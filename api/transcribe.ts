@@ -1,5 +1,3 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
 export const config = {
     api: {
         bodyParser: {
@@ -8,23 +6,38 @@ export const config = {
     },
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+interface TranscribeRequest {
+    audio: string;
+    expectedText?: string;
+}
+
+export default async function handler(req: Request): Promise<Response> {
     // Only allow POST
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
         console.error('OPENAI_API_KEY not configured');
-        return res.status(500).json({ error: 'API key not configured' });
+        return new Response(JSON.stringify({ error: 'API key not configured' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 
     try {
-        const { audio, expectedText } = req.body;
+        const body: TranscribeRequest = await req.json();
+        const { audio, expectedText } = body;
 
         if (!audio) {
-            return res.status(400).json({ error: 'No audio provided' });
+            return new Response(JSON.stringify({ error: 'No audio provided' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
 
         // Convert base64 to buffer
@@ -50,7 +63,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!response.ok) {
             const error = await response.text();
             console.error('OpenAI API error:', error);
-            return res.status(500).json({ error: 'Transcription failed' });
+            return new Response(JSON.stringify({ error: 'Transcription failed' }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
 
         const result = await response.json();
@@ -62,13 +78,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             comparison = compareArabicTexts(transcribed, expectedText);
         }
 
-        return res.status(200).json({
-            transcribed,
-            comparison,
+        return new Response(JSON.stringify({ transcribed, comparison }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
         console.error('Transcription error:', error);
-        return res.status(500).json({ error: 'Server error' });
+        return new Response(JSON.stringify({ error: 'Server error' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 }
 
