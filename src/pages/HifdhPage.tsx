@@ -15,6 +15,8 @@ import { useSettingsStore, RECITERS, PLAYBACK_SPEEDS } from '../stores/settingsS
 import { useProgressStore } from '../stores/progressStore';
 import { useStatsStore } from '../stores/statsStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
+import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
+import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
 
@@ -40,6 +42,8 @@ export function HifdhPage() {
     const [currentRepeat, setCurrentRepeat] = useState(1);
     const [maxRepeats, setMaxRepeats] = useState(repeatCount);
     const [showReciters, setShowReciters] = useState(false);
+    const [wordTimings, setWordTimings] = useState<VerseWords | null>(null);
+    const [activeWordIndex, setActiveWordIndex] = useState(-1);
 
     // Load surah ayahs
     useEffect(() => {
@@ -52,7 +56,7 @@ export function HifdhPage() {
         });
     }, [selectedSurah, startAyah, endAyah]);
 
-    // Load audio for current ayah
+    // Load audio for current ayah and fetch word timings
     useEffect(() => {
         if (ayahs.length > 0 && audioRef.current) {
             const ayah = ayahs[currentAyahIndex];
@@ -60,8 +64,12 @@ export function HifdhPage() {
             audioRef.current.src = audioUrl;
             audioRef.current.playbackRate = playbackSpeed;
             audioRef.current.load();
+
+            // Reset highlighting and fetch timings
+            setActiveWordIndex(-1);
+            fetchWordTimings(selectedSurah, ayah.numberInSurah).then(setWordTimings);
         }
-    }, [ayahs, currentAyahIndex, selectedReciter, playbackSpeed]);
+    }, [ayahs, currentAyahIndex, selectedReciter, playbackSpeed, selectedSurah]);
 
     // Update playback speed when changed
     useEffect(() => {
@@ -118,7 +126,16 @@ export function HifdhPage() {
         const audio = audioRef.current;
         if (!audio) return;
 
-        const updateTime = () => setCurrentTime(audio.currentTime);
+        const updateTime = () => {
+            if (!audio) return;
+            setCurrentTime(audio.currentTime);
+
+            // Sync word highlighting
+            if (wordTimings) {
+                const index = getCurrentWordIndex(audio.currentTime * 1000, wordTimings.words);
+                setActiveWordIndex(index);
+            }
+        };
         const updateDuration = () => setDuration(audio.duration);
 
         audio.addEventListener('timeupdate', updateTime);
@@ -197,8 +214,19 @@ export function HifdhPage() {
                 <audio ref={audioRef} />
 
                 {currentAyah && (
-                    <div className="hifdh-player__ayah">
-                        {currentAyah.text}
+                    <div className="hifdh-player__ayah" dir="rtl">
+                        {wordTimings ? (
+                            wordTimings.words.map((word, idx) => (
+                                <span
+                                    key={idx}
+                                    className={`hifdh-word ${activeWordIndex === idx ? 'highlight' : ''}`}
+                                >
+                                    {word.text}{' '}
+                                </span>
+                            ))
+                        ) : (
+                            currentAyah.text
+                        )}
                     </div>
                 )}
 

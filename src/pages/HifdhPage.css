@@ -71,6 +71,25 @@
     background: var(--color-bg-tertiary);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-lg);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    min-height: 120px;
+}
+
+.hifdh-word {
+    display: inline-block;
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.hifdh-word.highlight {
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+    transform: scale(1.1);
+    box-shadow: 0 0 8px var(--color-accent-muted);
 }
 
 .hifdh-player__progress {
