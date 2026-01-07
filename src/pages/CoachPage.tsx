@@ -6,20 +6,19 @@ import {
     ChevronRight,
     Volume2,
     RotateCcw,
-    Download,
     CheckCircle,
     XCircle,
-    Loader2
+    Loader2,
+    Crown
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore } from '../stores/settingsStore';
+import { usePremiumStore } from '../stores/premiumStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
-import { whisperService, compareArabicTexts } from '../lib/whisperService';
-import { Pipeline } from '@xenova/transformers';
 import type { Ayah } from '../types';
 import './CoachPage.css';
 
-type CoachMode = 'intro' | 'selection' | 'loading' | 'active' | 'result';
+type CoachMode = 'intro' | 'selection' | 'active' | 'result';
 
 interface TranscriptionResult {
     transcribed: string;
@@ -32,26 +31,21 @@ interface TranscriptionResult {
 export function CoachPage() {
     const { surahs } = useQuranStore();
     const { selectedReciter } = useSettingsStore();
+    const { isPremium, setPremium, checkPremium } = usePremiumStore();
 
     const [mode, setMode] = useState<CoachMode>('intro');
     const [selectedSurah, setSelectedSurah] = useState(1);
     const [ayahs, setAyahs] = useState<Ayah[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Model loading state
-    const [modelProgress, setModelProgress] = useState(0);
-    const [modelError, setModelError] = useState<string | null>(null);
-
     // Recording state
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    // Web Audio API refs
-    const audioContextRef = useRef<AudioContext | null>(null);
-    const streamRef = useRef<MediaStream | null>(null);
-    const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-    const processorNodeRef = useRef<ScriptProcessorNode | null>(null);
-    const audioDataRef = useRef<Float32Array[]>([]);
+    // MediaRecorder for API approach
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
 
     // Result state
     const [result, setResult] = useState<TranscriptionResult | null>(null);
@@ -62,138 +56,121 @@ export function CoachPage() {
     const currentSurah = surahs.find(s => s.number === selectedSurah);
     const currentAyah = ayahs[currentIndex];
 
+    // Check premium status on mount
+    useEffect(() => {
+        checkPremium();
+    }, [checkPremium]);
+
     // Load surah when selected
     useEffect(() => {
-        if (mode === 'active' || mode === 'selection' || mode === 'result') {
+        if (mode !== 'intro') {
             fetchSurah(selectedSurah).then(({ ayahs: surahAyahs }) => {
                 setAyahs(surahAyahs);
             });
         }
     }, [selectedSurah, mode]);
 
-    // Load Whisper model
-    const loadModel = async () => {
-        setMode('loading');
-        setModelError(null);
-
-        const success = await whisperService.loadModel((progress) => {
-            setModelProgress(Math.round(progress));
-        });
-
-        if (success) {
-            setMode('active');
-        } else {
-            setModelError("Impossible de charger le modèle. Vérifiez votre connexion.");
-            setMode('selection');
-        }
+    // Activate premium (for demo - in production use payment system)
+    const activatePremium = () => {
+        // Set premium for 30 days
+        const until = new Date();
+        until.setDate(until.getDate() + 30);
+        setPremium(true, until.toISOString());
     };
 
-    // Start recording using Web Audio API for direct Float32Array capture
+    // Start recording
     const startRecording = async () => {
-        setModelError(null);
+        if (!isPremium) return;
+
+        setError(null);
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio: {
-                    sampleRate: 16000,
-                    channelCount: 1,
-                    echoCancellation: true,
-                    noiseSuppression: true
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            // Use best available format
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm')
+                ? 'audio/webm'
+                : 'audio/mp4';
+
+            const mediaRecorder = new MediaRecorder(stream, { mimeType });
+            audioChunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
                 }
-            });
-            streamRef.current = stream;
-
-            // Create audio context at 16kHz
-            const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)({ sampleRate: 16000 });
-            audioContextRef.current = audioContext;
-
-            // Create source from microphone
-            const source = audioContext.createMediaStreamSource(stream);
-            sourceNodeRef.current = source;
-
-            // Create script processor to capture raw audio
-            const processor = audioContext.createScriptProcessor(4096, 1, 1);
-            processorNodeRef.current = processor;
-
-            audioDataRef.current = [];
-
-            processor.onaudioprocess = (event) => {
-                const inputData = event.inputBuffer.getChannelData(0);
-                audioDataRef.current.push(new Float32Array(inputData));
             };
 
-            source.connect(processor);
-            processor.connect(audioContext.destination);
+            mediaRecorder.onstop = async () => {
+                stream.getTracks().forEach(track => track.stop());
+                await processAudio();
+            };
 
+            mediaRecorderRef.current = mediaRecorder;
+            mediaRecorder.start();
             setIsRecording(true);
-        } catch (error) {
-            console.error('Microphone error:', error);
-            setModelError("Impossible d'accéder au microphone. Autorisez l'accès dans les paramètres.");
+        } catch (err) {
+            console.error('Microphone error:', err);
+            setError("Impossible d'accéder au microphone. Autorisez l'accès dans les paramètres.");
         }
     };
 
-    // Stop recording and process audio
-    const stopRecording = async () => {
-        if (!isRecording) return;
+    // Stop recording
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
 
-        setIsRecording(false);
+    // Process audio with API
+    const processAudio = async () => {
+        if (audioChunksRef.current.length === 0) return;
+
         setIsProcessing(true);
-
-        // Disconnect and cleanup
-        processorNodeRef.current?.disconnect();
-        sourceNodeRef.current?.disconnect();
-        streamRef.current?.getTracks().forEach(track => track.stop());
+        setError(null);
 
         try {
-            if (audioDataRef.current.length === 0) {
-                throw new Error('Aucun audio capturé');
-            }
+            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
 
-            // Combine all chunks into single Float32Array
-            const totalLength = audioDataRef.current.reduce((acc, chunk) => acc + chunk.length, 0);
-            const audioData = new Float32Array(totalLength);
-            let offset = 0;
-            for (const chunk of audioDataRef.current) {
-                audioData.set(chunk, offset);
-                offset += chunk.length;
-            }
-
-            console.log('Audio captured:', audioData.length, 'samples');
-
-            // Close audio context
-            await audioContextRef.current?.close();
-
-            // Transcribe directly with the pipeline
-            const transcriber = (whisperService as unknown as { transcriber: Pipeline }).transcriber;
-            if (!transcriber) {
-                throw new Error('Modèle non chargé');
-            }
-
-            const transcribeResult = await transcriber(audioData, {
-                language: 'ar',
-                task: 'transcribe',
+            // Convert to base64
+            const reader = new FileReader();
+            const base64Audio = await new Promise<string>((resolve, reject) => {
+                reader.onload = () => {
+                    const result = reader.result as string;
+                    resolve(result.split(',')[1]); // Remove data URL prefix
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(audioBlob);
             });
 
-            const transcribed = Array.isArray(transcribeResult)
-                ? transcribeResult.map((r: { text: string }) => r.text).join(' ')
-                : (transcribeResult as { text: string }).text || '';
+            // Call API
+            const response = await fetch('/api/transcribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    audio: base64Audio,
+                    expectedText: currentAyah?.text,
+                }),
+            });
 
-            console.log('Transcribed:', transcribed);
-
-            // Compare with expected text
-            if (currentAyah) {
-                const comparison = compareArabicTexts(transcribed, currentAyah.text);
-                setResult({
-                    transcribed,
-                    accuracy: comparison.accuracy,
-                    correct: comparison.correct,
-                    matchedWords: comparison.matchedWords,
-                    missedWords: comparison.missedWords,
-                });
-                setMode('result');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Transcription failed');
             }
-        } catch (error) {
-            console.error('Transcription error:', error);
-            setModelError("Erreur: " + (error as Error).message);
+
+            const data = await response.json();
+
+            setResult({
+                transcribed: data.transcribed,
+                accuracy: data.comparison?.accuracy || 0,
+                correct: data.comparison?.correct || false,
+                matchedWords: data.comparison?.matchedWords || [],
+                missedWords: data.comparison?.missedWords || [],
+            });
+            setMode('result');
+        } catch (err) {
+            console.error('API error:', err);
+            setError("Erreur de transcription: " + (err as Error).message);
         } finally {
             setIsProcessing(false);
         }
@@ -226,11 +203,11 @@ export function CoachPage() {
 
     const retry = () => {
         setResult(null);
-        setModelError(null);
+        setError(null);
         setMode('active');
     };
 
-    // Render highlighted text with correct/incorrect words
+    // Render highlighted text
     const renderHighlightedText = useCallback(() => {
         if (!currentAyah || !result) return null;
 
@@ -263,27 +240,39 @@ export function CoachPage() {
             <div className="coach-page">
                 <div className="coach-page__header">
                     <h1 className="coach-page__title">Coach de Récitation</h1>
+                    {isPremium && <Crown className="coach-premium-badge" size={20} />}
                 </div>
 
                 <div className="coach-intro">
                     <div className="coach-intro__icon">
                         <Mic size={36} />
                     </div>
-                    <h2 className="coach-intro__title">Correction en temps réel</h2>
+                    <h2 className="coach-intro__title">Correction IA avancée</h2>
                     <p className="coach-intro__description">
-                        Récitez un verset et l'IA analysera votre prononciation.
+                        Récitez un verset et notre IA analysera votre prononciation avec précision.
                         Les mots corrects seront surlignés en vert, les erreurs en rouge.
                     </p>
-                    <button className="coach-intro__btn" onClick={() => setMode('selection')}>
-                        Commencer une session
-                    </button>
-                </div>
 
-                <div className="coach-info">
-                    <p>
-                        <strong>💡 Info :</strong> Le premier chargement télécharge le modèle IA (~40 MB).
-                        C'est gratuit et tout se passe sur votre appareil.
-                    </p>
+                    {isPremium ? (
+                        <button className="coach-intro__btn" onClick={() => setMode('selection')}>
+                            Commencer une session
+                        </button>
+                    ) : (
+                        <div className="coach-premium-cta">
+                            <div className="coach-premium-badge-large">
+                                <Crown size={24} />
+                                <span>Fonctionnalité Premium</span>
+                            </div>
+                            <p className="coach-premium-desc">
+                                Accédez à la correction IA avec Whisper d'OpenAI pour une transcription
+                                précise de votre récitation en arabe.
+                            </p>
+                            <button className="coach-intro__btn coach-intro__btn--premium" onClick={activatePremium}>
+                                <Crown size={20} />
+                                Activer Premium (Test 30 jours)
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -313,39 +302,10 @@ export function CoachPage() {
                         ))}
                     </select>
 
-                    <button className="coach-intro__btn" onClick={loadModel}>
-                        <Download size={20} />
-                        Charger le modèle IA
+                    <button className="coach-intro__btn" onClick={() => setMode('active')}>
+                        <Mic size={20} />
+                        Démarrer le coaching
                     </button>
-
-                    {modelError && (
-                        <div className="coach-error">{modelError}</div>
-                    )}
-                </div>
-            </div>
-        );
-    }
-
-    // Loading Screen
-    if (mode === 'loading') {
-        return (
-            <div className="coach-page">
-                <div className="coach-page__header">
-                    <h1 className="coach-page__title">Chargement du modèle</h1>
-                </div>
-
-                <div className="coach-loading">
-                    <Loader2 size={48} className="coach-loading__spinner" />
-                    <p className="coach-loading__text">
-                        Téléchargement du modèle Whisper...
-                    </p>
-                    <div className="coach-loading__progress">
-                        <div
-                            className="coach-loading__bar"
-                            style={{ width: `${modelProgress}%` }}
-                        />
-                    </div>
-                    <span className="coach-loading__percent">{modelProgress}%</span>
                 </div>
             </div>
         );
@@ -426,7 +386,7 @@ export function CoachPage() {
                 {isProcessing ? (
                     <div className="coach-processing">
                         <Loader2 size={32} className="coach-loading__spinner" />
-                        <span>Analyse en cours...</span>
+                        <span>Analyse IA en cours...</span>
                     </div>
                 ) : isRecording ? (
                     <button className="coach-record coach-record--active" onClick={stopRecording}>
@@ -453,8 +413,8 @@ export function CoachPage() {
                 </button>
             </div>
 
-            {modelError && (
-                <div className="coach-error">{modelError}</div>
+            {error && (
+                <div className="coach-error">{error}</div>
             )}
         </div>
     );

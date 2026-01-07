@@ -1,3 +1,51 @@
+/* Coach Error */
+.coach-error {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(248, 81, 73, 0.15);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--color-error);
+    font-size: var(--text-ui-sm);
+}
+
+/* Premium Features */
+.coach-premium-badge {
+    color: var(--color-warning);
+}
+
+.coach-premium-cta {
+    text-align: center;
+}
+
+.coach-premium-badge-large {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #1a1a2e;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+
+.coach-premium-desc {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+    line-height: 1.6;
+}
+
+.coach-intro__btn--premium {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #1a1a2e;
+}
+
+.coach-intro__btn--premium:hover {
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    transform: scale(1.02);
+}
+
 .coach-page {
     padding: var(--space-md);
     padding-bottom: calc(80px + var(--space-lg));
