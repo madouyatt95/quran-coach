@@ -114,12 +114,38 @@
 /* Page Navigation */
 .page-nav {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--space-md);
     padding: var(--space-md);
     background: var(--color-bg-secondary);
     border-radius: var(--radius-lg);
     margin-top: var(--space-lg);
+}
+
+.page-nav__surah-select {
+    width: 100%;
+}
+
+.page-nav__surah-dropdown {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--text-ui-md);
+    cursor: pointer;
+}
+
+.page-nav__surah-dropdown:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.page-nav__buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .page-nav__btn {

@@ -86,24 +86,39 @@ export function HifdhPage() {
         const surah = surahs.find(s => s.number === selectedSurah);
         if (surah) {
             setMaxAyahs(surah.numberOfAyahs);
-            // Reset to full surah when changing
-            setStartAyah(1);
-            setEndAyah(surah.numberOfAyahs);
         }
     }, [selectedSurah, surahs]);
 
-    // Load surah ayahs
+    // Load surah ayahs - use a ref to track if this is a surah change
+    const prevSurahRef = useRef(selectedSurah);
+
     useEffect(() => {
+        const surah = surahs.find(s => s.number === selectedSurah);
+        const surahChanged = prevSurahRef.current !== selectedSurah;
+        prevSurahRef.current = selectedSurah;
+
+        // Determine the range to use
+        let fetchStart = startAyah;
+        let fetchEnd = endAyah;
+
+        // If surah changed, always load full surah and reset range
+        if (surahChanged && surah) {
+            fetchStart = 1;
+            fetchEnd = surah.numberOfAyahs;
+            setStartAyah(1);
+            setEndAyah(surah.numberOfAyahs);
+        }
+
         fetchSurah(selectedSurah).then(({ ayahs: allAyahs }) => {
             const filtered = allAyahs.filter(
-                a => a.numberInSurah >= startAyah && a.numberInSurah <= endAyah
+                a => a.numberInSurah >= fetchStart && a.numberInSurah <= fetchEnd
             );
             setAyahs(filtered);
             setCurrentAyahIndex(0);
             setSelectionStart(null);
             setSelectionEnd(null);
         });
-    }, [selectedSurah, startAyah, endAyah]);
+    }, [selectedSurah, startAyah, endAyah, surahs]);
 
     // Load audio and fetch timings
     useEffect(() => {

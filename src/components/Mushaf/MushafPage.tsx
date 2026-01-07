@@ -17,7 +17,8 @@ export function MushafPage() {
         nextPage,
         prevPage,
         setPageAyahs,
-        pageAyahs
+        pageAyahs,
+        goToSurah
     } = useQuranStore();
 
     const { arabicFontSize } = useSettingsStore();
@@ -121,25 +122,45 @@ export function MushafPage() {
             </div>
 
             <div className="page-nav">
-                <button
-                    className="page-nav__btn"
-                    onClick={prevPage}
-                    disabled={currentPage <= 1}
-                >
-                    <ChevronLeft size={20} />
-                    Précédent
-                </button>
+                <div className="page-nav__surah-select">
+                    <select
+                        className="page-nav__surah-dropdown"
+                        value=""
+                        onChange={(e) => {
+                            const surahNum = parseInt(e.target.value);
+                            if (surahNum) goToSurah(surahNum);
+                        }}
+                    >
+                        <option value="">Aller à la sourate...</option>
+                        {surahs.map((s) => (
+                            <option key={s.number} value={s.number}>
+                                {s.number}. {s.name} ({s.englishName})
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
-                <span className="page-nav__current">{currentPage} / 604</span>
+                <div className="page-nav__buttons">
+                    <button
+                        className="page-nav__btn"
+                        onClick={prevPage}
+                        disabled={currentPage <= 1}
+                    >
+                        <ChevronLeft size={20} />
+                        Précédent
+                    </button>
 
-                <button
-                    className="page-nav__btn"
-                    onClick={nextPage}
-                    disabled={currentPage >= 604}
-                >
-                    Suivant
-                    <ChevronRight size={20} />
-                </button>
+                    <span className="page-nav__current">{currentPage} / 604</span>
+
+                    <button
+                        className="page-nav__btn"
+                        onClick={nextPage}
+                        disabled={currentPage >= 604}
+                    >
+                        Suivant
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
             </div>
         </div>
     );
