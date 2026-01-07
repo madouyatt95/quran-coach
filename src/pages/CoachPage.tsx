@@ -160,13 +160,23 @@ export function CoachPage() {
 
             const data = await response.json();
 
-            setResult({
+            const resultData = {
                 transcribed: data.transcribed,
                 accuracy: data.comparison?.accuracy || 0,
                 correct: data.comparison?.correct || false,
                 matchedWords: data.comparison?.matchedWords || [],
                 missedWords: data.comparison?.missedWords || [],
-            });
+            };
+
+            setResult(resultData);
+
+            // Vibrate on error (if accuracy < 80%)
+            if (!resultData.correct && resultData.accuracy < 80) {
+                if ('vibrate' in navigator) {
+                    navigator.vibrate([200, 100, 200]); // Vibrate pattern
+                }
+            }
+
             setMode('result');
         } catch (err) {
             console.error('API error:', err);

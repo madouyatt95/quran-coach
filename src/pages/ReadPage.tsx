@@ -3,6 +3,7 @@ import { Header } from '../components/Navigation/Header';
 import { MushafPage } from '../components/Mushaf/MushafPage';
 import { FocusMode } from '../components/Mushaf/FocusMode';
 import { SearchModal } from '../components/Navigation/SearchModal';
+import { VoiceSearch } from '../components/VoiceSearch/VoiceSearch';
 import { TajwidControls } from '../components/Tajwid/TajwidControls';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore } from '../stores/settingsStore';
@@ -13,8 +14,9 @@ type ViewMode = 'mushaf' | 'focus';
 export function ReadPage() {
     const [viewMode, setViewMode] = useState<ViewMode>('mushaf');
     const [showSearch, setShowSearch] = useState(false);
+    const [showVoiceSearch, setShowVoiceSearch] = useState(false);
 
-    const { currentSurah, currentAyah, currentPage } = useQuranStore();
+    const { currentSurah, currentAyah, currentPage, setCurrentSurah, setCurrentAyah } = useQuranStore();
     const { tajwidEnabled } = useSettingsStore();
     const { addBookmark } = useProgressStore();
 
@@ -30,12 +32,21 @@ export function ReadPage() {
         setViewMode(prev => prev === 'mushaf' ? 'focus' : 'mushaf');
     };
 
+    const handleVoiceSearchResult = (surah: number, ayah: number) => {
+        setCurrentSurah(surah);
+        setCurrentAyah(ayah);
+        setShowVoiceSearch(false);
+        // Switch to focus mode to show the verse
+        setViewMode('focus');
+    };
+
     return (
         <>
             <Header
                 onMenuClick={handleMenuClick}
                 onSearchClick={() => setShowSearch(true)}
                 onBookmarkClick={handleBookmarkClick}
+                onVoiceSearchClick={() => setShowVoiceSearch(true)}
             />
 
             {tajwidEnabled && viewMode === 'mushaf' && <TajwidControls />}
@@ -54,6 +65,14 @@ export function ReadPage() {
                 isOpen={showSearch}
                 onClose={() => setShowSearch(false)}
             />
+
+            {showVoiceSearch && (
+                <VoiceSearch
+                    onResult={handleVoiceSearchResult}
+                    onClose={() => setShowVoiceSearch(false)}
+                />
+            )}
         </>
     );
 }
+
