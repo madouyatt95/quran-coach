@@ -1,43 +1,30 @@
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '10mb',
-        },
-    },
-};
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-interface TranscribeRequest {
-    audio: string;
-    expectedText?: string;
-}
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+    // CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-export default async function handler(req: Request): Promise<Response> {
-    // Only allow POST
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
     if (req.method !== 'POST') {
-        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-            status: 405,
-            headers: { 'Content-Type': 'application/json' },
-        });
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
         console.error('OPENAI_API_KEY not configured');
-        return new Response(JSON.stringify({ error: 'API key not configured' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-        });
+        return res.status(500).json({ error: 'API key not configured' });
     }
 
     try {
-        const body: TranscribeRequest = await req.json();
-        const { audio, expectedText } = body;
+        const { audio, expectedText } = req.body;
 
         if (!audio) {
-            return new Response(JSON.stringify({ error: 'No audio provided' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' },
-            });
+            return res.status(400).json({ error: 'No audio provided' });
         }
 
         // Convert base64 to buffer
@@ -63,10 +50,7 @@ export default async function handler(req: Request): Promise<Response> {
         if (!response.ok) {
             const error = await response.text();
             console.error('OpenAI API error:', error);
-            return new Response(JSON.stringify({ error: 'Transcription failed' }), {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            });
+            return res.status(500).json({ error: 'Transcription failed', details: error });
         }
 
         const result = await response.json();
@@ -78,25 +62,18 @@ export default async function handler(req: Request): Promise<Response> {
             comparison = compareArabicTexts(transcribed, expectedText);
         }
 
-        return new Response(JSON.stringify({ transcribed, comparison }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-        });
+        return res.status(200).json({ transcribed, comparison });
     } catch (error) {
         console.error('Transcription error:', error);
-        return new Response(JSON.stringify({ error: 'Server error' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-        });
+        return res.status(500).json({ error: 'Server error', details: String(error) });
     }
 }
 
 // Compare transcribed text with expected text
 function compareArabicTexts(transcribed: string, expected: string) {
-    // Normalize Arabic text (remove diacritics for comparison)
     const normalize = (text: string) => {
         return text
-            .replace(/[\u064B-\u0652\u0670]/g, '') // Remove tashkeel
+            .replace(/[\u064B-\u0652\u0670]/g, '')
             .replace(/\s+/g, ' ')
             .trim();
     };
@@ -119,7 +96,6 @@ function compareArabicTexts(transcribed: string, expected: string) {
             matchedWords.push(expectedWord);
             tIndex++;
         } else {
-            // Check next few words
             const found = transcribedWords.slice(tIndex, tIndex + 3).indexOf(expectedWord);
             if (found !== -1) {
                 tIndex += found + 1;
