@@ -54,6 +54,72 @@
     font-size: var(--text-ui-md);
 }
 
+/* Verse Range Selector */
+.hifdh-verse-range {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-bg-tertiary);
+    flex-wrap: wrap;
+}
+
+.hifdh-verse-range__label {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.hifdh-verse-range__inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.hifdh-verse-range__input {
+    width: 60px;
+    padding: var(--space-sm);
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--text-ui-md);
+    text-align: center;
+    font-weight: 600;
+}
+
+.hifdh-verse-range__input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.hifdh-verse-range__separator {
+    color: var(--color-text-muted);
+    font-size: var(--text-ui-sm);
+}
+
+.hifdh-verse-range__total {
+    color: var(--color-text-muted);
+    font-size: var(--text-ui-sm);
+}
+
+.hifdh-verse-range__all-btn {
+    margin-left: auto;
+    padding: var(--space-xs) var(--space-md);
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+    border-radius: var(--radius-md);
+    font-size: var(--text-ui-xs);
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.hifdh-verse-range__all-btn:hover {
+    background: var(--color-accent);
+    color: white;
+}
+
 /* Main Card */
 .hifdh-main-card {
     background: var(--color-bg-secondary);

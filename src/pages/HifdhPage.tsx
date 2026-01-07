@@ -42,8 +42,9 @@ export function HifdhPage() {
 
     // Selection state
     const [selectedSurah, setSelectedSurah] = useState(1);
-    const [startAyah] = useState(1);
-    const [endAyah] = useState(7);
+    const [startAyah, setStartAyah] = useState(1);
+    const [endAyah, setEndAyah] = useState(7);
+    const [maxAyahs, setMaxAyahs] = useState(7);
     const [ayahs, setAyahs] = useState<Ayah[]>([]);
     const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
 
@@ -79,6 +80,17 @@ export function HifdhPage() {
 
     // Check premium on mount
     useEffect(() => { checkPremium(); }, [checkPremium]);
+
+    // Update max ayahs when surah changes
+    useEffect(() => {
+        const surah = surahs.find(s => s.number === selectedSurah);
+        if (surah) {
+            setMaxAyahs(surah.numberOfAyahs);
+            // Reset to full surah when changing
+            setStartAyah(1);
+            setEndAyah(surah.numberOfAyahs);
+        }
+    }, [selectedSurah, surahs]);
 
     // Load surah ayahs
     useEffect(() => {
@@ -370,10 +382,39 @@ export function HifdhPage() {
                         >
                             {surahs.map((s) => (
                                 <option key={s.number} value={s.number}>
-                                    {s.number}. {s.name}
+                                    {s.number}. {s.name} ({s.englishName})
                                 </option>
                             ))}
                         </select>
+                    </div>
+                    <div className="hifdh-verse-range">
+                        <label className="hifdh-verse-range__label">Versets :</label>
+                        <div className="hifdh-verse-range__inputs">
+                            <input
+                                type="number"
+                                className="hifdh-verse-range__input"
+                                value={startAyah}
+                                min={1}
+                                max={endAyah}
+                                onChange={(e) => setStartAyah(Math.max(1, Math.min(parseInt(e.target.value) || 1, endAyah)))}
+                            />
+                            <span className="hifdh-verse-range__separator">à</span>
+                            <input
+                                type="number"
+                                className="hifdh-verse-range__input"
+                                value={endAyah}
+                                min={startAyah}
+                                max={maxAyahs}
+                                onChange={(e) => setEndAyah(Math.max(startAyah, Math.min(parseInt(e.target.value) || startAyah, maxAyahs)))}
+                            />
+                            <span className="hifdh-verse-range__total">/ {maxAyahs}</span>
+                        </div>
+                        <button
+                            className="hifdh-verse-range__all-btn"
+                            onClick={() => { setStartAyah(1); setEndAyah(maxAyahs); }}
+                        >
+                            Toute la sourate
+                        </button>
                     </div>
                 </div>
             )}
