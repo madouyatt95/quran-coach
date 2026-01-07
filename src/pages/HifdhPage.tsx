@@ -103,7 +103,11 @@ export function HifdhPage() {
             audioRef.current.load();
 
             setActiveWordIndex(-1);
-            fetchWordTimings(selectedSurah, ayah.numberInSurah).then(setWordTimings);
+
+            // Get the Quran.com reciter ID for word timings API
+            const reciterInfo = RECITERS.find(r => r.id === selectedReciter);
+            const quranComReciterId = reciterInfo?.quranComId || 7; // Default to Mishary Al-Afasy
+            fetchWordTimings(selectedSurah, ayah.numberInSurah, quranComReciterId).then(setWordTimings);
         }
     }, [ayahs, currentAyahIndex, selectedReciter, playbackSpeed, selectedSurah]);
 
