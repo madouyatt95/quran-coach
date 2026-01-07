@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
     Play,
     Pause,
@@ -8,30 +8,48 @@ import {
     Minus,
     Plus,
     RotateCcw,
-    Volume2
+    Volume2,
+    Brain,
+    Mic,
+    Square,
+    Loader2,
+    Eye,
+    Crown
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, RECITERS, PLAYBACK_SPEEDS } from '../stores/settingsStore';
-import { useProgressStore } from '../stores/progressStore';
 import { useStatsStore } from '../stores/statsStore';
+import { usePremiumStore } from '../stores/premiumStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
 
+interface WordState {
+    id: number;
+    text: string;
+    hidden: boolean;
+    revealed: boolean;
+    correct: boolean | null;
+}
+
 export function HifdhPage() {
     const { surahs } = useQuranStore();
     const { selectedReciter, repeatCount, playbackSpeed, setReciter, setPlaybackSpeed } = useSettingsStore();
-    const { getSessionsForReview } = useProgressStore();
     const { recordPageRead } = useStatsStore();
+    const { isPremium, checkPremium, setPremium } = usePremiumStore();
 
     // Selection state
     const [selectedSurah, setSelectedSurah] = useState(1);
-    const [startAyah, setStartAyah] = useState(1);
-    const [endAyah, setEndAyah] = useState(7);
+    const [startAyah] = useState(1);
+    const [endAyah] = useState(7);
     const [ayahs, setAyahs] = useState<Ayah[]>([]);
     const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
+
+    // Partial selection (Word loop)
+    const [selectionStart, setSelectionStart] = useState<number | null>(null);
+    const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
 
     // Player state
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -42,8 +60,25 @@ export function HifdhPage() {
     const [currentRepeat, setCurrentRepeat] = useState(1);
     const [maxRepeats, setMaxRepeats] = useState(repeatCount);
     const [showReciters, setShowReciters] = useState(false);
+
+    // Word timings & Test mode
     const [wordTimings, setWordTimings] = useState<VerseWords | null>(null);
     const [activeWordIndex, setActiveWordIndex] = useState(-1);
+    const [isTestMode, setIsTestMode] = useState(false);
+    const [hideLevel, setHideLevel] = useState(50); // 25, 50, 75, 100
+    const [wordStates, setWordStates] = useState<WordState[]>([]);
+    const [isRecording, setIsRecording] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+
+    const currentAyah = ayahs[currentAyahIndex];
+    const currentReciterInfo = RECITERS.find(r => r.id === selectedReciter);
+
+    // Check premium on mount
+    useEffect(() => { checkPremium(); }, [checkPremium]);
 
     // Load surah ayahs
     useEffect(() => {
@@ -53,10 +88,12 @@ export function HifdhPage() {
             );
             setAyahs(filtered);
             setCurrentAyahIndex(0);
+            setSelectionStart(null);
+            setSelectionEnd(null);
         });
     }, [selectedSurah, startAyah, endAyah]);
 
-    // Load audio for current ayah and fetch word timings
+    // Load audio and fetch timings
     useEffect(() => {
         if (ayahs.length > 0 && audioRef.current) {
             const ayah = ayahs[currentAyahIndex];
@@ -65,24 +102,72 @@ export function HifdhPage() {
             audioRef.current.playbackRate = playbackSpeed;
             audioRef.current.load();
 
-            // Reset highlighting and fetch timings
             setActiveWordIndex(-1);
             fetchWordTimings(selectedSurah, ayah.numberInSurah).then(setWordTimings);
         }
     }, [ayahs, currentAyahIndex, selectedReciter, playbackSpeed, selectedSurah]);
 
-    // Update playback speed when changed
+    // Initialize/Update word states for test mode
     useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.playbackRate = playbackSpeed;
-        }
-    }, [playbackSpeed]);
+        if (wordTimings && isTestMode) {
+            const totalWords = wordTimings.words.length;
+            const wordsToHideCount = Math.ceil((totalWords * hideLevel) / 100);
+            const hiddenIndices = new Set<number>();
 
+            while (hiddenIndices.size < wordsToHideCount) {
+                hiddenIndices.add(Math.floor(Math.random() * totalWords));
+            }
+
+            setWordStates(wordTimings.words.map((w, i) => ({
+                id: w.id,
+                text: w.text,
+                hidden: hiddenIndices.has(i),
+                revealed: false,
+                correct: null
+            })));
+        }
+    }, [wordTimings, isTestMode, hideLevel, currentAyahIndex]);
+
+    // Handle Word Selection for Loop
+    const handleWordClick = (index: number) => {
+        if (isTestMode) return; // Disable selection in test mode for now or use it differently
+
+        if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
+            setSelectionStart(index);
+            setSelectionEnd(null);
+        } else {
+            if (index < selectionStart) {
+                setSelectionEnd(selectionStart);
+                setSelectionStart(index);
+            } else {
+                setSelectionEnd(index);
+            }
+        }
+    };
+
+    const resetSelection = () => {
+        setSelectionStart(null);
+        setSelectionEnd(null);
+    };
+
+    const selectedTimeRange = useMemo(() => {
+        if (!wordTimings || selectionStart === null || selectionEnd === null) return null;
+        const startWord = wordTimings.words[selectionStart];
+        const endWord = wordTimings.words[selectionEnd];
+        return { start: startWord.timestampFrom / 1000, end: endWord.timestampTo / 1000 };
+    }, [wordTimings, selectionStart, selectionEnd]);
+
+    // Player logic
     const handlePlayPause = () => {
         if (audioRef.current) {
             if (isPlaying) {
                 audioRef.current.pause();
             } else {
+                if (selectedTimeRange) {
+                    if (audioRef.current.currentTime < selectedTimeRange.start || audioRef.current.currentTime > selectedTimeRange.end) {
+                        audioRef.current.currentTime = selectedTimeRange.start;
+                    }
+                }
                 audioRef.current.play();
             }
             setIsPlaying(!isPlaying);
@@ -93,10 +178,12 @@ export function HifdhPage() {
         if (currentAyahIndex < ayahs.length - 1) {
             setCurrentAyahIndex(prev => prev + 1);
             setCurrentRepeat(1);
+            resetSelection();
         } else if (isLooping) {
             setCurrentAyahIndex(0);
             setCurrentRepeat(1);
-            recordPageRead(); // Count as a page read when completing a loop
+            resetSelection();
+            recordPageRead();
         }
     }, [currentAyahIndex, ayahs.length, isLooping, recordPageRead]);
 
@@ -104,6 +191,7 @@ export function HifdhPage() {
         if (currentAyahIndex > 0) {
             setCurrentAyahIndex(prev => prev - 1);
             setCurrentRepeat(1);
+            resetSelection();
         }
     };
 
@@ -111,7 +199,7 @@ export function HifdhPage() {
         if (currentRepeat < maxRepeats) {
             setCurrentRepeat(prev => prev + 1);
             if (audioRef.current) {
-                audioRef.current.currentTime = 0;
+                audioRef.current.currentTime = selectedTimeRange ? selectedTimeRange.start : 0;
                 audioRef.current.play();
             }
         } else {
@@ -120,22 +208,36 @@ export function HifdhPage() {
                 setTimeout(() => audioRef.current?.play(), 100);
             }
         }
-    }, [currentRepeat, maxRepeats, handleNext, isPlaying]);
+    }, [currentRepeat, maxRepeats, handleNext, isPlaying, selectedTimeRange]);
 
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
         const updateTime = () => {
-            if (!audio) return;
             setCurrentTime(audio.currentTime);
 
-            // Sync word highlighting
+            // Loop logic for partial selection
+            if (selectedTimeRange && isPlaying) {
+                if (audio.currentTime >= selectedTimeRange.end) {
+                    if (currentRepeat < maxRepeats) {
+                        setCurrentRepeat(prev => prev + 1);
+                        audio.currentTime = selectedTimeRange.start;
+                    } else {
+                        audio.pause();
+                        setIsPlaying(false);
+                        setCurrentRepeat(1);
+                    }
+                }
+            }
+
+            // Sync highlighting
             if (wordTimings) {
                 const index = getCurrentWordIndex(audio.currentTime * 1000, wordTimings.words);
                 setActiveWordIndex(index);
             }
         };
+
         const updateDuration = () => setDuration(audio.duration);
 
         audio.addEventListener('timeupdate', updateTime);
@@ -147,7 +249,80 @@ export function HifdhPage() {
             audio.removeEventListener('loadedmetadata', updateDuration);
             audio.removeEventListener('ended', handleAudioEnded);
         };
-    }, [handleAudioEnded]);
+    }, [handleAudioEnded, wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats]);
+
+    // Test Mode logic
+    const startRecording = async () => {
+        if (!isPremium) {
+            setError("Premium requis");
+            return;
+        }
+        setError(null);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+            const mediaRecorder = new MediaRecorder(stream, { mimeType });
+            audioChunksRef.current = [];
+            mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
+            mediaRecorder.onstop = () => {
+                stream.getTracks().forEach(t => t.stop());
+                processTestAudio();
+            };
+            mediaRecorderRef.current = mediaRecorder;
+            mediaRecorder.start();
+            setIsRecording(true);
+        } catch (err) {
+            setError("Erreur microphone");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    const processTestAudio = async () => {
+        if (audioChunksRef.current.length === 0) return;
+        setIsProcessing(true);
+        try {
+            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            const reader = new FileReader();
+            const base64Audio = await new Promise<string>((res, rej) => {
+                reader.onload = () => res((reader.result as string).split(',')[1]);
+                reader.onerror = rej;
+                reader.readAsDataURL(audioBlob);
+            });
+
+            const response = await fetch('/api/transcribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ audio: base64Audio, expectedText: currentAyah?.text }),
+            });
+
+            if (!response.ok) throw new Error('Failed');
+            const data = await response.json();
+            const matchedWords = data.comparison?.matchedWords || [];
+
+            const normalize = (t: string) => t.replace(/[\u064B-\u0652\u0670]/g, '').trim();
+
+            setWordStates(prev => prev.map(ws => {
+                const norm = normalize(ws.text);
+                const match = matchedWords.some((m: string) => normalize(m) === norm);
+                if (ws.hidden && match) return { ...ws, revealed: true, correct: true };
+                return ws;
+            }));
+
+            if (data.comparison?.accuracy < 80 && 'vibrate' in navigator) {
+                navigator.vibrate([200, 100, 200]);
+            }
+        } catch (err) {
+            setError("Erreur transcription");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     const formatTime = (time: number) => {
         const mins = Math.floor(time / 60);
@@ -155,221 +330,208 @@ export function HifdhPage() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const surah = surahs.find(s => s.number === selectedSurah);
-    const currentAyah = ayahs[currentAyahIndex];
-    const sessionsForReview = getSessionsForReview();
-    const currentReciterInfo = RECITERS.find(r => r.id === selectedReciter);
+    const toggleTestMode = () => {
+        setIsTestMode(!isTestMode);
+        setIsPlaying(false);
+        if (audioRef.current) audioRef.current.pause();
+    };
+
+    const activatePremium = () => {
+        const until = new Date();
+        until.setDate(until.getDate() + 30);
+        setPremium(true, until.toISOString());
+    };
 
     return (
         <div className="hifdh-page">
-            <h1 className="hifdh-page__header">Studio Hifdh</h1>
-
-            {/* Selection */}
-            <div className="hifdh-selection">
-                <h2 className="hifdh-selection__title">Sélection du passage</h2>
-
-                <div className="hifdh-selection__row">
-                    <select
-                        className="hifdh-selection__select"
-                        value={selectedSurah}
-                        onChange={(e) => {
-                            const num = parseInt(e.target.value);
-                            setSelectedSurah(num);
-                            setStartAyah(1);
-                            const s = surahs.find(s => s.number === num);
-                            setEndAyah(Math.min(7, s?.numberOfAyahs || 7));
-                        }}
-                    >
-                        {surahs.map((s) => (
-                            <option key={s.number} value={s.number}>
-                                {s.number}. {s.name} - {s.englishName}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="hifdh-selection__row">
-                    <input
-                        type="number"
-                        className="hifdh-selection__input"
-                        value={startAyah}
-                        min={1}
-                        max={surah?.numberOfAyahs || 1}
-                        onChange={(e) => setStartAyah(parseInt(e.target.value) || 1)}
-                    />
-                    <span style={{ color: 'var(--color-text-muted)' }}>à</span>
-                    <input
-                        type="number"
-                        className="hifdh-selection__input"
-                        value={endAyah}
-                        min={startAyah}
-                        max={surah?.numberOfAyahs || 1}
-                        onChange={(e) => setEndAyah(parseInt(e.target.value) || 1)}
-                    />
-                </div>
+            <div className="hifdh-page__header-row">
+                <h1 className="hifdh-page__header">Studio Hifdh</h1>
+                <button
+                    className={`hifdh-test-toggle ${isTestMode ? 'active' : ''}`}
+                    onClick={toggleTestMode}
+                >
+                    <Brain size={20} />
+                    {isTestMode ? 'Mode Écoute' : 'Mode Test'}
+                </button>
             </div>
 
-            {/* Audio Player */}
-            <div className="hifdh-player">
+            {/* Selection */}
+            {!isTestMode && (
+                <div className="hifdh-selection">
+                    <div className="hifdh-selection__row">
+                        <select
+                            className="hifdh-selection__select"
+                            value={selectedSurah}
+                            onChange={(e) => setSelectedSurah(parseInt(e.target.value))}
+                        >
+                            {surahs.map((s) => (
+                                <option key={s.number} value={s.number}>
+                                    {s.number}. {s.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            )}
+
+            {/* Main Player/Test Area */}
+            <div className={`hifdh-main-card ${isTestMode ? 'test-active' : ''}`}>
                 <audio ref={audioRef} />
 
-                {currentAyah && (
-                    <div className="hifdh-player__ayah" dir="rtl">
-                        {wordTimings ? (
-                            wordTimings.words.map((word, idx) => (
-                                <span
-                                    key={idx}
-                                    className={`hifdh-word ${activeWordIndex === idx ? 'highlight' : ''}`}
-                                >
-                                    {word.text}{' '}
-                                </span>
-                            ))
-                        ) : (
-                            currentAyah.text
-                        )}
-                    </div>
-                )}
+                {/* Ayah View */}
+                <div className="hifdh-ayah-container" dir="rtl">
+                    {wordTimings ? (
+                        <div className="hifdh-words-grid">
+                            {(isTestMode ? wordStates : wordTimings.words).map((word, idx) => {
+                                const isHidden = isTestMode && (word as WordState).hidden && !(word as WordState).revealed;
+                                const isSelected = !isTestMode && selectionStart !== null && selectionEnd !== null &&
+                                    idx >= selectionStart && idx <= selectionEnd;
+                                const isPartiallySelected = !isTestMode && selectionStart !== null && idx === selectionStart && selectionEnd === null;
 
-                <div className="hifdh-player__progress">
-                    <span className="hifdh-player__time">{formatTime(currentTime)}</span>
-                    <div className="hifdh-player__progress-bar">
-                        <div
-                            className="hifdh-player__progress-fill"
-                            style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
-                        />
-                    </div>
-                    <span className="hifdh-player__time">{formatTime(duration)}</span>
-                </div>
-
-                <div className="hifdh-player__controls">
-                    <button className="hifdh-player__btn" onClick={handlePrev}>
-                        <SkipBack size={20} />
-                    </button>
-
-                    <button
-                        className="hifdh-player__btn hifdh-player__btn--primary"
-                        onClick={handlePlayPause}
-                    >
-                        {isPlaying ? <Pause size={28} /> : <Play size={28} />}
-                    </button>
-
-                    <button className="hifdh-player__btn" onClick={handleNext}>
-                        <SkipForward size={20} />
-                    </button>
-
-                    <button
-                        className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`}
-                        onClick={() => setIsLooping(!isLooping)}
-                    >
-                        <Repeat size={20} />
-                    </button>
-                </div>
-
-                {/* Speed Control */}
-                <div className="hifdh-speed">
-                    <Volume2 size={16} />
-                    <span className="hifdh-speed__label">Vitesse:</span>
-                    <div className="hifdh-speed__buttons">
-                        {PLAYBACK_SPEEDS.map((speed) => (
-                            <button
-                                key={speed}
-                                className={`hifdh-speed__btn ${playbackSpeed === speed ? 'active' : ''}`}
-                                onClick={() => setPlaybackSpeed(speed)}
-                            >
-                                {speed}x
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Reciter Selector */}
-                <div className="hifdh-reciter">
-                    <button
-                        className="hifdh-reciter__current"
-                        onClick={() => setShowReciters(!showReciters)}
-                    >
-                        <span className="hifdh-reciter__flag">{currentReciterInfo?.country}</span>
-                        <span className="hifdh-reciter__name">{currentReciterInfo?.name}</span>
-                        <span className="hifdh-reciter__arabic">{currentReciterInfo?.nameArabic}</span>
-                    </button>
-
-                    {showReciters && (
-                        <div className="hifdh-reciter__list">
-                            {RECITERS.map((reciter) => (
-                                <button
-                                    key={reciter.id}
-                                    className={`hifdh-reciter__item ${selectedReciter === reciter.id ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setReciter(reciter.id);
-                                        setShowReciters(false);
-                                    }}
-                                >
-                                    <span className="hifdh-reciter__flag">{reciter.country}</span>
-                                    <div className="hifdh-reciter__info">
-                                        <span className="hifdh-reciter__name">{reciter.name}</span>
-                                        <span className="hifdh-reciter__arabic">{reciter.nameArabic}</span>
-                                    </div>
-                                </button>
-                            ))}
+                                return (
+                                    <span
+                                        key={idx}
+                                        className={`hifdh-word 
+                                            ${activeWordIndex === idx && !isTestMode ? 'highlight' : ''} 
+                                            ${isHidden ? 'hidden-word' : ''} 
+                                            ${(word as WordState).revealed ? 'revealed-word' : ''}
+                                            ${isSelected ? 'range-selected' : ''}
+                                            ${isPartiallySelected ? 'single-selected' : ''}
+                                        `}
+                                        onClick={() => handleWordClick(idx)}
+                                    >
+                                        {isHidden ? '●●●' : (word.text)}{' '}
+                                    </span>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="hifdh-loading-ayah">
+                            {currentAyah?.text || "Chargement..."}
                         </div>
                     )}
                 </div>
 
-                {/* Repeat Counter */}
-                <div className="hifdh-repeat">
-                    <span className="hifdh-repeat__label">Répétitions</span>
-                    <div className="hifdh-repeat__counter">
-                        <button
-                            className="hifdh-repeat__btn"
-                            onClick={() => setMaxRepeats(prev => Math.max(1, prev - 1))}
-                        >
-                            <Minus size={16} />
-                        </button>
-                        <span className="hifdh-repeat__count">{currentRepeat}/{maxRepeats}</span>
-                        <button
-                            className="hifdh-repeat__btn"
-                            onClick={() => setMaxRepeats(prev => Math.min(20, prev + 1))}
-                        >
-                            <Plus size={16} />
+                {/* Controls Area */}
+                {isTestMode ? (
+                    <div className="hifdh-test-controls">
+                        {!isPremium ? (
+                            <div className="hifdh-premium-gate">
+                                <Crown size={24} color="#FFD700" />
+                                <p>Le mode Test IA est une fonctionnalité Premium</p>
+                                <button className="hifdh-premium-btn" onClick={activatePremium}>
+                                    Activer l'essai gratuit (30 jours)
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="hifdh-difficulty-selector">
+                                    {[25, 50, 75, 100].map(level => (
+                                        <button
+                                            key={level}
+                                            className={hideLevel === level ? 'active' : ''}
+                                            onClick={() => setHideLevel(level)}
+                                        >
+                                            {level}%
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="hifdh-mic-area">
+                                    {isProcessing ? (
+                                        <div className="hifdh-processing">
+                                            <Loader2 size={32} className="hifdh-spinner" />
+                                            <span>Analyse...</span>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className={`hifdh-mic-btn ${isRecording ? 'recording' : ''}`}
+                                            onClick={isRecording ? stopRecording : startRecording}
+                                        >
+                                            {isRecording ? <Square size={32} /> : <Mic size={32} />}
+                                            <span>{isRecording ? 'Arrêter' : 'Réciter'}</span>
+                                        </button>
+                                    )}
+                                </div>
+                            </>
+                        )}
+                        <button className="hifdh-action-btn" onClick={() => {
+                            setWordStates(prev => prev.map(ws => ({ ...ws, revealed: true })));
+                        }}>
+                            <Eye size={18} /> Tout révéler
                         </button>
                     </div>
-                    <button
-                        className="hifdh-repeat__btn"
-                        onClick={() => setCurrentRepeat(1)}
-                    >
-                        <RotateCcw size={16} />
+                ) : (
+                    <div className="hifdh-player-ui">
+                        <div className="hifdh-player__progress">
+                            <span className="hifdh-player__time">{formatTime(currentTime)}</span>
+                            <div className="hifdh-player__progress-bar">
+                                <div
+                                    className="hifdh-player__progress-fill"
+                                    style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
+                                />
+                            </div>
+                            <span className="hifdh-player__time">{formatTime(duration)}</span>
+                        </div>
+
+                        <div className="hifdh-player__controls">
+                            <button className="hifdh-player__btn" onClick={handlePrev}><SkipBack size={20} /></button>
+                            <button className="hifdh-player__btn hifdh-player__btn--primary" onClick={handlePlayPause}>
+                                {isPlaying ? <Pause size={28} /> : <Play size={28} />}
+                            </button>
+                            <button className="hifdh-player__btn" onClick={handleNext}><SkipForward size={20} /></button>
+                            <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
+                                <Repeat size={20} />
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Bottom Actions Selection info */}
+            {!isTestMode && selectionStart !== null && (
+                <div className="hifdh-selection-bar">
+                    <span>Boucle active de mots</span>
+                    <button onClick={resetSelection}><RotateCcw size={14} /> Réinitialiser</button>
+                </div>
+            )}
+
+            {/* Secondary Controls (Reciters, Speed, Repeat) */}
+            <div className="hifdh-footer-controls">
+                <div className="hifdh-control-group">
+                    <button className="hifdh-config-btn" onClick={() => setShowReciters(!showReciters)}>
+                        <Volume2 size={18} /> {currentReciterInfo?.name}
                     </button>
+                    <div className="hifdh-speed-row">
+                        {PLAYBACK_SPEEDS.filter(s => s >= 0.75).map(speed => (
+                            <button
+                                key={speed}
+                                className={playbackSpeed === speed ? 'active' : ''}
+                                onClick={() => setPlaybackSpeed(speed)}
+                            >{speed}x</button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="hifdh-loop">
-                    Verset {currentAyahIndex + 1} / {ayahs.length}
+                <div className="hifdh-repeat-control">
+                    <button onClick={() => setMaxRepeats(prev => Math.max(1, prev - 1))}><Minus size={16} /></button>
+                    <span className="hifdh-repeat-stat">{currentRepeat}/{maxRepeats} reps</span>
+                    <button onClick={() => setMaxRepeats(prev => Math.min(20, prev + 1))}><Plus size={16} /></button>
                 </div>
             </div>
 
-            {/* Review Sessions */}
-            {sessionsForReview.length > 0 && (
-                <div className="hifdh-sessions">
-                    <h2 className="hifdh-sessions__title">À réviser ({sessionsForReview.length})</h2>
-                    {sessionsForReview.map((session) => {
-                        const s = surahs.find(s => s.number === session.surah);
-                        return (
-                            <div key={session.id} className="hifdh-session-item">
-                                <div className="hifdh-session-item__info">
-                                    <div className="hifdh-session-item__title">
-                                        {s?.name} ({session.startAyah}-{session.endAyah})
-                                    </div>
-                                    <div className="hifdh-session-item__meta">
-                                        {session.repetitions} répétitions
-                                    </div>
-                                </div>
-                                <span className="hifdh-session-item__badge hifdh-session-item__badge--review">
-                                    À réviser
-                                </span>
-                            </div>
-                        );
-                    })}
+            {showReciters && (
+                <div className="hifdh-reciter-overlay" onClick={() => setShowReciters(false)}>
+                    <div className="hifdh-reciter-modal" onClick={e => e.stopPropagation()}>
+                        {RECITERS.map(r => (
+                            <button key={r.id} className={selectedReciter === r.id ? 'active' : ''} onClick={() => { setReciter(r.id); setShowReciters(false); }}>
+                                {r.country} {r.name} <span>{r.nameArabic}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
+
+            {error && <div className="hifdh-error-msg">{error}</div>}
         </div>
     );
 }

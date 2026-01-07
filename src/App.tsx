@@ -4,7 +4,6 @@ import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { HifdhPage } from './pages/HifdhPage';
 import { CoachPage } from './pages/CoachPage';
-import { MemorizePage } from './pages/MemorizePage';
 import { StatsPage } from './pages/StatsPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -58,7 +57,6 @@ function AppContent() {
           <Route path="/" element={<ReadPage />} />
           <Route path="/hifdh" element={<HifdhPage />} />
           <Route path="/coach" element={<CoachPage />} />
-          <Route path="/memorize" element={<MemorizePage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
