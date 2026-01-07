@@ -15,6 +15,7 @@ import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore } from '../stores/settingsStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { whisperService, compareArabicTexts } from '../lib/whisperService';
+import { Pipeline } from '@xenova/transformers';
 import type { Ayah } from '../types';
 import './CoachPage.css';
 
@@ -44,8 +45,13 @@ export function CoachPage() {
     // Recording state
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
+
+    // Web Audio API refs
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
+    const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+    const processorNodeRef = useRef<ScriptProcessorNode | null>(null);
+    const audioDataRef = useRef<Float32Array[]>([]);
 
     // Result state
     const [result, setResult] = useState<TranscriptionResult | null>(null);
@@ -82,55 +88,96 @@ export function CoachPage() {
         }
     };
 
-    // Start recording
+    // Start recording using Web Audio API for direct Float32Array capture
     const startRecording = async () => {
+        setModelError(null);
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-
-            audioChunksRef.current = [];
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunksRef.current.push(event.data);
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    sampleRate: 16000,
+                    channelCount: 1,
+                    echoCancellation: true,
+                    noiseSuppression: true
                 }
+            });
+            streamRef.current = stream;
+
+            // Create audio context at 16kHz
+            const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)({ sampleRate: 16000 });
+            audioContextRef.current = audioContext;
+
+            // Create source from microphone
+            const source = audioContext.createMediaStreamSource(stream);
+            sourceNodeRef.current = source;
+
+            // Create script processor to capture raw audio
+            const processor = audioContext.createScriptProcessor(4096, 1, 1);
+            processorNodeRef.current = processor;
+
+            audioDataRef.current = [];
+
+            processor.onaudioprocess = (event) => {
+                const inputData = event.inputBuffer.getChannelData(0);
+                audioDataRef.current.push(new Float32Array(inputData));
             };
 
-            mediaRecorder.onstop = async () => {
-                // Stop all tracks
-                stream.getTracks().forEach(track => track.stop());
+            source.connect(processor);
+            processor.connect(audioContext.destination);
 
-                // Process audio
-                await processAudio();
-            };
-
-            mediaRecorderRef.current = mediaRecorder;
-            mediaRecorder.start();
             setIsRecording(true);
         } catch (error) {
-            setModelError("Impossible d'accéder au microphone. Autorisez l'accès.");
+            console.error('Microphone error:', error);
+            setModelError("Impossible d'accéder au microphone. Autorisez l'accès dans les paramètres.");
         }
     };
 
-    // Stop recording
-    const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-        }
-    };
+    // Stop recording and process audio
+    const stopRecording = async () => {
+        if (!isRecording) return;
 
-    // Process recorded audio
-    const processAudio = async () => {
-        if (audioChunksRef.current.length === 0) return;
-
+        setIsRecording(false);
         setIsProcessing(true);
 
-        try {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        // Disconnect and cleanup
+        processorNodeRef.current?.disconnect();
+        sourceNodeRef.current?.disconnect();
+        streamRef.current?.getTracks().forEach(track => track.stop());
 
-            // Transcribe
-            const transcribed = await whisperService.transcribe(audioBlob);
+        try {
+            if (audioDataRef.current.length === 0) {
+                throw new Error('Aucun audio capturé');
+            }
+
+            // Combine all chunks into single Float32Array
+            const totalLength = audioDataRef.current.reduce((acc, chunk) => acc + chunk.length, 0);
+            const audioData = new Float32Array(totalLength);
+            let offset = 0;
+            for (const chunk of audioDataRef.current) {
+                audioData.set(chunk, offset);
+                offset += chunk.length;
+            }
+
+            console.log('Audio captured:', audioData.length, 'samples');
+
+            // Close audio context
+            await audioContextRef.current?.close();
+
+            // Transcribe directly with the pipeline
+            const transcriber = (whisperService as unknown as { transcriber: Pipeline }).transcriber;
+            if (!transcriber) {
+                throw new Error('Modèle non chargé');
+            }
+
+            const transcribeResult = await transcriber(audioData, {
+                language: 'ar',
+                task: 'transcribe',
+            });
+
+            const transcribed = Array.isArray(transcribeResult)
+                ? transcribeResult.map((r: { text: string }) => r.text).join(' ')
+                : (transcribeResult as { text: string }).text || '';
+
+            console.log('Transcribed:', transcribed);
 
             // Compare with expected text
             if (currentAyah) {
@@ -146,7 +193,7 @@ export function CoachPage() {
             }
         } catch (error) {
             console.error('Transcription error:', error);
-            setModelError("Erreur lors de la transcription.");
+            setModelError("Erreur: " + (error as Error).message);
         } finally {
             setIsProcessing(false);
         }
@@ -179,6 +226,7 @@ export function CoachPage() {
 
     const retry = () => {
         setResult(null);
+        setModelError(null);
         setMode('active');
     };
 
@@ -187,13 +235,15 @@ export function CoachPage() {
         if (!currentAyah || !result) return null;
 
         const words = currentAyah.text.split(' ');
+        const normalizedMatched = result.matchedWords.map(w =>
+            w.replace(/[\u064B-\u0652\u0670]/g, '')
+        );
 
         return (
             <div className="coach-result__text" dir="rtl">
                 {words.map((word, index) => {
-                    const isMatched = result.matchedWords.includes(
-                        word.replace(/[\u064B-\u0652\u0670]/g, '')
-                    );
+                    const normalized = word.replace(/[\u064B-\u0652\u0670]/g, '');
+                    const isMatched = normalizedMatched.includes(normalized);
                     return (
                         <span
                             key={index}
@@ -231,7 +281,7 @@ export function CoachPage() {
 
                 <div className="coach-info">
                     <p>
-                        <strong>💡 Info :</strong> Le premier chargement télécharge le modèle IA (~75 MB).
+                        <strong>💡 Info :</strong> Le premier chargement télécharge le modèle IA (~40 MB).
                         C'est gratuit et tout se passe sur votre appareil.
                     </p>
                 </div>
