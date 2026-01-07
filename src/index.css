@@ -1,0 +1,264 @@
+/* Quran Coach - Design System */
+
+/* Arabic Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Colors - Dark Theme (Default) */
+  --color-bg-primary: #0D1117;
+  --color-bg-secondary: #161B22;
+  --color-bg-tertiary: #21262D;
+  --color-bg-elevated: #2D333B;
+  
+  --color-text-primary: #F0E6D3;
+  --color-text-secondary: #8B949E;
+  --color-text-muted: #6E7681;
+  
+  --color-accent: #58A6FF;
+  --color-accent-hover: #79B8FF;
+  --color-accent-muted: rgba(88, 166, 255, 0.15);
+  
+  --color-success: #3FB950;
+  --color-warning: #D29922;
+  --color-error: #F85149;
+  
+  /* Tajwid Colors */
+  --tajwid-madd: #FF6B6B;
+  --tajwid-ghunna: #4ECDC4;
+  --tajwid-qalqala: #FFE66D;
+  --tajwid-idgham: #95E1D3;
+  --tajwid-ikhfa: #DDA0DD;
+  --tajwid-iqlab: #87CEEB;
+  
+  /* Typography */
+  --font-arabic: 'Amiri', 'Traditional Arabic', serif;
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  --text-arabic-xl: 2.5rem;
+  --text-arabic-lg: 2rem;
+  --text-arabic-md: 1.75rem;
+  --text-arabic-sm: 1.5rem;
+  
+  --text-ui-xl: 1.5rem;
+  --text-ui-lg: 1.125rem;
+  --text-ui-md: 1rem;
+  --text-ui-sm: 0.875rem;
+  --text-ui-xs: 0.75rem;
+  
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  
+  /* Line Heights */
+  --line-height-arabic: 2.4;
+  --line-height-ui: 1.5;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  
+  /* Z-index */
+  --z-modal: 100;
+  --z-overlay: 90;
+  --z-header: 80;
+  --z-nav: 70;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F6F8FA;
+  --color-bg-tertiary: #EAEEF2;
+  --color-bg-elevated: #FFFFFF;
+  
+  --color-text-primary: #1F2328;
+  --color-text-secondary: #656D76;
+  --color-text-muted: #8C959F;
+  
+  --color-accent: #0969DA;
+  --color-accent-hover: #0550AE;
+  --color-accent-muted: rgba(9, 105, 218, 0.1);
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Sepia Theme for reading comfort */
+[data-theme="sepia"] {
+  --color-bg-primary: #F4ECD8;
+  --color-bg-secondary: #EBE3CF;
+  --color-bg-tertiary: #E2D9C5;
+  --color-bg-elevated: #F9F3E3;
+  
+  --color-text-primary: #3D3929;
+  --color-text-secondary: #6B6455;
+  --color-text-muted: #8A8374;
+}
+
+/* Reset & Base Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-ui);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Arabic Text Styles */
+.arabic {
+  font-family: var(--font-arabic);
+  direction: rtl;
+  text-align: right;
+  line-height: var(--line-height-arabic);
+  font-size: var(--text-arabic-md);
+}
+
+.arabic-xl { font-size: var(--text-arabic-xl); }
+.arabic-lg { font-size: var(--text-arabic-lg); }
+.arabic-md { font-size: var(--text-arabic-md); }
+.arabic-sm { font-size: var(--text-arabic-sm); }
+
+/* Ayah Number Badge */
+.ayah-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  font-size: 0.5em;
+  font-family: var(--font-ui);
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
+  border-radius: var(--radius-full);
+  margin: 0 0.25em;
+  vertical-align: middle;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Focus Styles */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
+}
+
+/* Button Reset */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Link Reset */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Safe Area for mobile */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Animation Utilities */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal);
+}
+
+.animate-slide-up {
+  animation: slideUp var(--transition-normal);
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}

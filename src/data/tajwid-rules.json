@@ -1,0 +1,73 @@
+{
+  "rules": [
+    {
+      "id": "madd",
+      "name": "Madd (Prolongation)",
+      "nameArabic": "المد",
+      "color": "#FF6B6B",
+      "description": "Prolongation de la voyelle",
+      "patterns": ["آ", "ا", "و", "ي", "ى"]
+    },
+    {
+      "id": "ghunna",
+      "name": "Ghunna (Nasalisation)",
+      "nameArabic": "الغنة",
+      "color": "#4ECDC4",
+      "description": "Son nasal avec ن ou م",
+      "patterns": ["نّ", "مّ"]
+    },
+    {
+      "id": "qalqala",
+      "name": "Qalqala (Écho)",
+      "nameArabic": "القلقلة",
+      "color": "#FFE66D",
+      "description": "Rebond sonore sur les lettres ق ط ب ج د",
+      "patterns": ["قْ", "طْ", "بْ", "جْ", "دْ"]
+    },
+    {
+      "id": "idgham",
+      "name": "Idgham (Fusion)",
+      "nameArabic": "الإدغام",
+      "color": "#95E1D3",
+      "description": "Fusion du ن ou tanwin avec les lettres يرملون",
+      "patterns": []
+    },
+    {
+      "id": "ikhfa",
+      "name": "Ikhfa (Dissimulation)",
+      "nameArabic": "الإخفاء",
+      "color": "#DDA0DD",
+      "description": "Le ن ou tanwin devient nasal devant certaines lettres",
+      "patterns": []
+    },
+    {
+      "id": "iqlab",
+      "name": "Iqlab (Conversion)",
+      "nameArabic": "الإقلاب",
+      "color": "#87CEEB",
+      "description": "Le ن devient م devant ب",
+      "patterns": ["نب", "نْب"]
+    },
+    {
+      "id": "izhar",
+      "name": "Izhar (Clarification)",
+      "nameArabic": "الإظهار",
+      "color": "#98D8C8",
+      "description": "Prononciation claire du ن ou tanwin",
+      "patterns": []
+    },
+    {
+      "id": "waqf",
+      "name": "Signes d'arrêt",
+      "nameArabic": "علامات الوقف",
+      "color": "#F7DC6F",
+      "description": "Indications de pause dans la récitation",
+      "patterns": ["ۖ", "ۗ", "ۘ", "ۙ", "ۚ", "ۛ"]
+    }
+  ],
+  "layers": {
+    "beginner": ["madd", "ghunna", "qalqala"],
+    "intermediate": ["madd", "ghunna", "qalqala", "idgham", "ikhfa"],
+    "advanced": ["madd", "ghunna", "qalqala", "idgham", "ikhfa", "iqlab", "izhar", "waqf"]
+  }
+}

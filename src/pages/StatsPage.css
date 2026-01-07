@@ -1,0 +1,207 @@
+.stats-page {
+    padding: var(--space-md);
+    padding-bottom: calc(80px + var(--space-lg));
+    min-height: 100vh;
+}
+
+.stats-page__title {
+    font-size: var(--text-ui-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xl);
+}
+
+/* Streak Card */
+.stats-card {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.stats-card--streak {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    background: linear-gradient(135deg, var(--color-bg-secondary), var(--color-bg-tertiary));
+}
+
+.stats-card--streak.active {
+    background: linear-gradient(135deg, rgba(255, 149, 0, 0.2), rgba(255, 94, 0, 0.1));
+    border: 1px solid rgba(255, 149, 0, 0.3);
+}
+
+.stats-card--streak.active .stats-card__icon {
+    color: #FF9500;
+    animation: flicker 1.5s infinite;
+}
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+.stats-card__icon {
+    color: var(--color-text-muted);
+}
+
+.stats-card__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-card__value {
+    font-size: var(--text-ui-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.stats-card__label {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+.stats-card__badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: rgba(255, 149, 0, 0.2);
+    border-radius: var(--radius-full);
+    color: #FF9500;
+    font-size: var(--text-ui-xs);
+    font-weight: 600;
+}
+
+/* Daily Goal */
+.stats-card--goal {
+    background: var(--color-bg-secondary);
+}
+
+.stats-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.goal-met {
+    margin-left: auto;
+    color: var(--color-success);
+    font-weight: 600;
+}
+
+.goal-progress {
+    margin-bottom: var(--space-md);
+}
+
+.goal-progress__bar {
+    height: 8px;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-sm);
+}
+
+.goal-progress__fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-success));
+    border-radius: var(--radius-full);
+    transition: width var(--transition-normal);
+}
+
+.goal-progress__text {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+.goal-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+.goal-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.goal-btn:hover {
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+}
+
+.goal-btn.active {
+    background: var(--color-accent);
+    color: white;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.stats-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-lg);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.stats-item svg {
+    color: var(--color-accent);
+}
+
+.stats-item__value {
+    font-size: var(--text-ui-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.stats-item__label {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+/* Motivation */
+.stats-motivation {
+    padding: var(--space-lg);
+    background: var(--color-accent-muted);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.stats-motivation p {
+    color: var(--color-accent);
+    font-weight: 500;
+    line-height: 1.5;
+}

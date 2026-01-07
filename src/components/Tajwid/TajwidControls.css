@@ -1,0 +1,162 @@
+.tajwid-controls {
+    padding: var(--space-md);
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.tajwid-controls__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.tajwid-controls__title {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.tajwid-controls__count {
+    font-size: var(--text-ui-xs);
+    color: var(--color-accent);
+    background: var(--color-accent-muted);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+}
+
+.tajwid-controls__layers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.tajwid-layer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 2px solid transparent;
+}
+
+.tajwid-layer:hover {
+    background: var(--color-bg-elevated);
+}
+
+.tajwid-layer.active {
+    border-color: var(--color-accent);
+    background: var(--color-accent-muted);
+}
+
+.tajwid-layer__color {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+}
+
+.tajwid-layer__name {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-primary);
+    font-weight: 500;
+}
+
+.tajwid-layer__arabic {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-secondary);
+    direction: rtl;
+}
+
+/* Legend */
+.tajwid-legend {
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.tajwid-legend__title {
+    font-size: var(--text-ui-sm);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tajwid-legend__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--color-bg-elevated);
+}
+
+.tajwid-legend__item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.tajwid-legend__color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.tajwid-legend__text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tajwid-legend__name {
+    font-size: var(--text-ui-sm);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.tajwid-legend__desc {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+/* Tajwid text highlighting colors */
+.tajwid-madd {
+    color: #FF6B6B !important;
+}
+
+.tajwid-ghunna {
+    color: #4ECDC4 !important;
+}
+
+.tajwid-qalqala {
+    color: #FFE66D !important;
+}
+
+.tajwid-idgham {
+    color: #95E1D3 !important;
+}
+
+.tajwid-ikhfa {
+    color: #DDA0DD !important;
+}
+
+.tajwid-iqlab {
+    color: #87CEEB !important;
+}
+
+.tajwid-izhar {
+    color: #98D8C8 !important;
+}
+
+.tajwid-waqf {
+    color: #F7DC6F !important;
+}

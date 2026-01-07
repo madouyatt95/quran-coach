@@ -1,0 +1,71 @@
+.header {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-bg-tertiary);
+    padding: var(--space-md);
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: var(--z-header);
+}
+
+.header__left,
+.header__right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.header__title {
+    font-size: var(--text-ui-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.header__subtitle {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+.header__btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.header__btn:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.header__btn.active {
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+}
+
+/* Surah Info Display */
+.header__surah-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.header__surah-name {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-lg);
+    color: var(--color-text-primary);
+    direction: rtl;
+}
+
+.header__page-info {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}

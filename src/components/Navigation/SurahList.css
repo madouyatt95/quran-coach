@@ -1,0 +1,109 @@
+.surah-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    padding-bottom: calc(80px + var(--space-lg));
+}
+
+.surah-list__header {
+    font-size: var(--text-ui-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    padding: var(--space-md) 0;
+}
+
+.surah-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.surah-item:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.surah-item:active {
+    transform: scale(0.98);
+}
+
+.surah-item__number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--text-ui-sm);
+}
+
+.surah-item__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.surah-item__name-ar {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-lg);
+    color: var(--color-text-primary);
+    direction: rtl;
+}
+
+.surah-item__name-en {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+.surah-item__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-xs);
+}
+
+.surah-item__ayahs {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+.surah-item__type {
+    font-size: var(--text-ui-xs);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+}
+
+/* Search */
+.surah-search {
+    padding: 0 var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.surah-search__input {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-bg-tertiary);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-primary);
+    font-size: var(--text-ui-md);
+}
+
+.surah-search__input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.surah-search__input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
