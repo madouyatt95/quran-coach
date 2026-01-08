@@ -169,6 +169,24 @@
     color: var(--color-accent);
 }
 
+.hifdh-verse-select {
+    min-width: 50px;
+    padding: 4px 8px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: var(--text-ui-md);
+    text-align: center;
+    cursor: pointer;
+}
+
+.hifdh-verse-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
 .hifdh-verse-range__actions {
     display: flex;
     gap: var(--space-sm);

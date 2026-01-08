@@ -275,9 +275,9 @@ export function HifdhPage() {
             setCurrentTime(audio.currentTime);
 
             // Loop logic for partial selection
-            // Use a small margin (50ms) before the endpoint for mobile precision
+            // Use a larger margin (200ms) before the endpoint for mobile precision
             if (selectedTimeRange && isPlaying) {
-                const endWithMargin = selectedTimeRange.end - 0.05;
+                const endWithMargin = selectedTimeRange.end - 0.2;
                 if (audio.currentTime >= endWithMargin) {
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
@@ -495,7 +495,15 @@ export function HifdhPage() {
                                     onClick={() => setStartAyah(Math.max(1, startAyah - 1))}
                                     disabled={startAyah <= 1}
                                 >−</button>
-                                <span className="hifdh-verse-range__value">{startAyah}</span>
+                                <select
+                                    className="hifdh-verse-select"
+                                    value={startAyah}
+                                    onChange={(e) => setStartAyah(parseInt(e.target.value))}
+                                >
+                                    {Array.from({ length: endAyah }, (_, i) => i + 1).map(n => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
                                 <button
                                     className="hifdh-verse-btn"
                                     onClick={() => setStartAyah(Math.min(endAyah, startAyah + 1))}
@@ -509,7 +517,15 @@ export function HifdhPage() {
                                     onClick={() => setEndAyah(Math.max(startAyah, endAyah - 1))}
                                     disabled={endAyah <= startAyah}
                                 >−</button>
-                                <span className="hifdh-verse-range__value">{endAyah}</span>
+                                <select
+                                    className="hifdh-verse-select"
+                                    value={endAyah}
+                                    onChange={(e) => setEndAyah(parseInt(e.target.value))}
+                                >
+                                    {Array.from({ length: maxAyahs - startAyah + 1 }, (_, i) => startAyah + i).map(n => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
                                 <button
                                     className="hifdh-verse-btn"
                                     onClick={() => setEndAyah(Math.min(maxAyahs, endAyah + 1))}
