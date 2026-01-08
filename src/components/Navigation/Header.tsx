@@ -11,10 +11,11 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick, onSearchClick, onBookmarkClick, onVoiceSearchClick, surahName }: HeaderProps) {
-    const { currentPage, currentSurah, surahs } = useQuranStore();
+    const { currentPage, currentSurah, currentAyah, setCurrentAyah, surahs } = useQuranStore();
 
     const currentSurahData = surahs.find(s => s.number === currentSurah);
     const displayName = surahName || currentSurahData?.name || '';
+    const maxAyahs = currentSurahData?.numberOfAyahs || 7;
 
     return (
         <header className="header">
@@ -28,9 +29,21 @@ export function Header({ onMenuClick, onSearchClick, onBookmarkClick, onVoiceSea
                 {displayName && (
                     <span className="header__surah-name">{displayName}</span>
                 )}
-                <span className="header__page-info">
-                    Page {currentPage} / 604
-                </span>
+                <div className="header__nav-row">
+                    <span className="header__page-info">
+                        Page {currentPage} / 604
+                    </span>
+                    <select
+                        className="header__verse-select"
+                        value={currentAyah}
+                        onChange={(e) => setCurrentAyah(parseInt(e.target.value))}
+                        title="Aller au verset"
+                    >
+                        {Array.from({ length: maxAyahs }, (_, i) => i + 1).map(n => (
+                            <option key={n} value={n}>V.{n}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             <div className="header__right">
@@ -47,4 +60,3 @@ export function Header({ onMenuClick, onSearchClick, onBookmarkClick, onVoiceSea
         </header>
     );
 }
-

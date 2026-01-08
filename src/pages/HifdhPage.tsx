@@ -271,13 +271,21 @@ export function HifdhPage() {
         const audio = audioRef.current;
         if (!audio) return;
 
-        const updateTime = () => {
+        let rafId: number | null = null;
+
+        // Use requestAnimationFrame for precise loop timing (60fps vs timeupdate ~4fps)
+        const checkLoopPoint = () => {
+            if (!audio || audio.paused) {
+                rafId = null;
+                return;
+            }
+
             setCurrentTime(audio.currentTime);
 
-            // Loop logic for partial selection
-            // Use a larger margin (200ms) before the endpoint for mobile precision
+            // Loop logic with RAF precision
             if (selectedTimeRange && isPlaying) {
-                const endWithMargin = selectedTimeRange.end - 0.2;
+                // Smaller margin now that we have RAF precision (~17ms per frame)
+                const endWithMargin = selectedTimeRange.end - 0.05;
                 if (audio.currentTime >= endWithMargin) {
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
@@ -286,6 +294,7 @@ export function HifdhPage() {
                         audio.pause();
                         setIsPlaying(false);
                         setCurrentRepeat(1);
+                        return;
                     }
                 }
             }
@@ -295,18 +304,41 @@ export function HifdhPage() {
                 const index = getCurrentWordIndex(audio.currentTime * 1000, wordTimings.words);
                 setActiveWordIndex(index);
             }
+
+            rafId = requestAnimationFrame(checkLoopPoint);
+        };
+
+        const startRAF = () => {
+            if (!rafId) {
+                rafId = requestAnimationFrame(checkLoopPoint);
+            }
+        };
+
+        const stopRAF = () => {
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
         };
 
         const updateDuration = () => setDuration(audio.duration);
 
-        audio.addEventListener('timeupdate', updateTime);
+        audio.addEventListener('play', startRAF);
+        audio.addEventListener('pause', stopRAF);
         audio.addEventListener('loadedmetadata', updateDuration);
 
+        // Start RAF if already playing
+        if (isPlaying && !audio.paused) {
+            startRAF();
+        }
+
         return () => {
-            audio.removeEventListener('timeupdate', updateTime);
+            stopRAF();
+            audio.removeEventListener('play', startRAF);
+            audio.removeEventListener('pause', stopRAF);
             audio.removeEventListener('loadedmetadata', updateDuration);
         };
-    }, [handleAudioEnded, wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats]);
+    }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats]);
 
     // Test Mode logic
     const startRecording = async () => {
