@@ -585,3 +585,67 @@
     line-height: 2;
     color: var(--color-text-secondary);
 }
+
+/* SRS Section */
+.hifdh-srs-section {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.hifdh-srs-due__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-ui-sm);
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-bottom: var(--space-sm);
+}
+
+.hifdh-srs-due__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.hifdh-srs-card {
+    display: flex;
+    align-items: center;
+    padding: var(--space-xs) var(--space-md);
+    background: var(--color-accent-muted);
+    border-radius: var(--radius-md);
+    font-size: var(--text-ui-sm);
+    color: var(--color-accent);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.hifdh-srs-card:hover {
+    background: var(--color-accent);
+    color: white;
+    transform: scale(1.02);
+}
+
+.hifdh-srs-card__surah {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-md);
+}
+
+.hifdh-srs-card__ayah {
+    font-weight: 700;
+}
+
+.hifdh-srs-more {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    padding: var(--space-xs) var(--space-sm);
+}
+
+.hifdh-srs-all__label {
+    display: block;
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+}

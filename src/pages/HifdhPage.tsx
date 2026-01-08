@@ -14,7 +14,8 @@ import {
     Square,
     Loader2,
     Eye,
-    Crown
+    Crown,
+    BookmarkCheck
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, RECITERS, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -23,6 +24,7 @@ import { usePremiumStore } from '../stores/premiumStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
+import { useSRSStore } from '../stores/srsStore';
 import { pokeController } from '../lib/pokeService';
 import { getSharedAudioContext, getSupportedMimeType } from '../lib/audioUnlock';
 import type { VerseWords } from '../lib/wordTimings';
@@ -42,6 +44,7 @@ export function HifdhPage() {
     const { selectedReciter, repeatCount, playbackSpeed, setReciter, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
     const { isPremium, checkPremium, setPremium } = usePremiumStore();
+    const { getDueCards, cards } = useSRSStore();
 
     // Selection state
     const [selectedSurah, setSelectedSurah] = useState(1);
@@ -86,9 +89,18 @@ export function HifdhPage() {
 
     const currentAyah = ayahs[currentAyahIndex];
     const currentReciterInfo = RECITERS.find(r => r.id === selectedReciter);
+    const dueCards = getDueCards();
+    const allCards = Object.values(cards);
 
     // Check premium on mount
     useEffect(() => { checkPremium(); }, [checkPremium]);
+
+    // Load a verse from SRS card
+    const loadFromSRS = (surah: number, ayah: number) => {
+        setSelectedSurah(surah);
+        setStartAyah(ayah);
+        setEndAyah(ayah);
+    };
 
     // Update max ayahs when surah changes
     useEffect(() => {
@@ -514,6 +526,58 @@ export function HifdhPage() {
                     {isTestMode ? 'Mode Écoute' : 'Mode Test'}
                 </button>
             </div>
+
+            {/* Due Cards Section */}
+            {!isTestMode && (dueCards.length > 0 || allCards.length > 0) && (
+                <div className="hifdh-srs-section">
+                    {dueCards.length > 0 && (
+                        <div className="hifdh-srs-due">
+                            <div className="hifdh-srs-due__header">
+                                <BookmarkCheck size={16} />
+                                <span>{dueCards.length} verset{dueCards.length > 1 ? 's' : ''} à réviser</span>
+                            </div>
+                            <div className="hifdh-srs-due__list">
+                                {dueCards.slice(0, 5).map(card => {
+                                    const surahName = surahs.find(s => s.number === card.surah)?.name || '';
+                                    return (
+                                        <button
+                                            key={card.id}
+                                            className="hifdh-srs-card"
+                                            onClick={() => loadFromSRS(card.surah, card.ayah)}
+                                        >
+                                            <span className="hifdh-srs-card__surah">{surahName}</span>
+                                            <span className="hifdh-srs-card__ayah">:{card.ayah}</span>
+                                        </button>
+                                    );
+                                })}
+                                {dueCards.length > 5 && (
+                                    <span className="hifdh-srs-more">+{dueCards.length - 5} autres</span>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                    {dueCards.length === 0 && allCards.length > 0 && (
+                        <div className="hifdh-srs-all">
+                            <span className="hifdh-srs-all__label">Mes versets mémorisés :</span>
+                            <div className="hifdh-srs-due__list">
+                                {allCards.slice(0, 5).map(card => {
+                                    const surahName = surahs.find(s => s.number === card.surah)?.name || '';
+                                    return (
+                                        <button
+                                            key={card.id}
+                                            className="hifdh-srs-card"
+                                            onClick={() => loadFromSRS(card.surah, card.ayah)}
+                                        >
+                                            <span className="hifdh-srs-card__surah">{surahName}</span>
+                                            <span className="hifdh-srs-card__ayah">:{card.ayah}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Selection */}
             {!isTestMode && (
