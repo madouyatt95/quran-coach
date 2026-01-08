@@ -22,6 +22,8 @@ import { useStatsStore } from '../stores/statsStore';
 import { usePremiumStore } from '../stores/premiumStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
+import { SRSControls } from '../components/SRS/SRSControls';
+import { triggerVibration } from '../lib/pokeService';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
@@ -71,9 +73,13 @@ export function HifdhPage() {
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [pokeHint, setPokeHint] = useState<string | null>(null);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const silenceTimeoutRef = useRef<number | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const analyserRef = useRef<AnalyserNode | null>(null);
 
     const currentAyah = ayahs[currentAyahIndex];
     const currentReciterInfo = RECITERS.find(r => r.id === selectedReciter);
@@ -289,14 +295,63 @@ export function HifdhPage() {
             return;
         }
         setError(null);
+        setPokeHint(null);
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
             const mediaRecorder = new MediaRecorder(stream, { mimeType });
             audioChunksRef.current = [];
+
+            // Setup audio analysis for silence detection
+            audioContextRef.current = new AudioContext();
+            analyserRef.current = audioContextRef.current.createAnalyser();
+            analyserRef.current.fftSize = 256;
+            const source = audioContextRef.current.createMediaStreamSource(stream);
+            source.connect(analyserRef.current);
+
+            const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+            let lastVoiceTime = Date.now();
+            const SILENCE_THRESHOLD = 10; // Low amplitude = silence
+            const POKE_DELAY = 3000; // 3 seconds before poke
+
+            // Monitor for silence and trigger poke
+            const checkSilence = () => {
+                if (!analyserRef.current || !isRecording) return;
+
+                analyserRef.current.getByteFrequencyData(dataArray);
+                const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+
+                if (avg > SILENCE_THRESHOLD) {
+                    lastVoiceTime = Date.now();
+                    setPokeHint(null); // Clear hint when speaking
+                } else {
+                    const silenceDuration = Date.now() - lastVoiceTime;
+                    if (silenceDuration > POKE_DELAY && !pokeHint) {
+                        // Trigger poke!
+                        triggerVibration('double');
+
+                        // Show first letter hint if words available
+                        if (wordTimings && wordTimings.words.length > 0) {
+                            // Find first hidden word as hint
+                            const hiddenWord = wordStates.find(ws => ws.hidden && !ws.revealed);
+                            if (hiddenWord) {
+                                setPokeHint(hiddenWord.text.charAt(0) + '...');
+                            }
+                        }
+                    }
+                }
+
+                silenceTimeoutRef.current = requestAnimationFrame(checkSilence);
+            };
+
+            checkSilence();
+
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
             mediaRecorder.onstop = () => {
                 stream.getTracks().forEach(t => t.stop());
+                if (silenceTimeoutRef.current) cancelAnimationFrame(silenceTimeoutRef.current);
+                if (audioContextRef.current) audioContextRef.current.close();
                 processTestAudio();
             };
             mediaRecorderRef.current = mediaRecorder;
@@ -311,6 +366,8 @@ export function HifdhPage() {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
             setIsRecording(false);
+            setPokeHint(null);
+            if (silenceTimeoutRef.current) cancelAnimationFrame(silenceTimeoutRef.current);
         }
     };
 
@@ -511,6 +568,12 @@ export function HifdhPage() {
                                             <span>{isRecording ? 'Arrêter' : 'Réciter'}</span>
                                         </button>
                                     )}
+                                    {/* Poke Hint Display */}
+                                    {pokeHint && isRecording && (
+                                        <div className="hifdh-poke-hint">
+                                            💡 <span dir="rtl">{pokeHint}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </>
                         )}
@@ -553,6 +616,15 @@ export function HifdhPage() {
                     <span>Boucle active de mots</span>
                     <button onClick={resetSelection}><RotateCcw size={14} /> Réinitialiser</button>
                 </div>
+            )}
+
+            {/* SRS Memorization Controls */}
+            {currentAyah && !isTestMode && (
+                <SRSControls
+                    surah={selectedSurah}
+                    ayah={currentAyah.numberInSurah}
+                    onReviewComplete={handleNext}
+                />
             )}
 
             {/* Secondary Controls (Reciters, Speed, Repeat) */}

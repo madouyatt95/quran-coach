@@ -363,3 +363,41 @@
     text-align: center;
     font-size: var(--text-ui-sm);
 }
+
+/* AI Poke Hint */
+.hifdh-poke-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(251, 191, 36, 0.2));
+    border: 1px solid rgba(234, 179, 8, 0.4);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-md);
+    font-size: var(--text-arabic-md);
+    font-family: var(--font-arabic);
+    color: #fbbf24;
+    animation: hintPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.02);
+    }
+}
+
+.hifdh-mic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}

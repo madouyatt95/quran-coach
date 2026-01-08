@@ -52,6 +52,52 @@ export default defineConfig({
                 statuses: [0, 200]
               }
             }
+          },
+          {
+            // Audio files from islamic.network CDN
+            urlPattern: /^https:\/\/cdn\.islamic\.network\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'audio-cache',
+              expiration: {
+                maxEntries: 1000,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              },
+              rangeRequests: true
+            }
+          },
+          {
+            // Word-by-word audio from everyayah.com
+            urlPattern: /^https:\/\/everyayah\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'word-audio-cache',
+              expiration: {
+                maxEntries: 5000,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            // Quran.com API for word timings
+            urlPattern: /^https:\/\/api\.quran\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'qurancom-api-cache',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           }
         ]
       }

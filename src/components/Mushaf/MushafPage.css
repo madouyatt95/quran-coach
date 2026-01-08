@@ -77,6 +77,42 @@
     font-weight: 600;
 }
 
+/* Interactive Word Audio */
+.ayah__word {
+    display: inline;
+    transition: all 0.2s ease;
+}
+
+.ayah__word--clickable {
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.ayah__word--clickable:hover {
+    background: rgba(59, 130, 246, 0.15);
+    padding: 0 2px;
+}
+
+.ayah__word--playing {
+    background: rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+    padding: 0 4px;
+    border-radius: var(--radius-sm);
+    animation: wordPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes wordPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
 /* Surah Header in Page */
 .surah-header {
     display: flex;

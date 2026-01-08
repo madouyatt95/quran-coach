@@ -15,6 +15,9 @@ interface StatsState {
     // Session tracking
     sessionStartTime: number | null;
 
+    // Activity history for calendar (date -> pages read)
+    activityHistory: Record<string, number>;
+
     // Actions
     startSession: () => void;
     endSession: () => void;
@@ -36,6 +39,7 @@ export const useStatsStore = create<StatsState>()(
             dailyGoalPages: 2,
             todayPagesRead: 0,
             sessionStartTime: null,
+            activityHistory: {},
 
             startSession: () => {
                 set({ sessionStartTime: Date.now() });
@@ -53,16 +57,23 @@ export const useStatsStore = create<StatsState>()(
             },
 
             recordPageRead: () => {
-                const { totalPagesRead, todayPagesRead, lastReadDate } = get();
+                const { totalPagesRead, todayPagesRead, lastReadDate, activityHistory } = get();
                 const today = getTodayDate();
 
                 // Reset today's count if it's a new day
                 const newTodayPages = lastReadDate === today ? todayPagesRead + 1 : 1;
 
+                // Update activity history
+                const newHistory = {
+                    ...activityHistory,
+                    [today]: (activityHistory[today] || 0) + 1,
+                };
+
                 set({
                     totalPagesRead: totalPagesRead + 1,
                     todayPagesRead: newTodayPages,
                     lastReadDate: today,
+                    activityHistory: newHistory,
                 });
 
                 // Update streak
@@ -99,6 +110,7 @@ export const useStatsStore = create<StatsState>()(
                 totalMinutesSpent: state.totalMinutesSpent,
                 dailyGoalPages: state.dailyGoalPages,
                 todayPagesRead: state.todayPagesRead,
+                activityHistory: state.activityHistory,
             }),
         }
     )
