@@ -273,6 +273,9 @@ export function HifdhPage() {
 
         let rafId: number | null = null;
 
+        // Detect iOS for special handling
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
         // Use requestAnimationFrame for precise loop timing (60fps vs timeupdate ~4fps)
         const checkLoopPoint = () => {
             if (!audio || audio.paused) {
@@ -282,14 +285,24 @@ export function HifdhPage() {
 
             setCurrentTime(audio.currentTime);
 
-            // Loop logic with RAF precision
+            // Loop logic with larger margin for iOS
             if (selectedTimeRange && isPlaying) {
-                // Smaller margin now that we have RAF precision (~17ms per frame)
-                const endWithMargin = selectedTimeRange.end - 0.05;
+                // iOS needs much larger margin due to audio processing delays
+                const margin = isIOS ? 0.3 : 0.05;
+                const endWithMargin = selectedTimeRange.end - margin;
+
                 if (audio.currentTime >= endWithMargin) {
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
-                        audio.currentTime = selectedTimeRange.start;
+
+                        // iOS: pause-seek-play for reliable seeking
+                        if (isIOS) {
+                            audio.pause();
+                            audio.currentTime = selectedTimeRange.start;
+                            audio.play().catch(() => { });
+                        } else {
+                            audio.currentTime = selectedTimeRange.start;
+                        }
                     } else {
                         audio.pause();
                         setIsPlaying(false);
