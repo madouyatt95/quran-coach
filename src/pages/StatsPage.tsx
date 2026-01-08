@@ -1,63 +1,186 @@
 import { useEffect } from 'react';
-import { Flame, BookOpen, Clock, Target, TrendingUp, Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Flame, Target, Award, BookOpen, ChevronRight, Lock, CheckCircle } from 'lucide-react';
 import { useStatsStore } from '../stores/statsStore';
+import { useChallengesStore, BADGES } from '../stores/challengesStore';
+import { useQuranStore } from '../stores/quranStore';
 import './StatsPage.css';
 
 export function StatsPage() {
+    const navigate = useNavigate();
     const {
         readingStreak,
         totalPagesRead,
-        totalMinutesSpent,
         dailyGoalPages,
         todayPagesRead,
         setDailyGoal,
         checkAndUpdateStreak,
     } = useStatsStore();
 
-    // Check streak on mount
+    const {
+        dailyChallenges,
+        unlockedBadges,
+        khatmaPages,
+        ayahOfTheDay,
+        generateDailyChallenges,
+        checkBadges,
+        updateChallengeProgress
+    } = useChallengesStore();
+
+    const { goToAyah } = useQuranStore();
+
+    // Initialize on mount
     useEffect(() => {
         checkAndUpdateStreak();
-    }, [checkAndUpdateStreak]);
+        generateDailyChallenges();
+        checkBadges(readingStreak, totalPagesRead);
+    }, [checkAndUpdateStreak, generateDailyChallenges, checkBadges, readingStreak, totalPagesRead]);
+
+    // Update reading challenge progress
+    useEffect(() => {
+        updateChallengeProgress('read_1', todayPagesRead);
+    }, [todayPagesRead, updateChallengeProgress]);
 
     const goalProgress = Math.min((todayPagesRead / dailyGoalPages) * 100, 100);
-    const goalMet = todayPagesRead >= dailyGoalPages;
+    const khatmaProgress = Math.round((khatmaPages.length / 604) * 100);
+    const completedChallenges = dailyChallenges.filter(c => c.completed).length;
 
-    const formatTime = (minutes: number) => {
-        if (minutes < 60) return `${minutes} min`;
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours}h ${mins}min`;
+    const handleChallengeClick = (challenge: typeof dailyChallenges[0]) => {
+        if (challenge.type === 'memorize_ayah' && challenge.surah && challenge.ayah) {
+            goToAyah(challenge.surah, challenge.ayah);
+            navigate('/read');
+        } else if (challenge.type === 'read_pages') {
+            navigate('/read');
+        } else if (challenge.type === 'revision') {
+            navigate('/hifdh');
+        }
     };
 
     return (
         <div className="stats-page">
-            <h1 className="stats-page__title">Statistiques</h1>
-
-            {/* Streak Card */}
-            <div className={`stats-card stats-card--streak ${readingStreak > 0 ? 'active' : ''}`}>
-                <div className="stats-card__icon">
-                    <Flame size={32} />
+            {/* Hero Streak Section */}
+            <div className={`streak-hero ${readingStreak > 0 ? 'active' : ''}`}>
+                <div className="streak-hero__flame">
+                    <Flame size={48} />
                 </div>
-                <div className="stats-card__content">
-                    <span className="stats-card__value">{readingStreak}</span>
-                    <span className="stats-card__label">
-                        jour{readingStreak !== 1 ? 's' : ''} consécutif{readingStreak !== 1 ? 's' : ''}
-                    </span>
+                <div className="streak-hero__count">{readingStreak}</div>
+                <div className="streak-hero__label">
+                    jour{readingStreak !== 1 ? 's' : ''} consécutif{readingStreak !== 1 ? 's' : ''}
                 </div>
                 {readingStreak >= 7 && (
-                    <div className="stats-card__badge">
-                        <Award size={16} />
-                        <span>Assidu!</span>
+                    <div className="streak-hero__badge">
+                        <Award size={14} />
+                        <span>En feu !</span>
                     </div>
                 )}
             </div>
 
-            {/* Daily Goal */}
-            <div className="stats-card stats-card--goal">
-                <div className="stats-card__header">
+            {/* Khatma Progress Circle */}
+            <div className="khatma-card">
+                <div className="khatma-circle">
+                    <svg viewBox="0 0 100 100">
+                        <circle
+                            cx="50" cy="50" r="45"
+                            fill="none"
+                            stroke="rgba(201, 168, 76, 0.2)"
+                            strokeWidth="8"
+                        />
+                        <circle
+                            cx="50" cy="50" r="45"
+                            fill="none"
+                            stroke="#c9a84c"
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                            strokeDasharray={`${khatmaProgress * 2.83} 283`}
+                            transform="rotate(-90 50 50)"
+                        />
+                    </svg>
+                    <div className="khatma-circle__content">
+                        <span className="khatma-circle__percent">{khatmaProgress}%</span>
+                        <span className="khatma-circle__label">Khatma</span>
+                    </div>
+                </div>
+                <div className="khatma-info">
+                    <BookOpen size={16} />
+                    <span>{khatmaPages.length}/604 pages</span>
+                </div>
+            </div>
+
+            {/* Daily Challenges */}
+            <div className="challenges-section">
+                <div className="section-header">
                     <Target size={20} />
-                    <span>Objectif du jour</span>
-                    {goalMet && <span className="goal-met">✓ Atteint!</span>}
+                    <h2>Défis du jour</h2>
+                    <span className="challenge-count">{completedChallenges}/{dailyChallenges.length}</span>
+                </div>
+
+                <div className="challenges-list">
+                    {dailyChallenges.map((challenge) => (
+                        <button
+                            key={challenge.id}
+                            className={`challenge-card ${challenge.completed ? 'completed' : ''}`}
+                            onClick={() => handleChallengeClick(challenge)}
+                        >
+                            <div className="challenge-card__status">
+                                {challenge.completed ? (
+                                    <CheckCircle size={24} className="check-icon" />
+                                ) : (
+                                    <div className="challenge-progress-ring">
+                                        <svg viewBox="0 0 36 36">
+                                            <circle
+                                                cx="18" cy="18" r="16"
+                                                fill="none"
+                                                stroke="rgba(201, 168, 76, 0.2)"
+                                                strokeWidth="3"
+                                            />
+                                            <circle
+                                                cx="18" cy="18" r="16"
+                                                fill="none"
+                                                stroke="#c9a84c"
+                                                strokeWidth="3"
+                                                strokeLinecap="round"
+                                                strokeDasharray={`${(challenge.progress / challenge.target) * 100} 100`}
+                                                transform="rotate(-90 18 18)"
+                                            />
+                                        </svg>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="challenge-card__content">
+                                <div className="challenge-card__title">{challenge.title}</div>
+                                <div className="challenge-card__desc">{challenge.description}</div>
+                            </div>
+                            <div className="challenge-card__reward">
+                                <span>{challenge.reward}</span>
+                                <ChevronRight size={16} />
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Ayah of the Day */}
+            {ayahOfTheDay && (
+                <button
+                    className="ayah-of-day"
+                    onClick={() => {
+                        goToAyah(ayahOfTheDay.surah, ayahOfTheDay.ayah);
+                        navigate('/read');
+                    }}
+                >
+                    <div className="ayah-of-day__header">
+                        <span>✨ Verset du jour</span>
+                        <span className="ayah-of-day__ref">{ayahOfTheDay.surah}:{ayahOfTheDay.ayah}</span>
+                    </div>
+                    <ChevronRight size={20} />
+                </button>
+            )}
+
+            {/* Daily Goal */}
+            <div className="goal-card">
+                <div className="goal-card__header">
+                    <Target size={18} />
+                    <span>Objectif quotidien</span>
                 </div>
                 <div className="goal-progress">
                     <div className="goal-progress__bar">
@@ -67,11 +190,10 @@ export function StatsPage() {
                         />
                     </div>
                     <span className="goal-progress__text">
-                        {todayPagesRead} / {dailyGoalPages} page{dailyGoalPages > 1 ? 's' : ''}
+                        {todayPagesRead}/{dailyGoalPages} page{dailyGoalPages > 1 ? 's' : ''}
                     </span>
                 </div>
                 <div className="goal-selector">
-                    <span>Objectif :</span>
                     {[1, 2, 3, 5, 10].map((pages) => (
                         <button
                             key={pages}
@@ -84,41 +206,31 @@ export function StatsPage() {
                 </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="stats-grid">
-                <div className="stats-item">
-                    <BookOpen size={24} />
-                    <span className="stats-item__value">{totalPagesRead}</span>
-                    <span className="stats-item__label">Pages lues</span>
+            {/* Badges Section */}
+            <div className="badges-section">
+                <div className="section-header">
+                    <Award size={20} />
+                    <h2>Badges</h2>
+                    <span className="badge-count">{unlockedBadges.length}/{BADGES.length}</span>
                 </div>
-                <div className="stats-item">
-                    <Clock size={24} />
-                    <span className="stats-item__value">{formatTime(totalMinutesSpent)}</span>
-                    <span className="stats-item__label">Temps total</span>
-                </div>
-                <div className="stats-item">
-                    <TrendingUp size={24} />
-                    <span className="stats-item__value">
-                        {totalPagesRead > 0 ? Math.round((totalPagesRead / 604) * 100) : 0}%
-                    </span>
-                    <span className="stats-item__label">du Coran</span>
-                </div>
-            </div>
 
-            {/* Motivation */}
-            <div className="stats-motivation">
-                {readingStreak === 0 && (
-                    <p>📖 Commencez à lire pour démarrer votre streak!</p>
-                )}
-                {readingStreak >= 1 && readingStreak < 7 && (
-                    <p>🔥 Continuez comme ça! Encore {7 - readingStreak} jour{7 - readingStreak > 1 ? 's' : ''} pour une semaine complète.</p>
-                )}
-                {readingStreak >= 7 && readingStreak < 30 && (
-                    <p>⭐ Excellent! Vous êtes sur une belle lancée de {readingStreak} jours!</p>
-                )}
-                {readingStreak >= 30 && (
-                    <p>🏆 Incroyable! {readingStreak} jours de lecture régulière. Mashallah!</p>
-                )}
+                <div className="badges-grid">
+                    {BADGES.map((badge) => {
+                        const isUnlocked = unlockedBadges.includes(badge.id);
+                        return (
+                            <div
+                                key={badge.id}
+                                className={`badge-item ${isUnlocked ? 'unlocked' : 'locked'}`}
+                            >
+                                <div className="badge-item__icon">
+                                    {isUnlocked ? badge.icon : <Lock size={16} />}
+                                </div>
+                                <div className="badge-item__name">{badge.name}</div>
+                                <div className="badge-item__desc">{badge.description}</div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
