@@ -74,8 +74,9 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
     if (enabledLayers.includes(ruleId)) return true;
 
     // Category mapping - map API rule IDs to UI category IDs
+    // Note: API uses different spellings for some rules
     const categoryMap: Record<string, string> = {
-        // Madd (prolongation)
+        // Madd (prolongation) - API uses "madda_" prefix
         'madda_normal': 'madd',
         'madda_permissible': 'madd',
         'madda_necessary': 'madd',
@@ -91,19 +92,23 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
         'ghunnah': 'ghunnah',
         'ghunnah_2': 'ghunnah',
 
-        // Qalqalah (echo)
+        // Qalqalah (echo) - API uses "qalaqah" (different spelling!)
         'qalqalah': 'qalqalah',
+        'qalaqah': 'qalqalah', // API spelling variant
 
-        // Idgham (assimilation)
+        // Idgham (assimilation) - API uses "idgham_wo_ghunnah" not "no"
         'idgham_ghunnah': 'idgham',
         'idgham_no_ghunnah': 'idgham',
+        'idgham_wo_ghunnah': 'idgham', // API spelling variant (wo = without)
         'idgham_mutajanisayn': 'idgham',
         'idgham_mutaqaribayn': 'idgham',
         'idgham_shafawi': 'idgham',
 
-        // Ikhfa (concealment)
+        // Ikhfa (concealment) - API uses "ikhafa" not "ikhfa"
         'ikhfa': 'ikhfa',
         'ikhfa_shafawi': 'ikhfa',
+        'ikhafa': 'ikhfa', // API spelling variant
+        'ikhafa_shafawi': 'ikhfa', // API spelling variant
 
         // Iqlab (conversion)
         'iqlab': 'iqlab',
@@ -113,10 +118,11 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
         'izhar_shafawi': 'izhar',
         'izhar_halqi': 'izhar',
 
-        // Silent/other - these are minor rules, always show if any layer is active
+        // Silent/other - these are minor rules, show if "other" layer is active
         'ham_wasl': 'other',
         'laam_shamsiyah': 'other',
         'silent': 'other',
+        'slnt': 'other', // API uses abbreviated form
     };
 
     const category = categoryMap[ruleId];

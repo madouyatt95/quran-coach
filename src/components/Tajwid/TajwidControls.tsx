@@ -51,6 +51,13 @@ const TAJWID_RULES = [
         nameArabic: 'الإظهار',
         color: '#98D8C8',
         description: 'Prononciation claire du ن/tanwin (6 lettres gutturales)'
+    },
+    {
+        id: 'other',
+        name: 'Autres',
+        nameArabic: 'أخرى',
+        color: '#AAAAAA',
+        description: 'Hamza Wasl, Lam Shamsiyah, lettres silencieuses'
     }
 ];
 
