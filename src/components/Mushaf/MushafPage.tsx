@@ -141,7 +141,7 @@ export function MushafPage() {
 
                             <div className="arabic">
                                 {ayahs.map((ayah) => (
-                                    <AyahDisplay key={ayah.number} ayah={ayah} />
+                                    <AyahDisplay key={ayah.number} ayah={ayah} enableWordAudio={false} />
                                 ))}
                             </div>
                         </div>
