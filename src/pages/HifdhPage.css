@@ -401,3 +401,99 @@
     align-items: center;
     gap: var(--space-md);
 }
+
+/* Player UI */
+.hifdh-player-ui {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.hifdh-player__progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.hifdh-player__time {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    min-width: 40px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.hifdh-player__progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.hifdh-player__progress-fill {
+    height: 100%;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    transition: width 0.1s linear;
+}
+
+.hifdh-player__controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.hifdh-player__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    color: var(--color-text-primary);
+    transition: all var(--transition-fast);
+}
+
+.hifdh-player__btn:hover {
+    background: var(--color-bg-secondary);
+    transform: scale(1.05);
+}
+
+.hifdh-player__btn--primary {
+    width: 56px;
+    height: 56px;
+    background: var(--color-accent);
+    color: white;
+}
+
+.hifdh-player__btn--active {
+    background: var(--color-accent);
+    color: white;
+}
+
+.hifdh-action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.hifdh-action-btn:hover {
+    background: var(--color-bg-secondary);
+}
+
+.hifdh-loading-ayah {
+    font-family: var(--font-arabic);
+    font-size: var(--text-arabic-lg);
+    text-align: center;
+    line-height: 2;
+    color: var(--color-text-secondary);
+}

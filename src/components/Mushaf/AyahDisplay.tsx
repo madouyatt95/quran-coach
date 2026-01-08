@@ -1,51 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { playWordAudio } from '../../lib/wordAudioService';
+import { fetchTajweedVerse } from '../../lib/tajweedService';
+import { renderTajweedText } from '../../lib/tajweedParser';
 import type { Ayah } from '../../types';
-
-// Tajwid rules with Arabic patterns for detection
-const TAJWID_RULES = [
-    {
-        id: 'madd',
-        color: '#FF6B6B',
-        patterns: ['آ', 'ا۟', 'وٓ', 'يٓ', 'ىٰ']
-    },
-    {
-        id: 'ghunna',
-        color: '#4ECDC4',
-        patterns: ['نّ', 'مّ']
-    },
-    {
-        id: 'qalqala',
-        color: '#FFE66D',
-        patterns: ['قْ', 'طْ', 'بْ', 'جْ', 'دْ']
-    },
-    {
-        id: 'idgham',
-        color: '#95E1D3',
-        patterns: ['نْي', 'نْر', 'نْم', 'نْل', 'نْو', 'نْن']
-    },
-    {
-        id: 'ikhfa',
-        color: '#DDA0DD',
-        patterns: ['نْت', 'نْث', 'نْج', 'نْد', 'نْذ', 'نْز', 'نْس', 'نْش', 'نْص', 'نْض', 'نْط', 'نْظ', 'نْف', 'نْق', 'نْك']
-    },
-    {
-        id: 'iqlab',
-        color: '#87CEEB',
-        patterns: ['نْب', 'مۢب']
-    },
-    {
-        id: 'izhar',
-        color: '#98D8C8',
-        patterns: ['نْء', 'نْه', 'نْع', 'نْح', 'نْغ', 'نْخ']
-    },
-    {
-        id: 'waqf',
-        color: '#F7DC6F',
-        patterns: ['ۖ', 'ۗ', 'ۘ', 'ۙ', 'ۚ', 'ۛ', 'ۜ', '۩']
-    }
-];
 
 interface AyahDisplayProps {
     ayah: Ayah;
@@ -53,54 +11,6 @@ interface AyahDisplayProps {
     isFocused?: boolean;
     onClick?: () => void;
     enableWordAudio?: boolean;
-}
-
-// Apply color highlighting to text based on active Tajwid rules
-function applyTajwidColors(text: string, enabledLayers: string[]): React.ReactNode {
-    if (enabledLayers.length === 0) {
-        return text;
-    }
-
-    const activeRules = TAJWID_RULES.filter(r => enabledLayers.includes(r.id));
-    const result: React.ReactNode[] = [];
-    let i = 0;
-    let key = 0;
-
-    while (i < text.length) {
-        let matched = false;
-
-        // Try matching patterns of different lengths (longest first)
-        for (let len = 3; len >= 1; len--) {
-            if (i + len <= text.length) {
-                const substr = text.substring(i, i + len);
-                for (const rule of activeRules) {
-                    // Use exact match instead of includes to avoid false positives
-                    if (rule.patterns.includes(substr)) {
-                        result.push(
-                            <span
-                                key={key++}
-                                style={{ color: rule.color, fontWeight: 'bold' }}
-                                title={rule.id}
-                            >
-                                {substr}
-                            </span>
-                        );
-                        i += len;
-                        matched = true;
-                        break;
-                    }
-                }
-                if (matched) break;
-            }
-        }
-
-        if (!matched) {
-            result.push(text[i]);
-            i++;
-        }
-    }
-
-    return result;
 }
 
 export function AyahDisplay({
@@ -112,6 +22,18 @@ export function AyahDisplay({
 }: AyahDisplayProps) {
     const { tajwidEnabled, tajwidLayers } = useSettingsStore();
     const [playingWordIndex, setPlayingWordIndex] = useState<number | null>(null);
+    const [tajweedHtml, setTajweedHtml] = useState<string | null>(null);
+
+    // Fetch Tajweed text when ayah changes and Tajweed is enabled
+    useEffect(() => {
+        if (tajwidEnabled && tajwidLayers.length > 0) {
+            fetchTajweedVerse(ayah.surah, ayah.numberInSurah)
+                .then(setTajweedHtml)
+                .catch(() => setTajweedHtml(null));
+        } else {
+            setTajweedHtml(null);
+        }
+    }, [ayah.surah, ayah.numberInSurah, tajwidEnabled, tajwidLayers.length]);
 
     // Split text into words for interactive playback
     const words = ayah.text.split(' ');
@@ -135,13 +57,16 @@ export function AyahDisplay({
         }
     };
 
-    // Render words with optional interactive playback
-    const renderWords = () => {
+    // Render content with Tajweed coloring from API
+    const renderContent = () => {
+        // If Tajweed is enabled and we have the HTML from API
+        if (tajwidEnabled && tajwidLayers.length > 0 && tajweedHtml) {
+            return renderTajweedText(tajweedHtml, tajwidLayers);
+        }
+
+        // Fallback: render plain text with word-level interactivity
         return words.map((word, index) => {
             const isPlaying = playingWordIndex === index;
-            const wordContent = tajwidEnabled && tajwidLayers.length > 0
-                ? applyTajwidColors(word, tajwidLayers)
-                : word;
 
             return (
                 <span
@@ -149,7 +74,7 @@ export function AyahDisplay({
                     className={`ayah__word ${isPlaying ? 'ayah__word--playing' : ''} ${enableWordAudio ? 'ayah__word--clickable' : ''}`}
                     onClick={(e) => handleWordClick(index, e)}
                 >
-                    {wordContent}
+                    {word}
                     {index < words.length - 1 ? ' ' : ''}
                 </span>
             );
@@ -163,7 +88,7 @@ export function AyahDisplay({
             role={onClick ? 'button' : undefined}
             tabIndex={onClick ? 0 : undefined}
         >
-            <span className="ayah__text">{renderWords()}</span>
+            <span className="ayah__text">{renderContent()}</span>
             {showNumber && (
                 <span className="ayah__number">{ayah.numberInSurah}</span>
             )}

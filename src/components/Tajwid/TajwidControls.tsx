@@ -1,7 +1,7 @@
 import { useSettingsStore } from '../../stores/settingsStore';
 import './TajwidControls.css';
 
-// Complete Tajwid rules with descriptions
+// Complete Tajwid rules matching Quran.com API class names
 const TAJWID_RULES = [
     {
         id: 'madd',
@@ -11,15 +11,15 @@ const TAJWID_RULES = [
         description: 'Prolongation de la voyelle (2-6 temps)'
     },
     {
-        id: 'ghunna',
-        name: 'Ghunna',
+        id: 'ghunnah',
+        name: 'Ghunnah',
         nameArabic: 'الغنة',
         color: '#4ECDC4',
         description: 'Son nasal avec نّ ou مّ (2 temps)'
     },
     {
-        id: 'qalqala',
-        name: 'Qalqala',
+        id: 'qalqalah',
+        name: 'Qalqalah',
         nameArabic: 'القلقلة',
         color: '#FFE66D',
         description: 'Rebond sonore sur ق ط ب ج د avec sukoon'
@@ -51,13 +51,6 @@ const TAJWID_RULES = [
         nameArabic: 'الإظهار',
         color: '#98D8C8',
         description: 'Prononciation claire du ن/tanwin (6 lettres gutturales)'
-    },
-    {
-        id: 'waqf',
-        name: 'Waqf',
-        nameArabic: 'الوقف',
-        color: '#F7DC6F',
-        description: 'Signes d\'arrêt et de pause dans la récitation'
     }
 ];
 
