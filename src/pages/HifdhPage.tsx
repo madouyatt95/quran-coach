@@ -275,8 +275,10 @@ export function HifdhPage() {
             setCurrentTime(audio.currentTime);
 
             // Loop logic for partial selection
+            // Use a small margin (50ms) before the endpoint for mobile precision
             if (selectedTimeRange && isPlaying) {
-                if (audio.currentTime >= selectedTimeRange.end) {
+                const endWithMargin = selectedTimeRange.end - 0.05;
+                if (audio.currentTime >= endWithMargin) {
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
                         audio.currentTime = selectedTimeRange.start;
