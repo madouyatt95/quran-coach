@@ -11,48 +11,44 @@ interface VoiceSearchProps {
 // Remove Arabic diacritics (tashkeel) for fuzzy matching
 function normalizeArabic(text: string): string {
     return text
+        // Remove tashkeel (diacritical marks)
         .replace(/[\u064B-\u0652\u0670]/g, '')
+        // Remove tatweel (stretching character)
         .replace(/\u0640/g, '')
+        // Normalize alef variants to simple alef
         .replace(/[\u0622\u0623\u0625\u0627]/g, '\u0627')
+        // Normalize taa marbuta to haa
         .replace(/\u0629/g, '\u0647')
-        .replace(/[\u0649\u064A]/g, '\u064A')
+        // Remove extra spaces
         .replace(/\s+/g, ' ')
         .trim();
 }
 
+// Simple fuzzy match - check if search terms appear in text
 function fuzzyMatch(searchText: string, verseText: string): number {
     const normalizedSearch = normalizeArabic(searchText);
     const normalizedVerse = normalizeArabic(verseText);
 
-    if (normalizedVerse.includes(normalizedSearch)) return 100;
-
-    const searchWords = normalizedSearch.split(' ').filter(w => w.length > 2);
-    if (searchWords.length === 0) {
-        if (normalizedVerse.includes(normalizedSearch.slice(0, 3))) return 50;
-        return 0;
+    // Exact substring match
+    if (normalizedVerse.includes(normalizedSearch)) {
+        return 100;
     }
+
+    // Check if all words from search appear in verse
+    const searchWords = normalizedSearch.split(' ').filter(w => w.length > 1);
+    const verseWords = normalizedVerse.split(' ');
+
+    if (searchWords.length === 0) return 0;
 
     let matchedWords = 0;
     for (const searchWord of searchWords) {
-        if (normalizedVerse.includes(searchWord)) {
+        // Check if any verse word contains this search word
+        if (verseWords.some(vw => vw.includes(searchWord) || searchWord.includes(vw))) {
             matchedWords++;
-        } else {
-            const prefix = searchWord.slice(0, 3);
-            if (normalizedVerse.includes(prefix)) matchedWords += 0.5;
         }
     }
+
     return Math.round((matchedWords / searchWords.length) * 100);
-}
-
-// Get supported MIME type for this browser
-function getBestMimeType(): string {
-    if (typeof MediaRecorder === 'undefined') return 'audio/webm';
-
-    const types = ['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav'];
-    for (const type of types) {
-        if (MediaRecorder.isTypeSupported(type)) return type;
-    }
-    return 'audio/webm';
 }
 
 export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
@@ -65,7 +61,6 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
-    const streamRef = useRef<MediaStream | null>(null);
 
     const startRecording = async () => {
         if (!isPremium) {
@@ -79,17 +74,8 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            streamRef.current = stream;
-
-            const mimeType = getBestMimeType();
-            let mediaRecorder: MediaRecorder;
-
-            try {
-                mediaRecorder = new MediaRecorder(stream, { mimeType });
-            } catch {
-                // Fallback without mimeType
-                mediaRecorder = new MediaRecorder(stream);
-            }
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+            const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
             audioChunksRef.current = [];
 
@@ -99,20 +85,15 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
                 }
             };
 
-            mediaRecorder.onstop = () => {
-                // Stop stream tracks
-                if (streamRef.current) {
-                    streamRef.current.getTracks().forEach(track => track.stop());
-                }
-                // Process the audio
-                processAudio();
+            mediaRecorder.onstop = async () => {
+                stream.getTracks().forEach(track => track.stop());
+                await searchVerse();
             };
 
             mediaRecorderRef.current = mediaRecorder;
             mediaRecorder.start();
             setIsRecording(true);
-        } catch (err) {
-            console.error('Recording error:', err);
+        } catch {
             setError("Impossible d'accéder au microphone");
         }
     };
@@ -124,11 +105,8 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
         }
     };
 
-    const processAudio = async () => {
-        if (audioChunksRef.current.length === 0) {
-            setError("Aucun audio enregistré");
-            return;
-        }
+    const searchVerse = async () => {
+        if (audioChunksRef.current.length === 0) return;
 
         setIsProcessing(true);
 
@@ -161,84 +139,79 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
             setTranscribed(searchText);
 
             if (!searchText.trim()) {
-                setError("Aucun texte détecté. Parlez plus fort.");
+                setError("Aucun texte détecté. Essayez de parler plus fort.");
                 return;
             }
 
-            // Search with multiple strategies
-            await searchVerses(searchText);
-        } catch (err) {
-            console.error('Process error:', err);
-            setError("Erreur lors du traitement");
-        } finally {
-            setIsProcessing(false);
-        }
-    };
+            // Search with normalized text - use fuzzy matching
+            const normalizedSearch = normalizeArabic(searchText);
 
-    const searchVerses = async (searchText: string) => {
-        const normalizedSearch = normalizeArabic(searchText);
-        const words = normalizedSearch.split(' ').filter(w => w.length > 2);
+            // Try API search first with normalized query
+            const searchResponse = await fetch(
+                `https://api.alquran.cloud/v1/search/${encodeURIComponent(normalizedSearch)}/all/ar`
+            );
 
-        const searches: Promise<any[]>[] = [];
+            const matchedResults: Array<{ surah: number; ayah: number; text: string; surahName: string; score: number }> = [];
 
-        // Strategy 1: Full text
-        searches.push(searchAPI(normalizedSearch));
-
-        // Strategy 2: First 2 words
-        if (words.length >= 2) {
-            searches.push(searchAPI(words.slice(0, 2).join(' ')));
-        }
-
-        // Strategy 3: First word only
-        if (words.length >= 1) {
-            searches.push(searchAPI(words[0]));
-        }
-
-        const allResults = await Promise.all(searches);
-
-        const seenKeys = new Set<string>();
-        const combined: typeof results = [];
-
-        for (const resultSet of allResults) {
-            for (const result of resultSet) {
-                const key = `${result.surah}:${result.ayah}`;
-                if (!seenKeys.has(key)) {
-                    seenKeys.add(key);
-                    const score = fuzzyMatch(searchText, result.text);
-                    if (score >= 15) {
-                        combined.push({ ...result, score });
+            if (searchResponse.ok) {
+                const searchData = await searchResponse.json();
+                if (searchData.data?.matches && searchData.data.matches.length > 0) {
+                    for (const m of searchData.data.matches.slice(0, 10)) {
+                        const score = fuzzyMatch(searchText, m.text);
+                        if (score >= 30) { // Lower threshold for fuzzy matching
+                            matchedResults.push({
+                                surah: m.surah.number,
+                                ayah: m.numberInSurah,
+                                text: m.text,
+                                surahName: m.surah.name,
+                                score
+                            });
+                        }
                     }
                 }
             }
-        }
 
-        combined.sort((a, b) => b.score - a.score);
+            // If no results, try searching just the first few words
+            if (matchedResults.length === 0 && normalizedSearch.split(' ').length > 2) {
+                const firstWords = normalizedSearch.split(' ').slice(0, 3).join(' ');
+                const retryResponse = await fetch(
+                    `https://api.alquran.cloud/v1/search/${encodeURIComponent(firstWords)}/all/ar`
+                );
 
-        if (combined.length > 0) {
-            setResults(combined.slice(0, 8));
-        } else {
-            setError("Aucun verset trouvé.");
-        }
-    };
-
-    const searchAPI = async (query: string) => {
-        try {
-            const response = await fetch(
-                `https://api.alquran.cloud/v1/search/${encodeURIComponent(query)}/all/ar`
-            );
-            if (response.ok) {
-                const data = await response.json();
-                if (data.data?.matches) {
-                    return data.data.matches.slice(0, 15).map((m: any) => ({
-                        surah: m.surah.number,
-                        ayah: m.numberInSurah,
-                        text: m.text,
-                        surahName: m.surah.name,
-                    }));
+                if (retryResponse.ok) {
+                    const retryData = await retryResponse.json();
+                    if (retryData.data?.matches) {
+                        for (const m of retryData.data.matches.slice(0, 10)) {
+                            const score = fuzzyMatch(searchText, m.text);
+                            if (score >= 20) {
+                                matchedResults.push({
+                                    surah: m.surah.number,
+                                    ayah: m.numberInSurah,
+                                    text: m.text,
+                                    surahName: m.surah.name,
+                                    score
+                                });
+                            }
+                        }
+                    }
                 }
             }
-        } catch { /* ignore */ }
-        return [];
+
+            // Sort by score and take top 5
+            matchedResults.sort((a, b) => b.score - a.score);
+            const topResults = matchedResults.slice(0, 5);
+
+            if (topResults.length > 0) {
+                setResults(topResults);
+            } else {
+                setError("Aucun verset trouvé. Essayez de réciter plus clairement.");
+            }
+        } catch (err) {
+            console.error('Search error:', err);
+            setError("Erreur lors de la recherche");
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     return (
@@ -252,14 +225,14 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
                 </div>
 
                 <p className="voice-search__hint">
-                    Récitez 2-3 mots d'un verset
+                    Récitez quelques mots d'un verset pour le retrouver
                 </p>
 
                 <div className="voice-search__controls">
                     {isProcessing ? (
                         <div className="voice-search__processing">
                             <Loader2 size={32} className="voice-search__spinner" />
-                            <span>Recherche...</span>
+                            <span>Recherche en cours...</span>
                         </div>
                     ) : isRecording ? (
                         <button className="voice-search__record voice-search__record--active" onClick={stopRecording}>
@@ -276,7 +249,7 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
 
                 {transcribed && (
                     <div className="voice-search__transcribed">
-                        <span>Détecté : </span>
+                        <span className="voice-search__transcribed-label">Détecté :</span>
                         <span dir="rtl">{transcribed}</span>
                     </div>
                 )}
@@ -287,7 +260,7 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
 
                 {results.length > 0 && (
                     <div className="voice-search__results">
-                        <h3>Résultats ({results.length})</h3>
+                        <h3>Résultats</h3>
                         {results.map((result, i) => (
                             <button
                                 key={i}
