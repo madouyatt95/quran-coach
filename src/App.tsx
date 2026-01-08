@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { HifdhPage } from './pages/HifdhPage';
@@ -11,12 +11,44 @@ import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
 import { fetchSurahs } from './lib/quranApi';
+import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import './index.css';
 
 function AppContent() {
   const { theme, arabicFontSize } = useSettingsStore();
   const { surahs, setSurahs } = useQuranStore();
   const { startSession, endSession } = useStatsStore();
+  const hasUnlockedAudio = useRef(false);
+
+  // Unlock audio on first user interaction (critical for iOS PWA)
+  const handleFirstInteraction = useCallback(() => {
+    if (hasUnlockedAudio.current || isAudioUnlocked()) return;
+    hasUnlockedAudio.current = true;
+
+    unlockAudio().then(success => {
+      if (success) {
+        console.log('[App] Audio unlocked on user interaction');
+      }
+    });
+
+    // Remove listeners after first interaction
+    document.removeEventListener('touchstart', handleFirstInteraction);
+    document.removeEventListener('click', handleFirstInteraction);
+  }, []);
+
+  // Setup audio unlock listeners for iOS PWA
+  useEffect(() => {
+    if (isIOSPWA()) {
+      console.log('[App] iOS PWA detected, setting up audio unlock');
+      document.addEventListener('touchstart', handleFirstInteraction, { passive: true });
+      document.addEventListener('click', handleFirstInteraction);
+
+      return () => {
+        document.removeEventListener('touchstart', handleFirstInteraction);
+        document.removeEventListener('click', handleFirstInteraction);
+      };
+    }
+  }, [handleFirstInteraction]);
 
   // Apply theme on mount and changes
   useEffect(() => {
@@ -74,3 +106,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+

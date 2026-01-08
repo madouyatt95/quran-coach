@@ -276,6 +276,50 @@
     }
 }
 
+.coach-recording-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.coach-poke-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: var(--radius-full);
+    color: #3b82f6;
+    animation: pokePulse 2s infinite ease-in-out;
+}
+
+.coach-poke-icon {
+    color: #ffd700;
+}
+
+.coach-poke-text {
+    font-family: var(--font-arabic);
+    font-size: var(--text-arabic-lg);
+    font-weight: 600;
+}
+
+@keyframes pokePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+}
+
 .coach-processing {
     display: flex;
     flex-direction: column;

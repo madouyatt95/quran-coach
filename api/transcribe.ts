@@ -21,19 +21,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { audio, expectedText } = req.body;
+        const { audio, expectedText, mimeType } = req.body;
 
         if (!audio) {
             return res.status(400).json({ error: 'No audio provided' });
         }
+
+        // Determine extension and type
+        const isMp4 = mimeType?.includes('mp4') || mimeType?.includes('m4a');
+        const extension = isMp4 ? 'm4a' : 'webm';
+        const contentType = isMp4 ? 'audio/mp4' : 'audio/webm';
 
         // Convert base64 to buffer
         const audioBuffer = Buffer.from(audio, 'base64');
 
         // Create form data for OpenAI
         const formData = new FormData();
-        const blob = new Blob([audioBuffer], { type: 'audio/webm' });
-        formData.append('file', blob, 'recording.webm');
+        const blob = new Blob([audioBuffer], { type: contentType });
+        formData.append('file', blob, `recording.${extension}`);
         formData.append('model', 'whisper-1');
         formData.append('language', 'ar');
         formData.append('response_format', 'json');

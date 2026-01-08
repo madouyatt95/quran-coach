@@ -69,11 +69,13 @@ function applyTajwidColors(text: string, enabledLayers: string[]): React.ReactNo
     while (i < text.length) {
         let matched = false;
 
-        for (let len = 3; len >= 2; len--) {
+        // Try matching patterns of different lengths (longest first)
+        for (let len = 3; len >= 1; len--) {
             if (i + len <= text.length) {
                 const substr = text.substring(i, i + len);
                 for (const rule of activeRules) {
-                    if (rule.patterns.some(p => substr.includes(p) || p.includes(substr))) {
+                    // Use exact match instead of includes to avoid false positives
+                    if (rule.patterns.includes(substr)) {
                         result.push(
                             <span
                                 key={key++}
@@ -89,25 +91,6 @@ function applyTajwidColors(text: string, enabledLayers: string[]): React.ReactNo
                     }
                 }
                 if (matched) break;
-            }
-        }
-
-        if (!matched) {
-            const char = text[i];
-            for (const rule of activeRules) {
-                if (rule.patterns.includes(char)) {
-                    result.push(
-                        <span
-                            key={key++}
-                            style={{ color: rule.color, fontWeight: 'bold' }}
-                            title={rule.id}
-                        >
-                            {char}
-                        </span>
-                    );
-                    matched = true;
-                    break;
-                }
             }
         }
 

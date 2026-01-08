@@ -15,6 +15,7 @@ import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore } from '../stores/settingsStore';
 import { usePremiumStore } from '../stores/premiumStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
+import { getSupportedMimeType } from '../lib/audioUnlock';
 import type { Ayah } from '../types';
 import './CoachPage.css';
 
@@ -43,7 +44,8 @@ export function CoachPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // MediaRecorder for API approach
+    // MediaRecorder
+    const currentMimeTypeRef = useRef<string>('audio/webm');
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
 
@@ -51,7 +53,11 @@ export function CoachPage() {
     const [result, setResult] = useState<TranscriptionResult | null>(null);
 
     // Audio for playback help
-    const [audio] = useState(new Audio());
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    if (!audioRef.current) {
+        audioRef.current = new Audio();
+    }
 
     const currentSurah = surahs.find(s => s.number === selectedSurah);
     const currentAyah = ayahs[currentIndex];
@@ -86,10 +92,8 @@ export function CoachPage() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-            // Use best available format
-            const mimeType = MediaRecorder.isTypeSupported('audio/webm')
-                ? 'audio/webm'
-                : 'audio/mp4';
+            const mimeType = getSupportedMimeType();
+            currentMimeTypeRef.current = mimeType;
 
             const mediaRecorder = new MediaRecorder(stream, { mimeType });
             audioChunksRef.current = [];
@@ -110,7 +114,7 @@ export function CoachPage() {
             setIsRecording(true);
         } catch (err) {
             console.error('Microphone error:', err);
-            setError("Impossible d'accéder au microphone. Autorisez l'accès dans les paramètres.");
+            setError("Impossible d'accéder au microphone: " + (err instanceof Error ? err.message : 'Accès refusé'));
         }
     };
 
@@ -150,6 +154,7 @@ export function CoachPage() {
                 body: JSON.stringify({
                     audio: base64Audio,
                     expectedText: currentAyah?.text,
+                    mimeType: currentMimeTypeRef.current
                 }),
             });
 
@@ -187,10 +192,14 @@ export function CoachPage() {
     };
 
     // Play current ayah audio
-    const playAyah = () => {
-        if (currentAyah) {
-            audio.src = getAudioUrl(selectedReciter, currentAyah.number);
-            audio.play();
+    const playAyah = async () => {
+        if (currentAyah && audioRef.current) {
+
+            audioRef.current.src = getAudioUrl(selectedReciter, currentAyah.number);
+            audioRef.current.play().catch(err => {
+                console.error("Playback failed:", err);
+                setError("Échec de la lecture. Tapez à nouveau.");
+            });
         }
     };
 

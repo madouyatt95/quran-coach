@@ -23,7 +23,8 @@ import { usePremiumStore } from '../stores/premiumStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
-import { triggerVibration } from '../lib/pokeService';
+import { pokeController } from '../lib/pokeService';
+import { getSharedAudioContext, getSupportedMimeType } from '../lib/audioUnlock';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
@@ -80,6 +81,8 @@ export function HifdhPage() {
     const silenceTimeoutRef = useRef<number | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
+    const currentMimeTypeRef = useRef<string>('audio/webm');
+    const isRecordingRef = useRef(false); // Use ref to avoid stale closure
 
     const currentAyah = ayahs[currentAyahIndex];
     const currentReciterInfo = RECITERS.find(r => r.id === selectedReciter);
@@ -316,75 +319,78 @@ export function HifdhPage() {
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+            const mimeType = getSupportedMimeType();
+            currentMimeTypeRef.current = mimeType;
+
             const mediaRecorder = new MediaRecorder(stream, { mimeType });
             audioChunksRef.current = [];
 
-            // Setup audio analysis for silence detection
-            audioContextRef.current = new AudioContext();
+            // Use shared AudioContext for iOS PWA compatibility
+            audioContextRef.current = getSharedAudioContext();
+
+            // iOS requires resume() after user interaction
+            if (audioContextRef.current.state === 'suspended') {
+                await audioContextRef.current.resume();
+            }
+
             analyserRef.current = audioContextRef.current.createAnalyser();
             analyserRef.current.fftSize = 256;
             const source = audioContextRef.current.createMediaStreamSource(stream);
             source.connect(analyserRef.current);
 
             const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-            let lastVoiceTime = Date.now();
-            const SILENCE_THRESHOLD = 10; // Low amplitude = silence
-            const POKE_DELAY = 3000; // 3 seconds before poke
 
-            // Monitor for silence and trigger poke
+            // Mark recording as active (use ref to avoid stale closure)
+            isRecordingRef.current = true;
+
             const checkSilence = () => {
-                if (!analyserRef.current || !isRecording) return;
+                // Use ref instead of state to avoid stale closure
+                if (!analyserRef.current || !isRecordingRef.current) return;
 
                 analyserRef.current.getByteFrequencyData(dataArray);
                 const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
 
-                if (avg > SILENCE_THRESHOLD) {
-                    lastVoiceTime = Date.now();
-                    setPokeHint(null); // Clear hint when speaking
+                if (avg > 10) {
+                    pokeController.reset();
+                    setPokeHint(null);
                 } else {
-                    const silenceDuration = Date.now() - lastVoiceTime;
-                    if (silenceDuration > POKE_DELAY && !pokeHint) {
-                        // Trigger poke!
-                        triggerVibration('double');
-
-                        // Show first letter hint if words available
-                        if (wordTimings && wordTimings.words.length > 0) {
-                            // Find first hidden word as hint
-                            const hiddenWord = wordStates.find(ws => ws.hidden && !ws.revealed);
-                            if (hiddenWord) {
-                                setPokeHint(hiddenWord.text.charAt(0) + '...');
-                            }
-                        }
+                    const firstHiddenWord = wordStates.find(ws => ws.hidden && !ws.revealed);
+                    if (firstHiddenWord) {
+                        pokeController.onSilence([firstHiddenWord.text], 0);
                     }
                 }
-
                 silenceTimeoutRef.current = requestAnimationFrame(checkSilence);
             };
 
-            checkSilence();
+            pokeController.setOnHint((hint: string) => setPokeHint(hint));
 
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
             mediaRecorder.onstop = () => {
+                isRecordingRef.current = false;
                 stream.getTracks().forEach(t => t.stop());
                 if (silenceTimeoutRef.current) cancelAnimationFrame(silenceTimeoutRef.current);
-                if (audioContextRef.current) audioContextRef.current.close();
+                if (audioContextRef.current) audioContextRef.current.close().catch(() => { });
+                pokeController.reset();
                 processTestAudio();
             };
+
             mediaRecorderRef.current = mediaRecorder;
             mediaRecorder.start();
             setIsRecording(true);
+            checkSilence();
         } catch (err) {
-            setError("Erreur microphone");
+            console.error('Recording error:', err);
+            setError("Erreur microphone: " + (err instanceof Error ? err.message : 'Accès refusé'));
         }
     };
 
     const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
+        if (mediaRecorderRef.current && isRecordingRef.current) {
+            isRecordingRef.current = false;
             mediaRecorderRef.current.stop();
             setIsRecording(false);
             setPokeHint(null);
-            if (silenceTimeoutRef.current) cancelAnimationFrame(silenceTimeoutRef.current);
+            pokeController.reset();
         }
     };
 
@@ -392,7 +398,7 @@ export function HifdhPage() {
         if (audioChunksRef.current.length === 0) return;
         setIsProcessing(true);
         try {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            const audioBlob = new Blob(audioChunksRef.current, { type: currentMimeTypeRef.current });
             const reader = new FileReader();
             const base64Audio = await new Promise<string>((res, rej) => {
                 reader.onload = () => res((reader.result as string).split(',')[1]);
@@ -403,7 +409,11 @@ export function HifdhPage() {
             const response = await fetch('/api/transcribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ audio: base64Audio, expectedText: currentAyah?.text }),
+                body: JSON.stringify({
+                    audio: base64Audio,
+                    expectedText: currentAyah?.text,
+                    mimeType: currentMimeTypeRef.current
+                }),
             });
 
             if (!response.ok) throw new Error('Failed');
@@ -619,9 +629,16 @@ export function HifdhPage() {
 
                         <div className="hifdh-player__controls">
                             <button className="hifdh-player__btn" onClick={handlePrev}><SkipBack size={20} /></button>
-                            <button className="hifdh-player__btn hifdh-player__btn--primary" onClick={handlePlayPause}>
+                            <button className="hifdh-player__btn" onClick={handlePlayPause}>
                                 {isPlaying ? <Pause size={28} /> : <Play size={28} />}
                             </button>
+                            <button className="hifdh-player__btn" onClick={() => {
+                                if (audioRef.current) {
+                                    audioRef.current.pause();
+                                    audioRef.current.currentTime = 0;
+                                    setIsPlaying(false);
+                                }
+                            }}><Square size={18} /></button>
                             <button className="hifdh-player__btn" onClick={handleNext}><SkipForward size={20} /></button>
                             <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
                                 <Repeat size={20} />

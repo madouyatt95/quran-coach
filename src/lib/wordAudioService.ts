@@ -37,27 +37,38 @@ export async function playWordAudio(
     const url = getWordAudioUrl(surah, ayah, wordPosition);
     const cacheKey = `${surah}:${ayah}:${wordPosition}`;
 
-    // Stop any currently playing audio
+    // Stop and reset all currently playing audio
     stopAllWordAudio();
 
     let audio = audioCache.get(cacheKey);
 
     if (!audio) {
-        audio = new Audio(url);
+        audio = new Audio();
         audioCache.set(cacheKey, audio);
     }
 
+    // Set source and events
+    audio.src = url;
+
     if (onEnd) {
         audio.onended = onEnd;
+    } else {
+        audio.onended = null;
     }
 
     try {
-        audio.currentTime = 0;
-        await audio.play();
+        // Essential for mobile: play() must be closely linked to user gesture
+        // By setting src and playing immediately, we have better luck on Safari
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            await playPromise;
+        }
     } catch (error) {
         console.error('Failed to play word audio:', error);
-        // Fallback: Remove from cache and try again
-        audioCache.delete(cacheKey);
+        // Fallback: If it failed, maybe try a fresh object
+        const fallbackAudio = new Audio(url);
+        fallbackAudio.onended = onEnd || null;
+        await fallbackAudio.play().catch(e => console.error("Final fallback failed:", e));
     }
 }
 
