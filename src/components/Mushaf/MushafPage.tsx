@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { fetchPage, fetchSurahs } from '../../lib/quranApi';
+import { fetchPage, fetchSurahs, fetchAyah } from '../../lib/quranApi';
 import { AyahDisplay } from './AyahDisplay';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
@@ -75,10 +75,17 @@ export function MushafPage() {
         if (surahNum) goToSurah(surahNum);
     };
 
-    const handleAyahChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleAyahChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const ayahNum = parseInt(e.target.value);
         if (ayahNum && currentSurah) {
-            goToAyah(currentSurah, ayahNum);
+            try {
+                // Fetch the ayah to get its page number
+                const ayahData = await fetchAyah(currentSurah, ayahNum);
+                goToAyah(currentSurah, ayahNum, ayahData.page);
+            } catch {
+                // Fallback: just update the ayah without page navigation
+                goToAyah(currentSurah, ayahNum);
+            }
         }
     };
 
