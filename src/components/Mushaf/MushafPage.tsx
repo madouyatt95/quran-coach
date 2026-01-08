@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -12,19 +12,28 @@ const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَ
 export function MushafPage() {
     const {
         currentPage,
+        currentSurah,
+        currentAyah,
         surahs,
         setSurahs,
         nextPage,
         prevPage,
         setPageAyahs,
         pageAyahs,
-        goToSurah
+        goToSurah,
+        goToAyah
     } = useQuranStore();
 
     const { arabicFontSize } = useSettingsStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Current surah info for ayah count
+    const currentSurahInfo = useMemo(() =>
+        surahs.find(s => s.number === currentSurah),
+        [surahs, currentSurah]
+    );
 
     // Fetch surahs list on mount
     useEffect(() => {
@@ -60,6 +69,18 @@ export function MushafPage() {
         groups[surahNum].push(ayah);
         return groups;
     }, {} as Record<number, Ayah[]>);
+
+    const handleSurahChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const surahNum = parseInt(e.target.value);
+        if (surahNum) goToSurah(surahNum);
+    };
+
+    const handleAyahChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const ayahNum = parseInt(e.target.value);
+        if (ayahNum && currentSurah) {
+            goToAyah(currentSurah, ayahNum);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -122,19 +143,30 @@ export function MushafPage() {
             </div>
 
             <div className="page-nav">
-                <div className="page-nav__surah-select">
+                <div className="page-nav__selectors">
                     <select
-                        className="page-nav__surah-dropdown"
-                        value=""
-                        onChange={(e) => {
-                            const surahNum = parseInt(e.target.value);
-                            if (surahNum) goToSurah(surahNum);
-                        }}
+                        className="page-nav__dropdown"
+                        value={currentSurah}
+                        onChange={handleSurahChange}
                     >
-                        <option value="">Aller à la sourate...</option>
                         {surahs.map((s) => (
                             <option key={s.number} value={s.number}>
-                                {s.number}. {s.name} ({s.englishName})
+                                {s.number}. {s.name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        className="page-nav__dropdown page-nav__dropdown--ayah"
+                        value={currentAyah}
+                        onChange={handleAyahChange}
+                    >
+                        {currentSurahInfo && Array.from(
+                            { length: currentSurahInfo.numberOfAyahs },
+                            (_, i) => i + 1
+                        ).map((ayahNum) => (
+                            <option key={ayahNum} value={ayahNum}>
+                                Verset {ayahNum}
                             </option>
                         ))}
                     </select>
@@ -147,17 +179,15 @@ export function MushafPage() {
                         disabled={currentPage <= 1}
                     >
                         <ChevronLeft size={20} />
-                        Précédent
                     </button>
 
-                    <span className="page-nav__current">{currentPage} / 604</span>
+                    <span className="page-nav__current">{currentPage}</span>
 
                     <button
                         className="page-nav__btn"
                         onClick={nextPage}
                         disabled={currentPage >= 604}
                     >
-                        Suivant
                         <ChevronRight size={20} />
                     </button>
                 </div>
