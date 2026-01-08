@@ -130,19 +130,36 @@ export function HifdhPage() {
     useEffect(() => {
         if (ayahs.length > 0 && audioRef.current) {
             const ayah = ayahs[currentAyahIndex];
-            const audioUrl = getAudioUrl(selectedReciter, ayah.number);
-            audioRef.current.src = audioUrl;
-            audioRef.current.playbackRate = playbackSpeed;
-            audioRef.current.load();
+            if (!ayah) return;
 
+            const audioUrl = getAudioUrl(selectedReciter, ayah.number);
+
+            // Only update src if it changed to avoid restart loops
+            if (audioRef.current.src !== audioUrl) {
+                audioRef.current.src = audioUrl;
+                audioRef.current.load();
+            }
+
+            audioRef.current.playbackRate = playbackSpeed;
             setActiveWordIndex(-1);
 
-            // Get the Quran.com reciter ID for word timings API
             const reciterInfo = RECITERS.find(r => r.id === selectedReciter);
-            const quranComReciterId = reciterInfo?.quranComId || 7; // Default to Mishary Al-Afasy
+            const quranComReciterId = reciterInfo?.quranComId || 7;
             fetchWordTimings(selectedSurah, ayah.numberInSurah, quranComReciterId).then(setWordTimings);
         }
     }, [ayahs, currentAyahIndex, selectedReciter, playbackSpeed, selectedSurah]);
+
+    // Cleanup AudioContext on unmount
+    useEffect(() => {
+        return () => {
+            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+                audioContextRef.current.close().catch(console.error);
+            }
+            if (silenceTimeoutRef.current) {
+                cancelAnimationFrame(silenceTimeoutRef.current);
+            }
+        };
+    }, []);
 
     // Initialize/Update word states for test mode
     useEffect(() => {
@@ -493,7 +510,11 @@ export function HifdhPage() {
 
             {/* Main Player/Test Area */}
             <div className={`hifdh-main-card ${isTestMode ? 'test-active' : ''}`}>
-                <audio ref={audioRef} />
+                <audio
+                    ref={audioRef}
+                    src={currentAyah ? getAudioUrl(selectedReciter, currentAyah.number) : undefined}
+                    onEnded={handleAudioEnded}
+                />
 
                 {/* Ayah View */}
                 <div className="hifdh-ayah-container" dir="rtl">

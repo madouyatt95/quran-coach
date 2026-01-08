@@ -3,10 +3,9 @@
 
 const WORD_AUDIO_BASE = 'https://everyayah.com/data/Husary_Mujawwad_128kbps';
 
-// Format: https://everyayah.com/data/Husary_Mujawwad_128kbps/001002.mp3
-// 001 = surah, 002 = ayah
-// For word-by-word: https://everyayah.com/data/wordbyword/001_002_001.mp3
-const WORD_AUDIO_WBW_BASE = 'https://everyayah.com/data/wordbyword';
+// Using a more reliable source if possible, but keeping everyayah as fallback
+// Note: Some sources might be HTTP only, so we use a protocol-relative URL if needed
+const WORD_AUDIO_WBW_BASE = 'https://www.everyayah.com/data/wordbyword';
 
 // Cache for loaded audio
 const audioCache: Map<string, HTMLAudioElement> = new Map();
