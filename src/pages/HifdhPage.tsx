@@ -299,12 +299,10 @@ export function HifdhPage() {
 
         audio.addEventListener('timeupdate', updateTime);
         audio.addEventListener('loadedmetadata', updateDuration);
-        audio.addEventListener('ended', handleAudioEnded);
 
         return () => {
             audio.removeEventListener('timeupdate', updateTime);
             audio.removeEventListener('loadedmetadata', updateDuration);
-            audio.removeEventListener('ended', handleAudioEnded);
         };
     }, [handleAudioEnded, wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats]);
 
