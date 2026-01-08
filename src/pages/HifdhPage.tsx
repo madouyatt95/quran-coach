@@ -488,32 +488,56 @@ export function HifdhPage() {
                     </div>
                     <div className="hifdh-verse-range">
                         <label className="hifdh-verse-range__label">Versets :</label>
-                        <div className="hifdh-verse-range__inputs">
-                            <input
-                                type="number"
-                                className="hifdh-verse-range__input"
-                                value={startAyah}
-                                min={1}
-                                max={endAyah}
-                                onChange={(e) => setStartAyah(Math.max(1, Math.min(parseInt(e.target.value) || 1, endAyah)))}
-                            />
-                            <span className="hifdh-verse-range__separator">à</span>
-                            <input
-                                type="number"
-                                className="hifdh-verse-range__input"
-                                value={endAyah}
-                                min={startAyah}
-                                max={maxAyahs}
-                                onChange={(e) => setEndAyah(Math.max(startAyah, Math.min(parseInt(e.target.value) || startAyah, maxAyahs)))}
-                            />
+                        <div className="hifdh-verse-range__controls">
+                            <div className="hifdh-verse-range__group">
+                                <button
+                                    className="hifdh-verse-btn"
+                                    onClick={() => setStartAyah(Math.max(1, startAyah - 1))}
+                                    disabled={startAyah <= 1}
+                                >−</button>
+                                <span className="hifdh-verse-range__value">{startAyah}</span>
+                                <button
+                                    className="hifdh-verse-btn"
+                                    onClick={() => setStartAyah(Math.min(endAyah, startAyah + 1))}
+                                    disabled={startAyah >= endAyah}
+                                >+</button>
+                            </div>
+                            <span className="hifdh-verse-range__separator">→</span>
+                            <div className="hifdh-verse-range__group">
+                                <button
+                                    className="hifdh-verse-btn"
+                                    onClick={() => setEndAyah(Math.max(startAyah, endAyah - 1))}
+                                    disabled={endAyah <= startAyah}
+                                >−</button>
+                                <span className="hifdh-verse-range__value">{endAyah}</span>
+                                <button
+                                    className="hifdh-verse-btn"
+                                    onClick={() => setEndAyah(Math.min(maxAyahs, endAyah + 1))}
+                                    disabled={endAyah >= maxAyahs}
+                                >+</button>
+                            </div>
                             <span className="hifdh-verse-range__total">/ {maxAyahs}</span>
                         </div>
-                        <button
-                            className="hifdh-verse-range__all-btn"
-                            onClick={() => { setStartAyah(1); setEndAyah(maxAyahs); }}
-                        >
-                            Toute la sourate
-                        </button>
+                        <div className="hifdh-verse-range__actions">
+                            <button
+                                className="hifdh-verse-range__preset"
+                                onClick={() => { setStartAyah(1); setEndAyah(maxAyahs); }}
+                            >
+                                Tout
+                            </button>
+                            <button
+                                className="hifdh-verse-range__preset"
+                                onClick={() => { setEndAyah(startAyah); }}
+                            >
+                                1 verset
+                            </button>
+                            <button
+                                className="hifdh-verse-range__preset"
+                                onClick={() => { setEndAyah(Math.min(startAyah + 4, maxAyahs)); }}
+                            >
+                                5 versets
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
