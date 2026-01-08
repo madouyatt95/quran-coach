@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Mic, Square, Loader2, X } from 'lucide-react';
 import { usePremiumStore } from '../../stores/premiumStore';
+import { createMediaRecorder, getSupportedMimeType, unlockAudio, isIOSPWA } from '../../lib/audioUnlock';
 import './VoiceSearch.css';
 
 interface VoiceSearchProps {
@@ -74,6 +75,7 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const mimeTypeRef = useRef<string>('audio/webm');
 
     const startRecording = async () => {
         if (!isPremium) {
@@ -86,9 +88,22 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
         setTranscribed('');
 
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-            const mediaRecorder = new MediaRecorder(stream, { mimeType });
+            // Unlock audio on iOS PWA first
+            if (isIOSPWA()) {
+                await unlockAudio();
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 44100
+                }
+            });
+
+            // Use iOS-compatible MediaRecorder
+            const mediaRecorder = createMediaRecorder(stream);
+            mimeTypeRef.current = getSupportedMimeType();
 
             audioChunksRef.current = [];
 
@@ -106,8 +121,13 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
             mediaRecorderRef.current = mediaRecorder;
             mediaRecorder.start();
             setIsRecording(true);
-        } catch {
-            setError("Impossible d'accéder au microphone");
+        } catch (err) {
+            console.error('Recording error:', err);
+            if (isIOSPWA()) {
+                setError("Erreur micro sur PWA iOS. Essayez dans Safari.");
+            } else {
+                setError("Impossible d'accéder au microphone");
+            }
         }
     };
 
@@ -147,7 +167,7 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
         setIsProcessing(true);
 
         try {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            const audioBlob = new Blob(audioChunksRef.current, { type: mimeTypeRef.current });
 
             const reader = new FileReader();
             const base64Audio = await new Promise<string>((resolve, reject) => {
