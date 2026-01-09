@@ -185,8 +185,8 @@
 
 .prayer-time-name {
     font-size: var(--text-ui-md);
-    font-weight: 500;
-    color: var(--color-text-primary);
+    font-weight: 600;
+    color: #c9a84c;
 }
 
 .prayer-time-name-ar {
@@ -204,8 +204,8 @@
 
 .prayer-start {
     font-size: var(--text-ui-lg);
-    font-weight: 600;
-    color: var(--color-text-primary);
+    font-weight: 700;
+    color: #c9a84c;
 }
 
 .prayer-end {
