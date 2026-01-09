@@ -372,3 +372,155 @@
         background: rgba(201, 168, 76, 0.4);
     }
 }
+
+/* ========================================
+   Header Actions
+   ======================================== */
+
+.mushaf-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.mushaf-mic-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 168, 76, 0.2);
+    border-radius: var(--radius-md);
+    color: #c9a84c;
+}
+
+.mushaf-mic-btn.active {
+    background: #f44336;
+    color: white;
+    animation: recording-pulse 1s ease infinite;
+}
+
+@keyframes recording-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ========================================
+   Mode Toggle
+   ======================================== */
+
+.mushaf-mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: var(--space-xs) var(--space-md);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.mushaf-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-size: var(--text-ui-sm);
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.mushaf-mode-btn.active {
+    background: rgba(201, 168, 76, 0.2);
+    border-color: rgba(201, 168, 76, 0.5);
+    color: #c9a84c;
+}
+
+.mushaf-mode-btn.premium:not(.active) {
+    opacity: 0.6;
+}
+
+.mushaf-mode-btn .premium-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    color: #ffc107;
+}
+
+/* ========================================
+   Premium Prompt
+   ======================================== */
+
+.mushaf-premium-prompt {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-xs);
+}
+
+.mushaf-premium-prompt button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 193, 7, 0.15);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: var(--radius-full);
+    color: #ffc107;
+    font-size: var(--text-ui-xs);
+}
+
+/* ========================================
+   Word States (Coach/Test Mode)
+   ======================================== */
+
+.mushaf-word {
+    padding: 1px 2px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.mushaf-word--correct {
+    background: rgba(76, 175, 80, 0.35);
+    color: #2e7d32;
+}
+
+.mushaf-word--error {
+    background: rgba(244, 67, 54, 0.35);
+    color: #c62828;
+    text-decoration: underline wavy #c62828;
+}
+
+.mushaf-word--hidden {
+    background: #5a4520;
+    color: transparent;
+    border-radius: 4px;
+    user-select: none;
+}
+
+/* ========================================
+   Play Button
+   ======================================== */
+
+.mushaf-play-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #c9a84c, #a8893d);
+    border-radius: var(--radius-full);
+    color: #1a1a2e;
+    box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+}
+
+.mushaf-play-btn:active {
+    transform: scale(0.95);
+}

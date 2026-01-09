@@ -1,14 +1,19 @@
-import { useEffect, useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Loader2, Settings2 } from 'lucide-react';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Loader2, Settings2, Volume2, Mic, BookOpen, GraduationCap, FileQuestion, Crown, Square } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { fetchPage, fetchSurahs, fetchAyah } from '../../lib/quranApi';
+import { usePremiumStore } from '../../stores/premiumStore';
+import { fetchPage, fetchSurahs, fetchAyah, getAudioUrl } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
+import { speechRecognitionService, type WordState } from '../../lib/speechRecognition';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+
+// View modes
+type ViewMode = 'lecture' | 'coach' | 'test';
 
 // Convert Western numbers to Arabic-Indic numerals
 function toArabicNumbers(num: number): string {
@@ -31,12 +36,27 @@ export function MushafPage() {
         goToAyah
     } = useQuranStore();
 
-    const { arabicFontSize, tajwidLayers, toggleTajwidLayer } = useSettingsStore();
+    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter } = useSettingsStore();
+    const { isPremium, setPremium } = usePremiumStore();
 
+    const [viewMode, setViewMode] = useState<ViewMode>('lecture');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [tajweedVerses, setTajweedVerses] = useState<TajweedVerse[]>([]);
     const [showTajweedPanel, setShowTajweedPanel] = useState(false);
+
+    // Coach mode state
+    const [isListening, setIsListening] = useState(false);
+    const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
+
+    // Test mode state
+    const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
+
+    // Audio
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    if (!audioRef.current) {
+        audioRef.current = new Audio();
+    }
 
     const tajweedCategories = useMemo(() => getTajweedCategories(), []);
 
@@ -52,12 +72,24 @@ export function MushafPage() {
         return surahNums.map(num => surahs.find(s => s.number === num)?.name || '').filter(Boolean);
     }, [pageAyahs, surahs]);
 
+    // Get all words from page
+    const allWords = useMemo(() => {
+        const words: { text: string; ayahIndex: number; wordIndex: number }[] = [];
+        pageAyahs.forEach((ayah, ayahIndex) => {
+            const ayahWords = ayah.text.split(/\s+/).filter(w => w.length > 0);
+            ayahWords.forEach((word, wordIndex) => {
+                words.push({ text: word, ayahIndex, wordIndex });
+            });
+        });
+        return words;
+    }, [pageAyahs]);
+
     // Fetch surahs list on mount
     useEffect(() => {
         if (surahs.length === 0) {
             fetchSurahs()
                 .then(setSurahs)
-                .catch(() => {/* Surahs will be empty */ });
+                .catch(() => { });
         }
     }, [surahs.length, setSurahs]);
 
@@ -74,12 +106,79 @@ export function MushafPage() {
                 setPageAyahs(ayahs);
                 setTajweedVerses(tajweed);
                 setIsLoading(false);
+                // Reset states on page change
+                setWordStates(new Map());
+                setHiddenWords(new Set());
             })
             .catch(() => {
                 setError('Impossible de charger la page. Vérifiez votre connexion.');
                 setIsLoading(false);
             });
     }, [currentPage, setPageAyahs]);
+
+    // Initialize test mode
+    const initTestMode = () => {
+        const hidden = new Set<string>();
+        allWords.forEach((word) => {
+            if (Math.random() > 0.5) {
+                hidden.add(`${word.ayahIndex}-${word.wordIndex}`);
+            }
+        });
+        setHiddenWords(hidden);
+    };
+
+    // Handle mode change
+    const handleModeChange = (mode: ViewMode) => {
+        if ((mode === 'coach' || mode === 'test') && !isPremium) {
+            return; // Premium required
+        }
+        setViewMode(mode);
+        setWordStates(new Map());
+        if (mode === 'test') {
+            initTestMode();
+        } else {
+            setHiddenWords(new Set());
+        }
+    };
+
+    // Start listening (Coach/Test mode)
+    const startListening = () => {
+        const expectedText = pageAyahs.map(a => a.text).join(' ');
+
+        speechRecognitionService.start(expectedText, {
+            onWordMatch: (wordIndex, isCorrect) => {
+                const word = allWords[wordIndex];
+                if (!word) return;
+
+                const key = `${word.ayahIndex}-${word.wordIndex}`;
+                setWordStates(prev => {
+                    const newStates = new Map(prev);
+                    newStates.set(key, isCorrect ? 'correct' : 'error');
+                    return newStates;
+                });
+
+                // In test mode, reveal hidden word
+                if (viewMode === 'test' && hiddenWords.has(key)) {
+                    setHiddenWords(prev => {
+                        const newHidden = new Set(prev);
+                        newHidden.delete(key);
+                        return newHidden;
+                    });
+                }
+            },
+            onInterimResult: () => { },
+            onError: () => { },
+            onEnd: () => setIsListening(false)
+        });
+
+        setIsListening(true);
+    };
+
+    // Stop listening
+    const stopListening = () => {
+        speechRecognitionService.stop();
+        setIsListening(false);
+    };
 
     // Group ayahs by surah
     const groupedAyahs = pageAyahs.reduce((groups, ayah) => {
@@ -114,6 +213,36 @@ export function MushafPage() {
         return verse?.textTajweed || null;
     };
 
+    // Play audio for first ayah on page
+    const playAudio = () => {
+        if (pageAyahs.length > 0 && audioRef.current) {
+            audioRef.current.src = getAudioUrl(selectedReciter, pageAyahs[0].number);
+            audioRef.current.play().catch(() => { });
+        }
+    };
+
+    // Activate premium (demo)
+    const activatePremium = () => {
+        const until = new Date();
+        until.setDate(until.getDate() + 30);
+        setPremium(true, until.toISOString());
+    };
+
+    // Get word class based on mode and state
+    const getWordClass = (ayahIndex: number, wordIndex: number): string => {
+        const key = `${ayahIndex}-${wordIndex}`;
+
+        if (viewMode === 'test' && hiddenWords.has(key)) {
+            return 'mushaf-word--hidden';
+        }
+
+        const state = wordStates.get(key);
+        if (state === 'correct') return 'mushaf-word--correct';
+        if (state === 'error') return 'mushaf-word--error';
+
+        return '';
+    };
+
     if (isLoading) {
         return (
             <div className="mushaf-page">
@@ -142,20 +271,67 @@ export function MushafPage() {
     }
 
     return (
-        <div className="mushaf-page" data-arabic-size={arabicFontSize}>
-            {/* Mushaf Frame Header */}
+        <div className="mushaf-page" data-arabic-size={arabicFontSize} data-mode={viewMode}>
+            {/* Header */}
             <div className="mushaf-frame-header">
                 <div className="mushaf-page-info">
                     <span className="mushaf-surah-name">{pageSurahNames.join(' - ')}</span>
                     <span className="mushaf-page-number">صفحة {toArabicNumbers(currentPage)}</span>
                 </div>
+                <div className="mushaf-header-actions">
+                    <button
+                        className="mushaf-tajweed-toggle"
+                        onClick={() => setShowTajweedPanel(!showTajweedPanel)}
+                    >
+                        <Settings2 size={18} />
+                    </button>
+                    {(viewMode === 'coach' || viewMode === 'test') && (
+                        <button
+                            className={`mushaf-mic-btn ${isListening ? 'active' : ''}`}
+                            onClick={isListening ? stopListening : startListening}
+                        >
+                            {isListening ? <Square size={18} /> : <Mic size={18} />}
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Mode Toggle */}
+            <div className="mushaf-mode-toggle">
                 <button
-                    className="mushaf-tajweed-toggle"
-                    onClick={() => setShowTajweedPanel(!showTajweedPanel)}
+                    className={`mushaf-mode-btn ${viewMode === 'lecture' ? 'active' : ''}`}
+                    onClick={() => handleModeChange('lecture')}
                 >
-                    <Settings2 size={20} />
+                    <BookOpen size={16} />
+                    <span>Lecture</span>
+                </button>
+                <button
+                    className={`mushaf-mode-btn ${viewMode === 'coach' ? 'active' : ''} ${!isPremium ? 'premium' : ''}`}
+                    onClick={() => handleModeChange('coach')}
+                >
+                    <GraduationCap size={16} />
+                    <span>Coach</span>
+                    {!isPremium && <Crown size={12} className="premium-badge" />}
+                </button>
+                <button
+                    className={`mushaf-mode-btn ${viewMode === 'test' ? 'active' : ''} ${!isPremium ? 'premium' : ''}`}
+                    onClick={() => handleModeChange('test')}
+                >
+                    <FileQuestion size={16} />
+                    <span>Test</span>
+                    {!isPremium && <Crown size={12} className="premium-badge" />}
                 </button>
             </div>
+
+            {/* Premium prompt */}
+            {!isPremium && (viewMode === 'lecture') && (
+                <div className="mushaf-premium-prompt">
+                    <button onClick={activatePremium}>
+                        <Crown size={14} />
+                        Activer Premium (30j)
+                    </button>
+                </div>
+            )}
 
             {/* Tajweed Controls Panel */}
             {showTajweedPanel && (
@@ -193,6 +369,9 @@ export function MushafPage() {
                         const isStartOfSurah = ayahs[0]?.numberInSurah === 1;
                         const showBismillah = isStartOfSurah && surahNumber !== 1 && surahNumber !== 9;
 
+                        // Get ayah index in pageAyahs
+                        const getAyahIndex = (ayah: Ayah) => pageAyahs.findIndex(a => a.number === ayah.number);
+
                         return (
                             <div key={surahNum} className="mushaf-surah-section">
                                 {isStartOfSurah && surah && (
@@ -211,7 +390,35 @@ export function MushafPage() {
                                     {ayahs.map((ayah) => {
                                         const verseKey = `${ayah.surah}:${ayah.numberInSurah}`;
                                         const tajweedHtml = getTajweedText(verseKey);
+                                        const ayahIndex = getAyahIndex(ayah);
 
+                                        // For coach/test mode, render word by word
+                                        if (viewMode !== 'lecture') {
+                                            const words = ayah.text.split(/\s+/).filter(w => w.length > 0);
+                                            return (
+                                                <span key={ayah.number} className="mushaf-ayah">
+                                                    {words.map((word, wordIndex) => {
+                                                        const key = `${ayahIndex}-${wordIndex}`;
+                                                        const isHidden = viewMode === 'test' && hiddenWords.has(key);
+
+                                                        return (
+                                                            <span
+                                                                key={key}
+                                                                className={`mushaf-word ${getWordClass(ayahIndex, wordIndex)}`}
+                                                            >
+                                                                {isHidden ? '████' : word}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                    <span className="mushaf-verse-number">
+                                                        ﴿{toArabicNumbers(ayah.numberInSurah)}﴾
+                                                    </span>
+                                                    {' '}
+                                                </span>
+                                            );
+                                        }
+
+                                        // Lecture mode - normal render with Tajweed
                                         return (
                                             <span key={ayah.number} className="mushaf-ayah">
                                                 {tajweedHtml ? (
@@ -278,6 +485,10 @@ export function MushafPage() {
                         disabled={currentPage >= 604}
                     >
                         <ChevronLeft size={24} />
+                    </button>
+
+                    <button className="mushaf-play-btn" onClick={playAudio}>
+                        <Volume2 size={20} />
                     </button>
 
                     <span className="mushaf-nav-current">{toArabicNumbers(currentPage)}</span>
