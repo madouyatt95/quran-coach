@@ -7,6 +7,8 @@ import { CoachPage } from './pages/CoachPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { PrayerTimesPage } from './pages/PrayerTimesPage';
+import { AdhkarPage } from './pages/AdhkarPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -93,6 +95,8 @@ function AppContent() {
           <Route path="/stats" element={<ProgressPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/prayers" element={<PrayerTimesPage />} />
+          <Route path="/adhkar" element={<AdhkarPage />} />
         </Routes>
       </main>
       <BottomNav />

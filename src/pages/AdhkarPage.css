@@ -1,0 +1,286 @@
+/* ========================================
+   Adhkar Page - Mobile-First PWA Styles
+   ======================================== */
+
+.adhkar-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: linear-gradient(180deg, #1a1a2e 0%, #2d1b3d 100%);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+}
+
+/* Header */
+.adhkar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.3);
+    min-height: 56px;
+}
+
+.adhkar-back-btn {
+    color: #c9a84c;
+    padding: var(--space-sm);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.adhkar-title {
+    font-size: var(--text-ui-lg);
+    font-weight: 600;
+    color: #c9a84c;
+}
+
+.adhkar-progress-text {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+    min-width: 44px;
+    text-align: right;
+}
+
+/* Subtitle */
+.adhkar-subtitle {
+    text-align: center;
+    padding: var(--space-md);
+}
+
+.adhkar-subtitle-ar {
+    display: block;
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-xl);
+    color: #c9a84c;
+    margin-bottom: var(--space-xs);
+}
+
+.adhkar-subtitle span:last-child {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+/* Progress Bar */
+.adhkar-progress-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.adhkar-progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Category Cards */
+.adhkar-categories {
+    flex: 1;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.adhkar-category-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    text-align: left;
+    transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.adhkar-category-card:active {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(0.98);
+}
+
+.category-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.category-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.category-name {
+    font-size: var(--text-ui-md);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.category-name-ar {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+.category-count {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+.category-arrow {
+    color: var(--color-text-muted);
+}
+
+/* Dhikr Container */
+.dhikr-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-md);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Dhikr Card */
+.dhikr-card {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--space-lg);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-lg);
+}
+
+.dhikr-arabic {
+    font-family: var(--font-arabic);
+    font-size: var(--text-arabic-lg);
+    line-height: 2;
+    color: #c9a84c;
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    direction: rtl;
+}
+
+.dhikr-translation {
+    font-size: var(--text-ui-sm);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-bottom: var(--space-md);
+}
+
+.dhikr-source {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+/* Counter */
+.dhikr-counter {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 3px solid #c9a84c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: all var(--transition-fast);
+}
+
+.dhikr-counter:active {
+    transform: scale(0.95);
+}
+
+.counter-progress {
+    position: absolute;
+    inset: -3px;
+    width: calc(100% + 6px);
+    height: calc(100% + 6px);
+    transform: rotate(-90deg);
+}
+
+.counter-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 3;
+}
+
+.counter-fill {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.3s ease;
+}
+
+.counter-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+}
+
+.counter-current {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.counter-total {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+/* Navigation */
+.dhikr-nav {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+}
+
+.dhikr-nav-btn {
+    padding: var(--space-sm) var(--space-lg);
+    min-height: 44px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    font-size: var(--text-ui-sm);
+    transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dhikr-nav-btn:disabled {
+    opacity: 0.3;
+}
+
+.dhikr-nav-btn:active:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Tablet & Desktop */
+@media (min-width: 768px) {
+    .adhkar-categories {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .adhkar-category-card:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .dhikr-counter:hover {
+        transform: scale(1.02);
+    }
+}

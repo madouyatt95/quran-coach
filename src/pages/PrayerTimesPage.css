@@ -1,0 +1,245 @@
+/* ========================================
+   Prayer Times Page - Mobile-First PWA Styles
+   ======================================== */
+
+.prayer-times-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Loading State */
+.prayer-loading {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    color: #c9a84c;
+}
+
+.prayer-loading .spin {
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Header */
+.prayer-header {
+    padding: var(--space-lg) var(--space-md);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.prayer-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.prayer-location,
+.prayer-current-time {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+.prayer-hijri-date {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-lg);
+    color: #c9a84c;
+    margin-top: var(--space-sm);
+}
+
+/* Next Prayer Card */
+.next-prayer-card {
+    margin: var(--space-md);
+    padding: var(--space-lg);
+    background: rgba(201, 168, 76, 0.1);
+    border-radius: var(--radius-xl);
+    border: 2px solid #c9a84c;
+    backdrop-filter: blur(10px);
+}
+
+.next-prayer-label {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--space-sm);
+}
+
+.next-prayer-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.next-prayer-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+}
+
+.next-prayer-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.next-prayer-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.next-prayer-name {
+    font-size: var(--text-ui-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.next-prayer-name-ar {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-md);
+    color: var(--color-text-secondary);
+}
+
+.next-prayer-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.next-prayer-hour {
+    font-size: var(--text-ui-xl);
+    font-weight: 700;
+    color: #c9a84c;
+}
+
+.next-prayer-countdown {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+/* Prayer Times List */
+.prayer-times-list {
+    flex: 1;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.prayer-time-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.prayer-time-item.next {
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+}
+
+.prayer-time-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.prayer-time-names {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.prayer-time-name {
+    font-size: var(--text-ui-md);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.prayer-time-name-ar {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+.prayer-time-value {
+    font-size: var(--text-ui-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    min-width: 60px;
+    text-align: right;
+}
+
+/* Error State */
+.prayer-error {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--color-text-secondary);
+}
+
+.prayer-error button {
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
+    background: #c9a84c;
+    color: #1a1a2e;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+}
+
+/* Footer */
+.prayer-footer {
+    padding: var(--space-md);
+    text-align: center;
+}
+
+.prayer-footer p {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+/* Tablet & Desktop */
+@media (min-width: 768px) {
+    .prayer-times-list {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .next-prayer-card {
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

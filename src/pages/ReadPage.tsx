@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Navigation/Header';
+import { SideMenu } from '../components/Navigation/SideMenu';
 import { MushafPage } from '../components/Mushaf/MushafPage';
 import { FocusMode } from '../components/Mushaf/FocusMode';
 import { SearchModal } from '../components/Navigation/SearchModal';
@@ -13,10 +13,10 @@ import { useProgressStore } from '../stores/progressStore';
 type ViewMode = 'mushaf' | 'focus';
 
 export function ReadPage() {
-    const navigate = useNavigate();
     const [viewMode, setViewMode] = useState<ViewMode>('mushaf');
     const [showSearch, setShowSearch] = useState(false);
     const [showVoiceSearch, setShowVoiceSearch] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
 
     const { currentSurah, currentAyah, currentPage, setCurrentSurah, setCurrentAyah } = useQuranStore();
     const { tajwidEnabled } = useSettingsStore();
@@ -41,7 +41,7 @@ export function ReadPage() {
     return (
         <>
             <Header
-                onMenuClick={() => navigate('/settings')}
+                onMenuClick={() => setShowMenu(true)}
                 onSearchClick={() => setShowSearch(true)}
                 onBookmarkClick={handleBookmarkClick}
                 onVoiceSearchClick={() => setShowVoiceSearch(true)}
@@ -58,6 +58,8 @@ export function ReadPage() {
                     onClose={() => setViewMode('mushaf')}
                 />
             )}
+
+            <SideMenu isOpen={showMenu} onClose={() => setShowMenu(false)} />
 
             <SearchModal
                 isOpen={showSearch}
