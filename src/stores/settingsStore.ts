@@ -25,6 +25,10 @@ interface SettingsState extends Settings {
     playbackSpeed: number;
     setPlaybackSpeed: (speed: number) => void;
 
+    // Visual
+    starryMode: boolean;
+    setStarryMode: (enabled: boolean) => void;
+
     // Existing
     setTheme: (theme: Theme) => void;
     setArabicFontSize: (size: ArabicFontSize) => void;
@@ -55,6 +59,7 @@ export const useSettingsStore = create<SettingsState>()(
             autoPlayAudio: false,
             repeatCount: 3,
             playbackSpeed: 1,
+            starryMode: false,
 
             // Actions
             setTheme: (theme) => {
@@ -76,6 +81,10 @@ export const useSettingsStore = create<SettingsState>()(
             setReciter: (selectedReciter) => set({ selectedReciter }),
             setRepeatCount: (repeatCount) => set({ repeatCount }),
             setPlaybackSpeed: (playbackSpeed) => set({ playbackSpeed }),
+            setStarryMode: (starryMode) => {
+                document.documentElement.setAttribute('data-starry', starryMode ? 'true' : 'false');
+                set({ starryMode });
+            },
         }),
         {
             name: 'quran-coach-settings',

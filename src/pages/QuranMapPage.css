@@ -1,0 +1,233 @@
+.quran-map-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--color-bg-primary);
+}
+
+/* Header */
+.quran-map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.quran-map-header-btn {
+    color: #c9a84c;
+    padding: var(--space-sm);
+}
+
+.quran-map-title {
+    font-size: var(--text-ui-lg);
+    font-weight: 600;
+    color: #c9a84c;
+}
+
+/* Filters */
+.quran-map-filters {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    overflow-x: auto;
+    background: var(--color-bg-secondary);
+    z-index: 100;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.filter-btn.active {
+    background: #c9a84c;
+    color: #1a1a2e;
+}
+
+/* Map Container */
+.quran-map-container {
+    flex: 1;
+    position: relative;
+}
+
+.quran-map {
+    height: 100%;
+    width: 100%;
+}
+
+/* Custom Marker */
+.custom-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Popup */
+.map-popup {
+    text-align: center;
+    padding: var(--space-sm);
+}
+
+.map-popup h3 {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-lg);
+    color: #c9a84c;
+    margin-bottom: 4px;
+}
+
+.map-popup h4 {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Location Panel */
+.location-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: var(--space-lg);
+    max-height: 40vh;
+    overflow-y: auto;
+    z-index: 200;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.location-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+}
+
+.location-panel-name-ar {
+    display: block;
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-xl);
+    color: #c9a84c;
+}
+
+.location-panel-name {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+.location-panel-desc {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.location-panel-verses h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-ui-sm);
+    color: #c9a84c;
+    margin-bottom: var(--space-sm);
+}
+
+.verse-link {
+    display: block;
+    text-align: left;
+    width: 100%;
+    padding: var(--space-sm);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    transition: all var(--transition-fast);
+}
+
+.verse-link:hover {
+    background: rgba(201, 168, 76, 0.2);
+}
+
+.verse-ref {
+    display: block;
+    font-size: var(--text-ui-xs);
+    color: #c9a84c;
+    font-weight: 600;
+}
+
+.verse-excerpt {
+    display: block;
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+/* Location List */
+.location-list {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    overflow-x: auto;
+    background: var(--color-bg-secondary);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.location-panel~.location-list {
+    display: none;
+}
+
+.location-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.location-item.active {
+    background: rgba(201, 168, 76, 0.3);
+    border: 1px solid #c9a84c;
+}
+
+.location-item-name-ar {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-md);
+    color: #c9a84c;
+}
+
+.location-item-name {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+/* Leaflet overrides */
+.leaflet-container {
+    background: #1a1a2e;
+}
+
+.leaflet-popup-content-wrapper {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.leaflet-popup-tip {
+    background: var(--color-bg-secondary);
+}
+
+.leaflet-control-attribution {
+    background: rgba(0, 0, 0, 0.5) !important;
+    color: var(--color-text-muted) !important;
+}

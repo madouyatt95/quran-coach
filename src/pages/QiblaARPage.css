@@ -1,0 +1,191 @@
+.qibla-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0D1117 0%, #1a1a2e 50%, #2d1b3d 100%);
+    overflow: hidden;
+}
+
+/* Header */
+.qibla-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.qibla-header-btn {
+    color: #c9a84c;
+    padding: var(--space-sm);
+}
+
+.qibla-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-ui-lg);
+    font-weight: 600;
+    color: #c9a84c;
+}
+
+/* Content */
+.qibla-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    position: relative;
+}
+
+/* Loading / Error States */
+.qibla-loading,
+.qibla-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.qibla-spinner {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.qibla-retry-btn,
+.qibla-permission-btn {
+    padding: var(--space-md) var(--space-xl);
+    background: #c9a84c;
+    color: #1a1a2e;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    margin-top: var(--space-md);
+}
+
+/* Compass Container */
+.qibla-compass-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+}
+
+.qibla-compass {
+    position: relative;
+    width: 280px;
+    height: 280px;
+}
+
+.compass-ring {
+    position: absolute;
+    inset: 0;
+}
+
+/* Qibla Needle */
+.qibla-needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    transition: transform 0.3s ease-out;
+    color: #c9a84c;
+    margin-left: -20px;
+    margin-top: -60px;
+}
+
+.qibla-needle svg {
+    filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.6));
+}
+
+/* Center */
+.compass-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: rgba(201, 168, 76, 0.2);
+    border: 2px solid #c9a84c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c9a84c;
+}
+
+/* Info Section */
+.qibla-info {
+    display: flex;
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+}
+
+.qibla-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.qibla-stat-value {
+    font-size: var(--text-ui-xl);
+    font-weight: 700;
+    color: #c9a84c;
+}
+
+.qibla-stat-label {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+/* Instructions */
+.qibla-instructions {
+    margin-top: var(--space-xl);
+    padding: var(--space-md);
+    background: rgba(201, 168, 76, 0.1);
+    border-radius: var(--radius-md);
+    text-align: center;
+    max-width: 300px;
+}
+
+.qibla-instructions p {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+/* Kaaba Background Decoration */
+.qibla-kaaba-bg {
+    position: fixed;
+    bottom: -50px;
+    right: -50px;
+    font-size: 200px;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Glow effect around compass */
+.qibla-compass::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+}

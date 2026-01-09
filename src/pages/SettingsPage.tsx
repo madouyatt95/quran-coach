@@ -1,5 +1,6 @@
 import { useSettingsStore } from '../stores/settingsStore';
 import type { Theme, ArabicFontSize } from '../types';
+import { Stars } from 'lucide-react';
 import './SettingsPage.css';
 
 const RECITERS = [
@@ -25,6 +26,8 @@ export function SettingsPage() {
         setReciter,
         repeatCount,
         setRepeatCount,
+        starryMode,
+        setStarryMode,
     } = useSettingsStore();
 
     return (
@@ -50,6 +53,20 @@ export function SettingsPage() {
                             </button>
                         ))}
                     </div>
+                </div>
+
+                <div className="settings-item">
+                    <div className="settings-item__label">
+                        <Stars size={18} style={{ marginRight: 8, color: '#c9a84c' }} />
+                        <span className="settings-item__title">Mode Nuit Étoilée</span>
+                        <span className="settings-item__description">Fond animé avec étoiles scintillantes</span>
+                    </div>
+                    <button
+                        className={`toggle ${starryMode ? 'active' : ''}`}
+                        onClick={() => setStarryMode(!starryMode)}
+                    >
+                        <span className="toggle__knob" />
+                    </button>
                 </div>
             </section>
 
