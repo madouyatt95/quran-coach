@@ -174,13 +174,34 @@ export function PrayerTimesPage() {
     const getPrayersList = (): PrayerInfo[] => {
         if (!prayerTimes) return [];
 
+        // Calculate Islamic midnight (midpoint between Maghrib and Fajr)
+        const calculateIslamicMidnight = (): string => {
+            const [maghribH, maghribM] = prayerTimes.Maghrib.split(':').map(Number);
+            const [fajrH, fajrM] = prayerTimes.Fajr.split(':').map(Number);
+
+            const maghribMinutes = maghribH * 60 + maghribM;
+            const fajrMinutes = fajrH * 60 + fajrM;
+
+            // Night duration (Fajr is next day, so add 24h if needed)
+            const nightDuration = fajrMinutes < maghribMinutes
+                ? (24 * 60 - maghribMinutes) + fajrMinutes
+                : fajrMinutes - maghribMinutes;
+
+            // Islamic midnight = Maghrib + half of night duration
+            const midnightMinutes = (maghribMinutes + Math.floor(nightDuration / 2)) % (24 * 60);
+            const midnightH = Math.floor(midnightMinutes / 60);
+            const midnightM = midnightMinutes % 60;
+
+            return `${midnightH.toString().padStart(2, '0')}:${midnightM.toString().padStart(2, '0')}`;
+        };
+
         const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
         const endTimeMap: Record<string, string> = {
             Fajr: prayerTimes.Sunrise,
             Dhuhr: prayerTimes.Asr,
             Asr: prayerTimes.Maghrib,
             Maghrib: prayerTimes.Isha,
-            Isha: prayerTimes.Fajr, // Isha ends at Fajr (next day)
+            Isha: calculateIslamicMidnight(), // Islamic midnight (midpoint Maghrib-Fajr)
         };
 
         return prayers.map((prayer) => ({
