@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { X, Settings, BookHeart, Stars } from 'lucide-react';
+import { X, Settings, BookHeart, Stars, Building2 } from 'lucide-react';
 import './SideMenu.css';
 
 interface SideMenuProps {
@@ -11,6 +11,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     if (!isOpen) return null;
 
     const menuItems = [
+        { path: '/mosques', icon: Building2, label: 'Mosquées', color: '#26C6DA' },
         { path: '/adhkar', icon: BookHeart, label: 'Invocations', color: '#9C27B0' },
         { path: '/settings', icon: Settings, label: 'Réglages', color: '#888' },
     ];

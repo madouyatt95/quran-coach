@@ -9,6 +9,7 @@ import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PrayerTimesPage } from './pages/PrayerTimesPage';
 import { AdhkarPage } from './pages/AdhkarPage';
+import { MosquesPage } from './pages/MosquesPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -97,6 +98,7 @@ function AppContent() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/prayers" element={<PrayerTimesPage />} />
           <Route path="/adhkar" element={<AdhkarPage />} />
+          <Route path="/mosques" element={<MosquesPage />} />
         </Routes>
       </main>
       <BottomNav />
