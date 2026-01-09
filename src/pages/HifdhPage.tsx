@@ -101,6 +101,7 @@ export function HifdhPage() {
             );
             setAyahs(filtered);
             setCurrentAyahIndex(0);
+            setCurrentRepeat(1); // Reset repeat counter when changing verses
             setSelectionStart(null);
             setSelectionEnd(null);
         });

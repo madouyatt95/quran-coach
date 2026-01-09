@@ -1,5 +1,5 @@
 import { useSRSStore, QUALITY_LABELS } from '../../stores/srsStore';
-import { BookmarkPlus, Calendar, Star } from 'lucide-react';
+import { BookmarkPlus, Calendar, Star, Trash2 } from 'lucide-react';
 import './SRSControls.css';
 
 interface SRSControlsProps {
@@ -9,7 +9,7 @@ interface SRSControlsProps {
 }
 
 export function SRSControls({ surah, ayah, onReviewComplete }: SRSControlsProps) {
-    const { cards, addCard, reviewCard, getDueCards, isCardDue } = useSRSStore();
+    const { cards, addCard, reviewCard, removeCard, getDueCards, isCardDue } = useSRSStore();
 
     const cardId = `${surah}:${ayah}`;
     const card = cards[cardId];
@@ -23,6 +23,10 @@ export function SRSControls({ surah, ayah, onReviewComplete }: SRSControlsProps)
     const handleReview = (quality: number) => {
         reviewCard(cardId, quality);
         onReviewComplete?.();
+    };
+
+    const handleRemove = () => {
+        removeCard(cardId);
     };
 
     // Format next review date
@@ -76,15 +80,21 @@ export function SRSControls({ surah, ayah, onReviewComplete }: SRSControlsProps)
                     </div>
                 </div>
             ) : (
-                // In SRS but not due - show next review date
+                // In SRS but not due - show next review date with delete option
                 <div className="srs-status">
-                    <Star size={16} className="srs-status__icon" />
-                    <span>En mémorisation</span>
-                    <span className="srs-status__next">
-                        Prochaine révision: {formatNextReview(card.nextReviewDate)}
-                    </span>
+                    <div className="srs-status__info">
+                        <Star size={16} className="srs-status__icon" />
+                        <span>En mémorisation</span>
+                        <span className="srs-status__next">
+                            Prochaine révision: {formatNextReview(card.nextReviewDate)}
+                        </span>
+                    </div>
+                    <button className="srs-status__delete" onClick={handleRemove} title="Supprimer de la mémorisation">
+                        <Trash2 size={16} />
+                    </button>
                 </div>
             )}
         </div>
     );
 }
+

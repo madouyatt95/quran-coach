@@ -87,9 +87,17 @@
 .srs-status {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--space-sm);
     color: var(--color-text-secondary);
     font-size: var(--text-ui-sm);
+}
+
+.srs-status__info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex: 1;
 }
 
 .srs-status__icon {
@@ -100,4 +108,20 @@
     margin-left: auto;
     color: var(--color-text-muted);
     font-size: var(--text-ui-xs);
+}
+
+.srs-status__delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--color-text-muted);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.srs-status__delete:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
 }

@@ -1,6 +1,8 @@
 .hifdh-page {
-    padding: var(--space-md);
-    padding-bottom: calc(80px + var(--space-lg));
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+    padding: env(safe-area-inset-top) var(--space-md) calc(env(safe-area-inset-bottom) + 100px) var(--space-md);
 }
 
 .hifdh-page__header-row {
@@ -8,12 +10,17 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+    margin: calc(-1 * env(safe-area-inset-top)) calc(-1 * var(--space-md)) var(--space-lg);
+    padding-top: calc(env(safe-area-inset-top) + var(--space-md));
 }
 
 .hifdh-page__header {
     font-size: var(--text-ui-xl);
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: #c9a84c;
 }
 
 .hifdh-test-toggle {
@@ -38,17 +45,18 @@
 
 /* Selection Card */
 .hifdh-selection {
-    background: var(--color-bg-secondary);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-lg);
     padding: var(--space-md);
     margin-bottom: var(--space-md);
+    border-left: 4px solid #c9a84c;
 }
 
 .hifdh-selection__select {
     width: 100%;
     padding: var(--space-md);
-    background: var(--color-bg-tertiary);
-    border: none;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--text-ui-md);
@@ -210,12 +218,12 @@
 
 /* Main Card */
 .hifdh-main-card {
-    background: var(--color-bg-secondary);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-lg);
     padding: var(--space-xl);
     margin-bottom: var(--space-md);
     transition: all var(--transition-normal);
-    border: 1px solid var(--color-bg-tertiary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hifdh-main-card.test-active {
