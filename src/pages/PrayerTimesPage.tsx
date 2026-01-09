@@ -15,7 +15,8 @@ interface PrayerInfo {
     name: string;
     nameAr: string;
     icon: React.ReactNode;
-    time: string;
+    startTime: string;
+    endTime: string;
     color: string;
 }
 
@@ -173,11 +174,21 @@ export function PrayerTimesPage() {
     const getPrayersList = (): PrayerInfo[] => {
         if (!prayerTimes) return [];
 
-        return ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map((prayer) => ({
+        const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+        const endTimeMap: Record<string, string> = {
+            Fajr: prayerTimes.Sunrise,
+            Dhuhr: prayerTimes.Asr,
+            Asr: prayerTimes.Maghrib,
+            Maghrib: prayerTimes.Isha,
+            Isha: prayerTimes.Fajr, // Isha ends at Fajr (next day)
+        };
+
+        return prayers.map((prayer) => ({
             name: prayer,
             nameAr: PRAYER_NAMES_AR[prayer],
             icon: PRAYER_ICONS[prayer],
-            time: prayerTimes[prayer as keyof PrayerTimes],
+            startTime: prayerTimes[prayer as keyof PrayerTimes],
+            endTime: endTimeMap[prayer],
             color: PRAYER_COLORS[prayer],
         }));
     };
@@ -257,7 +268,8 @@ export function PrayerTimesPage() {
                                 <span className="prayer-time-name-ar">{prayer.nameAr}</span>
                             </div>
                             <div className="prayer-time-value">
-                                {prayer.time}
+                                <span className="prayer-start">{prayer.startTime}</span>
+                                <span className="prayer-end">→ {prayer.endTime}</span>
                             </div>
                         </div>
                     ))

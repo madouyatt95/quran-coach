@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane } from 'lucide-react';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -189,6 +189,57 @@ const ADHKAR_DATA: AdhkarCategory[] = [
                 translation: 'Sourate An-Nas - Dis: Je cherche refuge auprès du Seigneur des hommes.',
                 count: 3,
                 source: 'Abu Dawud, Tirmidhi'
+            },
+        ]
+    },
+    {
+        id: 'travel',
+        name: 'En Voyage',
+        nameAr: 'أذكار السفر',
+        icon: <Plane size={24} />,
+        color: '#26C6DA',
+        adhkar: [
+            {
+                id: 1,
+                arabic: 'اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَىٰ رَبِّنَا لَمُنْقَلِبُونَ',
+                translation: 'Allah est le Plus Grand (3x). Gloire à Celui qui a mis ceci à notre service alors que nous n\'étions pas capables de le dominer. Et c\'est vers notre Seigneur que nous retournerons.',
+                count: 1,
+                source: 'Muslim'
+            },
+            {
+                id: 2,
+                arabic: 'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَٰذَا الْبِرَّ وَالتَّقْوَىٰ، وَمِنَ الْعَمَلِ مَا تَرْضَىٰ',
+                translation: 'Ô Allah, nous Te demandons dans ce voyage la bonté et la piété, ainsi que les actions qui Te plaisent.',
+                count: 1,
+                source: 'Muslim'
+            },
+            {
+                id: 3,
+                arabic: 'اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَٰذَا وَاطْوِ عَنَّا بُعْدَهُ',
+                translation: 'Ô Allah, facilite-nous ce voyage et raccourcis-en la distance.',
+                count: 1,
+                source: 'Muslim'
+            },
+            {
+                id: 4,
+                arabic: 'اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ وَالْخَلِيفَةُ فِي الْأَهْلِ',
+                translation: 'Ô Allah, Tu es le Compagnon de voyage et le Protecteur de la famille.',
+                count: 1,
+                source: 'Muslim'
+            },
+            {
+                id: 5,
+                arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالْأَهْلِ',
+                translation: 'Ô Allah, je cherche refuge auprès de Toi contre les difficultés du voyage, la tristesse du retour, et le mauvais sort dans les biens et la famille.',
+                count: 1,
+                source: 'Muslim'
+            },
+            {
+                id: 6,
+                arabic: 'آيِبُونَ تَائِبُونَ عَابِدُونَ لِرَبِّنَا حَامِدُونَ',
+                translation: 'Nous voilà de retour, repentants, adorant et louant notre Seigneur. (À dire au retour)',
+                count: 1,
+                source: 'Muslim'
             },
         ]
     },

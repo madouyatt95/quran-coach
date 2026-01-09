@@ -196,11 +196,21 @@
 }
 
 .prayer-time-value {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 80px;
+}
+
+.prayer-start {
     font-size: var(--text-ui-lg);
     font-weight: 600;
     color: var(--color-text-primary);
-    min-width: 60px;
-    text-align: right;
+}
+
+.prayer-end {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
 }
 
 /* Error State */
