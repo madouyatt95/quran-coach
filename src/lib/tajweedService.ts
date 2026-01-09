@@ -143,3 +143,35 @@ export function getTajweedCategories() {
         }
     ];
 }
+
+// Cache for page Tajweed data
+const pageTajweedCache = new Map<number, TajweedVerse[]>();
+
+/**
+ * Fetch Tajweed text for a specific page from Quran.com API
+ */
+export async function fetchTajweedPage(pageNumber: number): Promise<TajweedVerse[]> {
+    // Check cache first
+    if (pageTajweedCache.has(pageNumber)) {
+        return pageTajweedCache.get(pageNumber)!;
+    }
+
+    try {
+        const response = await fetch(
+            `https://api.quran.com/api/v4/verses/by_page/${pageNumber}?words=false&fields=text_uthmani_tajweed`
+        );
+        const data = await response.json();
+
+        const verses: TajweedVerse[] = data.verses.map((v: any) => ({
+            verseKey: v.verse_key,
+            textTajweed: v.text_uthmani_tajweed,
+        }));
+
+        pageTajweedCache.set(pageNumber, verses);
+        return verses;
+    } catch (error) {
+        console.error('Failed to fetch Tajweed page:', error);
+        return [];
+    }
+}
+

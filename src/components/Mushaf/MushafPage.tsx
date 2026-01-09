@@ -1,13 +1,20 @@
 import { useEffect, useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, Settings2 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { fetchPage, fetchSurahs, fetchAyah } from '../../lib/quranApi';
-import { AyahDisplay } from './AyahDisplay';
+import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
+import { renderTajweedText } from '../../lib/tajweedParser';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+
+// Convert Western numbers to Arabic-Indic numerals
+function toArabicNumbers(num: number): string {
+    const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
+}
 
 export function MushafPage() {
     const {
@@ -24,16 +31,26 @@ export function MushafPage() {
         goToAyah
     } = useQuranStore();
 
-    const { arabicFontSize } = useSettingsStore();
+    const { arabicFontSize, tajwidLayers, toggleTajwidLayer } = useSettingsStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [tajweedVerses, setTajweedVerses] = useState<TajweedVerse[]>([]);
+    const [showTajweedPanel, setShowTajweedPanel] = useState(false);
+
+    const tajweedCategories = useMemo(() => getTajweedCategories(), []);
 
     // Current surah info for ayah count
     const currentSurahInfo = useMemo(() =>
         surahs.find(s => s.number === currentSurah),
         [surahs, currentSurah]
     );
+
+    // Get current page surah names
+    const pageSurahNames = useMemo(() => {
+        const surahNums = [...new Set(pageAyahs.map(a => a.surah))];
+        return surahNums.map(num => surahs.find(s => s.number === num)?.name || '').filter(Boolean);
+    }, [pageAyahs, surahs]);
 
     // Fetch surahs list on mount
     useEffect(() => {
@@ -44,14 +61,18 @@ export function MushafPage() {
         }
     }, [surahs.length, setSurahs]);
 
-    // Fetch page content
+    // Fetch page content and Tajweed
     useEffect(() => {
         setIsLoading(true);
         setError(null);
 
-        fetchPage(currentPage)
-            .then((ayahs) => {
+        Promise.all([
+            fetchPage(currentPage),
+            fetchTajweedPage(currentPage)
+        ])
+            .then(([ayahs, tajweed]) => {
                 setPageAyahs(ayahs);
+                setTajweedVerses(tajweed);
                 setIsLoading(false);
             })
             .catch(() => {
@@ -79,21 +100,26 @@ export function MushafPage() {
         const ayahNum = parseInt(e.target.value);
         if (ayahNum && currentSurah) {
             try {
-                // Fetch the ayah to get its page number
                 const ayahData = await fetchAyah(currentSurah, ayahNum);
                 goToAyah(currentSurah, ayahNum, ayahData.page);
             } catch {
-                // Fallback: just update the ayah without page navigation
                 goToAyah(currentSurah, ayahNum);
             }
         }
+    };
+
+    // Get Tajweed text for a verse
+    const getTajweedText = (verseKey: string): string | null => {
+        const verse = tajweedVerses.find(v => v.verseKey === verseKey);
+        return verse?.textTajweed || null;
     };
 
     if (isLoading) {
         return (
             <div className="mushaf-page">
                 <div className="mushaf-page__loading">
-                    <Loader2 size={32} className="animate-pulse" />
+                    <Loader2 size={32} className="animate-spin" />
+                    <p>تحميل...</p>
                 </div>
             </div>
         );
@@ -117,42 +143,108 @@ export function MushafPage() {
 
     return (
         <div className="mushaf-page" data-arabic-size={arabicFontSize}>
-            <div className="mushaf-page__content">
-                {Object.entries(groupedAyahs).map(([surahNum, ayahs]) => {
-                    const surahNumber = parseInt(surahNum);
-                    const surah = surahs.find(s => s.number === surahNumber);
-                    const isStartOfSurah = ayahs[0]?.numberInSurah === 1;
-                    const showBismillah = isStartOfSurah && surahNumber !== 1 && surahNumber !== 9;
-
-                    return (
-                        <div key={surahNum}>
-                            {isStartOfSurah && surah && (
-                                <div className="surah-header">
-                                    <span className="surah-header__name">{surah.name}</span>
-                                    <span className="surah-header__info">
-                                        {surah.englishName} • {surah.numberOfAyahs} versets
-                                    </span>
-                                </div>
-                            )}
-
-                            {showBismillah && (
-                                <div className="bismillah">{BISMILLAH}</div>
-                            )}
-
-                            <div className="arabic">
-                                {ayahs.map((ayah) => (
-                                    <AyahDisplay key={ayah.number} ayah={ayah} enableWordAudio={false} />
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
+            {/* Mushaf Frame Header */}
+            <div className="mushaf-frame-header">
+                <div className="mushaf-page-info">
+                    <span className="mushaf-surah-name">{pageSurahNames.join(' - ')}</span>
+                    <span className="mushaf-page-number">صفحة {toArabicNumbers(currentPage)}</span>
+                </div>
+                <button
+                    className="mushaf-tajweed-toggle"
+                    onClick={() => setShowTajweedPanel(!showTajweedPanel)}
+                >
+                    <Settings2 size={20} />
+                </button>
             </div>
 
-            <div className="page-nav">
-                <div className="page-nav__selectors">
+            {/* Tajweed Controls Panel */}
+            {showTajweedPanel && (
+                <div className="tajweed-panel">
+                    <div className="tajweed-panel-title">التجويد</div>
+                    <div className="tajweed-controls">
+                        {tajweedCategories.map(cat => (
+                            <button
+                                key={cat.id}
+                                className={`tajweed-control ${tajwidLayers.includes(cat.id) ? 'active' : ''}`}
+                                onClick={() => toggleTajwidLayer(cat.id)}
+                            >
+                                <span
+                                    className="tajweed-color-dot"
+                                    style={{ backgroundColor: tajwidLayers.includes(cat.id) ? cat.color : '#555' }}
+                                />
+                                <span className="tajweed-label">{cat.nameArabic}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Mushaf Content Frame */}
+            <div className="mushaf-frame">
+                <div className="mushaf-frame-corner mushaf-frame-corner--tl" />
+                <div className="mushaf-frame-corner mushaf-frame-corner--tr" />
+                <div className="mushaf-frame-corner mushaf-frame-corner--bl" />
+                <div className="mushaf-frame-corner mushaf-frame-corner--br" />
+
+                <div className="mushaf-content">
+                    {Object.entries(groupedAyahs).map(([surahNum, ayahs]) => {
+                        const surahNumber = parseInt(surahNum);
+                        const surah = surahs.find(s => s.number === surahNumber);
+                        const isStartOfSurah = ayahs[0]?.numberInSurah === 1;
+                        const showBismillah = isStartOfSurah && surahNumber !== 1 && surahNumber !== 9;
+
+                        return (
+                            <div key={surahNum} className="mushaf-surah-section">
+                                {isStartOfSurah && surah && (
+                                    <div className="mushaf-surah-header">
+                                        <div className="mushaf-surah-header-frame">
+                                            <span className="mushaf-surah-title">{surah.name}</span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {showBismillah && (
+                                    <div className="mushaf-bismillah">{BISMILLAH}</div>
+                                )}
+
+                                <div className="mushaf-ayahs">
+                                    {ayahs.map((ayah) => {
+                                        const verseKey = `${ayah.surah}:${ayah.numberInSurah}`;
+                                        const tajweedHtml = getTajweedText(verseKey);
+
+                                        return (
+                                            <span key={ayah.number} className="mushaf-ayah">
+                                                {tajweedHtml ? (
+                                                    <>
+                                                        {renderTajweedText(tajweedHtml, tajwidLayers)}
+                                                        <span className="mushaf-verse-number">
+                                                            ﴿{toArabicNumbers(ayah.numberInSurah)}﴾
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {ayah.text}
+                                                        <span className="mushaf-verse-number">
+                                                            ﴿{toArabicNumbers(ayah.numberInSurah)}﴾
+                                                        </span>
+                                                    </>
+                                                )}
+                                                {' '}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Page Navigation */}
+            <div className="mushaf-nav">
+                <div className="mushaf-nav-selectors">
                     <select
-                        className="page-nav__dropdown"
+                        className="mushaf-nav-dropdown"
                         value={currentSurah}
                         onChange={handleSurahChange}
                     >
@@ -164,7 +256,7 @@ export function MushafPage() {
                     </select>
 
                     <select
-                        className="page-nav__dropdown page-nav__dropdown--ayah"
+                        className="mushaf-nav-dropdown mushaf-nav-dropdown--ayah"
                         value={currentAyah}
                         onChange={handleAyahChange}
                     >
@@ -173,29 +265,29 @@ export function MushafPage() {
                             (_, i) => i + 1
                         ).map((ayahNum) => (
                             <option key={ayahNum} value={ayahNum}>
-                                Verset {ayahNum}
+                                آية {toArabicNumbers(ayahNum)}
                             </option>
                         ))}
                     </select>
                 </div>
 
-                <div className="page-nav__buttons">
+                <div className="mushaf-nav-buttons">
                     <button
-                        className="page-nav__btn"
-                        onClick={prevPage}
-                        disabled={currentPage <= 1}
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-
-                    <span className="page-nav__current">{currentPage}</span>
-
-                    <button
-                        className="page-nav__btn"
+                        className="mushaf-nav-btn"
                         onClick={nextPage}
                         disabled={currentPage >= 604}
                     >
-                        <ChevronRight size={20} />
+                        <ChevronLeft size={24} />
+                    </button>
+
+                    <span className="mushaf-nav-current">{toArabicNumbers(currentPage)}</span>
+
+                    <button
+                        className="mushaf-nav-btn"
+                        onClick={prevPage}
+                        disabled={currentPage <= 1}
+                    >
+                        <ChevronRight size={24} />
                     </button>
                 </div>
             </div>
