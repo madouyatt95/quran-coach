@@ -120,8 +120,8 @@
 
 .category-name {
     font-size: var(--text-ui-md);
-    font-weight: 500;
-    color: var(--color-text-primary);
+    font-weight: 600;
+    color: #c9a84c;
 }
 
 .category-name-ar {

@@ -117,7 +117,7 @@
 .next-prayer-name {
     font-size: var(--text-ui-lg);
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: #c9a84c;
 }
 
 .next-prayer-name-ar {
