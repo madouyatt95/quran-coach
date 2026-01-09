@@ -1,100 +1,211 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
     Mic,
     Square,
     ChevronLeft,
     ChevronRight,
     Volume2,
-    RotateCcw,
+    Eye,
+    EyeOff,
+    Crown,
+    Settings2,
     CheckCircle,
     XCircle,
-    Loader2,
-    Crown
+    RotateCcw
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore } from '../stores/settingsStore';
 import { usePremiumStore } from '../stores/premiumStore';
-import { fetchSurah, getAudioUrl } from '../lib/quranApi';
+import { fetchPage, fetchSurahs, getAudioUrl } from '../lib/quranApi';
+import { fetchTajweedPage, getTajweedCategories } from '../lib/tajweedService';
+import { speechRecognitionService, type WordState } from '../lib/speechRecognition';
 import { getSupportedMimeType } from '../lib/audioUnlock';
 import type { Ayah } from '../types';
 import './CoachPage.css';
 
-type CoachMode = 'intro' | 'selection' | 'active' | 'result';
+// Coach modes
+type CoachMode = 'intro' | 'recitation' | 'test' | 'result';
 
-interface TranscriptionResult {
-    transcribed: string;
-    accuracy: number;
-    correct: boolean;
-    matchedWords: string[];
-    missedWords: string[];
+// Word state for display
+interface WordDisplay {
+    text: string;
+    state: WordState;
+    ayahIndex: number;
+    wordIndex: number;
+}
+
+// Convert Western numbers to Arabic-Indic numerals
+function toArabicNumbers(num: number): string {
+    const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
 }
 
 export function CoachPage() {
-    const { surahs } = useQuranStore();
-    const { selectedReciter } = useSettingsStore();
+    const { currentPage, surahs, setSurahs, nextPage, prevPage, setPageAyahs, pageAyahs } = useQuranStore();
+    const { tajwidLayers, toggleTajwidLayer, selectedReciter } = useSettingsStore();
     const { isPremium, setPremium, checkPremium } = usePremiumStore();
 
     const [mode, setMode] = useState<CoachMode>('intro');
-    const [selectedSurah, setSelectedSurah] = useState(1);
-    const [ayahs, setAyahs] = useState<Ayah[]>([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    // Recording state
-    const [isRecording, setIsRecording] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
+    const [isListening, setIsListening] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showTajweedPanel, setShowTajweedPanel] = useState(false);
+    const [interimText, setInterimText] = useState('');
 
-    // MediaRecorder
-    const currentMimeTypeRef = useRef<string>('audio/webm');
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
+    // Word states for highlighting
+    const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
+
+    // Test mode: which words are hidden
+    const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
 
     // Result state
-    const [result, setResult] = useState<TranscriptionResult | null>(null);
+    const [correctCount, setCorrectCount] = useState(0);
+    const [totalWords, setTotalWords] = useState(0);
 
-    // Audio for playback help
+    // Audio for playback
     const audioRef = useRef<HTMLAudioElement | null>(null);
-
     if (!audioRef.current) {
         audioRef.current = new Audio();
     }
 
-    const currentSurah = surahs.find(s => s.number === selectedSurah);
-    const currentAyah = ayahs[currentIndex];
+    // Recording for Whisper validation
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
 
-    // Check premium status on mount
+    const tajweedCategories = useMemo(() => getTajweedCategories(), []);
+
+    // Get current page surah names
+    const pageSurahNames = useMemo(() => {
+        const surahNums = [...new Set(pageAyahs.map(a => a.surah))];
+        return surahNums.map(num => surahs.find(s => s.number === num)?.name || '').filter(Boolean);
+    }, [pageAyahs, surahs]);
+
+    // Get all words from page
+    const allWords = useMemo(() => {
+        const words: WordDisplay[] = [];
+        pageAyahs.forEach((ayah, ayahIndex) => {
+            const ayahWords = ayah.text.split(/\s+/).filter(w => w.length > 0);
+            ayahWords.forEach((word, wordIndex) => {
+                const key = `${ayahIndex}-${wordIndex}`;
+                words.push({
+                    text: word,
+                    state: wordStates.get(key) || 'pending',
+                    ayahIndex,
+                    wordIndex
+                });
+            });
+        });
+        return words;
+    }, [pageAyahs, wordStates]);
+
+    // Check premium on mount
     useEffect(() => {
         checkPremium();
     }, [checkPremium]);
 
-    // Load surah when selected
+    // Fetch surahs on mount
+    useEffect(() => {
+        if (surahs.length === 0) {
+            fetchSurahs().then(setSurahs).catch(() => { });
+        }
+    }, [surahs.length, setSurahs]);
+
+    // Fetch page content
     useEffect(() => {
         if (mode !== 'intro') {
-            fetchSurah(selectedSurah).then(({ ayahs: surahAyahs }) => {
-                setAyahs(surahAyahs);
-            });
+            Promise.all([fetchPage(currentPage), fetchTajweedPage(currentPage)])
+                .then(([ayahs]) => {
+                    setPageAyahs(ayahs);
+                    resetWordStates();
+                })
+                .catch(() => setError('Impossible de charger la page'));
         }
-    }, [selectedSurah, mode]);
+    }, [currentPage, mode, setPageAyahs]);
 
-    // Activate premium (for demo - in production use payment system)
-    const activatePremium = () => {
-        // Set premium for 30 days
-        const until = new Date();
-        until.setDate(until.getDate() + 30);
-        setPremium(true, until.toISOString());
+    // Reset word states
+    const resetWordStates = () => {
+        setWordStates(new Map());
+        setHiddenWords(new Set());
+        setCorrectCount(0);
+        setTotalWords(0);
     };
 
-    // Start recording
-    const startRecording = async () => {
+    // Initialize test mode (hide random words)
+    const initTestMode = () => {
+        const hidden = new Set<string>();
+        allWords.forEach((word) => {
+            // Hide ~50% of words randomly
+            if (Math.random() > 0.5) {
+                hidden.add(`${word.ayahIndex}-${word.wordIndex}`);
+            }
+        });
+        setHiddenWords(hidden);
+        setTotalWords(hidden.size);
+    };
+
+    // Start real-time recognition
+    const startListening = () => {
         if (!isPremium) return;
 
-        setError(null);
+        const expectedText = pageAyahs.map(a => a.text).join(' ');
+
+        const success = speechRecognitionService.start(expectedText, {
+            onWordMatch: (wordIndex, isCorrect) => {
+                const word = allWords[wordIndex];
+                if (!word) return;
+
+                const key = `${word.ayahIndex}-${word.wordIndex}`;
+                setWordStates(prev => {
+                    const newStates = new Map(prev);
+                    newStates.set(key, isCorrect ? 'correct' : 'error');
+                    return newStates;
+                });
+
+                // In test mode, reveal hidden word
+                if (mode === 'test' && hiddenWords.has(key)) {
+                    if (isCorrect) {
+                        setCorrectCount(prev => prev + 1);
+                    }
+                    setHiddenWords(prev => {
+                        const newHidden = new Set(prev);
+                        newHidden.delete(key);
+                        return newHidden;
+                    });
+                }
+            },
+            onInterimResult: (text) => {
+                setInterimText(text);
+            },
+            onError: (error) => {
+                console.error('Speech recognition error:', error);
+                // Fallback to Whisper if Web Speech fails
+                if (isPremium && error !== 'no-speech') {
+                    startWhisperRecording();
+                }
+            },
+            onEnd: () => {
+                setIsListening(false);
+                // Check if we should go to result
+                if (mode === 'test' && hiddenWords.size === 0) {
+                    setMode('result');
+                }
+            }
+        });
+
+        if (success) {
+            setIsListening(true);
+            // Also start recording for Whisper backup
+            startWhisperRecording();
+        } else {
+            // Fallback to Whisper-only
+            startWhisperRecording();
+        }
+    };
+
+    // Start Whisper recording (backup)
+    const startWhisperRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
             const mimeType = getSupportedMimeType();
-            currentMimeTypeRef.current = mimeType;
-
             const mediaRecorder = new MediaRecorder(stream, { mimeType });
             audioChunksRef.current = [];
 
@@ -104,191 +215,85 @@ export function CoachPage() {
                 }
             };
 
-            mediaRecorder.onstop = async () => {
-                stream.getTracks().forEach(track => track.stop());
-                await processAudio();
-            };
-
             mediaRecorderRef.current = mediaRecorder;
             mediaRecorder.start();
-            setIsRecording(true);
+            setIsListening(true);
         } catch (err) {
             console.error('Microphone error:', err);
-            setError("Impossible d'accéder au microphone: " + (err instanceof Error ? err.message : 'Accès refusé'));
+            setError("Impossible d'accéder au microphone");
         }
     };
 
-    // Stop recording
-    const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
+    // Stop listening
+    const stopListening = async () => {
+        speechRecognitionService.stop();
+
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
             mediaRecorderRef.current.stop();
-            setIsRecording(false);
+            mediaRecorderRef.current.stream.getTracks().forEach(t => t.stop());
         }
-    };
 
-    // Process audio with API
-    const processAudio = async () => {
-        if (audioChunksRef.current.length === 0) return;
+        setIsListening(false);
 
-        setIsProcessing(true);
-        setError(null);
-
-        try {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-
-            // Convert to base64
-            const reader = new FileReader();
-            const base64Audio = await new Promise<string>((resolve, reject) => {
-                reader.onload = () => {
-                    const result = reader.result as string;
-                    resolve(result.split(',')[1]); // Remove data URL prefix
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(audioBlob);
-            });
-
-            // Call API
-            const response = await fetch('/api/transcribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    audio: base64Audio,
-                    expectedText: currentAyah?.text,
-                    mimeType: currentMimeTypeRef.current
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Transcription failed');
-            }
-
-            const data = await response.json();
-
-            const resultData = {
-                transcribed: data.transcribed,
-                accuracy: data.comparison?.accuracy || 0,
-                correct: data.comparison?.correct || false,
-                matchedWords: data.comparison?.matchedWords || [],
-                missedWords: data.comparison?.missedWords || [],
-            };
-
-            setResult(resultData);
-
-            // Vibrate on error (if accuracy < 80%)
-            if (!resultData.correct && resultData.accuracy < 80) {
-                if ('vibrate' in navigator) {
-                    navigator.vibrate([200, 100, 200]); // Vibrate pattern
-                }
-            }
-
+        // In test mode, show result when done
+        if (mode === 'test') {
             setMode('result');
-        } catch (err) {
-            console.error('API error:', err);
-            setError("Erreur de transcription: " + (err as Error).message);
-        } finally {
-            setIsProcessing(false);
         }
     };
 
-    // Play current ayah audio
-    const playAyah = async () => {
-        if (currentAyah && audioRef.current) {
-
-            audioRef.current.src = getAudioUrl(selectedReciter, currentAyah.number);
-            audioRef.current.play().catch(err => {
-                console.error("Playback failed:", err);
-                setError("Échec de la lecture. Tapez à nouveau.");
-            });
+    // Play ayah audio
+    const playAyah = (ayah: Ayah) => {
+        if (audioRef.current) {
+            audioRef.current.src = getAudioUrl(selectedReciter, ayah.number);
+            audioRef.current.play().catch(() => { });
         }
     };
 
-    // Navigation
-    const goNext = () => {
-        if (currentIndex < ayahs.length - 1) {
-            setCurrentIndex(prev => prev + 1);
-            setResult(null);
-            setMode('active');
-        }
+    // Activate premium (demo)
+    const activatePremium = () => {
+        const until = new Date();
+        setPremium(true, until.toISOString());
     };
 
-    const goPrev = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(prev => prev - 1);
-            setResult(null);
-            setMode('active');
-        }
-    };
-
-    const retry = () => {
-        setResult(null);
-        setError(null);
-        setMode('active');
-    };
-
-    // Render highlighted text
-    const renderHighlightedText = useCallback(() => {
-        if (!currentAyah || !result) return null;
-
-        const words = currentAyah.text.split(' ');
-        const normalizedMatched = result.matchedWords.map(w =>
-            w.replace(/[\u064B-\u0652\u0670]/g, '')
-        );
-
-        return (
-            <div className="coach-result__text" dir="rtl">
-                {words.map((word, index) => {
-                    const normalized = word.replace(/[\u064B-\u0652\u0670]/g, '');
-                    const isMatched = normalizedMatched.includes(normalized);
-                    return (
-                        <span
-                            key={index}
-                            className={`coach-word ${isMatched ? 'correct' : 'incorrect'}`}
-                        >
-                            {word}{' '}
-                        </span>
-                    );
-                })}
-            </div>
-        );
-    }, [currentAyah, result]);
-
-    // Intro Screen
+    // Intro screen
     if (mode === 'intro') {
         return (
             <div className="coach-page">
-                <div className="coach-page__header">
-                    <h1 className="coach-page__title">Coach de Récitation</h1>
-                    {isPremium && <Crown className="coach-premium-badge" size={20} />}
-                </div>
-
                 <div className="coach-intro">
                     <div className="coach-intro__icon">
-                        <Mic size={36} />
+                        <Mic size={48} />
                     </div>
-                    <h2 className="coach-intro__title">Correction IA avancée</h2>
-                    <p className="coach-intro__description">
-                        Récitez un verset et notre IA analysera votre prononciation avec précision.
-                        Les mots corrects seront surlignés en vert, les erreurs en rouge.
+                    <h1 className="coach-intro__title">Coach de Récitation IA</h1>
+                    <p className="coach-intro__desc">
+                        Récitez page par page avec feedback temps réel.<br />
+                        Les mots s'illuminent au fur et à mesure.
                     </p>
 
                     {isPremium ? (
-                        <button className="coach-intro__btn" onClick={() => setMode('selection')}>
-                            Commencer une session
-                        </button>
+                        <div className="coach-intro__modes">
+                            <button
+                                className="coach-mode-btn"
+                                onClick={() => { setMode('recitation'); }}
+                            >
+                                <Mic size={24} />
+                                <span>Récitation libre</span>
+                                <small>Feedback en temps réel</small>
+                            </button>
+                            <button
+                                className="coach-mode-btn coach-mode-btn--test"
+                                onClick={() => { setMode('test'); initTestMode(); }}
+                            >
+                                <EyeOff size={24} />
+                                <span>Mode Test</span>
+                                <small>Mots cachés à révéler</small>
+                            </button>
+                        </div>
                     ) : (
                         <div className="coach-premium-cta">
-                            <div className="coach-premium-badge-large">
-                                <Crown size={24} />
-                                <span>Fonctionnalité Premium</span>
-                            </div>
-                            <p className="coach-premium-desc">
-                                Accédez à la correction IA avec Whisper d'OpenAI pour une transcription
-                                précise de votre récitation en arabe.
-                            </p>
-                            <button className="coach-intro__btn coach-intro__btn--premium" onClick={activatePremium}>
-                                <Crown size={20} />
-                                Activer Premium (Test 30 jours)
+                            <Crown size={24} />
+                            <p>Fonctionnalité Premium</p>
+                            <button onClick={activatePremium}>
+                                Activer Premium (Test 30j)
                             </button>
                         </div>
                     )}
@@ -297,79 +302,32 @@ export function CoachPage() {
         );
     }
 
-    // Selection Screen
-    if (mode === 'selection') {
+    // Result screen
+    if (mode === 'result') {
+        const accuracy = totalWords > 0 ? Math.round((correctCount / totalWords) * 100) : 0;
+
         return (
             <div className="coach-page">
-                <div className="coach-page__header">
-                    <h1 className="coach-page__title">Sélection de sourate</h1>
-                </div>
-
-                <div className="coach-selection">
-                    <select
-                        className="coach-selection__select"
-                        value={selectedSurah}
-                        onChange={(e) => {
-                            setSelectedSurah(parseInt(e.target.value));
-                            setCurrentIndex(0);
-                        }}
-                    >
-                        {surahs.map((s) => (
-                            <option key={s.number} value={s.number}>
-                                {s.number}. {s.name} - {s.englishName}
-                            </option>
-                        ))}
-                    </select>
-
-                    <button className="coach-intro__btn" onClick={() => setMode('active')}>
-                        <Mic size={20} />
-                        Démarrer le coaching
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    // Result Screen
-    if (mode === 'result' && result) {
-        return (
-            <div className="coach-page">
-                <div className="coach-page__header">
-                    <h1 className="coach-page__title">Résultat</h1>
-                </div>
-
                 <div className="coach-result">
-                    <div className={`coach-result__score ${result.accuracy >= 80 ? 'good' : result.accuracy >= 50 ? 'medium' : 'bad'}`}>
-                        {result.correct ? (
-                            <CheckCircle size={48} />
-                        ) : (
-                            <XCircle size={48} />
-                        )}
-                        <span className="coach-result__percent">{result.accuracy}%</span>
+                    <div className={`coach-result__score ${accuracy >= 80 ? 'good' : accuracy >= 50 ? 'medium' : 'bad'}`}>
+                        {accuracy >= 80 ? <CheckCircle size={48} /> : <XCircle size={48} />}
+                        <span className="coach-result__percent">{accuracy}%</span>
                         <span className="coach-result__label">
-                            {result.accuracy >= 80 ? 'Excellent!' : result.accuracy >= 50 ? 'Peut mieux faire' : 'À réviser'}
+                            {accuracy >= 80 ? 'Excellent!' : accuracy >= 50 ? 'Peut mieux faire' : 'À réviser'}
                         </span>
                     </div>
 
-                    {renderHighlightedText()}
-
-                    <div className="coach-result__transcribed">
-                        <h4>Votre récitation :</h4>
-                        <p dir="rtl">{result.transcribed || '(aucun son détecté)'}</p>
-                    </div>
+                    <p className="coach-result__detail">
+                        {correctCount} / {totalWords} mots corrects
+                    </p>
 
                     <div className="coach-result__actions">
-                        <button className="coach-btn coach-btn--primary" onClick={retry}>
+                        <button onClick={() => { resetWordStates(); setMode('test'); initTestMode(); }}>
                             <RotateCcw size={20} />
-                            Réessayer
+                            Recommencer
                         </button>
-                        <button className="coach-btn" onClick={playAyah}>
-                            <Volume2 size={20} />
-                            Écouter
-                        </button>
-                        <button className="coach-btn coach-btn--outline" onClick={goNext} disabled={currentIndex >= ayahs.length - 1}>
-                            Suivant
-                            <ChevronRight size={20} />
+                        <button onClick={() => setMode('intro')}>
+                            Retour
                         </button>
                     </div>
                 </div>
@@ -377,64 +335,115 @@ export function CoachPage() {
         );
     }
 
-    // Active Session
+    // Active mode (recitation or test)
     return (
-        <div className="coach-page">
-            <div className="coach-page__header">
-                <h1 className="coach-page__title">{currentSurah?.name}</h1>
-                <span className="coach-page__progress">
-                    Verset {currentIndex + 1} / {ayahs.length}
-                </span>
+        <div className="coach-page coach-page--active">
+            {/* Header */}
+            <div className="coach-header">
+                <div className="coach-header__info">
+                    <span className="coach-surah-name">{pageSurahNames.join(' - ')}</span>
+                    <span className="coach-page-number">صفحة {toArabicNumbers(currentPage)}</span>
+                </div>
+                <div className="coach-header__mode">
+                    {mode === 'test' ? <EyeOff size={16} /> : <Eye size={16} />}
+                    <span>{mode === 'test' ? 'Mode Test' : 'Récitation'}</span>
+                </div>
+                <button onClick={() => setShowTajweedPanel(!showTajweedPanel)}>
+                    <Settings2 size={20} />
+                </button>
             </div>
 
-            {/* Current Ayah */}
-            {currentAyah && (
-                <div className="coach-ayah">
-                    <p className="coach-ayah__text" dir="rtl">
-                        {currentAyah.text}
-                    </p>
-                    <button className="coach-ayah__play" onClick={playAyah}>
-                        <Volume2 size={20} />
-                        Écouter
-                    </button>
+            {/* Tajweed Panel */}
+            {showTajweedPanel && (
+                <div className="coach-tajweed-panel">
+                    {tajweedCategories.map(cat => (
+                        <button
+                            key={cat.id}
+                            className={`coach-tajweed-btn ${tajwidLayers.includes(cat.id) ? 'active' : ''}`}
+                            onClick={() => toggleTajwidLayer(cat.id)}
+                        >
+                            <span style={{ backgroundColor: tajwidLayers.includes(cat.id) ? cat.color : '#555' }} />
+                            {cat.nameArabic}
+                        </button>
+                    ))}
                 </div>
             )}
 
-            {/* Recording Controls */}
-            <div className="coach-controls">
-                {isProcessing ? (
-                    <div className="coach-processing">
-                        <Loader2 size={32} className="coach-loading__spinner" />
-                        <span>Analyse IA en cours...</span>
-                    </div>
-                ) : isRecording ? (
-                    <button className="coach-record coach-record--active" onClick={stopRecording}>
-                        <Square size={32} />
-                        <span>Arrêter l'enregistrement</span>
-                    </button>
-                ) : (
-                    <button className="coach-record" onClick={startRecording}>
-                        <Mic size={32} />
-                        <span>Réciter ce verset</span>
-                    </button>
-                )}
+            {/* Mushaf Content */}
+            <div className="coach-mushaf">
+                <div className="coach-mushaf-content">
+                    {pageAyahs.map((ayah, ayahIndex) => (
+                        <div key={ayah.number} className="coach-ayah">
+                            {ayah.text.split(/\s+/).map((word, wordIndex) => {
+                                const key = `${ayahIndex}-${wordIndex}`;
+                                const isHidden = mode === 'test' && hiddenWords.has(key);
+                                const state = wordStates.get(key) || 'pending';
+
+                                return (
+                                    <span
+                                        key={key}
+                                        className={`coach-word ${isHidden ? 'coach-word--hidden' : ''} coach-word--${state}`}
+                                    >
+                                        {isHidden ? '████' : word}
+                                    </span>
+                                );
+                            })}
+                            <span className="coach-verse-num">﴿{toArabicNumbers(ayah.numberInSurah)}﴾</span>
+                            <button className="coach-play-btn" onClick={() => playAyah(ayah)}>
+                                <Volume2 size={14} />
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            {/* Navigation */}
-            <div className="coach-nav">
-                <button className="coach-nav__btn" onClick={goPrev} disabled={currentIndex === 0}>
+            {/* Interim transcript */}
+            {interimText && (
+                <div className="coach-interim">
+                    <p dir="rtl">{interimText}</p>
+                </div>
+            )}
+
+            {/* Controls */}
+            <div className="coach-controls">
+                <button
+                    className="coach-nav-btn"
+                    onClick={nextPage}
+                    disabled={currentPage >= 604}
+                >
                     <ChevronLeft size={24} />
-                    Précédent
                 </button>
-                <button className="coach-nav__btn" onClick={goNext} disabled={currentIndex >= ayahs.length - 1}>
-                    Suivant
+
+                <button
+                    className={`coach-mic-btn ${isListening ? 'coach-mic-btn--active' : ''}`}
+                    onClick={isListening ? stopListening : startListening}
+                >
+                    {isListening ? <Square size={32} /> : <Mic size={32} />}
+                </button>
+
+                <button
+                    className="coach-nav-btn"
+                    onClick={prevPage}
+                    disabled={currentPage <= 1}
+                >
                     <ChevronRight size={24} />
                 </button>
             </div>
 
-            {error && (
-                <div className="coach-error">{error}</div>
+            {/* Progress */}
+            {mode === 'test' && (
+                <div className="coach-progress">
+                    <div className="coach-progress-bar">
+                        <div
+                            className="coach-progress-fill"
+                            style={{ width: `${((totalWords - hiddenWords.size) / totalWords) * 100}%` }}
+                        />
+                    </div>
+                    <span>{totalWords - hiddenWords.size} / {totalWords}</span>
+                </div>
             )}
+
+            {error && <div className="coach-error">{error}</div>}
         </div>
     );
 }
