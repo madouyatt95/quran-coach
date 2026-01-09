@@ -7,10 +7,6 @@ import { CoachPage } from './pages/CoachPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
-import { Mushaf3DPage } from './pages/Mushaf3DPage';
-import { QuranMapPage } from './pages/QuranMapPage';
-import { MemoryTreePage } from './pages/MemoryTreePage';
-import { QiblaARPage } from './pages/QiblaARPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -92,10 +88,6 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<ReadPage />} />
           <Route path="/read" element={<ReadPage />} />
-          <Route path="/mushaf3d" element={<Mushaf3DPage />} />
-          <Route path="/map" element={<QuranMapPage />} />
-          <Route path="/tree" element={<MemoryTreePage />} />
-          <Route path="/qibla" element={<QiblaARPage />} />
           <Route path="/hifdh" element={<HifdhPage />} />
           <Route path="/coach" element={<CoachPage />} />
           <Route path="/stats" element={<ProgressPage />} />
