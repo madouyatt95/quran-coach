@@ -3,7 +3,7 @@ import { useEffect, useCallback, useRef } from 'react';
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { HifdhPage } from './pages/HifdhPage';
-import { CoachPage } from './pages/CoachPage';
+import { ChallengesPage } from './pages/ChallengesPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -92,7 +92,7 @@ function AppContent() {
           <Route path="/" element={<ReadPage />} />
           <Route path="/read" element={<ReadPage />} />
           <Route path="/hifdh" element={<HifdhPage />} />
-          <Route path="/coach" element={<CoachPage />} />
+          <Route path="/challenges" element={<ChallengesPage />} />
           <Route path="/stats" element={<ProgressPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/settings" element={<SettingsPage />} />

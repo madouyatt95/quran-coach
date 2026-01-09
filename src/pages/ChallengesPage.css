@@ -1,0 +1,333 @@
+/* ========================================
+   Challenges Page
+   ======================================== */
+
+.challenges-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 100px) env(safe-area-inset-left);
+}
+
+/* Header */
+.challenges-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.challenges-back {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c9a84c;
+}
+
+.challenges-header h1 {
+    font-size: var(--text-ui-lg);
+    color: #c9a84c;
+    font-weight: 600;
+}
+
+/* Sections */
+.challenges-section {
+    padding: var(--space-md);
+}
+
+.challenges-section h2 {
+    font-size: var(--text-ui-md);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.challenges-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.challenges-toggle {
+    font-size: var(--text-ui-sm);
+    color: #c9a84c;
+}
+
+/* Empty State */
+.challenges-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-xl);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.challenges-empty p {
+    color: var(--color-text-muted);
+}
+
+.challenges-empty button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-lg);
+    background: #c9a84c;
+    color: #1a1a2e;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+}
+
+/* Challenge Card */
+.challenges-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.challenge-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid;
+    padding: var(--space-md);
+}
+
+.challenge-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.challenge-icon {
+    font-size: 1.5rem;
+}
+
+.challenge-info {
+    flex: 1;
+}
+
+.challenge-info h3 {
+    font-size: var(--text-ui-md);
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.challenge-arabic {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+.challenge-delete {
+    color: var(--color-text-muted);
+    padding: var(--space-xs);
+}
+
+/* Progress Bar */
+.challenge-progress {
+    margin-bottom: var(--space-sm);
+}
+
+.challenge-progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.challenge-progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.challenge-progress-text {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+/* Today's Reading */
+.challenge-today {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: rgba(201, 168, 76, 0.1);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-ui-sm);
+    color: #c9a84c;
+}
+
+/* Action Buttons */
+.challenge-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.challenge-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--text-ui-sm);
+    font-weight: 500;
+}
+
+.challenge-btn--done {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+}
+
+.challenge-btn--read {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+}
+
+.challenge-btn--complete {
+    color: white;
+}
+
+.challenge-next-day {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+/* Templates Grid */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+}
+
+.template-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    position: relative;
+}
+
+.template-card.active {
+    opacity: 0.5;
+}
+
+.template-icon {
+    font-size: 1.75rem;
+}
+
+.template-name {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-primary);
+    font-weight: 500;
+}
+
+.template-arabic {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+}
+
+.template-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 6px;
+    background: rgba(76, 175, 80, 0.3);
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    color: #4caf50;
+}
+
+/* Template Modal */
+.template-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    z-index: 100;
+}
+
+.template-modal {
+    background: #1a1a2e;
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+}
+
+.template-modal-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: var(--space-md);
+}
+
+.template-modal h3 {
+    font-size: var(--text-ui-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.template-modal-arabic {
+    font-family: var(--font-arabic);
+    font-size: var(--text-ui-md);
+    color: #c9a84c;
+    margin-bottom: var(--space-md);
+}
+
+.template-modal-desc {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.template-modal-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-lg);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+}
+
+.template-modal-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.template-modal-cancel {
+    flex: 1;
+    padding: var(--space-sm);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    color: var(--color-text-primary);
+}
+
+.template-modal-start {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm);
+    border-radius: var(--radius-full);
+    color: white;
+    font-weight: 600;
+}

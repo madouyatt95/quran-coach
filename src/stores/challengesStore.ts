@@ -44,16 +44,130 @@ export interface DailyChallenge {
     completed: boolean;
 }
 
+// Reading Challenge Template
+export interface ReadingChallengeTemplate {
+    id: string;
+    name: string;
+    nameArabic: string;
+    description: string;
+    icon: string;
+    color: string;
+    type: 'khatm' | 'surah' | 'verse';
+    target: number; // Pages for khatm, surah number for surah
+    frequency: 'daily' | 'weekly' | 'after_prayer';
+    frequencyDay?: number; // 0=Sunday, 5=Friday
+    duration: number; // Days (0 = ongoing)
+}
+
+// Active Reading Challenge
+export interface ActiveReadingChallenge {
+    id: string;
+    templateId: string;
+    name: string;
+    nameArabic: string;
+    icon: string;
+    color: string;
+    type: 'khatm' | 'surah' | 'verse';
+    target: number;
+    frequency: 'daily' | 'weekly' | 'after_prayer';
+    frequencyDay?: number;
+    duration: number;
+    startDate: string;
+    progress: number;
+    completedDates: string[];
+    isActive: boolean;
+}
+
+// Pre-defined reading challenge templates
+export const READING_TEMPLATES: ReadingChallengeTemplate[] = [
+    {
+        id: 'khatm-ramadan',
+        name: 'Khatm Ramadan',
+        nameArabic: 'ختم رمضان',
+        description: 'Terminer le Coran en 30 jours (~20 pages/jour)',
+        icon: '🌙',
+        color: '#9C27B0',
+        type: 'khatm',
+        target: 604,
+        frequency: 'daily',
+        duration: 30
+    },
+    {
+        id: 'alkahf-friday',
+        name: 'Al-Kahf Vendredi',
+        nameArabic: 'الكهف الجمعة',
+        description: 'Lire Sourate Al-Kahf chaque vendredi',
+        icon: '📖',
+        color: '#2196F3',
+        type: 'surah',
+        target: 18,
+        frequency: 'weekly',
+        frequencyDay: 5,
+        duration: 0
+    },
+    {
+        id: 'almulk-night',
+        name: 'Al-Mulk Nuit',
+        nameArabic: 'الملك قبل النوم',
+        description: 'Lire Sourate Al-Mulk chaque soir',
+        icon: '🌃',
+        color: '#3F51B5',
+        type: 'surah',
+        target: 67,
+        frequency: 'daily',
+        duration: 0
+    },
+    {
+        id: 'ayat-kursi',
+        name: 'Ayat al-Kursi',
+        nameArabic: 'آية الكرسي',
+        description: 'Lire après chaque prière',
+        icon: '🛡️',
+        color: '#4CAF50',
+        type: 'verse',
+        target: 255,
+        frequency: 'after_prayer',
+        duration: 0
+    },
+    {
+        id: '3-qul',
+        name: 'Les 3 Qul',
+        nameArabic: 'المعوذات',
+        description: 'Sourates 112-114 matin et soir',
+        icon: '🤲',
+        color: '#FF9800',
+        type: 'surah',
+        target: 112,
+        frequency: 'daily',
+        duration: 0
+    },
+    {
+        id: 'yasin-morning',
+        name: 'Yasin Matin',
+        nameArabic: 'يس صباحاً',
+        description: 'Sourate Yasin chaque matin',
+        icon: '🌅',
+        color: '#E91E63',
+        type: 'surah',
+        target: 36,
+        frequency: 'daily',
+        duration: 0
+    }
+];
+
 export interface ChallengesState {
     // Daily challenges
     dailyChallenges: DailyChallenge[];
     lastChallengeDate: string;
 
+    // Reading challenges (new)
+    activeReadingChallenges: ActiveReadingChallenge[];
+
     // Badges
     unlockedBadges: string[];
 
     // Khatma progress
-    khatmaPages: number[]; // Array of page numbers that have been read
+    khatmaPages: number[];
 
     // Ayah of the day
     ayahOfTheDay: { surah: number; ayah: number } | null;
@@ -67,6 +181,12 @@ export interface ChallengesState {
     checkBadges: (streak: number, totalPages: number) => void;
     markPageRead: (pageNumber: number) => void;
     generateAyahOfTheDay: () => void;
+
+    // Reading challenge actions (new)
+    startReadingChallenge: (template: ReadingChallengeTemplate, customName?: string) => void;
+    markReadingChallengeComplete: (challengeId: string) => void;
+    removeReadingChallenge: (challengeId: string) => void;
+    getTodayReading: (challengeId: string) => { start: number; end: number } | null;
 }
 
 const getTodayDate = () => new Date().toISOString().split('T')[0];
@@ -98,6 +218,7 @@ export const useChallengesStore = create<ChallengesState>()(
         (set, get) => ({
             dailyChallenges: [],
             lastChallengeDate: '',
+            activeReadingChallenges: [],
             unlockedBadges: [],
             khatmaPages: [],
             ayahOfTheDay: null,
@@ -186,13 +307,11 @@ export const useChallengesStore = create<ChallengesState>()(
                 const state = get();
                 const toUnlock: string[] = [];
 
-                // Check streak badges
                 if (streak >= 3 && !state.unlockedBadges.includes('streak_3')) toUnlock.push('streak_3');
                 if (streak >= 7 && !state.unlockedBadges.includes('streak_7')) toUnlock.push('streak_7');
                 if (streak >= 30 && !state.unlockedBadges.includes('streak_30')) toUnlock.push('streak_30');
                 if (streak >= 100 && !state.unlockedBadges.includes('streak_100')) toUnlock.push('streak_100');
 
-                // Check pages badges
                 if (totalPages >= 10 && !state.unlockedBadges.includes('pages_10')) toUnlock.push('pages_10');
                 if (totalPages >= 100 && !state.unlockedBadges.includes('pages_100')) toUnlock.push('pages_100');
                 if (totalPages >= 604 && !state.unlockedBadges.includes('pages_604')) toUnlock.push('pages_604');
@@ -215,6 +334,71 @@ export const useChallengesStore = create<ChallengesState>()(
 
                 const ayah = getAyahForDate(today);
                 set({ ayahOfTheDay: ayah, lastAyahDate: today });
+            },
+
+            // Reading Challenge Actions
+            startReadingChallenge: (template, customName) => {
+                const newChallenge: ActiveReadingChallenge = {
+                    id: `${template.id}-${Date.now()}`,
+                    templateId: template.id,
+                    name: customName || template.name,
+                    nameArabic: template.nameArabic,
+                    icon: template.icon,
+                    color: template.color,
+                    type: template.type,
+                    target: template.target,
+                    frequency: template.frequency,
+                    frequencyDay: template.frequencyDay,
+                    duration: template.duration,
+                    startDate: getTodayDate(),
+                    progress: 0,
+                    completedDates: [],
+                    isActive: true
+                };
+
+                set(state => ({
+                    activeReadingChallenges: [...state.activeReadingChallenges, newChallenge]
+                }));
+            },
+
+            markReadingChallengeComplete: (challengeId) => {
+                const today = getTodayDate();
+
+                set(state => ({
+                    activeReadingChallenges: state.activeReadingChallenges.map(c => {
+                        if (c.id !== challengeId) return c;
+                        if (c.completedDates.includes(today)) return c;
+
+                        const pagesPerDay = c.type === 'khatm' ? Math.ceil(604 / c.duration) : 0;
+                        const newProgress = c.type === 'khatm'
+                            ? c.progress + pagesPerDay
+                            : c.progress + 1;
+
+                        return {
+                            ...c,
+                            progress: Math.min(newProgress, c.type === 'khatm' ? 604 : 999),
+                            completedDates: [...c.completedDates, today]
+                        };
+                    })
+                }));
+            },
+
+            removeReadingChallenge: (challengeId) => {
+                set(state => ({
+                    activeReadingChallenges: state.activeReadingChallenges.filter(c => c.id !== challengeId)
+                }));
+            },
+
+            getTodayReading: (challengeId) => {
+                const challenge = get().activeReadingChallenges.find(c => c.id === challengeId);
+                if (!challenge || challenge.type !== 'khatm') return null;
+
+                const pagesPerDay = Math.ceil(604 / challenge.duration);
+                const dayNumber = challenge.completedDates.length + 1;
+                const start = (dayNumber - 1) * pagesPerDay + 1;
+                const end = Math.min(dayNumber * pagesPerDay, 604);
+
+                return { start, end };
             }
         }),
         {
