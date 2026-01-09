@@ -1,115 +1,129 @@
+/* ========================================
+   Mushaf 3D Page - Mobile-First PWA Styles
+   ======================================== */
+
 .mushaf3d-container {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    perspective: 2000px;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 70px);
+    /* Space for bottom nav */
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Header */
+/* Header - Touch-friendly */
 .mushaf3d-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-md);
-    background: rgba(0, 0, 0, 0.3);
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    min-height: 56px;
 }
 
 .mushaf3d-header-btn {
     color: #c9a84c;
-    padding: var(--space-sm);
-}
-
-.mushaf3d-title {
-    font-size: var(--text-ui-lg);
-    font-weight: 600;
-    color: #c9a84c;
-}
-
-/* Book Wrapper */
-.mushaf3d-book-wrapper {
-    flex: 1;
+    padding: var(--space-md);
+    min-width: 44px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-md);
-    perspective: 2500px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-/* Book */
+.mushaf3d-title {
+    font-size: var(--text-ui-md);
+    font-weight: 600;
+    color: #c9a84c;
+    text-align: center;
+}
+
+/* Book Wrapper - Mobile optimized */
+.mushaf3d-book-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--space-sm);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Book - Single page view on mobile */
 .mushaf3d-book {
     display: flex;
+    flex-direction: column;
     width: 100%;
-    max-width: 900px;
-    height: 70vh;
-    transform-style: preserve-3d;
-    transition: transform 0.1s ease;
+    max-width: 100%;
+    gap: var(--space-xs);
 }
 
-.mushaf3d-book:hover {
-    transform: rotateY(-2deg) rotateX(2deg);
-}
-
-/* Pages */
+/* Pages - Stack vertically on mobile */
 .mushaf3d-page {
-    flex: 1;
+    width: 100%;
+    min-height: 60vh;
     background: linear-gradient(135deg, #f5f0e8 0%, #ede4d3 100%);
-    border-radius: 2px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     overflow: hidden;
 }
 
 .mushaf3d-page-left {
-    border-radius: 8px 0 0 8px;
-    transform-origin: right center;
+    order: 2;
 }
 
 .mushaf3d-page-right {
-    border-radius: 0 8px 8px 0;
-    transform-origin: left center;
+    order: 1;
 }
 
-/* Page inner content */
+/* Hide spine on mobile */
+.mushaf3d-spine {
+    display: none;
+}
+
+/* Page inner - optimized for reading */
 .mushaf3d-page-inner {
     height: 100%;
-    padding: var(--space-lg);
+    padding: var(--space-md);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Page Header */
 .mushaf3d-page-header {
     display: flex;
     justify-content: space-between;
-    padding-bottom: var(--space-sm);
-    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-xs);
+    margin-bottom: var(--space-sm);
     border-bottom: 1px solid #c9a84c;
     font-size: var(--text-ui-xs);
     color: #8b7355;
     font-weight: 500;
+    flex-shrink: 0;
 }
 
-/* Spine */
-.mushaf3d-spine {
-    width: 20px;
-    background: linear-gradient(90deg, #8b5a2b 0%, #a0522d 50%, #8b5a2b 100%);
-    box-shadow:
-        inset 2px 0 4px rgba(0, 0, 0, 0.3),
-        inset -2px 0 4px rgba(0, 0, 0, 0.3);
-    border-radius: 2px;
-}
-
-/* Text */
+/* Arabic Text */
 .mushaf3d-text {
     flex: 1;
     font-family: var(--font-arabic);
     font-size: var(--text-arabic-md);
-    line-height: 2.4;
+    line-height: 2.2;
     color: #3d2914;
     text-align: justify;
+    direction: rtl;
 }
 
 .mushaf3d-ayah {
@@ -120,10 +134,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.5em;
-    height: 1.5em;
-    margin: 0 0.3em;
-    font-size: 0.6em;
+    width: 1.4em;
+    height: 1.4em;
+    margin: 0 0.2em;
+    font-size: 0.55em;
     color: #c9a84c;
     vertical-align: middle;
 }
@@ -135,6 +149,7 @@
     height: 100%;
     color: #8b7355;
     font-style: italic;
+    padding: var(--space-xl);
 }
 
 .mushaf3d-loading {
@@ -144,59 +159,28 @@
     width: 100%;
     height: 100%;
     color: #c9a84c;
-    font-size: var(--text-ui-lg);
+    font-size: var(--text-ui-md);
 }
 
-/* Page Flip Animation */
-.mushaf3d-book.flipping-next .mushaf3d-page-right {
-    animation: flipPageNext 0.6s ease-in-out;
-}
-
-.mushaf3d-book.flipping-prev .mushaf3d-page-left {
-    animation: flipPagePrev 0.6s ease-in-out;
-}
-
-@keyframes flipPageNext {
-    0% {
-        transform: rotateY(0deg);
-    }
-
-    50% {
-        transform: rotateY(-90deg);
-    }
-
-    100% {
-        transform: rotateY(0deg);
-    }
-}
-
-@keyframes flipPagePrev {
-    0% {
-        transform: rotateY(0deg);
-    }
-
-    50% {
-        transform: rotateY(90deg);
-    }
-
-    100% {
-        transform: rotateY(0deg);
-    }
-}
-
-/* Navigation */
+/* Navigation - Fixed bottom, touch-friendly */
 .mushaf3d-nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: var(--space-xl);
-    padding: var(--space-lg);
-    background: rgba(0, 0, 0, 0.3);
+    gap: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: sticky;
+    bottom: 0;
 }
 
 .mushaf3d-nav-btn {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -205,12 +189,14 @@
     border-radius: var(--radius-full);
     color: #c9a84c;
     transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-.mushaf3d-nav-btn:hover:not(:disabled) {
+.mushaf3d-nav-btn:active:not(:disabled) {
     background: #c9a84c;
     color: #1a1a2e;
-    transform: scale(1.1);
+    transform: scale(0.95);
 }
 
 .mushaf3d-nav-btn:disabled {
@@ -219,9 +205,11 @@
 }
 
 .mushaf3d-page-info {
-    font-size: var(--text-ui-md);
+    font-size: var(--text-ui-sm);
     color: #c9a84c;
     font-weight: 600;
+    min-width: 80px;
+    text-align: center;
 }
 
 /* Font size variants */
@@ -237,36 +225,111 @@
     font-size: var(--text-arabic-xl);
 }
 
-/* Mobile: Stack pages vertically */
-@media (max-width: 768px) {
+/* ========================================
+   Tablet & Desktop Enhancements (min-width)
+   ======================================== */
+@media (min-width: 768px) {
+    .mushaf3d-container {
+        perspective: 2000px;
+    }
+
+    .mushaf3d-book-wrapper {
+        padding: var(--space-lg);
+        align-items: center;
+        perspective: 2500px;
+    }
+
     .mushaf3d-book {
-        flex-direction: column;
-        height: auto;
-        min-height: 80vh;
-    }
-
-    .mushaf3d-page {
-        min-height: 50vh;
-    }
-
-    .mushaf3d-page-left {
-        order: 2;
-        border-radius: 0 0 8px 8px;
-    }
-
-    .mushaf3d-page-right {
-        order: 1;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .mushaf3d-spine {
-        width: 100%;
-        height: 10px;
-        order: 1.5;
-        background: linear-gradient(180deg, #8b5a2b 0%, #a0522d 50%, #8b5a2b 100%);
+        flex-direction: row;
+        max-width: 900px;
+        height: 70vh;
+        transform-style: preserve-3d;
+        transition: transform 0.1s ease;
     }
 
     .mushaf3d-book:hover {
-        transform: none;
+        transform: rotateY(-2deg) rotateX(2deg);
+    }
+
+    .mushaf3d-page {
+        flex: 1;
+        min-height: unset;
+    }
+
+    .mushaf3d-page-left {
+        order: 1;
+        border-radius: 8px 0 0 8px;
+        transform-origin: right center;
+    }
+
+    .mushaf3d-page-right {
+        order: 2;
+        border-radius: 0 8px 8px 0;
+        transform-origin: left center;
+    }
+
+    .mushaf3d-spine {
+        display: block;
+        width: 20px;
+        background: linear-gradient(90deg, #8b5a2b 0%, #a0522d 50%, #8b5a2b 100%);
+        box-shadow:
+            inset 2px 0 4px rgba(0, 0, 0, 0.3),
+            inset -2px 0 4px rgba(0, 0, 0, 0.3);
+        border-radius: 2px;
+        order: 1;
+    }
+
+    .mushaf3d-page-inner {
+        padding: var(--space-lg);
+    }
+
+    .mushaf3d-nav-btn {
+        width: 56px;
+        height: 56px;
+    }
+
+    .mushaf3d-nav-btn:hover:not(:disabled) {
+        background: #c9a84c;
+        color: #1a1a2e;
+        transform: scale(1.1);
+    }
+}
+
+/* Page Flip Animation (desktop only) */
+@media (min-width: 768px) {
+    .mushaf3d-book.flipping-next .mushaf3d-page-right {
+        animation: flipPageNext 0.6s ease-in-out;
+    }
+
+    .mushaf3d-book.flipping-prev .mushaf3d-page-left {
+        animation: flipPagePrev 0.6s ease-in-out;
+    }
+
+    @keyframes flipPageNext {
+        0% {
+            transform: rotateY(0deg);
+        }
+
+        50% {
+            transform: rotateY(-90deg);
+        }
+
+        100% {
+            transform: rotateY(0deg);
+        }
+    }
+
+    @keyframes flipPagePrev {
+        0% {
+            transform: rotateY(0deg);
+        }
+
+        50% {
+            transform: rotateY(90deg);
+        }
+
+        100% {
+            transform: rotateY(0deg);
+        }
     }
 }

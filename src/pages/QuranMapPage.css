@@ -1,52 +1,82 @@
+/* ========================================
+   Quran Map Page - Mobile-First PWA Styles
+   ======================================== */
+
 .quran-map-page {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
     background: var(--color-bg-primary);
+    padding-top: env(safe-area-inset-top);
+    overflow: hidden;
 }
 
-/* Header */
+/* Header - Touch-friendly */
 .quran-map-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-md);
-    background: rgba(0, 0, 0, 0.3);
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 100;
+    min-height: 56px;
+    flex-shrink: 0;
 }
 
 .quran-map-header-btn {
     color: #c9a84c;
-    padding: var(--space-sm);
+    padding: var(--space-md);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .quran-map-title {
-    font-size: var(--text-ui-lg);
+    font-size: var(--text-ui-md);
     font-weight: 600;
     color: #c9a84c;
 }
 
-/* Filters */
+/* Filters - Horizontal scroll */
 .quran-map-filters {
     display: flex;
     gap: var(--space-sm);
     padding: var(--space-sm) var(--space-md);
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     background: var(--color-bg-secondary);
     z-index: 100;
+    flex-shrink: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.quran-map-filters::-webkit-scrollbar {
+    display: none;
 }
 
 .filter-btn {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    min-height: 40px;
     background: var(--color-bg-tertiary);
     border-radius: var(--radius-full);
     font-size: var(--text-ui-sm);
     color: var(--color-text-secondary);
     white-space: nowrap;
     transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    flex-shrink: 0;
 }
 
 .filter-btn.active {
@@ -58,6 +88,8 @@
 .quran-map-container {
     flex: 1;
     position: relative;
+    min-height: 0;
+    /* Important for flex child */
 }
 
 .quran-map {
@@ -89,7 +121,7 @@
     color: var(--color-text-secondary);
 }
 
-/* Location Panel */
+/* Location Panel - Bottom Sheet Style */
 .location-panel {
     position: absolute;
     bottom: 0;
@@ -97,24 +129,51 @@
     right: 0;
     background: var(--color-bg-secondary);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    padding: var(--space-lg);
-    max-height: 40vh;
+    padding: var(--space-md);
+    padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom) + 70px);
+    max-height: 50vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     z-index: 200;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Drag handle indicator */
+.location-panel::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--color-bg-tertiary);
+    border-radius: 2px;
 }
 
 .location-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    margin-top: var(--space-sm);
     margin-bottom: var(--space-md);
 }
 
 .location-panel-name-ar {
     display: block;
     font-family: var(--font-arabic);
-    font-size: var(--text-ui-xl);
+    font-size: var(--text-ui-lg);
     color: #c9a84c;
 }
 
@@ -123,10 +182,21 @@
     color: var(--color-text-muted);
 }
 
+.location-panel-header button {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    -webkit-tap-highlight-color: transparent;
+}
+
 .location-panel-desc {
     font-size: var(--text-ui-sm);
     color: var(--color-text-secondary);
     margin-bottom: var(--space-md);
+    line-height: 1.5;
 }
 
 .location-panel-verses h4 {
@@ -142,15 +212,19 @@
     display: block;
     text-align: left;
     width: 100%;
-    padding: var(--space-sm);
+    padding: var(--space-md);
+    min-height: 48px;
     background: var(--color-bg-tertiary);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-sm);
     transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-.verse-link:hover {
-    background: rgba(201, 168, 76, 0.2);
+.verse-link:active {
+    background: rgba(201, 168, 76, 0.3);
+    transform: scale(0.98);
 }
 
 .verse-ref {
@@ -168,18 +242,27 @@
     line-height: 1.4;
 }
 
-/* Location List */
+/* Location List - Horizontal scroll at bottom */
 .location-list {
     display: flex;
     gap: var(--space-sm);
     padding: var(--space-sm) var(--space-md);
+    padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom) + 70px);
     overflow-x: auto;
-    background: var(--color-bg-secondary);
+    -webkit-overflow-scrolling: touch;
+    background: linear-gradient(to top, var(--color-bg-secondary) 0%, transparent 100%);
+    background-color: var(--color-bg-secondary);
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 100;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.location-list::-webkit-scrollbar {
+    display: none;
 }
 
 .location-panel~.location-list {
@@ -191,15 +274,24 @@
     flex-direction: column;
     align-items: center;
     padding: var(--space-sm) var(--space-md);
+    min-height: 48px;
+    min-width: 80px;
     background: var(--color-bg-tertiary);
     border-radius: var(--radius-md);
     white-space: nowrap;
     transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    flex-shrink: 0;
 }
 
 .location-item.active {
     background: rgba(201, 168, 76, 0.3);
     border: 1px solid #c9a84c;
+}
+
+.location-item:active {
+    transform: scale(0.95);
 }
 
 .location-item-name-ar {
@@ -213,21 +305,62 @@
     color: var(--color-text-muted);
 }
 
-/* Leaflet overrides */
+/* Leaflet overrides for dark theme */
 .leaflet-container {
     background: #1a1a2e;
+    font-family: inherit;
 }
 
 .leaflet-popup-content-wrapper {
     background: var(--color-bg-secondary);
     border-radius: var(--radius-md);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .leaflet-popup-tip {
     background: var(--color-bg-secondary);
 }
 
-.leaflet-control-attribution {
-    background: rgba(0, 0, 0, 0.5) !important;
+.leaflet-popup-close-button {
     color: var(--color-text-muted) !important;
+    font-size: 20px !important;
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.leaflet-control-attribution {
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: var(--color-text-muted) !important;
+    font-size: 10px !important;
+}
+
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.leaflet-control-zoom a {
+    background: var(--color-bg-secondary) !important;
+    color: #c9a84c !important;
+    border: none !important;
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+}
+
+/* Tablet & Desktop */
+@media (min-width: 768px) {
+    .location-panel {
+        max-height: 40vh;
+        padding: var(--space-lg);
+        padding-bottom: var(--space-lg);
+    }
+
+    .location-list {
+        padding-bottom: var(--space-md);
+    }
+
+    .verse-link:hover {
+        background: rgba(201, 168, 76, 0.2);
+    }
 }
