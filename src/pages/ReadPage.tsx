@@ -5,9 +5,7 @@ import { MushafPage } from '../components/Mushaf/MushafPage';
 import { FocusMode } from '../components/Mushaf/FocusMode';
 import { SearchModal } from '../components/Navigation/SearchModal';
 import { VoiceSearch } from '../components/VoiceSearch/VoiceSearch';
-import { TajwidControls } from '../components/Tajwid/TajwidControls';
 import { useQuranStore } from '../stores/quranStore';
-import { useSettingsStore } from '../stores/settingsStore';
 import { useProgressStore } from '../stores/progressStore';
 
 type ViewMode = 'mushaf' | 'focus';
@@ -19,7 +17,6 @@ export function ReadPage() {
     const [showMenu, setShowMenu] = useState(false);
 
     const { currentSurah, currentAyah, currentPage, setCurrentSurah, setCurrentAyah } = useQuranStore();
-    const { tajwidEnabled } = useSettingsStore();
     const { addBookmark } = useProgressStore();
 
     const handleBookmarkClick = () => {
@@ -46,8 +43,6 @@ export function ReadPage() {
                 onBookmarkClick={handleBookmarkClick}
                 onVoiceSearchClick={() => setShowVoiceSearch(true)}
             />
-
-            {tajwidEnabled && viewMode === 'mushaf' && <TajwidControls />}
 
             {viewMode === 'mushaf' ? (
                 <MushafPage />

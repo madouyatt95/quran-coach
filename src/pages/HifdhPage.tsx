@@ -9,41 +9,24 @@ import {
     Plus,
     RotateCcw,
     Volume2,
-    Brain,
-    Mic,
     Square,
-    Loader2,
-    Eye,
-    Crown,
     BookmarkCheck
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, RECITERS, PLAYBACK_SPEEDS } from '../stores/settingsStore';
 import { useStatsStore } from '../stores/statsStore';
-import { usePremiumStore } from '../stores/premiumStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
 import { useSRSStore } from '../stores/srsStore';
-import { pokeController } from '../lib/pokeService';
-import { getSharedAudioContext, getSupportedMimeType } from '../lib/audioUnlock';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
-
-interface WordState {
-    id: number;
-    text: string;
-    hidden: boolean;
-    revealed: boolean;
-    correct: boolean | null;
-}
 
 export function HifdhPage() {
     const { surahs } = useQuranStore();
     const { selectedReciter, repeatCount, playbackSpeed, setReciter, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
-    const { isPremium, checkPremium, setPremium } = usePremiumStore();
     const { getDueCards, cards } = useSRSStore();
 
     // Selection state
@@ -68,32 +51,14 @@ export function HifdhPage() {
     const [maxRepeats, setMaxRepeats] = useState(repeatCount);
     const [showReciters, setShowReciters] = useState(false);
 
-    // Word timings & Test mode
+    // Word timings
     const [wordTimings, setWordTimings] = useState<VerseWords | null>(null);
     const [activeWordIndex, setActiveWordIndex] = useState(-1);
-    const [isTestMode, setIsTestMode] = useState(false);
-    const [hideLevel, setHideLevel] = useState(50); // 25, 50, 75, 100
-    const [wordStates, setWordStates] = useState<WordState[]>([]);
-    const [isRecording, setIsRecording] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [pokeHint, setPokeHint] = useState<string | null>(null);
-
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
-    const silenceTimeoutRef = useRef<number | null>(null);
-    const audioContextRef = useRef<AudioContext | null>(null);
-    const analyserRef = useRef<AnalyserNode | null>(null);
-    const currentMimeTypeRef = useRef<string>('audio/webm');
-    const isRecordingRef = useRef(false); // Use ref to avoid stale closure
 
     const currentAyah = ayahs[currentAyahIndex];
     const currentReciterInfo = RECITERS.find(r => r.id === selectedReciter);
     const dueCards = getDueCards();
     const allCards = Object.values(cards);
-
-    // Check premium on mount
-    useEffect(() => { checkPremium(); }, [checkPremium]);
 
     // Load a verse from SRS card
     const loadFromSRS = (surah: number, ayah: number) => {
@@ -164,43 +129,8 @@ export function HifdhPage() {
         }
     }, [ayahs, currentAyahIndex, selectedReciter, playbackSpeed, selectedSurah]);
 
-    // Cleanup AudioContext on unmount
-    useEffect(() => {
-        return () => {
-            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-                audioContextRef.current.close().catch(console.error);
-            }
-            if (silenceTimeoutRef.current) {
-                cancelAnimationFrame(silenceTimeoutRef.current);
-            }
-        };
-    }, []);
-
-    // Initialize/Update word states for test mode
-    useEffect(() => {
-        if (wordTimings && isTestMode) {
-            const totalWords = wordTimings.words.length;
-            const wordsToHideCount = Math.ceil((totalWords * hideLevel) / 100);
-            const hiddenIndices = new Set<number>();
-
-            while (hiddenIndices.size < wordsToHideCount) {
-                hiddenIndices.add(Math.floor(Math.random() * totalWords));
-            }
-
-            setWordStates(wordTimings.words.map((w, i) => ({
-                id: w.id,
-                text: w.text,
-                hidden: hiddenIndices.has(i),
-                revealed: false,
-                correct: null
-            })));
-        }
-    }, [wordTimings, isTestMode, hideLevel, currentAyahIndex]);
-
     // Handle Word Selection for Loop
     const handleWordClick = (index: number) => {
-        if (isTestMode) return; // Disable selection in test mode for now or use it differently
-
         if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
             setSelectionStart(index);
             setSelectionEnd(null);
@@ -365,170 +295,20 @@ export function HifdhPage() {
         };
     }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats]);
 
-    // Test Mode logic
-    const startRecording = async () => {
-        if (!isPremium) {
-            setError("Premium requis");
-            return;
-        }
-        setError(null);
-        setPokeHint(null);
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeType = getSupportedMimeType();
-            currentMimeTypeRef.current = mimeType;
-
-            const mediaRecorder = new MediaRecorder(stream, { mimeType });
-            audioChunksRef.current = [];
-
-            // Use shared AudioContext for iOS PWA compatibility
-            audioContextRef.current = getSharedAudioContext();
-
-            // iOS requires resume() after user interaction
-            if (audioContextRef.current.state === 'suspended') {
-                await audioContextRef.current.resume();
-            }
-
-            analyserRef.current = audioContextRef.current.createAnalyser();
-            analyserRef.current.fftSize = 256;
-            const source = audioContextRef.current.createMediaStreamSource(stream);
-            source.connect(analyserRef.current);
-
-            const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-
-            // Mark recording as active (use ref to avoid stale closure)
-            isRecordingRef.current = true;
-
-            const checkSilence = () => {
-                // Use ref instead of state to avoid stale closure
-                if (!analyserRef.current || !isRecordingRef.current) return;
-
-                analyserRef.current.getByteFrequencyData(dataArray);
-                const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-
-                if (avg > 10) {
-                    pokeController.reset();
-                    setPokeHint(null);
-                } else {
-                    const firstHiddenWord = wordStates.find(ws => ws.hidden && !ws.revealed);
-                    if (firstHiddenWord) {
-                        pokeController.onSilence([firstHiddenWord.text], 0);
-                    }
-                }
-                silenceTimeoutRef.current = requestAnimationFrame(checkSilence);
-            };
-
-            pokeController.setOnHint((hint: string) => setPokeHint(hint));
-
-            mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
-            mediaRecorder.onstop = () => {
-                isRecordingRef.current = false;
-                stream.getTracks().forEach(t => t.stop());
-                if (silenceTimeoutRef.current) cancelAnimationFrame(silenceTimeoutRef.current);
-                if (audioContextRef.current) audioContextRef.current.close().catch(() => { });
-                pokeController.reset();
-                processTestAudio();
-            };
-
-            mediaRecorderRef.current = mediaRecorder;
-            mediaRecorder.start();
-            setIsRecording(true);
-            checkSilence();
-        } catch (err) {
-            console.error('Recording error:', err);
-            setError("Erreur microphone: " + (err instanceof Error ? err.message : 'Accès refusé'));
-        }
-    };
-
-    const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecordingRef.current) {
-            isRecordingRef.current = false;
-            mediaRecorderRef.current.stop();
-            setIsRecording(false);
-            setPokeHint(null);
-            pokeController.reset();
-        }
-    };
-
-    const processTestAudio = async () => {
-        if (audioChunksRef.current.length === 0) return;
-        setIsProcessing(true);
-        try {
-            const audioBlob = new Blob(audioChunksRef.current, { type: currentMimeTypeRef.current });
-            const reader = new FileReader();
-            const base64Audio = await new Promise<string>((res, rej) => {
-                reader.onload = () => res((reader.result as string).split(',')[1]);
-                reader.onerror = rej;
-                reader.readAsDataURL(audioBlob);
-            });
-
-            const response = await fetch('/api/transcribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    audio: base64Audio,
-                    expectedText: currentAyah?.text,
-                    mimeType: currentMimeTypeRef.current
-                }),
-            });
-
-            if (!response.ok) throw new Error('Failed');
-            const data = await response.json();
-            const matchedWords = data.comparison?.matchedWords || [];
-
-            const normalize = (t: string) => t.replace(/[\u064B-\u0652\u0670]/g, '').trim();
-
-            setWordStates(prev => prev.map(ws => {
-                const norm = normalize(ws.text);
-                const match = matchedWords.some((m: string) => normalize(m) === norm);
-                if (ws.hidden && match) return { ...ws, revealed: true, correct: true };
-                return ws;
-            }));
-
-            if (data.comparison?.accuracy < 80 && 'vibrate' in navigator) {
-                navigator.vibrate([200, 100, 200]);
-            }
-        } catch (err) {
-            setError("Erreur transcription");
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
     const formatTime = (time: number) => {
         const mins = Math.floor(time / 60);
         const secs = Math.floor(time % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const toggleTestMode = () => {
-        setIsTestMode(!isTestMode);
-        setIsPlaying(false);
-        if (audioRef.current) audioRef.current.pause();
-    };
-
-    const activatePremium = () => {
-        const until = new Date();
-        until.setDate(until.getDate() + 30);
-        setPremium(true, until.toISOString());
-    };
-
     return (
         <div className="hifdh-page">
             <div className="hifdh-page__header-row">
                 <h1 className="hifdh-page__header">Studio Hifdh</h1>
-                <button
-                    className={`hifdh-test-toggle ${isTestMode ? 'active' : ''}`}
-                    onClick={toggleTestMode}
-                >
-                    <Brain size={20} />
-                    {isTestMode ? 'Mode Écoute' : 'Mode Test'}
-                </button>
             </div>
 
             {/* Due Cards Section */}
-            {!isTestMode && (dueCards.length > 0 || allCards.length > 0) && (
+            {(dueCards.length > 0 || allCards.length > 0) && (
                 <div className="hifdh-srs-section">
                     {dueCards.length > 0 && (
                         <div className="hifdh-srs-due">
@@ -580,95 +360,93 @@ export function HifdhPage() {
             )}
 
             {/* Selection */}
-            {!isTestMode && (
-                <div className="hifdh-selection">
-                    <div className="hifdh-selection__row">
-                        <select
-                            className="hifdh-selection__select"
-                            value={selectedSurah}
-                            onChange={(e) => setSelectedSurah(parseInt(e.target.value))}
-                        >
-                            {surahs.map((s) => (
-                                <option key={s.number} value={s.number}>
-                                    {s.number}. {s.name} ({s.englishName})
-                                </option>
-                            ))}
-                        </select>
+            <div className="hifdh-selection">
+                <div className="hifdh-selection__row">
+                    <select
+                        className="hifdh-selection__select"
+                        value={selectedSurah}
+                        onChange={(e) => setSelectedSurah(parseInt(e.target.value))}
+                    >
+                        {surahs.map((s) => (
+                            <option key={s.number} value={s.number}>
+                                {s.number}. {s.name} ({s.englishName})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="hifdh-verse-range">
+                    <label className="hifdh-verse-range__label">Versets :</label>
+                    <div className="hifdh-verse-range__controls">
+                        <div className="hifdh-verse-range__group">
+                            <button
+                                className="hifdh-verse-btn"
+                                onClick={() => setStartAyah(Math.max(1, startAyah - 1))}
+                                disabled={startAyah <= 1}
+                            >−</button>
+                            <select
+                                className="hifdh-verse-select"
+                                value={startAyah}
+                                onChange={(e) => setStartAyah(parseInt(e.target.value))}
+                            >
+                                {Array.from({ length: endAyah }, (_, i) => i + 1).map(n => (
+                                    <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
+                            <button
+                                className="hifdh-verse-btn"
+                                onClick={() => setStartAyah(Math.min(endAyah, startAyah + 1))}
+                                disabled={startAyah >= endAyah}
+                            >+</button>
+                        </div>
+                        <span className="hifdh-verse-range__separator">→</span>
+                        <div className="hifdh-verse-range__group">
+                            <button
+                                className="hifdh-verse-btn"
+                                onClick={() => setEndAyah(Math.max(startAyah, endAyah - 1))}
+                                disabled={endAyah <= startAyah}
+                            >−</button>
+                            <select
+                                className="hifdh-verse-select"
+                                value={endAyah}
+                                onChange={(e) => setEndAyah(parseInt(e.target.value))}
+                            >
+                                {Array.from({ length: maxAyahs - startAyah + 1 }, (_, i) => startAyah + i).map(n => (
+                                    <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
+                            <button
+                                className="hifdh-verse-btn"
+                                onClick={() => setEndAyah(Math.min(maxAyahs, endAyah + 1))}
+                                disabled={endAyah >= maxAyahs}
+                            >+</button>
+                        </div>
+                        <span className="hifdh-verse-range__total">/ {maxAyahs}</span>
                     </div>
-                    <div className="hifdh-verse-range">
-                        <label className="hifdh-verse-range__label">Versets :</label>
-                        <div className="hifdh-verse-range__controls">
-                            <div className="hifdh-verse-range__group">
-                                <button
-                                    className="hifdh-verse-btn"
-                                    onClick={() => setStartAyah(Math.max(1, startAyah - 1))}
-                                    disabled={startAyah <= 1}
-                                >−</button>
-                                <select
-                                    className="hifdh-verse-select"
-                                    value={startAyah}
-                                    onChange={(e) => setStartAyah(parseInt(e.target.value))}
-                                >
-                                    {Array.from({ length: endAyah }, (_, i) => i + 1).map(n => (
-                                        <option key={n} value={n}>{n}</option>
-                                    ))}
-                                </select>
-                                <button
-                                    className="hifdh-verse-btn"
-                                    onClick={() => setStartAyah(Math.min(endAyah, startAyah + 1))}
-                                    disabled={startAyah >= endAyah}
-                                >+</button>
-                            </div>
-                            <span className="hifdh-verse-range__separator">→</span>
-                            <div className="hifdh-verse-range__group">
-                                <button
-                                    className="hifdh-verse-btn"
-                                    onClick={() => setEndAyah(Math.max(startAyah, endAyah - 1))}
-                                    disabled={endAyah <= startAyah}
-                                >−</button>
-                                <select
-                                    className="hifdh-verse-select"
-                                    value={endAyah}
-                                    onChange={(e) => setEndAyah(parseInt(e.target.value))}
-                                >
-                                    {Array.from({ length: maxAyahs - startAyah + 1 }, (_, i) => startAyah + i).map(n => (
-                                        <option key={n} value={n}>{n}</option>
-                                    ))}
-                                </select>
-                                <button
-                                    className="hifdh-verse-btn"
-                                    onClick={() => setEndAyah(Math.min(maxAyahs, endAyah + 1))}
-                                    disabled={endAyah >= maxAyahs}
-                                >+</button>
-                            </div>
-                            <span className="hifdh-verse-range__total">/ {maxAyahs}</span>
-                        </div>
-                        <div className="hifdh-verse-range__actions">
-                            <button
-                                className="hifdh-verse-range__preset"
-                                onClick={() => { setStartAyah(1); setEndAyah(maxAyahs); }}
-                            >
-                                Tout
-                            </button>
-                            <button
-                                className="hifdh-verse-range__preset"
-                                onClick={() => { setEndAyah(startAyah); }}
-                            >
-                                1 verset
-                            </button>
-                            <button
-                                className="hifdh-verse-range__preset"
-                                onClick={() => { setEndAyah(Math.min(startAyah + 4, maxAyahs)); }}
-                            >
-                                5 versets
-                            </button>
-                        </div>
+                    <div className="hifdh-verse-range__actions">
+                        <button
+                            className="hifdh-verse-range__preset"
+                            onClick={() => { setStartAyah(1); setEndAyah(maxAyahs); }}
+                        >
+                            Tout
+                        </button>
+                        <button
+                            className="hifdh-verse-range__preset"
+                            onClick={() => { setEndAyah(startAyah); }}
+                        >
+                            1 verset
+                        </button>
+                        <button
+                            className="hifdh-verse-range__preset"
+                            onClick={() => { setEndAyah(Math.min(startAyah + 4, maxAyahs)); }}
+                        >
+                            5 versets
+                        </button>
                     </div>
                 </div>
-            )}
+            </div>
 
-            {/* Main Player/Test Area */}
-            <div className={`hifdh-main-card ${isTestMode ? 'test-active' : ''}`}>
+            {/* Main Player Area */}
+            <div className="hifdh-main-card">
                 <audio
                     ref={audioRef}
                     src={currentAyah ? getAudioUrl(selectedReciter, currentAyah.number) : undefined}
@@ -679,25 +457,22 @@ export function HifdhPage() {
                 <div className="hifdh-ayah-container" dir="rtl">
                     {wordTimings ? (
                         <div className="hifdh-words-grid">
-                            {(isTestMode ? wordStates : wordTimings.words).map((word, idx) => {
-                                const isHidden = isTestMode && (word as WordState).hidden && !(word as WordState).revealed;
-                                const isSelected = !isTestMode && selectionStart !== null && selectionEnd !== null &&
+                            {wordTimings.words.map((word, idx) => {
+                                const isSelected = selectionStart !== null && selectionEnd !== null &&
                                     idx >= selectionStart && idx <= selectionEnd;
-                                const isPartiallySelected = !isTestMode && selectionStart !== null && idx === selectionStart && selectionEnd === null;
+                                const isPartiallySelected = selectionStart !== null && idx === selectionStart && selectionEnd === null;
 
                                 return (
                                     <span
                                         key={idx}
                                         className={`hifdh-word 
-                                            ${activeWordIndex === idx && !isTestMode ? 'highlight' : ''} 
-                                            ${isHidden ? 'hidden-word' : ''} 
-                                            ${(word as WordState).revealed ? 'revealed-word' : ''}
+                                            ${activeWordIndex === idx ? 'highlight' : ''} 
                                             ${isSelected ? 'range-selected' : ''}
                                             ${isPartiallySelected ? 'single-selected' : ''}
                                         `}
                                         onClick={() => handleWordClick(idx)}
                                     >
-                                        {isHidden ? '●●●' : (word.text)}{' '}
+                                        {word.text}{' '}
                                     </span>
                                 );
                             })}
@@ -709,96 +484,41 @@ export function HifdhPage() {
                     )}
                 </div>
 
-                {/* Controls Area */}
-                {isTestMode ? (
-                    <div className="hifdh-test-controls">
-                        {!isPremium ? (
-                            <div className="hifdh-premium-gate">
-                                <Crown size={24} color="#FFD700" />
-                                <p>Le mode Test IA est une fonctionnalité Premium</p>
-                                <button className="hifdh-premium-btn" onClick={activatePremium}>
-                                    Activer l'essai gratuit (30 jours)
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="hifdh-difficulty-selector">
-                                    {[25, 50, 75, 100].map(level => (
-                                        <button
-                                            key={level}
-                                            className={hideLevel === level ? 'active' : ''}
-                                            onClick={() => setHideLevel(level)}
-                                        >
-                                            {level}%
-                                        </button>
-                                    ))}
-                                </div>
-                                <div className="hifdh-mic-area">
-                                    {isProcessing ? (
-                                        <div className="hifdh-processing">
-                                            <Loader2 size={32} className="hifdh-spinner" />
-                                            <span>Analyse...</span>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            className={`hifdh-mic-btn ${isRecording ? 'recording' : ''}`}
-                                            onClick={isRecording ? stopRecording : startRecording}
-                                        >
-                                            {isRecording ? <Square size={32} /> : <Mic size={32} />}
-                                            <span>{isRecording ? 'Arrêter' : 'Réciter'}</span>
-                                        </button>
-                                    )}
-                                    {/* Poke Hint Display */}
-                                    {pokeHint && isRecording && (
-                                        <div className="hifdh-poke-hint">
-                                            💡 <span dir="rtl">{pokeHint}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </>
-                        )}
-                        <button className="hifdh-action-btn" onClick={() => {
-                            setWordStates(prev => prev.map(ws => ({ ...ws, revealed: true })));
-                        }}>
-                            <Eye size={18} /> Tout révéler
+                {/* Player Controls */}
+                <div className="hifdh-player-ui">
+                    <div className="hifdh-player__progress">
+                        <span className="hifdh-player__time">{formatTime(currentTime)}</span>
+                        <div className="hifdh-player__progress-bar">
+                            <div
+                                className="hifdh-player__progress-fill"
+                                style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
+                            />
+                        </div>
+                        <span className="hifdh-player__time">{formatTime(duration)}</span>
+                    </div>
+
+                    <div className="hifdh-player__controls">
+                        <button className="hifdh-player__btn" onClick={handlePrev}><SkipBack size={20} /></button>
+                        <button className="hifdh-player__btn" onClick={handlePlayPause}>
+                            {isPlaying ? <Pause size={28} /> : <Play size={28} />}
+                        </button>
+                        <button className="hifdh-player__btn" onClick={() => {
+                            if (audioRef.current) {
+                                audioRef.current.pause();
+                                audioRef.current.currentTime = 0;
+                                setIsPlaying(false);
+                            }
+                        }}><Square size={18} /></button>
+                        <button className="hifdh-player__btn" onClick={handleNext}><SkipForward size={20} /></button>
+                        <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
+                            <Repeat size={20} />
                         </button>
                     </div>
-                ) : (
-                    <div className="hifdh-player-ui">
-                        <div className="hifdh-player__progress">
-                            <span className="hifdh-player__time">{formatTime(currentTime)}</span>
-                            <div className="hifdh-player__progress-bar">
-                                <div
-                                    className="hifdh-player__progress-fill"
-                                    style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
-                                />
-                            </div>
-                            <span className="hifdh-player__time">{formatTime(duration)}</span>
-                        </div>
-
-                        <div className="hifdh-player__controls">
-                            <button className="hifdh-player__btn" onClick={handlePrev}><SkipBack size={20} /></button>
-                            <button className="hifdh-player__btn" onClick={handlePlayPause}>
-                                {isPlaying ? <Pause size={28} /> : <Play size={28} />}
-                            </button>
-                            <button className="hifdh-player__btn" onClick={() => {
-                                if (audioRef.current) {
-                                    audioRef.current.pause();
-                                    audioRef.current.currentTime = 0;
-                                    setIsPlaying(false);
-                                }
-                            }}><Square size={18} /></button>
-                            <button className="hifdh-player__btn" onClick={handleNext}><SkipForward size={20} /></button>
-                            <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
-                                <Repeat size={20} />
-                            </button>
-                        </div>
-                    </div>
-                )}
+                </div>
             </div>
 
             {/* Bottom Actions Selection info */}
-            {!isTestMode && selectionStart !== null && (
+            {selectionStart !== null && (
                 <div className="hifdh-selection-bar">
                     <span>Boucle active de mots</span>
                     <button onClick={resetSelection}><RotateCcw size={14} /> Réinitialiser</button>
@@ -806,7 +526,7 @@ export function HifdhPage() {
             )}
 
             {/* SRS Memorization Controls */}
-            {currentAyah && !isTestMode && (
+            {currentAyah && (
                 <SRSControls
                     surah={selectedSurah}
                     ayah={currentAyah.numberInSurah}
@@ -849,8 +569,6 @@ export function HifdhPage() {
                     </div>
                 </div>
             )}
-
-            {error && <div className="hifdh-error-msg">{error}</div>}
         </div>
     );
 }
