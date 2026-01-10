@@ -197,6 +197,8 @@ class SpeechRecognitionService {
                 for (let j = this.currentWordIndex; j < matchResult.matchIndex; j++) {
                     if (!this.processedWords.has(j)) {
                         this.processedWords.add(j);
+                        // Only trigger callback with error for the first skipped word to avoid TTS spam
+                        // The others are still marked as processed/error in the UI via the state map
                         this.callbacks?.onWordMatch(j, false);
                     }
                 }
