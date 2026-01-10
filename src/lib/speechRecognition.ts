@@ -6,16 +6,20 @@ function normalizeArabic(text: string): string {
     return text
         // Remove tashkeel (diacritics)
         .replace(/[\u064B-\u065F\u0670]/g, '')
-        // Normalize hamza forms
-        .replace(/[أإآ]/g, 'ا')
+        // Normalize Alif variants (Madda, Hamza, Wasla)
+        .replace(/[أإآٱ]/g, 'ا')
+        // Normalize Hamza forms
         .replace(/[ؤ]/g, 'و')
+        // Use a broader normalization for hamza on ya/standalone hamza
         .replace(/[ئء]/g, 'ي')
-        // Remove tatweel
+        // Remove tatweel (kashida)
         .replace(/ـ/g, '')
         // Normalize ya/alef maqsura
-        .replace(/ى/g, 'ي')
+        .replace(/[ىي]/g, 'ي')
         // Normalize taa marbuta to haa
         .replace(/ة/g, 'ه')
+        // Remove punctuation and extra symbols often in transcriptions
+        .replace(/[.,!?;:()]/g, '')
         // Remove extra spaces
         .replace(/\s+/g, ' ')
         .trim();
@@ -27,8 +31,12 @@ function areWordsEqual(word1: string, word2: string): boolean {
     const n2 = normalizeArabic(word2);
 
     if (n1 === n2) return true;
+    if (n1.includes(n2) || n2.includes(n1)) {
+        // Handle cases where one word includes the other (common in ASR for Arabic)
+        if (Math.abs(n1.length - n2.length) <= 1) return true;
+    }
 
-    // Levenshtein distance for fuzzy matching (allow 1-2 char errors)
+    // Levenshtein distance for fuzzy matching
     const distance = levenshteinDistance(n1, n2);
     const maxLen = Math.max(n1.length, n2.length);
 
@@ -36,8 +44,8 @@ function areWordsEqual(word1: string, word2: string): boolean {
 
     const similarity = 1 - (distance / maxLen);
 
-    // More tolerant for short words, stricter for long words
-    const threshold = maxLen <= 3 ? 0.6 : 0.7;
+    // Stricter for long words, more relaxed for short ones
+    const threshold = maxLen <= 3 ? 0.5 : maxLen <= 6 ? 0.7 : 0.8;
     return similarity >= threshold;
 }
 
@@ -256,7 +264,7 @@ class SpeechRecognitionService {
 
     // IMPROVED: Sliding window to find best match (allows skipping ahead)
     private findBestMatch(spokenWord: string, startIndex: number): { matched: boolean; matchIndex: number } {
-        const windowSize = 3; // Look up to 3 words ahead
+        const windowSize = 4; // Look up to 4 words ahead for better tolerance
 
         for (let i = startIndex; i < Math.min(startIndex + windowSize, this.expectedWords.length); i++) {
             if (areWordsEqual(spokenWord, this.expectedWords[i])) {
