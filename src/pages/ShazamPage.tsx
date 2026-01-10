@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Radio, Loader2, Volume2, BookOpen, ChevronRight, RefreshCcw, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuranStore } from '../stores/quranStore';
-import { transcribeAudio } from '../lib/openai';
+import { whisperService } from '../lib/whisperService';
 import { identifyReciter } from '../lib/audioFingerprint';
 import { fetchPage } from '../lib/quranApi';
 import type { Ayah } from '../types';
@@ -36,6 +36,8 @@ export function ShazamPage() {
     const [error, setError] = useState<string | null>(null);
     const [cachedAyahs, setCachedAyahs] = useState<CachedAyah[]>([]);
     const [_isLoadingAyahs, setIsLoadingAyahs] = useState(false);
+    const [modelReady, setModelReady] = useState(whisperService.isReady());
+    const [modelProgress, setModelProgress] = useState(0);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -66,6 +68,19 @@ export function ShazamPage() {
         };
         loadAyahs();
     }, [cachedAyahs.length]);
+
+    // Load Whisper model on first mount
+    useEffect(() => {
+        if (!modelReady) {
+            setProcessingStatus('Chargement du modèle IA...');
+            whisperService.loadModel((progress) => {
+                setModelProgress(progress);
+            }).then((success) => {
+                setModelReady(success);
+                setProcessingStatus('');
+            });
+        }
+    }, [modelReady]);
 
     const startListening = useCallback(async () => {
         setError(null);
@@ -102,9 +117,15 @@ export function ShazamPage() {
                     const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
                     capturedAudioRef.current = audioBlob; // Save for reciter identification
 
-                    // Step 1: Transcribe the audio
-                    setProcessingStatus('Transcription...');
-                    const transcript = await transcribeAudio(audioBlob);
+                    // Step 1: Transcribe the audio using local Whisper
+                    setProcessingStatus('Transcription locale...');
+
+                    // Ensure model is loaded
+                    if (!whisperService.isReady()) {
+                        await whisperService.loadModel((p) => setModelProgress(p));
+                    }
+
+                    const transcript = await whisperService.transcribe(audioBlob);
 
                     if (!transcript || transcript.trim().length === 0) {
                         setError("Aucun son détecté. Approchez le téléphone de la source audio.");
@@ -268,9 +289,10 @@ export function ShazamPage() {
 
                 {/* Status Text */}
                 <p className="shazam-status">
-                    {isListening ? 'Écoute en cours...' :
-                        isProcessing ? (processingStatus || 'Identification...') :
-                            'Appuyez pour écouter'}
+                    {!modelReady ? `Chargement du modèle IA... ${Math.round(modelProgress * 100)}%` :
+                        isListening ? 'Écoute en cours...' :
+                            isProcessing ? (processingStatus || 'Identification...') :
+                                'Appuyez pour écouter'}
                 </p>
 
                 {/* Main Button */}
