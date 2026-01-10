@@ -351,3 +351,40 @@
 .shazam-result-actions button:hover {
     background: rgba(255, 255, 255, 0.1);
 }
+
+/* Reciter Badge */
+.shazam-result-reciter {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-md);
+    background: linear-gradient(135deg, rgba(46, 213, 115, 0.15), rgba(46, 213, 115, 0.08));
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    border-radius: var(--radius-md);
+    color: #2ed573;
+}
+
+.shazam-result-reciter svg {
+    flex-shrink: 0;
+}
+
+.shazam-reciter-name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.shazam-reciter-ar {
+    font-family: var(--font-arabic);
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.shazam-reciter-confidence {
+    margin-left: auto;
+    background: rgba(46, 213, 115, 0.2);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+}

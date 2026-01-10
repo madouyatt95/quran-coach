@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Radio, Loader2, Volume2, BookOpen, ChevronRight, RefreshCcw } from 'lucide-react';
+import { Radio, Loader2, Volume2, BookOpen, ChevronRight, RefreshCcw, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuranStore } from '../stores/quranStore';
 import { transcribeAudio } from '../lib/openai';
+import { identifyReciter } from '../lib/audioFingerprint';
 import { fetchPage } from '../lib/quranApi';
 import type { Ayah } from '../types';
 import './ShazamPage.css';
@@ -13,6 +14,9 @@ interface ShazamResult {
     ayah: number;
     text: string;
     confidence: number;
+    reciterName?: string;
+    reciterNameAr?: string;
+    reciterConfidence?: number;
 }
 
 interface CachedAyah {
@@ -27,6 +31,7 @@ export function ShazamPage() {
 
     const [isListening, setIsListening] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [processingStatus, setProcessingStatus] = useState('');
     const [result, setResult] = useState<ShazamResult | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [cachedAyahs, setCachedAyahs] = useState<CachedAyah[]>([]);
@@ -34,6 +39,7 @@ export function ShazamPage() {
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const capturedAudioRef = useRef<Blob | null>(null);
 
     // Load ayahs for search (first 10 pages for quick search)
     useEffect(() => {
@@ -94,8 +100,10 @@ export function ShazamPage() {
 
                 try {
                     const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+                    capturedAudioRef.current = audioBlob; // Save for reciter identification
 
-                    // Transcribe the audio
+                    // Step 1: Transcribe the audio
+                    setProcessingStatus('Transcription...');
                     const transcript = await transcribeAudio(audioBlob);
 
                     if (!transcript || transcript.trim().length === 0) {
@@ -104,10 +112,28 @@ export function ShazamPage() {
                         return;
                     }
 
-                    // Search for the verse in the Quran
+                    // Step 2: Search for the verse in the Quran
+                    setProcessingStatus('Recherche du verset...');
                     const foundResult = searchVerseInQuran(transcript);
 
                     if (foundResult) {
+                        // Step 3: Identify the reciter
+                        setProcessingStatus('Identification du récitateur...');
+                        const reciterMatch = await identifyReciter(
+                            audioBlob,
+                            foundResult.surah,
+                            foundResult.ayah,
+                            (name, progress) => {
+                                setProcessingStatus(`Comparaison: ${name} (${Math.round(progress * 100)}%)`);
+                            }
+                        );
+
+                        if (reciterMatch) {
+                            foundResult.reciterName = reciterMatch.reciterName;
+                            foundResult.reciterNameAr = reciterMatch.reciterNameAr;
+                            foundResult.reciterConfidence = reciterMatch.confidence;
+                        }
+
                         setResult(foundResult);
                     } else {
                         setError(`Verset non trouvé. Transcript: "${transcript.substring(0, 50)}..."`);
@@ -117,6 +143,7 @@ export function ShazamPage() {
                     console.error(err);
                 } finally {
                     setIsProcessing(false);
+                    setProcessingStatus('');
                 }
             };
 
@@ -242,7 +269,7 @@ export function ShazamPage() {
                 {/* Status Text */}
                 <p className="shazam-status">
                     {isListening ? 'Écoute en cours...' :
-                        isProcessing ? 'Identification...' :
+                        isProcessing ? (processingStatus || 'Identification...') :
                             'Appuyez pour écouter'}
                 </p>
 
@@ -288,6 +315,21 @@ export function ShazamPage() {
                             <span className="shazam-result-surah">{result.surahName}</span>
                             <span className="shazam-result-ayah">Verset {result.ayah}</span>
                         </div>
+
+                        {/* Reciter Badge */}
+                        {result.reciterName && (
+                            <div className="shazam-result-reciter">
+                                <User size={16} />
+                                <span className="shazam-reciter-name">{result.reciterName}</span>
+                                <span className="shazam-reciter-ar">{result.reciterNameAr}</span>
+                                {result.reciterConfidence && (
+                                    <span className="shazam-reciter-confidence">
+                                        {Math.round(result.reciterConfidence * 100)}%
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
                         <p className="shazam-result-text" dir="rtl">
                             {result.text.substring(0, 100)}...
                         </p>
