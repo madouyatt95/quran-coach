@@ -9,6 +9,7 @@ import {
     EyeOff,
     Crown,
     Settings2,
+    FileQuestion,
     CheckCircle,
     XCircle,
     RotateCcw,
@@ -56,13 +57,16 @@ export function CoachPage() {
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [mistakes, setMistakes] = useState<Record<string, { expected: string, spoken: string }>>({});
     const [selectedError, setSelectedError] = useState<string | null>(null);
+    const [showMistakesSummary, setShowMistakesSummary] = useState(false);
 
     // Test mode: which words are hidden
     const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
 
     // Result state
     const [correctCount, setCorrectCount] = useState(0);
-    const [totalWords, setTotalWords] = useState(0);
+    const [totalWords, setTotalWords] = useState(0); // For Test Mode
+    const [mistakesCount, setMistakesCount] = useState(0); // For Recitation
+    const [totalProcessed, setTotalProcessed] = useState(0); // For Recitation
 
     // Audio for playback
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -130,8 +134,11 @@ export function CoachPage() {
         setHiddenWords(new Set());
         setCorrectCount(0);
         setTotalWords(0);
+        setMistakesCount(0);
+        setTotalProcessed(0);
         setMistakes({});
         setSelectedError(null);
+        setShowMistakesSummary(false);
     };
 
     // Initialize test mode (hide random words)
@@ -165,8 +172,11 @@ export function CoachPage() {
                     return newStates;
                 });
 
+                setTotalProcessed(prev => prev + 1);
+
                 // Handle error storage for comparison
                 if (!isCorrect) {
+                    setMistakesCount(prev => prev + 1);
                     setMistakes(prev => ({
                         ...prev,
                         [key]: {
@@ -358,6 +368,12 @@ export function CoachPage() {
                             <RotateCcw size={20} />
                             Recommencer
                         </button>
+                        {Object.keys(mistakes).length > 0 && (
+                            <button onClick={() => setShowMistakesSummary(true)} className="coach-result__view-mistakes">
+                                <FileQuestion size={20} />
+                                Voir les erreurs
+                            </button>
+                        )}
                         <button onClick={() => setMode('intro')}>
                             Retour
                         </button>
@@ -374,7 +390,14 @@ export function CoachPage() {
             <div className="coach-header">
                 <div className="coach-header__info">
                     <span className="coach-surah-name">{pageSurahNames.join(' - ')}</span>
-                    <span className="coach-page-number">صفحة {toArabicNumbers(currentPage)}</span>
+                    <span className="coach-page-number">
+                        صفحة {toArabicNumbers(currentPage)}
+                        {totalProcessed > 0 && (
+                            <button className="mushaf-stats" onClick={() => setShowMistakesSummary(true)}>
+                                {' • '} {mistakesCount} خطأ ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
+                            </button>
+                        )}
+                    </span>
                 </div>
                 <div className="coach-header__mode">
                     {mode === 'test' ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -498,6 +521,39 @@ export function CoachPage() {
                             </div>
                         </div>
                         <p className="error-modal__hint">Le feedback vous aide à corriger votre prononciation.</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Mistakes Summary Modal */}
+            {showMistakesSummary && (
+                <div className="error-modal-overlay" onClick={() => setShowMistakesSummary(false)}>
+                    <div className="error-modal error-modal--large" onClick={e => e.stopPropagation()}>
+                        <div className="error-modal__header">
+                            <h3>Toutes mes erreurs</h3>
+                            <button onClick={() => setShowMistakesSummary(false)}><X size={20} /></button>
+                        </div>
+                        <div className="error-modal__content error-modal__content--scrollable">
+                            {Object.keys(mistakes).length === 0 ? (
+                                <p className="error-modal__empty">Aucune erreur détectée pour le moment. Mashallah !</p>
+                            ) : (
+                                Object.entries(mistakes).map(([key, data]) => (
+                                    <div key={key} className="error-summary-item" onClick={() => {
+                                        setSelectedError(key);
+                                        setShowMistakesSummary(false);
+                                    }}>
+                                        <div className="error-summary-row">
+                                            <span className="error-summary-label">Attendu :</span>
+                                            <span className="error-summary-text expected">{data.expected}</span>
+                                        </div>
+                                        <div className="error-summary-row">
+                                            <span className="error-summary-label">Entendu :</span>
+                                            <span className="error-summary-text spoken">{data.spoken}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

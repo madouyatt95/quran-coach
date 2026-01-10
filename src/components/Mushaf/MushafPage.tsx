@@ -53,6 +53,7 @@ export function MushafPage() {
     // Stores: { [key]: { expected: string, spoken: string } }
     const [mistakes, setMistakes] = useState<Record<string, { expected: string, spoken: string }>>({});
     const [selectedError, setSelectedError] = useState<string | null>(null);
+    const [showMistakesSummary, setShowMistakesSummary] = useState(false);
 
     // Test mode state
     const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
@@ -322,9 +323,9 @@ export function MushafPage() {
                     <span className="mushaf-page-number">
                         صفحة {toArabicNumbers(currentPage)}
                         {(viewMode === 'coach' || viewMode === 'test') && totalProcessed > 0 && (
-                            <span className="mushaf-stats">
+                            <button className="mushaf-stats" onClick={() => setShowMistakesSummary(true)}>
                                 {' • '} {mistakesCount} خطأ ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
-                            </span>
+                            </button>
                         )}
                     </span>
                 </div>
@@ -574,6 +575,38 @@ export function MushafPage() {
                             </div>
                         </div>
                         <p className="error-modal__hint">Le feedback vous aide à corriger votre prononciation.</p>
+                    </div>
+                </div>
+            )}
+            {/* Mistakes Summary Modal */}
+            {showMistakesSummary && (
+                <div className="error-modal-overlay" onClick={() => setShowMistakesSummary(false)}>
+                    <div className="error-modal error-modal--large" onClick={e => e.stopPropagation()}>
+                        <div className="error-modal__header">
+                            <h3>Toutes mes erreurs</h3>
+                            <button onClick={() => setShowMistakesSummary(false)}><X size={20} /></button>
+                        </div>
+                        <div className="error-modal__content error-modal__content--scrollable">
+                            {Object.keys(mistakes).length === 0 ? (
+                                <p className="error-modal__empty">Aucune erreur détectée pour le moment. Mashallah !</p>
+                            ) : (
+                                Object.entries(mistakes).map(([key, data]) => (
+                                    <div key={key} className="error-summary-item" onClick={() => {
+                                        setSelectedError(key);
+                                        setShowMistakesSummary(false);
+                                    }}>
+                                        <div className="error-summary-row">
+                                            <span className="error-summary-label">Attendu :</span>
+                                            <span className="error-summary-text expected">{data.expected}</span>
+                                        </div>
+                                        <div className="error-summary-row">
+                                            <span className="error-summary-label">Entendu :</span>
+                                            <span className="error-summary-text spoken">{data.spoken}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
