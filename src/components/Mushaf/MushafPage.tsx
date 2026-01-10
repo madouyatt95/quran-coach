@@ -157,7 +157,19 @@ export function MushafPage() {
                     return newStates;
                 });
 
-                // In test mode, reveal hidden word
+                // AUTO-CORRECTION: Speak the correct word if user makes a mistake
+                if (!isCorrect) {
+                    import('../../lib/pokeService').then(({ speakHint }) => {
+                        speakHint(word.text, false); // Clear correction
+                    });
+
+                    // Vibrate on error
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(200);
+                    }
+                }
+
+                // In test mode, reveal hidden word if they got it right OR wrong (to show the correction)
                 if (viewMode === 'test' && hiddenWords.has(key)) {
                     setHiddenWords(prev => {
                         const newHidden = new Set(prev);

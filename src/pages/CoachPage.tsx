@@ -160,6 +160,18 @@ export function CoachPage() {
                     return newStates;
                 });
 
+                // AUTO-CORRECTION: Speak the correct word if user makes a mistake
+                if (!isCorrect) {
+                    import('../lib/pokeService').then(({ speakHint }) => {
+                        speakHint(word.text, false); // Clear correction
+                    });
+
+                    // Vibrate on error
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(200);
+                    }
+                }
+
                 // In test mode, reveal hidden word
                 if (mode === 'test' && hiddenWords.has(key)) {
                     if (isCorrect) {

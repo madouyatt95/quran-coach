@@ -272,29 +272,49 @@
 
 .coach-word--current {
     background: rgba(201, 168, 76, 0.4);
+    border-bottom: 2px solid #c9a84c;
     color: #5a4520;
-    animation: pulse 0.5s ease infinite alternate;
+    animation: coach-pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse {
-    from {
-        background: rgba(201, 168, 76, 0.3);
+@keyframes coach-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
     }
 
-    to {
-        background: rgba(201, 168, 76, 0.5);
+    50% {
+        opacity: 0.6;
     }
 }
 
 .coach-word--correct {
-    background: rgba(76, 175, 80, 0.3);
-    color: #2e7d32;
+    background: rgba(76, 175, 80, 0.25);
+    color: #1b5e20;
 }
 
 .coach-word--error {
-    background: rgba(244, 67, 54, 0.3);
-    color: #c62828;
-    text-decoration: underline wavy #c62828;
+    background: rgba(211, 47, 47, 0.2);
+    color: #b71c1c;
+    border-bottom: 2px solid #b71c1c;
+    animation: coach-error-shake 0.4s ease;
+}
+
+@keyframes coach-error-shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-2px);
+    }
+
+    75% {
+        transform: translateX(2px);
+    }
 }
 
 .coach-word--hidden {
