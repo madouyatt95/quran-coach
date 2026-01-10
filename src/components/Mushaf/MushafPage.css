@@ -39,6 +39,14 @@
     font-family: var(--font-arabic);
     font-size: var(--text-ui-sm);
     color: rgba(201, 168, 76, 0.7);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mushaf-stats {
+    color: #f44336;
+    font-weight: 500;
 }
 
 .mushaf-tajweed-toggle {

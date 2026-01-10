@@ -48,6 +48,8 @@ export function MushafPage() {
     // Coach mode state
     const [isListening, setIsListening] = useState(false);
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
+    const [mistakesCount, setMistakesCount] = useState(0);
+    const [totalProcessed, setTotalProcessed] = useState(0);
 
     // Test mode state
     const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
@@ -134,6 +136,8 @@ export function MushafPage() {
         }
         setViewMode(mode);
         setWordStates(new Map());
+        setMistakesCount(0);
+        setTotalProcessed(0);
         if (mode === 'test') {
             initTestMode();
         } else {
@@ -157,8 +161,11 @@ export function MushafPage() {
                     return newStates;
                 });
 
+                setTotalProcessed(prev => prev + 1);
+
                 // AUTO-CORRECTION: Speak the correct word if user makes a mistake
                 if (!isCorrect) {
+                    setMistakesCount(prev => prev + 1);
                     import('../../lib/pokeService').then(({ speakHint }) => {
                         speakHint(word.text, false); // Clear correction
                     });
@@ -299,7 +306,14 @@ export function MushafPage() {
             <div className="mushaf-frame-header">
                 <div className="mushaf-page-info">
                     <span className="mushaf-surah-name">{pageSurahNames.join(' - ')}</span>
-                    <span className="mushaf-page-number">صفحة {toArabicNumbers(currentPage)}</span>
+                    <span className="mushaf-page-number">
+                        صفحة {toArabicNumbers(currentPage)}
+                        {(viewMode === 'coach' || viewMode === 'test') && totalProcessed > 0 && (
+                            <span className="mushaf-stats">
+                                {' • '} {mistakesCount} خطأ ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
+                            </span>
+                        )}
+                    </span>
                 </div>
                 <div className="mushaf-header-actions">
                     <button
