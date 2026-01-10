@@ -3,10 +3,11 @@
 
 const API_BASE = 'https://api.qurancdn.com/api/v4';
 
-// Available French tafsirs on Quran.com
+// Available French tafsirs and high-quality translations
 export const AVAILABLE_TAFSIRS = [
-    { id: 169, name: 'Ibn Kathir', nameAr: 'ابن كثير', language: 'fr' },
-    { id: 93, name: 'Ibn Kathir (English)', nameAr: 'ابن كثير', language: 'en' },
+    { id: 'french_rashid', name: 'Rashid Maash (Exégèse)', nameAr: 'راشد معاش', language: 'fr', type: 'quranenc' },
+    { id: 'french_montada', name: 'Montada Islamic (Exégèse)', nameAr: 'المنتدى الإسلامي', language: 'fr', type: 'quranenc' },
+    { id: 169, name: 'Ibn Kathir (English)', nameAr: 'ابن كثير', language: 'en', type: 'quran' },
 ];
 
 export interface TafsirInfo {
@@ -43,10 +44,15 @@ export async function fetchAvailableTafsirs(): Promise<TafsirInfo[]> {
 
 // Fetch tafsir for a specific verse
 export async function fetchTafsir(
-    tafsirId: number,
+    tafsirId: number | string,
     surah: number,
     ayah: number
 ): Promise<TafsirContent | null> {
+    // If it's a QuranEnc resource
+    if (typeof tafsirId === 'string' && tafsirId.startsWith('french_')) {
+        return fetchFrenchTafsir(tafsirId, surah, ayah);
+    }
+
     try {
         const verseKey = `${surah}:${ayah}`;
         const response = await fetch(
@@ -61,6 +67,43 @@ export async function fetchTafsir(
         return data.tafsir;
     } catch (error) {
         console.error('Error fetching tafsir:', error);
+        return null;
+    }
+}
+
+// Fetch French "Tafsir" (Translation + Footnotes) from QuranEnc
+async function fetchFrenchTafsir(
+    resourceId: string,
+    surah: number,
+    ayah: number
+): Promise<TafsirContent | null> {
+    try {
+        // QuranEnc API: https://quranenc.com/api/v1/translation/aya/{resource_id}/{sura_number}/{aya_number}
+        const response = await fetch(
+            `https://quranenc.com/api/v1/translation/aya/${resourceId}/${surah}/${ayah}`
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch from QuranEnc');
+
+        const data = await response.json();
+        const result = data.result;
+
+        if (!result) return null;
+
+        // We combine translation and footnotes for a complete explanation
+        const fullContent = result.footnotes
+            ? `${result.translation}\n\nNotes :\n${result.footnotes}`
+            : result.translation;
+
+        return {
+            resource_id: 0,
+            text: fullContent,
+            verse_key: `${surah}:${ayah}`,
+            language_id: 0,
+            resource_name: resourceId === 'french_rashid' ? 'Rashid Maash' : 'Montada Islamic'
+        };
+    } catch (error) {
+        console.error('Error fetching French tafsir:', error);
         return null;
     }
 }

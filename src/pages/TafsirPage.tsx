@@ -11,7 +11,7 @@ export function TafsirPage() {
     const [selectedSurah, setSelectedSurah] = useState(1);
     const [selectedAyah, setSelectedAyah] = useState(1);
     const [maxAyahs, setMaxAyahs] = useState(7);
-    const [selectedTafsir] = useState(AVAILABLE_TAFSIRS[0].id);
+    const [selectedTafsir, setSelectedTafsir] = useState<number | string>(AVAILABLE_TAFSIRS[0].id);
 
     // Content state
     const [verseText, setVerseText] = useState<{ arabic: string; translation: string } | null>(null);
@@ -56,7 +56,8 @@ export function TafsirPage() {
                         .replace(/&nbsp;/g, ' ')
                         .replace(/&amp;/g, '&')
                         .replace(/&lt;/g, '<')
-                        .replace(/&gt;/g, '>');
+                        .replace(/&gt;/g, '>')
+                        .replace(/\\n/g, '\n'); // Handle escaped newlines from some APIs
 
                     setTafsirContent(cleanText);
                     setTafsirSource(tafsir.resource_name || 'Ibn Kathir');
@@ -118,6 +119,27 @@ export function TafsirPage() {
                         >
                             {Array.from({ length: maxAyahs }, (_, i) => i + 1).map((n) => (
                                 <option key={n} value={n}>{n}</option>
+                            ))}
+                        </select>
+                        <ChevronDown size={16} />
+                    </div>
+                </div>
+
+                {/* Tafsir Source Selector */}
+                <div className="tafsir-selector tafsir-selector--wide">
+                    <label>Source d'Exégèse</label>
+                    <div className="tafsir-select-wrapper">
+                        <select
+                            value={selectedTafsir}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setSelectedTafsir(isNaN(Number(val)) ? val : Number(val));
+                            }}
+                        >
+                            {AVAILABLE_TAFSIRS.map((t) => (
+                                <option key={t.id} value={t.id}>
+                                    {t.name} ({t.language.toUpperCase()})
+                                </option>
                             ))}
                         </select>
                         <ChevronDown size={16} />
