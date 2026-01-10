@@ -166,6 +166,17 @@ export function MushafPage() {
                     });
                 }
             },
+            onCurrentWord: (wordIndex) => {
+                // Highlight current word being expected
+                const word = allWords[wordIndex];
+                if (!word) return;
+                const key = `${word.ayahIndex}-${word.wordIndex}`;
+                setWordStates(prev => {
+                    const newStates = new Map(prev);
+                    newStates.set(key, 'current');
+                    return newStates;
+                });
+            },
             onInterimResult: () => { },
             onError: () => { },
             onEnd: () => setIsListening(false)

@@ -1,7 +1,7 @@
 // Speech Recognition Service for real-time Quran recitation feedback
 // Uses Web Speech API for free, real-time speech-to-text
 
-// Arabic normalization helpers
+// Arabic normalization helpers - improved for Quran
 function normalizeArabic(text: string): string {
     return text
         // Remove tashkeel (diacritics)
@@ -9,11 +9,13 @@ function normalizeArabic(text: string): string {
         // Normalize hamza forms
         .replace(/[أإآ]/g, 'ا')
         .replace(/[ؤ]/g, 'و')
-        .replace(/[ئ]/g, 'ي')
+        .replace(/[ئء]/g, 'ي')
         // Remove tatweel
         .replace(/ـ/g, '')
         // Normalize ya/alef maqsura
         .replace(/ى/g, 'ي')
+        // Normalize taa marbuta to haa
+        .replace(/ة/g, 'ه')
         // Remove extra spaces
         .replace(/\s+/g, ' ')
         .trim();
@@ -29,9 +31,14 @@ function areWordsEqual(word1: string, word2: string): boolean {
     // Levenshtein distance for fuzzy matching (allow 1-2 char errors)
     const distance = levenshteinDistance(n1, n2);
     const maxLen = Math.max(n1.length, n2.length);
+
+    if (maxLen === 0) return true;
+
     const similarity = 1 - (distance / maxLen);
 
-    return similarity >= 0.7; // 70% similarity threshold
+    // More tolerant for short words, stricter for long words
+    const threshold = maxLen <= 3 ? 0.6 : 0.7;
+    return similarity >= threshold;
 }
 
 function levenshteinDistance(s1: string, s2: string): number {
@@ -66,6 +73,7 @@ export interface WordMatch {
 export interface RecognitionCallbacks {
     onWordMatch: (wordIndex: number, isCorrect: boolean) => void;
     onInterimResult: (text: string) => void;
+    onCurrentWord: (wordIndex: number) => void; // NEW: for real-time highlighting
     onError: (error: string) => void;
     onEnd: () => void;
 }
@@ -76,6 +84,8 @@ class SpeechRecognitionService {
     private expectedWords: string[] = [];
     private currentWordIndex = 0;
     private callbacks: RecognitionCallbacks | null = null;
+    private processedWords: Set<number> = new Set(); // Track already processed words
+    private lastInterimText = ''; // Track last interim for delta processing
 
     // Check if Web Speech API is supported
     isSupported(): boolean {
@@ -96,6 +106,8 @@ class SpeechRecognitionService {
             .filter(w => w.length > 0);
         this.currentWordIndex = 0;
         this.callbacks = callbacks;
+        this.processedWords = new Set();
+        this.lastInterimText = '';
 
         // Create recognition instance
         const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -106,19 +118,17 @@ class SpeechRecognitionService {
         this.recognition.continuous = true;
         this.recognition.interimResults = true;
 
-        // Handle results
+        // Handle results - IMPROVED with instant interim feedback
         this.recognition.onresult = (event: any) => {
             const results = event.results;
             const lastResult = results[results.length - 1];
             const transcript = lastResult[0].transcript;
 
-            // Send interim result
+            // Send interim result for display
             this.callbacks?.onInterimResult(transcript);
 
-            // If final result, process words
-            if (lastResult.isFinal) {
-                this.processTranscript(transcript);
-            }
+            // Process BOTH interim and final results for instant feedback
+            this.processTranscriptRealtime(transcript, lastResult.isFinal);
         };
 
         // Handle errors
@@ -139,6 +149,8 @@ class SpeechRecognitionService {
         try {
             this.recognition.start();
             this.isListening = true;
+            // Highlight first word as current
+            this.callbacks?.onCurrentWord(0);
             return true;
         } catch (error) {
             console.error('Failed to start speech recognition:', error);
@@ -154,27 +166,105 @@ class SpeechRecognitionService {
         }
     }
 
-    // Process transcript and match words
-    private processTranscript(transcript: string): void {
+    // IMPROVED: Process transcript in real-time with instant feedback
+    private processTranscriptRealtime(transcript: string, isFinal: boolean): void {
         const spokenWords = transcript
             .split(/\s+/)
             .filter(w => w.length > 0);
 
-        for (const spokenWord of spokenWords) {
+        // Find new words not yet processed
+        const newWordStartIndex = this.findNewWordsStartIndex(spokenWords);
+
+        for (let i = newWordStartIndex; i < spokenWords.length; i++) {
             if (this.currentWordIndex >= this.expectedWords.length) break;
 
+            const spokenWord = spokenWords[i];
             const expectedWord = this.expectedWords[this.currentWordIndex];
-            const isCorrect = areWordsEqual(spokenWord, expectedWord);
 
-            this.callbacks?.onWordMatch(this.currentWordIndex, isCorrect);
+            // Try to match with sliding window (allows skipping 1-2 words ahead)
+            const matchResult = this.findBestMatch(spokenWord, this.currentWordIndex);
 
-            // Vibrate on error
-            if (!isCorrect && 'vibrate' in navigator) {
-                navigator.vibrate(200);
+            if (matchResult.matched) {
+                // Mark any skipped words as errors
+                for (let j = this.currentWordIndex; j < matchResult.matchIndex; j++) {
+                    if (!this.processedWords.has(j)) {
+                        this.processedWords.add(j);
+                        this.callbacks?.onWordMatch(j, false);
+                    }
+                }
+
+                // Mark the matched word as correct
+                if (!this.processedWords.has(matchResult.matchIndex)) {
+                    this.processedWords.add(matchResult.matchIndex);
+                    this.callbacks?.onWordMatch(matchResult.matchIndex, true);
+                }
+
+                this.currentWordIndex = matchResult.matchIndex + 1;
+
+                // Update current word highlight
+                if (this.currentWordIndex < this.expectedWords.length) {
+                    this.callbacks?.onCurrentWord(this.currentWordIndex);
+                }
+            } else if (isFinal) {
+                // Only mark as error on final result to avoid false negatives
+                const isCorrect = areWordsEqual(spokenWord, expectedWord);
+
+                if (!this.processedWords.has(this.currentWordIndex)) {
+                    this.processedWords.add(this.currentWordIndex);
+                    this.callbacks?.onWordMatch(this.currentWordIndex, isCorrect);
+
+                    // Vibrate on error
+                    if (!isCorrect && 'vibrate' in navigator) {
+                        navigator.vibrate(100);
+                    }
+                }
+
+                this.currentWordIndex++;
+
+                // Update current word highlight
+                if (this.currentWordIndex < this.expectedWords.length) {
+                    this.callbacks?.onCurrentWord(this.currentWordIndex);
+                }
             }
-
-            this.currentWordIndex++;
         }
+
+        // Update last processed text for delta tracking
+        if (isFinal) {
+            this.lastInterimText = '';
+        } else {
+            this.lastInterimText = transcript;
+        }
+    }
+
+    // Find where new words start (for incremental processing)
+    private findNewWordsStartIndex(currentWords: string[]): number {
+        const lastWords = this.lastInterimText.split(/\s+/).filter(w => w.length > 0);
+
+        // Find common prefix length
+        let commonLength = 0;
+        for (let i = 0; i < Math.min(lastWords.length, currentWords.length); i++) {
+            if (normalizeArabic(lastWords[i]) === normalizeArabic(currentWords[i])) {
+                commonLength++;
+            } else {
+                break;
+            }
+        }
+
+        // Start from after common words, but process at least last word
+        return Math.max(0, commonLength - 1);
+    }
+
+    // IMPROVED: Sliding window to find best match (allows skipping ahead)
+    private findBestMatch(spokenWord: string, startIndex: number): { matched: boolean; matchIndex: number } {
+        const windowSize = 3; // Look up to 3 words ahead
+
+        for (let i = startIndex; i < Math.min(startIndex + windowSize, this.expectedWords.length); i++) {
+            if (areWordsEqual(spokenWord, this.expectedWords[i])) {
+                return { matched: true, matchIndex: i };
+            }
+        }
+
+        return { matched: false, matchIndex: startIndex };
     }
 
     // Get current progress
@@ -191,7 +281,10 @@ class SpeechRecognitionService {
         this.expectedWords = [];
         this.currentWordIndex = 0;
         this.callbacks = null;
+        this.processedWords = new Set();
+        this.lastInterimText = '';
     }
 }
 
 export const speechRecognitionService = new SpeechRecognitionService();
+

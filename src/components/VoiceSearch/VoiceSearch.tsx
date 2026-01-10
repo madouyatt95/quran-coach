@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Search, Loader2, X } from 'lucide-react';
 import { usePremiumStore } from '../../stores/premiumStore';
+import { whisperService } from '../../lib/whisperService';
 import './VoiceSearch.css';
 
 interface VoiceSearchProps {
@@ -12,6 +13,8 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
     const { isPremium } = usePremiumStore();
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isLoadingModel, setIsLoadingModel] = useState(false);
+    const [modelProgress, setModelProgress] = useState(0);
     const [results, setResults] = useState<Array<{ surah: number; ayah: number; text: string; surahName: string }>>([]);
     const [error, setError] = useState<string | null>(null);
     const [transcribed, setTranscribed] = useState<string>('');
@@ -19,10 +22,35 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
 
+    // Load Whisper model on mount if premium
+    useEffect(() => {
+        if (isPremium && !whisperService.isReady()) {
+            setIsLoadingModel(true);
+            whisperService.loadModel((progress) => {
+                setModelProgress(Math.round(progress * 100));
+            }).then(() => {
+                setIsLoadingModel(false);
+            });
+        }
+    }, [isPremium]);
+
     const startRecording = async () => {
         if (!isPremium) {
             setError("Fonctionnalité Premium requise");
             return;
+        }
+
+        // Ensure model is loaded
+        if (!whisperService.isReady()) {
+            setIsLoadingModel(true);
+            const loaded = await whisperService.loadModel((progress) => {
+                setModelProgress(Math.round(progress * 100));
+            });
+            setIsLoadingModel(false);
+            if (!loaded) {
+                setError("Impossible de charger le modèle de reconnaissance");
+                return;
+            }
         }
 
         setError(null);
@@ -70,29 +98,8 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
         try {
             const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
 
-            const reader = new FileReader();
-            const base64Audio = await new Promise<string>((resolve, reject) => {
-                reader.onload = () => {
-                    const result = reader.result as string;
-                    resolve(result.split(',')[1]);
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(audioBlob);
-            });
-
-            // Send to API for transcription
-            const response = await fetch('/api/transcribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ audio: base64Audio }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Transcription failed');
-            }
-
-            const data = await response.json();
-            const searchText = data.transcribed || '';
+            // Use FREE in-browser Whisper instead of paid OpenAI API
+            const searchText = await whisperService.transcribe(audioBlob);
             setTranscribed(searchText);
 
             if (!searchText.trim()) {
@@ -145,7 +152,12 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
                 </p>
 
                 <div className="voice-search__controls">
-                    {isProcessing ? (
+                    {isLoadingModel ? (
+                        <div className="voice-search__processing">
+                            <Loader2 size={32} className="voice-search__spinner" />
+                            <span>Chargement du modèle... {modelProgress}%</span>
+                        </div>
+                    ) : isProcessing ? (
                         <div className="voice-search__processing">
                             <Loader2 size={32} className="voice-search__spinner" />
                             <span>Recherche en cours...</span>
