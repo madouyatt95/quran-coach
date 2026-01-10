@@ -6,6 +6,12 @@ const RECITERS = [
     { id: 'ar.abdulbasit', name: 'Abdul Basit', nameAr: 'عبد الباسط' },
     { id: 'ar.husary', name: 'Mahmoud Al-Husary', nameAr: 'محمود الحصري' },
     { id: 'ar.minshawi', name: 'Mohamed Al-Minshawi', nameAr: 'محمد المنشاوي' },
+    { id: 'ar.abdurrahmaansudais', name: 'Abdurrahman As-Sudais', nameAr: 'عبد الرحمن السديس' },
+    { id: 'ar.saadalghamdi', name: 'Saad Al-Ghamdi', nameAr: 'سعد الغامدي' },
+    { id: 'ar.mahermuaiqly', name: 'Maher Al-Muaiqly', nameAr: 'ماهر المعيقلي' },
+    { id: 'ar.ahmedajamy', name: 'Ahmad Al-Ajmi', nameAr: 'أحمد العجمي' },
+    { id: 'ar.haborehman', name: 'Hani Ar-Rifai', nameAr: 'هاني الرفاعي' },
+    { id: 'ar.faresabbad', name: 'Fares Abbad', nameAr: 'فارس عباد' },
 ];
 
 interface ReciterMatch {
@@ -107,6 +113,12 @@ function getReciterAudioUrl(reciterId: string, ayahNumber: number): string {
         'ar.abdulbasit': 'https://cdn.islamic.network/quran/audio/128/ar.abdulbasitmurattal',
         'ar.husary': 'https://cdn.islamic.network/quran/audio/128/ar.husary',
         'ar.minshawi': 'https://cdn.islamic.network/quran/audio/128/ar.minshawi',
+        'ar.abdurrahmaansudais': 'https://cdn.islamic.network/quran/audio/128/ar.abdurrahmaansudais',
+        'ar.saadalghamdi': 'https://cdn.islamic.network/quran/audio/128/ar.saadalghamdi',
+        'ar.mahermuaiqly': 'https://cdn.islamic.network/quran/audio/128/ar.mahermuaiqly',
+        'ar.ahmedajamy': 'https://cdn.islamic.network/quran/audio/128/ar.ahmedajamy',
+        'ar.haborehman': 'https://cdn.islamic.network/quran/audio/128/ar.hanirifai',
+        'ar.faresabbad': 'https://cdn.islamic.network/quran/audio/128/ar.faresabbad',
     };
     return `${baseUrls[reciterId] || baseUrls['ar.alafasy']}/${ayahNumber}.mp3`;
 }
