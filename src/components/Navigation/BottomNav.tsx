@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Book, Headphones, Trophy, BarChart2, Clock } from 'lucide-react';
+import { Book, Headphones, Trophy, BookOpen, Clock } from 'lucide-react';
 import './BottomNav.css';
 
 interface NavItem {
@@ -12,7 +12,7 @@ const navItems: NavItem[] = [
     { path: '/', icon: <Book />, label: 'Lecture' },
     { path: '/hifdh', icon: <Headphones />, label: 'Hifdh' },
     { path: '/challenges', icon: <Trophy />, label: 'Défis' },
-    { path: '/stats', icon: <BarChart2 />, label: 'Stats' },
+    { path: '/tafsir', icon: <BookOpen />, label: 'Tafsir' },
     { path: '/prayers', icon: <Clock />, label: 'Prières' },
 ];
 

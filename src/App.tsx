@@ -10,6 +10,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { PrayerTimesPage } from './pages/PrayerTimesPage';
 import { AdhkarPage } from './pages/AdhkarPage';
 import { MosquesPage } from './pages/MosquesPage';
+import { TafsirPage } from './pages/TafsirPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -99,6 +100,7 @@ function AppContent() {
           <Route path="/prayers" element={<PrayerTimesPage />} />
           <Route path="/adhkar" element={<AdhkarPage />} />
           <Route path="/mosques" element={<MosquesPage />} />
+          <Route path="/tafsir" element={<TafsirPage />} />
         </Routes>
       </main>
       <BottomNav />
