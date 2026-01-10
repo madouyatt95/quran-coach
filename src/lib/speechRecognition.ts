@@ -79,7 +79,7 @@ export interface WordMatch {
 }
 
 export interface RecognitionCallbacks {
-    onWordMatch: (wordIndex: number, isCorrect: boolean) => void;
+    onWordMatch: (wordIndex: number, isCorrect: boolean, spokenWord?: string) => void;
     onInterimResult: (text: string) => void;
     onCurrentWord: (wordIndex: number) => void; // NEW: for real-time highlighting
     onError: (error: string) => void;
@@ -197,16 +197,16 @@ class SpeechRecognitionService {
                 for (let j = this.currentWordIndex; j < matchResult.matchIndex; j++) {
                     if (!this.processedWords.has(j)) {
                         this.processedWords.add(j);
-                        // Only trigger callback with error for the first skipped word to avoid TTS spam
-                        // The others are still marked as processed/error in the UI via the state map
-                        this.callbacks?.onWordMatch(j, false);
+                        // Only trigger callback with error for the first skipped word to avoid UI spam
+                        // Passing undefined for spoken word since it was skipped entirely
+                        this.callbacks?.onWordMatch(j, false, "(sauté)");
                     }
                 }
 
                 // Mark the matched word as correct
                 if (!this.processedWords.has(matchResult.matchIndex)) {
                     this.processedWords.add(matchResult.matchIndex);
-                    this.callbacks?.onWordMatch(matchResult.matchIndex, true);
+                    this.callbacks?.onWordMatch(matchResult.matchIndex, true, spokenWord);
                 }
 
                 this.currentWordIndex = matchResult.matchIndex + 1;
@@ -221,7 +221,7 @@ class SpeechRecognitionService {
 
                 if (!this.processedWords.has(this.currentWordIndex)) {
                     this.processedWords.add(this.currentWordIndex);
-                    this.callbacks?.onWordMatch(this.currentWordIndex, isCorrect);
+                    this.callbacks?.onWordMatch(this.currentWordIndex, isCorrect, spokenWord);
 
                     // Vibrate on error
                     if (!isCorrect && 'vibrate' in navigator) {

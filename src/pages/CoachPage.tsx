@@ -11,7 +11,8 @@ import {
     Settings2,
     CheckCircle,
     XCircle,
-    RotateCcw
+    RotateCcw,
+    X
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore } from '../stores/settingsStore';
@@ -53,6 +54,8 @@ export function CoachPage() {
 
     // Word states for highlighting
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
+    const [mistakes, setMistakes] = useState<Record<string, { expected: string, spoken: string }>>({});
+    const [selectedError, setSelectedError] = useState<string | null>(null);
 
     // Test mode: which words are hidden
     const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
@@ -127,6 +130,8 @@ export function CoachPage() {
         setHiddenWords(new Set());
         setCorrectCount(0);
         setTotalWords(0);
+        setMistakes({});
+        setSelectedError(null);
     };
 
     // Initialize test mode (hide random words)
@@ -149,7 +154,7 @@ export function CoachPage() {
         const expectedText = pageAyahs.map(a => a.text).join(' ');
 
         const success = speechRecognitionService.start(expectedText, {
-            onWordMatch: (wordIndex, isCorrect) => {
+            onWordMatch: (wordIndex, isCorrect, spokenWord) => {
                 const word = allWords[wordIndex];
                 if (!word) return;
 
@@ -160,11 +165,15 @@ export function CoachPage() {
                     return newStates;
                 });
 
-                // AUTO-CORRECTION: Speak the correct word if user makes a mistake
+                // Handle error storage for comparison
                 if (!isCorrect) {
-                    import('../lib/pokeService').then(({ speakHint }) => {
-                        speakHint(word.text, false); // Clear correction
-                    });
+                    setMistakes(prev => ({
+                        ...prev,
+                        [key]: {
+                            expected: word.text,
+                            spoken: spokenWord || '(non entendu)'
+                        }
+                    }));
 
                     // Vibrate on error
                     if ('vibrate' in navigator) {
@@ -405,7 +414,9 @@ export function CoachPage() {
                                 return (
                                     <span
                                         key={key}
-                                        className={`coach-word ${isHidden ? 'coach-word--hidden' : ''} coach-word--${state}`}
+                                        className={`coach-word coach-word--${state} ${isHidden ? 'coach-word--hidden' : ''}`}
+                                        onClick={() => mistakes[key] && setSelectedError(key)}
+                                        style={{ cursor: mistakes[key] ? 'pointer' : 'default' }}
                                     >
                                         {isHidden ? '████' : word}
                                     </span>
@@ -467,6 +478,29 @@ export function CoachPage() {
             )}
 
             {error && <div className="coach-error">{error}</div>}
+
+            {/* Error Comparison Modal */}
+            {selectedError && mistakes[selectedError] && (
+                <div className="error-modal-overlay" onClick={() => setSelectedError(null)}>
+                    <div className="error-modal" onClick={e => e.stopPropagation()}>
+                        <div className="error-modal__header">
+                            <h3>Comparaison d'erreur</h3>
+                            <button onClick={() => setSelectedError(null)}><X size={20} /></button>
+                        </div>
+                        <div className="error-modal__content">
+                            <div className="error-item">
+                                <span className="error-label">Attendu :</span>
+                                <span className="error-text expected" dir="rtl">{mistakes[selectedError].expected}</span>
+                            </div>
+                            <div className="error-item">
+                                <span className="error-label">Entendu :</span>
+                                <span className="error-text spoken" dir="rtl">{mistakes[selectedError].spoken}</span>
+                            </div>
+                        </div>
+                        <p className="error-modal__hint">Le feedback vous aide à corriger votre prononciation.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

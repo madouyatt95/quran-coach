@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Loader2, Settings2, Volume2, Mic, BookOpen, GraduationCap, FileQuestion, Crown, Square } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, Settings2, Volume2, Mic, BookOpen, GraduationCap, FileQuestion, Crown, Square, X } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { usePremiumStore } from '../../stores/premiumStore';
@@ -50,6 +50,9 @@ export function MushafPage() {
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [mistakesCount, setMistakesCount] = useState(0);
     const [totalProcessed, setTotalProcessed] = useState(0);
+    // Stores: { [key]: { expected: string, spoken: string } }
+    const [mistakes, setMistakes] = useState<Record<string, { expected: string, spoken: string }>>({});
+    const [selectedError, setSelectedError] = useState<string | null>(null);
 
     // Test mode state
     const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
@@ -110,6 +113,10 @@ export function MushafPage() {
                 setIsLoading(false);
                 // Reset states on page change
                 setWordStates(new Map());
+                setMistakesCount(0);
+                setTotalProcessed(0);
+                setMistakes({});
+                setSelectedError(null);
                 setHiddenWords(new Set());
             })
             .catch(() => {
@@ -138,6 +145,8 @@ export function MushafPage() {
         setWordStates(new Map());
         setMistakesCount(0);
         setTotalProcessed(0);
+        setMistakes({});
+        setSelectedError(null);
         if (mode === 'test') {
             initTestMode();
         } else {
@@ -150,7 +159,7 @@ export function MushafPage() {
         const expectedText = pageAyahs.map(a => a.text).join(' ');
 
         speechRecognitionService.start(expectedText, {
-            onWordMatch: (wordIndex, isCorrect) => {
+            onWordMatch: (wordIndex, isCorrect, spokenWord) => {
                 const word = allWords[wordIndex];
                 if (!word) return;
 
@@ -163,12 +172,16 @@ export function MushafPage() {
 
                 setTotalProcessed(prev => prev + 1);
 
-                // AUTO-CORRECTION: Speak the correct word if user makes a mistake
+                // Handle error storage for comparison
                 if (!isCorrect) {
                     setMistakesCount(prev => prev + 1);
-                    import('../../lib/pokeService').then(({ speakHint }) => {
-                        speakHint(word.text, false); // Clear correction
-                    });
+                    setMistakes(prev => ({
+                        ...prev,
+                        [key]: {
+                            expected: word.text,
+                            spoken: spokenWord || '(non entendu)'
+                        }
+                    }));
 
                     // Vibrate on error
                     if ('vibrate' in navigator) {
@@ -442,6 +455,8 @@ export function MushafPage() {
                                                             <span
                                                                 key={key}
                                                                 className={`mushaf-word ${getWordClass(ayahIndex, wordIndex)}`}
+                                                                onClick={() => mistakes[key] && setSelectedError(key)}
+                                                                style={{ cursor: mistakes[key] ? 'pointer' : 'default' }}
                                                             >
                                                                 {isHidden ? '████' : word}
                                                             </span>
@@ -539,6 +554,29 @@ export function MushafPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Error Comparison Modal */}
+            {selectedError && mistakes[selectedError] && (
+                <div className="error-modal-overlay" onClick={() => setSelectedError(null)}>
+                    <div className="error-modal" onClick={e => e.stopPropagation()}>
+                        <div className="error-modal__header">
+                            <h3>Comparaison d'erreur</h3>
+                            <button onClick={() => setSelectedError(null)}><X size={20} /></button>
+                        </div>
+                        <div className="error-modal__content">
+                            <div className="error-item">
+                                <span className="error-label">Attendu :</span>
+                                <span className="error-text expected" dir="rtl">{mistakes[selectedError].expected}</span>
+                            </div>
+                            <div className="error-item">
+                                <span className="error-label">Entendu :</span>
+                                <span className="error-text spoken" dir="rtl">{mistakes[selectedError].spoken}</span>
+                            </div>
+                        </div>
+                        <p className="error-modal__hint">Le feedback vous aide à corriger votre prononciation.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
