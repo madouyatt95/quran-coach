@@ -1,10 +1,7 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Radio, Loader2, Volume2, BookOpen, ChevronRight, RefreshCcw, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useQuranStore } from '../stores/quranStore';
 import { identifyReciter } from '../lib/audioFingerprint';
-import { fetchPage } from '../lib/quranApi';
-import type { Ayah } from '../types';
 import './ShazamPage.css';
 
 interface ShazamResult {
@@ -18,53 +15,18 @@ interface ShazamResult {
     reciterConfidence?: number;
 }
 
-interface CachedAyah {
-    surahNumber: number;
-    numberInSurah: number;
-    text: string;
-}
-
 export function ShazamPage() {
     const navigate = useNavigate();
-    const { surahs } = useQuranStore();
 
     const [isListening, setIsListening] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [processingStatus, setProcessingStatus] = useState('');
     const [result, setResult] = useState<ShazamResult | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [cachedAyahs, setCachedAyahs] = useState<CachedAyah[]>([]);
-    const [_isLoadingAyahs, setIsLoadingAyahs] = useState(false);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const capturedAudioRef = useRef<Blob | null>(null);
-
-    // Load ayahs for search (first 10 pages for quick search)
-    useEffect(() => {
-        const loadAyahs = async () => {
-            if (cachedAyahs.length > 0) return;
-            setIsLoadingAyahs(true);
-            try {
-                const allAyahs: CachedAyah[] = [];
-                // Load first 50 pages for quick search
-                for (let page = 1; page <= 50; page++) {
-                    const pageAyahs: Ayah[] = await fetchPage(page);
-                    allAyahs.push(...pageAyahs.map((a: Ayah) => ({
-                        surahNumber: a.surah,
-                        numberInSurah: a.numberInSurah,
-                        text: a.text
-                    })));
-                }
-                setCachedAyahs(allAyahs);
-            } catch (err) {
-                console.error('Failed to load ayahs for search:', err);
-            } finally {
-                setIsLoadingAyahs(false);
-            }
-        };
-        loadAyahs();
-    }, [cachedAyahs.length]);
 
     const startListening = useCallback(async () => {
         setError(null);
@@ -99,35 +61,35 @@ export function ShazamPage() {
 
                 try {
                     const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-                    capturedAudioRef.current = audioBlob; // Save for reciter identification
+                    capturedAudioRef.current = audioBlob;
 
-                    // Step 1: Transcribe the audio using server API (OpenAI Whisper)
+                    // Step 1: Transcribe using server API (OpenAI Whisper)
                     setProcessingStatus('Transcription IA...');
 
-                    // Convert blob to base64
                     const reader = new FileReader();
                     const base64Audio = await new Promise<string>((resolve, reject) => {
                         reader.onload = () => {
-                            const result = reader.result as string;
-                            resolve(result.split(',')[1]);
+                            const dataUrl = reader.result as string;
+                            resolve(dataUrl.split(',')[1]);
                         };
                         reader.onerror = reject;
                         reader.readAsDataURL(audioBlob);
                     });
 
-                    // Call server API with OpenAI key
-                    const response = await fetch('/api/transcribe', {
+                    const transcribeResponse = await fetch('/api/transcribe', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ audio: base64Audio, mimeType }),
                     });
 
-                    if (!response.ok) {
+                    if (!transcribeResponse.ok) {
                         throw new Error('Transcription failed');
                     }
 
-                    const data = await response.json();
-                    const transcript = data.transcribed || '';
+                    const transcribeData = await transcribeResponse.json();
+                    const transcript = transcribeData.transcribed || '';
+
+                    console.log('Transcript:', transcript); // Debug
 
                     if (!transcript || transcript.trim().length === 0) {
                         setError("Aucun son détecté. Approchez le téléphone de la source audio.");
@@ -135,9 +97,28 @@ export function ShazamPage() {
                         return;
                     }
 
-                    // Step 2: Search for the verse in the Quran
+                    // Step 2: Search in Quran.com API
                     setProcessingStatus('Recherche du verset...');
-                    const foundResult = searchVerseInQuran(transcript);
+
+                    const searchResponse = await fetch(
+                        `https://api.alquran.cloud/v1/search/${encodeURIComponent(transcript)}/all/ar`
+                    );
+
+                    let foundResult: ShazamResult | null = null;
+
+                    if (searchResponse.ok) {
+                        const searchData = await searchResponse.json();
+                        if (searchData.data?.matches && searchData.data.matches.length > 0) {
+                            const match = searchData.data.matches[0];
+                            foundResult = {
+                                surah: match.surah.number,
+                                surahName: match.surah.name,
+                                ayah: match.numberInSurah,
+                                text: match.text,
+                                confidence: 0.9
+                            };
+                        }
+                    }
 
                     if (foundResult) {
                         // Step 3: Identify the reciter
@@ -159,7 +140,7 @@ export function ShazamPage() {
 
                         setResult(foundResult);
                     } else {
-                        setError(`Verset non trouvé. Transcript: "${transcript.substring(0, 50)}..."`);
+                        setError(`Verset non trouvé. Transcript: "${transcript}"`);
                     }
                 } catch (err) {
                     setError("Erreur lors de l'identification. Réessayez.");
@@ -192,66 +173,8 @@ export function ShazamPage() {
         }
     }, []);
 
-    const searchVerseInQuran = useCallback((transcript: string): ShazamResult | null => {
-        // Normalize the transcript
-        const normalizedTranscript = normalizeArabic(transcript);
-
-        // Search through cached ayahs
-        for (const ayah of cachedAyahs) {
-            const normalizedAyah = normalizeArabic(ayah.text);
-
-            // Check if the transcript is a substring of any ayah
-            if (normalizedAyah.includes(normalizedTranscript) ||
-                normalizedTranscript.includes(normalizedAyah.substring(0, 20))) {
-                const surah = surahs.find(s => s.number === ayah.surahNumber);
-                return {
-                    surah: ayah.surahNumber,
-                    surahName: surah?.name || `Sourate ${ayah.surahNumber}`,
-                    ayah: ayah.numberInSurah,
-                    text: ayah.text,
-                    confidence: 0.85
-                };
-            }
-        }
-
-        // Fuzzy search fallback - look for significant word matches
-        const words = normalizedTranscript.split(/\s+/).filter(w => w.length > 2);
-        if (words.length >= 2) {
-            for (const ayah of cachedAyahs) {
-                const normalizedAyah = normalizeArabic(ayah.text);
-                let matchCount = 0;
-                for (const word of words) {
-                    if (normalizedAyah.includes(word)) matchCount++;
-                }
-                if (matchCount >= Math.min(3, words.length)) {
-                    const surah = surahs.find(s => s.number === ayah.surahNumber);
-                    return {
-                        surah: ayah.surahNumber,
-                        surahName: surah?.name || `Sourate ${ayah.surahNumber}`,
-                        ayah: ayah.numberInSurah,
-                        text: ayah.text,
-                        confidence: 0.6
-                    };
-                }
-            }
-        }
-
-        return null;
-    }, [cachedAyahs, surahs]);
-
-    const normalizeArabic = (text: string): string => {
-        return text
-            .replace(/[\u064B-\u0652]/g, '') // Remove tashkeel
-            .replace(/[ٱأإآ]/g, 'ا') // Normalize alif
-            .replace(/ى/g, 'ي')
-            .replace(/ة/g, 'ه')
-            .replace(/\s+/g, ' ')
-            .trim();
-    };
-
     const goToVerse = () => {
         if (result) {
-            // Navigate to the Mushaf page for this verse
             navigate(`/?surah=${result.surah}&ayah=${result.ayah}`);
         }
     };
@@ -310,15 +233,6 @@ export function ShazamPage() {
                         <Radio size={48} />
                     )}
                 </button>
-
-                {/* Instructions */}
-                {!result && !error && !isListening && !isProcessing && (
-                    <div className="shazam-instructions">
-                        <p>1. Approchez le téléphone de la source audio</p>
-                        <p>2. Appuyez sur le bouton</p>
-                        <p>3. L'app identifie le verset en quelques secondes</p>
-                    </div>
-                )}
 
                 {/* Error */}
                 {error && (
