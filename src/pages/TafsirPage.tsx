@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, ChevronDown, Loader2 } from 'lucide-react';
+import { BookOpen, ChevronDown, Loader2, Users, MessageCircle } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
 import './TafsirPage.css';
+
+// List of narrative surahs with dialogues
+const NARRATIVE_SURAHS = [12, 18, 19, 20, 26, 27, 28]; // Yusuf, Kahf, Maryam, Ta-Ha, Shu'ara, Naml, Qasas
 
 export function TafsirPage() {
     const { surahs } = useQuranStore();
@@ -21,6 +24,10 @@ export function TafsirPage() {
     // Loading states
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Dialogue Narratif mode
+    const [narrativeMode, setNarrativeMode] = useState(false);
+    const isNarrativeSurah = NARRATIVE_SURAHS.includes(selectedSurah);
 
     // Update max ayahs when surah changes
     useEffect(() => {
@@ -87,6 +94,18 @@ export function TafsirPage() {
                     Tafsir
                 </h1>
                 <span className="tafsir-subtitle">التفسير</span>
+
+                {/* Narrative Mode Toggle */}
+                {isNarrativeSurah && (
+                    <button
+                        className={`tafsir-narrative-toggle ${narrativeMode ? 'active' : ''}`}
+                        onClick={() => setNarrativeMode(!narrativeMode)}
+                        title="Mode Dialogue Narratif"
+                    >
+                        <Users size={18} />
+                        Dialogues
+                    </button>
+                )}
             </div>
 
             {/* Selectors */}
@@ -181,10 +200,33 @@ export function TafsirPage() {
                         <p>{error}</p>
                     </div>
                 ) : tafsirContent ? (
-                    <div className="tafsir-text">
-                        {tafsirContent.split('\n').map((paragraph, idx) => (
-                            paragraph.trim() && <p key={idx}>{paragraph}</p>
-                        ))}
+                    <div className={`tafsir-text ${narrativeMode ? 'narrative-mode' : ''}`}>
+                        {narrativeMode ? (
+                            // Dialogue Narratif rendering
+                            tafsirContent.split('\n').map((paragraph, idx) => {
+                                const trimmed = paragraph.trim();
+                                if (!trimmed) return null;
+
+                                // Detect dialogue patterns (quotes, colons after names)
+                                const isDialogue = /^[\"\u00AB\u201C]|:\s*[\"\u00AB\u201C]|\u0642\u0627\u0644/.test(trimmed);
+                                const isSpeaker = /^[A-Z\u0600-\u06FF][^:]+:/.test(trimmed);
+
+                                if (isDialogue || isSpeaker) {
+                                    return (
+                                        <div key={idx} className="dialogue-bubble">
+                                            <MessageCircle size={14} className="dialogue-icon" />
+                                            <p>{trimmed}</p>
+                                        </div>
+                                    );
+                                }
+                                return <p key={idx} className="narrator-text">{trimmed}</p>;
+                            })
+                        ) : (
+                            // Standard rendering
+                            tafsirContent.split('\n').map((paragraph, idx) => (
+                                paragraph.trim() && <p key={idx}>{paragraph}</p>
+                            ))
+                        )}
                     </div>
                 ) : null}
             </div>

@@ -1,0 +1,353 @@
+/* ========================================
+   Shazam Page - Quran Audio Identification
+   ======================================== */
+
+.shazam-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0D1117 0%, #1a1a2e 50%, #0D1117 100%);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px;
+}
+
+/* Header */
+.shazam-header {
+    padding: var(--space-xl) var(--space-lg);
+    text-align: center;
+    background: linear-gradient(180deg, rgba(201, 168, 76, 0.1) 0%, transparent 100%);
+}
+
+.shazam-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #c9a84c;
+    margin: 0;
+}
+
+.shazam-subtitle {
+    margin-top: var(--space-sm);
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Main Content */
+.shazam-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    gap: var(--space-xl);
+}
+
+/* Visualizer */
+.shazam-visualizer {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shazam-wave {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 60px;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+}
+
+.shazam-visualizer.active .shazam-wave {
+    opacity: 1;
+}
+
+.shazam-wave-bar {
+    width: 6px;
+    height: 20px;
+    background: linear-gradient(180deg, #c9a84c, #a8893d);
+    border-radius: 3px;
+    animation: wave-idle 1s ease-in-out infinite;
+}
+
+.shazam-visualizer.active .shazam-wave-bar {
+    animation: wave-active 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes wave-idle {
+
+    0%,
+    100% {
+        height: 20px;
+    }
+
+    50% {
+        height: 30px;
+    }
+}
+
+@keyframes wave-active {
+    0% {
+        height: 15px;
+    }
+
+    100% {
+        height: 60px;
+    }
+}
+
+/* Rings */
+.shazam-rings {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shazam-ring {
+    position: absolute;
+    border: 2px solid rgba(201, 168, 76, 0.2);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.shazam-ring:nth-child(1) {
+    width: 120px;
+    height: 120px;
+}
+
+.shazam-ring:nth-child(2) {
+    width: 160px;
+    height: 160px;
+}
+
+.shazam-ring:nth-child(3) {
+    width: 200px;
+    height: 200px;
+}
+
+.shazam-visualizer.active .shazam-ring {
+    animation: ring-pulse 2s ease-out infinite;
+}
+
+.shazam-visualizer.active .shazam-ring:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.shazam-visualizer.active .shazam-ring:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes ring-pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Processing animation */
+.shazam-visualizer.processing .shazam-wave-bar {
+    animation: wave-processing 0.8s ease-in-out infinite;
+}
+
+@keyframes wave-processing {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Status */
+.shazam-status {
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+}
+
+/* Main Button */
+.shazam-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c9a84c, #a8893d);
+    color: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(201, 168, 76, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.shazam-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(201, 168, 76, 0.4);
+}
+
+.shazam-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.shazam-btn.listening {
+    background: linear-gradient(135deg, #ff6b6b, #ee5253);
+    animation: btn-pulse 1s ease-in-out infinite;
+}
+
+.shazam-btn.processing {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+@keyframes btn-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 8px 48px rgba(255, 107, 107, 0.5);
+    }
+}
+
+.shazam-btn .spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Instructions */
+.shazam-instructions {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.shazam-instructions p {
+    margin: var(--space-xs) 0;
+}
+
+/* Error */
+.shazam-error {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-align: center;
+    max-width: 320px;
+}
+
+.shazam-error p {
+    color: #e57373;
+    margin-bottom: var(--space-md);
+}
+
+.shazam-error button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+}
+
+/* Result */
+.shazam-result {
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    width: 100%;
+    max-width: 400px;
+    animation: slide-up 0.4s ease-out;
+}
+
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.shazam-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.shazam-result-surah {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #c9a84c;
+}
+
+.shazam-result-ayah {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+}
+
+.shazam-result-text {
+    font-family: var(--font-arabic);
+    font-size: 1.4rem;
+    line-height: 2;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.shazam-result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.shazam-result-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    transition: background 0.2s;
+}
+
+.shazam-result-actions button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}

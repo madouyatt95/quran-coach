@@ -246,3 +246,81 @@
     font-size: var(--text-ui-sm);
     color: var(--color-text-muted);
 }
+
+/* ========================================
+   Dialogue Narratif Mode
+   ======================================== */
+
+.tafsir-narrative-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    margin-top: var(--space-sm);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    font-size: var(--text-ui-xs);
+    transition: all var(--transition-fast);
+}
+
+.tafsir-narrative-toggle:hover {
+    background: rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: #c9a84c;
+}
+
+.tafsir-narrative-toggle.active {
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.25), rgba(201, 168, 76, 0.15));
+    border-color: #c9a84c;
+    color: #c9a84c;
+}
+
+/* Narrative Mode Styles */
+.tafsir-text.narrative-mode {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.dialogue-bubble {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: rgba(201, 168, 76, 0.08);
+    border-left: 3px solid #c9a84c;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.dialogue-icon {
+    flex-shrink: 0;
+    color: #c9a84c;
+    margin-top: 3px;
+}
+
+.dialogue-bubble p {
+    margin: 0;
+    font-style: italic;
+    color: var(--color-text-primary);
+}
+
+.narrator-text {
+    color: var(--color-text-secondary);
+    padding-left: var(--space-md);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
