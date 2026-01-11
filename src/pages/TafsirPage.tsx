@@ -29,6 +29,9 @@ export function TafsirPage() {
     const [narrativeMode, setNarrativeMode] = useState(false);
     const isNarrativeSurah = NARRATIVE_SURAHS.includes(selectedSurah);
 
+    // Flag to track if we're initializing from Shazam (to avoid resetting ayah)
+    const [initializedFromShazam, setInitializedFromShazam] = useState(false);
+
     // Read from sessionStorage on mount (from Shazam navigation)
     useEffect(() => {
         const shazamResult = sessionStorage.getItem('shazamResult');
@@ -36,7 +39,10 @@ export function TafsirPage() {
             try {
                 const { surah, ayah } = JSON.parse(shazamResult);
                 if (surah) setSelectedSurah(surah);
-                if (ayah) setSelectedAyah(ayah);
+                if (ayah) {
+                    setSelectedAyah(ayah);
+                    setInitializedFromShazam(true);
+                }
                 sessionStorage.removeItem('shazamResult'); // Clear after reading
             } catch (e) {
                 console.error('Failed to parse shazamResult', e);
@@ -49,10 +55,15 @@ export function TafsirPage() {
         const surah = surahs.find(s => s.number === selectedSurah);
         if (surah) {
             setMaxAyahs(surah.numberOfAyahs);
-            // Reset ayah to 1 when surah changes
-            setSelectedAyah(1);
+            // Only reset ayah to 1 if NOT initialized from Shazam
+            if (!initializedFromShazam) {
+                setSelectedAyah(1);
+            } else {
+                // Clear the flag after first render
+                setInitializedFromShazam(false);
+            }
         }
-    }, [selectedSurah, surahs]);
+    }, [selectedSurah, surahs, initializedFromShazam]);
 
     // Fetch tafsir when selection changes
     useEffect(() => {

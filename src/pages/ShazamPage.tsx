@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
-import { Radio, Loader2, Volume2, BookOpen, ChevronRight, RefreshCcw, User } from 'lucide-react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { Radio, Loader2, Volume2, BookOpen, ChevronRight, RefreshCcw, User, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuranStore } from '../stores/quranStore';
 import { identifyReciter } from '../lib/audioFingerprint';
@@ -25,19 +25,32 @@ export function ShazamPage() {
     const [processingStatus, setProcessingStatus] = useState('');
     const [result, setResult] = useState<ShazamResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [reciterStatus, setReciterStatus] = useState<string>('');
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const capturedAudioRef = useRef<Blob | null>(null);
 
+    // Restore result from sessionStorage on mount
+    useEffect(() => {
+        const savedResult = sessionStorage.getItem('shazamPageResult');
+        if (savedResult) {
+            try {
+                setResult(JSON.parse(savedResult));
+            } catch (e) {
+                console.error('Failed to restore shazam result');
+            }
+        }
+    }, []);
+
     const startListening = useCallback(async () => {
         setError(null);
         setResult(null);
+        setReciterStatus('');
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-            // Determine MIME type
             const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
                 ? 'audio/webm;codecs=opus'
                 : MediaRecorder.isTypeSupported('audio/mp4')
@@ -57,15 +70,13 @@ export function ShazamPage() {
             mediaRecorder.onstop = async () => {
                 setIsListening(false);
                 setIsProcessing(true);
-
-                // Stop the stream
                 stream.getTracks().forEach(track => track.stop());
 
                 try {
                     const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
                     capturedAudioRef.current = audioBlob;
 
-                    // Step 1: Transcribe using server API (OpenAI Whisper)
+                    // Step 1: Transcribe using server API
                     setProcessingStatus('Transcription IA...');
 
                     const reader = new FileReader();
@@ -90,8 +101,6 @@ export function ShazamPage() {
 
                     const transcribeData = await transcribeResponse.json();
                     const transcript = transcribeData.transcribed || '';
-
-                    console.log('Transcript:', transcript); // Debug
 
                     if (!transcript || transcript.trim().length === 0) {
                         setError("Aucun son détecté. Approchez le téléphone de la source audio.");
@@ -123,7 +132,7 @@ export function ShazamPage() {
                         }
                     }
 
-                    // Fallback: try with first 5 words if full transcript didn't work
+                    // Fallback: try with first 5 words
                     if (!foundResult) {
                         const words = transcript.split(/\s+/).filter((w: string) => w.length > 1);
                         if (words.length >= 3) {
@@ -151,24 +160,33 @@ export function ShazamPage() {
                     if (foundResult) {
                         // Step 3: Identify the reciter
                         setProcessingStatus('Identification du récitateur...');
-                        const reciterMatch = await identifyReciter(
-                            audioBlob,
-                            foundResult.surah,
-                            foundResult.ayah,
-                            (name, progress) => {
-                                setProcessingStatus(`Comparaison: ${name} (${Math.round(progress * 100)}%)`);
-                            }
-                        );
+                        setReciterStatus('Recherche en cours...');
 
-                        if (reciterMatch) {
-                            console.log('Reciter identified:', reciterMatch); // Debug
-                            foundResult.reciterName = reciterMatch.reciterName;
-                            foundResult.reciterNameAr = reciterMatch.reciterNameAr;
-                            foundResult.reciterConfidence = reciterMatch.confidence;
-                        } else {
-                            console.log('No reciter match found');
+                        try {
+                            const reciterMatch = await identifyReciter(
+                                audioBlob,
+                                foundResult.surah,
+                                foundResult.ayah,
+                                (name, progress) => {
+                                    setProcessingStatus(`Comparaison: ${name} (${Math.round(progress * 100)}%)`);
+                                }
+                            );
+
+                            if (reciterMatch) {
+                                foundResult.reciterName = reciterMatch.reciterName;
+                                foundResult.reciterNameAr = reciterMatch.reciterNameAr;
+                                foundResult.reciterConfidence = reciterMatch.confidence;
+                                setReciterStatus(`✓ ${reciterMatch.reciterName}`);
+                            } else {
+                                setReciterStatus('Récitateur non identifié');
+                            }
+                        } catch (reciterErr) {
+                            console.error('Reciter error:', reciterErr);
+                            setReciterStatus('Erreur identification récitateur');
                         }
 
+                        // Save to sessionStorage for persistence
+                        sessionStorage.setItem('shazamPageResult', JSON.stringify(foundResult));
                         setResult(foundResult);
                     } else {
                         setError(`Verset non trouvé. Transcript: "${transcript}"`);
@@ -185,12 +203,12 @@ export function ShazamPage() {
             mediaRecorder.start();
             setIsListening(true);
 
-            // Auto-stop after 10 seconds (longer for better transcription)
+            // Auto-stop after 20 seconds
             setTimeout(() => {
                 if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
                     mediaRecorderRef.current.stop();
                 }
-            }, 10000);
+            }, 20000);
 
         } catch (err) {
             setError("Accès au microphone refusé.");
@@ -214,7 +232,6 @@ export function ShazamPage() {
 
     const goToTafsir = () => {
         if (result) {
-            // Store result in sessionStorage for TafsirPage to read
             sessionStorage.setItem('shazamResult', JSON.stringify({
                 surah: result.surah,
                 ayah: result.ayah
@@ -252,7 +269,7 @@ export function ShazamPage() {
 
                 {/* Status Text */}
                 <p className="shazam-status">
-                    {isListening ? 'Écoute en cours...' :
+                    {isListening ? 'Écoute en cours... (20s)' :
                         isProcessing ? (processingStatus || 'Identification...') :
                             'Appuyez pour écouter'}
                 </p>
@@ -292,7 +309,7 @@ export function ShazamPage() {
                         </div>
 
                         {/* Reciter Badge */}
-                        {result.reciterName && (
+                        {result.reciterName ? (
                             <div className="shazam-result-reciter">
                                 <User size={16} />
                                 <span className="shazam-reciter-name">{result.reciterName}</span>
@@ -302,6 +319,11 @@ export function ShazamPage() {
                                         {Math.round(result.reciterConfidence * 100)}%
                                     </span>
                                 )}
+                            </div>
+                        ) : reciterStatus && (
+                            <div className="shazam-result-reciter shazam-reciter-unknown">
+                                <AlertCircle size={16} />
+                                <span>{reciterStatus}</span>
                             </div>
                         )}
 
