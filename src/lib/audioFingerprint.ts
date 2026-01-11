@@ -197,7 +197,7 @@ export async function identifyReciter(
         }
 
         // Only return if confidence is above threshold
-        if (bestMatch && bestMatch.confidence > 0.3) {
+        if (bestMatch && bestMatch.confidence > 0.15) {
             return bestMatch;
         }
 

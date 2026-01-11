@@ -18,7 +18,7 @@ interface ShazamResult {
 
 export function ShazamPage() {
     const navigate = useNavigate();
-    const { setCurrentSurah, setCurrentAyah } = useQuranStore();
+    const { goToSurah, setCurrentAyah } = useQuranStore();
 
     const [isListening, setIsListening] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -224,7 +224,12 @@ export function ShazamPage() {
 
     const goToVerse = () => {
         if (result) {
-            setCurrentSurah(result.surah);
+            // Store ayah in sessionStorage for MushafPage to scroll to
+            sessionStorage.setItem('scrollToAyah', JSON.stringify({
+                surah: result.surah,
+                ayah: result.ayah
+            }));
+            goToSurah(result.surah);
             setCurrentAyah(result.ayah);
             navigate('/');
         }
