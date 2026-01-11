@@ -100,11 +100,12 @@ export function ShazamPage() {
                     // Step 2: Search in Quran.com API
                     setProcessingStatus('Recherche du verset...');
 
+                    let foundResult: ShazamResult | null = null;
+
+                    // Try full transcript first
                     const searchResponse = await fetch(
                         `https://api.alquran.cloud/v1/search/${encodeURIComponent(transcript)}/all/ar`
                     );
-
-                    let foundResult: ShazamResult | null = null;
 
                     if (searchResponse.ok) {
                         const searchData = await searchResponse.json();
@@ -117,6 +118,31 @@ export function ShazamPage() {
                                 text: match.text,
                                 confidence: 0.9
                             };
+                        }
+                    }
+
+                    // Fallback: try with first 5 words if full transcript didn't work
+                    if (!foundResult) {
+                        const words = transcript.split(/\s+/).filter((w: string) => w.length > 1);
+                        if (words.length >= 3) {
+                            setProcessingStatus('Recherche approfondie...');
+                            const partial = words.slice(0, 5).join(' ');
+                            const fallbackResponse = await fetch(
+                                `https://api.alquran.cloud/v1/search/${encodeURIComponent(partial)}/all/ar`
+                            );
+                            if (fallbackResponse.ok) {
+                                const fallbackData = await fallbackResponse.json();
+                                if (fallbackData.data?.matches && fallbackData.data.matches.length > 0) {
+                                    const match = fallbackData.data.matches[0];
+                                    foundResult = {
+                                        surah: match.surah.number,
+                                        surahName: match.surah.name,
+                                        ayah: match.numberInSurah,
+                                        text: match.text,
+                                        confidence: 0.7
+                                    };
+                                }
+                            }
                         }
                     }
 
@@ -154,12 +180,12 @@ export function ShazamPage() {
             mediaRecorder.start();
             setIsListening(true);
 
-            // Auto-stop after 5 seconds
+            // Auto-stop after 10 seconds (longer for better transcription)
             setTimeout(() => {
                 if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
                     mediaRecorderRef.current.stop();
                 }
-            }, 5000);
+            }, 10000);
 
         } catch (err) {
             setError("Accès au microphone refusé.");
