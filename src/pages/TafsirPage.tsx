@@ -29,6 +29,21 @@ export function TafsirPage() {
     const [narrativeMode, setNarrativeMode] = useState(false);
     const isNarrativeSurah = NARRATIVE_SURAHS.includes(selectedSurah);
 
+    // Read from sessionStorage on mount (from Shazam navigation)
+    useEffect(() => {
+        const shazamResult = sessionStorage.getItem('shazamResult');
+        if (shazamResult) {
+            try {
+                const { surah, ayah } = JSON.parse(shazamResult);
+                if (surah) setSelectedSurah(surah);
+                if (ayah) setSelectedAyah(ayah);
+                sessionStorage.removeItem('shazamResult'); // Clear after reading
+            } catch (e) {
+                console.error('Failed to parse shazamResult', e);
+            }
+        }
+    }, []);
+
     // Update max ayahs when surah changes
     useEffect(() => {
         const surah = surahs.find(s => s.number === selectedSurah);

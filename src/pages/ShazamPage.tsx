@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Radio, Loader2, Volume2, BookOpen, ChevronRight, RefreshCcw, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQuranStore } from '../stores/quranStore';
 import { identifyReciter } from '../lib/audioFingerprint';
 import './ShazamPage.css';
 
@@ -17,6 +18,7 @@ interface ShazamResult {
 
 export function ShazamPage() {
     const navigate = useNavigate();
+    const { setCurrentSurah, setCurrentAyah } = useQuranStore();
 
     const [isListening, setIsListening] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -159,9 +161,12 @@ export function ShazamPage() {
                         );
 
                         if (reciterMatch) {
+                            console.log('Reciter identified:', reciterMatch); // Debug
                             foundResult.reciterName = reciterMatch.reciterName;
                             foundResult.reciterNameAr = reciterMatch.reciterNameAr;
                             foundResult.reciterConfidence = reciterMatch.confidence;
+                        } else {
+                            console.log('No reciter match found');
                         }
 
                         setResult(foundResult);
@@ -201,13 +206,20 @@ export function ShazamPage() {
 
     const goToVerse = () => {
         if (result) {
-            navigate(`/?surah=${result.surah}&ayah=${result.ayah}`);
+            setCurrentSurah(result.surah);
+            setCurrentAyah(result.ayah);
+            navigate('/');
         }
     };
 
     const goToTafsir = () => {
         if (result) {
-            navigate(`/tafsir?surah=${result.surah}&ayah=${result.ayah}`);
+            // Store result in sessionStorage for TafsirPage to read
+            sessionStorage.setItem('shazamResult', JSON.stringify({
+                surah: result.surah,
+                ayah: result.ayah
+            }));
+            navigate('/tafsir');
         }
     };
 
