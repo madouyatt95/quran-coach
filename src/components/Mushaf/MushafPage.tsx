@@ -119,6 +119,27 @@ export function MushafPage() {
                 setMistakes({});
                 setSelectedError(null);
                 setHiddenWords(new Set());
+
+                // Check for scrollToAyah from Shazam
+                const scrollData = sessionStorage.getItem('scrollToAyah');
+                if (scrollData) {
+                    try {
+                        const { surah, ayah } = JSON.parse(scrollData);
+                        sessionStorage.removeItem('scrollToAyah');
+
+                        // Find the ayah in the loaded page and scroll to it
+                        setTimeout(() => {
+                            const ayahElement = document.querySelector(`[data-surah="${surah}"][data-ayah="${ayah}"]`);
+                            if (ayahElement) {
+                                ayahElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                ayahElement.classList.add('highlighted-from-shazam');
+                                setTimeout(() => ayahElement.classList.remove('highlighted-from-shazam'), 3000);
+                            }
+                        }, 100);
+                    } catch (e) {
+                        console.error('Failed to parse scrollToAyah', e);
+                    }
+                }
             })
             .catch(() => {
                 setError('Impossible de charger la page. Vérifiez votre connexion.');
@@ -447,7 +468,7 @@ export function MushafPage() {
                                         if (viewMode !== 'lecture') {
                                             const words = ayah.text.split(/\s+/).filter(w => w.length > 0);
                                             return (
-                                                <span key={ayah.number} className="mushaf-ayah">
+                                                <span key={ayah.number} className="mushaf-ayah" data-surah={ayah.surah} data-ayah={ayah.numberInSurah}>
                                                     {words.map((word, wordIndex) => {
                                                         const key = `${ayahIndex}-${wordIndex}`;
                                                         const isHidden = viewMode === 'test' && hiddenWords.has(key);
@@ -473,7 +494,7 @@ export function MushafPage() {
 
                                         // Lecture mode - normal render with Tajweed
                                         return (
-                                            <span key={ayah.number} className="mushaf-ayah">
+                                            <span key={ayah.number} className="mushaf-ayah" data-surah={ayah.surah} data-ayah={ayah.numberInSurah}>
                                                 {tajweedHtml ? (
                                                     <>
                                                         {renderTajweedText(tajweedHtml, tajwidLayers)}

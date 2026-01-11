@@ -570,3 +570,21 @@
 .mushaf-play-btn:active {
     transform: scale(0.95);
 }
+
+/* Shazam highlight animation */
+.highlighted-from-shazam {
+    animation: shazamHighlight 3s ease-out;
+    border-radius: 4px;
+}
+
+@keyframes shazamHighlight {
+    0% {
+        background: rgba(201, 168, 76, 0.5);
+        box-shadow: 0 0 20px rgba(201, 168, 76, 0.6);
+    }
+
+    100% {
+        background: transparent;
+        box-shadow: none;
+    }
+}
