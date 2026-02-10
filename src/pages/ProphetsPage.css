@@ -67,6 +67,14 @@
     color: #c9a84c;
 }
 
+.prophets-hero__source {
+    display: block;
+    margin-top: var(--space-sm);
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+}
+
 /* Search */
 .prophets-search {
     padding: var(--space-md) var(--space-lg) 0;

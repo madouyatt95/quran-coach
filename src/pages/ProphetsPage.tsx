@@ -199,6 +199,7 @@ export function ProphetsPage() {
                 <h1 className="prophets-hero__title">قَصَصُ الأَنْبِيَاء</h1>
                 <p className="prophets-hero__subtitle">Histoires des Prophètes dans le Coran</p>
                 <span className="prophets-hero__count">{prophets.length} prophètes</span>
+                <span className="prophets-hero__source">Source : Coran & Tafsir Ibn Kathir — قصص الأنبياء</span>
             </div>
 
             {/* Search */}
