@@ -1,8 +1,21 @@
+export interface KeyVerse {
+  arabic: string;
+  translation: string;
+  reference: string;
+}
+
+export interface Dua {
+  arabic: string;
+  translation: string;
+  reference: string;
+}
+
 export interface Prophet {
   id: string;
   nameAr: string;
   nameFr: string;
   nameEn: string;
+  nameIslamic: string;
   title: string;
   titleAr: string;
   period: string;
@@ -11,6 +24,11 @@ export interface Prophet {
   surahs: { number: number; name: string }[];
   summary: string;
   lessons: string[];
+  mentionCount: number;
+  miracles?: string[];
+  keyVerses: KeyVerse[];
+  lineage?: string;
+  duas?: Dua[];
 }
 
 export const prophets: Prophet[] = [
@@ -19,41 +37,45 @@ export const prophets: Prophet[] = [
     nameAr: 'آدَم',
     nameFr: 'Adam',
     nameEn: 'Adam',
+    nameIslamic: 'Adam',
     title: 'Père de l\'humanité',
     titleAr: 'أبو البشرية',
     period: 'Le Commencement',
     icon: '🌿',
     color: '#4CAF50',
-    surahs: [
-      { number: 2, name: 'Al-Baqarah' },
-      { number: 7, name: 'Al-A\'raf' },
-      { number: 20, name: 'Taha' },
-    ],
+    mentionCount: 25,
+    lineage: 'Premier homme créé par Allah',
+    surahs: [{ number: 2, name: 'Al-Baqarah' }, { number: 7, name: 'Al-A\'raf' }, { number: 20, name: 'Taha' }],
     summary: 'Premier homme créé par Allah à partir d\'argile. Il vécut au Paradis avec Hawwa (Ève) avant d\'en être expulsé après avoir mangé du fruit interdit sur les murmures d\'Iblis. Allah lui pardonna et fit de lui le premier prophète sur Terre.',
-    lessons: [
-      'Le repentir sincère est toujours accepté par Allah',
-      'Le danger de l\'orgueil (Iblis refusa de se prosterner)',
-      'L\'importance de suivre les commandements divins',
+    lessons: ['Le repentir sincère est toujours accepté par Allah', 'Le danger de l\'orgueil (Iblis refusa de se prosterner)', 'L\'importance de suivre les commandements divins'],
+    miracles: ['Créé de la main d\'Allah à partir d\'argile', 'Allah lui enseigna tous les noms', 'Les anges se prosternèrent devant lui'],
+    keyVerses: [
+      { arabic: 'وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً', translation: 'Et lorsque ton Seigneur dit aux anges : Je vais établir sur terre un vicaire.', reference: 'Al-Baqarah 2:30' },
+      { arabic: 'وَعَلَّمَ آدَمَ الْأَسْمَاءَ كُلَّهَا', translation: 'Et Il apprit à Adam tous les noms.', reference: 'Al-Baqarah 2:31' },
+    ],
+    duas: [
+      { arabic: 'رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ', translation: 'Seigneur ! Nous nous sommes fait du tort à nous-mêmes. Si Tu ne nous pardonnes pas et ne nous fais pas miséricorde, nous serons certes du nombre des perdants.', reference: 'Al-A\'raf 7:23' },
     ],
   },
   {
     id: 'idris',
     nameAr: 'إدْرِيس',
-    nameFr: 'Idris',
+    nameFr: 'Énoch',
     nameEn: 'Enoch',
+    nameIslamic: 'Idris',
     title: 'L\'élevé en haut lieu',
     titleAr: 'رفيع المقام',
     period: 'Avant le Déluge',
     icon: '📜',
     color: '#7E57C2',
-    surahs: [
-      { number: 19, name: 'Maryam' },
-      { number: 21, name: 'Al-Anbiya' },
-    ],
+    mentionCount: 2,
+    lineage: 'Adam → … → Idris',
+    surahs: [{ number: 19, name: 'Maryam' }, { number: 21, name: 'Al-Anbiya' }],
     summary: 'Prophète mentionné dans le Coran comme un homme de vérité et de patience. Il fut élevé à un haut rang par Allah. La tradition le décrit comme le premier à écrire avec un calame et à coudre des vêtements.',
-    lessons: [
-      'La quête de la connaissance est une noble voie',
-      'La patience et la persévérance élèvent le rang',
+    lessons: ['La quête de la connaissance est une noble voie', 'La patience et la persévérance élèvent le rang'],
+    miracles: ['Élevé à un haut rang par Allah', 'Premier homme à écrire avec un calame'],
+    keyVerses: [
+      { arabic: 'وَاذْكُرْ فِي الْكِتَابِ إِدْرِيسَ ۚ إِنَّهُ كَانَ صِدِّيقًا نَّبِيًّا', translation: 'Et mentionne Idris dans le Livre. C\'était un véridique et un prophète.', reference: 'Maryam 19:56' },
     ],
   },
   {
@@ -61,21 +83,23 @@ export const prophets: Prophet[] = [
     nameAr: 'نُوح',
     nameFr: 'Noé',
     nameEn: 'Noah',
+    nameIslamic: 'Nuh',
     title: 'Sauvé des eaux',
     titleAr: 'شيخ المرسلين',
     period: 'L\'ère du Déluge',
     icon: '🕊️',
     color: '#29B6F6',
-    surahs: [
-      { number: 11, name: 'Hud' },
-      { number: 23, name: 'Al-Mu\'minun' },
-      { number: 71, name: 'Nuh' },
-    ],
+    mentionCount: 43,
+    lineage: 'Adam → … → Idris → … → Nuh',
+    surahs: [{ number: 11, name: 'Hud' }, { number: 23, name: 'Al-Mu\'minun' }, { number: 71, name: 'Nuh' }],
     summary: 'Noé prêcha pendant 950 ans, mais seulement quelques-uns crurent. Allah lui ordonna de construire une arche. Le Déluge submergea la terre, noyant les mécréants, y compris son propre fils qui refusa de monter à bord.',
-    lessons: [
-      'La persévérance dans la da\'wah malgré le rejet',
-      'Obéir à Allah même quand les ordres semblent incompréhensibles',
-      'Les liens de sang ne sauvent pas sans la foi',
+    lessons: ['La persévérance dans la da\'wah malgré le rejet', 'Obéir à Allah même quand les ordres semblent incompréhensibles', 'Les liens de sang ne sauvent pas sans la foi'],
+    miracles: ['Construction de l\'Arche par inspiration divine', 'Le Déluge universel', 'Survie des croyants et des animaux à bord'],
+    keyVerses: [
+      { arabic: 'وَلَقَدْ أَرْسَلْنَا نُوحًا إِلَىٰ قَوْمِهِ فَلَبِثَ فِيهِمْ أَلْفَ سَنَةٍ إِلَّا خَمْسِينَ عَامًا', translation: 'Nous avons envoyé Noé vers son peuple. Il demeura parmi eux mille ans moins cinquante années.', reference: 'Al-Ankabut 29:14' },
+    ],
+    duas: [
+      { arabic: 'رَّبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِمَن دَخَلَ بَيْتِيَ مُؤْمِنًا وَلِلْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ', translation: 'Seigneur ! Pardonne-moi, à mes père et mère, à celui qui entre dans ma demeure en croyant, ainsi qu\'aux croyants et croyantes.', reference: 'Nuh 71:28' },
     ],
   },
   {
@@ -83,20 +107,20 @@ export const prophets: Prophet[] = [
     nameAr: 'هُود',
     nameFr: 'Houd',
     nameEn: 'Hud',
+    nameIslamic: 'Hud',
     title: 'Envoyé au peuple de \'Ad',
     titleAr: 'رسول عاد',
     period: 'Après le Déluge',
     icon: '🏜️',
     color: '#FF7043',
-    surahs: [
-      { number: 7, name: 'Al-A\'raf' },
-      { number: 11, name: 'Hud' },
-      { number: 26, name: 'Ash-Shu\'ara' },
-    ],
-    summary: 'Envoyé au peuple de \'Ad dans la région d\'Al-Ahqaf (sud de l\'Arabie). Ce peuple était puissant et construisait des monuments impressionnants. Ils rejetèrent le message de Houd et furent détruits par un vent violent pendant sept nuits et huit jours.',
-    lessons: [
-      'La force physique ne protège pas contre la punition divine',
-      'L\'arrogance mène à la destruction',
+    mentionCount: 7,
+    lineage: 'Nuh → Sam → … → Hud',
+    surahs: [{ number: 7, name: 'Al-A\'raf' }, { number: 11, name: 'Hud' }, { number: 26, name: 'Ash-Shu\'ara' }],
+    summary: 'Envoyé au peuple de \'Ad dans la région d\'Al-Ahqaf. Ce peuple était puissant et construisait des monuments impressionnants. Ils rejetèrent le message de Hud et furent détruits par un vent violent pendant sept nuits et huit jours.',
+    lessons: ['La force physique ne protège pas contre la punition divine', 'L\'arrogance mène à la destruction'],
+    miracles: ['Survécut au vent destructeur qui anéantit son peuple'],
+    keyVerses: [
+      { arabic: 'فَأَرْسَلْنَا عَلَيْهِمْ رِيحًا صَرْصَرًا فِي أَيَّامٍ نَّحِسَاتٍ', translation: 'Nous déchaînâmes sur eux un vent violent et glacial, en des jours néfastes.', reference: 'Fussilat 41:16' },
     ],
   },
   {
@@ -104,20 +128,20 @@ export const prophets: Prophet[] = [
     nameAr: 'صَالِح',
     nameFr: 'Salih',
     nameEn: 'Salih',
+    nameIslamic: 'Salih',
     title: 'Envoyé au peuple de Thamud',
     titleAr: 'رسول ثمود',
     period: 'Après \'Ad',
     icon: '🐪',
     color: '#8D6E63',
-    surahs: [
-      { number: 7, name: 'Al-A\'raf' },
-      { number: 11, name: 'Hud' },
-      { number: 91, name: 'Ash-Shams' },
-    ],
+    mentionCount: 9,
+    lineage: 'Nuh → Sam → … → Salih',
+    surahs: [{ number: 7, name: 'Al-A\'raf' }, { number: 11, name: 'Hud' }, { number: 91, name: 'Ash-Shams' }],
     summary: 'Envoyé au peuple de Thamud qui taillait ses maisons dans les montagnes. Allah leur envoya comme miracle une chamelle sacrée. Ils la tuèrent malgré l\'avertissement de Salih, et furent détruits par un cri terrible.',
-    lessons: [
-      'Respecter les signes d\'Allah',
-      'Ne pas défier les avertissements divins',
+    lessons: ['Respecter les signes d\'Allah', 'Ne pas défier les avertissements divins'],
+    miracles: ['La chamelle miraculeuse sortie du rocher', 'Elle produisait du lait en abondance pour tout le peuple'],
+    keyVerses: [
+      { arabic: 'هَٰذِهِ نَاقَةُ اللَّهِ لَكُمْ آيَةً', translation: 'Voici la chamelle d\'Allah, un signe pour vous.', reference: 'Al-A\'raf 7:73' },
     ],
   },
   {
@@ -125,22 +149,25 @@ export const prophets: Prophet[] = [
     nameAr: 'إبْرَاهِيم',
     nameFr: 'Abraham',
     nameEn: 'Abraham',
+    nameIslamic: 'Ibrahim',
     title: 'L\'ami intime d\'Allah',
     titleAr: 'خليل الله',
     period: 'Environ 2000 av. J.-C.',
     icon: '🕋',
     color: '#C9A84C',
-    surahs: [
-      { number: 2, name: 'Al-Baqarah' },
-      { number: 6, name: 'Al-An\'am' },
-      { number: 14, name: 'Ibrahim' },
-      { number: 37, name: 'As-Saffat' },
-    ],
+    mentionCount: 69,
+    lineage: 'Nuh → Sam → … → Ibrahim',
+    surahs: [{ number: 2, name: 'Al-Baqarah' }, { number: 6, name: 'Al-An\'am' }, { number: 14, name: 'Ibrahim' }, { number: 37, name: 'As-Saffat' }],
     summary: 'Ibrahim brisa les idoles de son peuple, fut jeté dans le feu mais Allah le sauva. Il construisit la Ka\'ba avec son fils Isma\'il à La Mecque. Il fut éprouvé par le sacrifice de son fils et réussit l\'épreuve suprême de la soumission à Allah.',
-    lessons: [
-      'La soumission totale à Allah (islam)',
-      'Le courage de rejeter les fausses croyances',
-      'La confiance absolue en Allah face aux épreuves',
+    lessons: ['La soumission totale à Allah (islam)', 'Le courage de rejeter les fausses croyances', 'La confiance absolue en Allah face aux épreuves'],
+    miracles: ['Le feu devint frais et salutaire pour lui', 'Les oiseaux découpés puis ressuscités', 'Construction de la Ka\'ba'],
+    keyVerses: [
+      { arabic: 'قُلْنَا يَا نَارُ كُونِي بَرْدًا وَسَلَامًا عَلَىٰ إِبْرَاهِيمَ', translation: 'Nous dîmes : Ô feu, sois fraîcheur et paix pour Ibrahim.', reference: 'Al-Anbiya 21:69' },
+      { arabic: 'وَاتَّخَذَ اللَّهُ إِبْرَاهِيمَ خَلِيلًا', translation: 'Et Allah prit Ibrahim pour ami intime.', reference: 'An-Nisa 4:125' },
+    ],
+    duas: [
+      { arabic: 'رَبَّنَا تَقَبَّلْ مِنَّا ۖ إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ', translation: 'Seigneur ! Accepte ceci de notre part ! Car c\'est Toi l\'Audient, l\'Omniscient.', reference: 'Al-Baqarah 2:127' },
+      { arabic: 'رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِن ذُرِّيَّتِي', translation: 'Seigneur ! Fais que j\'accomplisse la prière ainsi qu\'une partie de ma descendance.', reference: 'Ibrahim 14:40' },
     ],
   },
   {
@@ -148,20 +175,19 @@ export const prophets: Prophet[] = [
     nameAr: 'لُوط',
     nameFr: 'Loth',
     nameEn: 'Lot',
+    nameIslamic: 'Lut',
     title: 'Neveu d\'Ibrahim',
     titleAr: 'ابن أخي إبراهيم',
     period: 'Contemporain d\'Ibrahim',
     icon: '🌋',
     color: '#E53935',
-    surahs: [
-      { number: 7, name: 'Al-A\'raf' },
-      { number: 11, name: 'Hud' },
-      { number: 15, name: 'Al-Hijr' },
-    ],
-    summary: 'Envoyé au peuple de Sodome qui pratiquait des actes immoraux. Malgré ses avertissements, ils refusèrent de se repentir. Allah détruisit leur cité en la soulevant puis en la retournant, la faisant pleuvoir de pierres d\'argile.',
-    lessons: [
-      'La dégradation morale d\'une société mène à sa perte',
-      'L\'importance de la chasteté et de la moralité',
+    mentionCount: 27,
+    lineage: 'Ibrahim (neveu)',
+    surahs: [{ number: 7, name: 'Al-A\'raf' }, { number: 11, name: 'Hud' }, { number: 15, name: 'Al-Hijr' }],
+    summary: 'Envoyé au peuple de Sodome qui pratiquait des actes immoraux. Malgré ses avertissements, ils refusèrent de se repentir. Allah détruisit leur cité en la retournant et en la faisant pleuvoir de pierres d\'argile.',
+    lessons: ['La dégradation morale mène à la perte', 'L\'importance de la chasteté et de la moralité'],
+    keyVerses: [
+      { arabic: 'فَجَعَلْنَا عَالِيَهَا سَافِلَهَا وَأَمْطَرْنَا عَلَيْهِمْ حِجَارَةً مِّن سِجِّيلٍ', translation: 'Nous renversâmes la cité sens dessus dessous et fîmes pleuvoir sur eux des pierres d\'argile.', reference: 'Al-Hijr 15:74' },
     ],
   },
   {
@@ -169,20 +195,20 @@ export const prophets: Prophet[] = [
     nameAr: 'إسْمَاعِيل',
     nameFr: 'Ismaël',
     nameEn: 'Ishmael',
+    nameIslamic: 'Isma\'il',
     title: 'Le sacrifié patient',
     titleAr: 'الذبيح الصابر',
     period: 'Fils d\'Ibrahim',
     icon: '💧',
     color: '#00ACC1',
-    surahs: [
-      { number: 2, name: 'Al-Baqarah' },
-      { number: 37, name: 'As-Saffat' },
-      { number: 19, name: 'Maryam' },
-    ],
-    summary: 'Fils d\'Ibrahim et Hajar. Bébé, il fut laissé avec sa mère dans le désert de La Mecque où jaillit la source de Zamzam. Il accepta avec patience le sacrifice demandé par Allah à son père, et fut sauvé par un bélier. Il aida son père à construire la Ka\'ba.',
-    lessons: [
-      'L\'obéissance filiale et la soumission à Allah',
-      'Allah récompense la patience et la confiance',
+    mentionCount: 12,
+    lineage: 'Ibrahim → Isma\'il',
+    surahs: [{ number: 2, name: 'Al-Baqarah' }, { number: 37, name: 'As-Saffat' }, { number: 19, name: 'Maryam' }],
+    summary: 'Fils d\'Ibrahim et Hajar. Bébé, il fut laissé avec sa mère dans le désert de La Mecque où jaillit la source de Zamzam. Il accepta avec patience le sacrifice, et fut sauvé par un bélier. Il aida son père à construire la Ka\'ba.',
+    lessons: ['L\'obéissance filiale et la soumission à Allah', 'Allah récompense la patience et la confiance'],
+    miracles: ['La source de Zamzam jaillit sous ses pieds', 'Sauvé du sacrifice par un bélier céleste'],
+    keyVerses: [
+      { arabic: 'فَلَمَّا بَلَغَ مَعَهُ السَّعْيَ قَالَ يَا بُنَيَّ إِنِّي أَرَىٰ فِي الْمَنَامِ أَنِّي أَذْبَحُكَ', translation: 'Quand celui-ci fut en âge de l\'accompagner, il dit : Ô mon fils, je me vois en songe en train de te sacrifier.', reference: 'As-Saffat 37:102' },
     ],
   },
   {
@@ -190,19 +216,20 @@ export const prophets: Prophet[] = [
     nameAr: 'إسْحَاق',
     nameFr: 'Isaac',
     nameEn: 'Isaac',
+    nameIslamic: 'Ishaq',
     title: 'Fils de la promesse',
     titleAr: 'ابن البشارة',
     period: 'Fils d\'Ibrahim',
     icon: '⭐',
     color: '#FDD835',
-    surahs: [
-      { number: 6, name: 'Al-An\'am' },
-      { number: 37, name: 'As-Saffat' },
-    ],
+    mentionCount: 17,
+    lineage: 'Ibrahim → Ishaq',
+    surahs: [{ number: 6, name: 'Al-An\'am' }, { number: 37, name: 'As-Saffat' }],
     summary: 'Fils d\'Ibrahim et Sarah, annoncé par les anges alors que ses parents étaient très âgés. Allah le bénit et fit de sa descendance une longue lignée de prophètes, dont Ya\'qub, Yusuf, Musa et \'Isa.',
-    lessons: [
-      'Rien n\'est impossible pour Allah',
-      'La bénédiction divine traverse les générations',
+    lessons: ['Rien n\'est impossible pour Allah', 'La bénédiction divine traverse les générations'],
+    miracles: ['Naissance miraculeuse de parents très âgés'],
+    keyVerses: [
+      { arabic: 'وَبَشَّرْنَاهُ بِإِسْحَاقَ نَبِيًّا مِّنَ الصَّالِحِينَ', translation: 'Et Nous lui annonçâmes la bonne nouvelle d\'Ishaq comme prophète parmi les vertueux.', reference: 'As-Saffat 37:112' },
     ],
   },
   {
@@ -210,19 +237,23 @@ export const prophets: Prophet[] = [
     nameAr: 'يَعْقُوب',
     nameFr: 'Jacob',
     nameEn: 'Jacob',
+    nameIslamic: 'Ya\'qub',
     title: 'Israël',
     titleAr: 'إسرائيل',
     period: 'Petit-fils d\'Ibrahim',
     icon: '🌙',
     color: '#5C6BC0',
-    surahs: [
-      { number: 12, name: 'Yusuf' },
-      { number: 2, name: 'Al-Baqarah' },
+    mentionCount: 16,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub',
+    surahs: [{ number: 12, name: 'Yusuf' }, { number: 2, name: 'Al-Baqarah' }],
+    summary: 'Fils d\'Ishaq, aussi appelé Israël. Il endura la séparation d\'avec son fils bien-aimé Yusuf pendant de longues années, pleurant jusqu\'à en perdre la vue. Allah le récompensa en réunissant sa famille en Égypte.',
+    lessons: ['La patience face à la séparation', 'Garder espoir en Allah malgré la longue épreuve'],
+    miracles: ['Sa vue fut restaurée grâce à la chemise de Yusuf'],
+    keyVerses: [
+      { arabic: 'إِنَّمَا أَشْكُو بَثِّي وَحُزْنِي إِلَى اللَّهِ', translation: 'Je ne me plains de ma douleur et de mon chagrin qu\'à Allah.', reference: 'Yusuf 12:86' },
     ],
-    summary: 'Fils d\'Ishaq, aussi appelé Israël ("serviteur d\'Allah"). Il endura la séparation d\'avec son fils bien-aimé Yusuf pendant de longues années, pleurant jusqu\'à en perdre la vue. Allah le récompensa en réunissant sa famille en Égypte.',
-    lessons: [
-      'La patience face à la séparation et la perte',
-      'Garder espoir en Allah malgré la longue épreuve',
+    duas: [
+      { arabic: 'فَصَبْرٌ جَمِيلٌ ۖ وَاللَّهُ الْمُسْتَعَانُ عَلَىٰ مَا تَصِفُونَ', translation: 'Belle patience ! C\'est Allah dont le secours est imploré contre ce que vous décrivez.', reference: 'Yusuf 12:18' },
     ],
   },
   {
@@ -230,19 +261,24 @@ export const prophets: Prophet[] = [
     nameAr: 'يُوسُف',
     nameFr: 'Joseph',
     nameEn: 'Joseph',
+    nameIslamic: 'Yusuf',
     title: 'Le plus beau des récits',
     titleAr: 'أحسن القصص',
     period: 'En Égypte',
     icon: '👑',
     color: '#AB47BC',
-    surahs: [
-      { number: 12, name: 'Yusuf' },
+    mentionCount: 27,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub → Yusuf',
+    surahs: [{ number: 12, name: 'Yusuf' }],
+    summary: 'Jeté dans un puits par ses frères jaloux, vendu comme esclave en Égypte, emprisonné injustement. Grâce à son don d\'interpréter les rêves, il devint ministre d\'Égypte et retrouva sa famille.',
+    lessons: ['La chasteté face à la tentation', 'Allah transforme les épreuves en bénédictions', 'Le pardon envers ceux qui nous ont fait du mal'],
+    miracles: ['Interprétation des rêves par révélation divine', 'Sa beauté extraordinaire', 'Son rêve d\'enfance réalisé des années plus tard'],
+    keyVerses: [
+      { arabic: 'نَحْنُ نَقُصُّ عَلَيْكَ أَحْسَنَ الْقَصَصِ', translation: 'Nous te racontons le plus beau des récits.', reference: 'Yusuf 12:3' },
+      { arabic: 'إِنَّهُ مَن يَتَّقِ وَيَصْبِرْ فَإِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ', translation: 'Quiconque craint Allah et patiente… Allah ne fait pas perdre la récompense des bienfaisants.', reference: 'Yusuf 12:90' },
     ],
-    summary: 'Jeté dans un puits par ses frères jaloux, vendu comme esclave en Égypte, emprisonné injustement après l\'épisode avec la femme d\'Al-Aziz. Grâce à son don d\'interpréter les rêves, il devint ministre d\'Égypte et retrouva sa famille.',
-    lessons: [
-      'La beauté intérieure et la chasteté face à la tentation',
-      'Allah transforme les épreuves en bénédictions',
-      'Le pardon envers ceux qui nous ont fait du mal',
+    duas: [
+      { arabic: 'رَبِّ قَدْ آتَيْتَنِي مِنَ الْمُلْكِ وَعَلَّمْتَنِي مِن تَأْوِيلِ الْأَحَادِيثِ ۚ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ أَنتَ وَلِيِّي فِي الدُّنْيَا وَالْآخِرَةِ ۖ تَوَفَّنِي مُسْلِمًا وَأَلْحِقْنِي بِالصَّالِحِينَ', translation: 'Mon Seigneur, Tu m\'as donné du pouvoir et m\'as enseigné l\'interprétation des rêves. Créateur des cieux et de la terre, Tu es mon protecteur ici-bas et dans l\'au-delà. Fais-moi mourir en musulman et fais-moi rejoindre les vertueux.', reference: 'Yusuf 12:101' },
     ],
   },
   {
@@ -250,20 +286,20 @@ export const prophets: Prophet[] = [
     nameAr: 'شُعَيْب',
     nameFr: 'Chou\'aïb',
     nameEn: 'Shu\'ayb',
+    nameIslamic: 'Shu\'ayb',
     title: 'L\'orateur des prophètes',
     titleAr: 'خطيب الأنبياء',
     period: 'Peuple de Madian',
     icon: '⚖️',
     color: '#26A69A',
-    surahs: [
-      { number: 7, name: 'Al-A\'raf' },
-      { number: 11, name: 'Hud' },
-      { number: 29, name: 'Al-Ankabut' },
-    ],
-    summary: 'Envoyé au peuple de Madian qui trichait dans les poids et mesures. Malgré son éloquence et ses appels à la justice, ils refusèrent de se réformer et furent détruits par un tremblement de terre.',
-    lessons: [
-      'L\'honnêteté dans le commerce et les transactions',
-      'La justice sociale est un pilier de l\'islam',
+    mentionCount: 11,
+    lineage: 'Ibrahim → … → Shu\'ayb',
+    surahs: [{ number: 7, name: 'Al-A\'raf' }, { number: 11, name: 'Hud' }, { number: 29, name: 'Al-Ankabut' }],
+    summary: 'Envoyé au peuple de Madian qui trichait dans les poids et mesures. Malgré son éloquence, ils refusèrent de se réformer et furent détruits par un tremblement de terre.',
+    lessons: ['L\'honnêteté dans le commerce', 'La justice sociale est un pilier de l\'islam'],
+    miracles: ['Son éloquence exceptionnelle dans la prédication'],
+    keyVerses: [
+      { arabic: 'وَأَوْفُوا الْكَيْلَ وَالْمِيزَانَ بِالْقِسْطِ', translation: 'Donnez la pleine mesure et le poids juste.', reference: 'Hud 11:85' },
     ],
   },
   {
@@ -271,20 +307,23 @@ export const prophets: Prophet[] = [
     nameAr: 'أيُّوب',
     nameFr: 'Job',
     nameEn: 'Job',
+    nameIslamic: 'Ayyub',
     title: 'Le patient exemplaire',
     titleAr: 'الصابر',
     period: 'Descendant d\'Ibrahim',
     icon: '🙏',
     color: '#78909C',
-    surahs: [
-      { number: 21, name: 'Al-Anbiya' },
-      { number: 38, name: 'Sad' },
+    mentionCount: 4,
+    lineage: 'Ibrahim → Ishaq → … → Ayyub',
+    surahs: [{ number: 21, name: 'Al-Anbiya' }, { number: 38, name: 'Sad' }],
+    summary: 'Prophète riche et en bonne santé, éprouvé par la perte de sa fortune, de ses enfants et par une maladie terrible. Il endura avec patience pendant des années. Allah le guérit et lui rendit le double.',
+    lessons: ['La patience dans les épreuves les plus dures', 'Allah récompense ceux qui endurent', 'Ne jamais désespérer de la miséricorde d\'Allah'],
+    miracles: ['Guérison miraculeuse par l\'eau de source divine', 'Allah lui rendit le double de tout ce qu\'il avait perdu'],
+    keyVerses: [
+      { arabic: 'إِنَّا وَجَدْنَاهُ صَابِرًا ۚ نِّعْمَ الْعَبْدُ ۖ إِنَّهُ أَوَّابٌ', translation: 'Nous l\'avons trouvé patient. Quel bon serviteur ! Il était plein de repentir.', reference: 'Sad 38:44' },
     ],
-    summary: 'Prophète riche et en bonne santé, il fut éprouvé par la perte de sa fortune, de ses enfants et par une maladie terrible. Il endura avec patience pendant des années. Allah le guérit et lui rendit le double de ce qu\'il avait perdu.',
-    lessons: [
-      'La patience dans les épreuves les plus dures',
-      'Allah récompense ceux qui endurent avec foi',
-      'Ne jamais désespérer de la miséricorde d\'Allah',
+    duas: [
+      { arabic: 'أَنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ', translation: 'Le mal m\'a touché. Mais Toi, Tu es le plus Miséricordieux des miséricordieux.', reference: 'Al-Anbiya 21:83' },
     ],
   },
   {
@@ -292,19 +331,19 @@ export const prophets: Prophet[] = [
     nameAr: 'ذُو الكِفْل',
     nameFr: 'Dhul-Kifl',
     nameEn: 'Dhul-Kifl',
+    nameIslamic: 'Dhul-Kifl',
     title: 'L\'homme de la garantie',
     titleAr: 'ذو الكفل',
     period: 'Après Ayyub',
     icon: '🤝',
     color: '#607D8B',
-    surahs: [
-      { number: 21, name: 'Al-Anbiya' },
-      { number: 38, name: 'Sad' },
-    ],
-    summary: 'Mentionné brièvement dans le Coran parmi les patients et les véridiques. Son nom signifie "celui qui garantit" ou "celui qui a la double part". Il est décrit comme un homme de patience.',
-    lessons: [
-      'La fiabilité et le respect des engagements',
-      'La patience est une qualité des élus',
+    mentionCount: 2,
+    lineage: 'Ibrahim → … → Dhul-Kifl',
+    surahs: [{ number: 21, name: 'Al-Anbiya' }, { number: 38, name: 'Sad' }],
+    summary: 'Mentionné brièvement dans le Coran parmi les patients et les véridiques. Son nom signifie "celui qui garantit". Il est décrit comme un homme de patience.',
+    lessons: ['La fiabilité et le respect des engagements', 'La patience est une qualité des élus'],
+    keyVerses: [
+      { arabic: 'وَإِسْمَاعِيلَ وَإِدْرِيسَ وَذَا الْكِفْلِ ۖ كُلٌّ مِّنَ الصَّابِرِينَ', translation: 'Et Isma\'il, Idris et Dhul-Kifl, tous étaient des patients.', reference: 'Al-Anbiya 21:85' },
     ],
   },
   {
@@ -312,22 +351,23 @@ export const prophets: Prophet[] = [
     nameAr: 'يُونُس',
     nameFr: 'Jonas',
     nameEn: 'Jonah',
+    nameIslamic: 'Yunus',
     title: 'L\'homme du poisson',
     titleAr: 'صاحب الحوت',
     period: 'Ninive (Irak actuel)',
     icon: '🐋',
     color: '#0288D1',
-    surahs: [
-      { number: 10, name: 'Yunus' },
-      { number: 21, name: 'Al-Anbiya' },
-      { number: 37, name: 'As-Saffat' },
-      { number: 68, name: 'Al-Qalam' },
+    mentionCount: 4,
+    lineage: 'Ibrahim → … → Yunus',
+    surahs: [{ number: 10, name: 'Yunus' }, { number: 21, name: 'Al-Anbiya' }, { number: 37, name: 'As-Saffat' }, { number: 68, name: 'Al-Qalam' }],
+    summary: 'Yunus quitta son peuple par frustration. Une baleine l\'avala et il invoqua Allah dans les ténèbres. Allah le sauva, et son peuple se repentit entièrement — le seul peuple entier à s\'être repenti.',
+    lessons: ['Ne jamais abandonner sa mission par frustration', 'L\'invocation sincère dans les moments de détresse', 'Le repentir d\'un peuple entier est possible'],
+    miracles: ['Survécut dans le ventre de la baleine', 'Son peuple entier se repentit (unique dans le Coran)'],
+    keyVerses: [
+      { arabic: 'فَنَادَىٰ فِي الظُّلُمَاتِ أَن لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ', translation: 'Il appela dans les ténèbres : Point de divinité à part Toi ! Gloire à Toi ! J\'étais parmi les injustes.', reference: 'Al-Anbiya 21:87' },
     ],
-    summary: 'Yunus quitta son peuple par frustration avant d\'en avoir reçu la permission d\'Allah. Une baleine l\'avala et il invoqua Allah dans les ténèbres : "Il n\'y a de divinité que Toi ! Gloire à Toi ! J\'étais parmi les injustes." Allah le sauva, et son peuple se repentit.',
-    lessons: [
-      'Ne jamais abandonner sa mission par frustration',
-      'L\'invocation sincère dans les moments de détresse',
-      'Le repentir d\'un peuple entier est possible',
+    duas: [
+      { arabic: 'لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ', translation: 'Point de divinité à part Toi ! Gloire à Toi ! J\'étais du nombre des injustes.', reference: 'Al-Anbiya 21:87' },
     ],
   },
   {
@@ -335,23 +375,25 @@ export const prophets: Prophet[] = [
     nameAr: 'مُوسَى',
     nameFr: 'Moïse',
     nameEn: 'Moses',
-    title: 'Kalimullah (l\'interlocuteur d\'Allah)',
+    nameIslamic: 'Musa',
+    title: 'Kalimullah — l\'interlocuteur d\'Allah',
     titleAr: 'كليم الله',
     period: 'Environ 1400 av. J.-C.',
     icon: '🔥',
     color: '#FF5722',
-    surahs: [
-      { number: 2, name: 'Al-Baqarah' },
-      { number: 7, name: 'Al-A\'raf' },
-      { number: 20, name: 'Taha' },
-      { number: 26, name: 'Ash-Shu\'ara' },
-      { number: 28, name: 'Al-Qasas' },
+    mentionCount: 136,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub → Lawi → … → Musa',
+    surahs: [{ number: 2, name: 'Al-Baqarah' }, { number: 7, name: 'Al-A\'raf' }, { number: 20, name: 'Taha' }, { number: 26, name: 'Ash-Shu\'ara' }, { number: 28, name: 'Al-Qasas' }],
+    summary: 'Le prophète le plus mentionné dans le Coran (136 fois). Sauvé des eaux du Nil, élevé dans le palais de Pharaon. Allah lui parla au mont Sinaï. Il affronta Pharaon avec neuf miracles, libéra les Banu Isra\'il et reçut la Torah.',
+    lessons: ['Le courage face à la tyrannie', 'La confiance en Allah même dans l\'impossible', 'La patience avec son peuple malgré leur rébellion'],
+    miracles: ['Le bâton transformé en serpent', 'La main lumineuse', 'Les neuf fléaux sur l\'Égypte', 'La mer fendue en deux', 'L\'eau jaillissant du rocher', 'La manne et les cailles'],
+    keyVerses: [
+      { arabic: 'وَكَلَّمَ اللَّهُ مُوسَىٰ تَكْلِيمًا', translation: 'Et Allah parla à Musa de vive voix.', reference: 'An-Nisa 4:164' },
+      { arabic: 'فَأَوْحَيْنَا إِلَىٰ مُوسَىٰ أَنِ اضْرِب بِّعَصَاكَ الْبَحْرَ ۖ فَانفَلَقَ', translation: 'Nous révélâmes à Musa : Frappe la mer de ton bâton. Et elle se fendit.', reference: 'Ash-Shu\'ara 26:63' },
     ],
-    summary: 'Le prophète le plus mentionné dans le Coran. Sauvé des eaux du Nil bébé, élevé dans le palais de Pharaon. Allah lui parla au mont Sinaï. Il affronta Pharaon avec neuf miracles, libéra les Banu Isra\'il, traversa la mer Rouge et reçut la Torah.',
-    lessons: [
-      'Le courage face à la tyrannie',
-      'La confiance en Allah même dans l\'impossible',
-      'La patience avec son peuple malgré leur rébellion',
+    duas: [
+      { arabic: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي', translation: 'Seigneur ! Ouvre-moi ma poitrine et facilite-moi ma mission.', reference: 'Taha 20:25-26' },
+      { arabic: 'رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ', translation: 'Seigneur ! J\'ai grand besoin du bien que Tu feras descendre vers moi.', reference: 'Al-Qasas 28:24' },
     ],
   },
   {
@@ -359,19 +401,19 @@ export const prophets: Prophet[] = [
     nameAr: 'هَارُون',
     nameFr: 'Aaron',
     nameEn: 'Aaron',
-    title: 'Le soutien de Moïse',
+    nameIslamic: 'Harun',
+    title: 'Le soutien de Musa',
     titleAr: 'وزير موسى',
     period: 'Contemporain de Musa',
     icon: '🤲',
     color: '#FF8A65',
-    surahs: [
-      { number: 7, name: 'Al-A\'raf' },
-      { number: 20, name: 'Taha' },
-    ],
-    summary: 'Frère aîné de Musa, il fut désigné par Allah comme son assistant et porte-parole grâce à son éloquence. Il partagea la mission de Musa auprès de Pharaon et des Banu Isra\'il.',
-    lessons: [
-      'La valeur du travail d\'équipe dans la da\'wah',
-      'L\'éloquence au service de la vérité',
+    mentionCount: 20,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub → Lawi → … → Harun (frère de Musa)',
+    surahs: [{ number: 7, name: 'Al-A\'raf' }, { number: 20, name: 'Taha' }],
+    summary: 'Frère aîné de Musa, désigné par Allah comme son assistant et porte-parole grâce à son éloquence. Il partagea la mission de Musa auprès de Pharaon et des Banu Isra\'il.',
+    lessons: ['La valeur du travail d\'équipe dans la da\'wah', 'L\'éloquence au service de la vérité'],
+    keyVerses: [
+      { arabic: 'وَأَخِي هَارُونُ هُوَ أَفْصَحُ مِنِّي لِسَانًا فَأَرْسِلْهُ مَعِيَ رِدْءًا يُصَدِّقُنِي', translation: 'Mon frère Harun est plus éloquent que moi. Envoie-le avec moi comme soutien.', reference: 'Al-Qasas 28:34' },
     ],
   },
   {
@@ -379,22 +421,20 @@ export const prophets: Prophet[] = [
     nameAr: 'دَاوُود',
     nameFr: 'David',
     nameEn: 'David',
+    nameIslamic: 'Dawud',
     title: 'Le roi-prophète chanteur',
     titleAr: 'خليفة الله في الأرض',
     period: 'Environ 1000 av. J.-C.',
     icon: '🎵',
     color: '#7B1FA2',
-    surahs: [
-      { number: 2, name: 'Al-Baqarah' },
-      { number: 21, name: 'Al-Anbiya' },
-      { number: 34, name: 'Saba\'' },
-      { number: 38, name: 'Sad' },
-    ],
-    summary: 'Jeune berger qui tua Jalut (Goliath) avec une fronde. Allah lui donna la royauté, la sagesse et les Psaumes (Zabur). Les montagnes et les oiseaux glorifiaient Allah avec lui. Il maîtrisait le fer qu\'il façonnait en cottes de mailles.',
-    lessons: [
-      'La force vient de la foi, pas de la taille',
-      'Utiliser ses talents pour glorifier Allah',
-      'La justice dans le jugement',
+    mentionCount: 16,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub → Yahudha → … → Dawud',
+    surahs: [{ number: 2, name: 'Al-Baqarah' }, { number: 21, name: 'Al-Anbiya' }, { number: 34, name: 'Saba\'' }, { number: 38, name: 'Sad' }],
+    summary: 'Jeune berger qui tua Jalut (Goliath) avec une fronde. Allah lui donna la royauté, la sagesse et les Psaumes (Zabur). Les montagnes et les oiseaux glorifiaient Allah avec lui. Il maîtrisait le fer.',
+    lessons: ['La force vient de la foi, pas de la taille', 'Utiliser ses talents pour glorifier Allah', 'La justice dans le jugement'],
+    miracles: ['Les montagnes et oiseaux glorifiaient Allah avec lui', 'Il amollissait le fer à mains nues', 'Révélation du Zabur (Psaumes)'],
+    keyVerses: [
+      { arabic: 'وَلَقَدْ آتَيْنَا دَاوُودَ مِنَّا فَضْلًا ۖ يَا جِبَالُ أَوِّبِي مَعَهُ وَالطَّيْرَ', translation: 'Nous accordâmes une grâce à Dawud : Ô montagnes ! Glorifiez Allah avec lui, ainsi que les oiseaux.', reference: 'Saba 34:10' },
     ],
   },
   {
@@ -402,21 +442,23 @@ export const prophets: Prophet[] = [
     nameAr: 'سُلَيْمَان',
     nameFr: 'Salomon',
     nameEn: 'Solomon',
+    nameIslamic: 'Sulayman',
     title: 'Le roi de toute création',
     titleAr: 'ملك الإنس والجن',
     period: 'Fils de Dawud',
     icon: '💎',
     color: '#00BCD4',
-    surahs: [
-      { number: 27, name: 'An-Naml' },
-      { number: 34, name: 'Saba\'' },
-      { number: 38, name: 'Sad' },
-    ],
+    mentionCount: 17,
+    lineage: 'Ibrahim → … → Dawud → Sulayman',
+    surahs: [{ number: 27, name: 'An-Naml' }, { number: 34, name: 'Saba\'' }, { number: 38, name: 'Sad' }],
     summary: 'Fils de Dawud, Allah lui donna un royaume sans pareil : il commandait les jinns, comprenait le langage des animaux, contrôlait le vent. Son histoire avec la reine de Saba (Bilqis) et la fourmi sont célèbres.',
-    lessons: [
-      'Le pouvoir est un test, pas un droit',
-      'La gratitude envers les bienfaits d\'Allah',
-      'Même une fourmi mérite le respect',
+    lessons: ['Le pouvoir est un test, pas un droit', 'La gratitude envers les bienfaits d\'Allah', 'Même une fourmi mérite le respect'],
+    miracles: ['Commandement des jinns et des vents', 'Compréhension du langage des animaux', 'Transport du trône de Bilqis en un clin d\'œil'],
+    keyVerses: [
+      { arabic: 'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ', translation: 'Seigneur ! Inspire-moi de rendre grâce pour Ton bienfait dont Tu m\'as comblé.', reference: 'An-Naml 27:19' },
+    ],
+    duas: [
+      { arabic: 'رَبِّ اغْفِرْ لِي وَهَبْ لِي مُلْكًا لَّا يَنبَغِي لِأَحَدٍ مِّن بَعْدِي', translation: 'Seigneur ! Pardonne-moi et fais-moi don d\'un royaume tel que nul après moi n\'aura de pareil.', reference: 'Sad 38:35' },
     ],
   },
   {
@@ -424,19 +466,19 @@ export const prophets: Prophet[] = [
     nameAr: 'إلْيَاس',
     nameFr: 'Élie',
     nameEn: 'Elijah',
+    nameIslamic: 'Ilyas',
     title: 'Le combattant de l\'idolâtrie',
     titleAr: 'محارب عبادة الأصنام',
     period: 'Après Sulayman',
     icon: '⚡',
     color: '#FFC107',
-    surahs: [
-      { number: 6, name: 'Al-An\'am' },
-      { number: 37, name: 'As-Saffat' },
-    ],
-    summary: 'Envoyé aux Banu Isra\'il qui adoraient l\'idole Ba\'l. Il les appela au monothéisme pur avec courage et détermination. Il est mentionné parmi les meilleurs dans le Coran.',
-    lessons: [
-      'Le courage de s\'opposer aux pratiques idolâtres même populaires',
-      'La fidélité au message d\'unicité divine',
+    mentionCount: 2,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub → … → Ilyas',
+    surahs: [{ number: 6, name: 'Al-An\'am' }, { number: 37, name: 'As-Saffat' }],
+    summary: 'Envoyé aux Banu Isra\'il qui adoraient l\'idole Ba\'l. Il les appela au monothéisme pur avec courage et détermination.',
+    lessons: ['Le courage de s\'opposer aux pratiques idolâtres', 'La fidélité au message d\'unicité divine'],
+    keyVerses: [
+      { arabic: 'أَتَدْعُونَ بَعْلًا وَتَذَرُونَ أَحْسَنَ الْخَالِقِينَ', translation: 'Invoquerez-vous Ba\'l et délaisserez-vous le Meilleur des créateurs ?', reference: 'As-Saffat 37:125' },
     ],
   },
   {
@@ -444,19 +486,19 @@ export const prophets: Prophet[] = [
     nameAr: 'اليَسَع',
     nameFr: 'Élisée',
     nameEn: 'Elisha',
+    nameIslamic: 'Al-Yasa\'',
     title: 'Le successeur d\'Ilyas',
     titleAr: 'خليفة إلياس',
     period: 'Après Ilyas',
     icon: '🌾',
     color: '#8BC34A',
-    surahs: [
-      { number: 6, name: 'Al-An\'am' },
-      { number: 38, name: 'Sad' },
-    ],
+    mentionCount: 2,
+    lineage: 'Ibrahim → … → Ilyas → Al-Yasa\'',
+    surahs: [{ number: 6, name: 'Al-An\'am' }, { number: 38, name: 'Sad' }],
     summary: 'Successeur d\'Ilyas, il poursuivit sa mission auprès des Banu Isra\'il. Le Coran le cite parmi les élus.',
-    lessons: [
-      'La continuité de la mission prophétique',
-      'L\'importance de la relève dans la da\'wah',
+    lessons: ['La continuité de la mission prophétique', 'L\'importance de la relève dans la da\'wah'],
+    keyVerses: [
+      { arabic: 'وَإِسْمَاعِيلَ وَالْيَسَعَ وَيُونُسَ وَلُوطًا ۚ وَكُلًّا فَضَّلْنَا عَلَى الْعَالَمِينَ', translation: 'Et Isma\'il, Al-Yasa\', Yunus et Lut. Chacun d\'eux Nous l\'avons favorisé par-dessus les mondes.', reference: 'Al-An\'am 6:86' },
     ],
   },
   {
@@ -464,20 +506,23 @@ export const prophets: Prophet[] = [
     nameAr: 'زَكَرِيَّا',
     nameFr: 'Zacharie',
     nameEn: 'Zechariah',
+    nameIslamic: 'Zakariyya',
     title: 'Le gardien de Maryam',
     titleAr: 'كافل مريم',
     period: 'Ier siècle av. J.-C.',
     icon: '🕯️',
     color: '#9575CD',
-    surahs: [
-      { number: 3, name: 'Al-Imran' },
-      { number: 19, name: 'Maryam' },
-      { number: 21, name: 'Al-Anbiya' },
+    mentionCount: 7,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub → … → Zakariyya',
+    surahs: [{ number: 3, name: 'Al-Imran' }, { number: 19, name: 'Maryam' }, { number: 21, name: 'Al-Anbiya' }],
+    summary: 'Vieux prophète sans enfant qui prit en charge Maryam au Temple. Voyant que Maryam recevait une nourriture miraculeuse, il invoqua Allah pour un fils. Allah lui accorda Yahya malgré son âge avancé et la stérilité de sa femme.',
+    lessons: ['Ne jamais désespérer de la réponse d\'Allah', 'L\'invocation sincère est exaucée à tout âge'],
+    miracles: ['Naissance de Yahya malgré sa vieillesse et la stérilité de sa femme'],
+    keyVerses: [
+      { arabic: 'هُنَالِكَ دَعَا زَكَرِيَّا رَبَّهُ ۖ قَالَ رَبِّ هَبْ لِي مِن لَّدُنكَ ذُرِّيَّةً طَيِّبَةً', translation: 'Alors Zakariyya invoqua son Seigneur : Seigneur, donne-moi une descendance vertueuse.', reference: 'Al-Imran 3:38' },
     ],
-    summary: 'Vieux prophète sans enfant, il prit en charge Maryam (Marie) au Temple. Voyant que Maryam recevait une nourriture miraculeuse d\'Allah, il invoqua Allah pour un fils. Allah lui accorda Yahya malgré son âge avancé et la stérilité de sa femme.',
-    lessons: [
-      'Ne jamais désespérer de la réponse d\'Allah',
-      'L\'invocation sincère est exaucée à tout âge',
+    duas: [
+      { arabic: 'رَبِّ لَا تَذَرْنِي فَرْدًا وَأَنتَ خَيْرُ الْوَارِثِينَ', translation: 'Seigneur ! Ne me laisse pas seul. Tu es le Meilleur des héritiers.', reference: 'Al-Anbiya 21:89' },
     ],
   },
   {
@@ -485,19 +530,20 @@ export const prophets: Prophet[] = [
     nameAr: 'يَحْيَى',
     nameFr: 'Jean-Baptiste',
     nameEn: 'John',
+    nameIslamic: 'Yahya',
     title: 'Le seigneur chaste',
     titleAr: 'السيد الحصور',
     period: 'Ier siècle',
     icon: '🌊',
     color: '#4FC3F7',
-    surahs: [
-      { number: 3, name: 'Al-Imran' },
-      { number: 19, name: 'Maryam' },
-    ],
-    summary: 'Fils de Zakariyya, nommé par Allah Lui-même d\'un nom jamais porté avant lui. Décrit comme "seigneur, chaste, prophète et parmi les vertueux". Il confirma la parole d\'Allah (\'Isa) et vécut une vie de piété intense.',
-    lessons: [
-      'La pureté et la chasteté sont des vertus élevées',
-      'L\'obéissance à Allah dès le plus jeune âge',
+    mentionCount: 5,
+    lineage: 'Ibrahim → … → Zakariyya → Yahya',
+    surahs: [{ number: 3, name: 'Al-Imran' }, { number: 19, name: 'Maryam' }],
+    summary: 'Fils de Zakariyya, nommé par Allah d\'un nom jamais porté avant. Décrit comme "seigneur, chaste, prophète et parmi les vertueux". Il confirma la parole d\'Allah (\'Isa) et vécut une vie de piété intense.',
+    lessons: ['La pureté et la chasteté sont des vertus élevées', 'L\'obéissance à Allah dès le plus jeune âge'],
+    miracles: ['Reçut la sagesse dès l\'enfance', 'Nommé par Allah Lui-même d\'un nom unique'],
+    keyVerses: [
+      { arabic: 'يَا يَحْيَىٰ خُذِ الْكِتَابَ بِقُوَّةٍ ۖ وَآتَيْنَاهُ الْحُكْمَ صَبِيًّا', translation: 'Ô Yahya, tiens fermement le Livre. Nous lui donnâmes la sagesse alors qu\'il était enfant.', reference: 'Maryam 19:12' },
     ],
   },
   {
@@ -505,22 +551,21 @@ export const prophets: Prophet[] = [
     nameAr: 'عِيسَى',
     nameFr: 'Jésus',
     nameEn: 'Jesus',
-    title: 'Ruhullah (l\'esprit d\'Allah)',
+    nameIslamic: '\'Isa',
+    title: 'Ruhullah — l\'esprit d\'Allah',
     titleAr: 'روح الله',
     period: 'Ier siècle',
     icon: '✨',
     color: '#E0E0E0',
-    surahs: [
-      { number: 3, name: 'Al-Imran' },
-      { number: 5, name: 'Al-Ma\'idah' },
-      { number: 19, name: 'Maryam' },
-      { number: 61, name: 'As-Saff' },
-    ],
-    summary: 'Né miraculeusement de Maryam (la Vierge Marie) sans père, par la parole d\'Allah "Sois !". Il parla au berceau, guérit les aveugles et les lépreux, et ressuscita les morts par la permission d\'Allah. Il reçut l\'Injil (Évangile). Allah l\'éleva vers Lui et il reviendra avant le Jour Dernier.',
-    lessons: [
-      'Le miracle de la création divine dépasse la logique humaine',
-      'L\'humilité malgré les dons extraordinaires',
-      '\'Isa est un prophète d\'Allah, pas son fils',
+    mentionCount: 25,
+    lineage: 'Ibrahim → Ishaq → Ya\'qub → … → Maryam → \'Isa (sans père)',
+    surahs: [{ number: 3, name: 'Al-Imran' }, { number: 5, name: 'Al-Ma\'idah' }, { number: 19, name: 'Maryam' }, { number: 61, name: 'As-Saff' }],
+    summary: 'Né miraculeusement de Maryam sans père, par la parole d\'Allah "Sois !". Il parla au berceau, guérit les aveugles et les lépreux, et ressuscita les morts par la permission d\'Allah. Il reçut l\'Injil. Allah l\'éleva et il reviendra avant le Jour Dernier.',
+    lessons: ['Le miracle de la création divine dépasse la logique humaine', 'L\'humilité malgré les dons extraordinaires', '\'Isa est un prophète d\'Allah, pas son fils'],
+    miracles: ['Naissance sans père', 'Parla au berceau', 'Guérit les aveugles et les lépreux', 'Ressuscita les morts par permission d\'Allah', 'Table servie descendue du ciel (Al-Ma\'idah)', 'Donna vie à un oiseau d\'argile'],
+    keyVerses: [
+      { arabic: 'إِنَّ مَثَلَ عِيسَىٰ عِندَ اللَّهِ كَمَثَلِ آدَمَ ۖ خَلَقَهُ مِن تُرَابٍ ثُمَّ قَالَ لَهُ كُن فَيَكُونُ', translation: 'Pour Allah, \'Isa est comme Adam qu\'Il créa de poussière, puis lui dit "Sois" et il fut.', reference: 'Al-Imran 3:59' },
+      { arabic: 'وَإِذْ قَالَ عِيسَى ابْنُ مَرْيَمَ يَا بَنِي إِسْرَائِيلَ إِنِّي رَسُولُ اللَّهِ إِلَيْكُم', translation: 'Et quand \'Isa fils de Maryam dit : Ô Banu Isra\'il, je suis le messager d\'Allah vers vous.', reference: 'As-Saff 61:6' },
     ],
   },
   {
@@ -528,23 +573,21 @@ export const prophets: Prophet[] = [
     nameAr: 'مُحَمَّد ﷺ',
     nameFr: 'Muhammad ﷺ',
     nameEn: 'Muhammad ﷺ',
+    nameIslamic: 'Muhammad ﷺ',
     title: 'Le sceau des prophètes',
     titleAr: 'خاتم النبيين',
     period: '570 - 632',
     icon: '🌟',
     color: '#FFD700',
-    surahs: [
-      { number: 3, name: 'Al-Imran' },
-      { number: 33, name: 'Al-Ahzab' },
-      { number: 47, name: 'Muhammad' },
-      { number: 48, name: 'Al-Fath' },
-      { number: 93, name: 'Ad-Duha' },
-    ],
-    summary: 'Le dernier et le sceau des prophètes. Orphelin élevé à La Mecque, il reçut la première révélation dans la grotte de Hira à 40 ans. Persécuté, il émigra à Médine (Hijra). En 23 ans, il transmit le Coran complet et établit une civilisation basée sur la justice, la miséricorde et le monothéisme pur.',
-    lessons: [
-      'La miséricorde est la plus grande force',
-      'La patience dans l\'adversité porte ses fruits',
-      'Le meilleur des exemples pour l\'humanité (Uswa Hasana)',
+    mentionCount: 4,
+    lineage: 'Ibrahim → Isma\'il → … → \'Adnan → … → Muhammad ﷺ',
+    surahs: [{ number: 3, name: 'Al-Imran' }, { number: 33, name: 'Al-Ahzab' }, { number: 47, name: 'Muhammad' }, { number: 48, name: 'Al-Fath' }, { number: 93, name: 'Ad-Duha' }],
+    summary: 'Le dernier et le sceau des prophètes. Orphelin élevé à La Mecque, il reçut la première révélation dans la grotte de Hira à 40 ans. En 23 ans, il transmit le Coran complet et établit une civilisation basée sur la justice, la miséricorde et le monothéisme pur.',
+    lessons: ['La miséricorde est la plus grande force', 'La patience dans l\'adversité porte ses fruits', 'Le meilleur des exemples pour l\'humanité (Uswa Hasana)'],
+    miracles: ['Le Coran (miracle éternel)', 'Le voyage nocturne (Al-Isra\' wal Mi\'raj)', 'La lune fendue en deux', 'L\'eau jaillissant entre ses doigts ﷺ'],
+    keyVerses: [
+      { arabic: 'وَمَا أَرْسَلْنَاكَ إِلَّا رَحْمَةً لِّلْعَالَمِينَ', translation: 'Et Nous ne t\'avons envoyé qu\'en miséricorde pour les mondes.', reference: 'Al-Anbiya 21:107' },
+      { arabic: 'مَّا كَانَ مُحَمَّدٌ أَبَا أَحَدٍ مِّن رِّجَالِكُمْ وَلَٰكِن رَّسُولَ اللَّهِ وَخَاتَمَ النَّبِيِّينَ', translation: 'Muhammad n\'a jamais été le père de l\'un de vos hommes, mais le messager d\'Allah et le sceau des prophètes.', reference: 'Al-Ahzab 33:40' },
     ],
   },
 ];

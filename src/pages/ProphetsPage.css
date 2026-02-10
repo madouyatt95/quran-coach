@@ -235,10 +235,31 @@
     direction: rtl;
 }
 
-.prophet-card__name-fr {
-    font-size: var(--text-ui-sm);
+.prophet-card__name-islamic {
+    font-size: var(--text-ui-md);
     color: var(--color-text-primary);
-    font-weight: 500;
+    font-weight: 600;
+}
+
+.prophet-card__name-ar {
+    font-family: var(--font-arabic);
+    font-size: 1.1rem;
+    color: #c9a84c;
+    line-height: 1.3;
+    direction: rtl;
+}
+
+.prophet-card__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.prophet-card__mentions {
+    font-size: var(--text-ui-xs);
+    color: var(--color-accent);
+    white-space: nowrap;
 }
 
 .prophet-card__period {
@@ -353,15 +374,32 @@
     font-style: italic;
 }
 
+.prophet-modal__badges {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--space-sm);
+}
+
 .prophet-modal__period {
     display: inline-block;
-    margin-top: var(--space-sm);
     padding: 4px 14px;
     background: rgba(201, 168, 76, 0.1);
     border: 1px solid rgba(201, 168, 76, 0.25);
     border-radius: var(--radius-full);
     font-size: var(--text-ui-xs);
     color: #c9a84c;
+}
+
+.prophet-modal__mention-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(88, 166, 255, 0.08);
+    border: 1px solid rgba(88, 166, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-ui-xs);
+    color: var(--color-accent);
 }
 
 /* Sections */
@@ -385,6 +423,19 @@
     color: #c9a84c;
 }
 
+/* Lineage */
+.prophet-modal__lineage {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    padding: 10px var(--space-md);
+    background: rgba(201, 168, 76, 0.06);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    border-radius: var(--radius-md);
+    font-style: italic;
+    text-align: center;
+}
+
+/* Story text */
 .prophet-modal__text {
     font-size: var(--text-ui-md);
     color: var(--color-text-secondary);
@@ -393,6 +444,108 @@
     padding: var(--space-md);
     border-radius: var(--radius-md);
     border-left: 3px solid rgba(201, 168, 76, 0.4);
+}
+
+/* Key Verses */
+.prophet-modal__verses {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.prophet-modal__verse {
+    background: rgba(201, 168, 76, 0.05);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    text-align: center;
+}
+
+.prophet-modal__verse-arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.4rem;
+    color: #c9a84c;
+    direction: rtl;
+    line-height: 2;
+    margin-bottom: var(--space-sm);
+}
+
+.prophet-modal__verse-translation {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    font-style: italic;
+    margin-bottom: 6px;
+}
+
+.prophet-modal__verse-ref {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+/* Miracles */
+.prophet-modal__miracles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.prophet-modal__miracle {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: 10px var(--space-md);
+    background: rgba(255, 193, 7, 0.06);
+    border: 1px solid rgba(255, 193, 7, 0.15);
+    border-radius: var(--radius-md);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.prophet-modal__miracle-icon {
+    color: #FFD54F;
+    min-width: 18px;
+    margin-top: 2px;
+}
+
+/* Du'as */
+.prophet-modal__duas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.prophet-modal__dua {
+    background: rgba(76, 175, 80, 0.05);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    text-align: center;
+}
+
+.prophet-modal__dua-arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.3rem;
+    color: #81c784;
+    direction: rtl;
+    line-height: 2;
+    margin-bottom: var(--space-sm);
+}
+
+.prophet-modal__dua-translation {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    font-style: italic;
+    margin-bottom: 6px;
+}
+
+.prophet-modal__dua-ref {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    font-weight: 600;
 }
 
 /* Surahs chips */
@@ -508,6 +661,10 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+[data-theme="light"] .prophet-modal__close {
+    background: linear-gradient(transparent, #ffffff 30%);
+}
+
 /* Sepia theme adjustments */
 [data-theme="sepia"] .prophets-hero {
     background: linear-gradient(135deg, #EBE3CF 0%, #ddd5c1 50%, #d5cdb9 100%);
@@ -515,4 +672,8 @@
 
 [data-theme="sepia"] .prophet-modal {
     background: linear-gradient(180deg, #EBE3CF 0%, #F4ECD8 100%);
+}
+
+[data-theme="sepia"] .prophet-modal__close {
+    background: linear-gradient(transparent, #F4ECD8 30%);
 }

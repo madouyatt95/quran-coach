@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle } from 'lucide-react';
 import { prophets } from '../data/prophets';
 import type { Prophet } from '../data/prophets';
 import { useQuranStore } from '../stores/quranStore';
@@ -39,11 +39,27 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 <div className="prophet-modal__hero">
                     <span className="prophet-modal__emoji">{prophet.icon}</span>
                     <div className="prophet-modal__name-ar">{prophet.nameAr}</div>
-                    <div className="prophet-modal__name-fr">{prophet.nameFr}</div>
+                    <div className="prophet-modal__name-fr">{prophet.nameIslamic}</div>
                     <div className="prophet-modal__title-ar">{prophet.titleAr}</div>
                     <div className="prophet-modal__title-fr">{prophet.title}</div>
-                    <span className="prophet-modal__period">{prophet.period}</span>
+                    <div className="prophet-modal__badges">
+                        <span className="prophet-modal__period">{prophet.period}</span>
+                        <span className="prophet-modal__mention-badge">
+                            📖 Cité {prophet.mentionCount}× dans le Coran
+                        </span>
+                    </div>
                 </div>
+
+                {/* Lineage */}
+                {prophet.lineage && (
+                    <div className="prophet-modal__section">
+                        <h3 className="prophet-modal__section-title">
+                            <GitBranch size={16} />
+                            Lignée
+                        </h3>
+                        <div className="prophet-modal__lineage">{prophet.lineage}</div>
+                    </div>
+                )}
 
                 {/* Story */}
                 <div className="prophet-modal__section">
@@ -54,10 +70,66 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                     <p className="prophet-modal__text">{prophet.summary}</p>
                 </div>
 
+                {/* Key Verses */}
+                {prophet.keyVerses.length > 0 && (
+                    <div className="prophet-modal__section">
+                        <h3 className="prophet-modal__section-title">
+                            <Sparkles size={16} />
+                            Versets clés
+                        </h3>
+                        <div className="prophet-modal__verses">
+                            {prophet.keyVerses.map((v, i) => (
+                                <div key={i} className="prophet-modal__verse">
+                                    <div className="prophet-modal__verse-arabic">{v.arabic}</div>
+                                    <div className="prophet-modal__verse-translation">{v.translation}</div>
+                                    <div className="prophet-modal__verse-ref">{v.reference}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Miracles */}
+                {prophet.miracles && prophet.miracles.length > 0 && (
+                    <div className="prophet-modal__section">
+                        <h3 className="prophet-modal__section-title">
+                            <Zap size={16} />
+                            Miracles
+                        </h3>
+                        <div className="prophet-modal__miracles">
+                            {prophet.miracles.map((m, i) => (
+                                <div key={i} className="prophet-modal__miracle">
+                                    <span className="prophet-modal__miracle-icon">✦</span>
+                                    {m}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Du'as */}
+                {prophet.duas && prophet.duas.length > 0 && (
+                    <div className="prophet-modal__section">
+                        <h3 className="prophet-modal__section-title">
+                            <MessageCircle size={16} />
+                            Du'as (Invocations)
+                        </h3>
+                        <div className="prophet-modal__duas">
+                            {prophet.duas.map((d, i) => (
+                                <div key={i} className="prophet-modal__dua">
+                                    <div className="prophet-modal__dua-arabic">{d.arabic}</div>
+                                    <div className="prophet-modal__dua-translation">{d.translation}</div>
+                                    <div className="prophet-modal__dua-ref">{d.reference}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Surahs */}
                 <div className="prophet-modal__section">
                     <h3 className="prophet-modal__section-title">
-                        <Sparkles size={16} />
+                        <BookOpen size={16} />
                         Sourates associées
                     </h3>
                     <div className="prophet-modal__surahs">
@@ -113,6 +185,7 @@ export function ProphetsPage() {
             (p) =>
                 p.nameFr.toLowerCase().includes(q) ||
                 p.nameEn.toLowerCase().includes(q) ||
+                p.nameIslamic.toLowerCase().includes(q) ||
                 p.nameAr.includes(q) ||
                 p.title.toLowerCase().includes(q)
         );
@@ -167,10 +240,13 @@ export function ProphetsPage() {
                                 <div className="prophet-card__header">
                                     <span className="prophet-card__emoji">{prophet.icon}</span>
                                     <div className="prophet-card__names">
+                                        <div className="prophet-card__name-islamic">{prophet.nameIslamic}</div>
                                         <div className="prophet-card__name-ar">{prophet.nameAr}</div>
-                                        <div className="prophet-card__name-fr">{prophet.nameFr}</div>
                                     </div>
-                                    <span className="prophet-card__period">{prophet.period}</span>
+                                    <div className="prophet-card__meta">
+                                        <span className="prophet-card__mentions">📖 {prophet.mentionCount}×</span>
+                                        <span className="prophet-card__period">{prophet.period}</span>
+                                    </div>
                                 </div>
                                 <div className="prophet-card__title">{prophet.titleAr} — {prophet.title}</div>
                                 <p className="prophet-card__summary">{prophet.summary}</p>
