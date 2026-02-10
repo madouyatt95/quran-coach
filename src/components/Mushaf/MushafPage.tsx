@@ -339,13 +339,15 @@ export function MushafPage() {
         }
     };
 
-    // Filtered surahs for search
+    // Filtered surahs for search (Arabic, English, French, number)
     const filteredSurahs = useMemo(() => {
         if (!searchQuery) return surahs;
         const q = searchQuery.toLowerCase();
         return surahs.filter(s =>
+            s.name.includes(q) ||
             s.name.toLowerCase().includes(q) ||
             s.englishName.toLowerCase().includes(q) ||
+            (s.englishNameTranslation && s.englishNameTranslation.toLowerCase().includes(q)) ||
             s.number.toString().includes(q)
         );
     }, [surahs, searchQuery]);
@@ -383,9 +385,14 @@ export function MushafPage() {
         <div className="mushaf-page" data-arabic-size={arabicFontSize}>
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
-                <span className="mih-header__surah">
-                    {pageSurahNames.map(s => s.englishName).join(' • ')}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <button onClick={() => setShowSideMenu(true)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 4, display: 'flex' }}>
+                        <Menu size={20} />
+                    </button>
+                    <span className="mih-header__surah" onClick={() => setShowSearch(true)} style={{ cursor: 'pointer' }}>
+                        {pageSurahNames.map(s => s.englishName).join(' • ')} <Search size={13} style={{ verticalAlign: 'middle', opacity: 0.5, marginLeft: 4 }} />
+                    </span>
+                </div>
                 <div className="mih-header__meta">
                     <span className="mih-header__badge">
                         <BookOpen size={14} />
@@ -507,10 +514,10 @@ export function MushafPage() {
             <div className="mih-toolbar">
                 <button
                     className="mih-toolbar__btn"
-                    onClick={() => setShowSideMenu(true)}
-                    title="Menu"
+                    onClick={() => setShowSearch(true)}
+                    title="Rechercher une sourate"
                 >
-                    <Menu size={22} />
+                    <Search size={22} />
                 </button>
 
                 <button
@@ -746,7 +753,7 @@ export function MushafPage() {
                     <div className="mih-search-header">
                         <input
                             className="mih-search-input"
-                            placeholder="Chercher une sourate ou un numéro de page..."
+                            placeholder="Nom arabe, français, anglais ou n° de page..."
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             autoFocus
@@ -782,9 +789,9 @@ export function MushafPage() {
                             >
                                 <div className="mih-search-item__icon">{s.number}</div>
                                 <div className="mih-search-item__info">
-                                    <div className="mih-search-item__name">{s.name} - {s.englishName}</div>
+                                    <div className="mih-search-item__name">{s.name} — {s.englishName}</div>
                                     <div className="mih-search-item__detail">
-                                        {s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
+                                        {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
                                     </div>
                                 </div>
                             </div>
