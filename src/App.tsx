@@ -12,6 +12,7 @@ import { AdhkarPage } from './pages/AdhkarPage';
 import { MosquesPage } from './pages/MosquesPage';
 import { TafsirPage } from './pages/TafsirPage';
 import { ShazamPage } from './pages/ShazamPage';
+import { ProphetsPage } from './pages/ProphetsPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -103,6 +104,7 @@ function AppContent() {
           <Route path="/mosques" element={<MosquesPage />} />
           <Route path="/tafsir" element={<TafsirPage />} />
           <Route path="/shazam" element={<ShazamPage />} />
+          <Route path="/prophets" element={<ProphetsPage />} />
         </Routes>
       </main>
       <BottomNav />
