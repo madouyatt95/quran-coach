@@ -43,8 +43,7 @@ export function renderTajweedText(
             result.push(
                 <span
                     key={key++}
-                    style={{ color: rule.color }}
-                    className="tajweed-highlight"
+                    className={`tajweed-highlight tj-${ruleId}`}
                 >
                     {content}
                 </span>

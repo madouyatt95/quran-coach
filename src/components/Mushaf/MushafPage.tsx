@@ -1,19 +1,37 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Loader2, Settings2, Volume2, Mic, BookOpen, GraduationCap, FileQuestion, Crown, Square, X } from 'lucide-react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import {
+    ChevronLeft,
+    ChevronRight,
+    Loader2,
+    Volume2,
+    Mic,
+    Square,
+    X,
+    Eye,
+    EyeOff,
+    Search,
+    BookOpen,
+    Palette,
+    Type,
+    Menu,
+    CheckCircle2,
+    Circle,
+    Moon
+} from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { usePremiumStore } from '../../stores/premiumStore';
-import { fetchPage, fetchSurahs, fetchAyah, getAudioUrl } from '../../lib/quranApi';
+import { fetchPage, fetchSurahs, getAudioUrl } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
 import { speechRecognitionService, type WordState } from '../../lib/speechRecognition';
+import { SideMenu } from '../Navigation/SideMenu';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
 
-// View modes
-type ViewMode = 'lecture' | 'coach' | 'test';
+// Masking modes
+type MaskMode = 'visible' | 'hidden' | 'partial' | 'minimal';
 
 // Convert Western numbers to Arabic-Indic numerals
 function toArabicNumbers(num: number): string {
@@ -21,11 +39,20 @@ function toArabicNumbers(num: number): string {
     return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
 }
 
+// Juz info helper
+function getJuzNumber(ayahs: Ayah[]): number {
+    if (ayahs.length === 0) return 1;
+    return ayahs[0].juz || 1;
+}
+
+function getHizbQuarter(ayahs: Ayah[]): number {
+    if (ayahs.length === 0) return 1;
+    return ayahs[0].hizbQuarter || 1;
+}
+
 export function MushafPage() {
     const {
         currentPage,
-        currentSurah,
-        currentAyah,
         surahs,
         setSurahs,
         nextPage,
@@ -33,52 +60,65 @@ export function MushafPage() {
         setPageAyahs,
         pageAyahs,
         goToSurah,
-        goToAyah
+        goToPage,
     } = useQuranStore();
 
-    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter } = useSettingsStore();
-    const { isPremium, setPremium } = usePremiumStore();
+    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize } = useSettingsStore();
 
-    const [viewMode, setViewMode] = useState<ViewMode>('lecture');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [tajweedVerses, setTajweedVerses] = useState<TajweedVerse[]>([]);
-    const [showTajweedPanel, setShowTajweedPanel] = useState(false);
 
-    // Coach mode state
+    // Panels
+    const [showTajweedSheet, setShowTajweedSheet] = useState(false);
+    const [showMaskSheet, setShowMaskSheet] = useState(false);
+    const [showFontSheet, setShowFontSheet] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
+    const [showSideMenu, setShowSideMenu] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Masking
+    const [maskMode, setMaskMode] = useState<MaskMode>('visible');
+    const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
+
+    // Coach mode
+    const [isCoachMode, setIsCoachMode] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [mistakesCount, setMistakesCount] = useState(0);
     const [totalProcessed, setTotalProcessed] = useState(0);
-    // Stores: { [key]: { expected: string, spoken: string } }
-    const [mistakes, setMistakes] = useState<Record<string, { expected: string, spoken: string }>>({});
+    const [mistakes, setMistakes] = useState<Record<string, { expected: string; spoken: string }>>({});
     const [selectedError, setSelectedError] = useState<string | null>(null);
-    const [showMistakesSummary, setShowMistakesSummary] = useState(false);
-
-    // Test mode state
-    const [hiddenWords, setHiddenWords] = useState<Set<string>>(new Set());
 
     // Audio
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentPlayingAyah, setCurrentPlayingAyah] = useState(0);
+
+    // Page validation
+    const [validatedPages, setValidatedPages] = useState<Set<number>>(() => {
+        try {
+            const saved = localStorage.getItem('quran-coach-validated-pages');
+            return saved ? new Set(JSON.parse(saved)) : new Set();
+        } catch { return new Set(); }
+    });
+
     if (!audioRef.current) {
         audioRef.current = new Audio();
     }
 
     const tajweedCategories = useMemo(() => getTajweedCategories(), []);
 
-    // Current surah info for ayah count
-    const currentSurahInfo = useMemo(() =>
-        surahs.find(s => s.number === currentSurah),
-        [surahs, currentSurah]
-    );
-
-    // Get current page surah names
+    // Current page surah names
     const pageSurahNames = useMemo(() => {
         const surahNums = [...new Set(pageAyahs.map(a => a.surah))];
-        return surahNums.map(num => surahs.find(s => s.number === num)?.name || '').filter(Boolean);
+        return surahNums.map(num => {
+            const s = surahs.find(s => s.number === num);
+            return s ? { number: num, name: s.name, englishName: s.englishName } : null;
+        }).filter(Boolean) as { number: number; name: string; englishName: string }[];
     }, [pageAyahs, surahs]);
 
-    // Get all words from page
+    // All words from page (for coach mode)
     const allWords = useMemo(() => {
         const words: { text: string; ayahIndex: number; wordIndex: number }[] = [];
         pageAyahs.forEach((ayah, ayahIndex) => {
@@ -90,16 +130,19 @@ export function MushafPage() {
         return words;
     }, [pageAyahs]);
 
-    // Fetch surahs list on mount
+    // Juz & Hizb
+    const juzNumber = useMemo(() => getJuzNumber(pageAyahs), [pageAyahs]);
+    const hizbQuarter = useMemo(() => getHizbQuarter(pageAyahs), [pageAyahs]);
+    const hizbNumber = Math.ceil(hizbQuarter / 4);
+
+    // Fetch surahs list
     useEffect(() => {
         if (surahs.length === 0) {
-            fetchSurahs()
-                .then(setSurahs)
-                .catch(() => { });
+            fetchSurahs().then(setSurahs).catch(() => { });
         }
     }, [surahs.length, setSurahs]);
 
-    // Fetch page content and Tajweed
+    // Fetch page content
     useEffect(() => {
         setIsLoading(true);
         setError(null);
@@ -107,121 +150,137 @@ export function MushafPage() {
         Promise.all([
             fetchPage(currentPage),
             fetchTajweedPage(currentPage)
-        ])
-            .then(([ayahs, tajweed]) => {
-                setPageAyahs(ayahs);
-                setTajweedVerses(tajweed);
-                setIsLoading(false);
-                // Reset states on page change
-                setWordStates(new Map());
-                setMistakesCount(0);
-                setTotalProcessed(0);
-                setMistakes({});
-                setSelectedError(null);
-                setHiddenWords(new Set());
+        ]).then(([ayahs, tajweed]) => {
+            setPageAyahs(ayahs);
+            setTajweedVerses(tajweed);
+            setIsLoading(false);
+            // Reset coach state on page change
+            setWordStates(new Map());
+            setMistakesCount(0);
+            setTotalProcessed(0);
+            setMistakes({});
+            setSelectedError(null);
 
-                // Check for scrollToAyah from Shazam
-                const scrollData = sessionStorage.getItem('scrollToAyah');
-                if (scrollData) {
-                    try {
-                        const { surah, ayah } = JSON.parse(scrollData);
-                        sessionStorage.removeItem('scrollToAyah');
+            // Generate partial hidden words
+            if (maskMode === 'partial') {
+                generatePartialMask(ayahs);
+            }
 
-                        // Find the ayah in the loaded page and scroll to it
-                        setTimeout(() => {
-                            const ayahElement = document.querySelector(`[data-surah="${surah}"][data-ayah="${ayah}"]`);
-                            if (ayahElement) {
-                                ayahElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                ayahElement.classList.add('highlighted-from-shazam');
-                                setTimeout(() => ayahElement.classList.remove('highlighted-from-shazam'), 3000);
-                            }
-                        }, 100);
-                    } catch (e) {
-                        console.error('Failed to parse scrollToAyah', e);
-                    }
+            // Handle scrollToAyah from Shazam
+            const scrollData = sessionStorage.getItem('scrollToAyah');
+            if (scrollData) {
+                try {
+                    const { surah, ayah } = JSON.parse(scrollData);
+                    sessionStorage.removeItem('scrollToAyah');
+                    setTimeout(() => {
+                        const ayahElement = document.querySelector(`[data-surah="${surah}"][data-ayah="${ayah}"]`);
+                        if (ayahElement) {
+                            ayahElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            ayahElement.classList.add('highlighted-from-shazam');
+                            setTimeout(() => ayahElement.classList.remove('highlighted-from-shazam'), 3000);
+                        }
+                    }, 100);
+                } catch (e) {
+                    console.error('Failed to parse scrollToAyah', e);
                 }
-            })
-            .catch(() => {
-                setError('Impossible de charger la page. Vérifiez votre connexion.');
-                setIsLoading(false);
-            });
+            }
+        }).catch(() => {
+            setError('Impossible de charger la page. Vérifiez votre connexion.');
+            setIsLoading(false);
+        });
     }, [currentPage, setPageAyahs]);
 
-    // Initialize test mode
-    const initTestMode = () => {
+    // Regenerate partial mask when mode changes
+    useEffect(() => {
+        if (maskMode === 'partial') {
+            generatePartialMask(pageAyahs);
+        }
+    }, [maskMode]);
+
+    // Generate partial mask (randomly hide ~50% of words)
+    const generatePartialMask = useCallback((ayahs: Ayah[]) => {
         const hidden = new Set<string>();
-        allWords.forEach((word) => {
-            if (Math.random() > 0.5) {
-                hidden.add(`${word.ayahIndex}-${word.wordIndex}`);
-            }
+        ayahs.forEach((ayah, ayahIndex) => {
+            const words = ayah.text.split(/\s+/).filter(w => w.length > 0);
+            words.forEach((_, wordIndex) => {
+                if (Math.random() > 0.5) {
+                    hidden.add(`${ayahIndex}-${wordIndex}`);
+                }
+            });
         });
-        setHiddenWords(hidden);
-    };
+        setPartialHidden(hidden);
+    }, []);
 
-    // Handle mode change
-    const handleModeChange = (mode: ViewMode) => {
-        if ((mode === 'coach' || mode === 'test') && !isPremium) {
-            return; // Premium required
-        }
-        setViewMode(mode);
-        setWordStates(new Map());
-        setMistakesCount(0);
-        setTotalProcessed(0);
-        setMistakes({});
-        setSelectedError(null);
-        if (mode === 'test') {
-            initTestMode();
-        } else {
-            setHiddenWords(new Set());
-        }
-    };
+    // Page validation
+    const togglePageValidation = useCallback(() => {
+        setValidatedPages(prev => {
+            const next = new Set(prev);
+            if (next.has(currentPage)) {
+                next.delete(currentPage);
+            } else {
+                next.add(currentPage);
+            }
+            localStorage.setItem('quran-coach-validated-pages', JSON.stringify([...next]));
+            return next;
+        });
+    }, [currentPage]);
 
-    // Start listening (Coach/Test mode)
-    const startListening = () => {
+    const isPageValidated = validatedPages.has(currentPage);
+
+    // Audio playback - play all ayahs on page sequentially
+    const playAudio = useCallback(() => {
+        if (pageAyahs.length === 0 || !audioRef.current) return;
+
+        if (isPlaying) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+            return;
+        }
+
+        let ayahIdx = 0;
+        const playNext = () => {
+            if (ayahIdx >= pageAyahs.length) {
+                setIsPlaying(false);
+                setCurrentPlayingAyah(0);
+                return;
+            }
+            const ayah = pageAyahs[ayahIdx];
+            setCurrentPlayingAyah(ayah.number);
+            audioRef.current!.src = getAudioUrl(selectedReciter, ayah.number);
+            audioRef.current!.play().catch(() => { });
+            ayahIdx++;
+        };
+
+        audioRef.current.onended = playNext;
+        setIsPlaying(true);
+        playNext();
+    }, [pageAyahs, selectedReciter, isPlaying]);
+
+    // Coach mode - speech recognition
+    const startListening = useCallback(() => {
         const expectedText = pageAyahs.map(a => a.text).join(' ');
 
         speechRecognitionService.start(expectedText, {
             onWordMatch: (wordIndex, isCorrect, spokenWord) => {
                 const word = allWords[wordIndex];
                 if (!word) return;
-
                 const key = `${word.ayahIndex}-${word.wordIndex}`;
                 setWordStates(prev => {
                     const newStates = new Map(prev);
                     newStates.set(key, isCorrect ? 'correct' : 'error');
                     return newStates;
                 });
-
                 setTotalProcessed(prev => prev + 1);
-
-                // Handle error storage for comparison
                 if (!isCorrect) {
                     setMistakesCount(prev => prev + 1);
                     setMistakes(prev => ({
                         ...prev,
-                        [key]: {
-                            expected: word.text,
-                            spoken: spokenWord || '(non entendu)'
-                        }
+                        [key]: { expected: word.text, spoken: spokenWord || '(non entendu)' }
                     }));
-
-                    // Vibrate on error
-                    if ('vibrate' in navigator) {
-                        navigator.vibrate(200);
-                    }
-                }
-
-                // In test mode, reveal hidden word if they got it right OR wrong (to show the correction)
-                if (viewMode === 'test' && hiddenWords.has(key)) {
-                    setHiddenWords(prev => {
-                        const newHidden = new Set(prev);
-                        newHidden.delete(key);
-                        return newHidden;
-                    });
+                    if ('vibrate' in navigator) navigator.vibrate(200);
                 }
             },
             onCurrentWord: (wordIndex) => {
-                // Highlight current word being expected
                 const word = allWords[wordIndex];
                 if (!word) return;
                 const key = `${word.ayahIndex}-${word.wordIndex}`;
@@ -235,42 +294,23 @@ export function MushafPage() {
             onError: () => { },
             onEnd: () => setIsListening(false)
         });
-
         setIsListening(true);
-    };
+    }, [pageAyahs, allWords]);
 
-    // Stop listening
-    const stopListening = () => {
+    const stopListening = useCallback(() => {
         speechRecognitionService.stop();
         setIsListening(false);
-    };
+    }, []);
 
     // Group ayahs by surah
-    const groupedAyahs = pageAyahs.reduce((groups, ayah) => {
-        const surahNum = ayah.surah;
-        if (!groups[surahNum]) {
-            groups[surahNum] = [];
-        }
-        groups[surahNum].push(ayah);
-        return groups;
-    }, {} as Record<number, Ayah[]>);
-
-    const handleSurahChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const surahNum = parseInt(e.target.value);
-        if (surahNum) goToSurah(surahNum);
-    };
-
-    const handleAyahChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const ayahNum = parseInt(e.target.value);
-        if (ayahNum && currentSurah) {
-            try {
-                const ayahData = await fetchAyah(currentSurah, ayahNum);
-                goToAyah(currentSurah, ayahNum, ayahData.page);
-            } catch {
-                goToAyah(currentSurah, ayahNum);
-            }
-        }
-    };
+    const groupedAyahs = useMemo(() => {
+        return pageAyahs.reduce((groups, ayah) => {
+            const surahNum = ayah.surah;
+            if (!groups[surahNum]) groups[surahNum] = [];
+            groups[surahNum].push(ayah);
+            return groups;
+        }, {} as Record<number, Ayah[]>);
+    }, [pageAyahs]);
 
     // Get Tajweed text for a verse
     const getTajweedText = (verseKey: string): string | null => {
@@ -278,40 +318,47 @@ export function MushafPage() {
         return verse?.textTajweed || null;
     };
 
-    // Play audio for first ayah on page
-    const playAudio = () => {
-        if (pageAyahs.length > 0 && audioRef.current) {
-            audioRef.current.src = getAudioUrl(selectedReciter, pageAyahs[0].number);
-            audioRef.current.play().catch(() => { });
-        }
-    };
-
-    // Activate premium (demo)
-    const activatePremium = () => {
-        const until = new Date();
-        until.setDate(until.getDate() + 30);
-        setPremium(true, until.toISOString());
-    };
-
-    // Get word class based on mode and state
+    // Get word class (coach mode + masking)
     const getWordClass = (ayahIndex: number, wordIndex: number): string => {
         const key = `${ayahIndex}-${wordIndex}`;
 
-        if (viewMode === 'test' && hiddenWords.has(key)) {
-            return 'mushaf-word--hidden';
+        // Coach mode states take priority
+        if (isCoachMode) {
+            const state = wordStates.get(key);
+            if (state === 'correct') return 'mih-word mih-word--correct';
+            if (state === 'error') return 'mih-word mih-word--error';
+            if (state === 'current') return 'mih-word mih-word--current';
         }
 
-        const state = wordStates.get(key);
-        if (state === 'correct') return 'mushaf-word--correct';
-        if (state === 'error') return 'mushaf-word--error';
-
-        return '';
+        // Masking mode
+        switch (maskMode) {
+            case 'hidden': return 'mih-word mih-word--hidden';
+            case 'partial': return partialHidden.has(key) ? 'mih-word mih-word--hidden' : 'mih-word';
+            case 'minimal': return 'mih-word mih-word--partial';
+            default: return 'mih-word';
+        }
     };
+
+    // Filtered surahs for search
+    const filteredSurahs = useMemo(() => {
+        if (!searchQuery) return surahs;
+        const q = searchQuery.toLowerCase();
+        return surahs.filter(s =>
+            s.name.toLowerCase().includes(q) ||
+            s.englishName.toLowerCase().includes(q) ||
+            s.number.toString().includes(q)
+        );
+    }, [surahs, searchQuery]);
+
+    // Get ayah index in pageAyahs
+    const getAyahIndex = (ayah: Ayah) => pageAyahs.findIndex(a => a.number === ayah.number);
+
+    // ============ RENDER ============
 
     if (isLoading) {
         return (
             <div className="mushaf-page">
-                <div className="mushaf-page__loading">
+                <div className="mih-loading">
                     <Loader2 size={32} className="animate-spin" />
                     <p>تحميل...</p>
                 </div>
@@ -322,12 +369,9 @@ export function MushafPage() {
     if (error) {
         return (
             <div className="mushaf-page">
-                <div className="mushaf-page__error">
+                <div className="mih-error">
                     <p>{error}</p>
-                    <button
-                        className="mushaf-page__retry-btn"
-                        onClick={() => window.location.reload()}
-                    >
+                    <button className="mih-error__btn" onClick={() => window.location.reload()}>
                         Réessayer
                     </button>
                 </div>
@@ -336,177 +380,115 @@ export function MushafPage() {
     }
 
     return (
-        <div className="mushaf-page" data-arabic-size={arabicFontSize} data-mode={viewMode}>
-            {/* Header */}
-            <div className="mushaf-frame-header">
-                <div className="mushaf-page-info">
-                    <span className="mushaf-surah-name">{pageSurahNames.join(' - ')}</span>
-                    <span className="mushaf-page-number">
-                        صفحة {toArabicNumbers(currentPage)}
-                        {(viewMode === 'coach' || viewMode === 'test') && totalProcessed > 0 && (
-                            <button className="mushaf-stats" onClick={() => setShowMistakesSummary(true)}>
-                                {' • '} {mistakesCount} خطأ ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
-                            </button>
-                        )}
+        <div className="mushaf-page" data-arabic-size={arabicFontSize}>
+            {/* ===== Compact Header ===== */}
+            <div className="mih-header">
+                <span className="mih-header__surah">
+                    {pageSurahNames.map(s => s.englishName).join(' • ')}
+                </span>
+                <div className="mih-header__meta">
+                    <span className="mih-header__badge">
+                        <BookOpen size={14} />
+                        Juz {juzNumber}
                     </span>
-                </div>
-                <div className="mushaf-header-actions">
-                    <button
-                        className="mushaf-tajweed-toggle"
-                        onClick={() => setShowTajweedPanel(!showTajweedPanel)}
-                    >
-                        <Settings2 size={18} />
-                    </button>
-                    {(viewMode === 'coach' || viewMode === 'test') && (
-                        <button
-                            className={`mushaf-mic-btn ${isListening ? 'active' : ''}`}
-                            onClick={isListening ? stopListening : startListening}
-                        >
-                            {isListening ? <Square size={18} /> : <Mic size={18} />}
-                        </button>
+                    <span className="mih-header__badge">
+                        <Moon size={14} />
+                        Hizb {hizbNumber}
+                    </span>
+                    {isCoachMode && totalProcessed > 0 && (
+                        <span className="mih-header__badge" style={{ color: mistakesCount > 0 ? '#f44336' : '#4CAF50' }}>
+                            {mistakesCount} erreur{mistakesCount !== 1 ? 's' : ''} ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
+                        </span>
                     )}
                 </div>
             </div>
 
-            {/* Mode Toggle */}
-            <div className="mushaf-mode-toggle">
-                <button
-                    className={`mushaf-mode-btn ${viewMode === 'lecture' ? 'active' : ''}`}
-                    onClick={() => handleModeChange('lecture')}
-                >
-                    <BookOpen size={16} />
-                    <span>Lecture</span>
-                </button>
-                <button
-                    className={`mushaf-mode-btn ${viewMode === 'coach' ? 'active' : ''} ${!isPremium ? 'premium' : ''}`}
-                    onClick={() => handleModeChange('coach')}
-                >
-                    <GraduationCap size={16} />
-                    <span>Coach</span>
-                    {!isPremium && <Crown size={12} className="premium-badge" />}
-                </button>
-                <button
-                    className={`mushaf-mode-btn ${viewMode === 'test' ? 'active' : ''} ${!isPremium ? 'premium' : ''}`}
-                    onClick={() => handleModeChange('test')}
-                >
-                    <FileQuestion size={16} />
-                    <span>Test</span>
-                    {!isPremium && <Crown size={12} className="premium-badge" />}
-                </button>
-            </div>
-
-            {/* Premium prompt */}
-            {!isPremium && (viewMode === 'lecture') && (
-                <div className="mushaf-premium-prompt">
-                    <button onClick={activatePremium}>
-                        <Crown size={14} />
-                        Activer Premium (30j)
-                    </button>
-                </div>
-            )}
-
-            {/* Tajweed Controls Panel */}
-            {showTajweedPanel && (
-                <div className="tajweed-panel">
-                    <div className="tajweed-panel-title">التجويد</div>
-                    <div className="tajweed-controls">
-                        {tajweedCategories.map(cat => (
-                            <button
-                                key={cat.id}
-                                className={`tajweed-control ${tajwidLayers.includes(cat.id) ? 'active' : ''}`}
-                                onClick={() => toggleTajwidLayer(cat.id)}
-                            >
-                                <span
-                                    className="tajweed-color-dot"
-                                    style={{ backgroundColor: tajwidLayers.includes(cat.id) ? cat.color : '#555' }}
-                                />
-                                <span className="tajweed-label">{cat.nameArabic}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Mushaf Content Frame */}
-            <div className="mushaf-frame">
-                <div className="mushaf-frame-corner mushaf-frame-corner--tl" />
-                <div className="mushaf-frame-corner mushaf-frame-corner--tr" />
-                <div className="mushaf-frame-corner mushaf-frame-corner--bl" />
-                <div className="mushaf-frame-corner mushaf-frame-corner--br" />
-
-                <div className="mushaf-content">
+            {/* ===== Mushaf Content ===== */}
+            <div className="mih-mushaf">
+                <div className="mih-mushaf__content">
                     {Object.entries(groupedAyahs).map(([surahNum, ayahs]) => {
                         const surahNumber = parseInt(surahNum);
                         const surah = surahs.find(s => s.number === surahNumber);
                         const isStartOfSurah = ayahs[0]?.numberInSurah === 1;
                         const showBismillah = isStartOfSurah && surahNumber !== 1 && surahNumber !== 9;
 
-                        // Get ayah index in pageAyahs
-                        const getAyahIndex = (ayah: Ayah) => pageAyahs.findIndex(a => a.number === ayah.number);
-
                         return (
-                            <div key={surahNum} className="mushaf-surah-section">
+                            <div key={surahNum}>
+                                {/* Ornamental Surah Header */}
                                 {isStartOfSurah && surah && (
-                                    <div className="mushaf-surah-header">
-                                        <div className="mushaf-surah-header-frame">
-                                            <span className="mushaf-surah-title">{surah.name}</span>
+                                    <div className="mih-surah-frame">
+                                        <div className="mih-surah-frame__top-line" />
+                                        <div className="mih-surah-frame__border">
+                                            <span className="mih-surah-name">{surah.name}</span>
                                         </div>
+                                        <div className="mih-surah-frame__bottom-line" />
                                     </div>
                                 )}
 
                                 {showBismillah && (
-                                    <div className="mushaf-bismillah">{BISMILLAH}</div>
+                                    <div className="mih-bismillah">{BISMILLAH}</div>
                                 )}
 
-                                <div className="mushaf-ayahs">
+                                <div className="mih-ayahs">
                                     {ayahs.map((ayah) => {
                                         const verseKey = `${ayah.surah}:${ayah.numberInSurah}`;
-                                        const tajweedHtml = getTajweedText(verseKey);
+                                        const tajweedHtml = tajwidEnabled ? getTajweedText(verseKey) : null;
                                         const ayahIndex = getAyahIndex(ayah);
+                                        const isCurrentlyPlaying = currentPlayingAyah === ayah.number;
 
-                                        // For coach/test mode, render word by word
-                                        if (viewMode !== 'lecture') {
+                                        // Word-by-word render (coach mode or masking active)
+                                        if (isCoachMode || maskMode !== 'visible') {
                                             const words = ayah.text.split(/\s+/).filter(w => w.length > 0);
                                             return (
-                                                <span key={ayah.number} className="mushaf-ayah" data-surah={ayah.surah} data-ayah={ayah.numberInSurah}>
+                                                <span
+                                                    key={ayah.number}
+                                                    className="mih-ayah"
+                                                    data-surah={ayah.surah}
+                                                    data-ayah={ayah.numberInSurah}
+                                                    style={isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : undefined}
+                                                >
                                                     {words.map((word, wordIndex) => {
                                                         const key = `${ayahIndex}-${wordIndex}`;
-                                                        const isHidden = viewMode === 'test' && hiddenWords.has(key);
-
                                                         return (
                                                             <span
                                                                 key={key}
-                                                                className={`mushaf-word ${getWordClass(ayahIndex, wordIndex)}`}
+                                                                className={getWordClass(ayahIndex, wordIndex)}
                                                                 onClick={() => mistakes[key] && setSelectedError(key)}
                                                                 style={{ cursor: mistakes[key] ? 'pointer' : 'default' }}
                                                             >
-                                                                {isHidden ? '████' : word}
+                                                                {word}
                                                             </span>
                                                         );
                                                     })}
-                                                    <span className="mushaf-verse-number">
-                                                        ﴿{toArabicNumbers(ayah.numberInSurah)}﴾
+                                                    <span className="mih-verse-num">
+                                                        {toArabicNumbers(ayah.numberInSurah)}
                                                     </span>
                                                     {' '}
                                                 </span>
                                             );
                                         }
 
-                                        // Lecture mode - normal render with Tajweed
+                                        // Normal render with Tajweed
                                         return (
-                                            <span key={ayah.number} className="mushaf-ayah" data-surah={ayah.surah} data-ayah={ayah.numberInSurah}>
+                                            <span
+                                                key={ayah.number}
+                                                className="mih-ayah"
+                                                data-surah={ayah.surah}
+                                                data-ayah={ayah.numberInSurah}
+                                                style={isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : undefined}
+                                            >
                                                 {tajweedHtml ? (
                                                     <>
                                                         {renderTajweedText(tajweedHtml, tajwidLayers)}
-                                                        <span className="mushaf-verse-number">
-                                                            ﴿{toArabicNumbers(ayah.numberInSurah)}﴾
+                                                        <span className="mih-verse-num">
+                                                            {toArabicNumbers(ayah.numberInSurah)}
                                                         </span>
                                                     </>
                                                 ) : (
                                                     <>
                                                         {ayah.text}
-                                                        <span className="mushaf-verse-number">
-                                                            ﴿{toArabicNumbers(ayah.numberInSurah)}﴾
+                                                        <span className="mih-verse-num">
+                                                            {toArabicNumbers(ayah.numberInSurah)}
                                                         </span>
                                                     </>
                                                 )}
@@ -521,116 +503,327 @@ export function MushafPage() {
                 </div>
             </div>
 
-            {/* Page Navigation */}
-            <div className="mushaf-nav">
-                <div className="mushaf-nav-selectors">
-                    <select
-                        className="mushaf-nav-dropdown"
-                        value={currentSurah}
-                        onChange={handleSurahChange}
-                    >
-                        {surahs.map((s) => (
-                            <option key={s.number} value={s.number}>
-                                {s.number}. {s.name}
-                            </option>
-                        ))}
-                    </select>
+            {/* ===== Toolbar (6 icons) ===== */}
+            <div className="mih-toolbar">
+                <button
+                    className="mih-toolbar__btn"
+                    onClick={() => setShowSideMenu(true)}
+                    title="Menu"
+                >
+                    <Menu size={22} />
+                </button>
 
-                    <select
-                        className="mushaf-nav-dropdown mushaf-nav-dropdown--ayah"
-                        value={currentAyah}
-                        onChange={handleAyahChange}
-                    >
-                        {currentSurahInfo && Array.from(
-                            { length: currentSurahInfo.numberOfAyahs },
-                            (_, i) => i + 1
-                        ).map((ayahNum) => (
-                            <option key={ayahNum} value={ayahNum}>
-                                آية {toArabicNumbers(ayahNum)}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <button
+                    className={`mih-toolbar__btn ${tajwidEnabled ? 'active' : ''}`}
+                    onClick={() => setShowTajweedSheet(true)}
+                    title="Tajweed"
+                >
+                    <Palette size={22} />
+                </button>
 
-                <div className="mushaf-nav-buttons">
-                    <button
-                        className="mushaf-nav-btn"
-                        onClick={nextPage}
-                        disabled={currentPage >= 604}
-                    >
-                        <ChevronLeft size={24} />
-                    </button>
+                <button
+                    className="mih-toolbar__btn"
+                    onClick={() => setShowFontSheet(true)}
+                    title="Taille"
+                >
+                    <Type size={22} />
+                </button>
 
-                    <button className="mushaf-play-btn" onClick={playAudio}>
-                        <Volume2 size={20} />
-                    </button>
+                <button
+                    className={`mih-toolbar__btn ${isPlaying ? 'active' : ''}`}
+                    onClick={playAudio}
+                    title="Audio"
+                >
+                    <Volume2 size={22} />
+                </button>
 
-                    <span className="mushaf-nav-current">{toArabicNumbers(currentPage)}</span>
+                <button
+                    className={`mih-toolbar__btn ${maskMode !== 'visible' ? 'active' : ''}`}
+                    onClick={() => setShowMaskSheet(true)}
+                    title="Masquage"
+                >
+                    {maskMode !== 'visible' ? <EyeOff size={22} /> : <Eye size={22} />}
+                </button>
 
-                    <button
-                        className="mushaf-nav-btn"
-                        onClick={prevPage}
-                        disabled={currentPage <= 1}
-                    >
-                        <ChevronRight size={24} />
-                    </button>
-                </div>
+                <button
+                    className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''} ${isListening ? 'listening' : ''}`}
+                    onClick={() => {
+                        if (isCoachMode && isListening) {
+                            stopListening();
+                        } else if (isCoachMode && !isListening) {
+                            startListening();
+                        } else {
+                            setIsCoachMode(true);
+                            setWordStates(new Map());
+                            setMistakesCount(0);
+                            setTotalProcessed(0);
+                            setMistakes({});
+                        }
+                    }}
+                    title="Coach"
+                >
+                    {isListening ? <Square size={22} /> : <Mic size={22} />}
+                </button>
             </div>
 
-            {/* Error Comparison Modal */}
-            {selectedError && mistakes[selectedError] && (
-                <div className="error-modal-overlay" onClick={() => setSelectedError(null)}>
-                    <div className="error-modal" onClick={e => e.stopPropagation()}>
-                        <div className="error-modal__header">
-                            <h3>Comparaison d'erreur</h3>
-                            <button onClick={() => setSelectedError(null)}><X size={20} /></button>
-                        </div>
-                        <div className="error-modal__content">
-                            <div className="error-item">
-                                <span className="error-label">Attendu :</span>
-                                <span className="error-text expected" dir="rtl">{mistakes[selectedError].expected}</span>
-                            </div>
-                            <div className="error-item">
-                                <span className="error-label">Entendu :</span>
-                                <span className="error-text spoken" dir="rtl">{mistakes[selectedError].spoken}</span>
-                            </div>
-                        </div>
-                        <p className="error-modal__hint">Le feedback vous aide à corriger votre prononciation.</p>
-                    </div>
+            {/* ===== Page Navigation ===== */}
+            <div className="mih-nav">
+                <button
+                    className="mih-nav__arrow"
+                    onClick={nextPage}
+                    disabled={currentPage >= 604}
+                >
+                    <ChevronLeft size={22} />
+                </button>
+
+                <div className="mih-nav__center">
+                    <button className="mih-nav__page" onClick={() => setShowSearch(true)}>
+                        <Search size={14} />
+                        Page {toArabicNumbers(currentPage)}
+                    </button>
+
+                    <button
+                        className={`mih-nav__validate ${isPageValidated ? 'validated' : ''}`}
+                        onClick={togglePageValidation}
+                    >
+                        {isPageValidated ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+                        Valider
+                    </button>
+                </div>
+
+                <button
+                    className="mih-nav__arrow"
+                    onClick={prevPage}
+                    disabled={currentPage <= 1}
+                >
+                    <ChevronRight size={22} />
+                </button>
+            </div>
+
+            {/* ===== Coach Mode Indicator ===== */}
+            {isCoachMode && (
+                <div style={{
+                    position: 'fixed', top: 52, right: 12, zIndex: 50,
+                    background: '#4CAF50', color: '#fff', padding: '4px 12px',
+                    borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
+                    display: 'flex', alignItems: 'center', gap: 6
+                }}>
+                    <Mic size={12} />
+                    Coach
+                    <button
+                        onClick={() => { setIsCoachMode(false); stopListening(); setWordStates(new Map()); }}
+                        style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, display: 'flex' }}
+                    >
+                        <X size={14} />
+                    </button>
                 </div>
             )}
-            {/* Mistakes Summary Modal */}
-            {showMistakesSummary && (
-                <div className="error-modal-overlay" onClick={() => setShowMistakesSummary(false)}>
-                    <div className="error-modal error-modal--large" onClick={e => e.stopPropagation()}>
-                        <div className="error-modal__header">
-                            <h3>Toutes mes erreurs</h3>
-                            <button onClick={() => setShowMistakesSummary(false)}><X size={20} /></button>
+
+            {/* ===== Tajweed Sheet ===== */}
+            {showTajweedSheet && (
+                <>
+                    <div className="mih-sheet-overlay" onClick={() => setShowTajweedSheet(false)} />
+                    <div className="mih-sheet">
+                        <div className="mih-sheet__handle" />
+                        <div className="mih-sheet__header">
+                            <span className="mih-sheet__title">Règles de Tajweed</span>
+                            <button className="mih-sheet__close" onClick={() => setShowTajweedSheet(false)}>
+                                <X size={18} />
+                            </button>
                         </div>
-                        <div className="error-modal__content error-modal__content--scrollable">
-                            {Object.keys(mistakes).length === 0 ? (
-                                <p className="error-modal__empty">Aucune erreur détectée pour le moment. Mashallah !</p>
-                            ) : (
-                                Object.entries(mistakes).map(([key, data]) => (
-                                    <div key={key} className="error-summary-item" onClick={() => {
-                                        setSelectedError(key);
-                                        setShowMistakesSummary(false);
-                                    }}>
-                                        <div className="error-summary-row">
-                                            <span className="error-summary-label">Attendu :</span>
-                                            <span className="error-summary-text expected">{data.expected}</span>
-                                        </div>
-                                        <div className="error-summary-row">
-                                            <span className="error-summary-label">Entendu :</span>
-                                            <span className="error-summary-text spoken">{data.spoken}</span>
-                                        </div>
+
+                        {/* Global toggle */}
+                        <div
+                            className={`mih-tajweed-toggle ${tajwidEnabled ? '' : 'off'}`}
+                            onClick={toggleTajwid}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <span>Tajweed {tajwidEnabled ? 'activé' : 'désactivé'}</span>
+                            <div className={`mih-toggle-switch ${tajwidEnabled ? 'on' : ''}`} />
+                        </div>
+
+                        {/* Rule cards */}
+                        <div className="mih-tajweed-grid">
+                            {tajweedCategories.map(cat => (
+                                <div
+                                    key={cat.id}
+                                    className={`mih-tajweed-card ${tajwidLayers.includes(cat.id) ? 'active' : ''}`}
+                                    style={{ color: cat.color, borderColor: tajwidLayers.includes(cat.id) ? cat.color : '#eee' }}
+                                    onClick={() => toggleTajwidLayer(cat.id)}
+                                >
+                                    <span className="mih-tajweed-card__name">{cat.name.split('(')[0].trim()}</span>
+                                    <span className="mih-tajweed-card__arabic">{cat.nameArabic}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* ===== Masquage Sheet ===== */}
+            {showMaskSheet && (
+                <>
+                    <div className="mih-sheet-overlay" onClick={() => setShowMaskSheet(false)} />
+                    <div className="mih-sheet">
+                        <div className="mih-sheet__handle" />
+                        <div className="mih-sheet__header">
+                            <span className="mih-sheet__title">Mode Masquage (Hifz)</span>
+                            <button className="mih-sheet__close" onClick={() => setShowMaskSheet(false)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className="mih-mask-grid">
+                            <div
+                                className={`mih-mask-card ${maskMode === 'visible' ? 'active' : ''}`}
+                                onClick={() => { setMaskMode('visible'); setShowMaskSheet(false); }}
+                            >
+                                <Eye size={20} />
+                                <span>Visible</span>
+                            </div>
+                            <div
+                                className={`mih-mask-card ${maskMode === 'hidden' ? 'active' : ''}`}
+                                onClick={() => { setMaskMode('hidden'); setShowMaskSheet(false); }}
+                            >
+                                <EyeOff size={20} />
+                                <span>Tout caché</span>
+                            </div>
+                            <div
+                                className={`mih-mask-card ${maskMode === 'partial' ? 'active' : ''}`}
+                                onClick={() => { setMaskMode('partial'); setShowMaskSheet(false); }}
+                            >
+                                <Eye size={20} />
+                                <span>Partiel</span>
+                            </div>
+                            <div
+                                className={`mih-mask-card ${maskMode === 'minimal' ? 'active' : ''}`}
+                                onClick={() => { setMaskMode('minimal'); setShowMaskSheet(false); }}
+                            >
+                                <EyeOff size={20} />
+                                <span>Minimal (flou)</span>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* ===== Font Size Sheet ===== */}
+            {showFontSheet && (
+                <>
+                    <div className="mih-sheet-overlay" onClick={() => setShowFontSheet(false)} />
+                    <div className="mih-sheet">
+                        <div className="mih-sheet__handle" />
+                        <div className="mih-sheet__header">
+                            <span className="mih-sheet__title">Taille de police</span>
+                            <button className="mih-sheet__close" onClick={() => setShowFontSheet(false)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className="mih-fontsize-grid">
+                            {(['sm', 'md', 'lg', 'xl'] as const).map(size => (
+                                <button
+                                    key={size}
+                                    className={`mih-fontsize-btn ${arabicFontSize === size ? 'active' : ''}`}
+                                    onClick={() => { setArabicFontSize(size); setShowFontSheet(false); }}
+                                >
+                                    <span style={{ fontSize: size === 'sm' ? '14px' : size === 'md' ? '18px' : size === 'lg' ? '22px' : '26px', fontFamily: 'var(--font-arabic)' }}>
+                                        بسم
+                                    </span>
+                                    <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>
+                                        {size === 'sm' ? 'Petit' : size === 'md' ? 'Normal' : size === 'lg' ? 'Grand' : 'Très grand'}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* ===== Search Overlay ===== */}
+            {showSearch && (
+                <div className="mih-search-overlay">
+                    <div className="mih-search-header">
+                        <input
+                            className="mih-search-input"
+                            placeholder="Chercher une sourate ou un numéro de page..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            autoFocus
+                        />
+                        <button className="mih-search-cancel" onClick={() => { setShowSearch(false); setSearchQuery(''); }}>
+                            Annuler
+                        </button>
+                    </div>
+
+                    {/* Direct page input */}
+                    {/^\d+$/.test(searchQuery) && parseInt(searchQuery) >= 1 && parseInt(searchQuery) <= 604 && (
+                        <div
+                            className="mih-search-item"
+                            onClick={() => { goToPage(parseInt(searchQuery)); setShowSearch(false); setSearchQuery(''); }}
+                        >
+                            <div className="mih-search-item__icon"><Search size={18} /></div>
+                            <div className="mih-search-item__info">
+                                <div className="mih-search-item__name">Aller à la page {searchQuery}</div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mih-search-label">
+                        {searchQuery ? `${filteredSurahs.length} résultat(s)` : '114 sourates'}
+                    </div>
+
+                    <div className="mih-search-list">
+                        {filteredSurahs.map(s => (
+                            <div
+                                key={s.number}
+                                className="mih-search-item"
+                                onClick={() => { goToSurah(s.number); setShowSearch(false); setSearchQuery(''); }}
+                            >
+                                <div className="mih-search-item__icon">{s.number}</div>
+                                <div className="mih-search-item__info">
+                                    <div className="mih-search-item__name">{s.name} - {s.englishName}</div>
+                                    <div className="mih-search-item__detail">
+                                        {s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
                                     </div>
-                                ))
-                            )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* ===== Error Comparison Modal ===== */}
+            {selectedError && mistakes[selectedError] && (
+                <div className="mih-sheet-overlay" onClick={() => setSelectedError(null)}>
+                    <div className="mih-sheet" onClick={e => e.stopPropagation()} style={{ maxHeight: '30vh' }}>
+                        <div className="mih-sheet__handle" />
+                        <div className="mih-sheet__header">
+                            <span className="mih-sheet__title">Comparaison d'erreur</span>
+                            <button className="mih-sheet__close" onClick={() => setSelectedError(null)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: '0.8rem', color: '#999' }}>Attendu :</span>
+                                <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#2E7D32' }} dir="rtl">
+                                    {mistakes[selectedError].expected}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: '0.8rem', color: '#999' }}>Entendu :</span>
+                                <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#C62828' }} dir="rtl">
+                                    {mistakes[selectedError].spoken}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* ===== Side Menu ===== */}
+            <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
         </div>
     );
 }
