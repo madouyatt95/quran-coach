@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useCallback, useRef } from 'react';
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
@@ -88,9 +88,12 @@ function AppContent() {
     };
   }, [startSession, endSession]);
 
+  const location = useLocation();
+  const hideBottomNav = location.pathname === '/' || location.pathname === '/read';
+
   return (
     <>
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1, paddingBottom: hideBottomNav ? 0 : '80px' }}>
         <Routes>
           <Route path="/" element={<ReadPage />} />
           <Route path="/read" element={<ReadPage />} />
@@ -107,7 +110,7 @@ function AppContent() {
           <Route path="/prophets" element={<ProphetsPage />} />
         </Routes>
       </main>
-      <BottomNav />
+      {!hideBottomNav && <BottomNav />}
     </>
   );
 }
