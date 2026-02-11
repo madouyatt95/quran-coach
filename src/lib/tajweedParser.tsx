@@ -11,50 +11,31 @@ const isIOS = typeof navigator !== 'undefined' && (
 );
 
 /**
- * Get color for a tajweed rule ID from TAJWEED_RULES.
- * Returns null if no rule or default.
+ * Get color for a tajweed rule ID from central TAJWEED_RULES.
  */
 function getTajweedColor(ruleId: string): string | null {
-    // Map API rule IDs to our TAJWEED_RULES keys if they differ
-    // API sometimes uses variations
-    const mapping: Record<string, string> = {
-        'ghunnah_2': 'ghunnah',
-        'qalaqah': 'qalqalah',
-        'idgham_wo_ghunnah': 'idgham_no_ghunnah',
-        'ikhafa': 'ikhfa',
-        'ikhafa_shafawi': 'ikhfa_shafawi',
-        'slnt': 'silent'
-    };
-
-    const key = mapping[ruleId] || ruleId;
+    const key = ruleId.toLowerCase();
     return TAJWEED_RULES[key]?.color || null;
 }
 
+/**
+ * Check if a specific rule or its category is enabled.
+ */
 function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
     if (enabledLayers.includes(ruleId)) return true;
 
-    // Check if the base category is enabled (e.g., 'madd' for 'madda_normal')
-    const categoryMap: Record<string, string> = {
-        madda_normal: 'madd', madda_permissible: 'madd', madda_necessary: 'madd', madda_obligatory: 'madd',
-        madd_2: 'madd', madd_4: 'madd', madd_6: 'madd', madd_246: 'madd', madd_munfasil: 'madd', madd_muttasil: 'madd',
-        ghunnah: 'ghunnah', ghunnah_2: 'ghunnah',
-        qalqalah: 'qalqalah', qalaqah: 'qalqalah',
-        idgham_ghunnah: 'idgham', idgham_no_ghunnah: 'idgham', idgham_wo_ghunnah: 'idgham',
-        idgham_mutajanisayn: 'idgham', idgham_mutaqaribayn: 'idgham', idgham_shafawi: 'idgham',
-        ikhfa: 'ikhfa', ikhfa_shafawi: 'ikhfa', ikhafa: 'ikhfa', ikhafa_shafawi: 'ikhfa',
-        iqlab: 'iqlab',
-        izhar: 'izhar', izhar_shafawi: 'izhar', izhar_halqi: 'izhar',
-        ham_wasl: 'other', laam_shamsiyah: 'other', silent: 'other', slnt: 'other',
-    };
+    // Check categories (madd, ghunnah, etc.)
+    const key = ruleId.toLowerCase();
+    if (key.startsWith('madda') && enabledLayers.includes('madd')) return true;
+    if ((key.startsWith('ghunnah') || key.startsWith('ikhfa')) && (enabledLayers.includes('ghunnah') || enabledLayers.includes('ikhfa'))) return true;
+    if (key.startsWith('qalqalah') && enabledLayers.includes('qalqalah')) return true;
+    if (key.startsWith('idgham') && enabledLayers.includes('idgham')) return true;
+    if (key.startsWith('izhar') && enabledLayers.includes('izhar')) return true;
+    if (key === 'iqlab' && enabledLayers.includes('iqlab')) return true;
 
-    const cat = categoryMap[ruleId];
-    if (cat && enabledLayers.includes(cat)) return true;
-
-    // Prefix match for more flexibility
-    const prefixes = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
-    for (const prefix of prefixes) {
-        if (ruleId.startsWith(prefix) && enabledLayers.includes(prefix)) return true;
-    }
+    // Fallback for "other" category
+    const otherRules = ['ham_wasl', 'laam_shamsiyah', 'silent', 'slnt'];
+    if (otherRules.includes(key) && enabledLayers.includes('other')) return true;
 
     return false;
 }
@@ -88,7 +69,7 @@ export function renderTajweedText(
         const beforeText = cleanHtml.substring(lastIndex, match.index);
         plainText += beforeText;
         for (let i = 0; i < beforeText.length; i++) {
-            colorMap.push(null); // Use default theme color
+            colorMap.push(null);
             ruleIdMap.push(null);
         }
 
@@ -116,7 +97,6 @@ export function renderTajweedText(
     }
 
     // 3. Render word by word
-    // We split by any sequence of whitespace
     const words = plainText.split(/(\s+)/);
     let charOffset = 0;
     const result: React.ReactNode[] = [];
@@ -129,10 +109,8 @@ export function renderTajweedText(
         const wordRuleIds = ruleIdMap.slice(charOffset, charOffset + word.length);
 
         if (word.trim() === '') {
-            // Is a space
             result.push(<span key={key++}>{word}</span>);
         } else if (isIOS) {
-            // iOS: Shape the whole word as one block to preserve ligatures
             result.push(
                 <TajweedCanvas
                     key={key++}
@@ -143,7 +121,6 @@ export function renderTajweedText(
                 />
             );
         } else {
-            // Non-iOS: Standard <span> rendering
             let currentContent = '';
             let currentColor = wordColors[0];
             let currentRuleId = wordRuleIds[0];
@@ -166,7 +143,6 @@ export function renderTajweedText(
                     currentRuleId = wordRuleIds[i];
                 }
             }
-            // Add last segment of the word
             result.push(
                 <span
                     key={key++}

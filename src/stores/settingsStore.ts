@@ -54,7 +54,7 @@ export const useSettingsStore = create<SettingsState>()(
             showTranslation: false,
             translationLanguage: 'fr',
             tajwidEnabled: true,
-            tajwidLayers: [], // Start with no layers active - user can enable them
+            tajwidLayers: ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'],
             selectedReciter: 'ar.alafasy',
             autoPlayAudio: false,
             repeatCount: 3,
@@ -88,19 +88,14 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'quran-coach-settings',
-            version: 2, // Increment version to force migration
+            version: 3, // Increment version for new migration
             migrate: (persistedState: any, version: number) => {
-                // Migration from older versions
-                if (version < 2) {
-                    // Reset tajwidLayers to empty array if it has stale/invalid data
-                    // This fixes the iOS PWA cache bug where rules appear active without selection
-                    const validLayers = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'];
-                    const existingLayers = persistedState?.tajwidLayers || [];
-                    const cleanedLayers = existingLayers.filter((layer: string) => validLayers.includes(layer));
+                const allLayers = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'];
 
+                if (version < 3) {
                     return {
                         ...persistedState,
-                        tajwidLayers: cleanedLayers.length === existingLayers.length ? cleanedLayers : [],
+                        tajwidLayers: allLayers,
                     };
                 }
                 return persistedState;
