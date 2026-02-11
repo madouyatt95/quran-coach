@@ -20,20 +20,23 @@ function getTajweedColor(ruleId: string): string | null {
 
 /**
  * Check if a specific rule or its category is enabled.
+ * Uses a mapping of sub-rules to main categories.
  */
 function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
     if (enabledLayers.includes(ruleId)) return true;
 
-    // Check categories (madd, ghunnah, etc.)
     const key = ruleId.toLowerCase();
-    if (key.startsWith('madda') && enabledLayers.includes('madd')) return true;
-    if ((key.startsWith('ghunnah') || key.startsWith('ikhfa')) && (enabledLayers.includes('ghunnah') || enabledLayers.includes('ikhfa'))) return true;
+
+    // Category Mappings
+    if (key.startsWith('madd') && enabledLayers.includes('madd')) return true;
+    if (key.startsWith('ghunnah') && (enabledLayers.includes('ghunnah') || enabledLayers.includes('ikhfa'))) return true;
+    if (key.startsWith('ikhfa') && (enabledLayers.includes('ghunnah') || enabledLayers.includes('ikhfa'))) return true;
     if (key.startsWith('qalqalah') && enabledLayers.includes('qalqalah')) return true;
     if (key.startsWith('idgham') && enabledLayers.includes('idgham')) return true;
     if (key.startsWith('izhar') && enabledLayers.includes('izhar')) return true;
-    if (key === 'iqlab' && enabledLayers.includes('iqlab')) return true;
+    if (key === 'iqlab' && (enabledLayers.includes('iqlab') || enabledLayers.includes('ghunnah'))) return true;
 
-    // Fallback for "other" category
+    // Helper category
     const otherRules = ['ham_wasl', 'laam_shamsiyah', 'silent', 'slnt'];
     if (otherRules.includes(key) && enabledLayers.includes('other')) return true;
 
@@ -42,8 +45,7 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
 
 /**
  * Main parser function.
- * Sur iOS, on traite chaque mot séparément mais comme un BLOC UNIQUE pour HarfBuzz,
- * ce qui permet de garder les ligatures intactes tout en colorisant des segments.
+ * On iOS, we treat each word as a SINGLE BLOCK for HarfBuzz to preserve ligatures.
  */
 export function renderTajweedText(
     tajweedHtml: string,
@@ -51,29 +53,29 @@ export function renderTajweedText(
 ): React.ReactNode {
     if (!tajweedHtml) return null;
 
-    // 1. Clean up HTML
+    // 1. Pre-parsing Cleanup
     const cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
 
-    // 2. Map colors to characters
+    // 2. Character-level color mapping
     let plainText = '';
     const colorMap: (string | null)[] = [];
     const ruleIdMap: (string | null)[] = [];
 
-    // Robust Regex to handle: <tajweed class=rule>, <tajweed class="rule">, <tajweed class='rule'>
+    // Robust Regex for <tajweed class="rule"> or <tajweed class=rule>
     const tagRegex = /<tajweed\s+class=["']?([^"'>\s]+)["']?>([^<]*)<\/tajweed>/g;
     let lastIndex = 0;
     let match;
 
     while ((match = tagRegex.exec(cleanHtml)) !== null) {
-        // Text before tag
+        // Handle text BEFORE the tag
         const beforeText = cleanHtml.substring(lastIndex, match.index);
         plainText += beforeText;
         for (let i = 0; i < beforeText.length; i++) {
-            colorMap.push(null);
+            colorMap.push(null); // Will use theme default
             ruleIdMap.push(null);
         }
 
-        // Inside tag
+        // Handle tag content
         const ruleId = match[1];
         const content = match[2];
         const enabled = isRuleEnabled(ruleId, enabledLayers);
@@ -88,7 +90,7 @@ export function renderTajweedText(
         lastIndex = match.index + match[0].length;
     }
 
-    // Text after last tag
+    // Handle remaining text
     const remainingText = cleanHtml.substring(lastIndex);
     plainText += remainingText;
     for (let i = 0; i < remainingText.length; i++) {
@@ -111,16 +113,18 @@ export function renderTajweedText(
         if (word.trim() === '') {
             result.push(<span key={key++}>{word}</span>);
         } else if (isIOS) {
+            // iOS Render: Professional Canvas with HarfBuzz
             result.push(
                 <TajweedCanvas
                     key={key++}
                     text={word}
                     colors={wordColors as (string | null)[]}
-                    fontSize={24}
-                    lineHeight={1.4}
+                    fontSize={26}
+                    lineHeight={1.6}
                 />
             );
         } else {
+            // Standard Render: Spans with color grouping
             let currentContent = '';
             let currentColor = wordColors[0];
             let currentRuleId = wordRuleIds[0];

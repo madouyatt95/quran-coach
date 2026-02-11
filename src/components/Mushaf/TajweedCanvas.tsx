@@ -1,6 +1,6 @@
 /**
  * TajweedCanvas — Renders Arabic text with Tajweed colors on a <canvas>.
- * Uses HarfBuzz WASM for correct text shaping (preserving Arabic ligatures).
+ * Uses HarfBuzz WASM for correct text shaping with Professional Uthmanic font.
  */
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { initHarfBuzz, shapeText, isHarfBuzzReady, getFontUpem } from '../../lib/harfbuzzService';
@@ -15,13 +15,13 @@ interface TajweedCanvasProps {
 export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
     text,
     colors,
-    fontSize = 30, // Higher base font size for clarity
-    lineHeight = 1.6,
+    fontSize = 32, // Professional Mushaf sizing
+    lineHeight = 1.8, // Generous line height for Uthmanic font flourishes
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [hbReady, setHbReady] = useState(isHarfBuzzReady());
 
-    // Lazy initialization of HarfBuzz
+    // Lazy initialization of HarfBuzz core
     useEffect(() => {
         if (!hbReady) {
             initHarfBuzz().then(ok => {
@@ -38,24 +38,22 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
         if (!ctx) return;
 
         // 1. Theme-aware base color detection
+        // We look for --color-text-primary defined on :root/body
         const style = window.getComputedStyle(document.body);
         const defaultColor = style.getPropertyValue('--color-text-primary').trim() || '#F0E6D3';
 
-        // 2. Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 3. Shape text
+        // 2. Shape text with the loaded Uthmanic font
         const glyphs = shapeText(text, fontSize);
         if (glyphs.length === 0) return;
 
-        // 4. Calculate dimensions
+        // 3. Clear and Prep Metrics
         const upem = getFontUpem();
         const scale = fontSize / upem;
         const totalWidth = glyphs.reduce((sum, g) => sum + g.xAdvance, 0);
 
-        // High DPI scaling
+        // High DPI scaling (Retina support)
         const dpr = window.devicePixelRatio || 1;
-        const padding = 2;
+        const padding = 2; // Exact horizontal breathing room
         const width = totalWidth + (padding * 2);
         const height = fontSize * lineHeight;
 
@@ -65,19 +63,27 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
         canvas.style.height = `${height}px`;
         ctx.scale(dpr, dpr);
 
-        // 5. Drawing loop
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 4. Drawing loop (RTL)
         let xCursor = totalWidth + padding;
-        const yBaseline = (fontSize * lineHeight) * 0.72; // Adjusted baseline
+        const yBaseline = (fontSize * lineHeight) * 0.75; // Baseline tuning for Uthmanic font
 
         for (const glyph of glyphs) {
+            // Apply rule color or fallback to theme primary
             const glyphColor = colors[glyph.cluster] || defaultColor;
 
             if (glyph.svgPath) {
                 ctx.save();
-                ctx.translate(xCursor - glyph.xAdvance + glyph.xOffset, yBaseline - glyph.yOffset);
-                ctx.scale(scale, -scale);
-                ctx.fillStyle = glyphColor;
 
+                // Position relative to RTL baseline
+                ctx.translate(xCursor - glyph.xAdvance + glyph.xOffset, yBaseline - glyph.yOffset);
+
+                // SVG Path scale: Font Units to Canvas Pixels
+                // Flip Y as canvas is positive down
+                ctx.scale(scale, -scale);
+
+                ctx.fillStyle = glyphColor;
                 const path = new Path2D(glyph.svgPath);
                 ctx.fill(path);
                 ctx.restore();
@@ -86,11 +92,11 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
         }
     }, [hbReady, text, colors, fontSize, lineHeight]);
 
-    // Use requestAnimationFrame for smooth and reliable drawing after mount
+    // Use requestAnimationFrame loop to wait for initialization and draw
     useEffect(() => {
         let rafId: number;
         const loop = () => {
-            if (hbReady) {
+            if (isHarfBuzzReady()) {
                 draw();
             } else {
                 rafId = requestAnimationFrame(loop);
@@ -98,11 +104,19 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
         };
         rafId = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(rafId);
-    }, [hbReady, draw]);
+    }, [draw]);
 
-    // Fallback: Show colored text via spans if HarfBuzz is not yet ready
+    // Fallback: Show original text while engine is warming up
     if (!hbReady) {
-        return <span style={{ color: colors[0] || 'inherit', whiteSpace: 'nowrap' }}>{text}</span>;
+        return (
+            <span style={{
+                color: colors[0] || 'inherit',
+                opacity: 0.5,
+                whiteSpace: 'nowrap'
+            }}>
+                {text}
+            </span>
+        );
     }
 
     return (
@@ -111,9 +125,9 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
             style={{
                 display: 'inline-block',
                 verticalAlign: 'baseline',
-                margin: '0 0.5px',
+                margin: '0 0.25px',
                 pointerEvents: 'none',
-                maxWidth: 'none', // Prevent accidental squishing
+                maxWidth: 'none',
             }}
         />
     );

@@ -2,8 +2,8 @@
  * HarfBuzz WASM Service for iOS Tajweed
  * 
  * Shapes Arabic text with HarfBuzz (correct ligatures), then
- * returns SVG path data for each glyph, grouped by Tajweed color.
- * Only loaded on iOS where <span> elements break Arabic ligatures.
+ * returns SVG path data for each glyph.
+ * Using KFGQPC Hafs Uthman Taha Naskh font for 100% authentic rendering.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,8 +27,8 @@ let hbFace: any = null;
 let hbBlob: any = null;
 let initPromise: Promise<boolean> | null = null;
 
-// The Amiri font URL from Google Fonts (same font our app uses)
-const FONT_URL = 'https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHpUrtLMA7w.ttf';
+// Hafs Uthmanic font - the gold standard for Quranic text
+const FONT_URL = 'https://github.com/quran/quran.com-frontend-next/raw/master/public/fonts/quran/hafs/v22/KFGQPC-HAFS-V22.ttf';
 
 /**
  * Initialize HarfBuzz and load font. Returns true on success.
@@ -38,25 +38,27 @@ export function initHarfBuzz(): Promise<boolean> {
 
     initPromise = (async () => {
         try {
-            // Import harfbuzzjs — its default export is a Promise resolving to the HB instance
+            console.log('[HarfBuzz] Starting initialization...');
+
+            // 1. Import harfbuzzjs
             const hb = await import('harfbuzzjs');
             hbInstance = await (hb.default || hb);
 
-            // Fetch the Amiri font file
+            // 2. Fetch the Professional Uthmanic font
             const fontResp = await fetch(FONT_URL);
             if (!fontResp.ok) throw new Error(`Font fetch failed: ${fontResp.status}`);
             const fontData = await fontResp.arrayBuffer();
 
-            // Create HarfBuzz font
+            // 3. Create HarfBuzz font instance
             hbBlob = hbInstance.createBlob(fontData);
             hbFace = hbInstance.createFace(hbBlob, 0);
             hbFont = hbInstance.createFont(hbFace);
 
-            console.log('[HarfBuzz] Ready');
+            console.log('[HarfBuzz] Initialization complete - Authentic Uthmanic font loaded');
             return true;
         } catch (err) {
             console.error('[HarfBuzz] Init failed:', err);
-            initPromise = null; // allow retry
+            initPromise = null;
             return false;
         }
     })();
@@ -69,9 +71,12 @@ export function initHarfBuzz(): Promise<boolean> {
  * Returns glyph positions mapped back to character clusters.
  */
 export function shapeText(text: string, fontSize: number): ShapedGlyph[] {
-    if (!hbInstance || !hbFont) return [];
+    if (!hbInstance || !hbFont) {
+        console.warn('[HarfBuzz] Rendering attempted before initialization');
+        return [];
+    }
 
-    // Scale: HarfBuzz works in font units; we scale by fontSize / upem * 64
+    // Scale optimization
     hbFont.setScale(fontSize * 64, fontSize * 64);
 
     const buffer = hbInstance.createBuffer();
@@ -111,7 +116,7 @@ export function getFontUpem(): number {
 }
 
 /**
- * Cleanup HarfBuzz resources (call on unmount).
+ * Cleanup HarfBuzz resources.
  */
 export function destroyHarfBuzz(): void {
     if (hbFont) { hbFont.destroy(); hbFont = null; }

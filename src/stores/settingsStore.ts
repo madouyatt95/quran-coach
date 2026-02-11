@@ -88,14 +88,16 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'quran-coach-settings',
-            version: 3, // Increment version for new migration
+            version: 4, // Increment version for final forced mirror
             migrate: (persistedState: any, version: number) => {
                 const allLayers = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'];
 
-                if (version < 3) {
+                // Force all layers for any version upgrade to v4
+                if (version < 4) {
                     return {
                         ...persistedState,
                         tajwidLayers: allLayers,
+                        tajwidEnabled: true // Ensure it's ON
                     };
                 }
                 return persistedState;
