@@ -9,8 +9,8 @@ import { initHarfBuzz, shapeText, isHarfBuzzReady, getFontUpem } from '../../lib
 interface TajweedCanvasProps {
     /** Plain text of the word to render */
     text: string;
-    /** Array of colors corresponding to each character in the text */
-    colors: string[];
+    /** Array of colors corresponding to each character in the text. Null uses theme color. */
+    colors: (string | null)[];
     /** Font size in CSS pixels */
     fontSize?: number;
     /** Line height multiplier */
@@ -20,7 +20,7 @@ interface TajweedCanvasProps {
 export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
     text,
     colors,
-    fontSize = 28, // Slightly larger base for mobile readability
+    fontSize = 28,
     lineHeight = 1.4,
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,18 +42,23 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Shape the entire word as one block to preserve ligatures
+        // 1. Detect default text color from theme
+        // We look for --color-text-primary defined on :root or body
+        const style = window.getComputedStyle(document.body);
+        const themeDefaultColor = style.getPropertyValue('--color-text-primary').trim() || '#F0E6D3';
+
+        // 2. Shape the entire word as one block to preserve ligatures
         const glyphs = shapeText(text, fontSize);
         if (glyphs.length === 0) return;
 
-        // Calculate metrics
+        // 3. Calculate metrics
         const totalWidth = glyphs.reduce((sum, g) => sum + g.xAdvance, 0);
         const upem = getFontUpem();
         const scale = fontSize / upem;
 
         // High DPI Support
         const dpr = window.devicePixelRatio || 1;
-        const padding = 2; // Small horizontal padding
+        const padding = 2;
         const canvasWidth = totalWidth + padding * 2;
         const canvasHeight = fontSize * lineHeight;
 
@@ -65,25 +70,17 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
 
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        // Arabic is RTL. HarfBuzz gives glyphs in logical order (first char first).
-        // To draw RTL, we start at the right side of the canvas.
+        // Arabic is RTL. Start at the right side.
         let xCursor = totalWidth + padding;
-        const yBaseline = (fontSize * lineHeight) * 0.7; // Baseline position
+        const yBaseline = (fontSize * lineHeight) * 0.7;
 
         for (const glyph of glyphs) {
-            // Pick color from the character cluster (original character index)
-            const glyphColor = colors[glyph.cluster] || '#1a1a2e';
+            // Pick color: provided Tajweed color OR theme default
+            const glyphColor = colors[glyph.cluster] || themeDefaultColor;
 
             if (glyph.svgPath) {
                 ctx.save();
-
-                // Position the glyph. 
-                // xCursor is at the "end" (right) of the current glyph slot.
-                // We draw the glyph relative to the baseline.
                 ctx.translate(xCursor - glyph.xAdvance + glyph.xOffset, yBaseline - glyph.yOffset);
-
-                // Scale SVG path from Font Units to Pixels.
-                // Font Y is positive UP, Canvas Y is positive DOWN, so we scale by (scale, -scale).
                 ctx.scale(scale, -scale);
 
                 ctx.fillStyle = glyphColor;
@@ -92,7 +89,6 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
                 ctx.restore();
             }
 
-            // Move cursor left for next glyph
             xCursor -= glyph.xAdvance;
         }
     }, [ready, text, colors, fontSize, lineHeight]);
@@ -103,7 +99,7 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
 
     // Fallback while loading
     if (!ready) {
-        return <span style={{ color: colors[0] || '#1a1a2e' }}>{text}</span>;
+        return <span style={{ color: 'inherit' }}>{text}</span>;
     }
 
     return (
@@ -113,7 +109,7 @@ export const TajweedCanvas: React.FC<TajweedCanvasProps> = ({
                 display: 'inline-block',
                 verticalAlign: 'baseline',
                 margin: '0 0.5px',
-                pointerEvents: 'none', // Allow clicks to pass through to ayah container
+                pointerEvents: 'none',
             }}
         />
     );

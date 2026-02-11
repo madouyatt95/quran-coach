@@ -1,5 +1,6 @@
 import React from 'react';
 import TajweedCanvas from '../components/Mushaf/TajweedCanvas';
+import { TAJWEED_RULES } from './tajweedService';
 
 /**
  * Detect iOS once at module level
@@ -10,25 +11,29 @@ const isIOS = typeof navigator !== 'undefined' && (
 );
 
 /**
- * Get CSS color for a tajweed rule ID.
+ * Get color for a tajweed rule ID from TAJWEED_RULES.
+ * Returns null if no rule or default.
  */
-function getCssColor(ruleId: string): string {
-    const colors: Record<string, string> = {
-        madda_normal: '#537FFF', madda_permissible: '#4169E1', madda_necessary: '#00008B', madda_obligatory: '#1E90FF',
-        madd_2: '#537FFF', madd_4: '#4169E1', madd_6: '#00008B', madd_246: '#537FFF', madd_munfasil: '#4169E1', madd_muttasil: '#1E90FF',
-        ghunnah: '#169200', ghunnah_2: '#169200',
-        qalqalah: '#DD0008', qalaqah: '#DD0008',
-        idgham_ghunnah: '#FF7F00', idgham_no_ghunnah: '#FF6347', idgham_wo_ghunnah: '#FF6347',
-        idgham_mutajanisayn: '#FFA07A', idgham_mutaqaribayn: '#FFB347', idgham_shafawi: '#FF8C00',
-        ikhfa: '#9400D3', ikhfa_shafawi: '#BA55D3', ikhafa: '#9400D3', ikhafa_shafawi: '#BA55D3',
-        iqlab: '#26BFBF', izhar: '#8B0000', izhar_shafawi: '#A52A2A', izhar_halqi: '#8B0000',
-        ham_wasl: '#AAAAAA', laam_shamsiyah: '#FF69B4', silent: '#AAAAAA', slnt: '#AAAAAA',
+function getTajweedColor(ruleId: string): string | null {
+    // Map API rule IDs to our TAJWEED_RULES keys if they differ
+    // API sometimes uses variations
+    const mapping: Record<string, string> = {
+        'ghunnah_2': 'ghunnah',
+        'qalaqah': 'qalqalah',
+        'idgham_wo_ghunnah': 'idgham_no_ghunnah',
+        'ikhafa': 'ikhfa',
+        'ikhafa_shafawi': 'ikhfa_shafawi',
+        'slnt': 'silent'
     };
-    return colors[ruleId] || '#1a1a2e';
+
+    const key = mapping[ruleId] || ruleId;
+    return TAJWEED_RULES[key]?.color || null;
 }
 
 function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
     if (enabledLayers.includes(ruleId)) return true;
+
+    // Check if the base category is enabled (e.g., 'madd' for 'madda_normal')
     const categoryMap: Record<string, string> = {
         madda_normal: 'madd', madda_permissible: 'madd', madda_necessary: 'madd', madda_obligatory: 'madd',
         madd_2: 'madd', madd_4: 'madd', madd_6: 'madd', madd_246: 'madd', madd_munfasil: 'madd', madd_muttasil: 'madd',
@@ -41,13 +46,17 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
         izhar: 'izhar', izhar_shafawi: 'izhar', izhar_halqi: 'izhar',
         ham_wasl: 'other', laam_shamsiyah: 'other', silent: 'other', slnt: 'other',
     };
+
     const cat = categoryMap[ruleId];
     if (cat && enabledLayers.includes(cat)) return true;
+
+    // Prefix match for more flexibility
     const prefixes = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
     for (const prefix of prefixes) {
         if (ruleId.startsWith(prefix) && enabledLayers.includes(prefix)) return true;
     }
-    return ruleId.startsWith('madda') && enabledLayers.includes('madd');
+
+    return false;
 }
 
 /**
@@ -66,10 +75,11 @@ export function renderTajweedText(
 
     // 2. Map colors to characters
     let plainText = '';
-    const colorMap: string[] = [];
+    const colorMap: (string | null)[] = [];
     const ruleIdMap: (string | null)[] = [];
 
-    const tagRegex = /<tajweed\s+class=([^>]+)>([^<]*)<\/tajweed>/g;
+    // Robust Regex to handle: <tajweed class=rule>, <tajweed class="rule">, <tajweed class='rule'>
+    const tagRegex = /<tajweed\s+class=["']?([^"'>\s]+)["']?>([^<]*)<\/tajweed>/g;
     let lastIndex = 0;
     let match;
 
@@ -78,7 +88,7 @@ export function renderTajweedText(
         const beforeText = cleanHtml.substring(lastIndex, match.index);
         plainText += beforeText;
         for (let i = 0; i < beforeText.length; i++) {
-            colorMap.push('#1a1a2e');
+            colorMap.push(null); // Use default theme color
             ruleIdMap.push(null);
         }
 
@@ -86,7 +96,7 @@ export function renderTajweedText(
         const ruleId = match[1];
         const content = match[2];
         const enabled = isRuleEnabled(ruleId, enabledLayers);
-        const color = enabled ? getCssColor(ruleId) : '#1a1a2e';
+        const color = enabled ? getTajweedColor(ruleId) : null;
 
         plainText += content;
         for (let i = 0; i < content.length; i++) {
@@ -101,11 +111,12 @@ export function renderTajweedText(
     const remainingText = cleanHtml.substring(lastIndex);
     plainText += remainingText;
     for (let i = 0; i < remainingText.length; i++) {
-        colorMap.push('#1a1a2e');
+        colorMap.push(null);
         ruleIdMap.push(null);
     }
 
     // 3. Render word by word
+    // We split by any sequence of whitespace
     const words = plainText.split(/(\s+)/);
     let charOffset = 0;
     const result: React.ReactNode[] = [];
@@ -126,13 +137,13 @@ export function renderTajweedText(
                 <TajweedCanvas
                     key={key++}
                     text={word}
-                    colors={wordColors}
+                    colors={wordColors as (string | null)[]}
                     fontSize={24}
-                    lineHeight={1.5}
+                    lineHeight={1.4}
                 />
             );
         } else {
-            // Non-iOS: Standard <span> rendering, but grouping by color to minimize elements
+            // Non-iOS: Standard <span> rendering
             let currentContent = '';
             let currentColor = wordColors[0];
             let currentRuleId = wordRuleIds[0];
@@ -145,7 +156,7 @@ export function renderTajweedText(
                         <span
                             key={key++}
                             className={currentRuleId ? `tajweed-highlight tj-${currentRuleId}` : ''}
-                            style={currentColor !== '#1a1a2e' ? { color: currentColor } : {}}
+                            style={currentColor ? { color: currentColor } : {}}
                         >
                             {currentContent}
                         </span>
@@ -160,7 +171,7 @@ export function renderTajweedText(
                 <span
                     key={key++}
                     className={currentRuleId ? `tajweed-highlight tj-${currentRuleId}` : ''}
-                    style={currentColor !== '#1a1a2e' ? { color: currentColor } : {}}
+                    style={currentColor ? { color: currentColor } : {}}
                 >
                     {currentContent}
                 </span>
