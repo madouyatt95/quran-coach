@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus } from 'lucide-react';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -334,11 +334,89 @@ export function AdhkarPage() {
         setSelectedCategory(category);
         setCurrentDhikrIndex(0);
         setRepetitions({});
+        stopAudioLoop();
     };
 
     const closeCategory = () => {
+        stopAudioLoop();
         setSelectedCategory(null);
     };
+
+    // ===== Audio Loop Player =====
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+    const [audioLoopCount, setAudioLoopCount] = useState(3);
+    const [currentLoop, setCurrentLoop] = useState(0);
+    const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+    const loopCounterRef = useRef(0);
+    const maxLoopRef = useRef(3);
+    const shouldPlayRef = useRef(false);
+
+    const speakDhikr = useCallback((text: string) => {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ar-SA';
+        utterance.rate = 0.85;
+        utterance.pitch = 1;
+
+        // Try to find an Arabic voice
+        const voices = window.speechSynthesis.getVoices();
+        const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+        if (arabicVoice) utterance.voice = arabicVoice;
+
+        utterance.onend = () => {
+            if (!shouldPlayRef.current) return;
+            loopCounterRef.current++;
+            setCurrentLoop(loopCounterRef.current);
+
+            if (loopCounterRef.current < maxLoopRef.current) {
+                // Small pause between repetitions
+                setTimeout(() => {
+                    if (shouldPlayRef.current) speakDhikr(text);
+                }, 600);
+            } else {
+                // Done
+                shouldPlayRef.current = false;
+                setIsAudioPlaying(false);
+                loopCounterRef.current = 0;
+                setCurrentLoop(0);
+            }
+        };
+
+        utteranceRef.current = utterance;
+        window.speechSynthesis.speak(utterance);
+    }, []);
+
+    const playAudioLoop = useCallback(() => {
+        if (!selectedCategory) return;
+        const dhikr = selectedCategory.adhkar[currentDhikrIndex];
+        if (!dhikr) return;
+
+        shouldPlayRef.current = true;
+        maxLoopRef.current = audioLoopCount;
+        loopCounterRef.current = 0;
+        setCurrentLoop(0);
+        setIsAudioPlaying(true);
+        speakDhikr(dhikr.arabic);
+    }, [selectedCategory, currentDhikrIndex, audioLoopCount, speakDhikr]);
+
+    const pauseAudioLoop = useCallback(() => {
+        shouldPlayRef.current = false;
+        window.speechSynthesis.cancel();
+        setIsAudioPlaying(false);
+    }, []);
+
+    const stopAudioLoop = useCallback(() => {
+        shouldPlayRef.current = false;
+        window.speechSynthesis.cancel();
+        setIsAudioPlaying(false);
+        loopCounterRef.current = 0;
+        setCurrentLoop(0);
+    }, []);
+
+    // Stop audio when dhikr changes
+    useEffect(() => {
+        stopAudioLoop();
+    }, [currentDhikrIndex, stopAudioLoop]);
 
     const incrementCount = (dhikrId: number, maxCount: number) => {
         const key = `${selectedCategory?.id}-${dhikrId}`;
@@ -451,6 +529,42 @@ export function AdhkarPage() {
                             📚 {currentDhikr.source}
                         </div>
                     )}
+                </div>
+
+                {/* Audio Loop Player */}
+                <div className="dhikr-audio-player">
+                    <div className="dhikr-audio-player__controls">
+                        <button
+                            className="dhikr-audio-player__btn"
+                            onClick={isAudioPlaying ? pauseAudioLoop : playAudioLoop}
+                        >
+                            {isAudioPlaying ? <Pause size={20} /> : <Play size={20} />}
+                        </button>
+                        {isAudioPlaying && (
+                            <button className="dhikr-audio-player__stop" onClick={stopAudioLoop}>
+                                <Square size={16} />
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="dhikr-audio-player__loop">
+                        <Repeat size={14} />
+                        <button
+                            className="dhikr-audio-player__loop-btn"
+                            onClick={() => setAudioLoopCount(Math.max(1, audioLoopCount - 1))}
+                        >
+                            <Minus size={14} />
+                        </button>
+                        <span className="dhikr-audio-player__loop-count">
+                            {isAudioPlaying ? `${currentLoop + 1}/${audioLoopCount}` : `${audioLoopCount}×`}
+                        </span>
+                        <button
+                            className="dhikr-audio-player__loop-btn"
+                            onClick={() => setAudioLoopCount(Math.min(20, audioLoopCount + 1))}
+                        >
+                            <Plus size={14} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Counter */}

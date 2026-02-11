@@ -219,6 +219,15 @@
    ======================================== */
 .tajweed-highlight {
     display: inline;
+    /* Prevent iOS/WebKit from breaking Arabic ligatures at span boundaries */
+    -webkit-text-size-adjust: 100%;
+    letter-spacing: 0;
+    word-break: keep-all;
+    line-break: strict;
+    unicode-bidi: plaintext;
+    padding: 0;
+    margin: 0;
+    border: none;
 }
 
 /* Madd - Blues */
