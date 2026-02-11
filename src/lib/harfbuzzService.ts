@@ -1,0 +1,115 @@
+/**
+ * HarfBuzz WASM Service for iOS Tajweed
+ * 
+ * Shapes Arabic text with HarfBuzz (correct ligatures), then
+ * returns SVG path data for each glyph, grouped by Tajweed color.
+ * Only loaded on iOS where <span> elements break Arabic ligatures.
+ */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type HbInstance = any;
+
+export interface ShapedGlyph {
+    glyphId: number;
+    cluster: number;
+    xAdvance: number;
+    xOffset: number;
+    yOffset: number;
+    svgPath: string;
+}
+
+let hbInstance: HbInstance = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let hbFont: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let hbFace: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let hbBlob: any = null;
+let initPromise: Promise<boolean> | null = null;
+
+// The Amiri font URL from Google Fonts (same font our app uses)
+const FONT_URL = 'https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHpUrtLMA7w.ttf';
+
+/**
+ * Initialize HarfBuzz and load font. Returns true on success.
+ */
+export function initHarfBuzz(): Promise<boolean> {
+    if (initPromise) return initPromise;
+
+    initPromise = (async () => {
+        try {
+            // Import harfbuzzjs — its default export is a Promise resolving to the HB instance
+            const hb = await import('harfbuzzjs');
+            hbInstance = await (hb.default || hb);
+
+            // Fetch the Amiri font file
+            const fontResp = await fetch(FONT_URL);
+            if (!fontResp.ok) throw new Error(`Font fetch failed: ${fontResp.status}`);
+            const fontData = await fontResp.arrayBuffer();
+
+            // Create HarfBuzz font
+            hbBlob = hbInstance.createBlob(fontData);
+            hbFace = hbInstance.createFace(hbBlob, 0);
+            hbFont = hbInstance.createFont(hbFace);
+
+            console.log('[HarfBuzz] Ready');
+            return true;
+        } catch (err) {
+            console.error('[HarfBuzz] Init failed:', err);
+            initPromise = null; // allow retry
+            return false;
+        }
+    })();
+
+    return initPromise;
+}
+
+/**
+ * Shape Arabic text using HarfBuzz.
+ * Returns glyph positions mapped back to character clusters.
+ */
+export function shapeText(text: string, fontSize: number): ShapedGlyph[] {
+    if (!hbInstance || !hbFont) return [];
+
+    // Scale: HarfBuzz works in font units; we scale by fontSize / upem * 64
+    hbFont.setScale(fontSize * 64, fontSize * 64);
+
+    const buffer = hbInstance.createBuffer();
+    buffer.addText(text);
+    buffer.setDirection('rtl');
+    buffer.setScript('Arab');
+    buffer.setLanguage('ar');
+    hbInstance.shape(hbFont, buffer);
+
+    const infos = buffer.json();
+    const result: ShapedGlyph[] = [];
+
+    for (const g of infos) {
+        result.push({
+            glyphId: g.g,
+            cluster: g.cl,
+            xAdvance: g.ax / 64,
+            xOffset: g.dx / 64,
+            yOffset: g.dy / 64,
+            svgPath: hbFont.glyphToPath(g.g),
+        });
+    }
+
+    buffer.destroy();
+    return result;
+}
+
+export function isHarfBuzzReady(): boolean {
+    return hbInstance !== null && hbFont !== null;
+}
+
+/**
+ * Cleanup HarfBuzz resources (call on unmount).
+ */
+export function destroyHarfBuzz(): void {
+    if (hbFont) { hbFont.destroy(); hbFont = null; }
+    if (hbFace) { hbFace.destroy(); hbFace = null; }
+    if (hbBlob) { hbBlob.destroy(); hbBlob = null; }
+    hbInstance = null;
+    initPromise = null;
+}

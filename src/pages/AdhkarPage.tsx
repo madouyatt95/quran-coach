@@ -351,6 +351,35 @@ export function AdhkarPage() {
     const maxLoopRef = useRef(3);
     const shouldPlayRef = useRef(false);
 
+    const incrementCount = useCallback((dhikrId: number, maxCount: number) => {
+        const key = `${selectedCategory?.id}-${dhikrId}`;
+        const current = repetitions[key] || 0;
+
+        if (current < maxCount) {
+            setRepetitions({ ...repetitions, [key]: current + 1 });
+
+            // Auto-advance to next dhikr when complete
+            if (current + 1 >= maxCount && selectedCategory) {
+                setTimeout(() => {
+                    if (currentDhikrIndex < selectedCategory.adhkar.length - 1) {
+                        setCurrentDhikrIndex(currentDhikrIndex + 1);
+                    }
+                }, 500);
+            }
+        }
+    }, [selectedCategory, repetitions, currentDhikrIndex]);
+
+    const getProgress = (dhikrId: number, maxCount: number) => {
+        const key = `${selectedCategory?.id}-${dhikrId}`;
+        const current = repetitions[key] || 0;
+        return (current / maxCount) * 100;
+    };
+
+    const getCurrentCount = (dhikrId: number) => {
+        const key = `${selectedCategory?.id}-${dhikrId}`;
+        return repetitions[key] || 0;
+    };
+
     const speakDhikr = useCallback((text: string) => {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
@@ -377,6 +406,13 @@ export function AdhkarPage() {
                 // Done
                 shouldPlayRef.current = false;
                 setIsAudioPlaying(false);
+
+                // Auto-increment the manual counter when loop is finished
+                const dhikr = selectedCategory?.adhkar[currentDhikrIndex];
+                if (dhikr) {
+                    incrementCount(dhikr.id, dhikr.count);
+                }
+
                 loopCounterRef.current = 0;
                 setCurrentLoop(0);
             }
@@ -384,7 +420,7 @@ export function AdhkarPage() {
 
         utteranceRef.current = utterance;
         window.speechSynthesis.speak(utterance);
-    }, []);
+    }, [selectedCategory, currentDhikrIndex, incrementCount]);
 
     const playAudioLoop = useCallback(() => {
         if (!selectedCategory) return;
@@ -417,35 +453,6 @@ export function AdhkarPage() {
     useEffect(() => {
         stopAudioLoop();
     }, [currentDhikrIndex, stopAudioLoop]);
-
-    const incrementCount = (dhikrId: number, maxCount: number) => {
-        const key = `${selectedCategory?.id}-${dhikrId}`;
-        const current = repetitions[key] || 0;
-
-        if (current < maxCount) {
-            setRepetitions({ ...repetitions, [key]: current + 1 });
-
-            // Auto-advance to next dhikr when complete
-            if (current + 1 >= maxCount && selectedCategory) {
-                setTimeout(() => {
-                    if (currentDhikrIndex < selectedCategory.adhkar.length - 1) {
-                        setCurrentDhikrIndex(currentDhikrIndex + 1);
-                    }
-                }, 500);
-            }
-        }
-    };
-
-    const getProgress = (dhikrId: number, maxCount: number) => {
-        const key = `${selectedCategory?.id}-${dhikrId}`;
-        const current = repetitions[key] || 0;
-        return (current / maxCount) * 100;
-    };
-
-    const getCurrentCount = (dhikrId: number) => {
-        const key = `${selectedCategory?.id}-${dhikrId}`;
-        return repetitions[key] || 0;
-    };
 
     // Category List View
     if (!selectedCategory) {
