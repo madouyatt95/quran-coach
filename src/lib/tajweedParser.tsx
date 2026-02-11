@@ -5,16 +5,35 @@ import { TAJWEED_RULES } from './tajweedService';
  * Parse Tajweed HTML from API and render as React elements
  * Only colorizes rules that are in the enabledLayers list
  * Hides verse number markers (span.end)
+ *
+ * NOTE: iOS Safari breaks Arabic ligatures at <span> boundaries (WebKit bug).
+ * On iOS, we render plain text without color spans to preserve correct shaping.
  */
+
+// Detect iOS once at module level
+const isIOS = typeof navigator !== 'undefined' && (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+);
+
 export function renderTajweedText(
     tajweedHtml: string,
     enabledLayers: string[]
 ): React.ReactNode {
     if (!tajweedHtml) return null;
 
+    // iOS Safari breaks Arabic ligatures at <span> boundaries (WebKit bug since 2005).
+    // MyIslamHub solves this with HarfBuzz WASM engine — too complex for us.
+    // On iOS, render plain text to preserve perfect Arabic shaping.
+    if (isIOS) {
+        return tajweedHtml
+            .replace(/<span\s+class=end>[^<]*<\/span>/g, '')
+            .replace(/<[^>]+>/g, '');
+    }
+
     // Clean up the HTML - remove verse number markers completely
     // They appear as <span class=end>N</span> at the end
-    let cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
+    const cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
 
     // Parse the HTML and extract tajweed tags
     const result: React.ReactNode[] = [];
@@ -40,15 +59,12 @@ export function renderTajweedText(
         const isEnabled = isRuleEnabled(ruleId, enabledLayers);
 
         if (isEnabled && rule) {
-            // Wrap content with Zero-Width Joiners (ZWJ) to prevent iOS Safari
-            // from breaking Arabic ligatures at span boundaries (WebKit bug)
-            const ZWJ = '\u200D';
             result.push(
                 <span
                     key={key++}
                     className={`tajweed-highlight tj-${ruleId}`}
                 >
-                    {ZWJ}{content}{ZWJ}
+                    {content}
                 </span>
             );
         } else {
