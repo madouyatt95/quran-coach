@@ -40,12 +40,15 @@ export function renderTajweedText(
         const isEnabled = isRuleEnabled(ruleId, enabledLayers);
 
         if (isEnabled && rule) {
+            // Wrap content with Zero-Width Joiners (ZWJ) to prevent iOS Safari
+            // from breaking Arabic ligatures at span boundaries (WebKit bug)
+            const ZWJ = '\u200D';
             result.push(
                 <span
                     key={key++}
                     className={`tajweed-highlight tj-${ruleId}`}
                 >
-                    {content}
+                    {ZWJ}{content}{ZWJ}
                 </span>
             );
         } else {
