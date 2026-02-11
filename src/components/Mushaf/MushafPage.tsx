@@ -16,7 +16,11 @@ import {
     Palette,
     Loader2,
     Eye,
-    EyeOff
+    EyeOff,
+    SkipBack,
+    SkipForward,
+    Play,
+    Pause
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -90,8 +94,11 @@ export function MushafPage() {
 
     // Audio
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [audioActive, setAudioActive] = useState(false);
     const [audioPlaying, setAudioPlaying] = useState(false);
     const [currentPlayingAyah, setCurrentPlayingAyah] = useState(0);
+    const [playingIndex, setPlayingIndex] = useState(-1);
+    const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
     // Page validation
     const [validatedPages, setValidatedPages] = useState<Set<number>>(() => {
@@ -224,33 +231,65 @@ export function MushafPage() {
     const isPageValidated = validatedPages.has(currentPage);
 
     // Audio playback - play all ayahs on page sequentially
+    const playAyahAtIndex = useCallback((idx: number) => {
+        if (!pageAyahs[idx] || !audioRef.current) return;
+
+        setAudioActive(true);
+        setAudioPlaying(true);
+        const ayah = pageAyahs[idx];
+        setPlayingIndex(idx);
+        setCurrentPlayingAyah(ayah.number);
+        audioRef.current.src = getAudioUrl(selectedReciter, ayah.number);
+        audioRef.current.playbackRate = playbackSpeed;
+        audioRef.current.play().catch(() => { });
+    }, [pageAyahs, selectedReciter, playbackSpeed]);
+
+    const playNextAyah = useCallback(() => {
+        if (playingIndex < pageAyahs.length - 1) {
+            playAyahAtIndex(playingIndex + 1);
+        } else {
+            setAudioPlaying(false);
+            setPlayingIndex(-1);
+            setCurrentPlayingAyah(0);
+        }
+    }, [playingIndex, pageAyahs.length, playAyahAtIndex]);
+
+    const playPrevAyah = useCallback(() => {
+        if (playingIndex > 0) {
+            playAyahAtIndex(playingIndex - 1);
+        }
+    }, [playingIndex, playAyahAtIndex]);
+
+    const stopAudio = useCallback(() => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+        setAudioActive(false);
+        setAudioPlaying(false);
+        setPlayingIndex(-1);
+        setCurrentPlayingAyah(0);
+    }, []);
+
     const toggleAudio = useCallback(() => {
         if (pageAyahs.length === 0 || !audioRef.current) return;
 
         if (audioPlaying) {
             audioRef.current.pause();
             setAudioPlaying(false);
-            return;
+        } else {
+            setAudioPlaying(true);
+            setAudioActive(true);
+            const startIdx = playingIndex >= 0 ? playingIndex : 0;
+            playAyahAtIndex(startIdx);
         }
+    }, [pageAyahs.length, audioPlaying, playingIndex, playAyahAtIndex]);
 
-        let ayahIdx = 0;
-        const playNext = () => {
-            if (ayahIdx >= pageAyahs.length) {
-                setAudioPlaying(false);
-                setCurrentPlayingAyah(0);
-                return;
-            }
-            const ayah = pageAyahs[ayahIdx];
-            setCurrentPlayingAyah(ayah.number);
-            audioRef.current!.src = getAudioUrl(selectedReciter, ayah.number);
-            audioRef.current!.play().catch(() => { });
-            ayahIdx++;
-        };
-
-        audioRef.current.onended = playNext;
-        setAudioPlaying(true);
-        playNext();
-    }, [pageAyahs, selectedReciter, audioPlaying]);
+    // Handle audio ended
+    useEffect(() => {
+        if (!audioRef.current) return;
+        audioRef.current.onended = playNextAyah;
+    }, [playNextAyah]);
 
     // Coach mode - speech recognition
     const startListening = useCallback(() => {
@@ -853,6 +892,46 @@ export function MushafPage() {
                     </div>
                 )
             }
+
+            {/* ===== Floating Audio Player ===== */}
+            {audioActive && (
+                <div className="mih-audio-bar">
+                    <div className="mih-audio-bar__info">
+                        <div className="mih-audio-bar__title">Lecture en cours</div>
+                        <div className="mih-audio-bar__subtitle">Ayat {currentPlayingAyah}</div>
+                    </div>
+
+                    <div className="mih-audio-bar__controls">
+                        <button
+                            className="mih-audio-bar__btn"
+                            onClick={playPrevAyah}
+                            disabled={playingIndex <= 0}
+                        >
+                            <SkipBack size={20} />
+                        </button>
+
+                        <button className="mih-audio-bar__play-btn" onClick={toggleAudio}>
+                            {audioPlaying ? <Pause size={24} /> : <Play size={24} />}
+                        </button>
+
+                        <button
+                            className="mih-audio-bar__btn"
+                            onClick={playNextAyah}
+                            disabled={playingIndex >= pageAyahs.length - 1}
+                        >
+                            <SkipForward size={20} />
+                        </button>
+                    </div>
+
+                    <div className="mih-audio-bar__speed" onClick={() => setPlaybackSpeed(s => s >= 2 ? 0.5 : s + 0.25)}>
+                        {playbackSpeed}x
+                    </div>
+
+                    <button className="mih-audio-bar__stop" onClick={stopAudio}>
+                        <X size={20} />
+                    </button>
+                </div>
+            )}
 
             <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
         </div>
