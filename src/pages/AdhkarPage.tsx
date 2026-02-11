@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart } from 'lucide-react';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -240,6 +240,85 @@ const ADHKAR_DATA: AdhkarCategory[] = [
                 translation: 'Nous voilà de retour, repentants, adorant et louant notre Seigneur. (À dire au retour)',
                 count: 1,
                 source: 'Muslim'
+            },
+        ]
+    },
+    {
+        id: 'rabanna',
+        name: 'Invocations Rabbanā',
+        nameAr: 'أدعية ربنا',
+        icon: <Heart size={24} />,
+        color: '#E91E63',
+        adhkar: [
+            {
+                id: 1,
+                arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+                translation: 'Seigneur ! Accorde-nous belle part ici-bas, et belle part aussi dans l\'au-delà ; et protège-nous du châtiment du Feu.',
+                count: 3,
+                source: 'Al-Baqarah 2:201'
+            },
+            {
+                id: 2,
+                arabic: 'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ',
+                translation: 'Ô notre Seigneur ! Accepte ceci de notre part, car c\'est Toi l\'Audient, l\'Omniscient.',
+                count: 3,
+                source: 'Al-Baqarah 2:127'
+            },
+            {
+                id: 3,
+                arabic: 'رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً إِنَّكَ أَنتَ الْوَهَّابُ',
+                translation: 'Seigneur ! Ne laisse pas dévier nos cœurs après que Tu nous aies guidés ; et accorde-nous Ta miséricorde. C\'est Toi le Grand Donateur.',
+                count: 3,
+                source: 'Āl-Imrān 3:8'
+            },
+            {
+                id: 4,
+                arabic: 'رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَابَ النَّارِ',
+                translation: 'Seigneur ! Nous avons cru ; pardonne-nous donc nos péchés et protège-nous du châtiment du Feu.',
+                count: 3,
+                source: 'Āl-Imrān 3:16'
+            },
+            {
+                id: 5,
+                arabic: 'رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ',
+                translation: 'Ô notre Seigneur ! Nous nous sommes fait du tort à nous-mêmes. Et si Tu ne nous pardonnes pas et ne nous fais pas miséricorde, nous serons certainement du nombre des perdants.',
+                count: 3,
+                source: 'Al-A\'rāf 7:23'
+            },
+            {
+                id: 6,
+                arabic: 'رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَتَوَفَّنَا مُسْلِمِينَ',
+                translation: 'Seigneur ! Déverse sur nous l\'endurance et fais nous mourir entièrement soumis.',
+                count: 3,
+                source: 'Al-A\'rāf 7:126'
+            },
+            {
+                id: 7,
+                arabic: 'رَبَّنَا لَا تَجْعَلْنَا فِتْنَةً لِّلْقَوْمِ الظَّالِمِينَ وَنَجِّنَا بِرَحْمَتِكَ مِنَ الْقَوْمِ الْكَافِرِينَ',
+                translation: 'Seigneur ! Ne fais pas de nous un objet de tentation pour les gens injustes, et délivre-nous par Ta miséricorde du peuple mécréant.',
+                count: 3,
+                source: 'Yūnus 10:85-86'
+            },
+            {
+                id: 8,
+                arabic: 'رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ',
+                translation: 'Ô notre Seigneur ! Pardonne-moi, ainsi qu\'à mes père et mère et aux croyants, le jour de la reddition des comptes.',
+                count: 3,
+                source: 'Ibrāhīm 14:41'
+            },
+            {
+                id: 9,
+                arabic: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+                translation: 'Seigneur ! Donne-nous, en nos épouses et nos descendants, la joie des yeux, et fais de nous un guide pour les pieux.',
+                count: 3,
+                source: 'Al-Furqān 25:74'
+            },
+            {
+                id: 10,
+                arabic: 'رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا',
+                translation: 'Notre Seigneur ! Accorde-nous de Ta part une miséricorde ; et assure-nous la droiture dans notre affaire.',
+                count: 3,
+                source: 'Al-Kahf 18:10'
             },
         ]
     },

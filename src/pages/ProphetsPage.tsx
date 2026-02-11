@@ -9,13 +9,12 @@ import './ProphetsPage.css';
 
 function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => void }) {
     const navigate = useNavigate();
-    const { setCurrentSurah, setCurrentAyah } = useQuranStore();
+    const { goToSurah } = useQuranStore();
 
-    const goToSurah = (surahNumber: number) => {
-        setCurrentSurah(surahNumber);
-        setCurrentAyah(1);
+    const goToSurahPage = (surahNumber: number) => {
+        goToSurah(surahNumber);
         onClose();
-        navigate('/');
+        navigate('/read');
     };
 
     return (
@@ -137,7 +136,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                             <button
                                 key={s.number}
                                 className="prophet-modal__surah-chip"
-                                onClick={() => goToSurah(s.number)}
+                                onClick={() => goToSurahPage(s.number)}
                             >
                                 <span className="prophet-modal__surah-number">#{s.number}</span>
                                 {s.name}

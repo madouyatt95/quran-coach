@@ -99,6 +99,10 @@ export function MushafPage() {
     const [currentPlayingAyah, setCurrentPlayingAyah] = useState(0);
     const [playingIndex, setPlayingIndex] = useState(-1);
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
+    const shouldAutoPlay = useRef(false);
+
+    // Toolbar auto-close timer
+    const toolbarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Page validation
     const [validatedPages, setValidatedPages] = useState<Set<number>>(() => {
@@ -247,12 +251,17 @@ export function MushafPage() {
     const playNextAyah = useCallback(() => {
         if (playingIndex < pageAyahs.length - 1) {
             playAyahAtIndex(playingIndex + 1);
+        } else if (currentPage < 604) {
+            // Auto-advance to next page
+            shouldAutoPlay.current = true;
+            nextPage();
         } else {
             setAudioPlaying(false);
+            setAudioActive(false);
             setPlayingIndex(-1);
             setCurrentPlayingAyah(0);
         }
-    }, [playingIndex, pageAyahs.length, playAyahAtIndex]);
+    }, [playingIndex, pageAyahs.length, playAyahAtIndex, currentPage, nextPage]);
 
     const playPrevAyah = useCallback(() => {
         if (playingIndex > 0) {
@@ -290,6 +299,33 @@ export function MushafPage() {
         if (!audioRef.current) return;
         audioRef.current.onended = playNextAyah;
     }, [playNextAyah]);
+
+    // Auto-resume after page change
+    useEffect(() => {
+        if (shouldAutoPlay.current && pageAyahs.length > 0 && audioActive) {
+            shouldAutoPlay.current = false;
+            playAyahAtIndex(0);
+        }
+    }, [pageAyahs, audioActive, playAyahAtIndex]);
+
+    // Toolbar auto-close after 2s
+    useEffect(() => {
+        if (showToolbar) {
+            toolbarTimerRef.current = setTimeout(() => {
+                setShowToolbar(false);
+            }, 2000);
+            return () => {
+                if (toolbarTimerRef.current) clearTimeout(toolbarTimerRef.current);
+            };
+        }
+    }, [showToolbar]);
+
+    const resetToolbarTimer = useCallback(() => {
+        if (toolbarTimerRef.current) clearTimeout(toolbarTimerRef.current);
+        toolbarTimerRef.current = setTimeout(() => {
+            setShowToolbar(false);
+        }, 2000);
+    }, []);
 
     // Coach mode - speech recognition
     const startListening = useCallback(() => {
@@ -564,7 +600,7 @@ export function MushafPage() {
             {/* ===== Toolbar (6 icons) ===== */}
             {/* Toolbar Toggle Panel */}
             {showToolbar && (
-                <div className="mih-toolbar">
+                <div className="mih-toolbar" onPointerDown={resetToolbarTimer}>
                     <button
                         className="mih-toolbar__btn"
                         onClick={() => setShowSearch(true)}

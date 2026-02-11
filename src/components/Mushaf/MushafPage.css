@@ -6,11 +6,13 @@
 .mushaf-page {
     display: flex;
     flex-direction: column;
+    height: 100vh;
     height: 100dvh;
+    /* fallback for modern browsers */
     background: #faf8f2;
     overflow: hidden;
     position: relative;
-    /* BottomNav is fixed at bottom (80px), so we just need safe areas */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* ========================================
@@ -169,6 +171,10 @@
     text-justify: inter-word;
     color: #1a1a2e;
     word-spacing: 2px;
+    /* Fix iOS vowel ligatures */
+    font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
 
 .mih-ayah {
@@ -1105,22 +1111,48 @@
    ======================================== */
 .mih-audio-bar {
     position: fixed;
-    bottom: 80px;
-    /* Above global BottomNav */
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
-    height: 70px;
-    background: rgba(255, 255, 255, 0.9);
+    height: 64px;
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
+    padding: 0 12px;
     z-index: 1000;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
     animation: mih-audio-slide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Compact audio bar on smaller screens */
+@media (max-width: 420px) {
+    .mih-audio-bar {
+        height: 58px;
+        padding: 0 8px;
+    }
+
+    .mih-audio-bar__controls {
+        gap: 6px;
+        margin: 0 8px;
+    }
+
+    .mih-audio-bar__play-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .mih-audio-bar__btn {
+        width: 30px;
+        height: 30px;
+    }
+
+    .mih-audio-bar__info {
+        max-width: 80px;
+    }
 }
 
 @keyframes mih-audio-slide {
