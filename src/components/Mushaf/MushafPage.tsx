@@ -2,21 +2,21 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
     ChevronLeft,
     ChevronRight,
-    Loader2,
-    Volume2,
+    Settings,
+    Menu,
+    Search,
+    Type,
+    Layout,
+    Music,
     Mic,
     Square,
-    X,
-    Eye,
-    EyeOff,
-    Search,
-    BookOpen,
-    Palette,
-    Type,
-    Menu,
     CheckCircle2,
     Circle,
-    Moon
+    X,
+    Palette,
+    Loader2,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -45,10 +45,7 @@ function getJuzNumber(ayahs: Ayah[]): number {
     return ayahs[0].juz || 1;
 }
 
-function getHizbQuarter(ayahs: Ayah[]): number {
-    if (ayahs.length === 0) return 1;
-    return ayahs[0].hizbQuarter || 1;
-}
+
 
 export function MushafPage() {
     const {
@@ -74,6 +71,7 @@ export function MushafPage() {
     const [showMaskSheet, setShowMaskSheet] = useState(false);
     const [showFontSheet, setShowFontSheet] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
+    const [showToolbar, setShowToolbar] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -92,7 +90,7 @@ export function MushafPage() {
 
     // Audio
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [audioPlaying, setAudioPlaying] = useState(false);
     const [currentPlayingAyah, setCurrentPlayingAyah] = useState(0);
 
     // Page validation
@@ -130,10 +128,8 @@ export function MushafPage() {
         return words;
     }, [pageAyahs]);
 
-    // Juz & Hizb
+    // Juz
     const juzNumber = useMemo(() => getJuzNumber(pageAyahs), [pageAyahs]);
-    const hizbQuarter = useMemo(() => getHizbQuarter(pageAyahs), [pageAyahs]);
-    const hizbNumber = Math.ceil(hizbQuarter / 4);
 
     // Fetch surahs list
     useEffect(() => {
@@ -228,19 +224,19 @@ export function MushafPage() {
     const isPageValidated = validatedPages.has(currentPage);
 
     // Audio playback - play all ayahs on page sequentially
-    const playAudio = useCallback(() => {
+    const toggleAudio = useCallback(() => {
         if (pageAyahs.length === 0 || !audioRef.current) return;
 
-        if (isPlaying) {
+        if (audioPlaying) {
             audioRef.current.pause();
-            setIsPlaying(false);
+            setAudioPlaying(false);
             return;
         }
 
         let ayahIdx = 0;
         const playNext = () => {
             if (ayahIdx >= pageAyahs.length) {
-                setIsPlaying(false);
+                setAudioPlaying(false);
                 setCurrentPlayingAyah(0);
                 return;
             }
@@ -252,9 +248,9 @@ export function MushafPage() {
         };
 
         audioRef.current.onended = playNext;
-        setIsPlaying(true);
+        setAudioPlaying(true);
         playNext();
-    }, [pageAyahs, selectedReciter, isPlaying]);
+    }, [pageAyahs, selectedReciter, audioPlaying]);
 
     // Coach mode - speech recognition
     const startListening = useCallback(() => {
@@ -386,29 +382,45 @@ export function MushafPage() {
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <button onClick={() => setShowSideMenu(true)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 4, display: 'flex' }}>
+                    <button onClick={() => setShowSideMenu(true)} className="mih-header__icon-btn">
                         <Menu size={20} />
                     </button>
-                    <span className="mih-header__surah" onClick={() => setShowSearch(true)} style={{ cursor: 'pointer' }}>
-                        {pageSurahNames.map(s => s.englishName).join(' • ')} <Search size={13} style={{ verticalAlign: 'middle', opacity: 0.5, marginLeft: 4 }} />
-                    </span>
+                    <div className="mih-header__info" onClick={() => setShowSearch(true)}>
+                        <div className="mih-header__surah">
+                            {pageSurahNames.map(s => s.englishName).join(' • ')}
+                            <Search size={12} style={{ marginLeft: 4, opacity: 0.5 }} />
+                        </div>
+                        <div className="mih-header__page-num">
+                            Page {toArabicNumbers(currentPage)} • Juz {juzNumber}
+                        </div>
+                    </div>
                 </div>
-                <div className="mih-header__meta">
-                    <span className="mih-header__badge">
-                        <BookOpen size={14} />
-                        Juz {juzNumber}
-                    </span>
-                    <span className="mih-header__badge">
-                        <Moon size={14} />
-                        Hizb {hizbNumber}
-                    </span>
-                    {isCoachMode && totalProcessed > 0 && (
-                        <span className="mih-header__badge" style={{ color: mistakesCount > 0 ? '#f44336' : '#4CAF50' }}>
-                            {mistakesCount} erreur{mistakesCount !== 1 ? 's' : ''} ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
-                        </span>
-                    )}
+
+                <div className="mih-header__right">
+                    <button
+                        className={`mih-header__icon-btn ${showToolbar ? 'active' : ''}`}
+                        onClick={() => setShowToolbar(!showToolbar)}
+                    >
+                        <Settings size={20} />
+                    </button>
                 </div>
             </div>
+
+            {/* ===== Floating Navigation ===== */}
+            <button
+                className="mih-float-nav mih-float-nav--left"
+                onClick={prevPage}
+                disabled={currentPage <= 1}
+            >
+                <ChevronRight size={24} />
+            </button>
+            <button
+                className="mih-float-nav mih-float-nav--right"
+                onClick={nextPage}
+                disabled={currentPage >= 604}
+            >
+                <ChevronLeft size={24} />
+            </button>
 
             {/* ===== Mushaf Content ===== */}
             <div className="mih-mushaf">
@@ -511,325 +523,337 @@ export function MushafPage() {
             </div>
 
             {/* ===== Toolbar (6 icons) ===== */}
-            <div className="mih-toolbar">
-                <button
-                    className="mih-toolbar__btn"
-                    onClick={() => setShowSearch(true)}
-                    title="Rechercher une sourate"
-                >
-                    <Search size={22} />
-                </button>
-
-                <button
-                    className={`mih-toolbar__btn ${tajwidEnabled ? 'active' : ''}`}
-                    onClick={() => setShowTajweedSheet(true)}
-                    title="Tajweed"
-                >
-                    <Palette size={22} />
-                </button>
-
-                <button
-                    className="mih-toolbar__btn"
-                    onClick={() => setShowFontSheet(true)}
-                    title="Taille"
-                >
-                    <Type size={22} />
-                </button>
-
-                <button
-                    className={`mih-toolbar__btn ${isPlaying ? 'active' : ''}`}
-                    onClick={playAudio}
-                    title="Audio"
-                >
-                    <Volume2 size={22} />
-                </button>
-
-                <button
-                    className={`mih-toolbar__btn ${maskMode !== 'visible' ? 'active' : ''}`}
-                    onClick={() => setShowMaskSheet(true)}
-                    title="Masquage"
-                >
-                    {maskMode !== 'visible' ? <EyeOff size={22} /> : <Eye size={22} />}
-                </button>
-
-                <button
-                    className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''} ${isListening ? 'listening' : ''}`}
-                    onClick={() => {
-                        if (isCoachMode && isListening) {
-                            stopListening();
-                        } else if (isCoachMode && !isListening) {
-                            startListening();
-                        } else {
-                            setIsCoachMode(true);
-                            setWordStates(new Map());
-                            setMistakesCount(0);
-                            setTotalProcessed(0);
-                            setMistakes({});
-                        }
-                    }}
-                    title="Coach"
-                >
-                    {isListening ? <Square size={22} /> : <Mic size={22} />}
-                </button>
-            </div>
-
-            {/* ===== Page Navigation ===== */}
-            <div className="mih-nav">
-                <button
-                    className="mih-nav__arrow"
-                    onClick={nextPage}
-                    disabled={currentPage >= 604}
-                >
-                    <ChevronLeft size={22} />
-                </button>
-
-                <div className="mih-nav__center">
-                    <button className="mih-nav__page" onClick={() => setShowSearch(true)}>
-                        <Search size={14} />
-                        Page {toArabicNumbers(currentPage)}
+            {/* Toolbar Toggle Panel */}
+            {showToolbar && (
+                <div className="mih-toolbar">
+                    <button
+                        className="mih-toolbar__btn"
+                        onClick={() => setShowSearch(true)}
+                        title="Rechercher une sourate"
+                    >
+                        <Search size={22} />
                     </button>
 
                     <button
-                        className={`mih-nav__validate ${isPageValidated ? 'validated' : ''}`}
-                        onClick={togglePageValidation}
+                        className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
+                        onClick={() => setShowTajweedSheet(true)}
+                        title="Tajweed"
                     >
-                        {isPageValidated ? <CheckCircle2 size={16} /> : <Circle size={16} />}
-                        Valider
+                        <Palette size={22} />
+                    </button>
+
+                    <button
+                        className={`mih-toolbar__btn ${showFontSheet ? 'active' : ''}`}
+                        onClick={() => setShowFontSheet(true)}
+                        title="Taille police"
+                    >
+                        <Type size={22} />
+                    </button>
+
+                    <button
+                        className={`mih-toolbar__btn ${audioPlaying ? 'active' : ''}`}
+                        onClick={toggleAudio}
+                        title="Audio"
+                    >
+                        <Music size={22} />
+                    </button>
+
+                    <button
+                        className={`mih-toolbar__btn ${showMaskSheet ? 'active' : ''}`}
+                        onClick={() => setShowMaskSheet(true)}
+                        title="Masquage"
+                    >
+                        <Layout size={22} />
+                    </button>
+
+                    <button
+                        className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''} ${isListening ? 'listening' : ''}`}
+                        onClick={() => {
+                            if (isListening) {
+                                stopListening();
+                            } else if (isCoachMode) {
+                                startListening();
+                            } else {
+                                setIsCoachMode(true);
+                                setWordStates(new Map());
+                                setMistakesCount(0);
+                                setTotalProcessed(0);
+                                setMistakes({});
+                            }
+                        }}
+                        title="Coach"
+                    >
+                        {isListening ? <Square size={22} /> : <Mic size={22} />}
+                    </button>
+
+                    <div className="mih-toolbar__divider" />
+
+                    <button
+                        className={`mih-toolbar__validate ${isPageValidated ? 'validated' : ''}`}
+                        onClick={togglePageValidation}
+                        title="Valider la page"
+                    >
+                        {isPageValidated ? <CheckCircle2 size={20} /> : <Circle size={20} />}
                     </button>
                 </div>
-
-                <button
-                    className="mih-nav__arrow"
-                    onClick={prevPage}
-                    disabled={currentPage <= 1}
-                >
-                    <ChevronRight size={22} />
-                </button>
-            </div>
+            )}
 
             {/* ===== Coach Mode Indicator ===== */}
-            {isCoachMode && (
-                <div style={{
-                    position: 'fixed', top: 52, right: 12, zIndex: 50,
-                    background: '#4CAF50', color: '#fff', padding: '4px 12px',
-                    borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
-                    display: 'flex', alignItems: 'center', gap: 6
-                }}>
-                    <Mic size={12} />
-                    Coach
-                    <button
-                        onClick={() => { setIsCoachMode(false); stopListening(); setWordStates(new Map()); }}
-                        style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, display: 'flex' }}
-                    >
-                        <X size={14} />
-                    </button>
-                </div>
-            )}
-
-            {/* ===== Tajweed Sheet ===== */}
-            {showTajweedSheet && (
-                <>
-                    <div className="mih-sheet-overlay" onClick={() => setShowTajweedSheet(false)} />
-                    <div className="mih-sheet">
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Règles de Tajweed</span>
-                            <button className="mih-sheet__close" onClick={() => setShowTajweedSheet(false)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        {/* Global toggle */}
-                        <div
-                            className={`mih-tajweed-toggle ${tajwidEnabled ? '' : 'off'}`}
-                            onClick={toggleTajwid}
-                            style={{ cursor: 'pointer' }}
+            {
+                isCoachMode && totalProcessed > 0 && (
+                    <div style={{
+                        position: 'fixed', top: 52, right: 12, zIndex: 50,
+                        background: mistakesCount > 0 ? '#f44336' : '#4CAF50',
+                        color: '#fff', padding: '4px 12px',
+                        borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                    }}>
+                        <Mic size={12} />
+                        {mistakesCount} erreur{mistakesCount !== 1 ? 's' : ''} ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
+                        <button
+                            onClick={() => { setIsCoachMode(false); stopListening(); setWordStates(new Map()); }}
+                            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, display: 'flex' }}
                         >
-                            <span>Tajweed {tajwidEnabled ? 'activé' : 'désactivé'}</span>
-                            <div className={`mih-toggle-switch ${tajwidEnabled ? 'on' : ''}`} />
-                        </div>
-
-                        {/* Rule cards */}
-                        <div className="mih-tajweed-grid">
-                            {tajweedCategories.map(cat => (
-                                <div
-                                    key={cat.id}
-                                    className={`mih-tajweed-card ${tajwidLayers.includes(cat.id) ? 'active' : ''}`}
-                                    style={{ color: cat.color, borderColor: tajwidLayers.includes(cat.id) ? cat.color : '#eee' }}
-                                    onClick={() => toggleTajwidLayer(cat.id)}
-                                >
-                                    <span className="mih-tajweed-card__name">{cat.name.split('(')[0].trim()}</span>
-                                    <span className="mih-tajweed-card__arabic">{cat.nameArabic}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* ===== Masquage Sheet ===== */}
-            {showMaskSheet && (
-                <>
-                    <div className="mih-sheet-overlay" onClick={() => setShowMaskSheet(false)} />
-                    <div className="mih-sheet">
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Mode Masquage (Hifz)</span>
-                            <button className="mih-sheet__close" onClick={() => setShowMaskSheet(false)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        <div className="mih-mask-grid">
-                            <div
-                                className={`mih-mask-card ${maskMode === 'visible' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('visible'); setShowMaskSheet(false); }}
-                            >
-                                <Eye size={20} />
-                                <span>Visible</span>
-                            </div>
-                            <div
-                                className={`mih-mask-card ${maskMode === 'hidden' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('hidden'); setShowMaskSheet(false); }}
-                            >
-                                <EyeOff size={20} />
-                                <span>Tout caché</span>
-                            </div>
-                            <div
-                                className={`mih-mask-card ${maskMode === 'partial' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('partial'); setShowMaskSheet(false); }}
-                            >
-                                <Eye size={20} />
-                                <span>Partiel</span>
-                            </div>
-                            <div
-                                className={`mih-mask-card ${maskMode === 'minimal' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('minimal'); setShowMaskSheet(false); }}
-                            >
-                                <EyeOff size={20} />
-                                <span>Minimal (flou)</span>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* ===== Font Size Sheet ===== */}
-            {showFontSheet && (
-                <>
-                    <div className="mih-sheet-overlay" onClick={() => setShowFontSheet(false)} />
-                    <div className="mih-sheet">
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Taille de police</span>
-                            <button className="mih-sheet__close" onClick={() => setShowFontSheet(false)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        <div className="mih-fontsize-grid">
-                            {(['sm', 'md', 'lg', 'xl'] as const).map(size => (
-                                <button
-                                    key={size}
-                                    className={`mih-fontsize-btn ${arabicFontSize === size ? 'active' : ''}`}
-                                    onClick={() => { setArabicFontSize(size); setShowFontSheet(false); }}
-                                >
-                                    <span style={{ fontSize: size === 'sm' ? '14px' : size === 'md' ? '18px' : size === 'lg' ? '22px' : '26px', fontFamily: 'var(--font-arabic)' }}>
-                                        بسم
-                                    </span>
-                                    <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>
-                                        {size === 'sm' ? 'Petit' : size === 'md' ? 'Normal' : size === 'lg' ? 'Grand' : 'Très grand'}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* ===== Search Overlay ===== */}
-            {showSearch && (
-                <div className="mih-search-overlay">
-                    <div className="mih-search-header">
-                        <input
-                            className="mih-search-input"
-                            placeholder="Nom arabe, français, anglais ou n° de page..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            autoFocus
-                        />
-                        <button className="mih-search-cancel" onClick={() => { setShowSearch(false); setSearchQuery(''); }}>
-                            Annuler
+                            <X size={14} />
                         </button>
                     </div>
+                )
+            }
 
-                    {/* Direct page input */}
-                    {/^\d+$/.test(searchQuery) && parseInt(searchQuery) >= 1 && parseInt(searchQuery) <= 604 && (
-                        <div
-                            className="mih-search-item"
-                            onClick={() => { goToPage(parseInt(searchQuery)); setShowSearch(false); setSearchQuery(''); }}
+            {/* ===== Page Indicator (if coach mode is off) ===== */}
+            {
+                isCoachMode && totalProcessed === 0 && (
+                    <div style={{
+                        position: 'fixed', top: 52, right: 12, zIndex: 50,
+                        background: '#4CAF50', color: '#fff', padding: '4px 12px',
+                        borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
+                        display: 'flex', alignItems: 'center', gap: 6
+                    }}>
+                        <Mic size={12} />
+                        Coach actif
+                        <button
+                            onClick={() => { setIsCoachMode(false); stopListening(); setWordStates(new Map()); }}
+                            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, display: 'flex' }}
                         >
-                            <div className="mih-search-item__icon"><Search size={18} /></div>
-                            <div className="mih-search-item__info">
-                                <div className="mih-search-item__name">Aller à la page {searchQuery}</div>
+                            <X size={14} />
+                        </button>
+                    </div>
+                )
+            }
+            {/* ===== Tajweed Sheet ===== */}
+            {
+                showTajweedSheet && (
+                    <>
+                        <div className="mih-sheet-overlay" onClick={() => setShowTajweedSheet(false)} />
+                        <div className="mih-sheet">
+                            <div className="mih-sheet__handle" />
+                            <div className="mih-sheet__header">
+                                <span className="mih-sheet__title">Règles de Tajweed</span>
+                                <button className="mih-sheet__close" onClick={() => setShowTajweedSheet(false)}>
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            {/* Global toggle */}
+                            <div
+                                className={`mih-tajweed-toggle ${tajwidEnabled ? '' : 'off'}`}
+                                onClick={toggleTajwid}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <span>Tajweed {tajwidEnabled ? 'activé' : 'désactivé'}</span>
+                                <div className={`mih-toggle-switch ${tajwidEnabled ? 'on' : ''}`} />
+                            </div>
+
+                            {/* Rule cards */}
+                            <div className="mih-tajweed-grid">
+                                {tajweedCategories.map(cat => (
+                                    <div
+                                        key={cat.id}
+                                        className={`mih-tajweed-card ${tajwidLayers.includes(cat.id) ? 'active' : ''}`}
+                                        style={{ color: cat.color, borderColor: tajwidLayers.includes(cat.id) ? cat.color : '#eee' }}
+                                        onClick={() => toggleTajwidLayer(cat.id)}
+                                    >
+                                        <span className="mih-tajweed-card__name">{cat.name.split('(')[0].trim()}</span>
+                                        <span className="mih-tajweed-card__arabic">{cat.nameArabic}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    )}
+                    </>
+                )
+            }
 
-                    <div className="mih-search-label">
-                        {searchQuery ? `${filteredSurahs.length} résultat(s)` : '114 sourates'}
-                    </div>
+            {/* ===== Masquage Sheet ===== */}
+            {
+                showMaskSheet && (
+                    <>
+                        <div className="mih-sheet-overlay" onClick={() => setShowMaskSheet(false)} />
+                        <div className="mih-sheet">
+                            <div className="mih-sheet__handle" />
+                            <div className="mih-sheet__header">
+                                <span className="mih-sheet__title">Mode Masquage (Hifz)</span>
+                                <button className="mih-sheet__close" onClick={() => setShowMaskSheet(false)}>
+                                    <X size={18} />
+                                </button>
+                            </div>
 
-                    <div className="mih-search-list">
-                        {filteredSurahs.map(s => (
-                            <div
-                                key={s.number}
-                                className="mih-search-item"
-                                onClick={() => { goToSurah(s.number); setShowSearch(false); setSearchQuery(''); }}
-                            >
-                                <div className="mih-search-item__icon">{s.number}</div>
-                                <div className="mih-search-item__info">
-                                    <div className="mih-search-item__name">{s.name} — {s.englishName}</div>
-                                    <div className="mih-search-item__detail">
-                                        {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
-                                    </div>
+                            <div className="mih-mask-grid">
+                                <div
+                                    className={`mih-mask-card ${maskMode === 'visible' ? 'active' : ''}`}
+                                    onClick={() => { setMaskMode('visible'); setShowMaskSheet(false); }}
+                                >
+                                    <Eye size={20} />
+                                    <span>Visible</span>
+                                </div>
+                                <div
+                                    className={`mih-mask-card ${maskMode === 'hidden' ? 'active' : ''}`}
+                                    onClick={() => { setMaskMode('hidden'); setShowMaskSheet(false); }}
+                                >
+                                    <EyeOff size={20} />
+                                    <span>Tout caché</span>
+                                </div>
+                                <div
+                                    className={`mih-mask-card ${maskMode === 'partial' ? 'active' : ''}`}
+                                    onClick={() => { setMaskMode('partial'); setShowMaskSheet(false); }}
+                                >
+                                    <Eye size={20} />
+                                    <span>Partiel</span>
+                                </div>
+                                <div
+                                    className={`mih-mask-card ${maskMode === 'minimal' ? 'active' : ''}`}
+                                    onClick={() => { setMaskMode('minimal'); setShowMaskSheet(false); }}
+                                >
+                                    <EyeOff size={20} />
+                                    <span>Minimal (flou)</span>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+                        </div>
+                    </>
+                )
+            }
 
-            {/* ===== Error Comparison Modal ===== */}
-            {selectedError && mistakes[selectedError] && (
-                <div className="mih-sheet-overlay" onClick={() => setSelectedError(null)}>
-                    <div className="mih-sheet" onClick={e => e.stopPropagation()} style={{ maxHeight: '30vh' }}>
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Comparaison d'erreur</span>
-                            <button className="mih-sheet__close" onClick={() => setSelectedError(null)}>
-                                <X size={18} />
+            {/* ===== Font Size Sheet ===== */}
+            {
+                showFontSheet && (
+                    <>
+                        <div className="mih-sheet-overlay" onClick={() => setShowFontSheet(false)} />
+                        <div className="mih-sheet">
+                            <div className="mih-sheet__handle" />
+                            <div className="mih-sheet__header">
+                                <span className="mih-sheet__title">Taille de police</span>
+                                <button className="mih-sheet__close" onClick={() => setShowFontSheet(false)}>
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            <div className="mih-fontsize-grid">
+                                {(['sm', 'md', 'lg', 'xl'] as const).map(size => (
+                                    <button
+                                        key={size}
+                                        className={`mih-fontsize-btn ${arabicFontSize === size ? 'active' : ''}`}
+                                        onClick={() => { setArabicFontSize(size); setShowFontSheet(false); }}
+                                    >
+                                        <span style={{ fontSize: size === 'sm' ? '14px' : size === 'md' ? '18px' : size === 'lg' ? '22px' : '26px', fontFamily: 'var(--font-arabic)' }}>
+                                            بسم
+                                        </span>
+                                        <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>
+                                            {size === 'sm' ? 'Petit' : size === 'md' ? 'Normal' : size === 'lg' ? 'Grand' : 'Très grand'}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )
+            }
+
+            {/* ===== Search Overlay ===== */}
+            {
+                showSearch && (
+                    <div className="mih-search-overlay">
+                        <div className="mih-search-header">
+                            <input
+                                className="mih-search-input"
+                                placeholder="Nom arabe, français, anglais ou n° de page..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                autoFocus
+                            />
+                            <button className="mih-search-cancel" onClick={() => { setShowSearch(false); setSearchQuery(''); }}>
+                                Annuler
                             </button>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ fontSize: '0.8rem', color: '#999' }}>Attendu :</span>
-                                <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#2E7D32' }} dir="rtl">
-                                    {mistakes[selectedError].expected}
-                                </span>
+
+                        {/* Direct page input */}
+                        {/^\d+$/.test(searchQuery) && parseInt(searchQuery) >= 1 && parseInt(searchQuery) <= 604 && (
+                            <div
+                                className="mih-search-item"
+                                onClick={() => { goToPage(parseInt(searchQuery)); setShowSearch(false); setSearchQuery(''); }}
+                            >
+                                <div className="mih-search-item__icon"><Search size={18} /></div>
+                                <div className="mih-search-item__info">
+                                    <div className="mih-search-item__name">Aller à la page {searchQuery}</div>
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ fontSize: '0.8rem', color: '#999' }}>Entendu :</span>
-                                <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#C62828' }} dir="rtl">
-                                    {mistakes[selectedError].spoken}
-                                </span>
+                        )}
+
+                        <div className="mih-search-label">
+                            {searchQuery ? `${filteredSurahs.length} résultat(s)` : '114 sourates'}
+                        </div>
+
+                        <div className="mih-search-list">
+                            {filteredSurahs.map(s => (
+                                <div
+                                    key={s.number}
+                                    className="mih-search-item"
+                                    onClick={() => { goToSurah(s.number); setShowSearch(false); setSearchQuery(''); }}
+                                >
+                                    <div className="mih-search-item__icon">{s.number}</div>
+                                    <div className="mih-search-item__info">
+                                        <div className="mih-search-item__name">{s.name} — {s.englishName}</div>
+                                        <div className="mih-search-item__detail">
+                                            {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* ===== Error Comparison Modal ===== */}
+            {
+                selectedError && mistakes[selectedError] && (
+                    <div className="mih-sheet-overlay" onClick={() => setSelectedError(null)}>
+                        <div className="mih-sheet" onClick={e => e.stopPropagation()} style={{ maxHeight: '30vh' }}>
+                            <div className="mih-sheet__handle" />
+                            <div className="mih-sheet__header">
+                                <span className="mih-sheet__title">Comparaison d'erreur</span>
+                                <button className="mih-sheet__close" onClick={() => setSelectedError(null)}>
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '0.8rem', color: '#999' }}>Attendu :</span>
+                                    <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#2E7D32' }} dir="rtl">
+                                        {selectedError && (mistakes as any)[selectedError]?.expected}
+                                    </span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '0.8rem', color: '#999' }}>Entendu :</span>
+                                    <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#C62828' }} dir="rtl">
+                                        {selectedError && (mistakes as any)[selectedError]?.spoken}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {/* ===== Side Menu ===== */}
             <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
         </div>
     );

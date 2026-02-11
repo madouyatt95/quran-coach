@@ -6,12 +6,11 @@
 .mushaf-page {
     display: flex;
     flex-direction: column;
-    height: 100vh;
     height: 100dvh;
     background: #faf8f2;
     overflow: hidden;
     position: relative;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* BottomNav is fixed at bottom (80px), so we just need safe areas */
 }
 
 /* ========================================
@@ -21,35 +20,53 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 16px;
+    padding: 8px 16px;
     background: #fff;
     border-bottom: 1px solid #e8e4da;
-    min-height: 44px;
-    z-index: 10;
+    z-index: 100;
+}
+
+.mih-header__info {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
 }
 
 .mih-header__surah {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     color: #1a1a2e;
-}
-
-.mih-header__meta {
     display: flex;
     align-items: center;
-    gap: 12px;
 }
 
-.mih-header__badge {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.8rem;
+.mih-header__page-num {
+    font-size: 0.75rem;
     color: #666;
+    margin-top: -2px;
 }
 
-.mih-header__badge svg {
-    color: #8bc34a;
+.mih-header__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    color: #555;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mih-header__icon-btn:active {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.mih-header__icon-btn.active {
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
 }
 
 /* ========================================
@@ -288,142 +305,132 @@
 }
 
 /* ========================================
-   Toolbar (bottom, 6 icons)
+   Floating Navigation Arrows
    ======================================== */
-.mih-toolbar {
+.mih-float-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    color: #4CAF50;
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    padding: 4px 0;
-    background: #f5f5f5;
-    border-top: 1px solid #e0e0e0;
+    justify-content: center;
+    z-index: 90;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+
+.mih-float-nav:active:not(:disabled) {
+    transform: translateY(-50%) scale(0.9);
+    background: #fff;
+}
+
+.mih-float-nav:disabled {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mih-float-nav--left {
+    left: 8px;
+}
+
+.mih-float-nav--right {
+    right: 8px;
+}
+
+/* ========================================
+   Toolbar (floating above BottomNav)
+   ======================================== */
+.mih-toolbar {
+    position: fixed;
+    bottom: 90px;
+    /* Above BottomNav */
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 24px;
+    z-index: 110;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    animation: mih-toolbar-slide 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mih-toolbar-slide {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .mih-toolbar__btn {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     border: none;
     background: none;
-    color: #555;
-    border-radius: 50%;
+    color: #666;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .mih-toolbar__btn:active {
-    background: rgba(0, 0, 0, 0.06);
+    background: rgba(0, 0, 0, 0.05);
     transform: scale(0.9);
 }
 
 .mih-toolbar__btn.active {
     color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
 }
 
-.mih-toolbar__btn.listening {
-    color: #f44336;
-    animation: mih-pulse 1.5s ease infinite;
+.mih-toolbar__divider {
+    width: 1px;
+    height: 24px;
+    background: #eee;
+    margin: 0 4px;
 }
 
-@keyframes mih-pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.15);
-    }
-}
-
-/* ========================================
-   Page Navigation Bar (très en bas)
-   ======================================== */
-.mih-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 2px 8px;
-    background: #fff;
-    border-top: 1px solid #e8e4da;
-    min-height: 40px;
-}
-
-.mih-nav__arrow {
+.mih-toolbar__validate {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
     border: none;
-    background: #4CAF50;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.mih-nav__arrow:disabled {
-    background: #e0e0e0;
-    color: #bbb;
-}
-
-.mih-nav__arrow:active:not(:disabled) {
-    transform: scale(0.9);
-}
-
-.mih-nav__center {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.mih-nav__page {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
     background: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    border-radius: 16px;
-    font-size: 0.75rem;
-    color: #333;
-    cursor: pointer;
-}
-
-.mih-nav__page svg {
     color: #999;
 }
 
-.mih-nav__validate {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    background: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    border-radius: 16px;
-    font-size: 0.75rem;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.mih-nav__validate.validated {
+.mih-toolbar__validate.validated {
     background: #E8F5E9;
-    border-color: #4CAF50;
-    color: #2E7D32;
-}
-
-.mih-nav__validate svg {
-    color: #999;
-}
-
-.mih-nav__validate.validated svg {
     color: #4CAF50;
+}
+
+/* Old Nav Removed */
+.mih-nav {
+    display: none;
 }
 
 /* ========================================
