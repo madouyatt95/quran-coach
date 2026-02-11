@@ -1,104 +1,40 @@
 import React from 'react';
-import { TAJWEED_RULES } from './tajweedService';
 import TajweedCanvas from '../components/Mushaf/TajweedCanvas';
 
 /**
- * Parse Tajweed HTML from API and render as React elements.
- * Only colorizes rules that are in the enabledLayers list.
- * Hides verse number markers (span.end).
- *
- * On iOS Safari, uses TajweedCanvas (HarfBuzz WASM) for content
- * to avoid iOS WebKit's Arabic ligature-breaking bug.
+ * Detect iOS once at module level
  */
-
-// Detect iOS once at module level
 const isIOS = typeof navigator !== 'undefined' && (
     /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 );
 
-export function renderTajweedText(
-    tajweedHtml: string,
-    enabledLayers: string[]
-): React.ReactNode {
-    if (!tajweedHtml) return null;
-
-    // Clean up the HTML - remove verse number markers completely
-    const cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
-
-    // On iOS, we use TajweedCanvas which uses HarfBuzz WASM to shape the whole verse
-    // correctly. To keep line wrapping, we split the text into words and render
-    // each word as its own canvas.
-    if (isIOS) {
-        // Simple splitting by space. Each "word" might contain <tajweed> tags.
-        // We split by space but keep the space in the array to re-insert it.
-        const words = cleanHtml.split(/(\s+)/);
-
-        return words.map((word, idx) => {
-            if (word.trim() === '') {
-                return <span key={idx}>{word}</span>;
-            }
-            // Each word is rendered as a small TajweedCanvas
-            return (
-                <TajweedCanvas
-                    key={idx}
-                    tajweedHtml={word}
-                    enabledLayers={enabledLayers}
-                    fontSize={24} // Should match CSS font-size
-                    lineHeight={1.5}
-                />
-            );
-        });
-    }
-
-    // Default rendering for Android/Desktop using <span>
-    const result: React.ReactNode[] = [];
-    let key = 0;
-
-    const tagRegex = /<tajweed\s+class=([^>]+)>([^<]*)<\/tajweed>/g;
-    let lastIndex = 0;
-    let match;
-
-    while ((match = tagRegex.exec(cleanHtml)) !== null) {
-        if (match.index > lastIndex) {
-            result.push(cleanHtml.substring(lastIndex, match.index));
-        }
-
-        const className = match[1];
-        const content = match[2];
-        const ruleId = className;
-        const rule = TAJWEED_RULES[ruleId];
-        const isEnabled = isRuleEnabled(ruleId, enabledLayers);
-
-        if (isEnabled && rule) {
-            result.push(
-                <span
-                    key={key++}
-                    className={`tajweed-highlight tj-${ruleId}`}
-                >
-                    {content}
-                </span>
-            );
-        } else {
-            result.push(content);
-        }
-
-        lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < cleanHtml.length) {
-        result.push(cleanHtml.substring(lastIndex));
-    }
-
-    return result;
+interface TextSegment {
+    text: string;
+    color: string | null;
+    ruleId: string | null;
 }
 
 /**
- * Check if a specific rule is enabled based on layer settings.
+ * Get CSS color for a tajweed rule ID.
  */
+function getCssColor(ruleId: string): string {
+    const colors: Record<string, string> = {
+        madda_normal: '#537FFF', madda_permissible: '#4169E1', madda_necessary: '#00008B', madda_obligatory: '#1E90FF',
+        madd_2: '#537FFF', madd_4: '#4169E1', madd_6: '#00008B', madd_246: '#537FFF', madd_munfasil: '#4169E1', madd_muttasil: '#1E90FF',
+        ghunnah: '#169200', ghunnah_2: '#169200',
+        qalqalah: '#DD0008', qalaqah: '#DD0008',
+        idgham_ghunnah: '#FF7F00', idgham_no_ghunnah: '#FF6347', idgham_wo_ghunnah: '#FF6347',
+        idgham_mutajanisayn: '#FFA07A', idgham_mutaqaribayn: '#FFB347', idgham_shafawi: '#FF8C00',
+        ikhfa: '#9400D3', ikhfa_shafawi: '#BA55D3', ikhafa: '#9400D3', ikhafa_shafawi: '#BA55D3',
+        iqlab: '#26BFBF', izhar: '#8B0000', izhar_shafawi: '#A52A2A', izhar_halqi: '#8B0000',
+        ham_wasl: '#AAAAAA', laam_shamsiyah: '#FF69B4', silent: '#AAAAAA', slnt: '#AAAAAA',
+    };
+    return colors[ruleId] || '#1a1a2e';
+}
+
 function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
     if (enabledLayers.includes(ruleId)) return true;
-
     const categoryMap: Record<string, string> = {
         madda_normal: 'madd', madda_permissible: 'madd', madda_necessary: 'madd', madda_obligatory: 'madd',
         madd_2: 'madd', madd_4: 'madd', madd_6: 'madd', madd_246: 'madd', madd_munfasil: 'madd', madd_muttasil: 'madd',
@@ -111,22 +47,95 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
         izhar: 'izhar', izhar_shafawi: 'izhar', izhar_halqi: 'izhar',
         ham_wasl: 'other', laam_shamsiyah: 'other', silent: 'other', slnt: 'other',
     };
-
-    const category = categoryMap[ruleId];
-    if (category && enabledLayers.includes(category)) return true;
-
+    const cat = categoryMap[ruleId];
+    if (cat && enabledLayers.includes(cat)) return true;
     const prefixes = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
     for (const prefix of prefixes) {
         if (ruleId.startsWith(prefix) && enabledLayers.includes(prefix)) return true;
     }
-    if (ruleId.startsWith('madda') && enabledLayers.includes('madd')) return true;
-
-    return false;
+    return ruleId.startsWith('madda') && enabledLayers.includes('madd');
 }
 
 /**
- * Strip all Tajweed tags and return plain text.
+ * Main parser function
  */
+export function renderTajweedText(
+    tajweedHtml: string,
+    enabledLayers: string[]
+): React.ReactNode {
+    if (!tajweedHtml) return null;
+
+    // 1. Clean up
+    const cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
+
+    // 2. Parse into segments
+    const segments: TextSegment[] = [];
+    const tagRegex = /<tajweed\s+class=([^>]+)>([^<]*)<\/tajweed>/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tagRegex.exec(cleanHtml)) !== null) {
+        if (match.index > lastIndex) {
+            segments.push({ text: cleanHtml.substring(lastIndex, match.index), color: null, ruleId: null });
+        }
+        const ruleId = match[1];
+        const content = match[2];
+        const enabled = isRuleEnabled(ruleId, enabledLayers);
+        segments.push({
+            text: content,
+            color: enabled ? getCssColor(ruleId) : null,
+            ruleId: enabled ? ruleId : null
+        });
+        lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < cleanHtml.length) {
+        segments.push({ text: cleanHtml.substring(lastIndex), color: null, ruleId: null });
+    }
+
+    // 3. Render
+    let key = 0;
+    const result: React.ReactNode[] = [];
+
+    for (const seg of segments) {
+        // Split segment into words to allow line wrapping
+        const words = seg.text.split(/(\s+)/);
+
+        for (const word of words) {
+            if (word === '') continue;
+            if (word.trim() === '') {
+                result.push(<span key={key++}>{word}</span>);
+                continue;
+            }
+
+            if (isIOS) {
+                // iOS: Each word gets its own Canvas for shaping
+                result.push(
+                    <TajweedCanvas
+                        key={key++}
+                        text={word}
+                        color={seg.color || '#1a1a2e'}
+                        fontSize={24}
+                        lineHeight={1.5}
+                    />
+                );
+            } else {
+                // Other: Standard <span>
+                result.push(
+                    <span
+                        key={key++}
+                        className={seg.ruleId ? `tajweed-highlight tj-${seg.ruleId}` : ''}
+                        style={seg.color ? { color: seg.color } : {}}
+                    >
+                        {word}
+                    </span>
+                );
+            }
+        }
+    }
+
+    return result;
+}
+
 export function stripTajweedTags(tajweedHtml: string): string {
     if (!tajweedHtml) return '';
     return tajweedHtml.replace(/<[^>]+>/g, '');
