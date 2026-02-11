@@ -104,6 +104,13 @@ export function isHarfBuzzReady(): boolean {
 }
 
 /**
+ * Get the Units Per Em of the currently loaded font.
+ */
+export function getFontUpem(): number {
+    return hbFace ? hbFace.getUnitsPerEm() : 2048;
+}
+
+/**
  * Cleanup HarfBuzz resources (call on unmount).
  */
 export function destroyHarfBuzz(): void {

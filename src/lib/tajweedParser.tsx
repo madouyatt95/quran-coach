@@ -9,12 +9,6 @@ const isIOS = typeof navigator !== 'undefined' && (
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 );
 
-interface TextSegment {
-    text: string;
-    color: string | null;
-    ruleId: string | null;
-}
-
 /**
  * Get CSS color for a tajweed rule ID.
  */
@@ -57,7 +51,9 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
 }
 
 /**
- * Main parser function
+ * Main parser function.
+ * Sur iOS, on traite chaque mot séparément mais comme un BLOC UNIQUE pour HarfBuzz,
+ * ce qui permet de garder les ligatures intactes tout en colorisant des segments.
  */
 export function renderTajweedText(
     tajweedHtml: string,
@@ -65,72 +61,113 @@ export function renderTajweedText(
 ): React.ReactNode {
     if (!tajweedHtml) return null;
 
-    // 1. Clean up
+    // 1. Clean up HTML
     const cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
 
-    // 2. Parse into segments
-    const segments: TextSegment[] = [];
+    // 2. Map colors to characters
+    let plainText = '';
+    const colorMap: string[] = [];
+    const ruleIdMap: (string | null)[] = [];
+
     const tagRegex = /<tajweed\s+class=([^>]+)>([^<]*)<\/tajweed>/g;
     let lastIndex = 0;
     let match;
 
     while ((match = tagRegex.exec(cleanHtml)) !== null) {
-        if (match.index > lastIndex) {
-            segments.push({ text: cleanHtml.substring(lastIndex, match.index), color: null, ruleId: null });
+        // Text before tag
+        const beforeText = cleanHtml.substring(lastIndex, match.index);
+        plainText += beforeText;
+        for (let i = 0; i < beforeText.length; i++) {
+            colorMap.push('#1a1a2e');
+            ruleIdMap.push(null);
         }
+
+        // Inside tag
         const ruleId = match[1];
         const content = match[2];
         const enabled = isRuleEnabled(ruleId, enabledLayers);
-        segments.push({
-            text: content,
-            color: enabled ? getCssColor(ruleId) : null,
-            ruleId: enabled ? ruleId : null
-        });
+        const color = enabled ? getCssColor(ruleId) : '#1a1a2e';
+
+        plainText += content;
+        for (let i = 0; i < content.length; i++) {
+            colorMap.push(color);
+            ruleIdMap.push(enabled ? ruleId : null);
+        }
+
         lastIndex = match.index + match[0].length;
     }
-    if (lastIndex < cleanHtml.length) {
-        segments.push({ text: cleanHtml.substring(lastIndex), color: null, ruleId: null });
+
+    // Text after last tag
+    const remainingText = cleanHtml.substring(lastIndex);
+    plainText += remainingText;
+    for (let i = 0; i < remainingText.length; i++) {
+        colorMap.push('#1a1a2e');
+        ruleIdMap.push(null);
     }
 
-    // 3. Render
-    let key = 0;
+    // 3. Render word by word
+    const words = plainText.split(/(\s+)/);
+    let charOffset = 0;
     const result: React.ReactNode[] = [];
+    let key = 0;
 
-    for (const seg of segments) {
-        // Split segment into words to allow line wrapping
-        const words = seg.text.split(/(\s+)/);
+    for (const word of words) {
+        if (word === '') continue;
 
-        for (const word of words) {
-            if (word === '') continue;
-            if (word.trim() === '') {
-                result.push(<span key={key++}>{word}</span>);
-                continue;
+        const wordColors = colorMap.slice(charOffset, charOffset + word.length);
+        const wordRuleIds = ruleIdMap.slice(charOffset, charOffset + word.length);
+
+        if (word.trim() === '') {
+            // Is a space
+            result.push(<span key={key++}>{word}</span>);
+        } else if (isIOS) {
+            // iOS: Shape the whole word as one block to preserve ligatures
+            result.push(
+                <TajweedCanvas
+                    key={key++}
+                    text={word}
+                    colors={wordColors}
+                    fontSize={24}
+                    lineHeight={1.5}
+                />
+            );
+        } else {
+            // Non-iOS: Standard <span> rendering, but grouping by color to minimize elements
+            let currentContent = '';
+            let currentColor = wordColors[0];
+            let currentRuleId = wordRuleIds[0];
+
+            for (let i = 0; i < word.length; i++) {
+                if (wordColors[i] === currentColor && wordRuleIds[i] === currentRuleId) {
+                    currentContent += word[i];
+                } else {
+                    result.push(
+                        <span
+                            key={key++}
+                            className={currentRuleId ? `tajweed-highlight tj-${currentRuleId}` : ''}
+                            style={currentColor !== '#1a1a2e' ? { color: currentColor } : {}}
+                        >
+                            {currentContent}
+                        </span>
+                    );
+                    currentContent = word[i];
+                    currentColor = wordColors[i];
+                    currentRuleId = wordRuleIds[i];
+                }
             }
-
-            if (isIOS) {
-                // iOS: Each word gets its own Canvas for shaping
-                result.push(
-                    <TajweedCanvas
-                        key={key++}
-                        text={word}
-                        color={seg.color || '#1a1a2e'}
-                        fontSize={24}
-                        lineHeight={1.5}
-                    />
-                );
-            } else {
-                // Other: Standard <span>
-                result.push(
-                    <span
-                        key={key++}
-                        className={seg.ruleId ? `tajweed-highlight tj-${seg.ruleId}` : ''}
-                        style={seg.color ? { color: seg.color } : {}}
-                    >
-                        {word}
-                    </span>
-                );
-            }
+            // Add last segment of the word
+            result.push(
+                <span
+                    key={key++}
+                    className={currentRuleId ? `tajweed-highlight tj-${currentRuleId}` : ''}
+                    style={currentColor !== '#1a1a2e' ? { color: currentColor } : {}}
+                >
+                    {currentContent}
+                </span>
+            );
         }
+
+        charOffset += word.length;
     }
 
     return result;
