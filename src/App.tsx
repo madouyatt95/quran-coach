@@ -17,6 +17,7 @@ import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
 import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
+import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
 import './index.css';
 
 // ReadPage is always mounted, hidden when on other routes
@@ -119,6 +120,7 @@ function AppContent() {
           <Route path="/prophets" element={<ProphetsPage />} />
         </Routes>
       </main>
+      <InstallPrompt />
       <BottomNav />
     </>
   );

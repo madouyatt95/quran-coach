@@ -1,0 +1,227 @@
+/* Install Prompt Modal */
+.install-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    animation: fadeIn 0.2s ease;
+}
+
+.install-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 85vh;
+    background: var(--card-bg, #fff);
+    border-radius: 20px 20px 0 0;
+    z-index: 9999;
+    padding: 24px 20px 32px;
+    animation: slideUpModal 0.3s ease;
+    overflow-y: auto;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideUpModal {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.install-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.install-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary, #1a1a2e);
+    margin: 0;
+}
+
+.install-close {
+    background: var(--bg-secondary, #f0f0f0);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary, #666);
+    transition: background 0.2s;
+}
+
+.install-close:hover {
+    background: var(--bg-tertiary, #ddd);
+}
+
+.install-desc {
+    color: var(--text-secondary, #666);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+/* Platform tabs */
+.install-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.install-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border: 2px solid var(--border-color, #e0e0e0);
+    border-radius: 12px;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary, #666);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.install-tab.active {
+    border-color: #2ecc71;
+    background: #2ecc71;
+    color: #fff;
+}
+
+.install-tab svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Instructions card */
+.install-instructions {
+    background: var(--bg-secondary, #f8f8f8);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color, #e8e8e8);
+}
+
+.install-platform-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary, #1a1a2e);
+}
+
+.install-platform-icon {
+    font-size: 1.3rem;
+}
+
+.install-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.install-steps li {
+    font-size: 0.9rem;
+    color: var(--text-primary, #333);
+    line-height: 1.5;
+}
+
+.install-steps li strong {
+    color: var(--text-primary, #1a1a2e);
+}
+
+/* Native install button */
+.install-native-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.35);
+}
+
+.install-native-btn:active {
+    transform: scale(0.97);
+}
+
+/* Floating install banner */
+.install-banner {
+    position: fixed;
+    bottom: 88px;
+    left: 16px;
+    right: 16px;
+    z-index: 100;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: #fff;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4);
+    animation: slideUpBanner 0.4s ease;
+    cursor: pointer;
+}
+
+@keyframes slideUpBanner {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.install-banner-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.install-banner-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    flex-shrink: 0;
+}
