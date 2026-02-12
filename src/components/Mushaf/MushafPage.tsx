@@ -158,6 +158,23 @@ export function MushafPage() {
         }
     }, [surahs.length, setSurahs]);
 
+    // Scroll to a specific verse with retry (waits for DOM render)
+    const scrollToVerse = useCallback((surah: number, ayah: number) => {
+        let attempts = 0;
+        const tryScroll = () => {
+            const el = document.querySelector(`[data-surah="${surah}"][data-ayah="${ayah}"]`);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('highlighted-from-shazam');
+                setTimeout(() => el.classList.remove('highlighted-from-shazam'), 3000);
+            } else if (attempts < 10) {
+                attempts++;
+                setTimeout(tryScroll, 150);
+            }
+        };
+        setTimeout(tryScroll, 200);
+    }, []);
+
     // Fetch page content
     useEffect(() => {
         setIsLoading(true);
@@ -179,20 +196,13 @@ export function MushafPage() {
                 generatePartialMask(ayahs);
             }
 
-            // Handle scrollToAyah from Shazam
+            // Handle scrollToAyah from Shazam or Search
             const scrollData = sessionStorage.getItem('scrollToAyah');
             if (scrollData) {
                 try {
                     const { surah, ayah } = JSON.parse(scrollData);
                     sessionStorage.removeItem('scrollToAyah');
-                    setTimeout(() => {
-                        const ayahElement = document.querySelector(`[data-surah="${surah}"][data-ayah="${ayah}"]`);
-                        if (ayahElement) {
-                            ayahElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            ayahElement.classList.add('highlighted-from-shazam');
-                            setTimeout(() => ayahElement.classList.remove('highlighted-from-shazam'), 3000);
-                        }
-                    }, 100);
+                    scrollToVerse(surah, ayah);
                 } catch (e) {
                     console.error('Failed to parse scrollToAyah', e);
                 }
@@ -995,8 +1005,14 @@ export function MushafPage() {
                                                 key={v.number}
                                                 className="mih-search-item"
                                                 onClick={() => {
-                                                    sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: v.surah, ayah: v.numberInSurah }));
-                                                    goToPage(v.page);
+                                                    if (v.page === currentPage) {
+                                                        // Same page: just scroll directly
+                                                        scrollToVerse(v.surah, v.numberInSurah);
+                                                    } else {
+                                                        // Different page: store scroll data and navigate
+                                                        sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: v.surah, ayah: v.numberInSurah }));
+                                                        goToPage(v.page);
+                                                    }
                                                     setShowSearch(false);
                                                     setSearchQuery('');
                                                 }}
