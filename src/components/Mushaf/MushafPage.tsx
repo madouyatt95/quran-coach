@@ -102,6 +102,11 @@ export function MushafPage() {
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const shouldAutoPlay = useRef(false);
 
+    // Refs to avoid stale closures in audio callbacks
+    const playingIndexRef = useRef(-1);
+    const pageAyahsRef = useRef<Ayah[]>([]);
+    const currentPageRef = useRef(currentPage);
+
     // Toolbar auto-close timer
     const toolbarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -116,6 +121,11 @@ export function MushafPage() {
     if (!audioRef.current) {
         audioRef.current = new Audio();
     }
+
+    // Keep refs in sync with state
+    useEffect(() => { playingIndexRef.current = playingIndex; }, [playingIndex]);
+    useEffect(() => { pageAyahsRef.current = pageAyahs; }, [pageAyahs]);
+    useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
 
     const tajweedCategories = useMemo(() => getTajweedCategories(), []);
 
@@ -221,26 +231,30 @@ export function MushafPage() {
 
     // Audio playback - play all ayahs on page sequentially
     const playAyahAtIndex = useCallback((idx: number) => {
-        if (!pageAyahs[idx] || !audioRef.current) return;
+        const ayahs = pageAyahsRef.current;
+        if (!ayahs[idx] || !audioRef.current) return;
 
         setAudioActive(true);
         setAudioPlaying(true);
-        const ayah = pageAyahs[idx];
+        const ayah = ayahs[idx];
         setPlayingIndex(idx);
         setCurrentPlayingAyah(ayah.number);
         audioRef.current.src = getAudioUrl(selectedReciter, ayah.number);
         audioRef.current.playbackRate = playbackSpeed;
         audioRef.current.play().catch(() => { });
-    }, [pageAyahs, selectedReciter, playbackSpeed]);
+    }, [selectedReciter, playbackSpeed]);
 
     const playNextAyah = useCallback(() => {
-        if (playingIndex < pageAyahs.length - 1) {
-            playAyahAtIndex(playingIndex + 1);
-        } else if (currentPage < 604) {
+        const idx = playingIndexRef.current;
+        const ayahs = pageAyahsRef.current;
+        const page = currentPageRef.current;
+
+        if (idx < ayahs.length - 1) {
+            playAyahAtIndex(idx + 1);
+        } else if (page < 604) {
             // Don't auto-advance pages when app is in background
             if (isHiddenRef.current) {
                 pendingAutoAdvance.current = true;
-                // Audio stops naturally at end of last ayah, that's fine
                 setAudioPlaying(false);
                 return;
             }
@@ -253,13 +267,13 @@ export function MushafPage() {
             setPlayingIndex(-1);
             setCurrentPlayingAyah(0);
         }
-    }, [playingIndex, pageAyahs.length, playAyahAtIndex, currentPage, nextPage]);
+    }, [playAyahAtIndex, nextPage]);
 
     const playPrevAyah = useCallback(() => {
-        if (playingIndex > 0) {
-            playAyahAtIndex(playingIndex - 1);
+        if (playingIndexRef.current > 0) {
+            playAyahAtIndex(playingIndexRef.current - 1);
         }
-    }, [playingIndex, playAyahAtIndex]);
+    }, [playAyahAtIndex]);
 
     const stopAudio = useCallback(() => {
         if (audioRef.current) {
@@ -273,7 +287,7 @@ export function MushafPage() {
     }, []);
 
     const toggleAudio = useCallback(() => {
-        if (pageAyahs.length === 0 || !audioRef.current) return;
+        if (pageAyahsRef.current.length === 0 || !audioRef.current) return;
 
         if (audioPlaying) {
             audioRef.current.pause();
@@ -281,16 +295,19 @@ export function MushafPage() {
         } else {
             setAudioPlaying(true);
             setAudioActive(true);
-            const startIdx = playingIndex >= 0 ? playingIndex : 0;
+            const startIdx = playingIndexRef.current >= 0 ? playingIndexRef.current : 0;
             playAyahAtIndex(startIdx);
         }
-    }, [pageAyahs.length, audioPlaying, playingIndex, playAyahAtIndex]);
+    }, [audioPlaying, playAyahAtIndex]);
 
-    // Handle audio ended
+    // Handle audio ended - use ref to always have latest callback
+    const playNextAyahRef = useRef(playNextAyah);
+    useEffect(() => { playNextAyahRef.current = playNextAyah; }, [playNextAyah]);
+
     useEffect(() => {
         if (!audioRef.current) return;
-        audioRef.current.onended = playNextAyah;
-    }, [playNextAyah]);
+        audioRef.current.onended = () => playNextAyahRef.current();
+    }, []);
 
     // Auto-resume after page change
     useEffect(() => {
