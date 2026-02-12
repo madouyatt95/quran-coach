@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { HifdhPage } from './pages/HifdhPage';
-import { ChallengesPage } from './pages/ChallengesPage';
+import { SideMenu } from './components/Navigation/SideMenu';
 
 import { SettingsPage } from './pages/SettingsPage';
 import { PrayerTimesPage } from './pages/PrayerTimesPage';
@@ -37,6 +37,7 @@ function AppContent() {
   const { surahs, setSurahs } = useQuranStore();
   const { startSession, endSession } = useStatsStore();
   const hasUnlockedAudio = useRef(false);
+  const [showSideMenu, setShowSideMenu] = useState(false);
 
   // Unlock audio on first user interaction (critical for iOS PWA)
   const handleFirstInteraction = useCallback(() => {
@@ -109,7 +110,6 @@ function AppContent() {
           <Route path="/" element={null} />
           <Route path="/read" element={null} />
           <Route path="/hifdh" element={<HifdhPage />} />
-          <Route path="/challenges" element={<ChallengesPage />} />
 
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/prayers" element={<PrayerTimesPage />} />
@@ -120,8 +120,9 @@ function AppContent() {
           <Route path="/prophets" element={<ProphetsPage />} />
         </Routes>
       </main>
+      <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
       <InstallPrompt />
-      <BottomNav />
+      <BottomNav onMenuOpen={() => setShowSideMenu(true)} />
     </>
   );
 }

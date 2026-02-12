@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { X, Settings, BookHeart, Stars, Building2, Trophy, Radio } from 'lucide-react';
+import { X, Settings, Stars, Building2, Radio, Clock } from 'lucide-react';
 import './SideMenu.css';
 
 interface SideMenuProps {
@@ -11,10 +11,9 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     if (!isOpen) return null;
 
     const menuItems = [
-        { path: '/challenges', icon: Trophy, label: 'Défis', color: '#FFD700' },
         { path: '/shazam', icon: Radio, label: 'Shazam', color: '#FF6B6B' },
         { path: '/mosques', icon: Building2, label: 'Mosquées', color: '#26C6DA' },
-        { path: '/adhkar', icon: BookHeart, label: 'Invocations', color: '#9C27B0' },
+        { path: '/prayers', icon: Clock, label: 'Prières', color: '#FF9800' },
         { path: '/settings', icon: Settings, label: 'Réglages', color: '#888' },
     ];
 
