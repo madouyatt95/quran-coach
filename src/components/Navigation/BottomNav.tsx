@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Book, Headphones, ScrollText, BookHeart, BookOpen, Menu } from 'lucide-react';
+import { Book, Headphones, ScrollText, BookHeart, BookOpen } from 'lucide-react';
 import './BottomNav.css';
 
 interface NavItem {
@@ -12,15 +12,11 @@ const navItems: NavItem[] = [
     { path: '/', icon: <Book />, label: 'Lecture' },
     { path: '/hifdh', icon: <Headphones />, label: 'Hifdh' },
     { path: '/prophets', icon: <ScrollText />, label: 'Prophètes' },
-    { path: '/adhkar', icon: <BookHeart />, label: 'Invocations' },
     { path: '/tafsir', icon: <BookOpen />, label: 'Tafsir' },
+    { path: '/adhkar', icon: <BookHeart />, label: 'Invocations' },
 ];
 
-interface BottomNavProps {
-    onMenuOpen?: () => void;
-}
-
-export function BottomNav({ onMenuOpen }: BottomNavProps) {
+export function BottomNav() {
     return (
         <nav className="bottom-nav">
             {navItems.map((item) => (
@@ -35,12 +31,6 @@ export function BottomNav({ onMenuOpen }: BottomNavProps) {
                     <span className="bottom-nav__label">{item.label}</span>
                 </NavLink>
             ))}
-            {onMenuOpen && (
-                <button className="bottom-nav__item bottom-nav__menu-btn" onClick={onMenuOpen}>
-                    <span className="bottom-nav__icon"><Menu /></span>
-                    <span className="bottom-nav__label">Menu</span>
-                </button>
-            )}
         </nav>
     );
 }

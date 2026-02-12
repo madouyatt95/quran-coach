@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Menu } from 'lucide-react';
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { HifdhPage } from './pages/HifdhPage';
@@ -101,8 +102,22 @@ function AppContent() {
     };
   }, [startSession, endSession]);
 
+  const location = useLocation();
+  const isLecturePage = location.pathname === '/' || location.pathname === '/read';
+
   return (
     <>
+      {/* Global burger menu button – hidden on Lecture (MushafPage has its own) */}
+      {!isLecturePage && (
+        <button
+          className="global-menu-btn"
+          onClick={() => setShowSideMenu(true)}
+          aria-label="Menu"
+        >
+          <Menu size={22} />
+        </button>
+      )}
+
       <main style={{ flex: 1, paddingBottom: '80px' }}>
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
@@ -122,7 +137,7 @@ function AppContent() {
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
       <InstallPrompt />
-      <BottomNav onMenuOpen={() => setShowSideMenu(true)} />
+      <BottomNav />
     </>
   );
 }
