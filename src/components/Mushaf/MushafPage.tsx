@@ -21,11 +21,12 @@ import {
     Play,
     Pause,
     Lock,
-    Volume2
+    Volume2,
+    Languages
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
-import { fetchPage, fetchSurahs, getAudioUrl } from '../../lib/quranApi';
+import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
@@ -67,11 +68,12 @@ export function MushafPage() {
         goToPage,
     } = useQuranStore();
 
-    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter } = useSettingsStore();
+    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter, showTranslation, toggleTranslation } = useSettingsStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [tajweedVerses, setTajweedVerses] = useState<TajweedVerse[]>([]);
+    const [translationMap, setTranslationMap] = useState<Map<number, string>>(new Map());
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
@@ -158,11 +160,13 @@ export function MushafPage() {
 
         Promise.all([
             fetchPage(currentPage),
-            fetchTajweedPage(currentPage)
-        ]).then(([ayahs, tajweed]) => {
+            fetchTajweedPage(currentPage),
+            showTranslation ? fetchPageTranslation(currentPage) : Promise.resolve(new Map<number, string>())
+        ]).then(([ayahs, tajweed, translations]) => {
             setPageAyahs(ayahs);
             pageAyahsRef.current = ayahs; // sync ref immediately
             setTajweedVerses(tajweed);
+            setTranslationMap(translations);
             setIsLoading(false);
 
             // Generate partial hidden words
@@ -192,7 +196,7 @@ export function MushafPage() {
             setError('Impossible de charger la page. Vérifiez votre connexion.');
             setIsLoading(false);
         });
-    }, [currentPage, setPageAyahs]);
+    }, [currentPage, setPageAyahs, showTranslation]);
 
     // Regenerate partial mask when mode changes
     useEffect(() => {
@@ -546,6 +550,9 @@ export function MushafPage() {
                                                     <span className="mih-verse-num">
                                                         {toArabicNumbers(ayah.numberInSurah)}
                                                     </span>
+                                                    {showTranslation && translationMap.get(ayah.number) && (
+                                                        <div className="mih-translation">{translationMap.get(ayah.number)}</div>
+                                                    )}
                                                     {' '}
                                                 </span>
                                             );
@@ -574,6 +581,9 @@ export function MushafPage() {
                                                             {toArabicNumbers(ayah.numberInSurah)}
                                                         </span>
                                                     </>
+                                                )}
+                                                {showTranslation && translationMap.get(ayah.number) && (
+                                                    <div className="mih-translation">{translationMap.get(ayah.number)}</div>
                                                 )}
                                                 {' '}
                                             </span>
@@ -604,6 +614,14 @@ export function MushafPage() {
                         title="Tajweed"
                     >
                         <Palette size={22} />
+                    </button>
+
+                    <button
+                        className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
+                        onClick={toggleTranslation}
+                        title="Traduction"
+                    >
+                        <Languages size={22} />
                     </button>
 
                     <button
