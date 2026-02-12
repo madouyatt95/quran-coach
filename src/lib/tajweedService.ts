@@ -6,7 +6,7 @@ export interface TajweedVerse {
     textTajweed: string; // HTML with <tajweed class=X> tags
 }
 
-// Tajweed rule definitions with colors (REVERTED TO 7eb1354)
+// Tajweed rule definitions with colors
 export const TAJWEED_RULES: Record<string, { name: string; nameArabic: string; color: string; description: string }> = {
     // Hamza
     'ham_wasl': { name: 'Hamza Wasl', nameArabic: 'همزة الوصل', color: '#AAAAAA', description: 'Hamza silencieuse (liaison)' },
@@ -29,8 +29,8 @@ export const TAJWEED_RULES: Record<string, { name: string; nameArabic: string; c
     // Idgham (Fusion)
     'idgham_ghunnah': { name: 'Idgham avec Ghunnah', nameArabic: 'إدغام بغنة', color: '#95E1D3', description: 'Fusion nasale avec ينمو' },
     'idgham_no_ghunnah': { name: 'Idgham sans Ghunnah', nameArabic: 'إدغام بلا غنة', color: '#7BC9BD', description: 'Fusion sans nasalisation avec ل ر' },
-    'idgham_mutajanisayn': { name: 'Idgham متجانسين', nameArabic: 'إدغام متجانسين', color: '#6AB5A8', description: 'Fusion de lettres similaires' },
-    'idgham_mutaqaribayn': { name: 'Idgham متقاربين', nameArabic: 'إدغام متقاربين', color: '#5AA99C', description: 'Fusion de lettres proches' },
+    'idgham_mutajanisayn': { name: 'Idgham Mutajanisayn', nameArabic: 'إدغام متجانسين', color: '#6AB5A8', description: 'Fusion de lettres similaires' },
+    'idgham_mutaqaribayn': { name: 'Idgham Mutaqaribayn', nameArabic: 'إدغام متقاربين', color: '#5AA99C', description: 'Fusion de lettres proches' },
 
     // Ikhfa (Dissimulation)
     'ikhfa': { name: 'Ikhfa', nameArabic: 'الإخفاء', color: '#DDA0DD', description: 'Dissimulation nasale (15 lettres)' },
@@ -45,7 +45,6 @@ export const TAJWEED_RULES: Record<string, { name: string; nameArabic: string; c
 
     // Silent letters
     'silent': { name: 'Lettre silencieuse', nameArabic: 'حرف ساكن', color: '#888888', description: 'Lettre non prononcée' },
-    'slnt': { name: 'Lettre silencieuse', nameArabic: 'حرف ساكن', color: '#888888', description: 'Lettre non prononcée' },
 };
 
 // Cache for Tajweed text
@@ -55,6 +54,7 @@ const tajweedCache = new Map<number, TajweedVerse[]>();
  * Fetch Tajweed text for a surah from Quran.com API
  */
 export async function fetchTajweedSurah(surahNumber: number): Promise<TajweedVerse[]> {
+    // Check cache first
     if (tajweedCache.has(surahNumber)) {
         return tajweedCache.get(surahNumber)!;
     }
@@ -76,6 +76,15 @@ export async function fetchTajweedSurah(surahNumber: number): Promise<TajweedVer
         console.error('Failed to fetch Tajweed text:', error);
         return [];
     }
+}
+
+/**
+ * Get Tajweed text for a specific verse
+ */
+export async function fetchTajweedVerse(surah: number, ayah: number): Promise<string | null> {
+    const verses = await fetchTajweedSurah(surah);
+    const verse = verses.find(v => v.verseKey === `${surah}:${ayah}`);
+    return verse?.textTajweed || null;
 }
 
 /**
@@ -131,13 +140,6 @@ export function getTajweedCategories() {
             nameArabic: 'الإظهار',
             color: '#98D8C8',
             rules: ['izhar', 'izhar_shafawi']
-        },
-        {
-            id: 'other',
-            name: 'Autres',
-            nameArabic: 'أخرى',
-            color: '#AAAAAA',
-            rules: ['ham_wasl', 'laam_shamsiyah', 'silent', 'slnt']
         }
     ];
 }
@@ -149,6 +151,7 @@ const pageTajweedCache = new Map<number, TajweedVerse[]>();
  * Fetch Tajweed text for a specific page from Quran.com API
  */
 export async function fetchTajweedPage(pageNumber: number): Promise<TajweedVerse[]> {
+    // Check cache first
     if (pageTajweedCache.has(pageNumber)) {
         return pageTajweedCache.get(pageNumber)!;
     }
@@ -161,7 +164,6 @@ export async function fetchTajweedPage(pageNumber: number): Promise<TajweedVerse
 
         const verses: TajweedVerse[] = data.verses.map((v: any) => ({
             verseKey: v.verse_key,
-            text_uthmani_tajweed: v.text_uthmani_tajweed,
             textTajweed: v.text_uthmani_tajweed,
         }));
 
@@ -171,14 +173,4 @@ export async function fetchTajweedPage(pageNumber: number): Promise<TajweedVerse
         console.error('Failed to fetch Tajweed page:', error);
         return [];
     }
-}
-
-/**
- * Get Tajweed text for a specific verse
- */
-export async function fetchTajweedVerse(surah: number, ayah: number): Promise<string | null> {
-    const verses = await fetchTajweedSurah(surah);
-    const verseKey = `${surah}:${ayah}`;
-    const verse = verses.find(v => v.verseKey === verseKey);
-    return verse?.textTajweed || null;
 }

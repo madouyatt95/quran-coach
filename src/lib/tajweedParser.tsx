@@ -1,33 +1,81 @@
 import React from 'react';
-import { TajweedCanvas } from '../components/Mushaf/TajweedCanvas';
 import { TAJWEED_RULES } from './tajweedService';
 
 /**
- * Detect iOS
+ * Parse Tajweed HTML from API and render as React elements
+ * Only colorizes rules that are in the enabledLayers list
+ * Hides verse number markers (span.end)
  */
-const isIOS = typeof navigator !== 'undefined' && (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-);
+export function renderTajweedText(
+    tajweedHtml: string,
+    enabledLayers: string[]
+): React.ReactNode {
+    if (!tajweedHtml) return null;
 
-/**
- * Get color for a tajweed rule ID from central TAJWEED_RULES.
- */
-function getTajweedColor(ruleId: string): string | null {
-    const key = ruleId.toLowerCase();
-    return TAJWEED_RULES[key]?.color || null;
+    // Clean up the HTML - remove verse number markers completely
+    // They appear as <span class=end>N</span> at the end
+    let cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
+
+    // Parse the HTML and extract tajweed tags
+    const result: React.ReactNode[] = [];
+    let key = 0;
+
+    // Regex to match <tajweed class=X>content</tajweed>
+    const tagRegex = /<tajweed\s+class=([^>]+)>([^<]*)<\/tajweed>/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tagRegex.exec(cleanHtml)) !== null) {
+        // Add text before the tag
+        if (match.index > lastIndex) {
+            result.push(cleanHtml.substring(lastIndex, match.index));
+        }
+
+        const className = match[1];
+        const content = match[2];
+        const ruleId = className;
+        const rule = TAJWEED_RULES[ruleId];
+
+        // Check if this rule (or its category) is enabled
+        const isEnabled = isRuleEnabled(ruleId, enabledLayers);
+
+        if (isEnabled && rule) {
+            result.push(
+                <span
+                    key={key++}
+                    className={`tajweed-highlight tj-${ruleId}`}
+                >
+                    {content}
+                </span>
+            );
+        } else {
+            // Rule not enabled or unknown, render without color
+            result.push(content);
+        }
+
+        lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text after last tag
+    if (lastIndex < cleanHtml.length) {
+        result.push(cleanHtml.substring(lastIndex));
+    }
+
+    return result;
 }
 
 /**
  * Check if a specific rule is enabled based on layer settings
- * REVERTED Logic from 7eb1354
+ * Supports both direct rule IDs and category IDs
  */
 function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
     // Direct match
     if (enabledLayers.includes(ruleId)) return true;
 
-    // Category mapping - RESTORED ORIGINAL MAPPING
+    // Category mapping - map API rule IDs to UI category IDs
+    // Note: API uses different spellings for some rules
     const categoryMap: Record<string, string> = {
+        // Madd (prolongation) - API uses "madda_" prefix
         'madda_normal': 'madd',
         'madda_permissible': 'madd',
         'madda_necessary': 'madd',
@@ -35,26 +83,45 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
         'madd_2': 'madd',
         'madd_4': 'madd',
         'madd_6': 'madd',
+        'madd_246': 'madd',
+        'madd_munfasil': 'madd',
+        'madd_muttasil': 'madd',
+
+        // Ghunnah (nasalization)
         'ghunnah': 'ghunnah',
         'ghunnah_2': 'ghunnah',
+
+        // Qalqalah (echo) - API uses "qalaqah" (different spelling!)
         'qalqalah': 'qalqalah',
-        'qalaqah': 'qalqalah',
+        'qalaqah': 'qalqalah', // API spelling variant
+
+        // Idgham (assimilation) - API uses "idgham_wo_ghunnah" not "no"
         'idgham_ghunnah': 'idgham',
         'idgham_no_ghunnah': 'idgham',
-        'idgham_wo_ghunnah': 'idgham',
+        'idgham_wo_ghunnah': 'idgham', // API spelling variant (wo = without)
         'idgham_mutajanisayn': 'idgham',
         'idgham_mutaqaribayn': 'idgham',
+        'idgham_shafawi': 'idgham',
+
+        // Ikhfa (concealment) - API uses "ikhafa" not "ikhfa"
         'ikhfa': 'ikhfa',
         'ikhfa_shafawi': 'ikhfa',
-        'ikhafa': 'ikhfa',
+        'ikhafa': 'ikhfa', // API spelling variant
+        'ikhafa_shafawi': 'ikhfa', // API spelling variant
+
+        // Iqlab (conversion)
         'iqlab': 'iqlab',
+
+        // Izhar (clarity)
         'izhar': 'izhar',
         'izhar_shafawi': 'izhar',
         'izhar_halqi': 'izhar',
+
+        // Silent/other - these are minor rules, show if "other" layer is active
         'ham_wasl': 'other',
         'laam_shamsiyah': 'other',
         'silent': 'other',
-        'slnt': 'other',
+        'slnt': 'other', // API uses abbreviated form
     };
 
     const category = categoryMap[ruleId];
@@ -62,7 +129,7 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
         return true;
     }
 
-    // Prefix checks
+    // If the rule starts with a known prefix, try to match it
     const prefixes = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
     for (const prefix of prefixes) {
         if (ruleId.startsWith(prefix) && enabledLayers.includes(prefix)) {
@@ -70,6 +137,7 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
         }
     }
 
+    // Also check for madda_ prefix mapping to madd
     if (ruleId.startsWith('madda') && enabledLayers.includes('madd')) {
         return true;
     }
@@ -78,123 +146,10 @@ function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
 }
 
 /**
- * Main parser function
+ * Strip all Tajweed tags and return plain text
  */
-export function renderTajweedText(
-    tajweedHtml: string,
-    enabledLayers: string[]
-): React.ReactNode {
-    if (!tajweedHtml) return null;
-
-    // 1. Clean up HTML
-    const cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
-
-    // 2. Character-level color mapping for uniform rendering
-    let plainText = '';
-    const colorMap: (string | null)[] = [];
-    const ruleIdMap: (string | null)[] = [];
-
-    const tagRegex = /<tajweed\s+class=["']?([^"'>\s]+)["']?>([^<]*)<\/tajweed>/g;
-    let lastIndex = 0;
-    let match;
-
-    while ((match = tagRegex.exec(cleanHtml)) !== null) {
-        // Text before tag
-        const beforeText = cleanHtml.substring(lastIndex, match.index);
-        plainText += beforeText;
-        for (let i = 0; i < beforeText.length; i++) {
-            colorMap.push(null);
-            ruleIdMap.push(null);
-        }
-
-        // Tag content
-        const ruleId = match[1];
-        const content = match[2];
-        const enabled = isRuleEnabled(ruleId, enabledLayers);
-        const color = enabled ? getTajweedColor(ruleId) : null;
-
-        plainText += content;
-        for (let i = 0; i < content.length; i++) {
-            colorMap.push(color);
-            ruleIdMap.push(enabled ? ruleId : null);
-        }
-
-        lastIndex = match.index + match[0].length;
-    }
-
-    // Remaining text
-    const remainingText = cleanHtml.substring(lastIndex);
-    plainText += remainingText;
-    for (let i = 0; i < remainingText.length; i++) {
-        colorMap.push(null);
-        ruleIdMap.push(null);
-    }
-
-    // 3. Render word by word
-    const words = plainText.split(/(\s+)/);
-    let charOffset = 0;
-    const result: React.ReactNode[] = [];
-    let key = 0;
-
-    for (const word of words) {
-        if (word === '') continue;
-
-        const wordColors = colorMap.slice(charOffset, charOffset + word.length);
-        const wordRuleIds = ruleIdMap.slice(charOffset, charOffset + word.length);
-
-        if (word.trim() === '') {
-            result.push(<span key={key++}>{word}</span>);
-        } else if (isIOS) {
-            result.push(
-                <TajweedCanvas
-                    key={key++}
-                    text={word}
-                    colors={wordColors as (string | null)[]}
-                    fontSize={26}
-                    lineHeight={1.6}
-                />
-            );
-        } else {
-            let currentContent = '';
-            let currentColor = wordColors[0];
-            let currentRuleId = wordRuleIds[0];
-
-            for (let i = 0; i < word.length; i++) {
-                if (wordColors[i] === currentColor && wordRuleIds[i] === currentRuleId) {
-                    currentContent += word[i];
-                } else {
-                    result.push(
-                        <span
-                            key={key++}
-                            className={currentRuleId ? `tajweed-highlight tj-${currentRuleId}` : ''}
-                            style={currentColor ? { color: currentColor } : {}}
-                        >
-                            {currentContent}
-                        </span>
-                    );
-                    currentContent = word[i];
-                    currentColor = wordColors[i];
-                    currentRuleId = wordRuleIds[i];
-                }
-            }
-            result.push(
-                <span
-                    key={key++}
-                    className={currentRuleId ? `tajweed-highlight tj-${currentRuleId}` : ''}
-                    style={currentColor ? { color: currentColor } : {}}
-                >
-                    {currentContent}
-                </span>
-            );
-        }
-
-        charOffset += word.length;
-    }
-
-    return result;
-}
-
 export function stripTajweedTags(tajweedHtml: string): string {
     if (!tajweedHtml) return '';
+    // Remove all HTML tags
     return tajweedHtml.replace(/<[^>]+>/g, '');
 }
