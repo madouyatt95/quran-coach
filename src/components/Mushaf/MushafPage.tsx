@@ -28,6 +28,7 @@ import { fetchPage, fetchSurahs, getAudioUrl } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
+import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
@@ -463,6 +464,9 @@ export function MushafPage() {
                 </div>
             </div>
 
+            {/* ===== Khatm Tracker ===== */}
+            <KhatmTracker />
+
             {/* ===== Floating Navigation ===== */}
             <button
                 className="mih-float-nav mih-float-nav--left"
@@ -478,6 +482,9 @@ export function MushafPage() {
             >
                 <ChevronLeft size={24} />
             </button>
+
+            {/* ===== Khatm Page Badge ===== */}
+            <KhatmPageBadge currentPage={currentPage} />
 
             {/* ===== Mushaf Content ===== */}
             <div className="mih-mushaf">
