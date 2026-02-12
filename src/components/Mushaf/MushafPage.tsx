@@ -9,7 +9,6 @@ import {
     Layout,
     Music,
     Mic,
-    Square,
     CheckCircle2,
     Circle,
     X,
@@ -20,19 +19,21 @@ import {
     SkipBack,
     SkipForward,
     Play,
-    Pause
+    Pause,
+    Lock
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { fetchPage, fetchSurahs, getAudioUrl } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
-import { speechRecognitionService, type WordState } from '../../lib/speechRecognition';
 import { SideMenu } from '../Navigation/SideMenu';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+
+type WordState = 'correct' | 'error' | 'current' | 'unread';
 
 // Masking modes
 type MaskMode = 'visible' | 'hidden' | 'partial' | 'minimal';
@@ -83,14 +84,14 @@ export function MushafPage() {
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
     const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
 
-    // Coach mode
-    const [isCoachMode, setIsCoachMode] = useState(false);
-    const [isListening, setIsListening] = useState(false);
-    const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
-    const [mistakesCount, setMistakesCount] = useState(0);
-    const [totalProcessed, setTotalProcessed] = useState(0);
-    const [mistakes, setMistakes] = useState<Record<string, { expected: string; spoken: string }>>({});
-    const [selectedError, setSelectedError] = useState<string | null>(null);
+    // Coach mode (locked for now)
+    const [isCoachMode] = useState(false);
+    const [wordStates] = useState<Map<string, WordState>>(new Map());
+    const [coachSoonToast, setCoachSoonToast] = useState(false);
+
+    // Background/visibility tracking
+    const isHiddenRef = useRef(false);
+    const pendingAutoAdvance = useRef(false);
 
     // Audio
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -127,17 +128,7 @@ export function MushafPage() {
         }).filter(Boolean) as { number: number; name: string; englishName: string }[];
     }, [pageAyahs, surahs]);
 
-    // All words from page (for coach mode)
-    const allWords = useMemo(() => {
-        const words: { text: string; ayahIndex: number; wordIndex: number }[] = [];
-        pageAyahs.forEach((ayah, ayahIndex) => {
-            const ayahWords = ayah.text.split(/\s+/).filter(w => w.length > 0);
-            ayahWords.forEach((word, wordIndex) => {
-                words.push({ text: word, ayahIndex, wordIndex });
-            });
-        });
-        return words;
-    }, [pageAyahs]);
+
 
     // Juz
     const juzNumber = useMemo(() => getJuzNumber(pageAyahs), [pageAyahs]);
@@ -161,12 +152,6 @@ export function MushafPage() {
             setPageAyahs(ayahs);
             setTajweedVerses(tajweed);
             setIsLoading(false);
-            // Reset coach state on page change
-            setWordStates(new Map());
-            setMistakesCount(0);
-            setTotalProcessed(0);
-            setMistakes({});
-            setSelectedError(null);
 
             // Generate partial hidden words
             if (maskMode === 'partial') {
@@ -252,6 +237,13 @@ export function MushafPage() {
         if (playingIndex < pageAyahs.length - 1) {
             playAyahAtIndex(playingIndex + 1);
         } else if (currentPage < 604) {
+            // Don't auto-advance pages when app is in background
+            if (isHiddenRef.current) {
+                pendingAutoAdvance.current = true;
+                // Audio stops naturally at end of last ayah, that's fine
+                setAudioPlaying(false);
+                return;
+            }
             // Auto-advance to next page
             shouldAutoPlay.current = true;
             nextPage();
@@ -308,6 +300,23 @@ export function MushafPage() {
         }
     }, [pageAyahs, audioActive, playAyahAtIndex]);
 
+    // Visibility change handler - preserve audio & tracking in background
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            isHiddenRef.current = document.hidden;
+
+            // When user comes back and there's a pending page advance
+            if (!document.hidden && pendingAutoAdvance.current) {
+                pendingAutoAdvance.current = false;
+                shouldAutoPlay.current = true;
+                nextPage();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [nextPage]);
+
     // Toolbar auto-close after 2s
     useEffect(() => {
         if (showToolbar) {
@@ -327,51 +336,7 @@ export function MushafPage() {
         }, 2000);
     }, []);
 
-    // Coach mode - speech recognition
-    const startListening = useCallback(() => {
-        const expectedText = pageAyahs.map(a => a.text).join(' ');
-
-        speechRecognitionService.start(expectedText, {
-            onWordMatch: (wordIndex, isCorrect, spokenWord) => {
-                const word = allWords[wordIndex];
-                if (!word) return;
-                const key = `${word.ayahIndex}-${word.wordIndex}`;
-                setWordStates(prev => {
-                    const newStates = new Map(prev);
-                    newStates.set(key, isCorrect ? 'correct' : 'error');
-                    return newStates;
-                });
-                setTotalProcessed(prev => prev + 1);
-                if (!isCorrect) {
-                    setMistakesCount(prev => prev + 1);
-                    setMistakes(prev => ({
-                        ...prev,
-                        [key]: { expected: word.text, spoken: spokenWord || '(non entendu)' }
-                    }));
-                    if ('vibrate' in navigator) navigator.vibrate(200);
-                }
-            },
-            onCurrentWord: (wordIndex) => {
-                const word = allWords[wordIndex];
-                if (!word) return;
-                const key = `${word.ayahIndex}-${word.wordIndex}`;
-                setWordStates(prev => {
-                    const newStates = new Map(prev);
-                    newStates.set(key, 'current');
-                    return newStates;
-                });
-            },
-            onInterimResult: () => { },
-            onError: () => { },
-            onEnd: () => setIsListening(false)
-        });
-        setIsListening(true);
-    }, [pageAyahs, allWords]);
-
-    const stopListening = useCallback(() => {
-        speechRecognitionService.stop();
-        setIsListening(false);
-    }, []);
+    // Coach mode - disabled for now (speech recognition locked)
 
     // Group ayahs by surah
     const groupedAyahs = useMemo(() => {
@@ -547,8 +512,6 @@ export function MushafPage() {
                                                             <span
                                                                 key={key}
                                                                 className={getWordClass(ayahIndex, wordIndex)}
-                                                                onClick={() => mistakes[key] && setSelectedError(key)}
-                                                                style={{ cursor: mistakes[key] ? 'pointer' : 'default' }}
                                                             >
                                                                 {word}
                                                             </span>
@@ -642,23 +605,15 @@ export function MushafPage() {
                     </button>
 
                     <button
-                        className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''} ${isListening ? 'listening' : ''}`}
+                        className="mih-toolbar__btn"
                         onClick={() => {
-                            if (isListening) {
-                                stopListening();
-                            } else if (isCoachMode) {
-                                startListening();
-                            } else {
-                                setIsCoachMode(true);
-                                setWordStates(new Map());
-                                setMistakesCount(0);
-                                setTotalProcessed(0);
-                                setMistakes({});
-                            }
+                            setCoachSoonToast(true);
+                            setTimeout(() => setCoachSoonToast(false), 2000);
                         }}
-                        title="Coach"
+                        title="Coach (bientôt)"
+                        style={{ opacity: 0.5 }}
                     >
-                        {isListening ? <Square size={22} /> : <Mic size={22} />}
+                        <Mic size={22} />
                     </button>
 
                     <div className="mih-toolbar__divider" />
@@ -673,49 +628,20 @@ export function MushafPage() {
                 </div>
             )}
 
-            {/* ===== Coach Mode Indicator ===== */}
-            {
-                isCoachMode && totalProcessed > 0 && (
-                    <div style={{
-                        position: 'fixed', top: 52, right: 12, zIndex: 50,
-                        background: mistakesCount > 0 ? '#f44336' : '#4CAF50',
-                        color: '#fff', padding: '4px 12px',
-                        borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
-                        display: 'flex', alignItems: 'center', gap: 6,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                    }}>
-                        <Mic size={12} />
-                        {mistakesCount} erreur{mistakesCount !== 1 ? 's' : ''} ({Math.round(((totalProcessed - mistakesCount) / totalProcessed) * 100)}%)
-                        <button
-                            onClick={() => { setIsCoachMode(false); stopListening(); setWordStates(new Map()); }}
-                            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, display: 'flex' }}
-                        >
-                            <X size={14} />
-                        </button>
-                    </div>
-                )
-            }
-
-            {/* ===== Page Indicator (if coach mode is off) ===== */}
-            {
-                isCoachMode && totalProcessed === 0 && (
-                    <div style={{
-                        position: 'fixed', top: 52, right: 12, zIndex: 50,
-                        background: '#4CAF50', color: '#fff', padding: '4px 12px',
-                        borderRadius: 20, fontSize: '0.75rem', fontWeight: 600,
-                        display: 'flex', alignItems: 'center', gap: 6
-                    }}>
-                        <Mic size={12} />
-                        Coach actif
-                        <button
-                            onClick={() => { setIsCoachMode(false); stopListening(); setWordStates(new Map()); }}
-                            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, display: 'flex' }}
-                        >
-                            <X size={14} />
-                        </button>
-                    </div>
-                )
-            }
+            {/* ===== Coach Soon Toast ===== */}
+            {coachSoonToast && (
+                <div style={{
+                    position: 'fixed', top: 52, right: 12, zIndex: 50,
+                    background: 'rgba(201, 168, 76, 0.95)', color: '#fff', padding: '8px 16px',
+                    borderRadius: 20, fontSize: '0.85rem', fontWeight: 600,
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    animation: 'fadeIn 0.2s ease'
+                }}>
+                    <Lock size={14} />
+                    Bientôt disponible 🔜
+                </div>
+            )}
             {/* ===== Tajweed Sheet ===== */}
             {
                 showTajweedSheet && (
@@ -898,36 +824,7 @@ export function MushafPage() {
                 )
             }
 
-            {/* ===== Error Comparison Modal ===== */}
-            {
-                selectedError && mistakes[selectedError] && (
-                    <div className="mih-sheet-overlay" onClick={() => setSelectedError(null)}>
-                        <div className="mih-sheet" onClick={e => e.stopPropagation()} style={{ maxHeight: '30vh' }}>
-                            <div className="mih-sheet__handle" />
-                            <div className="mih-sheet__header">
-                                <span className="mih-sheet__title">Comparaison d'erreur</span>
-                                <button className="mih-sheet__close" onClick={() => setSelectedError(null)}>
-                                    <X size={18} />
-                                </button>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '0.8rem', color: '#999' }}>Attendu :</span>
-                                    <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#2E7D32' }} dir="rtl">
-                                        {selectedError && (mistakes as any)[selectedError]?.expected}
-                                    </span>
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '0.8rem', color: '#999' }}>Entendu :</span>
-                                    <span style={{ fontFamily: 'var(--font-arabic)', fontSize: '1.3rem', color: '#C62828' }} dir="rtl">
-                                        {selectedError && (mistakes as any)[selectedError]?.spoken}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
+
 
             {/* ===== Floating Audio Player ===== */}
             {audioActive && (

@@ -4,8 +4,7 @@ import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { HifdhPage } from './pages/HifdhPage';
 import { ChallengesPage } from './pages/ChallengesPage';
-import { ProgressPage } from './pages/ProgressPage';
-import { FavoritesPage } from './pages/FavoritesPage';
+
 import { SettingsPage } from './pages/SettingsPage';
 import { PrayerTimesPage } from './pages/PrayerTimesPage';
 import { AdhkarPage } from './pages/AdhkarPage';
@@ -96,8 +95,7 @@ function AppContent() {
           <Route path="/read" element={<ReadPage />} />
           <Route path="/hifdh" element={<HifdhPage />} />
           <Route path="/challenges" element={<ChallengesPage />} />
-          <Route path="/stats" element={<ProgressPage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
+
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/prayers" element={<PrayerTimesPage />} />
           <Route path="/adhkar" element={<AdhkarPage />} />
