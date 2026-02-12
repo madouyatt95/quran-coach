@@ -1,7 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
-    ChevronLeft,
-    ChevronRight,
     Settings,
     Menu,
     Search,
@@ -26,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
-import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation } from '../../lib/quranApi';
+import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation, searchQuran } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
@@ -114,6 +112,11 @@ export function MushafPage() {
 
     // Toolbar auto-close timer
     const toolbarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Swipe gesture
+    const touchStartX = useRef(0);
+    const touchStartY = useRef(0);
+    const isSwiping = useRef(false);
 
     // Page validation
     const [validatedPages, setValidatedPages] = useState<Set<number>>(() => {
@@ -412,6 +415,93 @@ export function MushafPage() {
         );
     }, [surahs, searchQuery]);
 
+    // Verse search (Arabic + French)
+    const [verseResults, setVerseResults] = useState<Array<{ number: number; surah: number; numberInSurah: number; text: string; translation?: string; page: number }>>([]);
+    const [isSearchingVerses, setIsSearchingVerses] = useState(false);
+    const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+
+        // Only search verses if 3+ chars and not a pure number
+        if (searchQuery.length >= 3 && !/^\d+$/.test(searchQuery)) {
+            setIsSearchingVerses(true);
+            searchTimerRef.current = setTimeout(async () => {
+                try {
+                    // Search Arabic text
+                    const arabicResults = await searchQuran(searchQuery);
+
+                    // Also search French via alquran.cloud
+                    let frenchResults: typeof arabicResults = [];
+                    try {
+                        const frRes = await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(searchQuery)}/all/fr.hamidullah`);
+                        const frData = await frRes.json();
+                        if (frData.code === 200 && frData.data?.matches) {
+                            frenchResults = frData.data.matches.map((m: any) => ({
+                                number: m.number,
+                                numberInSurah: m.numberInSurah,
+                                text: m.text,
+                                surah: m.surah.number,
+                                page: m.page || 1,
+                            }));
+                        }
+                    } catch { /* ignore French search errors */ }
+
+                    // Merge results, prefer Arabic, add French translation text
+                    const merged = new Map<number, typeof verseResults[0]>();
+                    for (const a of arabicResults) {
+                        merged.set(a.number, { ...a, page: a.page || 1 });
+                    }
+                    for (const f of frenchResults) {
+                        if (merged.has(f.number)) {
+                            merged.get(f.number)!.translation = f.text;
+                        } else {
+                            merged.set(f.number, { ...f, translation: f.text, text: '' });
+                        }
+                    }
+
+                    setVerseResults(Array.from(merged.values()).slice(0, 20));
+                } catch {
+                    setVerseResults([]);
+                }
+                setIsSearchingVerses(false);
+            }, 400);
+        } else {
+            setVerseResults([]);
+            setIsSearchingVerses(false);
+        }
+
+        return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
+    }, [searchQuery]);
+
+    // Swipe handlers
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartX.current = e.touches[0].clientX;
+        touchStartY.current = e.touches[0].clientY;
+        isSwiping.current = false;
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        const dx = e.touches[0].clientX - touchStartX.current;
+        const dy = e.touches[0].clientY - touchStartY.current;
+        // Only consider horizontal swipes
+        if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+            isSwiping.current = true;
+        }
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (!isSwiping.current) return;
+        const dx = e.changedTouches[0].clientX - touchStartX.current;
+        const threshold = 60;
+        // RTL: swipe left = next page, swipe right = prev page
+        if (dx < -threshold && currentPage < 604) {
+            nextPage();
+        } else if (dx > threshold && currentPage > 1) {
+            prevPage();
+        }
+    };
+
     // Get ayah index in pageAyahs
     const getAyahIndex = (ayah: Ayah) => pageAyahs.findIndex(a => a.number === ayah.number);
 
@@ -473,27 +563,17 @@ export function MushafPage() {
             {/* ===== Khatm Tracker ===== */}
             <KhatmTracker />
 
-            {/* ===== Floating Navigation ===== */}
-            <button
-                className="mih-float-nav mih-float-nav--left"
-                onClick={prevPage}
-                disabled={currentPage <= 1}
-            >
-                <ChevronRight size={24} />
-            </button>
-            <button
-                className="mih-float-nav mih-float-nav--right"
-                onClick={nextPage}
-                disabled={currentPage >= 604}
-            >
-                <ChevronLeft size={24} />
-            </button>
 
             {/* ===== Khatm Page Badge ===== */}
             <KhatmPageBadge currentPage={currentPage} />
 
             {/* ===== Mushaf Content ===== */}
-            <div className="mih-mushaf">
+            <div
+                className="mih-mushaf"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
                 <div className="mih-mushaf__content">
                     {Object.entries(groupedAyahs).map(([surahNum, ayahs]) => {
                         const surahNumber = parseInt(surahNum);
@@ -844,7 +924,7 @@ export function MushafPage() {
                         )}
 
                         <div className="mih-search-label">
-                            {searchQuery ? `${filteredSurahs.length} résultat(s)` : '114 sourates'}
+                            {searchQuery ? `${filteredSurahs.length} sourate(s)` : '114 sourates'}
                         </div>
 
                         <div className="mih-search-list">
@@ -864,6 +944,49 @@ export function MushafPage() {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Verse text search results */}
+                        {searchQuery.length >= 3 && !/^\d+$/.test(searchQuery) && (
+                            <>
+                                <div className="mih-search-label" style={{ marginTop: 12 }}>
+                                    {isSearchingVerses
+                                        ? 'Recherche dans les versets...'
+                                        : `${verseResults.length} verset(s) trouvé(s)`
+                                    }
+                                </div>
+                                <div className="mih-search-list">
+                                    {verseResults.map(v => {
+                                        const surah = surahs.find(s => s.number === v.surah);
+                                        return (
+                                            <div
+                                                key={v.number}
+                                                className="mih-search-item"
+                                                onClick={() => { goToPage(v.page); setShowSearch(false); setSearchQuery(''); }}
+                                            >
+                                                <div className="mih-search-item__icon" style={{ fontSize: '0.7rem' }}>
+                                                    {v.surah}:{v.numberInSurah}
+                                                </div>
+                                                <div className="mih-search-item__info">
+                                                    {v.text && (
+                                                        <div className="mih-search-item__name" dir="rtl" style={{ fontFamily: 'var(--font-arabic)', fontSize: '0.95rem' }}>
+                                                            {v.text.length > 80 ? v.text.slice(0, 80) + '…' : v.text}
+                                                        </div>
+                                                    )}
+                                                    {v.translation && (
+                                                        <div className="mih-search-item__detail" style={{ fontStyle: 'italic' }}>
+                                                            {v.translation.length > 100 ? v.translation.slice(0, 100) + '…' : v.translation}
+                                                        </div>
+                                                    )}
+                                                    <div className="mih-search-item__detail" style={{ marginTop: 2 }}>
+                                                        {surah?.englishName} • Page {v.page}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        )}
                     </div>
                 )
             }
