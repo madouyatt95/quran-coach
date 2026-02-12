@@ -1277,3 +1277,87 @@
 .mushaf-page[data-mushaf-dark="true"] .mih-audio-bar__btn {
     color: #fff;
 }
+
+/* ========================================
+   Reciter Selection List
+   ======================================== */
+.mih-reciter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.mih-reciter-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #eee;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.mih-reciter-item:active {
+    transform: scale(0.98);
+}
+
+.mih-reciter-item.active {
+    background: #E8F5E9;
+    border-color: #4CAF50;
+}
+
+.mih-reciter-item__flag {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.mih-reciter-item__name {
+    flex: 1;
+    font-weight: 600;
+    color: inherit;
+}
+
+.mih-reciter-item__arabic {
+    font-family: var(--font-arabic);
+    font-size: 1rem;
+    color: #999;
+    direction: rtl;
+}
+
+.mih-reciter-item.active .mih-reciter-item__name {
+    color: #2E7D32;
+}
+
+.mih-reciter-item.active .mih-reciter-item__arabic {
+    color: #4CAF50;
+}
+
+/* Dark mode reciter list */
+[data-theme="dark"] .mih-reciter-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #eee;
+}
+
+[data-theme="dark"] .mih-reciter-item.active {
+    background: rgba(76, 175, 80, 0.15);
+    border-color: #4CAF50;
+}
+
+[data-theme="dark"] .mih-reciter-item__arabic {
+    color: #888;
+}
+
+[data-theme="dark"] .mih-reciter-item.active .mih-reciter-item__name {
+    color: #66BB6A;
+}
+
+[data-theme="dark"] .mih-reciter-item.active .mih-reciter-item__arabic {
+    color: #66BB6A;
+}

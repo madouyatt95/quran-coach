@@ -8,12 +8,11 @@ import {
     Minus,
     Plus,
     RotateCcw,
-    Volume2,
     Square,
     BookmarkCheck
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
-import { useSettingsStore, RECITERS, PLAYBACK_SPEEDS } from '../stores/settingsStore';
+import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
 import { useStatsStore } from '../stores/statsStore';
 import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
@@ -23,9 +22,13 @@ import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
 
+// Hifdh always uses Mishari Al-Afasy — only reciter with reliable word-by-word timings
+const HIFDH_RECITER = 'ar.alafasy';
+const HIFDH_RECITER_QURAN_COM_ID = 7;
+
 export function HifdhPage() {
     const { surahs } = useQuranStore();
-    const { selectedReciter, repeatCount, playbackSpeed, setReciter, setPlaybackSpeed } = useSettingsStore();
+    const { repeatCount, playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
     const { getDueCards, cards } = useSRSStore();
 
@@ -49,14 +52,14 @@ export function HifdhPage() {
     const [isLooping, setIsLooping] = useState(true);
     const [currentRepeat, setCurrentRepeat] = useState(1);
     const [maxRepeats, setMaxRepeats] = useState(repeatCount);
-    const [showReciters, setShowReciters] = useState(false);
+
 
     // Word timings
     const [wordTimings, setWordTimings] = useState<VerseWords | null>(null);
     const [activeWordIndex, setActiveWordIndex] = useState(-1);
 
     const currentAyah = ayahs[currentAyahIndex];
-    const currentReciterInfo = RECITERS.find(r => r.id === selectedReciter);
+
     const dueCards = getDueCards();
     const allCards = Object.values(cards);
 
@@ -113,7 +116,7 @@ export function HifdhPage() {
             const ayah = ayahs[currentAyahIndex];
             if (!ayah) return;
 
-            const audioUrl = getAudioUrl(selectedReciter, ayah.number);
+            const audioUrl = getAudioUrl(HIFDH_RECITER, ayah.number);
 
             // Only update src if it changed to avoid restart loops
             if (audioRef.current.src !== audioUrl) {
@@ -124,11 +127,9 @@ export function HifdhPage() {
             audioRef.current.playbackRate = playbackSpeed;
             setActiveWordIndex(-1);
 
-            const reciterInfo = RECITERS.find(r => r.id === selectedReciter);
-            const quranComReciterId = reciterInfo?.quranComId || 7;
-            fetchWordTimings(selectedSurah, ayah.numberInSurah, quranComReciterId).then(setWordTimings);
+            fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).then(setWordTimings);
         }
-    }, [ayahs, currentAyahIndex, selectedReciter, playbackSpeed, selectedSurah]);
+    }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah]);
 
     // Handle Word Selection for Loop
     const handleWordClick = (index: number) => {
@@ -450,7 +451,7 @@ export function HifdhPage() {
             <div className="hifdh-main-card">
                 <audio
                     ref={audioRef}
-                    src={currentAyah ? getAudioUrl(selectedReciter, currentAyah.number) : undefined}
+                    src={currentAyah ? getAudioUrl(HIFDH_RECITER, currentAyah.number) : undefined}
                     onEnded={handleAudioEnded}
                 />
 
@@ -535,12 +536,9 @@ export function HifdhPage() {
                 />
             )}
 
-            {/* Secondary Controls (Reciters, Speed, Repeat) */}
+            {/* Secondary Controls (Speed, Repeat) */}
             <div className="hifdh-footer-controls">
                 <div className="hifdh-control-group">
-                    <button className="hifdh-config-btn" onClick={() => setShowReciters(!showReciters)}>
-                        <Volume2 size={18} /> {currentReciterInfo?.name}
-                    </button>
                     <div className="hifdh-speed-row">
                         {PLAYBACK_SPEEDS.filter(s => s >= 0.75).map(speed => (
                             <button
@@ -558,18 +556,6 @@ export function HifdhPage() {
                     <button onClick={() => setMaxRepeats(prev => Math.min(20, prev + 1))}><Plus size={16} /></button>
                 </div>
             </div>
-
-            {showReciters && (
-                <div className="hifdh-reciter-overlay" onClick={() => setShowReciters(false)}>
-                    <div className="hifdh-reciter-modal" onClick={e => e.stopPropagation()}>
-                        {RECITERS.map(r => (
-                            <button key={r.id} className={selectedReciter === r.id ? 'active' : ''} onClick={() => { setReciter(r.id); setShowReciters(false); }}>
-                                {r.country} {r.name} <span>{r.nameArabic}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

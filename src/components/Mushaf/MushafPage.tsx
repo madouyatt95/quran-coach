@@ -20,10 +20,11 @@ import {
     SkipForward,
     Play,
     Pause,
-    Lock
+    Lock,
+    Volume2
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
-import { useSettingsStore } from '../../stores/settingsStore';
+import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
 import { fetchPage, fetchSurahs, getAudioUrl } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
@@ -66,7 +67,7 @@ export function MushafPage() {
         goToPage,
     } = useQuranStore();
 
-    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize } = useSettingsStore();
+    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter } = useSettingsStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -79,6 +80,7 @@ export function MushafPage() {
     const [showSearch, setShowSearch] = useState(false);
     const [showToolbar, setShowToolbar] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
+    const [showReciterSheet, setShowReciterSheet] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     // Masking
@@ -880,6 +882,14 @@ export function MushafPage() {
                         </button>
                     </div>
 
+                    <button
+                        className="mih-audio-bar__btn"
+                        onClick={() => setShowReciterSheet(true)}
+                        title="Choisir un récitateur"
+                    >
+                        <Volume2 size={18} />
+                    </button>
+
                     <div className="mih-audio-bar__speed" onClick={() => setPlaybackSpeed(s => s >= 2 ? 0.5 : s + 0.25)}>
                         {playbackSpeed}x
                     </div>
@@ -888,6 +898,35 @@ export function MushafPage() {
                         <X size={20} />
                     </button>
                 </div>
+            )}
+
+            {/* ===== Reciter Selection Sheet ===== */}
+            {showReciterSheet && (
+                <>
+                    <div className="mih-sheet-overlay" onClick={() => setShowReciterSheet(false)} />
+                    <div className="mih-sheet">
+                        <div className="mih-sheet__handle" />
+                        <div className="mih-sheet__header">
+                            <span className="mih-sheet__title">Récitateur</span>
+                            <button className="mih-sheet__close" onClick={() => setShowReciterSheet(false)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="mih-reciter-list">
+                            {RECITERS.map(r => (
+                                <button
+                                    key={r.id}
+                                    className={`mih-reciter-item ${selectedReciter === r.id ? 'active' : ''}`}
+                                    onClick={() => { setReciter(r.id); setShowReciterSheet(false); }}
+                                >
+                                    <span className="mih-reciter-item__flag">{r.country}</span>
+                                    <span className="mih-reciter-item__name">{r.name}</span>
+                                    <span className="mih-reciter-item__arabic">{r.nameArabic}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </>
             )}
 
             <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
