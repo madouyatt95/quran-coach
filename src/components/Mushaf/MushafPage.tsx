@@ -122,10 +122,8 @@ export function MushafPage() {
         audioRef.current = new Audio();
     }
 
-    // Keep refs in sync with state
-    useEffect(() => { playingIndexRef.current = playingIndex; }, [playingIndex]);
-    useEffect(() => { pageAyahsRef.current = pageAyahs; }, [pageAyahs]);
-    useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
+    // Sync currentPageRef synchronously (not via useEffect)
+    currentPageRef.current = currentPage;
 
     const tajweedCategories = useMemo(() => getTajweedCategories(), []);
 
@@ -160,6 +158,7 @@ export function MushafPage() {
             fetchTajweedPage(currentPage)
         ]).then(([ayahs, tajweed]) => {
             setPageAyahs(ayahs);
+            pageAyahsRef.current = ayahs; // sync ref immediately
             setTajweedVerses(tajweed);
             setIsLoading(false);
 
@@ -234,6 +233,7 @@ export function MushafPage() {
         const ayahs = pageAyahsRef.current;
         if (!ayahs[idx] || !audioRef.current) return;
 
+        playingIndexRef.current = idx; // sync ref immediately before audio starts
         setAudioActive(true);
         setAudioPlaying(true);
         const ayah = ayahs[idx];
