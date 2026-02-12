@@ -20,7 +20,9 @@ import {
     Pause,
     Lock,
     Volume2,
-    Languages
+    Languages,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
@@ -502,6 +504,21 @@ export function MushafPage() {
         }
     };
 
+    // Keyboard navigation (← →)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Don't navigate if user is typing in an input
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (e.key === 'ArrowLeft' && currentPage < 604) {
+                nextPage();
+            } else if (e.key === 'ArrowRight' && currentPage > 1) {
+                prevPage();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [currentPage, nextPage, prevPage]);
+
     // Get ayah index in pageAyahs
     const getAyahIndex = (ayah: Ayah) => pageAyahs.findIndex(a => a.number === ayah.number);
 
@@ -566,6 +583,22 @@ export function MushafPage() {
 
             {/* ===== Khatm Page Badge ===== */}
             <KhatmPageBadge currentPage={currentPage} />
+
+            {/* ===== Floating Navigation (desktop only, hidden on touch) ===== */}
+            <button
+                className="mih-float-nav mih-float-nav--left"
+                onClick={prevPage}
+                disabled={currentPage <= 1}
+            >
+                <ChevronRight size={24} />
+            </button>
+            <button
+                className="mih-float-nav mih-float-nav--right"
+                onClick={nextPage}
+                disabled={currentPage >= 604}
+            >
+                <ChevronLeft size={24} />
+            </button>
 
             {/* ===== Mushaf Content ===== */}
             <div

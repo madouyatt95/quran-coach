@@ -351,6 +351,13 @@
     right: 8px;
 }
 
+/* Hide arrows on touch devices (they use swipe) */
+@media (hover: none) and (pointer: coarse) {
+    .mih-float-nav {
+        display: none;
+    }
+}
+
 /* ========================================
    Toolbar (floating above BottomNav)
    ======================================== */
