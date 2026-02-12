@@ -1,9 +1,9 @@
 import React from 'react';
-import TajweedCanvas from '../components/Mushaf/TajweedCanvas';
+import { TajweedCanvas } from '../components/Mushaf/TajweedCanvas';
 import { TAJWEED_RULES } from './tajweedService';
 
 /**
- * Detect iOS once at module level
+ * Detect iOS
  */
 const isIOS = typeof navigator !== 'undefined' && (
     /iPad|iPhone|iPod/.test(navigator.userAgent) ||
@@ -19,33 +19,66 @@ function getTajweedColor(ruleId: string): string | null {
 }
 
 /**
- * Check if a specific rule or its category is enabled.
- * Uses a mapping of sub-rules to main categories.
+ * Check if a specific rule is enabled based on layer settings
+ * REVERTED Logic from 7eb1354
  */
 function isRuleEnabled(ruleId: string, enabledLayers: string[]): boolean {
+    // Direct match
     if (enabledLayers.includes(ruleId)) return true;
 
-    const key = ruleId.toLowerCase();
+    // Category mapping - RESTORED ORIGINAL MAPPING
+    const categoryMap: Record<string, string> = {
+        'madda_normal': 'madd',
+        'madda_permissible': 'madd',
+        'madda_necessary': 'madd',
+        'madda_obligatory': 'madd',
+        'madd_2': 'madd',
+        'madd_4': 'madd',
+        'madd_6': 'madd',
+        'ghunnah': 'ghunnah',
+        'ghunnah_2': 'ghunnah',
+        'qalqalah': 'qalqalah',
+        'qalaqah': 'qalqalah',
+        'idgham_ghunnah': 'idgham',
+        'idgham_no_ghunnah': 'idgham',
+        'idgham_wo_ghunnah': 'idgham',
+        'idgham_mutajanisayn': 'idgham',
+        'idgham_mutaqaribayn': 'idgham',
+        'ikhfa': 'ikhfa',
+        'ikhfa_shafawi': 'ikhfa',
+        'ikhafa': 'ikhfa',
+        'iqlab': 'iqlab',
+        'izhar': 'izhar',
+        'izhar_shafawi': 'izhar',
+        'izhar_halqi': 'izhar',
+        'ham_wasl': 'other',
+        'laam_shamsiyah': 'other',
+        'silent': 'other',
+        'slnt': 'other',
+    };
 
-    // Category Mappings
-    if (key.startsWith('madd') && enabledLayers.includes('madd')) return true;
-    if (key.startsWith('ghunnah') && (enabledLayers.includes('ghunnah') || enabledLayers.includes('ikhfa'))) return true;
-    if (key.startsWith('ikhfa') && (enabledLayers.includes('ghunnah') || enabledLayers.includes('ikhfa'))) return true;
-    if (key.startsWith('qalqalah') && enabledLayers.includes('qalqalah')) return true;
-    if (key.startsWith('idgham') && enabledLayers.includes('idgham')) return true;
-    if (key.startsWith('izhar') && enabledLayers.includes('izhar')) return true;
-    if (key === 'iqlab' && (enabledLayers.includes('iqlab') || enabledLayers.includes('ghunnah'))) return true;
+    const category = categoryMap[ruleId];
+    if (category && enabledLayers.includes(category)) {
+        return true;
+    }
 
-    // Helper category
-    const otherRules = ['ham_wasl', 'laam_shamsiyah', 'silent', 'slnt'];
-    if (otherRules.includes(key) && enabledLayers.includes('other')) return true;
+    // Prefix checks
+    const prefixes = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
+    for (const prefix of prefixes) {
+        if (ruleId.startsWith(prefix) && enabledLayers.includes(prefix)) {
+            return true;
+        }
+    }
+
+    if (ruleId.startsWith('madda') && enabledLayers.includes('madd')) {
+        return true;
+    }
 
     return false;
 }
 
 /**
- * Main parser function.
- * On iOS, we treat each word as a SINGLE BLOCK for HarfBuzz to preserve ligatures.
+ * Main parser function
  */
 export function renderTajweedText(
     tajweedHtml: string,
@@ -53,29 +86,28 @@ export function renderTajweedText(
 ): React.ReactNode {
     if (!tajweedHtml) return null;
 
-    // 1. Pre-parsing Cleanup
+    // 1. Clean up HTML
     const cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
 
-    // 2. Character-level color mapping
+    // 2. Character-level color mapping for uniform rendering
     let plainText = '';
     const colorMap: (string | null)[] = [];
     const ruleIdMap: (string | null)[] = [];
 
-    // Robust Regex for <tajweed class="rule"> or <tajweed class=rule>
     const tagRegex = /<tajweed\s+class=["']?([^"'>\s]+)["']?>([^<]*)<\/tajweed>/g;
     let lastIndex = 0;
     let match;
 
     while ((match = tagRegex.exec(cleanHtml)) !== null) {
-        // Handle text BEFORE the tag
+        // Text before tag
         const beforeText = cleanHtml.substring(lastIndex, match.index);
         plainText += beforeText;
         for (let i = 0; i < beforeText.length; i++) {
-            colorMap.push(null); // Will use theme default
+            colorMap.push(null);
             ruleIdMap.push(null);
         }
 
-        // Handle tag content
+        // Tag content
         const ruleId = match[1];
         const content = match[2];
         const enabled = isRuleEnabled(ruleId, enabledLayers);
@@ -90,7 +122,7 @@ export function renderTajweedText(
         lastIndex = match.index + match[0].length;
     }
 
-    // Handle remaining text
+    // Remaining text
     const remainingText = cleanHtml.substring(lastIndex);
     plainText += remainingText;
     for (let i = 0; i < remainingText.length; i++) {
@@ -113,7 +145,6 @@ export function renderTajweedText(
         if (word.trim() === '') {
             result.push(<span key={key++}>{word}</span>);
         } else if (isIOS) {
-            // iOS Render: Professional Canvas with HarfBuzz
             result.push(
                 <TajweedCanvas
                     key={key++}
@@ -124,7 +155,6 @@ export function renderTajweedText(
                 />
             );
         } else {
-            // Standard Render: Spans with color grouping
             let currentContent = '';
             let currentColor = wordColors[0];
             let currentRuleId = wordRuleIds[0];

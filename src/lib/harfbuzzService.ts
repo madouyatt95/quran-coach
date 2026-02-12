@@ -3,7 +3,6 @@
  * 
  * Shapes Arabic text with HarfBuzz (correct ligatures), then
  * returns SVG path data for each glyph.
- * Using KFGQPC Hafs Uthman Taha Naskh font for 100% authentic rendering.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,8 +26,8 @@ let hbFace: any = null;
 let hbBlob: any = null;
 let initPromise: Promise<boolean> | null = null;
 
-// Hafs Uthmanic font - the gold standard for Quranic text
-const FONT_URL = 'https://github.com/quran/quran.com-frontend-next/raw/master/public/fonts/quran/hafs/v22/KFGQPC-HAFS-V22.ttf';
+// Reverting to Amiri font URL
+const FONT_URL = 'https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHpUrtLMA7w.ttf';
 
 /**
  * Initialize HarfBuzz and load font. Returns true on success.
@@ -38,23 +37,23 @@ export function initHarfBuzz(): Promise<boolean> {
 
     initPromise = (async () => {
         try {
-            console.log('[HarfBuzz] Starting initialization...');
+            console.log('[HarfBuzz] Initializing with Amiri font...');
 
             // 1. Import harfbuzzjs
             const hb = await import('harfbuzzjs');
             hbInstance = await (hb.default || hb);
 
-            // 2. Fetch the Professional Uthmanic font
+            // 2. Fetch the Amiri font file
             const fontResp = await fetch(FONT_URL);
             if (!fontResp.ok) throw new Error(`Font fetch failed: ${fontResp.status}`);
             const fontData = await fontResp.arrayBuffer();
 
-            // 3. Create HarfBuzz font instance
+            // 3. Create HarfBuzz font
             hbBlob = hbInstance.createBlob(fontData);
             hbFace = hbInstance.createFace(hbBlob, 0);
             hbFont = hbInstance.createFont(hbFace);
 
-            console.log('[HarfBuzz] Initialization complete - Authentic Uthmanic font loaded');
+            console.log('[HarfBuzz] Ready (Amiri)');
             return true;
         } catch (err) {
             console.error('[HarfBuzz] Init failed:', err);
@@ -71,10 +70,7 @@ export function initHarfBuzz(): Promise<boolean> {
  * Returns glyph positions mapped back to character clusters.
  */
 export function shapeText(text: string, fontSize: number): ShapedGlyph[] {
-    if (!hbInstance || !hbFont) {
-        console.warn('[HarfBuzz] Rendering attempted before initialization');
-        return [];
-    }
+    if (!hbInstance || !hbFont) return [];
 
     // Scale optimization
     hbFont.setScale(fontSize * 64, fontSize * 64);
