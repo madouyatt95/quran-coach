@@ -994,7 +994,12 @@ export function MushafPage() {
                                             <div
                                                 key={v.number}
                                                 className="mih-search-item"
-                                                onClick={() => { goToPage(v.page); setShowSearch(false); setSearchQuery(''); }}
+                                                onClick={() => {
+                                                    sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: v.surah, ayah: v.numberInSurah }));
+                                                    goToPage(v.page);
+                                                    setShowSearch(false);
+                                                    setSearchQuery('');
+                                                }}
                                             >
                                                 <div className="mih-search-item__icon" style={{ fontSize: '0.7rem' }}>
                                                     {v.surah}:{v.numberInSurah}
