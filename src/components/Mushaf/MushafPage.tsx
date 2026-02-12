@@ -462,7 +462,7 @@ export function MushafPage() {
                     // Merge results, prefer Arabic, add French translation text
                     const merged = new Map<number, typeof verseResults[0]>();
                     for (const a of arabicResults) {
-                        merged.set(a.number, { ...a, page: a.page || 1 });
+                        merged.set(a.number, { ...a, page: a.page || 0 });
                     }
                     for (const f of frenchResults) {
                         if (merged.has(f.number)) {
@@ -472,7 +472,23 @@ export function MushafPage() {
                         }
                     }
 
-                    setVerseResults(Array.from(merged.values()).slice(0, 20));
+                    // Resolve missing page numbers
+                    const results = Array.from(merged.values()).slice(0, 20);
+                    const needsPage = results.filter(r => !r.page || r.page <= 0);
+                    if (needsPage.length > 0) {
+                        const pagePromises = needsPage.map(async r => {
+                            try {
+                                const res = await fetch(`https://api.alquran.cloud/v1/ayah/${r.number}`);
+                                const data = await res.json();
+                                if (data.code === 200 && data.data?.page) {
+                                    r.page = data.data.page;
+                                }
+                            } catch { /* ignore */ }
+                        });
+                        await Promise.all(pagePromises);
+                    }
+
+                    setVerseResults(results);
                 } catch {
                     setVerseResults([]);
                 }
