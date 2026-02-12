@@ -454,7 +454,7 @@ export function MushafPage() {
                                 numberInSurah: m.numberInSurah,
                                 text: m.text,
                                 surah: m.surah.number,
-                                page: m.page || 1,
+                                page: m.page || 0,
                             }));
                         }
                     } catch { /* ignore French search errors */ }
