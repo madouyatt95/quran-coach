@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useCallback, useRef } from 'react';
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
@@ -18,6 +18,18 @@ import { useStatsStore } from './stores/statsStore';
 import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import './index.css';
+
+// ReadPage is always mounted, hidden when on other routes
+// This preserves audio state, player UI, and reading tracking
+function ReadPagePersistent() {
+  const location = useLocation();
+  const isActive = location.pathname === '/' || location.pathname === '/read';
+  return (
+    <div style={{ display: isActive ? 'contents' : 'none' }}>
+      <ReadPage />
+    </div>
+  );
+}
 
 function AppContent() {
   const { theme, arabicFontSize } = useSettingsStore();
@@ -90,9 +102,11 @@ function AppContent() {
   return (
     <>
       <main style={{ flex: 1, paddingBottom: '80px' }}>
+        {/* ReadPage always mounted to preserve audio state & tracking */}
+        <ReadPagePersistent />
         <Routes>
-          <Route path="/" element={<ReadPage />} />
-          <Route path="/read" element={<ReadPage />} />
+          <Route path="/" element={null} />
+          <Route path="/read" element={null} />
           <Route path="/hifdh" element={<HifdhPage />} />
           <Route path="/challenges" element={<ChallengesPage />} />
 
