@@ -84,6 +84,7 @@ export function MushafPage() {
 
     const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter, showTranslation, toggleTranslation } = useSettingsStore();
     const { toggleFavorite, isFavorite } = useFavoritesStore();
+    const { playlist, addToQueue, removeFromQueue } = useAudioPlayerStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -1071,15 +1072,18 @@ export function MushafPage() {
                                         <Play size={16} />
                                     </button>
                                     {(() => {
-                                        const inPlaylist = useAudioPlayerStore.getState().playlist.some(p => p.surahNumber === s.number);
+                                        const playlistIdx = playlist.findIndex((p, idx) => p.surahNumber === s.number && idx > useAudioPlayerStore.getState().currentPlaylistIndex);
+                                        const inPlaylist = playlistIdx !== -1;
                                         return (
                                             <button
                                                 className={`mih-search-item__play mih-search-item__queue ${inPlaylist ? 'mih-search-item__queue--added' : ''}`}
-                                                title={inPlaylist ? 'Déjà dans la playlist' : 'Ajouter à la playlist'}
+                                                title={inPlaylist ? 'Retirer de la playlist' : 'Ajouter à la playlist'}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    if (!inPlaylist) {
-                                                        useAudioPlayerStore.getState().addToQueue({
+                                                    if (inPlaylist) {
+                                                        removeFromQueue(playlistIdx);
+                                                    } else {
+                                                        addToQueue({
                                                             surahNumber: s.number,
                                                             surahName: s.englishName,
                                                             surahNameAr: s.name,
