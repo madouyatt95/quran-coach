@@ -22,7 +22,8 @@ import {
     Volume2,
     Languages,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Heart
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
@@ -31,10 +32,18 @@ import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../..
 import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
+import { useFavoritesStore } from '../../stores/favoritesStore';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
-const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+const BISMILLAH = '\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650';
+
+// Juz start pages (1-indexed, 30 juz)
+const JUZ_START_PAGES: number[] = [
+    1, 22, 42, 62, 82, 102, 121, 142, 162, 182,
+    201, 222, 242, 262, 282, 302, 322, 342, 362, 382,
+    402, 422, 442, 462, 482, 502, 522, 542, 562, 582
+];
 
 type WordState = 'correct' | 'error' | 'current' | 'unread';
 
@@ -69,6 +78,7 @@ export function MushafPage() {
     } = useQuranStore();
 
     const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter, showTranslation, toggleTranslation } = useSettingsStore();
+    const { toggleFavorite, isFavorite } = useFavoritesStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -690,6 +700,12 @@ export function MushafPage() {
                                                     <span className="mih-verse-num">
                                                         {toArabicNumbers(ayah.numberInSurah)}
                                                     </span>
+                                                    <button
+                                                        className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
+                                                        onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
+                                                    >
+                                                        <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
+                                                    </button>
                                                     {showTranslation && translationMap.get(ayah.number) && (
                                                         <div className="mih-translation">{translationMap.get(ayah.number)}</div>
                                                     )}
@@ -726,6 +742,12 @@ export function MushafPage() {
                                                 {showTranslation && translationMap.get(ayah.number) && (
                                                     <div className="mih-translation">{translationMap.get(ayah.number)}</div>
                                                 )}
+                                                <button
+                                                    className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
+                                                    onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
+                                                >
+                                                    <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
+                                                </button>
                                                 {' '}
                                             </span>
                                         );
@@ -982,6 +1004,24 @@ export function MushafPage() {
                                     <div className="mih-search-item__name">Aller à la page {searchQuery}</div>
                                 </div>
                             </div>
+                        )}
+
+                        {/* Juz Quick Navigation */}
+                        {!searchQuery && (
+                            <>
+                                <div className="mih-search-label">Naviguer par Juz</div>
+                                <div className="mih-juz-grid">
+                                    {JUZ_START_PAGES.map((page, idx) => (
+                                        <button
+                                            key={idx}
+                                            className={`mih-juz-btn ${currentPage >= page && (idx === 29 || currentPage < JUZ_START_PAGES[idx + 1]) ? 'active' : ''}`}
+                                            onClick={() => { goToPage(page); setShowSearch(false); setSearchQuery(''); }}
+                                        >
+                                            {idx + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
                         )}
 
                         <div className="mih-search-label">

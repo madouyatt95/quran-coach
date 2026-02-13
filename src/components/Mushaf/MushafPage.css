@@ -1400,3 +1400,89 @@
 [data-theme="dark"] .mih-reciter-item.active .mih-reciter-item__arabic {
     color: #66BB6A;
 }
+
+/* ========================================
+   Juz Navigation Grid
+   ======================================== */
+.mih-juz-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    padding: 8px 16px 12px;
+}
+
+.mih-juz-btn {
+    background: #f5f3ed;
+    border: 1px solid #e8e4da;
+    border-radius: 8px;
+    padding: 8px 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+.mih-juz-btn:hover {
+    background: #e8e4da;
+}
+
+.mih-juz-btn.active {
+    background: #4CAF50;
+    color: #fff;
+    border-color: #4CAF50;
+}
+
+[data-theme="dark"] .mih-juz-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+[data-theme="dark"] .mih-juz-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .mih-juz-btn.active {
+    background: #66BB6A;
+    color: #111;
+    border-color: #66BB6A;
+}
+
+/* ========================================
+   Verse Favorite Heart Button
+   ======================================== */
+.mih-fav-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    padding: 2px 4px;
+    margin-inline-start: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    opacity: 0.4;
+}
+
+.mih-fav-btn:hover {
+    opacity: 1;
+    color: #e74c3c;
+}
+
+.mih-fav-btn.active {
+    color: #e74c3c;
+    opacity: 1;
+}
+
+[data-theme="dark"] .mih-fav-btn {
+    color: #888;
+}
+
+[data-theme="dark"] .mih-fav-btn:hover,
+[data-theme="dark"] .mih-fav-btn.active {
+    color: #e74c3c;
+}

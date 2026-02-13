@@ -1,89 +1,117 @@
 .favorites-page {
-    padding: var(--space-md);
-    padding-bottom: calc(80px + var(--space-lg));
+    min-height: 100vh;
+    background: var(--color-bg, #0a0e17);
+    padding: 20px 16px 100px;
+    color: var(--color-text, #e8e0d4);
 }
 
-.favorites-page__header {
-    font-size: var(--text-ui-xl);
-    font-weight: 600;
-    margin-bottom: var(--space-lg);
-    color: var(--color-text-primary);
-}
-
-.favorites-page__tabs {
+.favorites-header {
     display: flex;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-lg);
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
 }
 
-.favorites-page__tab {
-    flex: 1;
-    padding: var(--space-md);
-    background: var(--color-bg-secondary);
-    border-radius: var(--radius-md);
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    transition: all var(--transition-fast);
+.favorites-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #d4af37;
+    margin: 0;
 }
 
-.favorites-page__tab.active {
-    background: var(--color-accent);
-    color: white;
+.favorites-count {
+    font-size: 0.85rem;
+    color: rgba(212, 175, 55, 0.6);
+    background: rgba(212, 175, 55, 0.08);
+    padding: 4px 12px;
+    border-radius: 12px;
 }
 
 .favorites-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(232, 224, 212, 0.4);
+}
+
+.favorites-empty p {
+    margin: 12px 0 0;
+    font-size: 1rem;
+}
+
+.favorites-empty__hint {
+    font-size: 0.85rem !important;
+    color: rgba(232, 224, 212, 0.3);
+    line-height: 1.6;
+}
+
+.favorites-list {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-2xl);
-    text-align: center;
-    color: var(--color-text-muted);
-    gap: var(--space-md);
+    gap: 12px;
 }
 
-.favorites-empty__icon {
-    opacity: 0.5;
+.favorites-card {
+    background: rgba(212, 175, 55, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.favorite-item {
-    padding: var(--space-md);
-    background: var(--color-bg-secondary);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-sm);
+.favorites-card:hover {
+    background: rgba(212, 175, 55, 0.08);
+    border-color: rgba(212, 175, 55, 0.2);
+    transform: translateY(-1px);
 }
 
-.favorite-item__header {
+.favorites-card__ref {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--space-sm);
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #d4af37;
+    margin-bottom: 10px;
+    font-weight: 600;
 }
 
-.favorite-item__title {
-    font-weight: 500;
-    color: var(--color-text-primary);
+.favorites-card__text {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.15rem;
+    line-height: 2;
+    color: var(--color-text, #e8e0d4);
+    margin-bottom: 10px;
 }
 
-.favorite-item__delete {
-    color: var(--color-error);
-    padding: var(--space-xs);
+.favorites-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.favorite-item__text {
-    font-family: var(--font-arabic);
-    font-size: var(--text-arabic-sm);
-    direction: rtl;
-    color: var(--color-text-secondary);
-    line-height: 1.8;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+.favorites-card__date {
+    font-size: 0.75rem;
+    color: rgba(232, 224, 212, 0.35);
 }
 
-.favorite-item__meta {
-    font-size: var(--text-ui-xs);
-    color: var(--color-text-muted);
-    margin-top: var(--space-sm);
+.favorites-card__delete {
+    background: none;
+    border: none;
+    color: rgba(232, 224, 212, 0.3);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.favorites-card__delete:hover {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
 }

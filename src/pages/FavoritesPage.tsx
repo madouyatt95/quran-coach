@@ -1,129 +1,76 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bookmark, Star, Trash2 } from 'lucide-react';
-import { useProgressStore } from '../stores/progressStore';
+import { Heart, Trash2, BookOpen } from 'lucide-react';
+import { useFavoritesStore } from '../stores/favoritesStore';
 import { useQuranStore } from '../stores/quranStore';
+import { useNavigate } from 'react-router-dom';
 import './FavoritesPage.css';
 
-type Tab = 'bookmarks' | 'favorites';
-
 export function FavoritesPage() {
-    const [activeTab, setActiveTab] = useState<Tab>('bookmarks');
+    const { favorites, removeFavorite } = useFavoritesStore();
+    const { goToPage, surahs } = useQuranStore();
     const navigate = useNavigate();
 
-    const { bookmarks, favorites, removeBookmark, removeFavorite } = useProgressStore();
-    const { goToAyah, surahs } = useQuranStore();
+    const sortedFavorites = [...favorites].sort((a, b) => b.addedAt - a.addedAt);
 
-    const getSurahName = (surahNum: number) => {
-        return surahs.find(s => s.number === surahNum)?.name || `Sourate ${surahNum}`;
-    };
-
-    const handleBookmarkClick = (surah: number, ayah: number) => {
-        goToAyah(surah, ayah);
+    const handleGoToVerse = (fav: typeof favorites[0]) => {
+        sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: fav.surah, ayah: fav.numberInSurah }));
+        fetch(`https://api.alquran.cloud/v1/ayah/${fav.number}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200 && data.data?.page) {
+                    goToPage(data.data.page);
+                }
+            })
+            .catch(() => { });
         navigate('/');
     };
 
     return (
         <div className="favorites-page">
-            <h1 className="favorites-page__header">Favoris & Signets</h1>
-
-            <div className="favorites-page__tabs">
-                <button
-                    className={`favorites-page__tab ${activeTab === 'bookmarks' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('bookmarks')}
-                >
-                    <Bookmark size={16} style={{ marginRight: '8px' }} />
-                    Signets ({bookmarks.length})
-                </button>
-                <button
-                    className={`favorites-page__tab ${activeTab === 'favorites' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('favorites')}
-                >
-                    <Star size={16} style={{ marginRight: '8px' }} />
-                    Favoris ({favorites.length})
-                </button>
+            <div className="favorites-header">
+                <h1 className="favorites-title">
+                    <Heart size={24} fill="currentColor" />
+                    Favoris
+                </h1>
+                <span className="favorites-count">{favorites.length} verset(s)</span>
             </div>
 
-            {activeTab === 'bookmarks' && (
-                <>
-                    {bookmarks.length === 0 ? (
-                        <div className="favorites-empty">
-                            <Bookmark size={48} className="favorites-empty__icon" />
-                            <p>Aucun marque-page</p>
-                            <p>Appuyez sur l'icône signet pendant la lecture pour en ajouter</p>
-                        </div>
-                    ) : (
-                        bookmarks.map((bookmark) => (
-                            <div
-                                key={bookmark.id}
-                                className="favorite-item"
-                                onClick={() => handleBookmarkClick(bookmark.surah, bookmark.ayah)}
-                            >
-                                <div className="favorite-item__header">
-                                    <span className="favorite-item__title">
-                                        {getSurahName(bookmark.surah)} - Verset {bookmark.ayah}
+            {sortedFavorites.length === 0 ? (
+                <div className="favorites-empty">
+                    <Heart size={48} strokeWidth={1} />
+                    <p>Aucun verset en favoris</p>
+                    <p className="favorites-empty__hint">
+                        Appuyez sur le <Heart size={14} fill="currentColor" style={{ verticalAlign: 'middle' }} /> sur un verset dans la page de lecture pour l'ajouter
+                    </p>
+                </div>
+            ) : (
+                <div className="favorites-list">
+                    {sortedFavorites.map(fav => {
+                        const surah = surahs.find(s => s.number === fav.surah);
+                        return (
+                            <div key={fav.number} className="favorites-card" onClick={() => handleGoToVerse(fav)}>
+                                <div className="favorites-card__ref">
+                                    <BookOpen size={14} />
+                                    {surah?.name} ({surah?.englishName}) — Verset {fav.numberInSurah}
+                                </div>
+                                <div className="favorites-card__text" dir="rtl">
+                                    {fav.text.length > 120 ? fav.text.slice(0, 120) + '…' : fav.text}
+                                </div>
+                                <div className="favorites-card__footer">
+                                    <span className="favorites-card__date">
+                                        {new Date(fav.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </span>
                                     <button
-                                        className="favorite-item__delete"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeBookmark(bookmark.id);
-                                        }}
+                                        className="favorites-card__delete"
+                                        onClick={(e) => { e.stopPropagation(); removeFavorite(fav.number); }}
+                                        title="Retirer des favoris"
                                     >
-                                        <Trash2 size={18} />
+                                        <Trash2 size={16} />
                                     </button>
                                 </div>
-                                {bookmark.label && (
-                                    <p className="favorite-item__meta">{bookmark.label}</p>
-                                )}
-                                <p className="favorite-item__meta">
-                                    Page {bookmark.page} • {new Date(bookmark.createdAt).toLocaleDateString('fr-FR')}
-                                </p>
                             </div>
-                        ))
-                    )}
-                </>
-            )}
-
-            {activeTab === 'favorites' && (
-                <>
-                    {favorites.length === 0 ? (
-                        <div className="favorites-empty">
-                            <Star size={48} className="favorites-empty__icon" />
-                            <p>Aucun favori</p>
-                            <p>Sauvegardez vos passages préférés ici</p>
-                        </div>
-                    ) : (
-                        favorites.map((favorite) => (
-                            <div
-                                key={favorite.id}
-                                className="favorite-item"
-                                onClick={() => handleBookmarkClick(favorite.surah, favorite.startAyah)}
-                            >
-                                <div className="favorite-item__header">
-                                    <span className="favorite-item__title">
-                                        {getSurahName(favorite.surah)} ({favorite.startAyah}-{favorite.endAyah})
-                                    </span>
-                                    <button
-                                        className="favorite-item__delete"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeFavorite(favorite.id);
-                                        }}
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                                {favorite.note && (
-                                    <p className="favorite-item__text">{favorite.note}</p>
-                                )}
-                                <p className="favorite-item__meta">
-                                    {new Date(favorite.createdAt).toLocaleDateString('fr-FR')}
-                                </p>
-                            </div>
-                        ))
-                    )}
-                </>
+                        );
+                    })}
+                </div>
             )}
         </div>
     );
