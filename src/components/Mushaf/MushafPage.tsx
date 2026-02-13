@@ -694,6 +694,12 @@ export function MushafPage() {
                                                     onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                                     onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                                 >
+                                                    <button
+                                                        className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
+                                                        onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
+                                                    >
+                                                        <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
+                                                    </button>
                                                     {words.map((word, wordIndex) => {
                                                         const key = `${ayahIndex}-${wordIndex}`;
                                                         return (
@@ -708,12 +714,6 @@ export function MushafPage() {
                                                     <span className="mih-verse-num">
                                                         {toArabicNumbers(ayah.numberInSurah)}
                                                     </span>
-                                                    <button
-                                                        className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
-                                                        onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
-                                                    >
-                                                        <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
-                                                    </button>
                                                     {showTranslation && translationMap.get(ayah.number) && (
                                                         <div className="mih-translation">{translationMap.get(ayah.number)}</div>
                                                     )}
@@ -735,6 +735,12 @@ export function MushafPage() {
                                                 onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                                 onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                             >
+                                                <button
+                                                    className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
+                                                    onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
+                                                >
+                                                    <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
+                                                </button>
                                                 {tajweedHtml ? (
                                                     <>
                                                         {renderTajweedText(tajweedHtml, tajwidLayers)}
@@ -753,12 +759,6 @@ export function MushafPage() {
                                                 {showTranslation && translationMap.get(ayah.number) && (
                                                     <div className="mih-translation">{translationMap.get(ayah.number)}</div>
                                                 )}
-                                                <button
-                                                    className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
-                                                    onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
-                                                >
-                                                    <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
-                                                </button>
                                                 {' '}
                                             </span>
                                         );

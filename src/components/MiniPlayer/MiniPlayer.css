@@ -233,6 +233,24 @@
     color: #666;
 }
 
+/* Queue badge in compact view */
+.mini-player__queue-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    background: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    font-size: 0.68rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+[data-theme="dark"] .mini-player__queue-badge {
+    background: rgba(102, 187, 106, 0.15);
+    color: #66BB6A;
+}
+
 /* ========================================
    Tabs (Versets / File d'attente)
    ======================================== */

@@ -87,7 +87,7 @@ export function MiniPlayer() {
                     <div className="mini-player__surah">{currentSurahNameAr}</div>
                     <div className="mini-player__detail">
                         {currentSurahName} · Verset {currentAyahInSurah}/{totalAyahsInSurah}
-                        {upcomingSurahs.length > 0 && ` · +${upcomingSurahs.length} sourate${upcomingSurahs.length > 1 ? 's' : ''}`}
+                        {upcomingSurahs.length > 0 && <span className="mini-player__queue-badge">📋 {upcomingSurahs.length} à suivre</span>}
                     </div>
                 </div>
 
@@ -125,7 +125,7 @@ export function MiniPlayer() {
                                 Versets
                             </button>
                             <button className={`mini-player__tab ${showQueue ? 'active' : ''}`} onClick={() => setShowQueue(true)}>
-                                <ListMusic size={14} /> File ({upcomingSurahs.length})
+                                <ListMusic size={14} /> Sourates ({upcomingSurahs.length})
                             </button>
                         </div>
                     )}

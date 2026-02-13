@@ -1458,14 +1458,15 @@
     border: none;
     color: #ccc;
     cursor: pointer;
-    padding: 2px 4px;
-    margin-inline-start: 4px;
-    border-radius: 4px;
+    padding: 4px 6px;
+    margin-inline-end: 6px;
+    border-radius: 6px;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     vertical-align: middle;
-    opacity: 0.4;
+    opacity: 0.5;
+    float: right;
 }
 
 .mih-fav-btn:hover {
