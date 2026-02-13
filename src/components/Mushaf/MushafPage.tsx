@@ -670,10 +670,11 @@ export function MushafPage() {
                                             return (
                                                 <span
                                                     key={ayah.number}
-                                                    className="mih-ayah"
+                                                    className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''}`}
                                                     data-surah={ayah.surah}
                                                     data-ayah={ayah.numberInSurah}
-                                                    style={isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : undefined}
+                                                    style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
+                                                    onClick={() => playAyahAtIndex(ayahIndex)}
                                                 >
                                                     {words.map((word, wordIndex) => {
                                                         const key = `${ayahIndex}-${wordIndex}`;
@@ -701,10 +702,11 @@ export function MushafPage() {
                                         return (
                                             <span
                                                 key={ayah.number}
-                                                className="mih-ayah"
+                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
-                                                style={isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : undefined}
+                                                style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
+                                                onClick={() => playAyahAtIndex(ayahIndex)}
                                             >
                                                 {tajweedHtml ? (
                                                     <>
