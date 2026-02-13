@@ -284,12 +284,6 @@ export function MushafPage() {
         if (idx < ayahs.length - 1) {
             playAyahAtIndex(idx + 1);
         } else if (page < 604) {
-            // Don't auto-advance pages when app is in background
-            if (isHiddenRef.current) {
-                pendingAutoAdvance.current = true;
-                setAudioPlaying(false);
-                return;
-            }
             // Auto-advance to next page
             shouldAutoPlay.current = true;
             nextPage();
