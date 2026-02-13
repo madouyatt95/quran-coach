@@ -274,19 +274,7 @@ export function MushafPage() {
         audioRef.current.src = getAudioUrl(selectedReciter, ayah.number);
         audioRef.current.playbackRate = playbackSpeed;
         audioRef.current.play().catch(() => { });
-
-        // Update Media Session metadata for lock screen / notification controls
-        if ('mediaSession' in navigator) {
-            const surahName = surahs.find(s => s.number === ayah.surah)?.name || '';
-            const reciterName = RECITERS.find(r => r.id === selectedReciter)?.name || '';
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: `${surahName} — Verset ${ayah.numberInSurah}`,
-                artist: reciterName,
-                album: 'Quran Coach',
-            });
-            navigator.mediaSession.playbackState = 'playing';
-        }
-    }, [selectedReciter, playbackSpeed, surahs]);
+    }, [selectedReciter, playbackSpeed]);
 
     const playNextAyah = useCallback(() => {
         const idx = playingIndexRef.current;
@@ -352,42 +340,6 @@ export function MushafPage() {
         if (!audioRef.current) return;
         audioRef.current.onended = () => playNextAyahRef.current();
     }, []);
-
-    // Register Media Session action handlers for lock screen / background controls
-    useEffect(() => {
-        if (!('mediaSession' in navigator)) return;
-
-        navigator.mediaSession.setActionHandler('play', () => {
-            if (audioRef.current && !audioRef.current.ended) {
-                audioRef.current.play().catch(() => { });
-                setAudioPlaying(true);
-                navigator.mediaSession.playbackState = 'playing';
-            }
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-            if (audioRef.current) {
-                audioRef.current.pause();
-                setAudioPlaying(false);
-                navigator.mediaSession.playbackState = 'paused';
-            }
-        });
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            playNextAyahRef.current();
-        });
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            if (playingIndexRef.current > 0) {
-                const prevIdx = playingIndexRef.current - 1;
-                const ayahs = pageAyahsRef.current;
-                if (ayahs[prevIdx] && audioRef.current) {
-                    playingIndexRef.current = prevIdx;
-                    setPlayingIndex(prevIdx);
-                    setCurrentPlayingAyah(ayahs[prevIdx].number);
-                    audioRef.current.src = getAudioUrl(selectedReciter, ayahs[prevIdx].number);
-                    audioRef.current.play().catch(() => { });
-                }
-            }
-        });
-    }, [selectedReciter]);
 
     // Auto-resume after page change
     useEffect(() => {
