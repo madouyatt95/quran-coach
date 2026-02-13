@@ -105,7 +105,11 @@ export function HifdhPage() {
         let fetchEnd = endAyah;
 
         // If surah changed, always load full surah and reset range
-        if (surahChanged && surah) {
+        // EXCEPT if we just came from a deep link (location.state)
+        const state = location.state as { surah?: number; ayah?: number };
+        const isDeepLink = state?.surah === selectedSurah && state?.ayah === startAyah && state?.ayah === endAyah;
+
+        if (surahChanged && surah && !isDeepLink) {
             fetchStart = 1;
             fetchEnd = surah.numberOfAyahs;
             setStartAyah(1);

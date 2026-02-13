@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, List, X } from 'lucide-react';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -144,17 +144,20 @@ export function AdhkarPage() {
     const [selectedCategory, setSelectedCategory] = useState<AdhkarCategory | null>(null);
     const [currentDhikrIndex, setCurrentDhikrIndex] = useState(0);
     const [repetitions, setRepetitions] = useState<Record<string, number>>({});
+    const [showList, setShowList] = useState(false);
 
     const handleCategoryClick = (category: AdhkarCategory) => {
         setSelectedCategory(category);
         setCurrentDhikrIndex(0);
         setRepetitions({});
         stopAudioLoop();
+        setShowList(false);
     };
 
     const closeCategory = () => {
         stopAudioLoop();
         setSelectedCategory(null);
+        setShowList(false);
     };
 
     // ===== Audio Loop Player =====
@@ -171,13 +174,13 @@ export function AdhkarPage() {
         const current = repetitions[key] || 0;
 
         if (current < maxCount) {
-            setRepetitions({ ...repetitions, [key]: current + 1 });
+            setRepetitions(prev => ({ ...prev, [key]: (prev[key] || 0) + 1 }));
 
             // Auto-advance to next dhikr when complete
             if (current + 1 >= maxCount && selectedCategory) {
                 setTimeout(() => {
                     if (currentDhikrIndex < selectedCategory.adhkar.length - 1) {
-                        setCurrentDhikrIndex(currentDhikrIndex + 1);
+                        setCurrentDhikrIndex(prev => prev + 1);
                     }
                 }, 500);
             }
@@ -269,7 +272,7 @@ export function AdhkarPage() {
         stopAudioLoop();
     }, [currentDhikrIndex, stopAudioLoop]);
 
-    // Category List View
+    // Category Selection View
     if (!selectedCategory) {
         return (
             <div className="adhkar-page">
@@ -311,143 +314,166 @@ export function AdhkarPage() {
         );
     }
 
-    // Dhikr Detail View
+    // Detail / List View
     const currentDhikr = selectedCategory.adhkar[currentDhikrIndex];
 
     return (
         <div className="adhkar-page">
-            <div className="adhkar-header">
-                <button className="adhkar-back-btn" onClick={closeCategory}>
+            <div className="adhkar-category-header" style={{ '--accent-color': selectedCategory.color } as any}>
+                <button className="back-button" onClick={closeCategory}>
                     <ArrowLeft size={24} />
                 </button>
-                <h1 className="adhkar-title">{selectedCategory.name}</h1>
-                <span className="adhkar-progress-text">
-                    {currentDhikrIndex + 1}/{selectedCategory.adhkar.length}
-                </span>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="adhkar-progress-bar">
-                <div
-                    className="adhkar-progress-fill"
-                    style={{
-                        width: `${((currentDhikrIndex + 1) / selectedCategory.adhkar.length) * 100}%`,
-                        backgroundColor: selectedCategory.color
-                    }}
-                />
-            </div>
-
-            {/* Dhikr Card */}
-            <div className="dhikr-container">
-                <div className="dhikr-card">
-                    <div className="dhikr-arabic">
-                        {currentDhikr.arabic}
-                    </div>
-                    <div className="dhikr-translation">
-                        {currentDhikr.translation}
-                    </div>
-                    {currentDhikr.source && (
-                        <div className="dhikr-source">
-                            📚 {currentDhikr.source}
-                        </div>
-                    )}
+                <div className="header-titles">
+                    <h1>{selectedCategory.name}</h1>
+                    <span className="arabic-text">{selectedCategory.nameAr}</span>
                 </div>
-
-                {/* Audio Loop Player */}
-                <div className="dhikr-audio-player">
-                    <div className="dhikr-audio-player__controls">
-                        <button
-                            className="dhikr-audio-player__btn"
-                            onClick={isAudioPlaying ? pauseAudioLoop : playAudioLoop}
-                        >
-                            {isAudioPlaying ? <Pause size={20} /> : <Play size={20} />}
-                        </button>
-                        {isAudioPlaying && (
-                            <button className="dhikr-audio-player__stop" onClick={stopAudioLoop}>
-                                <Square size={16} />
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="dhikr-audio-player__loop">
-                        <Repeat size={14} />
-                        <button
-                            className="dhikr-audio-player__loop-btn"
-                            onClick={() => setAudioLoopCount(Math.max(1, audioLoopCount - 1))}
-                        >
-                            <Minus size={14} />
-                        </button>
-                        <span className="dhikr-audio-player__loop-count">
-                            {isAudioPlaying ? `${currentLoop + 1}/${audioLoopCount}` : `${audioLoopCount}×`}
-                        </span>
-                        <button
-                            className="dhikr-audio-player__loop-btn"
-                            onClick={() => setAudioLoopCount(Math.min(20, audioLoopCount + 1))}
-                        >
-                            <Plus size={14} />
-                        </button>
-                    </div>
-
-                    {/* Hifdh Studio Link for Rabbana (which are all Quranic verses) */}
-                    {selectedCategory.id === 'rabanna' && currentDhikr.source && (
-                        <button
-                            className="dhikr-hifdh-link"
-                            title="Pratiquer dans le Hifdh Studio (Mot à mot)"
-                            onClick={() => {
-                                // Parse source e.g. "2:127"
-                                const [s, a] = currentDhikr.source!.split(':').map(Number);
-                                if (s && a) {
-                                    navigate('/hifdh', { state: { surah: s, ayah: a } });
-                                }
-                            }}
-                        >
-                            <Mic size={18} />
-                            <span>Mémoriser</span>
-                        </button>
-                    )}
-                </div>
-
-                {/* Counter */}
                 <button
-                    className="dhikr-counter"
-                    onClick={() => incrementCount(currentDhikr.id, currentDhikr.count)}
-                    style={{ borderColor: selectedCategory.color }}
+                    className="category-list-toggle"
+                    onClick={() => setShowList(!showList)}
+                    title="Voir la liste complète"
                 >
-                    <svg className="counter-progress" viewBox="0 0 100 100">
-                        <circle className="counter-bg" cx="50" cy="50" r="45" />
-                        <circle
-                            className="counter-fill"
-                            cx="50" cy="50" r="45"
-                            style={{
-                                strokeDasharray: `${getProgress(currentDhikr.id, currentDhikr.count) * 2.83} 283`,
-                                stroke: selectedCategory.color
-                            }}
-                        />
-                    </svg>
-                    <div className="counter-text">
-                        <span className="counter-current">{getCurrentCount(currentDhikr.id)}</span>
-                        <span className="counter-total">/ {currentDhikr.count}</span>
-                    </div>
+                    {showList ? <X size={24} /> : <List size={24} />}
                 </button>
-
-                {/* Navigation */}
-                <div className="dhikr-nav">
-                    <button
-                        className="dhikr-nav-btn"
-                        onClick={() => setCurrentDhikrIndex(Math.max(0, currentDhikrIndex - 1))}
-                        disabled={currentDhikrIndex === 0}
-                    >
-                        Précédent
-                    </button>
-                    <button
-                        className="dhikr-nav-btn"
-                        onClick={() => setCurrentDhikrIndex(Math.min(selectedCategory.adhkar.length - 1, currentDhikrIndex + 1))}
-                        disabled={currentDhikrIndex === selectedCategory.adhkar.length - 1}
-                    >
-                        Suivant
-                    </button>
+                <div className="progress-pill">
+                    {currentDhikrIndex + 1} / {selectedCategory.adhkar.length}
                 </div>
             </div>
+
+            {showList ? (
+                <div className="adhkar-list-view">
+                    {selectedCategory.adhkar.map((dhikr, index) => (
+                        <div
+                            key={dhikr.id}
+                            className={`adhkar-list-item ${index === currentDhikrIndex ? 'active' : ''}`}
+                            onClick={() => {
+                                setCurrentDhikrIndex(index);
+                                setShowList(false);
+                            }}
+                        >
+                            <div className="list-item-header">
+                                <span className="item-number">#{index + 1}</span>
+                                {dhikr.source && <span className="item-source">{dhikr.source}</span>}
+                            </div>
+                            <p className="item-arabic">{dhikr.arabic.substring(0, 80)}...</p>
+                            <p className="item-translation">{dhikr.translation.substring(0, 100)}...</p>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="adhkar-player">
+                    {/* Dhikr Card */}
+                    <div className="dhikr-container">
+                        <div className="dhikr-card">
+                            <div className="dhikr-arabic">
+                                {currentDhikr.arabic}
+                            </div>
+                            <div className="dhikr-translation">
+                                {currentDhikr.translation}
+                            </div>
+                            {currentDhikr.source && (
+                                <div className="dhikr-source">
+                                    📚 {currentDhikr.source}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Audio Loop Player */}
+                        <div className="dhikr-audio-player">
+                            <div className="dhikr-audio-player__controls">
+                                <button
+                                    className="dhikr-audio-player__btn"
+                                    onClick={isAudioPlaying ? pauseAudioLoop : playAudioLoop}
+                                >
+                                    {isAudioPlaying ? <Pause size={20} /> : <Play size={20} />}
+                                </button>
+                                {isAudioPlaying && (
+                                    <button className="dhikr-audio-player__stop" onClick={stopAudioLoop}>
+                                        <Square size={16} />
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="dhikr-audio-player__loop">
+                                <Repeat size={14} />
+                                <button
+                                    className="dhikr-audio-player__loop-btn"
+                                    onClick={() => setAudioLoopCount(Math.max(1, audioLoopCount - 1))}
+                                >
+                                    <Minus size={14} />
+                                </button>
+                                <span className="dhikr-audio-player__loop-count">
+                                    {isAudioPlaying ? `${currentLoop + 1}/${audioLoopCount}` : `${audioLoopCount}×`}
+                                </span>
+                                <button
+                                    className="dhikr-audio-player__loop-btn"
+                                    onClick={() => setAudioLoopCount(Math.min(20, audioLoopCount + 1))}
+                                >
+                                    <Plus size={14} />
+                                </button>
+                            </div>
+
+                            {/* Hifdh Studio Link for Rabbana */}
+                            {selectedCategory.id === 'rabanna' && currentDhikr.source && (
+                                <button
+                                    className="dhikr-hifdh-link"
+                                    title="Pratiquer dans le Hifdh Studio (Mot à mot)"
+                                    onClick={() => {
+                                        const [s, a] = currentDhikr.source!.split(':').map(Number);
+                                        if (s && a) {
+                                            navigate('/hifdh', { state: { surah: s, ayah: a } });
+                                        }
+                                    }}
+                                >
+                                    <Mic size={18} />
+                                    <span>Mémoriser</span>
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Counter */}
+                        <button
+                            className="dhikr-counter"
+                            onClick={() => incrementCount(currentDhikr.id, currentDhikr.count)}
+                            style={{ borderColor: selectedCategory.color }}
+                        >
+                            <svg className="counter-progress" viewBox="0 0 100 100">
+                                <circle className="counter-bg" cx="50" cy="50" r="45" />
+                                <circle
+                                    className="counter-fill"
+                                    cx="50" cy="50" r="45"
+                                    style={{
+                                        strokeDasharray: `${getProgress(currentDhikr.id, currentDhikr.count) * 2.83} 283`,
+                                        stroke: selectedCategory.color
+                                    }}
+                                />
+                            </svg>
+                            <div className="counter-text">
+                                <span className="counter-current">{getCurrentCount(currentDhikr.id)}</span>
+                                <span className="counter-total">/ {currentDhikr.count}</span>
+                            </div>
+                        </button>
+
+                        {/* Navigation */}
+                        <div className="dhikr-nav">
+                            <button
+                                className="dhikr-nav-btn"
+                                onClick={() => setCurrentDhikrIndex(Math.max(0, currentDhikrIndex - 1))}
+                                disabled={currentDhikrIndex === 0}
+                            >
+                                Précédent
+                            </button>
+                            <button
+                                className="dhikr-nav-btn"
+                                onClick={() => setCurrentDhikrIndex(Math.min(selectedCategory.adhkar.length - 1, currentDhikrIndex + 1))}
+                                disabled={currentDhikrIndex === selectedCategory.adhkar.length - 1}
+                            >
+                                Suivant
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
