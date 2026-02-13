@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
     Play,
     Pause,
@@ -27,6 +28,7 @@ const HIFDH_RECITER = 'ar.alafasy';
 const HIFDH_RECITER_QURAN_COM_ID = 7;
 
 export function HifdhPage() {
+    const location = useLocation();
     const { surahs } = useQuranStore();
     const { repeatCount, playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
@@ -57,6 +59,18 @@ export function HifdhPage() {
     // Word timings
     const [wordTimings, setWordTimings] = useState<VerseWords | null>(null);
     const [activeWordIndex, setActiveWordIndex] = useState(-1);
+
+    // Handle incoming verse from navigation state (Deep link)
+    useEffect(() => {
+        const state = location.state as { surah?: number; ayah?: number };
+        if (state?.surah && state?.ayah) {
+            setSelectedSurah(state.surah);
+            setStartAyah(state.ayah);
+            setEndAyah(state.ayah);
+            // Clear state so it doesn't re-trigger on every render
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state]);
 
     const currentAyah = ayahs[currentAyahIndex];
 

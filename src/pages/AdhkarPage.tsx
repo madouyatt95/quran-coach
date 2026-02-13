@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic } from 'lucide-react';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -387,6 +387,24 @@ export function AdhkarPage() {
                             <Plus size={14} />
                         </button>
                     </div>
+
+                    {/* Hifdh Studio Link for Rabbana (which are all Quranic verses) */}
+                    {selectedCategory.id === 'rabanna' && currentDhikr.source && (
+                        <button
+                            className="dhikr-hifdh-link"
+                            title="Pratiquer dans le Hifdh Studio (Mot à mot)"
+                            onClick={() => {
+                                // Parse source e.g. "2:127"
+                                const [s, a] = currentDhikr.source!.split(':').map(Number);
+                                if (s && a) {
+                                    navigate('/hifdh', { state: { surah: s, ayah: a } });
+                                }
+                            }}
+                        >
+                            <Mic size={18} />
+                            <span>Mémoriser</span>
+                        </button>
+                    )}
                 </div>
 
                 {/* Counter */}
