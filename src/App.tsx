@@ -5,6 +5,7 @@ import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { HifdhPage } from './pages/HifdhPage';
 import { SideMenu } from './components/Navigation/SideMenu';
+import { MiniPlayer } from './components/MiniPlayer/MiniPlayer';
 
 import { SettingsPage } from './pages/SettingsPage';
 import { PrayerTimesPage } from './pages/PrayerTimesPage';
@@ -14,6 +15,7 @@ import { TafsirPage } from './pages/TafsirPage';
 import { ShazamPage } from './pages/ShazamPage';
 import { ProphetsPage } from './pages/ProphetsPage';
 import { FavoritesPage } from './pages/FavoritesPage';
+import { ThemesPage } from './pages/ThemesPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -135,10 +137,12 @@ function AppContent() {
           <Route path="/shazam" element={<ShazamPage />} />
           <Route path="/prophets" element={<ProphetsPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/themes" element={<ThemesPage />} />
         </Routes>
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
       <InstallPrompt />
+      <MiniPlayer />
       <BottomNav />
     </>
   );

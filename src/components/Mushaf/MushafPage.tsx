@@ -33,6 +33,7 @@ import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { useFavoritesStore } from '../../stores/favoritesStore';
+import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
@@ -1036,6 +1037,23 @@ export function MushafPage() {
                                             {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
                                         </div>
                                     </div>
+                                    <button
+                                        className="mih-search-item__play"
+                                        title="Écouter la sourate"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            useAudioPlayerStore.getState().playSurah({
+                                                surahNumber: s.number,
+                                                surahName: s.englishName,
+                                                surahNameAr: s.name,
+                                                totalAyahs: s.numberOfAyahs,
+                                            }, selectedReciter);
+                                            setShowSearch(false);
+                                            setSearchQuery('');
+                                        }}
+                                    >
+                                        <Play size={16} />
+                                    </button>
                                 </div>
                             ))}
                         </div>

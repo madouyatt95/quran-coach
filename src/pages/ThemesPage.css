@@ -1,0 +1,235 @@
+.themes-page {
+    min-height: 100vh;
+    background: var(--color-bg, #faf8f2);
+    padding: 16px;
+    padding-bottom: 100px;
+    color: var(--color-text, #333);
+}
+
+.themes-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.themes-back {
+    background: none;
+    border: none;
+    color: var(--color-text, #333);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.themes-back:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.themes-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.themes-title__icon {
+    font-size: 1.5rem;
+}
+
+.themes-title__ar {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #888;
+}
+
+/* Search */
+.themes-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #e8e4da;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+}
+
+.themes-search input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+    background: none;
+    color: var(--color-text, #333);
+}
+
+.themes-search svg {
+    color: #999;
+    flex-shrink: 0;
+}
+
+/* Theme cards grid */
+.themes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.themes-card {
+    background: #fff;
+    border: 1px solid #e8e4da;
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    border-left-width: 3px;
+}
+
+.themes-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.themes-card__icon {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.themes-card__name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.themes-card__name-ar {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1rem;
+    color: #888;
+    margin-top: 2px;
+}
+
+.themes-card__count {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 6px;
+}
+
+.themes-card__arrow {
+    position: absolute;
+    top: 16px;
+    right: 12px;
+}
+
+/* Verse cards */
+.themes-verses {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.themes-verse-card {
+    background: #fff;
+    border: 1px solid #e8e4da;
+    border-left-width: 3px;
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.themes-verse-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.themes-verse-card__ref {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: #999;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.themes-verse-card__ar {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.2rem;
+    line-height: 2;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.themes-verse-card__fr {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* ========================================
+   Dark Theme
+   ======================================== */
+[data-theme="dark"] .themes-page {
+    background: #0a0e17;
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .themes-back {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .themes-back:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .themes-search {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .themes-search input {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .themes-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .themes-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .themes-card__name {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .themes-card__name-ar {
+    color: #888;
+}
+
+[data-theme="dark"] .themes-verse-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .themes-verse-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .themes-verse-card__ar {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .themes-verse-card__fr {
+    color: #999;
+}
