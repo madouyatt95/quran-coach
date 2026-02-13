@@ -1513,3 +1513,153 @@
 [data-theme="dark"] .mih-search-item__play:hover {
     background: rgba(102, 187, 106, 0.15);
 }
+
+/* ========================================
+   Share Modal
+   ======================================== */
+.mih-share-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9000;
+}
+
+.mih-share-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    z-index: 9001;
+    padding: 20px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    animation: shareSlideUp 0.25s ease-out;
+}
+
+@keyframes shareSlideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.mih-share-modal__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+}
+
+.mih-share-modal__header button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.mih-share-modal__ref {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.mih-share-modal__text {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.3rem;
+    line-height: 2.2;
+    color: #333;
+    background: #f8f6f0;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.mih-share-modal__translation {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+    line-height: 1.5;
+    padding: 0 4px;
+    margin-bottom: 16px;
+}
+
+.mih-share-modal__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.mih-share-modal__btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e8e4da;
+    background: #fff;
+    color: #333;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.mih-share-modal__btn:hover {
+    background: #f5f3ed;
+}
+
+.mih-share-modal__btn--primary {
+    background: #4CAF50;
+    color: #fff;
+    border-color: #4CAF50;
+}
+
+.mih-share-modal__btn--primary:hover {
+    background: #43A047;
+}
+
+/* Dark theme */
+[data-theme="dark"] .mih-share-modal {
+    background: #1a1a2e;
+}
+
+[data-theme="dark"] .mih-share-modal__header {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .mih-share-modal__text {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .mih-share-modal__translation {
+    color: #999;
+}
+
+[data-theme="dark"] .mih-share-modal__btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .mih-share-modal__btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .mih-share-modal__btn--primary {
+    background: #66BB6A;
+    border-color: #66BB6A;
+    color: #111;
+}

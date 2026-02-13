@@ -23,7 +23,10 @@ import {
     Languages,
     ChevronLeft,
     ChevronRight,
-    Heart
+    Heart,
+    Share2,
+    Copy,
+    Check
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
@@ -95,6 +98,12 @@ export function MushafPage() {
     const [showSideMenu, setShowSideMenu] = useState(false);
     const [showReciterSheet, setShowReciterSheet] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // Share modal
+    const [shareAyah, setShareAyah] = useState<Ayah | null>(null);
+    const [copied, setCopied] = useState(false);
+    const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const longPressTriggered = useRef(false);
 
     // Masking
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
@@ -679,7 +688,10 @@ export function MushafPage() {
                                                     data-surah={ayah.surah}
                                                     data-ayah={ayah.numberInSurah}
                                                     style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
-                                                    onClick={() => playAyahAtIndex(ayahIndex)}
+                                                    onClick={() => { if (!longPressTriggered.current) playAyahAtIndex(ayahIndex); }}
+                                                    onTouchStart={() => { longPressTriggered.current = false; longPressTimerRef.current = setTimeout(() => { longPressTriggered.current = true; setShareAyah(ayah); }, 600); }}
+                                                    onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
+                                                    onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                                 >
                                                     {words.map((word, wordIndex) => {
                                                         const key = `${ayahIndex}-${wordIndex}`;
@@ -717,7 +729,10 @@ export function MushafPage() {
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
                                                 style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
-                                                onClick={() => playAyahAtIndex(ayahIndex)}
+                                                onClick={() => { if (!longPressTriggered.current) playAyahAtIndex(ayahIndex); }}
+                                                onTouchStart={() => { longPressTriggered.current = false; longPressTimerRef.current = setTimeout(() => { longPressTriggered.current = true; setShareAyah(ayah); }, 600); }}
+                                                onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
+                                                onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                             >
                                                 {tajweedHtml ? (
                                                     <>
@@ -1189,6 +1204,55 @@ export function MushafPage() {
                                     <span className="mih-reciter-item__arabic">{r.nameArabic}</span>
                                 </button>
                             ))}
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Share modal */}
+            {shareAyah && (
+                <>
+                    <div className="mih-share-overlay" onClick={() => { setShareAyah(null); setCopied(false); }} />
+                    <div className="mih-share-modal">
+                        <div className="mih-share-modal__header">
+                            <Share2 size={18} />
+                            <span>Partager le verset</span>
+                            <button onClick={() => { setShareAyah(null); setCopied(false); }}><X size={18} /></button>
+                        </div>
+                        <div className="mih-share-modal__ref">
+                            Sourate {surahs.find(s => s.number === shareAyah.surah)?.englishName || shareAyah.surah}, Verset {shareAyah.numberInSurah}
+                        </div>
+                        <div className="mih-share-modal__text" dir="rtl">{shareAyah.text}</div>
+                        {showTranslation && translationMap.get(shareAyah.number) && (
+                            <div className="mih-share-modal__translation">{translationMap.get(shareAyah.number)}</div>
+                        )}
+                        <div className="mih-share-modal__actions">
+                            <button
+                                className="mih-share-modal__btn"
+                                onClick={() => {
+                                    const surahName = surahs.find(s => s.number === shareAyah.surah)?.englishName || '';
+                                    const text = `${shareAyah.text}\n\n— ${surahName}, Verset ${shareAyah.numberInSurah}\n\nQuran Coach`;
+                                    navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+                                }}
+                            >
+                                {copied ? <Check size={16} /> : <Copy size={16} />}
+                                {copied ? 'Copié !' : 'Copier'}
+                            </button>
+                            {'share' in navigator && (
+                                <button
+                                    className="mih-share-modal__btn mih-share-modal__btn--primary"
+                                    onClick={() => {
+                                        const surahName = surahs.find(s => s.number === shareAyah.surah)?.englishName || '';
+                                        const translation = showTranslation ? translationMap.get(shareAyah.number) : '';
+                                        const text = `${shareAyah.text}\n${translation ? `\n${translation}\n` : ''}\n— ${surahName}, Verset ${shareAyah.numberInSurah}`;
+                                        navigator.share({ title: `${surahName} — Verset ${shareAyah.numberInSurah}`, text }).catch(() => { });
+                                        setShareAyah(null);
+                                    }}
+                                >
+                                    <Share2 size={16} />
+                                    Partager
+                                </button>
+                            )}
                         </div>
                     </div>
                 </>
