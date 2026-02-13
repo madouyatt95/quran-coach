@@ -1070,21 +1070,28 @@ export function MushafPage() {
                                     >
                                         <Play size={16} />
                                     </button>
-                                    <button
-                                        className="mih-search-item__play mih-search-item__queue"
-                                        title="Ajouter à la file"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            useAudioPlayerStore.getState().addToQueue({
-                                                surahNumber: s.number,
-                                                surahName: s.englishName,
-                                                surahNameAr: s.name,
-                                                totalAyahs: s.numberOfAyahs,
-                                            });
-                                        }}
-                                    >
-                                        <ListPlus size={16} />
-                                    </button>
+                                    {(() => {
+                                        const inPlaylist = useAudioPlayerStore.getState().playlist.some(p => p.surahNumber === s.number);
+                                        return (
+                                            <button
+                                                className={`mih-search-item__play mih-search-item__queue ${inPlaylist ? 'mih-search-item__queue--added' : ''}`}
+                                                title={inPlaylist ? 'Déjà dans la playlist' : 'Ajouter à la playlist'}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (!inPlaylist) {
+                                                        useAudioPlayerStore.getState().addToQueue({
+                                                            surahNumber: s.number,
+                                                            surahName: s.englishName,
+                                                            surahNameAr: s.name,
+                                                            totalAyahs: s.numberOfAyahs,
+                                                        });
+                                                    }
+                                                }}
+                                            >
+                                                {inPlaylist ? <Check size={16} /> : <ListPlus size={16} />}
+                                            </button>
+                                        );
+                                    })()}
                                 </div>
                             ))}
                         </div>

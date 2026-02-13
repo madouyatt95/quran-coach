@@ -1511,6 +1511,17 @@
     color: #42A5F5;
 }
 
+.mih-search-item__queue--added {
+    background: rgba(76, 175, 80, 0.1) !important;
+    color: #4CAF50 !important;
+    border-color: rgba(76, 175, 80, 0.3) !important;
+}
+
+[data-theme="dark"] .mih-search-item__queue--added {
+    background: rgba(102, 187, 106, 0.15) !important;
+    color: #81c784 !important;
+}
+
 .mih-search-item__queue:hover {
     background: rgba(66, 165, 245, 0.1);
 }
