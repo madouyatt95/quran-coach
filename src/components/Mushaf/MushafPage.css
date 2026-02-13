@@ -1506,6 +1506,14 @@
     background: rgba(76, 175, 80, 0.1);
 }
 
+.mih-search-item__queue {
+    color: #42A5F5;
+}
+
+.mih-search-item__queue:hover {
+    background: rgba(66, 165, 245, 0.1);
+}
+
 [data-theme="dark"] .mih-search-item__play {
     color: #66BB6A;
 }

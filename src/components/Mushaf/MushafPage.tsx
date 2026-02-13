@@ -26,7 +26,8 @@ import {
     Heart,
     Share2,
     Copy,
-    Check
+    Check,
+    ListPlus
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
@@ -1068,6 +1069,21 @@ export function MushafPage() {
                                         }}
                                     >
                                         <Play size={16} />
+                                    </button>
+                                    <button
+                                        className="mih-search-item__play mih-search-item__queue"
+                                        title="Ajouter à la file"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            useAudioPlayerStore.getState().addToQueue({
+                                                surahNumber: s.number,
+                                                surahName: s.englishName,
+                                                surahNameAr: s.name,
+                                                totalAyahs: s.numberOfAyahs,
+                                            });
+                                        }}
+                                    >
+                                        <ListPlus size={16} />
                                     </button>
                                 </div>
                             ))}

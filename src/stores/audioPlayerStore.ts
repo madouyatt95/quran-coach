@@ -42,6 +42,8 @@ interface AudioPlayerState {
     setAyahs: (ayahs: { number: number; numberInSurah: number; text: string }[]) => void;
     updateTime: (current: number, dur: number) => void;
     getAudioRef: () => HTMLAudioElement;
+    addToQueue: (surah: PlaylistItem) => void;
+    removeFromQueue: (index: number) => void;
 }
 
 // Single shared audio element for the global player
@@ -215,4 +217,22 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     },
 
     getAudioRef: () => getOrCreateAudio(),
+
+    addToQueue: (surah) => {
+        const { playlist, currentSurahNumber, reciterId } = get();
+        if (currentSurahNumber === 0) {
+            // Nothing playing — start this surah
+            get().playSurah(surah, reciterId);
+        } else {
+            // Append to playlist
+            set({ playlist: [...playlist, surah] });
+        }
+    },
+
+    removeFromQueue: (index) => {
+        const { playlist, currentPlaylistIndex } = get();
+        if (index <= currentPlaylistIndex) return; // Can't remove current or past items
+        const newPlaylist = playlist.filter((_, i) => i !== index);
+        set({ playlist: newPlaylist });
+    },
 }));

@@ -51,7 +51,7 @@ export const useSettingsStore = create<SettingsState>()(
             arabicFontSize: 'md',
             viewMode: 'mushaf',
             lineSpacing: 2.4,
-            showTranslation: false,
+            showTranslation: true,
             translationLanguage: 'fr',
             tajwidEnabled: true,
             tajwidLayers: ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'],

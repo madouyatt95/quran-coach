@@ -232,3 +232,134 @@
 [data-theme="dark"] .mini-player__time-row {
     color: #666;
 }
+
+/* ========================================
+   Tabs (Versets / File d'attente)
+   ======================================== */
+.mini-player__tabs {
+    display: flex;
+    gap: 4px;
+    padding: 4px 12px 8px;
+}
+
+.mini-player__tab {
+    flex: 1;
+    padding: 6px 8px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.04);
+    color: #888;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.15s;
+}
+
+.mini-player__tab.active {
+    background: #4CAF50;
+    color: #fff;
+}
+
+/* ========================================
+   Queue Items
+   ======================================== */
+.mini-player__queue-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    transition: background 0.15s;
+}
+
+.mini-player__queue-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.mini-player__queue-num {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f0ede6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #888;
+}
+
+.mini-player__queue-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mini-player__queue-name {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1rem;
+    color: #333;
+    display: block;
+}
+
+.mini-player__queue-detail {
+    font-size: 0.72rem;
+    color: #999;
+}
+
+.mini-player__queue-remove {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    transition: all 0.15s;
+}
+
+.mini-player__queue-remove:hover {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.08);
+}
+
+/* Dark theme — tabs */
+[data-theme="dark"] .mini-player__tab {
+    background: rgba(255, 255, 255, 0.06);
+    color: #aaa;
+}
+
+[data-theme="dark"] .mini-player__tab.active {
+    background: #66BB6A;
+    color: #111;
+}
+
+/* Dark theme — queue */
+[data-theme="dark"] .mini-player__queue-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .mini-player__queue-num {
+    background: rgba(255, 255, 255, 0.08);
+    color: #aaa;
+}
+
+[data-theme="dark"] .mini-player__queue-name {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .mini-player__queue-detail {
+    color: #888;
+}
+
+[data-theme="dark"] .mini-player__queue-remove {
+    color: #666;
+}
+
+[data-theme="dark"] .mini-player__queue-remove:hover {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.15);
+}
