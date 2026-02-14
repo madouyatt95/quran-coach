@@ -93,7 +93,6 @@ class SpeechRecognitionService {
     private currentWordIndex = 0;
     private callbacks: RecognitionCallbacks | null = null;
     private processedWords: Set<number> = new Set(); // Track already processed words
-    private lastInterimText = ''; // Track last interim for delta processing
 
     // Check if Web Speech API is supported
     isSupported(): boolean {
