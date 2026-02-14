@@ -497,6 +497,42 @@
 }
 
 /* ========================================
+   Transliteration / Phonetic Text
+   ======================================== */
+.mih-transliteration {
+    display: block;
+    direction: ltr;
+    text-align: left;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #ab8a4c;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    padding: 6px 12px;
+    border-left: 3px solid #d4af37;
+    background: rgba(212, 175, 55, 0.04);
+    border-radius: 0 8px 8px 0;
+    letter-spacing: 0.2px;
+}
+
+[data-theme="dark"] .mih-transliteration,
+.mushaf-page[data-mushaf-dark="true"] .mih-transliteration {
+    color: #d4b86a;
+    background: rgba(212, 175, 55, 0.06);
+    border-left-color: #c9a84c;
+}
+
+[data-theme="sepia"] .mih-transliteration {
+    color: #8b6d3a;
+    background: rgba(212, 175, 55, 0.06);
+}
+
+[data-theme="light"] .mih-transliteration {
+    color: #8b6914;
+}
+
+/* ========================================
    Bottom Sheet (Tajweed + Masquage)
    ======================================== */
 .mih-sheet-overlay {

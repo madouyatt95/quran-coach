@@ -86,6 +86,7 @@ export interface Settings {
     viewMode: ViewMode;
     lineSpacing: number;
     showTranslation: boolean;
+    showTransliteration: boolean;
     translationLanguage: string;
     tajwidEnabled: boolean;
     tajwidLayers: string[];

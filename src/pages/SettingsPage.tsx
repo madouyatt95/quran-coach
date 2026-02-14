@@ -22,6 +22,8 @@ export function SettingsPage() {
         toggleTajwid,
         showTranslation,
         toggleTranslation,
+        showTransliteration,
+        toggleTransliteration,
         selectedReciter,
         setReciter,
         repeatCount,
@@ -129,6 +131,19 @@ export function SettingsPage() {
                     <button
                         className={`toggle ${showTranslation ? 'active' : ''}`}
                         onClick={toggleTranslation}
+                    >
+                        <span className="toggle__knob" />
+                    </button>
+                </div>
+
+                <div className="settings-item">
+                    <div className="settings-item__label">
+                        <span className="settings-item__title">Phonétique</span>
+                        <span className="settings-item__description">Prononciation en lettres latines</span>
+                    </div>
+                    <button
+                        className={`toggle ${showTransliteration ? 'active' : ''}`}
+                        onClick={toggleTransliteration}
                     >
                         <span className="toggle__knob" />
                     </button>

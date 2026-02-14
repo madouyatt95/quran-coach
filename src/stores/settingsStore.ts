@@ -35,6 +35,7 @@ interface SettingsState extends Settings {
     setViewMode: (mode: ViewMode) => void;
     setLineSpacing: (spacing: number) => void;
     toggleTranslation: () => void;
+    toggleTransliteration: () => void;
     setTranslationLanguage: (lang: string) => void;
     toggleTajwid: () => void;
     setTajwidLayers: (layers: string[]) => void;
@@ -52,6 +53,7 @@ export const useSettingsStore = create<SettingsState>()(
             viewMode: 'mushaf',
             lineSpacing: 2.4,
             showTranslation: true,
+            showTransliteration: false,
             translationLanguage: 'fr',
             tajwidEnabled: true,
             tajwidLayers: ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'],
@@ -70,6 +72,7 @@ export const useSettingsStore = create<SettingsState>()(
             setViewMode: (viewMode) => set({ viewMode }),
             setLineSpacing: (lineSpacing) => set({ lineSpacing }),
             toggleTranslation: () => set((state) => ({ showTranslation: !state.showTranslation })),
+            toggleTransliteration: () => set((state) => ({ showTransliteration: !state.showTransliteration })),
             setTranslationLanguage: (translationLanguage) => set({ translationLanguage }),
             toggleTajwid: () => set((state) => ({ tajwidEnabled: !state.tajwidEnabled })),
             setTajwidLayers: (tajwidLayers) => set({ tajwidLayers }),

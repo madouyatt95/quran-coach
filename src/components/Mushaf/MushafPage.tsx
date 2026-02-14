@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
-import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation, searchQuran } from '../../lib/quranApi';
+import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation, fetchPageTransliteration, searchQuran } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
@@ -89,7 +89,7 @@ export function MushafPage() {
         goToPage,
     } = useQuranStore();
 
-    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter, showTranslation, toggleTranslation } = useSettingsStore();
+    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter, showTranslation, toggleTranslation, showTransliteration, toggleTransliteration } = useSettingsStore();
     const { toggleFavorite, isFavorite } = useFavoritesStore();
     const { playlist, addToQueue, removeFromQueue } = useAudioPlayerStore();
 
@@ -97,6 +97,7 @@ export function MushafPage() {
     const [error, setError] = useState<string | null>(null);
     const [tajweedVerses, setTajweedVerses] = useState<TajweedVerse[]>([]);
     const [translationMap, setTranslationMap] = useState<Map<number, string>>(new Map());
+    const [transliterationMap, setTransliterationMap] = useState<Map<number, string>>(new Map());
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
@@ -219,12 +220,14 @@ export function MushafPage() {
         Promise.all([
             fetchPage(currentPage),
             fetchTajweedPage(currentPage),
-            showTranslation ? fetchPageTranslation(currentPage) : Promise.resolve(new Map<number, string>())
-        ]).then(([ayahs, tajweed, translations]) => {
+            showTranslation ? fetchPageTranslation(currentPage) : Promise.resolve(new Map<number, string>()),
+            showTransliteration ? fetchPageTransliteration(currentPage) : Promise.resolve(new Map<number, string>())
+        ]).then(([ayahs, tajweed, translations, transliterations]) => {
             setPageAyahs(ayahs);
             pageAyahsRef.current = ayahs; // sync ref immediately
             setTajweedVerses(tajweed);
             setTranslationMap(translations);
+            setTransliterationMap(transliterations);
             setIsLoading(false);
 
             // Generate partial hidden words
@@ -247,7 +250,7 @@ export function MushafPage() {
             setError('Impossible de charger la page. Vérifiez votre connexion.');
             setIsLoading(false);
         });
-    }, [currentPage, setPageAyahs, showTranslation]);
+    }, [currentPage, setPageAyahs, showTranslation, showTransliteration]);
 
     // Regenerate partial mask when mode changes
     useEffect(() => {
@@ -802,6 +805,14 @@ export function MushafPage() {
                             </button>
 
                             <button
+                                className={`mih-toolbar__btn ${showTransliteration ? 'active' : ''}`}
+                                onClick={toggleTransliteration}
+                                title="Phonétique"
+                            >
+                                <span style={{ fontSize: 14, fontWeight: 700 }}>Aa</span>
+                            </button>
+
+                            <button
                                 className={`mih-toolbar__btn ${showFontSheet ? 'active' : ''}`}
                                 onClick={() => setShowFontSheet(true)}
                                 title="Taille police"
@@ -965,6 +976,9 @@ export function MushafPage() {
                                                     <span className="mih-verse-num">
                                                         {toArabicNumbers(ayah.numberInSurah)}
                                                     </span>
+                                                    {showTransliteration && transliterationMap.get(ayah.number) && (
+                                                        <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
+                                                    )}
                                                     {showTranslation && translationMap.get(ayah.number) && (
                                                         <div className="mih-translation">{translationMap.get(ayah.number)}</div>
                                                     )}
@@ -1006,6 +1020,9 @@ export function MushafPage() {
                                                             {toArabicNumbers(ayah.numberInSurah)}
                                                         </span>
                                                     </>
+                                                )}
+                                                {showTransliteration && transliterationMap.get(ayah.number) && (
+                                                    <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
                                                 )}
                                                 {showTranslation && translationMap.get(ayah.number) && (
                                                     <div className="mih-translation">{translationMap.get(ayah.number)}</div>
@@ -1426,6 +1443,9 @@ export function MushafPage() {
                             Sourate {surahs.find(s => s.number === shareAyah.surah)?.englishName || shareAyah.surah}, Verset {shareAyah.numberInSurah}
                         </div>
                         <div className="mih-share-modal__text" dir="rtl">{shareAyah.text}</div>
+                        {showTransliteration && transliterationMap.get(shareAyah.number) && (
+                            <div className="mih-share-modal__transliteration" style={{ fontStyle: 'italic', color: '#ab9a6c', margin: '8px 0' }}>{transliterationMap.get(shareAyah.number)}</div>
+                        )}
                         {showTranslation && translationMap.get(shareAyah.number) && (
                             <div className="mih-share-modal__translation">{translationMap.get(shareAyah.number)}</div>
                         )}

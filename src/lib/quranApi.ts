@@ -129,3 +129,18 @@ export async function fetchPageTranslation(
     }
     return map;
 }
+
+export async function fetchPageTransliteration(
+    pageNumber: number
+): Promise<Map<number, string>> {
+    const response = await fetch(`${API_BASE}/page/${pageNumber}/en.transliteration`);
+    const data = await response.json();
+
+    const map = new Map<number, string>();
+    if (data.code === 200 && data.data?.ayahs) {
+        for (const ayah of data.data.ayahs) {
+            map.set(ayah.number, ayah.text);
+        }
+    }
+    return map;
+}
