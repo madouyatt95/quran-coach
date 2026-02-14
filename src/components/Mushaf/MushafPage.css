@@ -1692,12 +1692,14 @@
 /* Progress Bar */
 .mih-coach-bar {
     position: fixed;
-    top: 44px;
+    top: 52px;
+    /* Correctly below the fixed header */
     left: 0;
     right: 0;
     height: 24px;
     background: rgba(0, 0, 0, 0.08);
-    z-index: 40;
+    z-index: 105;
+    /* Just above header/content boundary */
     display: flex;
     align-items: center;
 }

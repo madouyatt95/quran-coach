@@ -135,7 +135,7 @@ class SpeechRecognitionService {
             // Send interim result for display
             this.callbacks?.onInterimResult(transcript);
 
-            // Process BOTH interim and final results for instant feedback
+            // Only process transcript for word matching
             this.processTranscriptRealtime(transcript, lastResult.isFinal);
         };
 
@@ -174,95 +174,64 @@ class SpeechRecognitionService {
         }
     }
 
-    // IMPROVED: Process transcript in real-time with instant feedback
+    // Process transcript in real-time
     private processTranscriptRealtime(transcript: string, isFinal: boolean): void {
         const spokenWords = transcript
             .split(/\s+/)
             .filter(w => w.length > 0);
 
-        // Find new words not yet processed
-        const newWordStartIndex = this.findNewWordsStartIndex(spokenWords);
+        // N'utiliser que les résultats "finaux" pour valider les mots
+        // Cela évite que le même mot soit compté plusieurs fois pendant qu'il est "en cours"
+        if (!isFinal) {
+            // Toutefois, on peut faire du highlighting en temps réel
+            if (spokenWords.length > 0) {
+                // On ne valide pas, mais on peut donner un indice visuel sur le mot actuel
+                // this.callbacks?.onInterimResult(transcript); // Déjà fait dans onresult
+            }
+            return;
+        }
 
-        for (let i = newWordStartIndex; i < spokenWords.length; i++) {
+        // Pour les résultats finaux, on traite tous les mots parlés
+        for (const spokenWord of spokenWords) {
             if (this.currentWordIndex >= this.expectedWords.length) break;
 
-            const spokenWord = spokenWords[i];
             const expectedWord = this.expectedWords[this.currentWordIndex];
-
-            // Try to match with sliding window (allows skipping 1-2 words ahead)
             const matchResult = this.findBestMatch(spokenWord, this.currentWordIndex);
 
             if (matchResult.matched) {
-                // Mark any skipped words as errors
+                // Marquer les mots sautés comme erreurs
                 for (let j = this.currentWordIndex; j < matchResult.matchIndex; j++) {
                     if (!this.processedWords.has(j)) {
                         this.processedWords.add(j);
-                        // Only trigger callback with error for the first skipped word to avoid UI spam
-                        // Passing undefined for spoken word since it was skipped entirely
                         this.callbacks?.onWordMatch(j, false, "(sauté)");
                     }
                 }
 
-                // Mark the matched word as correct
+                // Valider le mot actuel
                 if (!this.processedWords.has(matchResult.matchIndex)) {
                     this.processedWords.add(matchResult.matchIndex);
                     this.callbacks?.onWordMatch(matchResult.matchIndex, true, spokenWord);
                 }
 
                 this.currentWordIndex = matchResult.matchIndex + 1;
-
-                // Update current word highlight
-                if (this.currentWordIndex < this.expectedWords.length) {
-                    this.callbacks?.onCurrentWord(this.currentWordIndex);
-                }
-            } else if (isFinal) {
-                // Only mark as error on final result to avoid false negatives
-                const isCorrect = areWordsEqual(spokenWord, expectedWord);
-
+            } else {
+                // Pas de match direct, on regarde si c'est une erreur sur le mot attendu
                 if (!this.processedWords.has(this.currentWordIndex)) {
                     this.processedWords.add(this.currentWordIndex);
-                    this.callbacks?.onWordMatch(this.currentWordIndex, isCorrect, spokenWord);
-
-                    // Vibrate on error
-                    if (!isCorrect && 'vibrate' in navigator) {
-                        navigator.vibrate(100);
-                    }
+                    const fuzzyMatch = areWordsEqual(spokenWord, expectedWord);
+                    this.callbacks?.onWordMatch(this.currentWordIndex, fuzzyMatch, spokenWord);
                 }
-
                 this.currentWordIndex++;
-
-                // Update current word highlight
-                if (this.currentWordIndex < this.expectedWords.length) {
-                    this.callbacks?.onCurrentWord(this.currentWordIndex);
-                }
             }
-        }
 
-        // Update last processed text for delta tracking
-        if (isFinal) {
-            this.lastInterimText = '';
-        } else {
-            this.lastInterimText = transcript;
+            // Highlight next word
+            if (this.currentWordIndex < this.expectedWords.length) {
+                this.callbacks?.onCurrentWord(this.currentWordIndex);
+            }
         }
     }
 
-    // Find where new words start (for incremental processing)
-    private findNewWordsStartIndex(currentWords: string[]): number {
-        const lastWords = this.lastInterimText.split(/\s+/).filter(w => w.length > 0);
 
-        // Find common prefix length
-        let commonLength = 0;
-        for (let i = 0; i < Math.min(lastWords.length, currentWords.length); i++) {
-            if (normalizeArabic(lastWords[i]) === normalizeArabic(currentWords[i])) {
-                commonLength++;
-            } else {
-                break;
-            }
-        }
-
-        // Start from after common words, but process at least last word
-        return Math.max(0, commonLength - 1);
-    }
 
     // IMPROVED: Sliding window to find best match (allows skipping ahead)
     private findBestMatch(spokenWord: string, startIndex: number): { matched: boolean; matchIndex: number } {

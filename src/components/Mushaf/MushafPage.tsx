@@ -1419,14 +1419,18 @@ export function MushafPage() {
                 <div className="mih-coach-controls">
                     <button
                         className="mih-coach-listen-btn"
-                        onClick={async () => {
+                        onClick={() => {
                             if (pageAyahs.length === 0) return;
-                            const fullText = pageAyahs.map(a => a.text).join(' ');
-                            await playTts(fullText, { rate: 0.85 });
+                            // Utiliser l'audio de haute qualité du récitateur
+                            if (audioPlaying) {
+                                stopAudio();
+                            } else {
+                                playAyahAtIndex(0);
+                            }
                         }}
-                        title="Écouter la page"
+                        title={audioPlaying ? "Arrêter l'écoute" : "Écouter la page (Récitateur)"}
                     >
-                        <Volume2 size={18} />
+                        {audioPlaying ? <Square size={18} /> : <Volume2 size={18} />}
                     </button>
 
                     <button

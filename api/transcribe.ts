@@ -83,16 +83,25 @@ async function transcribeWithHuggingFace(audioBuffer: Buffer, contentType: strin
     const filePath = Array.isArray(uploadResult) ? uploadResult[0] : uploadResult;
 
     // Call the predict endpoint
+    // Gradio 4+ uses a specific format for files
     const predictResponse = await fetch(`${HF_SPACE_URL}/api/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            data: [{ name: `recording.${extension}`, data: filePath }],
+            data: [{
+                path: filePath,
+                orig_name: `recording.${extension}`,
+                mime_type: contentType,
+                size: audioBuffer.length,
+                data: null,
+                is_file: true
+            }],
         }),
     });
 
     if (!predictResponse.ok) {
-        throw new Error(`HF predict failed: ${predictResponse.status}`);
+        const errText = await predictResponse.text();
+        throw new Error(`HF predict failed: ${predictResponse.status} - ${errText}`);
     }
 
     const predictResult = await predictResponse.json();
