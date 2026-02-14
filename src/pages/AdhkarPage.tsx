@@ -347,20 +347,13 @@ export function AdhkarPage() {
     return (
         <div className="adhkar-page">
             <div className="adhkar-category-header" style={{ '--accent-color': selectedCategory.color } as any}>
-                <button className="back-button" onClick={closeCategory}>
+                <button className="back-button" onClick={handleBackClick}>
                     <ArrowLeft size={24} />
                 </button>
                 <div className="header-titles">
                     <h1>{selectedCategory.name}</h1>
                     <span className="arabic-text">{selectedCategory.nameAr}</span>
                 </div>
-                <button
-                    className="category-list-toggle"
-                    onClick={() => setShowList(!showList)}
-                    title="Voir la liste complète"
-                >
-                    {showList ? <X size={24} /> : <List size={24} />}
-                </button>
                 <div className="progress-pill">
                     {currentDhikrIndex + 1} / {selectedCategory.adhkar.length}
                 </div>
