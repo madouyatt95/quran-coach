@@ -575,6 +575,29 @@
     cursor: pointer;
 }
 
+/* Dark mode for sheets */
+[data-theme="dark"] .mih-sheet {
+    background: #161b22;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .mih-sheet__handle {
+    background: #444;
+}
+
+[data-theme="dark"] .mih-sheet__title {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .mih-sheet__close {
+    background: #333;
+    color: #888;
+}
+
+[data-theme="dark"] .mih-sheet-overlay {
+    background: rgba(0, 0, 0, 0.6);
+}
+
 /* Tajweed Toggle */
 .mih-tajweed-toggle {
     display: flex;
