@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
-import { Radio, Mic, Square, Loader2, BookOpen, RefreshCw, ChevronRight } from 'lucide-react';
+import { Radio, Mic, Square, Loader2, RefreshCw, ChevronRight } from 'lucide-react';
 import { getSupportedMimeType } from '../lib/audioUnlock';
-import { useNavigationStore } from '../stores/navigationStore';
+import { useQuranStore } from '../stores/quranStore';
 import './ShazamPage.css';
 
 interface ShazamResult {
@@ -18,7 +18,7 @@ export function ShazamPage() {
     const [transcribed, setTranscribed] = useState('');
     const [results, setResults] = useState<ShazamResult[]>([]);
     const [errorMsg, setErrorMsg] = useState('');
-    const { setCurrentPage, setCurrentSurah, setCurrentAyah } = useNavigationStore();
+    const { goToAyah } = useQuranStore();
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -152,9 +152,7 @@ export function ShazamPage() {
     };
 
     const goToVerse = (surah: number, ayah: number) => {
-        setCurrentSurah(surah);
-        setCurrentAyah(ayah);
-        setCurrentPage('read');
+        goToAyah(surah, ayah);
     };
 
     return (

@@ -52,7 +52,7 @@ demo = gr.Interface(
     - Optimized for Quranic Arabic
     """,
     examples=[],
-    allow_flagging="never"
+    flagging_mode="never"
 )
 
 demo.launch()
