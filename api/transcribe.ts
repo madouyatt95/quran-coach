@@ -74,7 +74,7 @@ async function transcribeWithHuggingFace(audioBuffer: Buffer, contentType: strin
     const uploadResponse = await fetch(`${HF_SPACE_URL}/upload?session_hash=${sessionHash}`, {
         method: 'POST',
         headers: { 'Content-Type': contentType },
-        body: audioBuffer,
+        body: new Uint8Array(audioBuffer),
     });
 
     if (!uploadResponse.ok) {
@@ -109,7 +109,7 @@ async function transcribeWithHuggingFace(audioBuffer: Buffer, contentType: strin
     if (!predictResponse.ok) {
         const errText = await predictResponse.text().catch(() => 'no body');
         console.error('HF Predict Error Body:', errText);
-        throw new Error(`HF predict failed: ${predictResponse.status} - ${errText}`);
+        throw new Error(`HF predict failed: ${predictResponse.status}. Details: ${errText.substring(0, 100)}`);
     }
 
     const predictResult = await predictResponse.json();

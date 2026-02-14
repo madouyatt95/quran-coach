@@ -420,11 +420,13 @@ export function MushafPage() {
             setWordStates(prev => {
                 const next = new Map(prev);
                 allCoachWords.forEach((_, i) => {
-                    if (i >= wordKeyIndex) {
+                    if (i > wordKeyIndex) {
                         const word = allCoachWords[i];
                         next.delete(`${word.ayahIndex}-${word.wordIndex}`);
                     }
                 });
+                // Marquer le mot cible comme actuel (doré)
+                next.set(`${ayahIndex}-${wordIndex}`, 'current');
                 return next;
             });
         }
