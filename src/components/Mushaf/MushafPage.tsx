@@ -1265,7 +1265,7 @@ export function MushafPage() {
                                 >
                                     <div className="mih-search-item__icon">{s.number}</div>
                                     <div className="mih-search-item__info">
-                                        <div className="mih-search-item__name">{s.name} — {SURAH_NAMES_FR[s.number] || s.englishName}</div>
+                                        <div className="mih-search-item__name">{s.englishName} — {SURAH_NAMES_FR[s.number] || s.englishNameTranslation}</div>
                                         <div className="mih-search-item__detail">
                                             {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
                                         </div>
