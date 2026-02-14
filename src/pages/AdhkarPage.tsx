@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2 } from 'lucide-react';
+import { playTts, playTtsLoop, stopTts } from '../lib/ttsService';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -206,14 +207,11 @@ export function AdhkarPage() {
         }
     };
 
-    // ===== Audio Loop Player =====
+    // ===== Audio Loop Player (via ttsService) =====
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+    const [isAudioLoading, setIsAudioLoading] = useState(false);
     const [audioLoopCount, setAudioLoopCount] = useState(3);
     const [currentLoop, setCurrentLoop] = useState(0);
-    const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-    const loopCounterRef = useRef(0);
-    const maxLoopRef = useRef(3);
-    const shouldPlayRef = useRef(false);
 
     const incrementCount = useCallback((dhikrId: number, maxCount: number) => {
         const key = `${selectedCategory?.id}-${dhikrId}`;
@@ -244,72 +242,51 @@ export function AdhkarPage() {
         return repetitions[key] || 0;
     };
 
-    const speakDhikr = useCallback((text: string) => {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ar-SA';
-        utterance.rate = 0.85;
-        utterance.pitch = 1;
+    // Play a single dhikr text via TTS
+    const playDhikrOnce = useCallback(async (text: string) => {
+        setIsAudioLoading(true);
+        try {
+            await playTts(text, { rate: 0.85 });
+        } finally {
+            setIsAudioLoading(false);
+        }
+    }, []);
 
-        // Try to find an Arabic voice
-        const voices = window.speechSynthesis.getVoices();
-        const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
-        if (arabicVoice) utterance.voice = arabicVoice;
-
-        utterance.onend = () => {
-            if (!shouldPlayRef.current) return;
-            loopCounterRef.current++;
-            setCurrentLoop(loopCounterRef.current);
-
-            if (loopCounterRef.current < maxLoopRef.current) {
-                // Small pause between repetitions
-                setTimeout(() => {
-                    if (shouldPlayRef.current) speakDhikr(text);
-                }, 600);
-            } else {
-                // Done
-                shouldPlayRef.current = false;
-                setIsAudioPlaying(false);
-
-                // Auto-increment the manual counter when loop is finished
-                const dhikr = selectedCategory?.adhkar[currentDhikrIndex];
-                if (dhikr) {
-                    incrementCount(dhikr.id, dhikr.count);
-                }
-
-                loopCounterRef.current = 0;
-                setCurrentLoop(0);
-            }
-        };
-
-        utteranceRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
-    }, [selectedCategory, currentDhikrIndex, incrementCount]);
-
-    const playAudioLoop = useCallback(() => {
+    const playAudioLoop = useCallback(async () => {
         if (!selectedCategory) return;
         const dhikr = selectedCategory.adhkar[currentDhikrIndex];
         if (!dhikr) return;
 
-        shouldPlayRef.current = true;
-        maxLoopRef.current = audioLoopCount;
-        loopCounterRef.current = 0;
-        setCurrentLoop(0);
         setIsAudioPlaying(true);
-        speakDhikr(dhikr.arabic);
-    }, [selectedCategory, currentDhikrIndex, audioLoopCount, speakDhikr]);
+        setIsAudioLoading(true);
+        setCurrentLoop(0);
+
+        try {
+            await playTtsLoop(dhikr.arabic, audioLoopCount, {
+                rate: 0.85,
+                onLoop: (i) => setCurrentLoop(i),
+                onEnd: () => {
+                    // Auto-increment counter when loop finishes
+                    incrementCount(dhikr.id, dhikr.count);
+                }
+            });
+        } finally {
+            setIsAudioPlaying(false);
+            setIsAudioLoading(false);
+            setCurrentLoop(0);
+        }
+    }, [selectedCategory, currentDhikrIndex, audioLoopCount, incrementCount]);
 
     const pauseAudioLoop = useCallback(() => {
-        shouldPlayRef.current = false;
-        window.speechSynthesis.cancel();
+        stopTts();
         setIsAudioPlaying(false);
+        setIsAudioLoading(false);
     }, []);
 
     const stopAudioLoop = useCallback(() => {
-        shouldPlayRef.current = false;
-        window.speechSynthesis.cancel();
+        stopTts();
         setIsAudioPlaying(false);
-        loopCounterRef.current = 0;
+        setIsAudioLoading(false);
         setCurrentLoop(0);
     }, []);
 
@@ -391,6 +368,13 @@ export function AdhkarPage() {
                         >
                             <div className="list-item-header">
                                 <span className="item-number">#{index + 1}</span>
+                                <button
+                                    className="list-item-tts-btn"
+                                    onClick={(e) => { e.stopPropagation(); playDhikrOnce(dhikr.arabic); }}
+                                    title="Écouter"
+                                >
+                                    {isAudioLoading ? <Loader2 size={14} className="spin" /> : <Volume2 size={14} />}
+                                </button>
                                 {dhikr.source && <span className="item-source">{dhikr.source}</span>}
                             </div>
                             <p className="item-arabic">{dhikr.arabic.substring(0, 80)}...</p>

@@ -1,5 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
+// HuggingFace Space URL (set in Vercel environment variables)
+const HF_SPACE_URL = process.env.HF_SPACE_URL || '';
+
+/**
+ * Transcribe Arabic audio using HuggingFace Space (free) with OpenAI fallback (paid).
+ */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,12 +18,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-        console.error('OPENAI_API_KEY not configured');
-        return res.status(500).json({ error: 'API key not configured' });
     }
 
     try {
@@ -35,31 +35,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // Convert base64 to buffer
         const audioBuffer = Buffer.from(audio, 'base64');
 
-        // Create form data for OpenAI
-        const formData = new FormData();
-        const blob = new Blob([audioBuffer], { type: contentType });
-        formData.append('file', blob, `recording.${extension}`);
-        formData.append('model', 'whisper-1');
-        formData.append('language', 'ar');
-        formData.append('response_format', 'json');
+        let transcribed = '';
 
-        // Call OpenAI Whisper API
-        const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-            },
-            body: formData,
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            console.error('OpenAI API error:', error);
-            return res.status(500).json({ error: 'Transcription failed', details: error });
+        // Strategy: try HuggingFace Space first (free), then OpenAI (paid fallback)
+        if (HF_SPACE_URL) {
+            try {
+                transcribed = await transcribeWithHuggingFace(audioBuffer, contentType, extension);
+            } catch (hfError) {
+                console.warn('HuggingFace Space unavailable, falling back to OpenAI:', hfError);
+                transcribed = await transcribeWithOpenAI(audioBuffer, contentType, extension);
+            }
+        } else {
+            transcribed = await transcribeWithOpenAI(audioBuffer, contentType, extension);
         }
-
-        const result = await response.json();
-        const transcribed = result.text || '';
 
         // Compare with expected text if provided
         let comparison = null;
@@ -74,11 +62,82 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 }
 
-// Compare transcribed text with expected text
+/**
+ * Transcribe using HuggingFace Space (Gradio API)
+ */
+async function transcribeWithHuggingFace(audioBuffer: Buffer, contentType: string, extension: string): Promise<string> {
+    // Upload the audio file to HuggingFace Space via Gradio API
+    const uploadResponse = await fetch(`${HF_SPACE_URL}/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': contentType },
+        body: audioBuffer,
+    });
+
+    if (!uploadResponse.ok) {
+        throw new Error(`HF upload failed: ${uploadResponse.status}`);
+    }
+
+    const uploadResult = await uploadResponse.json();
+    const filePath = Array.isArray(uploadResult) ? uploadResult[0] : uploadResult;
+
+    // Call the predict endpoint
+    const predictResponse = await fetch(`${HF_SPACE_URL}/api/predict`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            data: [{ name: `recording.${extension}`, data: filePath }],
+        }),
+    });
+
+    if (!predictResponse.ok) {
+        throw new Error(`HF predict failed: ${predictResponse.status}`);
+    }
+
+    const predictResult = await predictResponse.json();
+    return predictResult.data?.[0] || '';
+}
+
+/**
+ * Transcribe using OpenAI Whisper API (paid fallback)
+ */
+async function transcribeWithOpenAI(audioBuffer: Buffer, contentType: string, extension: string): Promise<string> {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+        throw new Error('OPENAI_API_KEY not configured');
+    }
+
+    const formData = new FormData();
+    const blob = new Blob([audioBuffer], { type: contentType });
+    formData.append('file', blob, `recording.${extension}`);
+    formData.append('model', 'whisper-1');
+    formData.append('language', 'ar');
+    formData.append('response_format', 'json');
+
+    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const error = await response.text();
+        console.error('OpenAI API error:', error);
+        throw new Error(`OpenAI transcription failed: ${error}`);
+    }
+
+    const result = await response.json();
+    return result.text || '';
+}
+
+/**
+ * Compare transcribed text with expected text (Arabic word matching)
+ */
 function compareArabicTexts(transcribed: string, expected: string) {
     const normalize = (text: string) => {
         return text
-            .replace(/[\u064B-\u0652\u0670]/g, '')
+            .replace(/[\u064B-\u0652\u0670]/g, '') // Remove tashkeel
             .replace(/\s+/g, ' ')
             .trim();
     };

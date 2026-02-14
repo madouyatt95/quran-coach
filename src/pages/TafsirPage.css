@@ -129,6 +129,41 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.tafsir-tts-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    margin-bottom: var(--space-md);
+    background: rgba(201, 168, 76, 0.12);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: var(--radius-full);
+    color: #c9a84c;
+    font-size: var(--text-ui-xs);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tafsir-tts-btn:active,
+.tafsir-tts-btn.active {
+    background: rgba(201, 168, 76, 0.25);
+    transform: scale(0.95);
+}
+
+.tafsir-tts-btn .spin {
+    animation: tts-spin 1s linear infinite;
+}
+
+@keyframes tts-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .tafsir-verse-translation {
     font-size: var(--text-ui-md);
     color: var(--color-text-secondary);

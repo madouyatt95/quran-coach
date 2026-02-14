@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, ChevronDown, Loader2, Users, MessageCircle } from 'lucide-react';
+import { BookOpen, ChevronDown, Loader2, Users, MessageCircle, Volume2 } from 'lucide-react';
+import { playTts, stopTts } from '../lib/ttsService';
 import { useQuranStore } from '../stores/quranStore';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
 import './TafsirPage.css';
@@ -55,6 +56,10 @@ export function TafsirPage() {
     // Dialogue Narratif mode
     const [narrativeMode, setNarrativeMode] = useState(false);
     const isNarrativeSurah = NARRATIVE_SURAHS.includes(selectedSurah);
+
+    // TTS state
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isTtsLoadingState, setIsTtsLoadingState] = useState(false);
 
     // Flag to track if we're initializing from Shazam (to avoid resetting ayah)
     const [initializedFromShazam, setInitializedFromShazam] = useState(false);
@@ -230,6 +235,31 @@ export function TafsirPage() {
                     <div className="tafsir-verse-arabic" dir="rtl">
                         {verseText.arabic}
                     </div>
+                    <button
+                        className={`tafsir-tts-btn ${isSpeaking ? 'active' : ''}`}
+                        onClick={async () => {
+                            if (isSpeaking) {
+                                stopTts();
+                                setIsSpeaking(false);
+                            } else {
+                                setIsTtsLoadingState(true);
+                                setIsSpeaking(true);
+                                try {
+                                    await playTts(verseText.arabic, {
+                                        rate: 0.85,
+                                        onEnd: () => setIsSpeaking(false)
+                                    });
+                                } finally {
+                                    setIsTtsLoadingState(false);
+                                    setIsSpeaking(false);
+                                }
+                            }
+                        }}
+                        title={isSpeaking ? 'Arrêter' : 'Écouter le verset'}
+                    >
+                        {isTtsLoadingState ? <Loader2 size={16} className="spin" /> : <Volume2 size={16} />}
+                        <span>{isSpeaking ? 'Arrêter' : 'Écouter'}</span>
+                    </button>
                     <div className="tafsir-verse-translation">
                         {verseText.translation.replace(/<[^>]*>/g, '')}
                     </div>

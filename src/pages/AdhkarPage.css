@@ -416,6 +416,39 @@
     align-items: center;
 }
 
+.list-item-tts-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 50%;
+    color: #c9a84c;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.list-item-tts-btn:active {
+    transform: scale(0.9);
+    background: rgba(201, 168, 76, 0.3);
+}
+
+.list-item-tts-btn .spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .item-number {
     font-size: 0.75rem;
     font-weight: 800;

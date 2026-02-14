@@ -18,7 +18,6 @@ import {
     SkipForward,
     Play,
     Pause,
-    Lock,
     Volume2,
     Languages,
     ChevronLeft,
@@ -27,7 +26,9 @@ import {
     Share2,
     Copy,
     Check,
-    ListPlus
+    ListPlus,
+    Square,
+    MicOff
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
@@ -38,6 +39,9 @@ import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
+import { speechRecognitionService } from '../../lib/speechRecognition';
+import { getSupportedMimeType } from '../../lib/audioUnlock';
+import { playTts } from '../../lib/ttsService';
 import type { Ayah } from '../../types';
 import './MushafPage.css';
 
@@ -111,10 +115,18 @@ export function MushafPage() {
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
     const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
 
-    // Coach mode (locked for now)
-    const [isCoachMode] = useState(false);
-    const [wordStates] = useState<Map<string, WordState>>(new Map());
-    const [coachSoonToast, setCoachSoonToast] = useState(false);
+    // Coach mode
+    const [isCoachMode, setIsCoachMode] = useState(false);
+    const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
+    const [isListening, setIsListening] = useState(false);
+    const [coachMistakes, setCoachMistakes] = useState<Record<string, { expected: string; spoken: string }>>({});
+    const [coachMistakesCount, setCoachMistakesCount] = useState(0);
+    const [coachTotalProcessed, setCoachTotalProcessed] = useState(0);
+    const [selectedError, setSelectedError] = useState<string | null>(null);
+    const [showMistakesSummary, setShowMistakesSummary] = useState(false);
+    const [coachInterimText, setCoachInterimText] = useState('');
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
 
     // Background/visibility tracking
     const isHiddenRef = useRef(false);
@@ -391,7 +403,147 @@ export function MushafPage() {
         }, 2000);
     }, []);
 
-    // Coach mode - disabled for now (speech recognition locked)
+    // ======= Coach Mode Logic =======
+    // Build a flat word list for ASR matching
+    const allCoachWords = useMemo(() => {
+        const words: Array<{ text: string; ayahIndex: number; wordIndex: number }> = [];
+        pageAyahs.forEach((ayah, ayahIndex) => {
+            const w = ayah.text.split(/\s+/).filter(w => w.length > 0);
+            w.forEach((text, wordIndex) => {
+                words.push({ text, ayahIndex, wordIndex });
+            });
+        });
+        return words;
+    }, [pageAyahs]);
+
+    // Reset coach state
+    const resetCoach = useCallback(() => {
+        setWordStates(new Map());
+        setCoachMistakes({});
+        setCoachMistakesCount(0);
+        setCoachTotalProcessed(0);
+        setCoachInterimText('');
+        setSelectedError(null);
+        setShowMistakesSummary(false);
+    }, []);
+
+    // Start listening (ASR)
+    const startCoachListening = useCallback(() => {
+        if (pageAyahs.length === 0) return;
+        resetCoach();
+
+        const expectedText = pageAyahs.map(a => a.text).join(' ');
+
+        const success = speechRecognitionService.start(expectedText, {
+            onWordMatch: (wordIndex, isCorrect, spokenWord) => {
+                const word = allCoachWords[wordIndex];
+                if (!word) return;
+                const key = `${word.ayahIndex}-${word.wordIndex}`;
+
+                setWordStates(prev => {
+                    const n = new Map(prev);
+                    n.set(key, isCorrect ? 'correct' : 'error');
+                    return n;
+                });
+                setCoachTotalProcessed(prev => prev + 1);
+
+                if (!isCorrect) {
+                    setCoachMistakesCount(prev => prev + 1);
+                    setCoachMistakes(prev => ({
+                        ...prev,
+                        [key]: { expected: word.text, spoken: spokenWord || '(non entendu)' }
+                    }));
+                    if ('vibrate' in navigator) navigator.vibrate(200);
+                }
+            },
+            onCurrentWord: (wordIndex) => {
+                const word = allCoachWords[wordIndex];
+                if (!word) return;
+                const key = `${word.ayahIndex}-${word.wordIndex}`;
+                setWordStates(prev => {
+                    const n = new Map(prev);
+                    n.set(key, 'current');
+                    return n;
+                });
+            },
+            onInterimResult: (text) => setCoachInterimText(text),
+            onError: (error) => {
+                console.warn('Speech recognition error:', error);
+                if (error !== 'no-speech') startWhisperBackup();
+            },
+            onEnd: () => setIsListening(false)
+        });
+
+        if (success) {
+            setIsListening(true);
+            startWhisperBackup();
+        } else {
+            startWhisperBackup();
+        }
+    }, [pageAyahs, allCoachWords, resetCoach]);
+
+    // Whisper backup recording
+    const startWhisperBackup = useCallback(async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mimeType = getSupportedMimeType();
+            const mediaRecorder = new MediaRecorder(stream, { mimeType });
+            audioChunksRef.current = [];
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) audioChunksRef.current.push(event.data);
+            };
+            mediaRecorderRef.current = mediaRecorder;
+            mediaRecorder.start();
+            setIsListening(true);
+        } catch (err) {
+            console.error('Microphone error:', err);
+        }
+    }, []);
+
+    // Stop listening
+    const stopCoachListening = useCallback(() => {
+        speechRecognitionService.stop();
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+            mediaRecorderRef.current.stream.getTracks().forEach(t => t.stop());
+        }
+        setIsListening(false);
+    }, []);
+
+    // Toggle coach mode on/off
+    const toggleCoachMode = useCallback(() => {
+        if (isCoachMode) {
+            stopCoachListening();
+            resetCoach();
+            setIsCoachMode(false);
+        } else {
+            setIsCoachMode(true);
+        }
+    }, [isCoachMode, stopCoachListening, resetCoach]);
+
+    // Coach accuracy
+    const coachAccuracy = useMemo(() => {
+        if (coachTotalProcessed === 0) return 0;
+        return Math.round(((coachTotalProcessed - coachMistakesCount) / coachTotalProcessed) * 100);
+    }, [coachTotalProcessed, coachMistakesCount]);
+
+    // Coach progress fraction
+    const coachProgress = useMemo(() => {
+        if (allCoachWords.length === 0) return 0;
+        return coachTotalProcessed / allCoachWords.length;
+    }, [coachTotalProcessed, allCoachWords.length]);
+
+    // Save score when coach finishes a page
+    useEffect(() => {
+        if (isCoachMode && coachTotalProcessed > 0 && coachTotalProcessed >= allCoachWords.length) {
+            try {
+                const saved = JSON.parse(localStorage.getItem('quran-coach-scores') || '{}');
+                saved[currentPage] = { accuracy: coachAccuracy, date: new Date().toISOString() };
+                localStorage.setItem('quran-coach-scores', JSON.stringify(saved));
+            } catch { /* ignore */ }
+        }
+    }, [isCoachMode, coachTotalProcessed, allCoachWords.length, coachAccuracy, currentPage]);
+
 
     // Group ayahs by surah
     const groupedAyahs = useMemo(() => {
@@ -824,15 +976,11 @@ export function MushafPage() {
                     </button>
 
                     <button
-                        className="mih-toolbar__btn"
-                        onClick={() => {
-                            setCoachSoonToast(true);
-                            setTimeout(() => setCoachSoonToast(false), 2000);
-                        }}
-                        title="Coach (bientôt)"
-                        style={{ opacity: 0.5 }}
+                        className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''}`}
+                        onClick={toggleCoachMode}
+                        title={isCoachMode ? 'Désactiver le Coach' : 'Activer le Coach'}
                     >
-                        <Mic size={22} />
+                        {isCoachMode ? <MicOff size={22} /> : <Mic size={22} />}
                     </button>
 
                     <div className="mih-toolbar__divider" />
@@ -847,18 +995,18 @@ export function MushafPage() {
                 </div>
             )}
 
-            {/* ===== Coach Soon Toast ===== */}
-            {coachSoonToast && (
-                <div style={{
-                    position: 'fixed', top: 52, right: 12, zIndex: 50,
-                    background: 'rgba(201, 168, 76, 0.95)', color: '#fff', padding: '8px 16px',
-                    borderRadius: 20, fontSize: '0.85rem', fontWeight: 600,
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                    animation: 'fadeIn 0.2s ease'
-                }}>
-                    <Lock size={14} />
-                    Bientôt disponible 🔜
+            {/* ===== Coach Progress Bar ===== */}
+            {isCoachMode && coachTotalProcessed > 0 && (
+                <div className="mih-coach-bar">
+                    <div className="mih-coach-bar__fill" style={{ width: `${coachProgress * 100}%` }} />
+                    <span className="mih-coach-bar__text">
+                        {coachAccuracy}% • {coachTotalProcessed}/{allCoachWords.length} mots
+                        {coachMistakesCount > 0 && (
+                            <button className="mih-coach-bar__errors" onClick={() => setShowMistakesSummary(true)}>
+                                {coachMistakesCount} erreur{coachMistakesCount > 1 ? 's' : ''}
+                            </button>
+                        )}
+                    </span>
                 </div>
             )}
             {/* ===== Tajweed Sheet ===== */}
@@ -1279,6 +1427,116 @@ export function MushafPage() {
                                     <Share2 size={16} />
                                     Partager
                                 </button>
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* ===== Coach Floating Mic ===== */}
+            {isCoachMode && (
+                <div className="mih-coach-controls">
+                    <button
+                        className="mih-coach-listen-btn"
+                        onClick={async () => {
+                            if (pageAyahs.length === 0) return;
+                            const fullText = pageAyahs.map(a => a.text).join(' ');
+                            await playTts(fullText, { rate: 0.85 });
+                        }}
+                        title="Écouter la page"
+                    >
+                        <Volume2 size={18} />
+                    </button>
+
+                    <button
+                        className={`mih-coach-mic ${isListening ? 'mih-coach-mic--active' : ''}`}
+                        onClick={isListening ? stopCoachListening : startCoachListening}
+                    >
+                        {isListening ? <Square size={28} /> : <Mic size={28} />}
+                    </button>
+                </div>
+            )}
+
+            {/* ===== Coach Interim Text ===== */}
+            {isCoachMode && coachInterimText && (
+                <div className="mih-coach-interim" dir="rtl">{coachInterimText}</div>
+            )}
+
+            {/* ===== Coach Error Modal ===== */}
+            {selectedError && coachMistakes[selectedError] && (
+                <>
+                    <div className="mih-sheet-overlay" onClick={() => setSelectedError(null)} />
+                    <div className="mih-coach-error-modal">
+                        <div className="mih-coach-error-modal__header">
+                            <h3>Comparaison</h3>
+                            <button onClick={() => setSelectedError(null)}><X size={18} /></button>
+                        </div>
+                        <div className="mih-coach-error-modal__content">
+                            <div className="mih-coach-error-row">
+                                <span className="mih-coach-error-label">Attendu :</span>
+                                <span className="mih-coach-error-text mih-coach-error-text--expected" dir="rtl">
+                                    {coachMistakes[selectedError].expected}
+                                </span>
+                                <button
+                                    className="mih-coach-error-play"
+                                    onClick={() => playTts(coachMistakes[selectedError].expected, { rate: 0.7 })}
+                                >
+                                    <Volume2 size={14} />
+                                </button>
+                            </div>
+                            <div className="mih-coach-error-row">
+                                <span className="mih-coach-error-label">Entendu :</span>
+                                <span className="mih-coach-error-text mih-coach-error-text--spoken" dir="rtl">
+                                    {coachMistakes[selectedError].spoken}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* ===== Coach Mistakes Summary Modal ===== */}
+            {showMistakesSummary && (
+                <>
+                    <div className="mih-sheet-overlay" onClick={() => setShowMistakesSummary(false)} />
+                    <div className="mih-sheet">
+                        <div className="mih-sheet__handle" />
+                        <div className="mih-sheet__header">
+                            <span className="mih-sheet__title">
+                                Résumé des erreurs ({coachMistakesCount})
+                            </span>
+                            <button className="mih-sheet__close" onClick={() => setShowMistakesSummary(false)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div style={{ maxHeight: '60vh', overflowY: 'auto', padding: '0 16px 16px' }}>
+                            {Object.keys(coachMistakes).length === 0 ? (
+                                <p style={{ textAlign: 'center', color: '#999', padding: 24 }}>
+                                    Aucune erreur. Mashallah ! 🌟
+                                </p>
+                            ) : (
+                                Object.entries(coachMistakes).map(([key, data]) => (
+                                    <div
+                                        key={key}
+                                        className="mih-coach-summary-item"
+                                        onClick={() => { setSelectedError(key); setShowMistakesSummary(false); }}
+                                    >
+                                        <div className="mih-coach-summary-row">
+                                            <span className="mih-coach-error-label">Attendu :</span>
+                                            <span className="mih-coach-error-text mih-coach-error-text--expected" dir="rtl">{data.expected}</span>
+                                            <button
+                                                className="mih-coach-error-play"
+                                                onClick={(e) => { e.stopPropagation(); playTts(data.expected, { rate: 0.7 }); }}
+                                            >
+                                                <Volume2 size={12} />
+                                            </button>
+                                        </div>
+                                        <div className="mih-coach-summary-row">
+                                            <span className="mih-coach-error-label">Entendu :</span>
+                                            <span className="mih-coach-error-text mih-coach-error-text--spoken" dir="rtl">{data.spoken}</span>
+                                        </div>
+                                    </div>
+                                ))
                             )}
                         </div>
                     </div>
