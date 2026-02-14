@@ -781,14 +781,6 @@ export function MushafPage() {
                     {showToolbar && (
                         <div className="mih-toolbar">
                             <button
-                                className="mih-toolbar__btn"
-                                onClick={() => setShowSearch(true)}
-                                title="Rechercher une sourate"
-                            >
-                                <Search size={18} />
-                            </button>
-
-                            <button
                                 className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
                                 onClick={() => setShowTajweedSheet(true)}
                                 title="Tajweed"
