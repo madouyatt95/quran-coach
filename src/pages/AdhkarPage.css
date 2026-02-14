@@ -352,6 +352,118 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
+/* ========================================
+   List View Redesign (Premium)
+   ======================================== */
+
+.adhkar-list-view {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    overflow-y: auto;
+    flex: 1;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-overflow-scrolling: touch;
+}
+
+.adhkar-list-item {
+    padding: var(--space-lg);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-xl);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.adhkar-list-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 0;
+    background: #c9a84c;
+    transition: height 0.3s ease;
+    border-radius: 0 4px 4px 0;
+}
+
+.adhkar-list-item:active {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(0.98);
+}
+
+.adhkar-list-item.active {
+    background: rgba(201, 168, 76, 0.1);
+    border-color: rgba(201, 168, 76, 0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.adhkar-list-item.active::before {
+    height: 70%;
+}
+
+.list-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item-number {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #ffd700;
+    background: rgba(201, 168, 76, 0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.item-source {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.item-arabic {
+    font-family: var(--font-arabic);
+    font-size: 1.8rem;
+    color: #f3e5ab;
+    text-align: right;
+    line-height: 1.8;
+    direction: rtl;
+    margin: 4px 0;
+}
+
+.active .item-arabic {
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(201, 168, 76, 0.4);
+}
+
+.item-translation {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+}
+
+.active .item-translation {
+    color: #ffffff;
+}
+
+/* Player layout adjustment */
+.adhkar-player {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 /* Tablet & Desktop */
 @media (min-width: 768px) {
     .adhkar-categories {
@@ -365,5 +477,12 @@
 
     .dhikr-counter:hover {
         transform: scale(1.02);
+    }
+
+    .adhkar-list-view {
+        max-width: 650px;
+        margin: 0 auto;
+        width: 100%;
+        background: transparent;
     }
 }

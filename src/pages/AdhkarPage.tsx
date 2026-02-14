@@ -141,10 +141,36 @@ const ADHKAR_DATA: AdhkarCategory[] = [
 
 export function AdhkarPage() {
     const navigate = useNavigate();
-    const [selectedCategory, setSelectedCategory] = useState<AdhkarCategory | null>(null);
-    const [currentDhikrIndex, setCurrentDhikrIndex] = useState(0);
+
+    // Load persisted state
+    const [selectedCategory, setSelectedCategory] = useState<AdhkarCategory | null>(() => {
+        const savedCatId = localStorage.getItem('adhkar_category_id');
+        if (savedCatId) {
+            return ADHKAR_DATA.find(c => c.id === savedCatId) || null;
+        }
+        return null;
+    });
+
+    const [currentDhikrIndex, setCurrentDhikrIndex] = useState(() => {
+        const savedIndex = localStorage.getItem('adhkar_dhikr_index');
+        return savedIndex ? parseInt(savedIndex, 10) : 0;
+    });
+
     const [repetitions, setRepetitions] = useState<Record<string, number>>({});
     const [showList, setShowList] = useState(false);
+
+    // Persist state changes
+    useEffect(() => {
+        if (selectedCategory) {
+            localStorage.setItem('adhkar_category_id', selectedCategory.id);
+        } else {
+            localStorage.removeItem('adhkar_category_id');
+        }
+    }, [selectedCategory]);
+
+    useEffect(() => {
+        localStorage.setItem('adhkar_dhikr_index', currentDhikrIndex.toString());
+    }, [currentDhikrIndex]);
 
     const handleCategoryClick = (category: AdhkarCategory) => {
         setSelectedCategory(category);
@@ -158,6 +184,7 @@ export function AdhkarPage() {
         stopAudioLoop();
         setSelectedCategory(null);
         setShowList(false);
+        setCurrentDhikrIndex(0);
     };
 
     // ===== Audio Loop Player =====
