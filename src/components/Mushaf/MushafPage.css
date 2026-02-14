@@ -1482,47 +1482,56 @@
 /* ========================================
    Juz Navigation Grid
    ======================================== */
-.mih-juz-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
+.mih-juz-scroll {
+    display: flex;
     gap: 6px;
     padding: 8px 16px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 }
 
-.mih-juz-btn {
+.mih-juz-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.mih-juz-pill {
+    flex-shrink: 0;
+    min-width: 36px;
+    height: 32px;
     background: #f5f3ed;
     border: 1px solid #e8e4da;
-    border-radius: 8px;
-    padding: 8px 4px;
-    font-size: 0.85rem;
+    border-radius: 16px;
+    padding: 0 10px;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: #555;
+    color: #777;
     cursor: pointer;
     transition: all 0.15s ease;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.mih-juz-btn:hover {
-    background: #e8e4da;
+.mih-juz-pill:active {
+    transform: scale(0.95);
 }
 
-.mih-juz-btn.active {
+.mih-juz-pill.active {
     background: #4CAF50;
     color: #fff;
     border-color: #4CAF50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
-[data-theme="dark"] .mih-juz-btn {
+[data-theme="dark"] .mih-juz-pill {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(255, 255, 255, 0.1);
-    color: #ccc;
+    color: #aaa;
 }
 
-[data-theme="dark"] .mih-juz-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-}
-
-[data-theme="dark"] .mih-juz-btn.active {
+[data-theme="dark"] .mih-juz-pill.active {
     background: #66BB6A;
     color: #111;
     border-color: #66BB6A;

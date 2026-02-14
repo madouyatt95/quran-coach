@@ -47,6 +47,33 @@ import './MushafPage.css';
 
 const BISMILLAH = '\u0628\u0650\u0633\u0652\u0645\u0650 \u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650';
 
+// French surah name translations
+const SURAH_NAMES_FR: Record<number, string> = {
+    1: "L'Ouverture", 2: "La Vache", 3: "La Famille d'Imran", 4: "Les Femmes", 5: "La Table Servie",
+    6: "Les Bestiaux", 7: "Les Murailles", 8: "Le Butin", 9: "Le Repentir", 10: "Jonas",
+    11: "Houd", 12: "Joseph", 13: "Le Tonnerre", 14: "Abraham", 15: "Al-Hijr",
+    16: "Les Abeilles", 17: "Le Voyage Nocturne", 18: "La Caverne", 19: "Marie", 20: "Ta-Ha",
+    21: "Les Prophètes", 22: "Le Pèlerinage", 23: "Les Croyants", 24: "La Lumière", 25: "Le Discernement",
+    26: "Les Poètes", 27: "Les Fourmis", 28: "Le Récit", 29: "L'Araignée", 30: "Les Romains",
+    31: "Luqman", 32: "La Prosternation", 33: "Les Coalisés", 34: "Saba", 35: "Le Créateur",
+    36: "Ya-Sin", 37: "Les Rangées", 38: "Sad", 39: "Les Groupes", 40: "Le Pardonneur",
+    41: "Les Versets Détaillés", 42: "La Consultation", 43: "L'Ornement", 44: "La Fumée", 45: "L'Agenouillée",
+    46: "Al-Ahqaf", 47: "Muhammad", 48: "La Victoire", 49: "Les Appartements", 50: "Qaf",
+    51: "Qui Éparpillent", 52: "Le Mont", 53: "L'Étoile", 54: "La Lune", 55: "Le Tout Miséricordieux",
+    56: "L'Événement", 57: "Le Fer", 58: "La Discussion", 59: "L'Exode", 60: "L'Éprouvée",
+    61: "Le Rang", 62: "Le Vendredi", 63: "Les Hypocrites", 64: "La Fausse Alerte", 65: "Le Divorce",
+    66: "L'Interdiction", 67: "La Royauté", 68: "La Plume", 69: "Celle qui Montre la Vérité", 70: "Les Voies d'Ascension",
+    71: "Noé", 72: "Les Djinns", 73: "L'Enveloppé", 74: "Le Revêtu d'un Manteau", 75: "La Résurrection",
+    76: "L'Homme", 77: "Les Envoyés", 78: "La Nouvelle", 79: "Les Anges qui Arrachent", 80: "Il s'est Renfrogné",
+    81: "L'Obscurcissement", 82: "La Rupture", 83: "Les Fraudeurs", 84: "La Déchirure", 85: "Les Constellations",
+    86: "L'Astre Nocturne", 87: "Le Très-Haut", 88: "L'Enveloppante", 89: "L'Aube", 90: "La Cité",
+    91: "Le Soleil", 92: "La Nuit", 93: "Le Jour Montant", 94: "L'Ouverture de la Poitrine", 95: "Le Figuier",
+    96: "L'Adhérence", 97: "La Destinée", 98: "La Preuve", 99: "La Secousse", 100: "Les Coursiers",
+    101: "Le Fracas", 102: "La Course aux Richesses", 103: "Le Temps", 104: "Le Calomniateur", 105: "L'Éléphant",
+    106: "Quraych", 107: "L'Ustensile", 108: "L'Abondance", 109: "Les Infidèles", 110: "Le Secours Divin",
+    111: "Les Fibres", 112: "Le Monothéisme Pur", 113: "L'Aube Naissante", 114: "Les Hommes"
+};
+
 // Juz start pages (1-indexed, 30 juz)
 const JUZ_START_PAGES: number[] = [
     1, 22, 42, 62, 82, 102, 121, 142, 162, 182,
@@ -602,13 +629,17 @@ export function MushafPage() {
     const filteredSurahs = useMemo(() => {
         if (!searchQuery) return surahs;
         const q = searchQuery.toLowerCase();
-        return surahs.filter(s =>
-            s.name.includes(q) ||
-            s.name.toLowerCase().includes(q) ||
-            s.englishName.toLowerCase().includes(q) ||
-            (s.englishNameTranslation && s.englishNameTranslation.toLowerCase().includes(q)) ||
-            s.number.toString().includes(q)
-        );
+        return surahs.filter(s => {
+            const frName = SURAH_NAMES_FR[s.number] || '';
+            return (
+                s.name.includes(q) ||
+                s.name.toLowerCase().includes(q) ||
+                s.englishName.toLowerCase().includes(q) ||
+                frName.toLowerCase().includes(q) ||
+                (s.englishNameTranslation && s.englishNameTranslation.toLowerCase().includes(q)) ||
+                s.number.toString().includes(q)
+            );
+        });
     }, [surahs, searchQuery]);
 
     // Verse search (Arabic + French)
@@ -1207,11 +1238,11 @@ export function MushafPage() {
                         {!searchQuery && (
                             <>
                                 <div className="mih-search-label">Naviguer par Juz</div>
-                                <div className="mih-juz-grid">
+                                <div className="mih-juz-scroll">
                                     {JUZ_START_PAGES.map((page, idx) => (
                                         <button
                                             key={idx}
-                                            className={`mih-juz-btn ${currentPage >= page && (idx === 29 || currentPage < JUZ_START_PAGES[idx + 1]) ? 'active' : ''}`}
+                                            className={`mih-juz-pill ${currentPage >= page && (idx === 29 || currentPage < JUZ_START_PAGES[idx + 1]) ? 'active' : ''}`}
                                             onClick={() => { goToPage(page); setShowSearch(false); setSearchQuery(''); }}
                                         >
                                             {idx + 1}
@@ -1234,7 +1265,7 @@ export function MushafPage() {
                                 >
                                     <div className="mih-search-item__icon">{s.number}</div>
                                     <div className="mih-search-item__info">
-                                        <div className="mih-search-item__name">{s.name} — {s.englishName}</div>
+                                        <div className="mih-search-item__name">{s.name} — {SURAH_NAMES_FR[s.number] || s.englishName}</div>
                                         <div className="mih-search-item__detail">
                                             {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
                                         </div>
