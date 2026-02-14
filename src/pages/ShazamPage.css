@@ -388,3 +388,79 @@
     font-size: 0.8rem;
     font-weight: 600;
 }
+
+/* Maintenance Overlay */
+.shazam-maintenance-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, rgba(13, 17, 23, 0.95) 0%, rgba(26, 26, 46, 0.98) 100%);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    text-align: center;
+    color: var(--color-text-primary);
+}
+
+.shazam-maintenance-icon {
+    color: #c9a84c;
+    margin-bottom: var(--space-lg);
+    animation: maintenance-pulse 2s ease-in-out infinite;
+}
+
+@keyframes maintenance-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+.shazam-maintenance-badge {
+    background: #c9a84c;
+    color: #1a1a2e;
+    padding: var(--space-xs) var(--space-lg);
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    margin: var(--space-md) 0;
+}
+
+.shazam-maintenance-overlay h2 {
+    font-size: 2rem;
+    margin: 0;
+    color: var(--color-text-primary);
+}
+
+.shazam-maintenance-overlay p {
+    color: var(--color-text-secondary);
+    max-width: 300px;
+    line-height: 1.6;
+    margin-bottom: var(--space-xl);
+}
+
+.shazam-maintenance-btn {
+    padding: var(--space-md) var(--space-2xl);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.shazam-maintenance-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #c9a84c;
+    color: #c9a84c;
+}

@@ -14,7 +14,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         { path: '/tafsir', icon: BookOpen, label: 'Tafsir', color: '#58A6FF' },
         { path: '/themes', icon: Bookmark, label: 'Thèmes', color: '#d4af37' },
         { path: '/favorites', icon: Heart, label: 'Favoris', color: '#e74c3c' },
-        { path: '/shazam', icon: Radio, label: 'Shazam', color: '#FF6B6B' },
+        { path: '/shazam', icon: Radio, label: 'Shazam (Bientôt)', color: '#FF6B6B', disabled: true },
         { path: '/mosques', icon: Building2, label: 'Mosquées', color: '#26C6DA' },
         { path: '/settings', icon: Settings, label: 'Réglages', color: '#888' },
     ];
@@ -40,15 +40,22 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 {/* Navigation */}
                 <nav className="side-menu-nav">
                     {menuItems.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            className={({ isActive }) => `side-menu-item ${isActive ? 'active' : ''}`}
-                            onClick={onClose}
-                        >
-                            <item.icon size={22} style={{ color: item.color }} />
-                            <span>{item.label}</span>
-                        </NavLink>
+                        item.disabled ? (
+                            <div key={item.path} className="side-menu-item disabled">
+                                <item.icon size={22} style={{ color: item.color, opacity: 0.5 }} />
+                                <span>{item.label}</span>
+                            </div>
+                        ) : (
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                className={({ isActive }) => `side-menu-item ${isActive ? 'active' : ''}`}
+                                onClick={onClose}
+                            >
+                                <item.icon size={22} style={{ color: item.color }} />
+                                <span>{item.label}</span>
+                            </NavLink>
+                        )
                     ))}
                 </nav>
 
