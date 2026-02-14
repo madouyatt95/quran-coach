@@ -146,8 +146,7 @@ export function MushafPage() {
     const pageAyahsRef = useRef<Ayah[]>([]);
     const currentPageRef = useRef(currentPage);
 
-    // Toolbar auto-close timer
-    const toolbarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
     // Swipe gesture
     const touchStartX = useRef(0);
@@ -384,24 +383,7 @@ export function MushafPage() {
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, [nextPage]);
 
-    // Toolbar auto-close after 2s
-    useEffect(() => {
-        if (showToolbar) {
-            toolbarTimerRef.current = setTimeout(() => {
-                setShowToolbar(false);
-            }, 2000);
-            return () => {
-                if (toolbarTimerRef.current) clearTimeout(toolbarTimerRef.current);
-            };
-        }
-    }, [showToolbar]);
 
-    const resetToolbarTimer = useCallback(() => {
-        if (toolbarTimerRef.current) clearTimeout(toolbarTimerRef.current);
-        toolbarTimerRef.current = setTimeout(() => {
-            setShowToolbar(false);
-        }, 2000);
-    }, []);
 
     // ======= Coach Mode Logic =======
     // Build a flat word list for ASR matching
@@ -762,6 +744,75 @@ export function MushafPage() {
                 </div>
 
                 <div className="mih-header__right">
+                    {showToolbar && (
+                        <div className="mih-toolbar">
+                            <button
+                                className="mih-toolbar__btn"
+                                onClick={() => setShowSearch(true)}
+                                title="Rechercher une sourate"
+                            >
+                                <Search size={18} />
+                            </button>
+
+                            <button
+                                className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
+                                onClick={() => setShowTajweedSheet(true)}
+                                title="Tajweed"
+                            >
+                                <Palette size={18} />
+                            </button>
+
+                            <button
+                                className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
+                                onClick={toggleTranslation}
+                                title="Traduction"
+                            >
+                                <Languages size={18} />
+                            </button>
+
+                            <button
+                                className={`mih-toolbar__btn ${showFontSheet ? 'active' : ''}`}
+                                onClick={() => setShowFontSheet(true)}
+                                title="Taille police"
+                            >
+                                <Type size={18} />
+                            </button>
+
+                            <button
+                                className={`mih-toolbar__btn ${audioPlaying ? 'active' : ''}`}
+                                onClick={toggleAudio}
+                                title="Audio"
+                            >
+                                <Music size={18} />
+                            </button>
+
+                            <button
+                                className={`mih-toolbar__btn ${showMaskSheet ? 'active' : ''}`}
+                                onClick={() => setShowMaskSheet(true)}
+                                title="Masquage"
+                            >
+                                <Layout size={18} />
+                            </button>
+
+                            <button
+                                className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''}`}
+                                onClick={toggleCoachMode}
+                                title={isCoachMode ? 'Désactiver le Coach' : 'Activer le Coach'}
+                            >
+                                {isCoachMode ? <MicOff size={18} /> : <Mic size={18} />}
+                            </button>
+
+                            <div className="mih-toolbar__divider" />
+
+                            <button
+                                className={`mih-toolbar__validate ${isPageValidated ? 'validated' : ''}`}
+                                onClick={togglePageValidation}
+                                title="Valider la page"
+                            >
+                                {isPageValidated ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+                            </button>
+                        </div>
+                    )}
                     <button
                         className={`mih-header__icon-btn ${showToolbar ? 'active' : ''}`}
                         onClick={() => setShowToolbar(!showToolbar)}
@@ -923,77 +974,7 @@ export function MushafPage() {
                 </div>
             </div>
 
-            {/* ===== Toolbar (6 icons) ===== */}
-            {/* Toolbar Toggle Panel */}
-            {showToolbar && (
-                <div className="mih-toolbar" onPointerDown={resetToolbarTimer}>
-                    <button
-                        className="mih-toolbar__btn"
-                        onClick={() => setShowSearch(true)}
-                        title="Rechercher une sourate"
-                    >
-                        <Search size={22} />
-                    </button>
 
-                    <button
-                        className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
-                        onClick={() => setShowTajweedSheet(true)}
-                        title="Tajweed"
-                    >
-                        <Palette size={22} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
-                        onClick={toggleTranslation}
-                        title="Traduction"
-                    >
-                        <Languages size={22} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${showFontSheet ? 'active' : ''}`}
-                        onClick={() => setShowFontSheet(true)}
-                        title="Taille police"
-                    >
-                        <Type size={22} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${audioPlaying ? 'active' : ''}`}
-                        onClick={toggleAudio}
-                        title="Audio"
-                    >
-                        <Music size={22} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${showMaskSheet ? 'active' : ''}`}
-                        onClick={() => setShowMaskSheet(true)}
-                        title="Masquage"
-                    >
-                        <Layout size={22} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''}`}
-                        onClick={toggleCoachMode}
-                        title={isCoachMode ? 'Désactiver le Coach' : 'Activer le Coach'}
-                    >
-                        {isCoachMode ? <MicOff size={22} /> : <Mic size={22} />}
-                    </button>
-
-                    <div className="mih-toolbar__divider" />
-
-                    <button
-                        className={`mih-toolbar__validate ${isPageValidated ? 'validated' : ''}`}
-                        onClick={togglePageValidation}
-                        title="Valider la page"
-                    >
-                        {isPageValidated ? <CheckCircle2 size={20} /> : <Circle size={20} />}
-                    </button>
-                </div>
-            )}
 
             {/* ===== Coach Progress Bar ===== */}
             {isCoachMode && coachTotalProcessed > 0 && (
