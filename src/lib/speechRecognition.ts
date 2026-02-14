@@ -123,8 +123,9 @@ class SpeechRecognitionService {
         this.recognition.lang = 'ar-SA';
         this.recognition.continuous = true;
         this.recognition.interimResults = true;
+        this.recognition.maxAlternatives = 1;
 
-        // Handle results - IMPROVED with instant interim feedback
+        // Handle results - IMPROVED for Android & iOS
         this.recognition.onresult = (event: any) => {
             const results = event.results;
             const lastResult = results[results.length - 1];
@@ -133,8 +134,10 @@ class SpeechRecognitionService {
             // Send interim result for display
             this.callbacks?.onInterimResult(transcript);
 
-            // Only process transcript for word matching
-            this.processTranscriptRealtime(transcript, lastResult.isFinal);
+            // Android fix: On mobile, isFinal can be very delayed. 
+            // We allow processing interim results if we are on Android to improve responsiveness.
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            this.processTranscriptRealtime(transcript, lastResult.isFinal || isAndroid);
         };
 
         // Handle errors

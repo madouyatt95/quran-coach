@@ -54,6 +54,9 @@ const JUZ_START_PAGES: number[] = [
     402, 422, 442, 462, 482, 502, 522, 542, 562, 582
 ];
 
+// simple Android detection
+const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+
 type WordState = 'correct' | 'error' | 'current' | 'unread';
 
 // Masking modes
@@ -753,7 +756,7 @@ export function MushafPage() {
     }
 
     return (
-        <div className="mushaf-page" data-arabic-size={arabicFontSize}>
+        <div className={`mushaf-page ${isAndroid ? 'is-android' : ''}`} data-arabic-size={arabicFontSize}>
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -857,21 +860,25 @@ export function MushafPage() {
             {/* ===== Khatm Page Badge ===== */}
             <KhatmPageBadge currentPage={currentPage} />
 
-            {/* ===== Floating Navigation (desktop only, hidden on touch) ===== */}
-            <button
-                className="mih-float-nav mih-float-nav--left"
-                onClick={prevPage}
-                disabled={currentPage <= 1}
-            >
-                <ChevronRight size={24} />
-            </button>
-            <button
-                className="mih-float-nav mih-float-nav--right"
-                onClick={nextPage}
-                disabled={currentPage >= 604}
-            >
-                <ChevronLeft size={24} />
-            </button>
+            {/* ===== Floating Navigation (desktop only, hidden on touch and android) ===== */}
+            {!isAndroid && (
+                <>
+                    <button
+                        className="mih-float-nav mih-float-nav--left"
+                        onClick={prevPage}
+                        disabled={currentPage <= 1}
+                    >
+                        <ChevronRight size={24} />
+                    </button>
+                    <button
+                        className="mih-float-nav mih-float-nav--right"
+                        onClick={nextPage}
+                        disabled={currentPage >= 604}
+                    >
+                        <ChevronLeft size={24} />
+                    </button>
+                </>
+            )}
 
             {/* ===== Mushaf Content ===== */}
             <div

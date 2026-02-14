@@ -380,6 +380,23 @@
     margin-right: 4px;
 }
 
+/* Specific fix for Android where the gear button gets masked */
+.is-android .mih-header__right {
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.is-android .mih-toolbar {
+    max-width: calc(100vw - 120px);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.is-android .mih-toolbar::-webkit-scrollbar {
+    display: none;
+}
+
 @keyframes mih-toolbar-slide {
     from {
         transform: translateX(20px);
@@ -1980,7 +1997,26 @@
 }
 
 [data-theme="dark"] .mih-coach-error-modal__header h3 {
-    color: #e8e0d4;
+    color: #c9a84c;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .mih-coach-error-modal__content {
+    background: #0d1117;
+}
+
+[data-theme="dark"] .mih-coach-error-label {
+    color: #888;
+}
+
+[data-theme="dark"] .mih-coach-error-text--expected {
+    color: #4CAF50;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+}
+
+[data-theme="dark"] .mih-coach-error-text--spoken {
+    color: #ff6b6b;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.2);
 }
 
 [data-theme="dark"] .mih-coach-summary-item {
