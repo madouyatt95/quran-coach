@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, List, X } from 'lucide-react';
+import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic } from 'lucide-react';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -157,7 +157,13 @@ export function AdhkarPage() {
     });
 
     const [repetitions, setRepetitions] = useState<Record<string, number>>({});
-    const [showList, setShowList] = useState(false);
+
+    // Default to list view when a category is selected, unless a specific dhikr was active
+    const [showList, setShowList] = useState(() => {
+        const savedView = localStorage.getItem('adhkar_view_state');
+        // If we have a category but no specific view saved, default to list
+        return savedView === 'list' || !savedView;
+    });
 
     // Persist state changes
     useEffect(() => {
@@ -172,19 +178,32 @@ export function AdhkarPage() {
         localStorage.setItem('adhkar_dhikr_index', currentDhikrIndex.toString());
     }, [currentDhikrIndex]);
 
+    useEffect(() => {
+        localStorage.setItem('adhkar_view_state', showList ? 'list' : 'player');
+    }, [showList]);
+
     const handleCategoryClick = (category: AdhkarCategory) => {
         setSelectedCategory(category);
         setCurrentDhikrIndex(0);
         setRepetitions({});
         stopAudioLoop();
-        setShowList(false);
+        setShowList(true); // Always start with List View
     };
 
-    const closeCategory = () => {
-        stopAudioLoop();
-        setSelectedCategory(null);
-        setShowList(false);
-        setCurrentDhikrIndex(0);
+    const handleBackClick = () => {
+        if (!selectedCategory) {
+            navigate(-1);
+        } else if (!showList) {
+            // If in Player, go back to List
+            stopAudioLoop();
+            setShowList(true);
+        } else {
+            // If in List, go back to Categories
+            stopAudioLoop();
+            setSelectedCategory(null);
+            setShowList(true);
+            setCurrentDhikrIndex(0);
+        }
     };
 
     // ===== Audio Loop Player =====
