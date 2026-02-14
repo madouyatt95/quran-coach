@@ -16,6 +16,7 @@ import { ShazamPage } from './pages/ShazamPage';
 import { ProphetsPage } from './pages/ProphetsPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { ThemesPage } from './pages/ThemesPage';
+import { QiblaPage } from './pages/QiblaPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -138,6 +139,7 @@ function AppContent() {
           <Route path="/prophets" element={<ProphetsPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/themes" element={<ThemesPage />} />
+          <Route path="/qibla" element={<QiblaPage />} />
         </Routes>
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
