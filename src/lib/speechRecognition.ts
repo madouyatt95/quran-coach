@@ -114,7 +114,6 @@ class SpeechRecognitionService {
         this.currentWordIndex = 0;
         this.callbacks = callbacks;
         this.processedWords = new Set();
-        this.lastInterimText = '';
 
         // Create recognition instance
         const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -260,7 +259,6 @@ class SpeechRecognitionService {
         this.currentWordIndex = 0;
         this.callbacks = null;
         this.processedWords = new Set();
-        this.lastInterimText = '';
     }
 }
 
