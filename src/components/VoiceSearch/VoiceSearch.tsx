@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Mic, Square, Search, Loader2, X } from 'lucide-react';
-import { usePremiumStore } from '../../stores/premiumStore';
+import { getSupportedMimeType } from '../../lib/audioUnlock';
 import './VoiceSearch.css';
 
 interface VoiceSearchProps {
@@ -9,7 +9,6 @@ interface VoiceSearchProps {
 }
 
 export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
-    const { isPremium } = usePremiumStore();
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [results, setResults] = useState<Array<{ surah: number; ayah: number; text: string; surahName: string }>>([]);
@@ -20,18 +19,13 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
     const audioChunksRef = useRef<Blob[]>([]);
 
     const startRecording = async () => {
-        if (!isPremium) {
-            setError("Fonctionnalité Premium requise");
-            return;
-        }
-
         setError(null);
         setResults([]);
         setTranscribed('');
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+            const mimeType = getSupportedMimeType();
             const mediaRecorder = new MediaRecorder(stream, { mimeType });
 
             audioChunksRef.current = [];
@@ -50,8 +44,8 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
             mediaRecorderRef.current = mediaRecorder;
             mediaRecorder.start();
             setIsRecording(true);
-        } catch (err) {
-            setError("Impossible d'accéder au microphone");
+        } catch (_err) {
+            setError("Impossible d'accéder al microphone");
         }
     };
 
@@ -68,7 +62,8 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
         setIsProcessing(true);
 
         try {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            const mimeType = getSupportedMimeType();
+            const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
 
             const reader = new FileReader();
             const base64Audio = await new Promise<string>((resolve, reject) => {
@@ -80,11 +75,11 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
                 reader.readAsDataURL(audioBlob);
             });
 
-            // Use OpenAI API for better transcription quality
+            // Use free HuggingFace Space via Vercel API
             const response = await fetch('/api/transcribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ audio: base64Audio }),
+                body: JSON.stringify({ audio: base64Audio, mimeType }),
             });
 
             if (!response.ok) {
@@ -124,7 +119,7 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
             }
         } catch (err) {
             console.error('Search error:', err);
-            setError("Erreur lors de la recherche");
+            setError("Erreur lors de la recherche. Réessayez.");
         } finally {
             setIsProcessing(false);
         }
