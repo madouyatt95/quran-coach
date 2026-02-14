@@ -409,12 +409,38 @@ export function MushafPage() {
         setShowMistakesSummary(false);
     }, []);
 
+    // Coach jump to word
+    const coachJumpToWord = useCallback((ayahIndex: number, wordIndex: number) => {
+        if (!isCoachMode) return;
+        const wordKeyIndex = allCoachWords.findIndex(w => w.ayahIndex === ayahIndex && w.wordIndex === wordIndex);
+        if (wordKeyIndex !== -1) {
+            speechRecognitionService.setCurrentWordIndex(wordKeyIndex);
+
+            // Nettoyer les états visuels des mots "futurs"
+            setWordStates(prev => {
+                const next = new Map(prev);
+                allCoachWords.forEach((_, i) => {
+                    if (i >= wordKeyIndex) {
+                        const word = allCoachWords[i];
+                        next.delete(`${word.ayahIndex}-${word.wordIndex}`);
+                    }
+                });
+                return next;
+            });
+        }
+    }, [isCoachMode, allCoachWords]);
+
     // Start listening (ASR)
     const startCoachListening = useCallback(() => {
         if (pageAyahs.length === 0) return;
         resetCoach();
 
         const expectedText = pageAyahs.map(a => a.text).join(' ');
+
+        // Démarrer à partir du verset actuellement en lecture (ou 0 par défaut)
+        const currentAyahIdx = playingIndex >= 0 ? playingIndex : 0;
+        const startWordIndex = allCoachWords.findIndex(w => w.ayahIndex === currentAyahIdx);
+        const safeStartIndex = startWordIndex >= 0 ? startWordIndex : 0;
 
         const success = speechRecognitionService.start(expectedText, {
             onWordMatch: (wordIndex, isCorrect, spokenWord) => {
@@ -454,7 +480,7 @@ export function MushafPage() {
                 if (error !== 'no-speech') startWhisperBackup();
             },
             onEnd: () => setIsListening(false)
-        });
+        }, safeStartIndex);
 
         if (success) {
             setIsListening(true);
@@ -893,7 +919,13 @@ export function MushafPage() {
                                                     data-surah={ayah.surah}
                                                     data-ayah={ayah.numberInSurah}
                                                     style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
-                                                    onClick={() => { if (!longPressTriggered.current) playAyahAtIndex(ayahIndex); }}
+                                                    onClick={() => {
+                                                        if (isCoachMode) {
+                                                            coachJumpToWord(ayahIndex, 0);
+                                                        } else if (!longPressTriggered.current) {
+                                                            playAyahAtIndex(ayahIndex);
+                                                        }
+                                                    }}
                                                     onTouchStart={() => { longPressTriggered.current = false; longPressTimerRef.current = setTimeout(() => { longPressTriggered.current = true; setShareAyah(ayah); }, 600); }}
                                                     onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                                     onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
@@ -910,6 +942,12 @@ export function MushafPage() {
                                                             <span
                                                                 key={key}
                                                                 className={getWordClass(ayahIndex, wordIndex)}
+                                                                onClick={(e) => {
+                                                                    if (isCoachMode) {
+                                                                        e.stopPropagation();
+                                                                        coachJumpToWord(ayahIndex, wordIndex);
+                                                                    }
+                                                                }}
                                                             >
                                                                 {word}
                                                             </span>

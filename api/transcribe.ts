@@ -68,14 +68,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
  * Transcribe using HuggingFace Space (Gradio API)
  */
 async function transcribeWithHuggingFace(audioBuffer: Buffer, contentType: string, extension: string): Promise<string> {
+    const sessionHash = Math.random().toString(36).substring(2);
+
     // Upload the audio file to HuggingFace Space via Gradio API
-    const uploadResponse = await fetch(`${HF_SPACE_URL}/upload`, {
+    const uploadResponse = await fetch(`${HF_SPACE_URL}/upload?session_hash=${sessionHash}`, {
         method: 'POST',
         headers: { 'Content-Type': contentType },
         body: audioBuffer,
     });
 
     if (!uploadResponse.ok) {
+        const errBody = await uploadResponse.text().catch(() => 'no body');
+        console.error('HF Upload Error Body:', errBody);
         throw new Error(`HF upload failed: ${uploadResponse.status}`);
     }
 
@@ -83,7 +87,7 @@ async function transcribeWithHuggingFace(audioBuffer: Buffer, contentType: strin
     const filePath = Array.isArray(uploadResult) ? uploadResult[0] : uploadResult;
 
     // Call the predict endpoint
-    // Gradio 4+ uses a specific format for files
+    // Gradio 4+ robust payload
     const predictResponse = await fetch(`${HF_SPACE_URL}/api/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -96,16 +100,26 @@ async function transcribeWithHuggingFace(audioBuffer: Buffer, contentType: strin
                 data: null,
                 is_file: true
             }],
+            event_data: null,
+            fn_index: 0,
+            session_hash: sessionHash
         }),
     });
 
     if (!predictResponse.ok) {
-        const errText = await predictResponse.text();
+        const errText = await predictResponse.text().catch(() => 'no body');
+        console.error('HF Predict Error Body:', errText);
         throw new Error(`HF predict failed: ${predictResponse.status} - ${errText}`);
     }
 
     const predictResult = await predictResponse.json();
-    return predictResult.data?.[0] || '';
+
+    // Gradio returns a 'data' array with the output
+    if (Array.isArray(predictResult.data)) {
+        return predictResult.data[0] || '';
+    }
+
+    return '';
 }
 
 /**

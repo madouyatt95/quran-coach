@@ -100,7 +100,7 @@ class SpeechRecognitionService {
     }
 
     // Initialize recognition session
-    start(expectedText: string, callbacks: RecognitionCallbacks): boolean {
+    start(expectedText: string, callbacks: RecognitionCallbacks, startIndex: number = 0): boolean {
         if (!this.isSupported()) {
             callbacks.onError('Speech recognition not supported');
             return false;
@@ -111,7 +111,7 @@ class SpeechRecognitionService {
             .replace(/[\u064B-\u065F\u0670]/g, '') // Remove tashkeel for comparison
             .split(/\s+/)
             .filter(w => w.length > 0);
-        this.currentWordIndex = 0;
+        this.currentWordIndex = startIndex;
         this.callbacks = callbacks;
         this.processedWords = new Set();
 
@@ -242,6 +242,19 @@ class SpeechRecognitionService {
         }
 
         return { matched: false, matchIndex: startIndex };
+    }
+
+    // Set current word index (for manual jumps)
+    setCurrentWordIndex(index: number): void {
+        if (index >= 0 && index < this.expectedWords.length) {
+            this.currentWordIndex = index;
+            // Clear processed status for subsequent words if needed? 
+            // Better to let processTranscriptRealtime handle it or just clear everything from here on
+            for (let i = index; i < this.expectedWords.length; i++) {
+                this.processedWords.delete(i);
+            }
+            this.callbacks?.onCurrentWord(index);
+        }
     }
 
     // Get current progress
