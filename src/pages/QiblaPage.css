@@ -10,6 +10,7 @@
 .qibla-hero {
     position: relative;
     padding: var(--space-2xl) var(--space-lg) var(--space-xl);
+    padding-top: max(var(--space-2xl), calc(env(safe-area-inset-top) + var(--space-lg)));
     text-align: center;
     overflow: hidden;
     background: linear-gradient(135deg, #0D1117 0%, #1a1a2e 50%, #16213e 100%);

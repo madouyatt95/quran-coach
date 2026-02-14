@@ -1,5 +1,6 @@
 .settings-page {
     padding: var(--space-md);
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
     padding-bottom: calc(80px + var(--space-lg));
 }
 
