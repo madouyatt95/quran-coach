@@ -35,7 +35,11 @@ export type QuizThemeId =
     | 'verses'
     | 'invocations'
     | 'structure'
-    | 'ya-ayyuha';
+    | 'ya-ayyuha'
+    | 'stories'
+    | 'geography'
+    | 'virtues'
+    | 'women';
 
 export type QuizDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -220,6 +224,38 @@ export const QUIZ_THEMES: QuizTheme[] = [
         emoji: '📢',
         color: '#E91E63',
         gradient: 'linear-gradient(135deg, #880e4f, #E91E63)',
+    },
+    {
+        id: 'stories',
+        name: 'Récits & Sagesse',
+        nameAr: 'قصص وعبر',
+        emoji: '🦁',
+        color: '#795548',
+        gradient: 'linear-gradient(135deg, #3e2723, #795548)',
+    },
+    {
+        id: 'geography',
+        name: 'Géographie & Nations',
+        nameAr: 'الجغرافيا والأمم',
+        emoji: '🗺️',
+        color: '#3F51B5',
+        gradient: 'linear-gradient(135deg, #1a237e, #3F51B5)',
+    },
+    {
+        id: 'virtues',
+        name: 'Vertus des Sourates',
+        nameAr: 'فضائل السور',
+        emoji: '📜',
+        color: '#607D8B',
+        gradient: 'linear-gradient(135deg, #263238, #607D8B)',
+    },
+    {
+        id: 'women',
+        name: 'Femmes du Coran',
+        nameAr: 'نساء في القرآن',
+        emoji: '🧕',
+        color: '#AD1457',
+        gradient: 'linear-gradient(135deg, #880e4f, #AD1457)',
     },
 ];
 

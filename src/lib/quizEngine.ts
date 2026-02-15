@@ -403,6 +403,54 @@ function generateYaAyyuhaQuestions(): QuizQuestion[] {
     return questions;
 }
 
+// ─── Stories Questions ──────────────────────────────────
+function generateStoriesQuestions(): QuizQuestion[] {
+    const data = [
+        { q: "Qui sont les 'Gens de la Caverne' (Ashab al-Kahf) ?", a: "Des jeunes croyants protégés par Allah", p: ["Des prophètes de l'Antiquité", "Des soldats mécréants", "Des marchands de la Mecque"] },
+        { q: "Combien de temps les Gens de la Caverne sont-ils restés endormis ?", a: "309 ans", p: ["100 ans", "40 ans", "1000 ans"] },
+        { q: "Quel sage a donné de profonds conseils à son fils dans le Coran ?", a: "Luqman", p: ["Imran", "Uzayr", "Dhul-Qarnayn"] },
+        { q: "Qui a construit un mur de fer et de cuivre contre Gog et Magog ?", a: "Dhul-Qarnayn", p: ["Sulayman", "Talut", "Musa"] },
+        { q: "Quelle sourate raconte l'histoire du propriétaire des deux jardins ?", a: "Al-Kahf", p: ["Al-Baqarah", "Yusuf", "Al-Qasas"] }
+    ];
+    return data.map(d => buildMCQ('stories', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
+}
+
+// ─── Geography Questions ────────────────────────────────
+function generateGeographyQuestions(): QuizQuestion[] {
+    const data = [
+        { q: "Dans quel pays le Prophète Musa (Moïse) a-t-il grandi ?", a: "L'Égypte", p: ["La Syrie", "La Palestine", "L'Irak"] },
+        { q: "Quel est l'ancien nom de Makkah (La Mecque) mentionné dans le Coran ?", a: "Bakkah", p: ["Yathrib", "Taybah", "Pétra"] },
+        { q: "Où se trouve la 'Vallée Sacrée' de Tuwa mentionnée pour Musa ?", a: "Au pied du mont Sinaï", p: ["À Makkah", "À Al-Quds", "Au Yémen"] },
+        { q: "Quel peuple habitait dans des maisons taillées dans les rochers ?", a: "Thamud", p: ["'Ad", "Banu Isra'il", "Quraysh"] },
+        { q: "Quelle nation était la cité d'Iram 'aux colonnes sans pareilles' ?", a: "Les 'Ad", p: ["Les Samaritains", "Les Romains", "Les Perses"] }
+    ];
+    return data.map(d => buildMCQ('geography', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
+}
+
+// ─── Virtues Questions ──────────────────────────────────
+function generateVirtuesQuestions(): QuizQuestion[] {
+    const data = [
+        { q: "Quelle sourate protège du châtiment de la tombe ?", a: "Al-Mulk (La Royauté)", p: ["Al-Waqi'ah", "Ya-Sin", "Al-Kahf"] },
+        { q: "Quelle sourate est recommandée à la lecture chaque Vendredi ?", a: "Al-Kahf (La Caverne)", p: ["Al-Baqarah", "Maryam", "Ar-Rahman"] },
+        { q: "Quelle sourate équivaut à un tiers (1/3) du Coran ?", a: "Al-Ikhlas (Le Monothéisme Pur)", p: ["Al-Fatihah", "Al-Kursi", "An-Nas"] },
+        { q: "Quelle sourate est souvent appelée le 'Cœur du Coran' ?", a: "Ya-Sin", p: ["Ar-Rahman", "Al-Fatihah", "Al-Muzammil"] },
+        { q: "Quelle sourate est une protection contre la pauvreté ?", a: "Al-Waqi'ah", p: ["Al-Mulk", "An-Naba", "Al-Infitar"] }
+    ];
+    return data.map(d => buildMCQ('virtues', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
+}
+
+// ─── Women Questions ────────────────────────────────────
+function generateWomenQuestions(): QuizQuestion[] {
+    const data = [
+        { q: "Qui est la seule femme nommée directement (par son prénom) dans le Coran ?", a: "Maryam (Marie)", p: ["Asiya", "Khadija", "Eve (Hawwa)"] },
+        { q: "Comment s'appelait la femme de Pharaon qui a adopté Musa ?", a: "Asiya", p: ["Bilqis", "Hajar", "Sarah"] },
+        { q: "Quelle Reine a embrassé l'Islam après avoir rencontré Sulayman ?", a: "La Reine de Saba (Bilqis)", p: ["Zulaikha", "Cléopâtre", "Nefertiti"] },
+        { q: "Quelle femme a reçu l'inspiration de placer son bébé dans le fleuve ?", a: "La mère de Musa", p: ["La femme de Lut", "Maryam", "Hajar"] },
+        { q: "Quelle sourate porte le nom de 'La Femme qui discute' ?", a: "Al-Mujadila", p: ["An-Nisa", "Al-Mumtahina", "Al-Ahzab"] }
+    ];
+    return data.map(d => buildMCQ('women', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
+}
+
 // ─── Audio Questions ────────────────────────────────────
 function generateAudioQuestions(): QuizQuestion[] {
     const samples = [
@@ -459,6 +507,10 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
         invocations: generateInvocationQuestions(),
         structure: generateStructureQuestions(),
         'ya-ayyuha': generateYaAyyuhaQuestions(),
+        stories: generateStoriesQuestions(),
+        geography: generateGeographyQuestions(),
+        virtues: generateVirtuesQuestions(),
+        women: generateWomenQuestions(),
     };
 
     console.log('[QuizEngine] Question bank generated:',
@@ -521,7 +573,7 @@ export function getSprintQuestions(count: number = 30): QuizQuestion[] {
 /** Build 3 rounds of duel questions, each round = random theme × 3 questions */
 export function getDuelRoundQuestions(customThemes?: QuizThemeId[]): { themes: QuizThemeId[]; questions: QuizQuestion[][] } {
     const bank = getQuestionBank();
-    const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha'];
+    const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women'];
     const selectedThemes = customThemes || pick(allThemeIds, 3);
 
     const rounds = selectedThemes.map(themeId => {
