@@ -396,10 +396,11 @@ function BadgeView() {
                     const isUnlocked = unlocked.has(badge.id);
                     return (
                         <div key={badge.id} className={`quiz-badge-card ${isUnlocked ? 'unlocked' : 'locked'}`}>
+                            {isUnlocked && <span className="quiz-badge-check">✓</span>}
                             <span className="quiz-badge-emoji">{badge.emoji}</span>
                             <span className="quiz-badge-name">{badge.name}</span>
                             <span className="quiz-badge-desc">{badge.description}</span>
-                            {isUnlocked && <span className="quiz-badge-check">✓</span>}
+                            <span className="quiz-badge-condition">🎯 {badge.condition}</span>
                         </div>
                     );
                 })}
@@ -1008,6 +1009,15 @@ function AudioPlayer({ url }: { url: string }) {
 // ─── Profile & Customization View ───────────────────────
 function ProfileView() {
     const { player, title, level, totalXP, setView, unlockedBadges, totalPlayed, totalWins } = useQuizStore();
+    const xpInLevel = totalXP % 1000;
+    const xpToNext = 1000 - xpInLevel;
+
+    const titles = [
+        { name: 'Mubtadi', range: 'Lv 1-5', info: 'Débutant courageux' },
+        { name: 'Talib', range: 'Lv 6-15', info: 'Étudiant assidu' },
+        { name: 'Hafidh', range: 'Lv 16-30', info: 'Gardien du savoir' },
+        { name: 'Alim', range: 'Lv 31+', info: 'Savant accompli' }
+    ];
 
     return (
         <div className="quiz-container">
@@ -1028,11 +1038,14 @@ function ProfileView() {
 
                 <div className="quiz-xp-container" style={{ width: '100%', marginTop: '16px' }}>
                     <div className="quiz-xp-header">
-                        <span className="quiz-xp-text">{totalXP % 1000} / 1000 XP</span>
+                        <span className="quiz-xp-text">{xpInLevel} / 1000 XP</span>
                     </div>
                     <div className="quiz-xp-bar-bg">
-                        <div className="quiz-xp-bar-fill" style={{ width: `${(totalXP % 1000) / 10}%` }}></div>
+                        <div className="quiz-xp-bar-fill" style={{ width: `${xpInLevel / 10}%` }}></div>
                     </div>
+                    <p className="quiz-next-level-info">
+                        Plus que <strong>{xpToNext} XP</strong> pour le niveau {level + 1} !
+                    </p>
                 </div>
             </div>
 
@@ -1060,7 +1073,20 @@ function ProfileView() {
                 </div>
             </div>
 
-            <button className="quiz-btn-primary" style={{ marginTop: '20px' }} onClick={() => setView('home')}>
+            <div className="quiz-level-guide">
+                <h3><Crown size={18} color="#FFD700" /> Guide des Titres</h3>
+                {titles.map(t => (
+                    <div key={t.name} className={`quiz-guide-row ${title === t.name ? 'active' : ''}`}>
+                        <div className="quiz-guide-label">
+                            <span className="quiz-guide-title">{t.name}</span>
+                            <span className="quiz-guide-info">{t.info}</span>
+                        </div>
+                        <span className="quiz-guide-range">{t.range}</span>
+                    </div>
+                ))}
+            </div>
+
+            <button className="quiz-btn-primary" style={{ marginTop: '24px', width: '100%' }} onClick={() => setView('home')}>
                 Retour au menu
             </button>
         </div>
