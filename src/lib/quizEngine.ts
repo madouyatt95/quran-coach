@@ -519,10 +519,10 @@ export function getSprintQuestions(count: number = 30): QuizQuestion[] {
 }
 
 /** Build 3 rounds of duel questions, each round = random theme × 3 questions */
-export function getDuelRoundQuestions(): { themes: QuizThemeId[]; questions: QuizQuestion[][] } {
+export function getDuelRoundQuestions(customThemes?: QuizThemeId[]): { themes: QuizThemeId[]; questions: QuizQuestion[][] } {
     const bank = getQuestionBank();
     const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha'];
-    const selectedThemes = pick(allThemeIds, 3);
+    const selectedThemes = customThemes || pick(allThemeIds, 3);
 
     const rounds = selectedThemes.map(themeId => {
         const pool = bank[themeId] || [];

@@ -53,7 +53,7 @@ interface QuizState {
     startSprint: () => void;
     startRevision: () => void;
     startDaily: () => void;
-    createDuel: () => Promise<string>;
+    createDuel: (customThemes?: QuizThemeId[]) => Promise<string>;
     joinDuel: (code: string) => Promise<boolean>;
     submitAnswer: (chosenIndex: number) => void;
     nextQuestion: () => void;
@@ -317,12 +317,12 @@ export const useQuizStore = create<QuizState>()(
                 });
             },
 
-            createDuel: async () => {
+            createDuel: async (customThemes?: QuizThemeId[]) => {
                 const { player } = get();
                 if (!player) return '';
 
                 const code = generateCode();
-                const { themes, questions: roundQuestions } = getDuelRoundQuestions();
+                const { themes, questions: roundQuestions } = getDuelRoundQuestions(customThemes);
                 const allQuestions = roundQuestions.flat();
 
                 const { data, error } = await supabase

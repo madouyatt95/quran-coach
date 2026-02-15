@@ -3,6 +3,7 @@
 export type QuizView =
     | 'home'        // Mode Selection (Solo, Duel, etc.) + Difficulty
     | 'solo-themes' // Theme selection (only for Solo)
+    | 'custom-duel' // Theme selection for custom duel (Teacher mode)
     | 'daily'       // Daily Challenge
     | 'profile'     // User profile & customization
     | 'stats'       // Stats dashboard

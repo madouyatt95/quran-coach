@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Trophy, Zap, Share2, RotateCcw, CheckCircle, XCircle, Timer, Award, Clock, Swords, BarChart3, Globe, User, BookOpen, Crown, Copy } from 'lucide-react';
+import { ArrowLeft, Trophy, Zap, Share2, RotateCcw, CheckCircle, XCircle, Timer, Award, Clock, Swords, BarChart3, Globe, User, BookOpen, Crown, Copy, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuizStore } from '../stores/quizStore';
 import { QUIZ_THEMES, DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
-import type { QuizDifficulty } from '../data/quizTypes';
+import type { QuizDifficulty, QuizThemeId } from '../data/quizTypes';
 import { getQuestionCounts } from '../lib/quizEngine';
 import './QuizPage.css';
 
@@ -175,6 +175,13 @@ function HomeView() {
                         <p>60s • Tous thèmes</p>
                     </div>
                     {sprintBest > 0 && <span className="quiz-special-best">🏆 {sprintBest}</span>}
+                </button>
+                <button className="quiz-special-card teacher-card" onClick={() => setView('custom-duel')}>
+                    <GraduationCap size={24} />
+                    <div>
+                        <h4>🎓 Mode Professeur</h4>
+                        <p>Crée ton duel sur mesure</p>
+                    </div>
                 </button>
                 {wrongQuestions.length > 0 && (
                     <button className="quiz-special-card revision-card" onClick={() => {
@@ -1006,6 +1013,67 @@ function AudioPlayer({ url }: { url: string }) {
     );
 }
 
+// ─── Custom Duel (Teacher Mode) ─────────────────────────
+function CustomDuel() {
+    const { createDuel, setView } = useQuizStore();
+    const [selected, setSelected] = useState<QuizThemeId[]>([]);
+    const [creating, setCreating] = useState(false);
+
+    const toggleTheme = (id: QuizThemeId) => {
+        if (selected.includes(id)) {
+            setSelected(selected.filter(t => t !== id));
+        } else if (selected.length < 3) {
+            setSelected([...selected, id]);
+        }
+    };
+
+    const handleCreate = async () => {
+        if (selected.length !== 3) return;
+        setCreating(true);
+        await createDuel(selected);
+        setCreating(false);
+    };
+
+    return (
+        <div className="quiz-container">
+            <div className="quiz-header">
+                <button className="quiz-back-btn" onClick={() => setView('home')}>
+                    <ArrowLeft size={22} />
+                </button>
+                <h1 className="quiz-title">Duel Personnalisé</h1>
+            </div>
+
+            <p className="quiz-subtitle">Sélectionne 3 thèmes pour ce duel ({selected.length}/3)</p>
+            <div className="quiz-theme-grid">
+                {QUIZ_THEMES.map(theme => (
+                    <div
+                        key={theme.id}
+                        className={`quiz-theme-card ${selected.includes(theme.id) ? 'active' : ''}`}
+                        onClick={() => toggleTheme(theme.id)}
+                        style={{ '--theme-gradient': theme.gradient } as any}
+                    >
+                        <div className="quiz-theme-emoji">{theme.emoji}</div>
+                        <div className="quiz-theme-info">
+                            <h3>{theme.name}</h3>
+                            <p>{theme.nameAr}</p>
+                        </div>
+                        {selected.includes(theme.id) && <div className="quiz-theme-check">✓</div>}
+                    </div>
+                ))}
+            </div>
+
+            <button
+                className="quiz-btn-primary"
+                style={{ marginTop: '24px', width: '100%', opacity: selected.length === 3 ? 1 : 0.5 }}
+                disabled={selected.length !== 3 || creating}
+                onClick={handleCreate}
+            >
+                {creating ? <div className="quiz-spinner" /> : 'Générer le code de match'}
+            </button>
+        </div>
+    );
+}
+
 // ─── Profile & Customization View ───────────────────────
 function ProfileView() {
     const { player, title, level, totalXP, setView, unlockedBadges, totalPlayed, totalWins } = useQuizStore();
@@ -1251,6 +1319,8 @@ export function QuizPage() {
             return <RoundEndView />;
         case 'result':
             return <ResultView />;
+        case 'custom-duel':
+            return <CustomDuel />;
         default:
             return <HomeView />;
     }
