@@ -1,19 +1,18 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Book, Headphones, ScrollText, Swords } from 'lucide-react';
 import './BottomNav.css';
 
 interface NavItem {
     path: string;
-    icon: React.ReactNode;
+    emoji: string;
     label: string;
 }
 
 const navItems: NavItem[] = [
-    { path: '/', icon: <Home />, label: 'Accueil' },
-    { path: '/read', icon: <Book />, label: 'Lecture' },
-    { path: '/hifdh', icon: <Headphones />, label: 'Hifdh' },
-    { path: '/prophets', icon: <ScrollText />, label: 'Prophètes' },
-    { path: '/quiz', icon: <Swords />, label: 'Quiz' },
+    { path: '/', emoji: '🏠', label: 'Accueil' },
+    { path: '/read', emoji: '📖', label: 'Lecture' },
+    { path: '/hifdh', emoji: '🎧', label: 'Hifdh' },
+    { path: '/prophets', emoji: '📜', label: 'Prophètes' },
+    { path: '/quiz', emoji: '⚔️', label: 'Quiz' },
 ];
 
 export function BottomNav() {
@@ -27,8 +26,9 @@ export function BottomNav() {
                         `bottom-nav__item ${isActive ? 'active' : ''}`
                     }
                 >
-                    <span className="bottom-nav__icon">{item.icon}</span>
+                    <span className="bottom-nav__emoji">{item.emoji}</span>
                     <span className="bottom-nav__label">{item.label}</span>
+                    <span className="bottom-nav__dot" />
                 </NavLink>
             ))}
         </nav>
