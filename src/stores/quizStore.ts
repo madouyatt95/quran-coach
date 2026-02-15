@@ -8,12 +8,11 @@ import { DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export type QuizView =
-    | 'home'        // Theme selection
+    | 'home'        // Mode Selection (Solo, Duel, etc.) + Difficulty
+    | 'solo-themes' // Theme selection (only for Solo)
     | 'stats'       // Stats dashboard
     | 'badges'      // Badge gallery
     | 'leaderboard' // Global leaderboard
-    | 'mode'        // Solo vs Duel vs Sprint vs Revision
-    | 'difficulty'  // Difficulty selector
     | 'lobby'       // Waiting for opponent
     | 'join'        // Enter code to join
     | 'playing'     // Active quiz
@@ -73,6 +72,7 @@ interface QuizState {
     submitAnswer: (chosenIndex: number) => void;
     nextQuestion: () => void;
     nextRound: () => void;
+    selectRandomSolo: () => void;
     resetQuiz: () => void;
     submitToLeaderboard: () => Promise<void>;
 
@@ -202,11 +202,10 @@ export const useQuizStore = create<QuizState>()(
 
             setDifficulty: (d) => set({ difficulty: d }),
 
-            selectTheme: (theme) => set({ theme, view: 'mode' }),
-
-            startSolo: () => {
-                const { theme, difficulty } = get();
-                if (!theme) return;
+            selectTheme: (theme) => {
+                set({ theme });
+                // Start solo immediately with selected theme
+                const { difficulty } = get();
                 const config = DIFFICULTY_CONFIG[difficulty];
                 const questions = getQuestions(theme, config.questionCount, difficulty);
                 set({
@@ -219,6 +218,16 @@ export const useQuizStore = create<QuizState>()(
                     timerStart: Date.now(),
                     view: 'playing',
                 });
+            },
+
+            startSolo: () => {
+                set({ view: 'solo-themes' });
+            },
+
+            selectRandomSolo: () => {
+                const allThemes = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha'];
+                const randomTheme = allThemes[Math.floor(Math.random() * allThemes.length)] as QuizThemeId;
+                get().selectTheme(randomTheme);
             },
 
             startSprint: () => {

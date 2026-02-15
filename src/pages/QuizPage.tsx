@@ -63,11 +63,10 @@ function PseudoSetup({ onDone }: { onDone: () => void }) {
     );
 }
 
-// ─── Theme Selection (Home) ─────────────────────────────
-function ThemeSelect() {
-    const { selectTheme, player, totalPlayed, totalWins, soloHighScores, setView, wrongQuestions, unlockedBadges, sprintBest, themeStats } = useQuizStore();
+// ─── Home View (Mode Selection) ──────────────────────────
+function HomeView() {
+    const { startSolo, setView, player, totalPlayed, totalWins, difficulty, setDifficulty, wrongQuestions, unlockedBadges, sprintBest } = useQuizStore();
     const navigate = useNavigate();
-    const counts = getQuestionCounts();
 
     return (
         <div className="quiz-container">
@@ -103,8 +102,47 @@ function ThemeSelect() {
                 </div>
             )}
 
+            {/* Difficulty Selector */}
+            <p className="quiz-subtitle">Difficulté</p>
+            <div className="quiz-difficulty-row">
+                {(Object.keys(DIFFICULTY_CONFIG) as QuizDifficulty[]).map(d => {
+                    const cfg = DIFFICULTY_CONFIG[d];
+                    return (
+                        <button
+                            key={d}
+                            className={`quiz-diff-btn ${difficulty === d ? 'active' : ''}`}
+                            onClick={() => setDifficulty(d)}
+                        >
+                            <span className="quiz-diff-emoji">{cfg.emoji}</span>
+                            <span className="quiz-diff-label">{cfg.label}</span>
+                            <span className="quiz-diff-detail">
+                                {cfg.choiceCount} choix • {cfg.timerSeconds}s
+                            </span>
+                        </button>
+                    );
+                })}
+            </div>
+
+            <p className="quiz-subtitle">Choisis ton mode</p>
+            <div className="quiz-mode-cards">
+                <button className="quiz-mode-card solo" onClick={startSolo}>
+                    <User size={32} />
+                    <h3>Solo</h3>
+                    <p>Choisis ton thème et joue</p>
+                </button>
+                <button className="quiz-mode-card duel" onClick={() => setView('lobby')}>
+                    <Swords size={32} />
+                    <h3>Duel</h3>
+                    <p>3 rounds thèmes variés</p>
+                </button>
+            </div>
+
+            <button className="quiz-join-btn" onClick={() => setView('join')} style={{ marginTop: '12px' }}>
+                Rejoindre un duel avec un code
+            </button>
+
             {/* Special Modes */}
-            <div className="quiz-special-modes">
+            <div className="quiz-special-modes" style={{ marginTop: '24px' }}>
                 <button className="quiz-special-card sprint-card" onClick={() => {
                     useQuizStore.getState().startSprint();
                 }}>
@@ -127,10 +165,40 @@ function ThemeSelect() {
                     </button>
                 )}
             </div>
+        </div>
+    );
+}
 
-            <p className="quiz-subtitle">Choisis un thème</p>
+// ─── Solo Theme Selection ───────────────────────────────
+function SoloThemeSelect() {
+    const { selectTheme, selectRandomSolo, setView, soloHighScores, themeStats } = useQuizStore();
+    const counts = getQuestionCounts();
+
+    return (
+        <div className="quiz-container">
+            <div className="quiz-header">
+                <button className="quiz-back-btn" onClick={() => setView('home')}>
+                    <ArrowLeft size={22} />
+                </button>
+                <h1 className="quiz-title">
+                    <BookOpen size={24} />
+                    <span>Choisir un thème</span>
+                </h1>
+            </div>
 
             <div className="quiz-theme-grid">
+                {/* Random Card First */}
+                <button
+                    className="quiz-theme-card"
+                    style={{ background: 'linear-gradient(135deg, #607D8B, #455A64)' }}
+                    onClick={selectRandomSolo}
+                >
+                    <span className="quiz-theme-emoji">🎲</span>
+                    <span className="quiz-theme-name">Aléatoire</span>
+                    <span className="quiz-theme-nameAr">عشوائي</span>
+                    <span className="quiz-theme-count">Tirage au sort</span>
+                </button>
+
                 {QUIZ_THEMES.map(theme => {
                     const stats = themeStats[theme.id];
                     const rate = stats && stats.attempts > 0 ? Math.round((stats.correct / stats.attempts) * 100) : null;
@@ -397,66 +465,7 @@ function LeaderboardView() {
     );
 }
 
-// ─── Mode Selection ──────────────────────────────────────
-function ModeSelect() {
-    const { startSolo, setView, theme, difficulty, setDifficulty } = useQuizStore();
-    const themeData = QUIZ_THEMES.find(t => t.id === theme);
 
-    return (
-        <div className="quiz-container">
-            <div className="quiz-header">
-                <button className="quiz-back-btn" onClick={() => setView('home')}>
-                    <ArrowLeft size={22} />
-                </button>
-                <h1 className="quiz-title">
-                    <span>{themeData?.emoji}</span>
-                    <span>{themeData?.name}</span>
-                </h1>
-            </div>
-
-            {/* Difficulty Selector */}
-            <div className="quiz-difficulty-row">
-                {(Object.keys(DIFFICULTY_CONFIG) as QuizDifficulty[]).map(d => {
-                    const cfg = DIFFICULTY_CONFIG[d];
-                    return (
-                        <button
-                            key={d}
-                            className={`quiz-diff-btn ${difficulty === d ? 'active' : ''}`}
-                            onClick={() => setDifficulty(d)}
-                        >
-                            <span className="quiz-diff-emoji">{cfg.emoji}</span>
-                            <span className="quiz-diff-label">{cfg.label}</span>
-                            <span className="quiz-diff-detail">
-                                {cfg.choiceCount} choix • {cfg.timerSeconds}s
-                            </span>
-                        </button>
-                    );
-                })}
-            </div>
-
-            <div className="quiz-mode-cards">
-                <button className="quiz-mode-card solo" onClick={startSolo}>
-                    <User size={40} />
-                    <h3>Solo</h3>
-                    <p>Entraîne-toi seul</p>
-                    <span className="quiz-mode-detail">
-                        {DIFFICULTY_CONFIG[difficulty].questionCount} questions • {DIFFICULTY_CONFIG[difficulty].timerSeconds}s/question
-                    </span>
-                </button>
-                <button className="quiz-mode-card duel" onClick={() => setView('lobby')}>
-                    <Swords size={40} />
-                    <h3>Duel</h3>
-                    <p>Défie un ami</p>
-                    <span className="quiz-mode-detail">3 rounds × thèmes variés • Temps réel</span>
-                </button>
-            </div>
-
-            <button className="quiz-join-btn" onClick={() => setView('join')}>
-                Rejoindre un duel (code)
-            </button>
-        </div>
-    );
-}
 
 // ─── Duel Lobby ──────────────────────────────────────────
 function DuelLobby() {
@@ -495,7 +504,7 @@ function DuelLobby() {
     return (
         <div className="quiz-container">
             <div className="quiz-header">
-                <button className="quiz-back-btn" onClick={() => setView('mode')}>
+                <button className="quiz-back-btn" onClick={() => setView('home')}>
                     <ArrowLeft size={22} />
                 </button>
                 <h1 className="quiz-title">Duel</h1>
@@ -559,7 +568,7 @@ function JoinDuel() {
     return (
         <div className="quiz-container">
             <div className="quiz-header">
-                <button className="quiz-back-btn" onClick={() => setView('mode')}>
+                <button className="quiz-back-btn" onClick={() => setView('home')}>
                     <ArrowLeft size={22} />
                 </button>
                 <h1 className="quiz-title">Rejoindre</h1>
@@ -992,15 +1001,15 @@ export function QuizPage() {
 
     switch (view) {
         case 'home':
-            return <ThemeSelect />;
+            return <HomeView />;
+        case 'solo-themes':
+            return <SoloThemeSelect />;
         case 'stats':
             return <StatsView />;
         case 'badges':
             return <BadgeView />;
         case 'leaderboard':
             return <LeaderboardView />;
-        case 'mode':
-            return <ModeSelect />;
         case 'lobby':
             return <DuelLobby />;
         case 'join':
@@ -1014,6 +1023,6 @@ export function QuizPage() {
         case 'result':
             return <ResultView />;
         default:
-            return <ThemeSelect />;
+            return <HomeView />;
     }
 }
