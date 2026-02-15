@@ -410,7 +410,12 @@ function generateStoriesQuestions(): QuizQuestion[] {
         { q: "Combien de temps les Gens de la Caverne sont-ils restés endormis ?", a: "309 ans", p: ["100 ans", "40 ans", "1000 ans"] },
         { q: "Quel sage a donné de profonds conseils à son fils dans le Coran ?", a: "Luqman", p: ["Imran", "Uzayr", "Dhul-Qarnayn"] },
         { q: "Qui a construit un mur de fer et de cuivre contre Gog et Magog ?", a: "Dhul-Qarnayn", p: ["Sulayman", "Talut", "Musa"] },
-        { q: "Quelle sourate raconte l'histoire du propriétaire des deux jardins ?", a: "Al-Kahf", p: ["Al-Baqarah", "Yusuf", "Al-Qasas"] }
+        { q: "Quelle sourate raconte l'histoire du propriétaire des deux jardins ?", a: "Al-Kahf", p: ["Al-Baqarah", "Yusuf", "Al-Qasas"] },
+        { q: "Quel homme immensément riche a été englouti par la terre avec ses trésors ?", a: "Qarûn (Coré)", p: ["Pharaon", "Hâmân", "Namroud"] },
+        { q: "Quel roi croyant a mené une petite armée contre le géant Jalût (Goliath) ?", a: "Talût (Saül)", p: ["David", "Salomon", "Josué"] },
+        { q: "Quel animal est au centre d'une grande querelle légale chez Banu Isra'il ?", a: "Une vache", p: ["Un chameau", "Un mouton", "Un veau d'or"] },
+        { q: "Qui a tenté de détruire la Kaaba avec une armée d'éléphants ?", a: "Abrahah", p: ["Namroud", "Abou Jahl", "Chosroès"] },
+        { q: "Quel serviteur d'Allah est resté mort pendant 100 ans avant d'être ressuscité ?", a: "Uzayr (Esdras)", p: ["Ilyas", "Al-Yasa", "Idris"] }
     ];
     return data.map(d => buildMCQ('stories', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
@@ -422,7 +427,12 @@ function generateGeographyQuestions(): QuizQuestion[] {
         { q: "Quel est l'ancien nom de Makkah (La Mecque) mentionné dans le Coran ?", a: "Bakkah", p: ["Yathrib", "Taybah", "Pétra"] },
         { q: "Où se trouve la 'Vallée Sacrée' de Tuwa mentionnée pour Musa ?", a: "Au pied du mont Sinaï", p: ["À Makkah", "À Al-Quds", "Au Yémen"] },
         { q: "Quel peuple habitait dans des maisons taillées dans les rochers ?", a: "Thamud", p: ["'Ad", "Banu Isra'il", "Quraysh"] },
-        { q: "Quelle nation était la cité d'Iram 'aux colonnes sans pareilles' ?", a: "Les 'Ad", p: ["Les Samaritains", "Les Romains", "Les Perses"] }
+        { q: "Quelle nation était la cité d'Iram 'aux colonnes sans pareilles' ?", a: "Les 'Ad", p: ["Les Samaritains", "Les Romains", "Les Perses"] },
+        { q: "Sur quelle montagne l'Arche de Nuh (Noé) s'est-elle posée ?", a: "Le Mont Judi", p: ["Le Mont Sinaï", "Le Mont Safa", "Le Mont Arafat"] },
+        { q: "Où se trouvait le 'Barrage de Ma'rib' dont la rupture a causé l'inondation d'al-'Arim ?", a: "Au Royaume de Saba (Yémen)", p: ["En Égypte", "En Mésopotamie", "En Syrie"] },
+        { q: "Dans quelle cité les anges Harut et Marut ont-ils été envoyés ?", a: "Babylone", p: ["Ninive", "Jérusalem", "Sodome"] },
+        { q: "Sur quel mont Allah a-t-il parlé directement à Musa (Moïse) ?", a: "Le Mont Tur (Sinaï)", p: ["Le Mont Uhud", "Le Mont Hira", "Le Mont Thawr"] },
+        { q: "Quel fleuve Musa a-t-il dû traverser miraculeusement avec son peuple ?", a: "La Mer Rouge", p: ["L'Euphrate", "Le Jourdain", "Le Tigre"] }
     ];
     return data.map(d => buildMCQ('geography', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
@@ -434,7 +444,12 @@ function generateVirtuesQuestions(): QuizQuestion[] {
         { q: "Quelle sourate est recommandée à la lecture chaque Vendredi ?", a: "Al-Kahf (La Caverne)", p: ["Al-Baqarah", "Maryam", "Ar-Rahman"] },
         { q: "Quelle sourate équivaut à un tiers (1/3) du Coran ?", a: "Al-Ikhlas (Le Monothéisme Pur)", p: ["Al-Fatihah", "Al-Kursi", "An-Nas"] },
         { q: "Quelle sourate est souvent appelée le 'Cœur du Coran' ?", a: "Ya-Sin", p: ["Ar-Rahman", "Al-Fatihah", "Al-Muzammil"] },
-        { q: "Quelle sourate est une protection contre la pauvreté ?", a: "Al-Waqi'ah", p: ["Al-Mulk", "An-Naba", "Al-Infitar"] }
+        { q: "Quelle sourate est une protection contre la pauvreté ?", a: "Al-Waqi'ah", p: ["Al-Mulk", "An-Naba", "Al-Infitar"] },
+        { q: "Quel est le plus grand verset du Coran ?", a: "Ayat al-Kursi (Verset du Trône)", p: ["Le dernier verset d'Al-Baqarah", "Le premier verset d'Al-Fatihah", "Le verset de la Lumière"] },
+        { q: "La récitation de quelle sourate empêche Shaytan d'entrer dans une maison ?", a: "Al-Baqarah", p: ["Al-Imran", "Al-Falaq", "An-Nas"] },
+        { q: "Quelles sont les deux sourates protectrices (Al-Mu'awwidhatayn) ?", a: "Al-Falaq et An-Nas", p: ["Al-Ikhlas et Al-Falaq", "An-Nas et Al-Ikhlas", "Al-Kursi et Al-Falaq"] },
+        { q: "Quelle sourate est la 'Guérison' (Ash-Shifa) et la 'Mère du Livre' ?", a: "Al-Fatihah", p: ["Ar-Rahman", "Al-Falaq", "An-Nas"] },
+        { q: "Récite une sourate et tu auras 10 récompenses par lettre. Laquelle ?", a: "Toutes les sourates du Coran", a: "Toutes les sourates", p: ["Seulement Al-Fatihah", "Seulement Al-Ikhlas", "Seulement Ya-Sin"] }
     ];
     return data.map(d => buildMCQ('virtues', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
@@ -446,7 +461,11 @@ function generateWomenQuestions(): QuizQuestion[] {
         { q: "Comment s'appelait la femme de Pharaon qui a adopté Musa ?", a: "Asiya", p: ["Bilqis", "Hajar", "Sarah"] },
         { q: "Quelle Reine a embrassé l'Islam après avoir rencontré Sulayman ?", a: "La Reine de Saba (Bilqis)", p: ["Zulaikha", "Cléopâtre", "Nefertiti"] },
         { q: "Quelle femme a reçu l'inspiration de placer son bébé dans le fleuve ?", a: "La mère de Musa", p: ["La femme de Lut", "Maryam", "Hajar"] },
-        { q: "Quelle sourate porte le nom de 'La Femme qui discute' ?", a: "Al-Mujadila", p: ["An-Nisa", "Al-Mumtahina", "Al-Ahzab"] }
+        { q: "Quelle sourate porte le nom de 'La Femme qui discute' ?", a: "Al-Mujadila", p: ["An-Nisa", "Al-Mumtahina", "Al-Ahzab"] },
+        { q: "Qui était l'épouse du Prophète Ibrahim et la mère de Ishaq ?", a: "Sarah", p: ["Hajar", "Asiya", "Zulaikha"] },
+        { q: "Qui était la pieuse mère d'Isma'il, à l'origine du trajet Safa-Marwah ?", a: "Hajar (Agar)", p: ["Sarah", "Maryam", "Bilqis"] },
+        { q: "Quelle femme exemplaire est citée comme la femme d'Imran ?", a: "Hanna (Mère de Maryam)", p: ["Elizabeth", "Asiya", "Khadija"] },
+        { q: "Quelle femme, épouse de Zakariya, a enfanté Yahya malgré son vieil âge ?", a: "La femme de Zakariya (Elizabeth)", p: ["La femme de Lut", "La femme d'Ibrahim", "La femme de Nuh"] }
     ];
     return data.map(d => buildMCQ('women', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
