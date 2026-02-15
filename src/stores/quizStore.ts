@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
-import { getQuestions, getSprintQuestions, calculateScore } from '../lib/quizEngine';
+import { getQuestions, getSprintQuestions, getDuelRoundQuestions, calculateScore } from '../lib/quizEngine';
 import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId } from '../data/quizTypes';
 import { DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
 import type { RealtimeChannel } from '@supabase/supabase-js';
@@ -55,6 +55,13 @@ interface QuizState {
     opponentAnswers: QuizAnswer[];
     channel: RealtimeChannel | null;
 
+    // Multi-round duel state
+    duelRound: number;                    // Current round (0-indexed)
+    duelRounds: QuizThemeId[];            // Theme per round
+    duelAllQuestions: QuizQuestion[][];   // Questions grouped by round
+    duelRoundScores: number[];            // My score per round
+    duelRoundOppScores: number[];         // Opponent score per round
+
     // Actions
     selectTheme: (theme: QuizThemeId) => void;
     setDifficulty: (d: QuizDifficulty) => void;
@@ -65,6 +72,7 @@ interface QuizState {
     joinDuel: (code: string) => Promise<boolean>;
     submitAnswer: (chosenIndex: number) => void;
     nextQuestion: () => void;
+    nextRound: () => void;
     resetQuiz: () => void;
     submitToLeaderboard: () => Promise<void>;
 
@@ -174,6 +182,13 @@ export const useQuizStore = create<QuizState>()(
             opponentAnswers: [],
             channel: null,
 
+            // Multi-round duel
+            duelRound: 0,
+            duelRounds: [],
+            duelAllQuestions: [],
+            duelRoundScores: [],
+            duelRoundOppScores: [],
+
             // Stats
             totalPlayed: 0,
             totalWins: 0,
@@ -240,19 +255,20 @@ export const useQuizStore = create<QuizState>()(
             },
 
             createDuel: async () => {
-                const { theme, player } = get();
-                if (!theme || !player) return '';
+                const { player } = get();
+                if (!player) return '';
 
                 const code = generateCode();
-                const questions = getQuestions(theme, 5);
+                const { themes, questions: roundQuestions } = getDuelRoundQuestions();
+                const allQuestions = roundQuestions.flat();
 
                 const { data, error } = await supabase
                     .from('quiz_matches')
                     .insert({
                         code,
                         status: 'waiting',
-                        theme,
-                        questions,
+                        theme: themes[0],
+                        questions: allQuestions,
                         player1_id: player.id,
                         player1_pseudo: player.pseudo,
                         player1_emoji: player.avatar_emoji,
@@ -279,6 +295,11 @@ export const useQuizStore = create<QuizState>()(
 
                         // Opponent joined
                         if (match.status === 'playing' && state.view === 'lobby') {
+                            // Rebuild round questions from flat list
+                            const flatQ = match.questions as QuizQuestion[];
+                            const rebuiltRounds = [flatQ.slice(0, 3), flatQ.slice(3, 6), flatQ.slice(6, 9)];
+                            const rebuiltThemes = rebuiltRounds.map(r => r[0]?.theme || 'prophets') as QuizThemeId[];
+
                             set({
                                 opponent: {
                                     id: match.player2_id,
@@ -287,7 +308,12 @@ export const useQuizStore = create<QuizState>()(
                                     total_wins: 0,
                                     total_played: 0,
                                 },
-                                questions: match.questions,
+                                duelAllQuestions: rebuiltRounds,
+                                duelRounds: rebuiltThemes,
+                                duelRound: 0,
+                                duelRoundScores: [0, 0, 0],
+                                duelRoundOppScores: [0, 0, 0],
+                                questions: rebuiltRounds[0],
                                 currentIndex: 0,
                                 answers: [],
                                 score: 0,
@@ -310,7 +336,13 @@ export const useQuizStore = create<QuizState>()(
                     matchId: data.id,
                     matchCode: code,
                     channel,
-                    questions,
+                    duelAllQuestions: roundQuestions,
+                    duelRounds: themes,
+                    duelRound: 0,
+                    duelRoundScores: [0, 0, 0],
+                    duelRoundOppScores: [0, 0, 0],
+                    questions: roundQuestions[0],
+                    theme: themes[0],
                     mode: 'duel',
                     view: 'lobby',
                     currentIndex: 0,
@@ -373,6 +405,11 @@ export const useQuizStore = create<QuizState>()(
                     })
                     .subscribe();
 
+                // Rebuild round questions from flat list
+                const flatQ = match.questions as QuizQuestion[];
+                const rebuiltRounds = [flatQ.slice(0, 3), flatQ.slice(3, 6), flatQ.slice(6, 9)];
+                const rebuiltThemes = rebuiltRounds.map(r => r[0]?.theme || 'prophets') as QuizThemeId[];
+
                 set({
                     matchId: match.id,
                     matchCode: code.toUpperCase(),
@@ -385,8 +422,13 @@ export const useQuizStore = create<QuizState>()(
                         total_wins: 0,
                         total_played: 0,
                     },
-                    theme: match.theme,
-                    questions: match.questions,
+                    duelAllQuestions: rebuiltRounds,
+                    duelRounds: rebuiltThemes,
+                    duelRound: 0,
+                    duelRoundScores: [0, 0, 0],
+                    duelRoundOppScores: [0, 0, 0],
+                    theme: rebuiltThemes[0],
+                    questions: rebuiltRounds[0],
                     currentIndex: 0,
                     answers: [],
                     score: 0,
@@ -483,10 +525,25 @@ export const useQuizStore = create<QuizState>()(
 
             nextQuestion: () => {
                 const state = get();
-                const { currentIndex, questions, mode, score, totalPlayed, totalWins, opponentScore, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest } = state;
+                const { currentIndex, questions, mode, score, totalPlayed, totalWins, opponentScore, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest, duelRound, duelRounds, duelRoundScores } = state;
+
+                // In duel mode: check if current round is done (3 questions per round)
+                if (mode === 'duel' && currentIndex + 1 >= questions.length && duelRound < duelRounds.length - 1) {
+                    // End of current round, but more rounds to go
+                    const newRoundScores = [...duelRoundScores];
+                    // Calculate this round's score contribution
+                    const prevRoundsScore = newRoundScores.slice(0, duelRound).reduce((a, b) => a + b, 0);
+                    newRoundScores[duelRound] = score - prevRoundsScore;
+
+                    set({
+                        view: 'roundEnd',
+                        duelRoundScores: newRoundScores,
+                    });
+                    return;
+                }
 
                 if (currentIndex + 1 >= questions.length || mode === 'sprint') {
-                    // End of round
+                    // End of match
                     const isDuel = mode === 'duel';
                     const isWin = mode === 'solo' || mode === 'sprint' || mode === 'revision' || score > opponentScore;
                     const newHighScores = { ...soloHighScores };
@@ -505,6 +562,14 @@ export const useQuizStore = create<QuizState>()(
                             .update({ status: 'finished' })
                             .eq('id', matchId)
                             .then();
+                    }
+
+                    // For duel: finalize last round score
+                    if (isDuel) {
+                        const newRoundScores = [...duelRoundScores];
+                        const prevRoundsScore = newRoundScores.slice(0, duelRound).reduce((a, b) => a + b, 0);
+                        newRoundScores[duelRound] = score - prevRoundsScore;
+                        set({ duelRoundScores: newRoundScores });
                     }
 
                     set({
@@ -537,6 +602,21 @@ export const useQuizStore = create<QuizState>()(
                         view: 'playing',
                     });
                 }
+            },
+
+            nextRound: () => {
+                const { duelRound, duelAllQuestions, duelRounds } = get();
+                const nextRound = duelRound + 1;
+                if (nextRound >= duelAllQuestions.length) return;
+
+                set({
+                    duelRound: nextRound,
+                    theme: duelRounds[nextRound],
+                    questions: duelAllQuestions[nextRound],
+                    currentIndex: 0,
+                    timerStart: Date.now(),
+                    view: 'playing',
+                });
             },
 
             submitToLeaderboard: async () => {
@@ -580,6 +660,11 @@ export const useQuizStore = create<QuizState>()(
                     currentStreak: 0,
                     sprintCorrect: 0,
                     sprintTimeLeft: 60,
+                    duelRound: 0,
+                    duelRounds: [],
+                    duelAllQuestions: [],
+                    duelRoundScores: [],
+                    duelRoundOppScores: [],
                 });
             },
         }),

@@ -457,6 +457,20 @@ export function getSprintQuestions(count: number = 30): QuizQuestion[] {
     return pick(allQuestions, Math.min(count, allQuestions.length));
 }
 
+/** Build 3 rounds of duel questions, each round = random theme × 3 questions */
+export function getDuelRoundQuestions(): { themes: QuizThemeId[]; questions: QuizQuestion[][] } {
+    const bank = getQuestionBank();
+    const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha'];
+    const selectedThemes = pick(allThemeIds, 3);
+
+    const rounds = selectedThemes.map(themeId => {
+        const pool = bank[themeId] || [];
+        return pick(pool, Math.min(3, pool.length));
+    });
+
+    return { themes: selectedThemes, questions: rounds };
+}
+
 /** Get total question count per theme */
 export function getQuestionCounts(): Record<QuizThemeId, number> {
     const bank = getQuestionBank();
