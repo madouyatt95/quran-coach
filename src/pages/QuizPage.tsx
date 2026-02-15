@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Swords, User, Trophy, Clock, CheckCircle, XCircle, Copy, Share2, RotateCcw, Zap, Crown, BarChart3, Award, Globe, Timer, BookOpen } from 'lucide-react';
+import { ArrowLeft, Trophy, Zap, Share2, RotateCcw, CheckCircle, XCircle, Timer, Award, Clock, Swords, BarChart3, Globe, User, BookOpen, Crown, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useQuizStore, BADGES } from '../stores/quizStore';
-import { QUIZ_THEMES, DIFFICULTY_CONFIG } from '../data/quizTypes';
-import type { QuizDifficulty } from '../data/quizTypes';
+import { useQuizStore } from '../stores/quizStore';
+import { QUIZ_THEMES, DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
+import type { QuizDifficulty, PowerUpId } from '../data/quizTypes';
 import { getQuestionCounts } from '../lib/quizEngine';
 import './QuizPage.css';
 
@@ -22,6 +22,9 @@ function PseudoSetup({ onDone }: { onDone: () => void }) {
             avatar_emoji: emoji,
             total_wins: 0,
             total_played: 0,
+            total_xp: 0,
+            level: 1,
+            title: 'Mubtadi'
         });
         onDone();
     };
@@ -65,7 +68,7 @@ function PseudoSetup({ onDone }: { onDone: () => void }) {
 
 // ─── Home View (Mode Selection) ──────────────────────────
 function HomeView() {
-    const { startSolo, setView, player, totalPlayed, totalWins, difficulty, setDifficulty, wrongQuestions, unlockedBadges, sprintBest } = useQuizStore();
+    const { startSolo, setView, player, totalPlayed, totalWins, totalXP, level, title, difficulty, setDifficulty, wrongQuestions, unlockedBadges, sprintBest } = useQuizStore();
     const navigate = useNavigate();
 
     return (
@@ -78,9 +81,23 @@ function HomeView() {
                     <Swords size={24} />
                     <span>Duel Quiz</span>
                 </h1>
-                <div className="quiz-player-badge">
+                <div className="quiz-player-badge" onClick={() => setView('profile')}>
                     <span className="quiz-player-emoji">{player?.avatar_emoji}</span>
-                    <span className="quiz-player-name">{player?.pseudo}</span>
+                    <div className="quiz-player-info">
+                        <span className="quiz-player-name">{player?.pseudo}</span>
+                        <span className="quiz-player-title">{title}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Level & XP Bar */}
+            <div className="quiz-xp-container" onClick={() => setView('stats')}>
+                <div className="quiz-xp-header">
+                    <span className="quiz-level-tag">Niveau {level}</span>
+                    <span className="quiz-xp-text">{totalXP % 1000} / 1000 XP</span>
+                </div>
+                <div className="quiz-xp-bar-bg">
+                    <div className="quiz-xp-bar-fill" style={{ width: `${(totalXP % 1000) / 10}%` }}></div>
                 </div>
             </div>
 
@@ -125,16 +142,22 @@ function HomeView() {
 
             <p className="quiz-subtitle">Choisis ton mode</p>
             <div className="quiz-mode-cards">
-                <button className="quiz-mode-card solo" onClick={startSolo}>
-                    <User size={32} />
-                    <h3>Solo</h3>
-                    <p>Choisis ton thème et joue</p>
+                <button className="quiz-mode-card daily" onClick={() => setView('daily')}>
+                    <Timer size={32} />
+                    <h3>Défi du Jour</h3>
+                    <p>Même quiz pour tous !</p>
+                    <span className="quiz-mode-tag">XP x2</span>
                 </button>
-                <button className="quiz-mode-card duel" onClick={() => setView('lobby')}>
-                    <Swords size={32} />
-                    <h3>Duel</h3>
-                    <p>3 rounds thèmes variés</p>
-                </button>
+                <div className="quiz-mode-row">
+                    <button className="quiz-mode-card solo" onClick={startSolo}>
+                        <User size={32} />
+                        <h3>Solo</h3>
+                    </button>
+                    <button className="quiz-mode-card duel" onClick={() => setView('lobby')}>
+                        <Swords size={32} />
+                        <h3>Duel</h3>
+                    </button>
+                </div>
             </div>
 
             <button className="quiz-join-btn" onClick={() => setView('join')} style={{ marginTop: '12px' }}>
@@ -601,8 +624,7 @@ function JoinDuel() {
 
 // ─── Playing View ────────────────────────────────────────
 function PlayingView() {
-    const store = useQuizStore();
-    const { questions, currentIndex, submitAnswer, mode, opponent, score, opponentScore, difficulty, sprintCorrect, currentStreak, duelRound, duelRounds } = store;
+    const { questions, currentIndex, submitAnswer, mode, opponent, score, opponentScore, opponentAnswers, difficulty, sprintCorrect, currentStreak, duelRound, duelRounds, powerUps, applyPowerUp } = useQuizStore();
     const isDuel = mode === 'duel';
     const roundTheme = isDuel && duelRounds.length > 0 ? QUIZ_THEMES.find(t => t.id === duelRounds[duelRound]) : null;
     const question = questions[currentIndex];
@@ -730,12 +752,35 @@ function PlayingView() {
             </div>
 
             {/* Question */}
+            {question.audioUrl && <AudioPlayer url={question.audioUrl} />}
+
             <div className="quiz-question-card">
                 {question.questionAr && (
                     <p className="quiz-question-ar">{question.questionAr}</p>
                 )}
                 <p className="quiz-question-fr">{question.questionFr}</p>
             </div>
+
+            {/* Power-Ups (Solo Only) */}
+            {!isSprint && mode === 'solo' && (
+                <div className="quiz-powerups" style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '20px' }}>
+                    {(['50-50', 'time-freeze', 'second-chance'] as const).map(id => {
+                        const count = powerUps[id];
+                        return (
+                            <button
+                                key={id}
+                                className={`quiz-powerup-item ${count === 0 ? 'disabled' : ''}`}
+                                onClick={() => applyPowerUp(id)}
+                                disabled={count === 0}
+                                title={id}
+                            >
+                                <span className="quiz-pu-icon">{id === '50-50' ? '🌗' : id === 'time-freeze' ? '❄️' : '🛡️'}</span>
+                                <span className="quiz-pu-count">{count}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
 
             {/* Choices */}
             <div className="quiz-choices">
@@ -756,7 +801,7 @@ function PlayingView() {
             {mode === 'duel' && opponent && (
                 <div className="quiz-opp-progress">
                     <span>{opponent.avatar_emoji} {opponent.pseudo}</span>
-                    <span>{store.opponentAnswers.length}/{questions.length} réponses</span>
+                    <span>{opponentAnswers.length}/{questions.length} réponses</span>
                 </div>
             )}
         </div>
@@ -915,6 +960,160 @@ function ResultView() {
                     <RotateCcw size={18} />
                     Nouvelle partie
                 </button>
+                <button className="quiz-btn-secondary" style={{ marginTop: '12px' }} onClick={() => {
+                    const text = mode === 'duel'
+                        ? `J'ai fait un score de ${score} contre ${opponent?.pseudo} sur Duel Quiz ! 🏆`
+                        : `J'ai fait ${correctCount}/${total} sur le thème ${themeData?.name || ''} ! 🚀`;
+                    if (navigator.share) {
+                        navigator.share({ title: 'Quran Coach Quiz', text, url: window.location.href });
+                    } else {
+                        navigator.clipboard.writeText(text);
+                        alert('Copié dans le presse-papiers !');
+                    }
+                }}>
+                    <Share2 size={18} />
+                    Partager mon score
+                </button>
+            </div>
+        </div>
+    );
+}
+
+// ─── Audio Player Component ──────────────────────────────
+function AudioPlayer({ url }: { url: string }) {
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    const togglePlay = () => {
+        if (!audioRef.current) return;
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+    };
+
+    return (
+        <div className="quiz-audio-player">
+            <audio ref={audioRef} src={url} onEnded={() => setIsPlaying(false)} />
+            <button className={`quiz-audio-btn ${isPlaying ? 'playing' : ''}`} onClick={togglePlay}>
+                <Zap size={24} fill={isPlaying ? 'currentColor' : 'none'} />
+                <span>{isPlaying ? 'Pause' : 'Écouter l\'extrait'}</span>
+            </button>
+        </div>
+    );
+}
+
+// ─── Profile & Customization View ───────────────────────
+function ProfileView() {
+    const { player, title, level, totalXP, setView, unlockedBadges, totalPlayed, totalWins } = useQuizStore();
+
+    return (
+        <div className="quiz-container">
+            <div className="quiz-header">
+                <button className="quiz-back-btn" onClick={() => setView('home')}>
+                    <ArrowLeft size={22} />
+                </button>
+                <h1 className="quiz-title">Profil Joueur</h1>
+            </div>
+
+            <div className="quiz-profile-card">
+                <div className="quiz-profile-avatar">{player?.avatar_emoji}</div>
+                <h2 className="quiz-profile-name">{player?.pseudo}</h2>
+                <div className="quiz-profile-rank">
+                    <span className="quiz-level-tag">Niveau {level}</span>
+                    <span className="quiz-profile-title">{title}</span>
+                </div>
+
+                <div className="quiz-xp-container" style={{ width: '100%', marginTop: '16px' }}>
+                    <div className="quiz-xp-header">
+                        <span className="quiz-xp-text">{totalXP % 1000} / 1000 XP</span>
+                    </div>
+                    <div className="quiz-xp-bar-bg">
+                        <div className="quiz-xp-bar-fill" style={{ width: `${(totalXP % 1000) / 10}%` }}></div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="quiz-profile-stats">
+                <div className="quiz-p-stat">
+                    <Trophy size={18} color="#FFD700" />
+                    <div className="quiz-p-stat-info">
+                        <strong>{totalWins}</strong>
+                        <span>Victoires Total</span>
+                    </div>
+                </div>
+                <div className="quiz-p-stat">
+                    <Award size={18} color="#4CAF50" />
+                    <div className="quiz-p-stat-info">
+                        <strong>{unlockedBadges.length}</strong>
+                        <span>Badges</span>
+                    </div>
+                </div>
+                <div className="quiz-p-stat">
+                    <CheckCircle size={18} color="#2196F3" />
+                    <div className="quiz-p-stat-info">
+                        <strong>{Math.round((totalWins / (totalPlayed || 1)) * 100)}%</strong>
+                        <span>Taux de réussite</span>
+                    </div>
+                </div>
+            </div>
+
+            <button className="quiz-btn-primary" style={{ marginTop: '20px' }} onClick={() => setView('home')}>
+                Retour au menu
+            </button>
+        </div>
+    );
+}
+
+// ─── Daily Challenge View ───────────────────────────────
+function DailyChallengeView() {
+    const { startDaily, dailyChallengeLastDate, setView } = useQuizStore();
+    const today = new Date().toISOString().split('T')[0];
+    const hasPlayedToday = dailyChallengeLastDate === today;
+
+    return (
+        <div className="quiz-container">
+            <div className="quiz-header">
+                <button className="quiz-back-btn" onClick={() => setView('home')}>
+                    <ArrowLeft size={22} />
+                </button>
+                <h1 className="quiz-title">Défi du Jour</h1>
+            </div>
+
+            <div className="quiz-daily-intro">
+                <div className="quiz-daily-icon">📅</div>
+                <h2>Le Défi du Jour</h2>
+                <p>
+                    Chaque jour, un nouveau quiz de 10 questions est généré.
+                    Tout le monde reçoit les mêmes questions !
+                </p>
+
+                <div className="quiz-daily-perks">
+                    <div className="quiz-perk">
+                        <Zap size={18} color="#ffc107" />
+                        <span>XP doublée (x2)</span>
+                    </div>
+                    <div className="quiz-perk">
+                        <Trophy size={18} color="#FFD700" />
+                        <span>Classement spécial</span>
+                    </div>
+                </div>
+
+                {hasPlayedToday ? (
+                    <div className="quiz-daily-played">
+                        <CheckCircle size={24} color="#4CAF50" />
+                        <p>Tu as déjà relevé le défi aujourd'hui ! Reviens demain.</p>
+                        <button className="quiz-join-btn" onClick={() => setView('home')}>
+                            Retour à l'accueil
+                        </button>
+                    </div>
+                ) : (
+                    <button className="quiz-btn-primary" onClick={startDaily} style={{ marginTop: '20px' }}>
+                        Relever le défi
+                    </button>
+                )}
             </div>
         </div>
     );
@@ -1002,6 +1201,10 @@ export function QuizPage() {
     switch (view) {
         case 'home':
             return <HomeView />;
+        case 'daily':
+            return <DailyChallengeView />;
+        case 'profile':
+            return <ProfileView />;
         case 'solo-themes':
             return <SoloThemeSelect />;
         case 'stats':

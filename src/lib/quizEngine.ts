@@ -10,17 +10,25 @@ import type { QuizQuestion, QuizThemeId, QuizDifficulty } from '../data/quizType
 import { DIFFICULTY_CONFIG } from '../data/quizTypes';
 
 // ─── Utility ────────────────────────────────────────────
-function shuffle<T>(arr: T[]): T[] {
+function seededRandom(seed: number) {
+    let state = seed;
+    return function () {
+        state = (state * 1664525 + 1013904223) % 4294967296;
+        return state / 4294967296;
+    };
+}
+
+function shuffle<T>(arr: T[], random: () => number = Math.random): T[] {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
 }
 
-function pick<T>(arr: T[], n: number): T[] {
-    return shuffle(arr).slice(0, n);
+function pick<T>(arr: T[], n: number, random: () => number = Math.random): T[] {
+    return shuffle(arr, random).slice(0, n);
 }
 
 function uid(): string {
@@ -395,6 +403,49 @@ function generateYaAyyuhaQuestions(): QuizQuestion[] {
     return questions;
 }
 
+// ─── Audio Questions ────────────────────────────────────
+function generateAudioQuestions(): QuizQuestion[] {
+    const samples = [
+        { id: 'a1', theme: 'verses' as const, reciter: 'Mishary Rashid Alafasy', surah: 'Al-Fatihah', url: 'https://download.quranicaudio.com/quran/mishari_rashid_alafasy/001.mp3' },
+        { id: 'a2', theme: 'verses' as const, reciter: 'Abdur-Rahman as-Sudais', surah: 'An-Nas', url: 'https://download.quranicaudio.com/quran/abdurrahmaan_as-sudais/114.mp3' },
+        { id: 'a3', theme: 'verses' as const, reciter: 'Saad al-Ghamdi', surah: 'Al-Ikhlas', url: 'https://download.quranicaudio.com/quran/saad_al-ghamidi/112.mp3' },
+    ];
+
+    const questions: QuizQuestion[] = [];
+    const reciterNames = ['Mishary Rashid Alafasy', 'Abdur-Rahman as-Sudais', 'Saad al-Ghamdi', 'Maher Al-Muaiqly'];
+
+    for (const s of samples) {
+        // Q: Who is the reciter?
+        const q1 = buildMCQ(
+            s.theme,
+            `Qui est ce récitateur ?`,
+            s.reciter,
+            reciterNames,
+            undefined,
+            `Il s'agit de ${s.reciter}.`
+        );
+        if (q1) {
+            q1.audioUrl = s.url;
+            questions.push(q1);
+        }
+
+        // Q: Which surah?
+        const q2 = buildMCQ(
+            s.theme,
+            `De quelle sourate provient cet extrait ?`,
+            s.surah,
+            ['Al-Fatihah', 'An-Nas', 'Al-Ikhlas', 'Al-Falaq', 'Al-Baqarah'],
+            undefined,
+            `C'est la sourate ${s.surah}.`
+        );
+        if (q2) {
+            q2.audioUrl = s.url;
+            questions.push(q2);
+        }
+    }
+    return questions;
+}
+
 // ─── Question Bank Cache ────────────────────────────────
 let questionBank: Record<QuizThemeId, QuizQuestion[]> | null = null;
 
@@ -404,7 +455,7 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
     questionBank = {
         prophets: generateProphetQuestions(),
         companions: generateCompanionQuestions(),
-        verses: generateVerseQuestions(),
+        verses: [...generateVerseQuestions(), ...generateAudioQuestions()],
         invocations: generateInvocationQuestions(),
         structure: generateStructureQuestions(),
         'ya-ayyuha': generateYaAyyuhaQuestions(),
@@ -415,6 +466,16 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
     );
 
     return questionBank;
+}
+
+/** Hash a string into a numeric seed */
+function hashString(s: string): number {
+    let hash = 0;
+    for (let i = 0; i < s.length; i++) {
+        hash = ((hash << 5) - hash) + s.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
 }
 
 // ─── Public API ─────────────────────────────────────────
@@ -469,6 +530,16 @@ export function getDuelRoundQuestions(): { themes: QuizThemeId[]; questions: Qui
     });
 
     return { themes: selectedThemes, questions: rounds };
+}
+
+/** Get seeded questions for Daily Challenge (10 Q, all themes) */
+export function getDailyQuestions(dateSeed: string): QuizQuestion[] {
+    const bank = getQuestionBank();
+    const allQuestions = Object.values(bank).flat();
+    const seed = hashString(dateSeed);
+    const rng = seededRandom(seed);
+
+    return pick(allQuestions, 10, rng);
 }
 
 /** Get total question count per theme */

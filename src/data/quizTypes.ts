@@ -1,5 +1,22 @@
 // Quiz Duel — Types
 
+export type QuizView =
+    | 'home'        // Mode Selection (Solo, Duel, etc.) + Difficulty
+    | 'solo-themes' // Theme selection (only for Solo)
+    | 'daily'       // Daily Challenge
+    | 'profile'     // User profile & customization
+    | 'stats'       // Stats dashboard
+    | 'badges'      // Badge gallery
+    | 'leaderboard' // Global leaderboard
+    | 'lobby'       // Waiting for opponent
+    | 'join'        // Enter code to join
+    | 'playing'     // Active quiz
+    | 'feedback'    // Answer feedback (correct/wrong)
+    | 'roundEnd'    // End of round summary
+    | 'result';     // Final match result
+
+export type QuizMode = 'solo' | 'duel' | 'sprint' | 'revision' | 'daily';
+
 export interface QuizQuestion {
     id: string;
     theme: QuizThemeId;
@@ -8,6 +25,7 @@ export interface QuizQuestion {
     choices: string[];         // 2-4 answer choices
     correctIndex: number;      // Index of correct answer
     explanation?: string;      // Brief explanation shown after answer
+    audioUrl?: string;         // Optional audio snippet URL
 }
 
 export type QuizThemeId =
@@ -35,6 +53,26 @@ export interface QuizPlayer {
     avatar_emoji: string;
     total_wins: number;
     total_played: number;
+    total_xp: number;
+    level: number;
+    title?: string;
+    card_theme?: string; // CSS gradient string
+}
+
+export type PowerUpId = '50-50' | 'time-freeze' | 'second-chance';
+
+export interface QuizPowerUp {
+    id: PowerUpId;
+    name: string;
+    description: string;
+    icon: string; // Emoji
+    useLimit: number; // Usage count
+}
+
+export interface UserTitle {
+    id: string;
+    label: string;
+    minLevel: number;
 }
 
 export interface QuizAnswer {

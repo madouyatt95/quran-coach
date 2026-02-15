@@ -2,25 +2,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
-import { getQuestions, getSprintQuestions, getDuelRoundQuestions, calculateScore } from '../lib/quizEngine';
-import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId } from '../data/quizTypes';
+import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore } from '../lib/quizEngine';
+import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId, QuizView, QuizMode, PowerUpId } from '../data/quizTypes';
 import { DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
 import type { RealtimeChannel } from '@supabase/supabase-js';
-
-export type QuizView =
-    | 'home'        // Mode Selection (Solo, Duel, etc.) + Difficulty
-    | 'solo-themes' // Theme selection (only for Solo)
-    | 'stats'       // Stats dashboard
-    | 'badges'      // Badge gallery
-    | 'leaderboard' // Global leaderboard
-    | 'lobby'       // Waiting for opponent
-    | 'join'        // Enter code to join
-    | 'playing'     // Active quiz
-    | 'feedback'    // Answer feedback (correct/wrong)
-    | 'roundEnd'    // End of round summary
-    | 'result';     // Final match result
-
-export type QuizMode = 'solo' | 'duel' | 'sprint' | 'revision';
 
 interface QuizState {
     // Player
@@ -67,25 +52,39 @@ interface QuizState {
     startSolo: () => void;
     startSprint: () => void;
     startRevision: () => void;
+    startDaily: () => void;
     createDuel: () => Promise<string>;
     joinDuel: (code: string) => Promise<boolean>;
     submitAnswer: (chosenIndex: number) => void;
     nextQuestion: () => void;
+    applyPowerUp: (id: PowerUpId) => void;
     nextRound: () => void;
     selectRandomSolo: () => void;
     resetQuiz: () => void;
     submitToLeaderboard: () => Promise<void>;
 
-    // Persisted Stats
+    // Persisted Stats & Progress
     totalPlayed: number;
     totalWins: number;
     totalCorrect: number;
+    totalXP: number;
+    level: number;
+    title: string | null;
+    card_theme: string | null;
+    powerUps: Record<PowerUpId, number>;
+    dailyChallengeLastDate: string | null; // ISO date YYYY-MM-DD
+
     soloHighScores: Record<string, number>;
     themeStats: Record<string, ThemeStats>;
     unlockedBadges: BadgeId[];
     wrongQuestions: QuizQuestion[];  // For revision mode
     sprintBest: number;
     duelWins: number;
+
+    // Progression Actions
+    addXP: (amount: number) => void;
+    usePowerUp: (id: PowerUpId) => void;
+    unlockBadge: (id: BadgeId) => void;
 }
 
 function generateCode(): string {
@@ -193,12 +192,51 @@ export const useQuizStore = create<QuizState>()(
             totalPlayed: 0,
             totalWins: 0,
             totalCorrect: 0,
+            totalXP: 0,
+            level: 1,
+            title: 'Mubtadi',
+            card_theme: null,
+            powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3 },
+            dailyChallengeLastDate: null,
             soloHighScores: {},
             themeStats: {},
             unlockedBadges: [],
             wrongQuestions: [],
             sprintBest: 0,
             duelWins: 0,
+
+            addXP: (amount) => {
+                const { totalXP, player } = get();
+                const newXP = totalXP + amount;
+                const newLevel = Math.floor(newXP / 1000) + 1;
+
+                // Determine Title based on level
+                let newTitle = 'Mubtadi';
+                if (newLevel >= 31) newTitle = 'Alim';
+                else if (newLevel >= 16) newTitle = 'Hafidh';
+                else if (newLevel >= 6) newTitle = 'Talib';
+
+                set({
+                    totalXP: newXP,
+                    level: newLevel,
+                    title: newTitle,
+                    player: player ? { ...player, total_xp: newXP, level: newLevel, title: newTitle } : null
+                });
+            },
+
+            usePowerUp: (id) => {
+                const { powerUps } = get();
+                if (powerUps[id] > 0) {
+                    set({ powerUps: { ...powerUps, [id]: powerUps[id] - 1 } });
+                }
+            },
+
+            unlockBadge: (id) => {
+                const { unlockedBadges } = get();
+                if (!unlockedBadges.includes(id)) {
+                    set({ unlockedBadges: [...unlockedBadges, id] });
+                }
+            },
 
             setDifficulty: (d) => set({ difficulty: d }),
 
@@ -263,6 +301,22 @@ export const useQuizStore = create<QuizState>()(
                 });
             },
 
+            startDaily: () => {
+                const today = new Date().toISOString().split('T')[0];
+                const questions = getDailyQuestions(today);
+                set({
+                    mode: 'daily',
+                    questions,
+                    dailyChallengeLastDate: today,
+                    currentIndex: 0,
+                    answers: [],
+                    score: 0,
+                    currentStreak: 0,
+                    timerStart: Date.now(),
+                    view: 'playing',
+                });
+            },
+
             createDuel: async () => {
                 const { player } = get();
                 if (!player) return '';
@@ -316,6 +370,9 @@ export const useQuizStore = create<QuizState>()(
                                     avatar_emoji: match.player2_emoji || '🎓',
                                     total_wins: 0,
                                     total_played: 0,
+                                    total_xp: 0,
+                                    level: 1,
+                                    title: 'Mubtadi'
                                 },
                                 duelAllQuestions: rebuiltRounds,
                                 duelRounds: rebuiltThemes,
@@ -430,6 +487,9 @@ export const useQuizStore = create<QuizState>()(
                         avatar_emoji: match.player1_emoji || '🎓',
                         total_wins: 0,
                         total_played: 0,
+                        total_xp: 0,
+                        level: 1,
+                        title: 'Mubtadi'
                     },
                     duelAllQuestions: rebuiltRounds,
                     duelRounds: rebuiltThemes,
@@ -448,6 +508,41 @@ export const useQuizStore = create<QuizState>()(
                 return true;
             },
 
+            applyPowerUp: (id) => {
+                const { powerUps, mode } = get();
+                if (mode !== 'solo') return; // For now
+                if (powerUps[id] <= 0) return;
+
+                const newPowerUps = { ...powerUps, [id]: powerUps[id] - 1 };
+
+                if (id === 'time-freeze') {
+                    // Stop timer by resetting timerStart to a future date or just setting a flag
+                    // Simple: add 10s to timerStart
+                    set({ timerStart: get().timerStart + 10000, powerUps: newPowerUps });
+                } else if (id === '50-50') {
+                    const { questions, currentIndex } = get();
+                    const q = questions[currentIndex];
+                    if (!q) return;
+
+                    const correctChoice = q.choices[q.correctIndex];
+                    const others = q.choices.filter((_, i) => i !== q.correctIndex);
+                    // Keep 1 random wrong choice
+                    const randomWrong = others[Math.floor(Math.random() * others.length)];
+                    // Shuffle them?
+                    const shuffled = Math.random() > 0.5 ? [correctChoice, randomWrong] : [randomWrong, correctChoice];
+
+                    const newQuestions = [...questions];
+                    newQuestions[currentIndex] = {
+                        ...q,
+                        choices: shuffled,
+                        correctIndex: shuffled.indexOf(correctChoice)
+                    };
+                    set({ questions: newQuestions, powerUps: newPowerUps });
+                } else {
+                    set({ powerUps: newPowerUps });
+                }
+            },
+
             submitAnswer: (chosenIndex) => {
                 const { questions, currentIndex, answers, score, timerStart, mode, matchId, player, difficulty, currentStreak, wrongQuestions, totalCorrect, sprintCorrect } = get();
                 const question = questions[currentIndex];
@@ -457,6 +552,18 @@ export const useQuizStore = create<QuizState>()(
                 const timeMs = Date.now() - timerStart;
                 const correct = chosenIndex === question.correctIndex;
                 const points = calculateScore(correct, timeMs, maxTimeMs, difficulty);
+
+                if (correct) {
+                    const difficultyCfg = DIFFICULTY_CONFIG[difficulty];
+                    const baseXP = 15; // Base XP per correct answer
+                    const difficultyBonus = Math.round(baseXP * difficultyCfg.scoreMultiplier);
+                    const streakBonus = currentStreak * 2; // +2 XP for each streak point
+                    let totalXPToGained = difficultyBonus + streakBonus;
+
+                    if (mode === 'daily') totalXPToGained *= 2;
+
+                    get().addXP(totalXPToGained);
+                }
 
                 const answer: QuizAnswer = {
                     questionId: question.id,
@@ -684,6 +791,12 @@ export const useQuizStore = create<QuizState>()(
                 totalPlayed: state.totalPlayed,
                 totalWins: state.totalWins,
                 totalCorrect: state.totalCorrect,
+                totalXP: state.totalXP,
+                level: state.level,
+                title: state.title,
+                card_theme: state.card_theme,
+                powerUps: state.powerUps,
+                dailyChallengeLastDate: state.dailyChallengeLastDate,
                 soloHighScores: state.soloHighScores,
                 themeStats: state.themeStats,
                 unlockedBadges: state.unlockedBadges,
