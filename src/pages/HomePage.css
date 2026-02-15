@@ -1,0 +1,340 @@
+/* ─── HomePage ─────────────────────────────────────────── */
+
+.home-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 40%, #16213e 100%);
+    padding: 0 0 100px 0;
+    color: #e0e0e0;
+    overflow-x: hidden;
+}
+
+/* ─── Header ──────────────────────────────────────────── */
+.home-header {
+    padding: 24px 20px 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.home-header__left {
+    flex: 1;
+}
+
+.home-header__greeting {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-header__hijri {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+    direction: ltr;
+}
+
+.home-header__hijri-ar {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-family: 'Amiri', 'Traditional Arabic', serif;
+    direction: rtl;
+    margin-top: 2px;
+}
+
+/* ─── Hadith Card ─────────────────────────────────────── */
+.hadith-card {
+    margin: 8px 16px 20px;
+    padding: 24px 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    animation: hadith-fade-in 0.6s ease-out;
+}
+
+.hadith-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #c9a84c, #e8d48b, #c9a84c);
+    border-radius: 20px 20px 0 0;
+}
+
+.hadith-card__label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #c9a84c;
+    margin-bottom: 16px;
+}
+
+.hadith-card__label-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #c9a84c;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.hadith-card__arabic {
+    font-family: 'Amiri', 'Traditional Arabic', 'Scheherazade New', serif;
+    font-size: 1.5rem;
+    line-height: 2.2;
+    color: #ffffff;
+    text-align: center;
+    direction: rtl;
+    margin-bottom: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hadith-card__french {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.75);
+    text-align: center;
+    font-style: italic;
+    margin-bottom: 16px;
+}
+
+.hadith-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hadith-card__source {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hadith-card__source strong {
+    color: #c9a84c;
+    font-weight: 600;
+}
+
+.hadith-card__narrator {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.hadith-card__actions {
+    display: flex;
+    gap: 6px;
+}
+
+.hadith-card__action-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+}
+
+.hadith-card__action-btn:hover {
+    background: rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: #c9a84c;
+}
+
+/* ─── Quick Shortcuts ─────────────────────────────────── */
+.home-shortcuts {
+    padding: 0 16px;
+    margin-bottom: 20px;
+}
+
+.home-shortcuts__title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 12px;
+    padding-left: 4px;
+}
+
+.home-shortcuts__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.home-shortcut {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-decoration: none;
+    color: inherit;
+}
+
+.home-shortcut:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.home-shortcut:active {
+    transform: scale(0.95);
+}
+
+.home-shortcut__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.home-shortcut__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+/* ─── Stats Overview ──────────────────────────────────── */
+.home-stats {
+    padding: 0 16px;
+    margin-bottom: 20px;
+}
+
+.home-stats__title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 12px;
+    padding-left: 4px;
+}
+
+.home-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.home-stat {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+}
+
+.home-stat__value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #c9a84c, #e8d48b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+
+.home-stat__label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 500;
+}
+
+/* ─── Seasonal Banner ─────────────────────────────────── */
+.home-seasonal {
+    margin: 0 16px 20px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.15) 0%, rgba(201, 168, 76, 0.05) 100%);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.home-seasonal__emoji {
+    font-size: 1.8rem;
+}
+
+.home-seasonal__text {
+    flex: 1;
+}
+
+.home-seasonal__text strong {
+    display: block;
+    color: #e8d48b;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+.home-seasonal__text span {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ─── Animations ──────────────────────────────────────── */
+@keyframes hadith-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+/* ─── Responsive ──────────────────────────────────────── */
+@media (max-width: 360px) {
+    .home-shortcuts__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hadith-card__arabic {
+        font-size: 1.3rem;
+    }
+}

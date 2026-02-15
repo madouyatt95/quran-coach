@@ -17,6 +17,7 @@ import { ProphetsPage } from './pages/ProphetsPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { ThemesPage } from './pages/ThemesPage';
 import { QuizPage } from './pages/QuizPage';
+import { HomePage } from './pages/HomePage';
 import { QiblaPage } from './pages/QiblaPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
@@ -30,7 +31,7 @@ import './index.css';
 // This preserves audio state, player UI, and reading tracking
 function ReadPagePersistent() {
   const location = useLocation();
-  const isActive = location.pathname === '/' || location.pathname === '/read';
+  const isActive = location.pathname === '/read';
   return (
     <div style={{ display: isActive ? 'contents' : 'none' }}>
       <ReadPage />
@@ -108,12 +109,13 @@ function AppContent() {
   }, [startSession, endSession]);
 
   const location = useLocation();
-  const isLecturePage = location.pathname === '/' || location.pathname === '/read';
+  const isLecturePage = location.pathname === '/read';
+  const isHomePage = location.pathname === '/';
 
   return (
     <>
       {/* Global burger menu button – hidden on Lecture (MushafPage has its own) */}
-      {!isLecturePage && (
+      {!isLecturePage && !isHomePage && (
         <button
           className="global-menu-btn"
           onClick={() => setShowSideMenu(true)}
@@ -127,7 +129,7 @@ function AppContent() {
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
         <Routes>
-          <Route path="/" element={null} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/read" element={null} />
           <Route path="/hifdh" element={<HifdhPage />} />
 
