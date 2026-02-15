@@ -3,7 +3,7 @@ import { ArrowLeft, Trophy, Zap, Share2, RotateCcw, CheckCircle, XCircle, Timer,
 import { useNavigate } from 'react-router-dom';
 import { useQuizStore } from '../stores/quizStore';
 import { QUIZ_THEMES, DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
-import type { QuizDifficulty, PowerUpId } from '../data/quizTypes';
+import type { QuizDifficulty } from '../data/quizTypes';
 import { getQuestionCounts } from '../lib/quizEngine';
 import './QuizPage.css';
 
