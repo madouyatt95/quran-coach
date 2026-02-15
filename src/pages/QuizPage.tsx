@@ -545,7 +545,7 @@ function DuelLobby() {
                 {creating ? (
                     <div className="quiz-lobby-loading">
                         <div className="quiz-spinner" />
-                        <p>Création de la partie...</p>
+                        <p>Préparation de la partie...</p>
                     </div>
                 ) : (
                     <>
@@ -571,6 +571,10 @@ function DuelLobby() {
                             <div className="quiz-spinner" />
                             <p>En attente d'un adversaire...</p>
                         </div>
+                        <p className="quiz-lobby-hint">
+                            Si ton adversaire a déjà rejoint et que tu es bloqué ici,
+                            la resynchronisation automatique devrait s'en charger...
+                        </p>
                     </>
                 )}
             </div>
@@ -1285,8 +1289,16 @@ function RoundEndView() {
 
 // ─── Main Quiz Page ──────────────────────────────────────
 export function QuizPage() {
-    const { view, player } = useQuizStore();
+    const { view, player, matchId, channel, syncMatch } = useQuizStore();
     const [showSetup, setShowSetup] = useState(!player);
+
+    // Auto-sync duel on mount or recovery
+    useEffect(() => {
+        if (player && matchId && !channel) {
+            console.log('[QuizPage] Duel detected without channel, syncing...');
+            syncMatch();
+        }
+    }, [player, matchId, channel, syncMatch]);
 
     if (showSetup || !player) {
         return <PseudoSetup onDone={() => setShowSetup(false)} />;

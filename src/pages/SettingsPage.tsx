@@ -10,6 +10,8 @@ const RECITERS = [
     { id: 'ar.minshawi', name: 'Mohamed Siddiq El-Minshawi' },
 ];
 
+const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 export function SettingsPage() {
     const {
         theme,
@@ -111,18 +113,20 @@ export function SettingsPage() {
                     </div>
                 </div>
 
-                <div className="settings-item">
-                    <div className="settings-item__label">
-                        <span className="settings-item__title">Afficher les règles de Tajwîd</span>
-                        <span className="settings-item__description">Coloriser le texte selon les règles</span>
+                {!isMobile && (
+                    <div className="settings-item">
+                        <div className="settings-item__label">
+                            <span className="settings-item__title">Afficher les règles de Tajwîd</span>
+                            <span className="settings-item__description">Coloriser le texte selon les règles</span>
+                        </div>
+                        <button
+                            className={`toggle ${tajwidEnabled ? 'active' : ''}`}
+                            onClick={toggleTajwid}
+                        >
+                            <span className="toggle__knob" />
+                        </button>
                     </div>
-                    <button
-                        className={`toggle ${tajwidEnabled ? 'active' : ''}`}
-                        onClick={toggleTajwid}
-                    >
-                        <span className="toggle__knob" />
-                    </button>
-                </div>
+                )}
 
                 <div className="settings-item">
                     <div className="settings-item__label">

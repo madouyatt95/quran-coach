@@ -811,13 +811,15 @@ export function MushafPage() {
                 <div className="mih-header__right">
                     {showToolbar && (
                         <div className="mih-toolbar">
-                            <button
-                                className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
-                                onClick={() => setShowTajweedSheet(true)}
-                                title="Tajweed"
-                            >
-                                <Palette size={18} />
-                            </button>
+                            {!isMobile && (
+                                <button
+                                    className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
+                                    onClick={() => setShowTajweedSheet(true)}
+                                    title="Tajweed"
+                                >
+                                    <Palette size={18} />
+                                </button>
+                            )}
 
                             <button
                                 className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
@@ -948,7 +950,7 @@ export function MushafPage() {
                                 <div className="mih-ayahs">
                                     {ayahs.map((ayah) => {
                                         const verseKey = `${ayah.surah}:${ayah.numberInSurah}`;
-                                        const tajweedHtml = tajwidEnabled ? getTajweedText(verseKey) : null;
+                                        const tajweedHtml = (tajwidEnabled && !isMobile) ? getTajweedText(verseKey) : null;
                                         const ayahIndex = getAyahIndex(ayah);
                                         const isCurrentlyPlaying = currentPlayingAyah === ayah.number;
 
@@ -1031,7 +1033,7 @@ export function MushafPage() {
                                                 </button>
                                                 {tajweedHtml ? (
                                                     <>
-                                                        {renderTajweedText(tajweedHtml, tajwidLayers)}
+                                                        {renderTajweedText(tajweedHtml as string, tajwidLayers)}
                                                         <span className="mih-verse-num">
                                                             {toArabicNumbers(ayah.numberInSurah)}
                                                         </span>

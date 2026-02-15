@@ -82,6 +82,7 @@ interface QuizState {
     duelWins: number;
 
     // Progression Actions
+    syncMatch: () => Promise<void>;
     addXP: (amount: number) => void;
     usePowerUp: (id: PowerUpId) => void;
     unlockBadge: (id: BadgeId) => void;
@@ -344,64 +345,9 @@ export const useQuizStore = create<QuizState>()(
                     return '';
                 }
 
-                // Subscribe to match changes
-                const channel = supabase
-                    .channel(`match-${data.id}`)
-                    .on('postgres_changes', {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'quiz_matches',
-                        filter: `id=eq.${data.id}`,
-                    }, (payload) => {
-                        const match = payload.new as any;
-                        const state = get();
-
-                        // Opponent joined
-                        if (match.status === 'playing' && state.view === 'lobby') {
-                            // Rebuild round questions from flat list
-                            const flatQ = match.questions as QuizQuestion[];
-                            const rebuiltRounds = [flatQ.slice(0, 3), flatQ.slice(3, 6), flatQ.slice(6, 9)];
-                            const rebuiltThemes = rebuiltRounds.map(r => r[0]?.theme || 'prophets') as QuizThemeId[];
-
-                            set({
-                                opponent: {
-                                    id: match.player2_id,
-                                    pseudo: match.player2_pseudo || 'Adversaire',
-                                    avatar_emoji: match.player2_emoji || '🎓',
-                                    total_wins: 0,
-                                    total_played: 0,
-                                    total_xp: 0,
-                                    level: 1,
-                                    title: 'Mubtadi'
-                                },
-                                duelAllQuestions: rebuiltRounds,
-                                duelRounds: rebuiltThemes,
-                                duelRound: 0,
-                                duelRoundScores: [0, 0, 0],
-                                duelRoundOppScores: [0, 0, 0],
-                                questions: rebuiltRounds[0],
-                                currentIndex: 0,
-                                answers: [],
-                                score: 0,
-                                timerStart: Date.now(),
-                                view: 'playing',
-                            });
-                        }
-
-                        // Opponent score update
-                        if (match.player2_score !== undefined) {
-                            set({
-                                opponentScore: match.player2_score,
-                                opponentAnswers: match.player2_answers || [],
-                            });
-                        }
-                    })
-                    .subscribe();
-
                 set({
                     matchId: data.id,
                     matchCode: code,
-                    channel,
                     duelAllQuestions: roundQuestions,
                     duelRounds: themes,
                     duelRound: 0,
@@ -416,6 +362,7 @@ export const useQuizStore = create<QuizState>()(
                     score: 0,
                 });
 
+                await get().syncMatch();
                 return code;
             },
 
@@ -452,25 +399,6 @@ export const useQuizStore = create<QuizState>()(
                     return false;
                 }
 
-                // Subscribe
-                const channel = supabase
-                    .channel(`match-${match.id}`)
-                    .on('postgres_changes', {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'quiz_matches',
-                        filter: `id=eq.${match.id}`,
-                    }, (payload) => {
-                        const m = payload.new as any;
-                        if (m.player1_score !== undefined) {
-                            set({
-                                opponentScore: m.player1_score,
-                                opponentAnswers: m.player1_answers || [],
-                            });
-                        }
-                    })
-                    .subscribe();
-
                 // Rebuild round questions from flat list
                 const flatQ = match.questions as QuizQuestion[];
                 const rebuiltRounds = [flatQ.slice(0, 3), flatQ.slice(3, 6), flatQ.slice(6, 9)];
@@ -480,7 +408,6 @@ export const useQuizStore = create<QuizState>()(
                     matchId: match.id,
                     matchCode: code.toUpperCase(),
                     mode: 'duel',
-                    channel,
                     opponent: {
                         id: match.player1_id,
                         pseudo: match.player1_pseudo || 'Adversaire',
@@ -505,7 +432,122 @@ export const useQuizStore = create<QuizState>()(
                     view: 'playing',
                 });
 
+                await get().syncMatch();
                 return true;
+            },
+
+            syncMatch: async () => {
+                const { matchId, player, channel } = get();
+                if (!matchId || !player) return;
+
+                // Cleanup existing channel if any
+                if (channel) {
+                    supabase.removeChannel(channel);
+                }
+
+                // Initial fetch to get current state
+                const { data: match, error } = await supabase
+                    .from('quiz_matches')
+                    .select('*')
+                    .eq('id', matchId)
+                    .single();
+
+                if (error || !match) {
+                    console.error('[Quiz] Sync fetch error:', error);
+                    return;
+                }
+
+                const isPlayer1 = match.player1_id === player.id;
+                const oppId = isPlayer1 ? match.player2_id : match.player1_id;
+
+                // Update local state if opponent joined while we were offline
+                if (oppId && match.status === 'playing') {
+                    const flatQ = match.questions as QuizQuestion[];
+                    const rebuiltRounds = [flatQ.slice(0, 3), flatQ.slice(3, 6), flatQ.slice(6, 9)];
+                    const rebuiltThemes = rebuiltRounds.map(r => r[0]?.theme || 'prophets') as QuizThemeId[];
+
+                    set({
+                        opponent: {
+                            id: oppId,
+                            pseudo: isPlayer1 ? match.player2_pseudo : match.player1_pseudo,
+                            avatar_emoji: isPlayer1 ? match.player2_emoji : match.player1_emoji,
+                            total_wins: 0,
+                            total_played: 0,
+                            total_xp: 0,
+                            level: 1,
+                            title: 'Mubtadi'
+                        },
+                        opponentScore: isPlayer1 ? (match.player2_score || 0) : (match.player1_score || 0),
+                        opponentAnswers: isPlayer1 ? (match.player2_answers || []) : (match.player1_answers || []),
+                        duelAllQuestions: rebuiltRounds,
+                        duelRounds: rebuiltThemes,
+                        mode: 'duel',
+                        view: get().view === 'lobby' || get().view === 'home' || get().view === 'join' ? 'playing' : get().view,
+                    });
+                }
+
+                // Establish/Restore Realtime subscription
+                const newChannel = supabase
+                    .channel(`match-${matchId}`)
+                    .on('postgres_changes', {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'quiz_matches',
+                        filter: `id=eq.${matchId}`,
+                    }, (payload) => {
+                        const m = payload.new as any;
+                        const state = get();
+                        const myId = state.player?.id;
+                        if (!myId) return;
+
+                        const isP1 = m.player1_id === myId;
+                        const oId = isP1 ? m.player2_id : m.player1_id;
+
+                        // Transition to playing if opponent just joined
+                        if (m.status === 'playing' && oId && (state.view === 'lobby' || state.view === 'home')) {
+                            const flatQ = m.questions as QuizQuestion[];
+                            const rebuiltRounds = [flatQ.slice(0, 3), flatQ.slice(3, 6), flatQ.slice(6, 9)];
+                            const rebuiltThemes = rebuiltRounds.map(r => r[0]?.theme || 'prophets') as QuizThemeId[];
+
+                            set({
+                                opponent: {
+                                    id: oId,
+                                    pseudo: isP1 ? m.player2_pseudo : m.player1_pseudo,
+                                    avatar_emoji: isP1 ? m.player2_emoji : m.player1_emoji,
+                                    total_wins: 0, total_played: 0, total_xp: 0, level: 1, title: 'Mubtadi'
+                                },
+                                duelAllQuestions: rebuiltRounds,
+                                duelRounds: rebuiltThemes,
+                                duelRound: 0,
+                                questions: rebuiltRounds[0],
+                                currentIndex: 0,
+                                answers: [],
+                                score: 0,
+                                timerStart: Date.now(),
+                                view: 'playing',
+                            });
+                        }
+
+                        // Update opponent scores in real-time
+                        if (isP1) {
+                            if (m.player2_score !== undefined) {
+                                set({
+                                    opponentScore: m.player2_score,
+                                    opponentAnswers: m.player2_answers || [],
+                                });
+                            }
+                        } else {
+                            if (m.player1_score !== undefined) {
+                                set({
+                                    opponentScore: m.player1_score,
+                                    opponentAnswers: m.player1_answers || [],
+                                });
+                            }
+                        }
+                    })
+                    .subscribe();
+
+                set({ channel: newChannel });
             },
 
             applyPowerUp: (id) => {
