@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Compass, Clock, Bookmark, BookHeart, Share2, BookOpen } from 'lucide-react';
+import { useMemo, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Compass, Clock, Bookmark, BookHeart, Share2, BookOpen, Star } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
 import { useStatsStore } from '../stores/statsStore';
+import { useQuranStore } from '../stores/quranStore';
 import './HomePage.css';
 
 const HIJRI_MONTH_EVENTS: Record<number, { emoji: string; title: string; description: string }> = {
@@ -21,6 +22,59 @@ const SHORTCUTS = [
     { path: '/adhkar', icon: BookHeart, label: 'Invocations', color: '#e74c3c', bg: 'rgba(231,76,60,0.15)' },
 ];
 
+interface EssentialSurah {
+    surahNumber: number;
+    nameAr: string;
+    nameFr: string;
+    emoji: string;
+    verseCount: number;
+    benefit: string;
+    gradient: string;
+}
+
+const ESSENTIAL_SURAHS: EssentialSurah[] = [
+    {
+        surahNumber: 36, nameAr: 'يس', nameFr: 'Ya-Sin',
+        emoji: '💎', verseCount: 83, benefit: 'Cœur du Coran',
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    },
+    {
+        surahNumber: 67, nameAr: 'المُلك', nameFr: 'Al-Mulk',
+        emoji: '👑', verseCount: 30, benefit: 'Protection dans la tombe',
+        gradient: 'linear-gradient(135deg, #c9a84c 0%, #8B6914 100%)'
+    },
+    {
+        surahNumber: 18, nameAr: 'الكهف', nameFr: 'Al-Kahf',
+        emoji: '🏔️', verseCount: 110, benefit: 'Lumière du vendredi',
+        gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'
+    },
+    {
+        surahNumber: 55, nameAr: 'الرحمن', nameFr: 'Ar-Rahman',
+        emoji: '🌸', verseCount: 78, benefit: 'Les bienfaits d\'Allah',
+        gradient: 'linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)'
+    },
+    {
+        surahNumber: 56, nameAr: 'الواقعة', nameFr: 'Al-Waqi\'a',
+        emoji: '⚡', verseCount: 96, benefit: 'Protection contre la pauvreté',
+        gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+    },
+    {
+        surahNumber: 112, nameAr: 'الإخلاص', nameFr: 'Al-Ikhlas',
+        emoji: '✨', verseCount: 4, benefit: 'Vaut le tiers du Coran',
+        gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+    },
+    {
+        surahNumber: 2, nameAr: 'البقرة', nameFr: 'Al-Baqara',
+        emoji: '🛡️', verseCount: 286, benefit: 'Protection du foyer',
+        gradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)'
+    },
+    {
+        surahNumber: 32, nameAr: 'السجدة', nameFr: 'As-Sajda',
+        emoji: '🤲', verseCount: 30, benefit: 'Lecture avant de dormir',
+        gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)'
+    },
+];
+
 export function HomePage() {
     const now = useMemo(() => new Date(), []);
     const hadith = useMemo(() => getHadithOfDay(now), [now]);
@@ -30,6 +84,13 @@ export function HomePage() {
     const seasonalEvent = HIJRI_MONTH_EVENTS[hijri.month];
 
     const { totalPagesRead, totalMinutesSpent } = useStatsStore();
+    const goToSurah = useQuranStore(s => s.goToSurah);
+    const navigate = useNavigate();
+
+    const handleSurahClick = useCallback((surahNumber: number) => {
+        goToSurah(surahNumber);
+        navigate('/read');
+    }, [goToSurah, navigate]);
 
     const handleShare = async () => {
         const text = `📜 Hadith du Jour\n\n${hadith.textAr}\n\n${hadith.textFr}\n\n— ${hadith.source} (${hadith.narrator})\n\nvia Quran Coach`;
@@ -98,6 +159,33 @@ export function HomePage() {
                             Partager
                         </button>
                     </div>
+                </div>
+            </div>
+
+            {/* Essential Surahs */}
+            <div className="home-surahs">
+                <div className="home-surahs__header">
+                    <div className="home-surahs__title">
+                        <Star size={14} />
+                        Sourates essentielles
+                    </div>
+                </div>
+                <div className="home-surahs__scroll">
+                    {ESSENTIAL_SURAHS.map((surah, i) => (
+                        <button
+                            key={surah.surahNumber}
+                            className="surah-card"
+                            onClick={() => handleSurahClick(surah.surahNumber)}
+                            style={{ animationDelay: `${0.4 + i * 0.06}s` }}
+                        >
+                            <div className="surah-card__gradient" style={{ background: surah.gradient }} />
+                            <span className="surah-card__emoji">{surah.emoji}</span>
+                            <div className="surah-card__name-ar">{surah.nameAr}</div>
+                            <div className="surah-card__name-fr">{surah.nameFr}</div>
+                            <div className="surah-card__benefit">{surah.benefit}</div>
+                            <div className="surah-card__verses">{surah.verseCount} versets</div>
+                        </button>
+                    ))}
                 </div>
             </div>
 
