@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#2d1b3d"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37"/>
+      <stop offset="100%" style="stop-color:#f0d060"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="rgba(212,175,55,0.03)"/>
+  <circle cx="1100" cy="530" r="250" fill="rgba(212,175,55,0.03)"/>
+  <circle cx="600" cy="315" r="350" fill="rgba(212,175,55,0.02)"/>
+  
+  <!-- Star decorations -->
+  <circle cx="150" cy="80" r="2" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="300" cy="50" r="1.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="900" cy="100" r="2" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="1050" cy="60" r="1.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="200" cy="550" r="1.5" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="1000" cy="530" r="2" fill="rgba(255,255,255,0.4)"/>
+  
+  <!-- Top decorative line -->
+  <rect x="400" y="140" width="400" height="1" fill="url(#gold)" opacity="0.3"/>
+  
+  <!-- Quran icon (book) -->
+  <g transform="translate(600,230)" filter="url(#glow)">
+    <text x="0" y="0" font-size="80" text-anchor="middle" fill="url(#gold)">📖</text>
+  </g>
+  
+  <!-- App name -->
+  <text x="600" y="330" font-family="Georgia, serif" font-size="64" font-weight="bold" text-anchor="middle" fill="url(#gold)">Quran Coach</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.85)">Apprenez, mémorisez et vivez le Coran</text>
+  
+  <!-- Bottom decorative line -->
+  <rect x="400" y="410" width="400" height="1" fill="url(#gold)" opacity="0.3"/>
+  
+  <!-- Features row -->
+  <text x="600" y="460" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="rgba(255,255,255,0.6)">📖 Lecture · 🧠 Mémorisation · 📜 250+ Hadiths · 🤲 Invocations · 🕌 Prières</text>
+  
+  <!-- Bottom accent -->
+  <rect x="0" y="620" width="1200" height="10" fill="url(#gold)" opacity="0.4"/>
+  
+  <!-- Bismillah -->
+  <text x="600" y="530" font-family="'Traditional Arabic', 'Scheherazade', Georgia, serif" font-size="28" text-anchor="middle" fill="rgba(212,175,55,0.5)">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</text>
+</svg>
