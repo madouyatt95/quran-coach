@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Compass, Clock, Bookmark, BookHeart, Share2, BookOpen, Star } from 'lucide-react';
+import { Share2, BookOpen, Star } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
@@ -16,10 +16,10 @@ const HIJRI_MONTH_EVENTS: Record<number, { emoji: string; title: string; descrip
 };
 
 const SHORTCUTS = [
-    { path: '/qibla', icon: Compass, label: 'Qibla', color: '#c9a84c', bg: 'rgba(201,168,76,0.15)' },
-    { path: '/prayers', icon: Clock, label: 'Prières', color: '#FF9800', bg: 'rgba(255,152,0,0.15)' },
-    { path: '/themes', icon: Bookmark, label: 'Thèmes', color: '#58A6FF', bg: 'rgba(88,166,255,0.15)' },
-    { path: '/adhkar', icon: BookHeart, label: 'Invocations', color: '#e74c3c', bg: 'rgba(231,76,60,0.15)' },
+    { path: '/qibla', emoji: '🧭', label: 'Qibla', desc: 'Direction', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
+    { path: '/prayers', emoji: '🕌', label: 'Prières', desc: 'Horaires', gradient: 'linear-gradient(135deg, rgba(255,152,0,0.2), rgba(255,152,0,0.05))' },
+    { path: '/themes', emoji: '📚', label: 'Thèmes', desc: 'Coraniques', gradient: 'linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.05))' },
+    { path: '/adhkar', emoji: '🤲', label: 'Invocations', desc: 'Adhkar', gradient: 'linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.05))' },
 ];
 
 interface EssentialSurah {
@@ -194,14 +194,10 @@ export function HomePage() {
                 <div className="home-shortcuts__title">Accès rapide</div>
                 <div className="home-shortcuts__grid">
                     {SHORTCUTS.map(s => (
-                        <Link key={s.path} to={s.path} className="home-shortcut">
-                            <div
-                                className="home-shortcut__icon"
-                                style={{ background: s.bg, color: s.color }}
-                            >
-                                <s.icon size={22} />
-                            </div>
+                        <Link key={s.path} to={s.path} className="home-shortcut" style={{ background: s.gradient }}>
+                            <span className="home-shortcut__emoji">{s.emoji}</span>
                             <span className="home-shortcut__label">{s.label}</span>
+                            <span className="home-shortcut__desc">{s.desc}</span>
                         </Link>
                     ))}
                 </div>

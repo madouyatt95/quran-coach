@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Clock, Sun, Sunrise, Sunset, Moon, CloudSun, MapPin, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Clock, Sun, Sunrise, Sunset, Moon, CloudSun, MapPin, RefreshCw, ArrowLeft } from 'lucide-react';
 import './PrayerTimesPage.css';
 
 interface PrayerTimes {
@@ -45,6 +46,7 @@ const PRAYER_COLORS: Record<string, string> = {
 };
 
 export function PrayerTimesPage() {
+    const navigate = useNavigate();
     const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -231,6 +233,11 @@ export function PrayerTimesPage() {
 
     return (
         <div className="prayer-times-page">
+            {/* Back button */}
+            <button className="page-back-btn" onClick={() => navigate(-1)}>
+                <ArrowLeft size={22} />
+            </button>
+
             {/* Header */}
             <div className="prayer-header">
                 <div className="prayer-header-top">

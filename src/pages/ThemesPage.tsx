@@ -68,6 +68,9 @@ export function ThemesPage() {
     return (
         <div className="themes-page">
             <div className="themes-header">
+                <button className="themes-back" onClick={() => navigate(-1)}>
+                    <ArrowLeft size={20} />
+                </button>
                 <h1 className="themes-title">
                     📚 Thèmes Coraniques
                 </h1>

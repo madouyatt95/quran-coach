@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Compass, Navigation, AlertTriangle, Loader2, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Compass, Navigation, AlertTriangle, Loader2, MapPin, ArrowLeft } from 'lucide-react';
 import './QiblaPage.css';
 
 const KAABA_LAT = 21.4225;
@@ -23,6 +24,7 @@ function calculateQiblaDirection(lat: number, lng: number): number {
 }
 
 export function QiblaPage() {
+    const navigate = useNavigate();
     const [qiblaAngle, setQiblaAngle] = useState<number | null>(null);
     const [compassHeading, setCompassHeading] = useState<number>(0);
     const [locationError, setLocationError] = useState<string | null>(null);
@@ -127,6 +129,11 @@ export function QiblaPage() {
 
     return (
         <div className="qibla-page">
+            {/* Back button */}
+            <button className="page-back-btn" onClick={() => navigate(-1)}>
+                <ArrowLeft size={22} />
+            </button>
+
             {/* Hero */}
             <div className="qibla-hero">
                 <span className="qibla-hero__icon">🕋</span>
