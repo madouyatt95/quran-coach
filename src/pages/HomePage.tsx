@@ -48,7 +48,7 @@ export function HomePage() {
             <div className="home-header">
                 <div className="home-header__left">
                     <div className="home-header__greeting">
-                        <span>{greeting.emoji}</span>
+                        <span className="home-header__greeting-emoji">{greeting.emoji}</span>
                         <span>{greeting.text}</span>
                     </div>
                     <div className="home-header__hijri">{formatHijriDate(hijri)}</div>

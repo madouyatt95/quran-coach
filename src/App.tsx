@@ -110,12 +110,11 @@ function AppContent() {
 
   const location = useLocation();
   const isLecturePage = location.pathname === '/read';
-  const isHomePage = location.pathname === '/';
 
   return (
     <>
       {/* Global burger menu button – hidden on Lecture (MushafPage has its own) */}
-      {!isLecturePage && !isHomePage && (
+      {!isLecturePage && (
         <button
           className="global-menu-btn"
           onClick={() => setShowSideMenu(true)}

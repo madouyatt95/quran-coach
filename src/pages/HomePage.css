@@ -1,19 +1,81 @@
-/* ─── HomePage ─────────────────────────────────────────── */
+/* ─── HomePage — Premium Dynamic Design ───────────────── */
 
 .home-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 40%, #16213e 100%);
+    background: linear-gradient(160deg, #0a0e1a 0%, #1a1a2e 35%, #16213e 65%, #0f3460 100%);
     padding: 0 0 100px 0;
     color: #e0e0e0;
     overflow-x: hidden;
+    position: relative;
+}
+
+/* ─── Animated Background Orbs ────────────────────────── */
+.home-page::before,
+.home-page::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.home-page::before {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, #c9a84c, transparent 70%);
+    top: -50px;
+    right: -80px;
+    animation: float-orb 8s ease-in-out infinite;
+}
+
+.home-page::after {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, #58A6FF, transparent 70%);
+    bottom: 100px;
+    left: -60px;
+    animation: float-orb 10s ease-in-out infinite reverse;
+}
+
+@keyframes float-orb {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -20px) scale(1.1);
+    }
+
+    66% {
+        transform: translate(-15px, 15px) scale(0.95);
+    }
 }
 
 /* ─── Header ──────────────────────────────────────────── */
 .home-header {
-    padding: 24px 20px 16px;
+    padding: 20px 20px 12px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+    position: relative;
+    z-index: 1;
+    animation: slide-down 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .home-header__left {
@@ -21,43 +83,123 @@
 }
 
 .home-header__greeting {
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 800;
     color: #ffffff;
     margin-bottom: 4px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+}
+
+.home-header__greeting-emoji {
+    font-size: 1.6rem;
+    animation: gentle-bounce 2s ease-in-out infinite;
+}
+
+@keyframes gentle-bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
 }
 
 .home-header__hijri {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.45);
     font-weight: 400;
     direction: ltr;
 }
 
 .home-header__hijri-ar {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.6);
     font-family: 'Amiri', 'Traditional Arabic', serif;
     direction: rtl;
     margin-top: 2px;
 }
 
+/* ─── Seasonal Banner ─────────────────────────────────── */
+.home-seasonal {
+    margin: 4px 16px 16px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.18) 0%, rgba(201, 168, 76, 0.05) 100%);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.home-seasonal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.08), transparent);
+    animation: shimmer 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    100% {
+        transform: translateX(50%);
+    }
+}
+
+.home-seasonal__emoji {
+    font-size: 2rem;
+    animation: gentle-bounce 3s ease-in-out infinite;
+}
+
+.home-seasonal__text {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.home-seasonal__text strong {
+    display: block;
+    color: #e8d48b;
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.home-seasonal__text span {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
 /* ─── Hadith Card ─────────────────────────────────────── */
 .hadith-card {
     margin: 8px 16px 20px;
-    padding: 24px 20px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    padding: 28px 22px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.02) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    border-radius: 24px;
     backdrop-filter: blur(20px);
     position: relative;
+    z-index: 1;
     overflow: hidden;
-    animation: hadith-fade-in 0.6s ease-out;
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
+/* Golden top border with animated gradient */
 .hadith-card::before {
     content: '';
     position: absolute;
@@ -65,8 +207,31 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #c9a84c, #e8d48b, #c9a84c);
-    border-radius: 20px 20px 0 0;
+    background: linear-gradient(90deg, #c9a84c, #e8d48b, #c9a84c, #e8d48b);
+    background-size: 200% 100%;
+    animation: gradient-slide 3s linear infinite;
+    border-radius: 24px 24px 0 0;
+}
+
+@keyframes gradient-slide {
+    0% {
+        background-position: 0% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Decorative corner ornament */
+.hadith-card::after {
+    content: '﷽';
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    font-size: 1.1rem;
+    color: rgba(201, 168, 76, 0.2);
+    font-family: 'Amiri', serif;
 }
 
 .hadith-card__label {
@@ -78,36 +243,72 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: #c9a84c;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .hadith-card__label-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: #c9a84c;
+    box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
     animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
+    }
+
+    50% {
+        opacity: 0.4;
+        box-shadow: 0 0 2px rgba(201, 168, 76, 0.2);
+    }
 }
 
 .hadith-card__arabic {
     font-family: 'Amiri', 'Traditional Arabic', 'Scheherazade New', serif;
-    font-size: 1.5rem;
-    line-height: 2.2;
+    font-size: 1.55rem;
+    line-height: 2.3;
     color: #ffffff;
     text-align: center;
     direction: rtl;
-    margin-bottom: 16px;
-    padding: 12px 0;
+    margin-bottom: 18px;
+    padding: 16px 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    position: relative;
+}
+
+/* Decorative dots around Arabic text */
+.hadith-card__arabic::before,
+.hadith-card__arabic::after {
+    content: '❁';
+    font-size: 0.65rem;
+    color: rgba(201, 168, 76, 0.3);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.hadith-card__arabic::before {
+    left: 0;
+}
+
+.hadith-card__arabic::after {
+    right: 0;
 }
 
 .hadith-card__french {
     font-size: 0.95rem;
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.72);
     text-align: center;
     font-style: italic;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+    padding: 0 8px;
 }
 
 .hadith-card__meta {
@@ -144,35 +345,44 @@
 .hadith-card__action-btn {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 12px;
     color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
-    padding: 6px 8px;
+    padding: 8px 12px;
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    transition: all 0.2s;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .hadith-card__action-btn:hover {
     background: rgba(201, 168, 76, 0.15);
-    border-color: rgba(201, 168, 76, 0.3);
-    color: #c9a84c;
+    border-color: rgba(201, 168, 76, 0.35);
+    color: #e8d48b;
+    transform: scale(1.05);
+}
+
+.hadith-card__action-btn:active {
+    transform: scale(0.95);
 }
 
 /* ─── Quick Shortcuts ─────────────────────────────────── */
 .home-shortcuts {
     padding: 0 16px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
+    position: relative;
+    z-index: 1;
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
 
 .home-shortcuts__title {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.3);
     margin-bottom: 12px;
     padding-left: 4px;
 }
@@ -186,36 +396,67 @@
 .home-shortcut {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 16px 8px;
+    border-radius: 18px;
+    padding: 18px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     text-decoration: none;
     color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.home-shortcut::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.home-shortcut:hover::before {
+    opacity: 1;
 }
 
 .home-shortcut:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.09);
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .home-shortcut:active {
-    transform: scale(0.95);
+    transform: scale(0.93);
+    transition-duration: 0.1s;
 }
 
 .home-shortcut__icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.2rem;
+    position: relative;
+}
+
+/* Glow effect behind icon */
+.home-shortcut__icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 20px;
+    background: inherit;
+    filter: blur(12px);
+    opacity: 0.4;
+    z-index: -1;
 }
 
 .home-shortcut__label {
@@ -229,14 +470,17 @@
 .home-stats {
     padding: 0 16px;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
 }
 
 .home-stats__title {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.3);
     margin-bottom: 12px;
     padding-left: 4px;
 }
@@ -250,81 +494,65 @@
 .home-stat {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 16px 12px;
+    border-radius: 18px;
+    padding: 18px 12px;
     text-align: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.home-stat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.3), transparent);
 }
 
 .home-stat__value {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #c9a84c, #e8d48b);
+    background: linear-gradient(135deg, #c9a84c 0%, #e8d48b 50%, #c9a84c 100%);
+    background-size: 200% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    animation: gold-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes gold-shimmer {
+
+    0%,
+    100% {
+        background-position: 0% 0;
+    }
+
+    50% {
+        background-position: 200% 0;
+    }
 }
 
 .home-stat__label {
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.4);
     font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
-/* ─── Seasonal Banner ─────────────────────────────────── */
-.home-seasonal {
-    margin: 0 16px 20px;
-    padding: 14px 16px;
-    background: linear-gradient(135deg, rgba(201, 168, 76, 0.15) 0%, rgba(201, 168, 76, 0.05) 100%);
-    border: 1px solid rgba(201, 168, 76, 0.2);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.home-seasonal__emoji {
-    font-size: 1.8rem;
-}
-
-.home-seasonal__text {
-    flex: 1;
-}
-
-.home-seasonal__text strong {
-    display: block;
-    color: #e8d48b;
-    font-size: 0.85rem;
-    margin-bottom: 2px;
-}
-
-.home-seasonal__text span {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-/* ─── Animations ──────────────────────────────────────── */
-@keyframes hadith-fade-in {
+/* ─── Fade Up Animation ───────────────────────────────── */
+@keyframes fade-up {
     from {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(24px);
     }
 
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-@keyframes pulse-dot {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.3;
     }
 }
 
@@ -335,6 +563,10 @@
     }
 
     .hadith-card__arabic {
+        font-size: 1.3rem;
+    }
+
+    .home-header__greeting {
         font-size: 1.3rem;
     }
 }
