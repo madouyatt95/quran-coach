@@ -1,20 +1,27 @@
-// Quiz Store — Zustand state management for solo + duel modes
+// Quiz Store — Zustand state management for solo + duel + sprint + revision modes
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
-import { getQuestions, calculateScore } from '../lib/quizEngine';
-import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer } from '../data/quizTypes';
+import { getQuestions, getSprintQuestions, calculateScore } from '../lib/quizEngine';
+import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId } from '../data/quizTypes';
+import { DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export type QuizView =
     | 'home'        // Theme selection
-    | 'mode'        // Solo vs Duel
+    | 'stats'       // Stats dashboard
+    | 'badges'      // Badge gallery
+    | 'leaderboard' // Global leaderboard
+    | 'mode'        // Solo vs Duel vs Sprint vs Revision
+    | 'difficulty'  // Difficulty selector
     | 'lobby'       // Waiting for opponent
     | 'join'        // Enter code to join
     | 'playing'     // Active quiz
     | 'feedback'    // Answer feedback (correct/wrong)
     | 'roundEnd'    // End of round summary
     | 'result';     // Final match result
+
+export type QuizMode = 'solo' | 'duel' | 'sprint' | 'revision';
 
 interface QuizState {
     // Player
@@ -26,13 +33,19 @@ interface QuizState {
     setView: (v: QuizView) => void;
 
     // Game state
-    mode: 'solo' | 'duel';
+    mode: QuizMode;
+    difficulty: QuizDifficulty;
     theme: QuizThemeId | null;
     questions: QuizQuestion[];
     currentIndex: number;
     answers: QuizAnswer[];
     score: number;
     timerStart: number;
+    currentStreak: number;
+
+    // Sprint state
+    sprintTimeLeft: number;
+    sprintCorrect: number;
 
     // Duel state
     matchId: string | null;
@@ -44,17 +57,27 @@ interface QuizState {
 
     // Actions
     selectTheme: (theme: QuizThemeId) => void;
+    setDifficulty: (d: QuizDifficulty) => void;
     startSolo: () => void;
+    startSprint: () => void;
+    startRevision: () => void;
     createDuel: () => Promise<string>;
     joinDuel: (code: string) => Promise<boolean>;
     submitAnswer: (chosenIndex: number) => void;
     nextQuestion: () => void;
     resetQuiz: () => void;
+    submitToLeaderboard: () => Promise<void>;
 
-    // Stats
+    // Persisted Stats
     totalPlayed: number;
     totalWins: number;
+    totalCorrect: number;
     soloHighScores: Record<string, number>;
+    themeStats: Record<string, ThemeStats>;
+    unlockedBadges: BadgeId[];
+    wrongQuestions: QuizQuestion[];  // For revision mode
+    sprintBest: number;
+    duelWins: number;
 }
 
 function generateCode(): string {
@@ -62,6 +85,59 @@ function generateCode(): string {
     let code = '';
     for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
     return code;
+}
+
+// ─── Badge Checking ──────────────────────────────────────
+function checkBadges(state: QuizState): BadgeId[] {
+    const newBadges: BadgeId[] = [];
+    const already = new Set(state.unlockedBadges);
+
+    const check = (id: BadgeId, condition: boolean) => {
+        if (!already.has(id) && condition) newBadges.push(id);
+    };
+
+    check('first_quiz', state.totalPlayed >= 1);
+    check('streak_5', state.currentStreak >= 5);
+    check('streak_10', state.currentStreak >= 10);
+    check('marathon', state.totalPlayed >= 50);
+    check('scholar', state.totalCorrect >= 500);
+    check('duel_winner', state.duelWins >= 1);
+    check('duel_champion', state.duelWins >= 10);
+    check('sprint_30', state.sprintBest >= 30);
+
+    // Perfect round check
+    const lastRoundAnswers = state.answers;
+    if (lastRoundAnswers.length >= 5 && lastRoundAnswers.every(a => a.correct)) {
+        check('perfect_round', true);
+    }
+
+    // Speed demon
+    if (lastRoundAnswers.some(a => a.correct && a.timeMs < 3000)) {
+        check('speed_demon', true);
+    }
+
+    // Theme mastery
+    const themeMap: Record<string, BadgeId> = {
+        prophets: 'master_prophets',
+        companions: 'master_companions',
+        verses: 'master_verses',
+        invocations: 'master_invocations',
+        structure: 'master_structure',
+        'ya-ayyuha': 'master_ya_ayyuha',
+    };
+    for (const [themeId, badgeId] of Object.entries(themeMap)) {
+        const stats = state.themeStats[themeId];
+        if (stats && stats.attempts >= 20) {
+            check(badgeId, stats.correct / stats.attempts >= 0.9);
+        }
+    }
+
+    // All themes played
+    const allThemes = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha'];
+    const allPlayed = allThemes.every(t => state.themeStats[t]?.attempts > 0);
+    check('all_themes', allPlayed);
+
+    return newBadges;
 }
 
 export const useQuizStore = create<QuizState>()(
@@ -77,12 +153,18 @@ export const useQuizStore = create<QuizState>()(
 
             // Game
             mode: 'solo',
+            difficulty: 'medium',
             theme: null,
             questions: [],
             currentIndex: 0,
             answers: [],
             score: 0,
             timerStart: 0,
+            currentStreak: 0,
+
+            // Sprint
+            sprintTimeLeft: 60,
+            sprintCorrect: 0,
 
             // Duel
             matchId: null,
@@ -95,20 +177,63 @@ export const useQuizStore = create<QuizState>()(
             // Stats
             totalPlayed: 0,
             totalWins: 0,
+            totalCorrect: 0,
             soloHighScores: {},
+            themeStats: {},
+            unlockedBadges: [],
+            wrongQuestions: [],
+            sprintBest: 0,
+            duelWins: 0,
+
+            setDifficulty: (d) => set({ difficulty: d }),
 
             selectTheme: (theme) => set({ theme, view: 'mode' }),
 
             startSolo: () => {
-                const { theme } = get();
+                const { theme, difficulty } = get();
                 if (!theme) return;
-                const questions = getQuestions(theme, 5);
+                const config = DIFFICULTY_CONFIG[difficulty];
+                const questions = getQuestions(theme, config.questionCount, difficulty);
                 set({
                     mode: 'solo',
                     questions,
                     currentIndex: 0,
                     answers: [],
                     score: 0,
+                    currentStreak: 0,
+                    timerStart: Date.now(),
+                    view: 'playing',
+                });
+            },
+
+            startSprint: () => {
+                const questions = getSprintQuestions(50);
+                set({
+                    mode: 'sprint',
+                    theme: null,
+                    questions,
+                    currentIndex: 0,
+                    answers: [],
+                    score: 0,
+                    sprintCorrect: 0,
+                    sprintTimeLeft: 60,
+                    currentStreak: 0,
+                    timerStart: Date.now(),
+                    view: 'playing',
+                });
+            },
+
+            startRevision: () => {
+                const { wrongQuestions } = get();
+                if (wrongQuestions.length === 0) return;
+                const questions = wrongQuestions.slice(0, 10);
+                set({
+                    mode: 'revision',
+                    questions,
+                    currentIndex: 0,
+                    answers: [],
+                    score: 0,
+                    currentStreak: 0,
                     timerStart: Date.now(),
                     view: 'playing',
                 });
@@ -273,28 +398,61 @@ export const useQuizStore = create<QuizState>()(
             },
 
             submitAnswer: (chosenIndex) => {
-                const { questions, currentIndex, answers, score, timerStart, mode, matchId, player } = get();
+                const { questions, currentIndex, answers, score, timerStart, mode, matchId, player, difficulty, currentStreak, wrongQuestions, totalCorrect, sprintCorrect } = get();
                 const question = questions[currentIndex];
                 if (!question) return;
 
+                const maxTimeMs = mode === 'sprint' ? 10000 : DIFFICULTY_CONFIG[difficulty].timerSeconds * 1000;
                 const timeMs = Date.now() - timerStart;
                 const correct = chosenIndex === question.correctIndex;
-                const points = calculateScore(correct, timeMs);
+                const points = calculateScore(correct, timeMs, maxTimeMs, difficulty);
 
                 const answer: QuizAnswer = {
                     questionId: question.id,
                     chosenIndex,
                     correct,
                     timeMs,
+                    theme: question.theme,
                 };
 
                 const newAnswers = [...answers, answer];
                 const newScore = score + points;
+                const newStreak = correct ? currentStreak + 1 : 0;
+                const newTotalCorrect = correct ? totalCorrect + 1 : totalCorrect;
+
+                // Track wrong answers for revision (don't add duplicates)
+                let newWrong = wrongQuestions;
+                if (!correct) {
+                    if (!wrongQuestions.find(q => q.id === question.id)) {
+                        newWrong = [...wrongQuestions, question];
+                    }
+                } else if (mode === 'revision') {
+                    // Remove from wrong if answered correctly in revision
+                    newWrong = wrongQuestions.filter(q => q.id !== question.id);
+                }
+
+                // Update theme stats
+                const themeId = question.theme;
+                const { themeStats } = get();
+                const existing = themeStats[themeId] || { attempts: 0, correct: 0, bestStreak: 0, totalTimeMs: 0, lastPlayed: 0 };
+                const updatedStats = {
+                    ...existing,
+                    attempts: existing.attempts + 1,
+                    correct: existing.correct + (correct ? 1 : 0),
+                    bestStreak: Math.max(existing.bestStreak, newStreak),
+                    totalTimeMs: existing.totalTimeMs + timeMs,
+                    lastPlayed: Date.now(),
+                };
 
                 set({
                     answers: newAnswers,
                     score: newScore,
-                    view: 'feedback',
+                    currentStreak: newStreak,
+                    totalCorrect: newTotalCorrect,
+                    wrongQuestions: newWrong,
+                    sprintCorrect: correct ? sprintCorrect + 1 : sprintCorrect,
+                    themeStats: { ...themeStats, [themeId]: updatedStats },
+                    view: mode === 'sprint' ? 'playing' : 'feedback',
                 });
 
                 // Sync to Supabase in duel mode
@@ -310,22 +468,38 @@ export const useQuizStore = create<QuizState>()(
                         .eq('id', matchId)
                         .then();
                 }
+
+                // In sprint, auto-advance to next question
+                if (mode === 'sprint') {
+                    const nextIdx = currentIndex + 1;
+                    if (nextIdx < questions.length) {
+                        set({
+                            currentIndex: nextIdx,
+                            timerStart: Date.now(),
+                        });
+                    }
+                }
             },
 
             nextQuestion: () => {
-                const { currentIndex, questions, mode, score, totalPlayed, totalWins, opponentScore, soloHighScores, theme, matchId, channel } = get();
+                const state = get();
+                const { currentIndex, questions, mode, score, totalPlayed, totalWins, opponentScore, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest } = state;
 
-                if (currentIndex + 1 >= questions.length) {
+                if (currentIndex + 1 >= questions.length || mode === 'sprint') {
                     // End of round
-                    const isWin = mode === 'solo' || score > opponentScore;
+                    const isDuel = mode === 'duel';
+                    const isWin = mode === 'solo' || mode === 'sprint' || mode === 'revision' || score > opponentScore;
                     const newHighScores = { ...soloHighScores };
                     if (mode === 'solo' && theme) {
                         const prev = newHighScores[theme] || 0;
                         if (score > prev) newHighScores[theme] = score;
                     }
 
+                    const newDuelWins = isDuel && score > opponentScore ? duelWins + 1 : duelWins;
+                    const newSprintBest = mode === 'sprint' ? Math.max(sprintBest, sprintCorrect) : sprintBest;
+
                     // Mark match finished in duel mode
-                    if (mode === 'duel' && matchId) {
+                    if (isDuel && matchId) {
                         supabase
                             .from('quiz_matches')
                             .update({ status: 'finished' })
@@ -338,7 +512,18 @@ export const useQuizStore = create<QuizState>()(
                         totalPlayed: totalPlayed + 1,
                         totalWins: isWin ? totalWins + 1 : totalWins,
                         soloHighScores: newHighScores,
+                        duelWins: newDuelWins,
+                        sprintBest: newSprintBest,
                     });
+
+                    // Check for new badges
+                    const updatedState = get();
+                    const newBadges = checkBadges(updatedState);
+                    if (newBadges.length > 0) {
+                        set({
+                            unlockedBadges: [...updatedState.unlockedBadges, ...newBadges],
+                        });
+                    }
 
                     // Cleanup channel
                     if (channel) {
@@ -352,6 +537,27 @@ export const useQuizStore = create<QuizState>()(
                         view: 'playing',
                     });
                 }
+            },
+
+            submitToLeaderboard: async () => {
+                const { player, totalCorrect, totalPlayed, totalWins, score, sprintBest } = get();
+                if (!player) return;
+
+                const { error } = await supabase
+                    .from('quiz_leaderboard')
+                    .upsert({
+                        id: player.id,
+                        pseudo: player.pseudo,
+                        avatar_emoji: player.avatar_emoji,
+                        total_score: score,
+                        total_correct: totalCorrect,
+                        total_played: totalPlayed,
+                        total_wins: totalWins,
+                        sprint_best: sprintBest,
+                        updated_at: new Date().toISOString(),
+                    }, { onConflict: 'id' });
+
+                if (error) console.error('[Quiz] Leaderboard update error:', error);
             },
 
             resetQuiz: () => {
@@ -371,6 +577,9 @@ export const useQuizStore = create<QuizState>()(
                     opponentAnswers: [],
                     channel: null,
                     mode: 'solo',
+                    currentStreak: 0,
+                    sprintCorrect: 0,
+                    sprintTimeLeft: 60,
                 });
             },
         }),
@@ -380,8 +589,18 @@ export const useQuizStore = create<QuizState>()(
                 player: state.player,
                 totalPlayed: state.totalPlayed,
                 totalWins: state.totalWins,
+                totalCorrect: state.totalCorrect,
                 soloHighScores: state.soloHighScores,
+                themeStats: state.themeStats,
+                unlockedBadges: state.unlockedBadges,
+                wrongQuestions: state.wrongQuestions,
+                sprintBest: state.sprintBest,
+                duelWins: state.duelWins,
+                difficulty: state.difficulty,
             }),
         }
     )
 );
+
+// Re-export badge list for UI
+export { BADGES };

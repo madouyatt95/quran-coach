@@ -6,7 +6,8 @@ import { companions } from '../data/companions';
 import { QURAN_THEMES } from '../data/themesData';
 import { HISNUL_MUSLIM_DATA } from '../data/hisnulMuslim';
 import { JUZ_DATA } from '../data/juzData';
-import type { QuizQuestion, QuizThemeId } from '../data/quizTypes';
+import type { QuizQuestion, QuizThemeId, QuizDifficulty } from '../data/quizTypes';
+import { DIFFICULTY_CONFIG } from '../data/quizTypes';
 
 // ─── Utility ────────────────────────────────────────────
 function shuffle<T>(arr: T[]): T[] {
@@ -32,10 +33,12 @@ function buildMCQ(
     correct: string,
     pool: string[],
     questionAr?: string,
-    explanation?: string
+    explanation?: string,
+    choiceCount: number = 4
 ): QuizQuestion | null {
-    const distractors = shuffle(pool.filter(p => p !== correct)).slice(0, 3);
-    if (distractors.length < 3) return null;
+    const needed = choiceCount - 1;
+    const distractors = shuffle(pool.filter(p => p !== correct)).slice(0, needed);
+    if (distractors.length < needed) return null;
     const choices = shuffle([correct, ...distractors]);
     return {
         id: uid(),
@@ -416,11 +419,42 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
 
 // ─── Public API ─────────────────────────────────────────
 
-/** Get N random questions for a theme */
-export function getQuestions(theme: QuizThemeId, count: number = 5): QuizQuestion[] {
+/** Get N random questions for a theme, optionally adjusted for difficulty */
+export function getQuestions(
+    theme: QuizThemeId,
+    count: number = 5,
+    difficulty: QuizDifficulty = 'medium'
+): QuizQuestion[] {
     const bank = getQuestionBank();
     const pool = bank[theme] || [];
-    return pick(pool, Math.min(count, pool.length));
+    const selected = pick(pool, Math.min(count, pool.length));
+
+    const config = DIFFICULTY_CONFIG[difficulty];
+
+    // Adjust choice count based on difficulty
+    if (config.choiceCount !== 4) {
+        return selected.map(q => {
+            if (q.choices.length <= config.choiceCount) return q;
+            const correct = q.choices[q.correctIndex];
+            const others = q.choices.filter((_, i) => i !== q.correctIndex);
+            const kept = pick(others, config.choiceCount - 1);
+            const newChoices = shuffle([correct, ...kept]);
+            return {
+                ...q,
+                choices: newChoices,
+                correctIndex: newChoices.indexOf(correct),
+            };
+        });
+    }
+
+    return selected;
+}
+
+/** Get random questions from ALL themes (for Sprint mode) */
+export function getSprintQuestions(count: number = 30): QuizQuestion[] {
+    const bank = getQuestionBank();
+    const allQuestions = Object.values(bank).flat();
+    return pick(allQuestions, Math.min(count, allQuestions.length));
 }
 
 /** Get total question count per theme */
@@ -434,8 +468,14 @@ export function getQuestionCounts(): Record<QuizThemeId, number> {
 }
 
 /** Calculate score for an answer (time-based bonus) */
-export function calculateScore(correct: boolean, timeMs: number, maxTimeMs: number = 15000): number {
+export function calculateScore(
+    correct: boolean,
+    timeMs: number,
+    maxTimeMs: number = 15000,
+    difficulty: QuizDifficulty = 'medium'
+): number {
     if (!correct) return 0;
     const timeBonus = Math.max(0, 1 - timeMs / maxTimeMs);
-    return Math.round(100 + timeBonus * 100); // 100-200 points
+    const base = Math.round(100 + timeBonus * 100); // 100-200 points
+    return Math.round(base * DIFFICULTY_CONFIG[difficulty].scoreMultiplier);
 }

@@ -5,8 +5,8 @@ export interface QuizQuestion {
     theme: QuizThemeId;
     questionAr?: string;       // Arabic text (verse, dua, etc.)
     questionFr: string;        // Question text in French
-    choices: string[];         // 4 answer choices
-    correctIndex: number;      // Index of correct answer (0-3)
+    choices: string[];         // 2-4 answer choices
+    correctIndex: number;      // Index of correct answer
     explanation?: string;      // Brief explanation shown after answer
 }
 
@@ -17,6 +17,8 @@ export type QuizThemeId =
     | 'invocations'
     | 'structure'
     | 'ya-ayyuha';
+
+export type QuizDifficulty = 'easy' | 'medium' | 'hard';
 
 export interface QuizTheme {
     id: QuizThemeId;
@@ -40,6 +42,7 @@ export interface QuizAnswer {
     chosenIndex: number;
     correct: boolean;
     timeMs: number;          // Time taken to answer
+    theme?: QuizThemeId;     // For revision tracking
 }
 
 export interface QuizMatch {
@@ -57,6 +60,77 @@ export interface QuizMatch {
     player2_score: number;
     winner_id: string | null;
     created_at: string;
+}
+
+// ─── Theme Stats ─────────────────────────────────────────
+export interface ThemeStats {
+    attempts: number;
+    correct: number;
+    bestStreak: number;
+    totalTimeMs: number;
+    lastPlayed: number;     // timestamp
+}
+
+// ─── Badges ──────────────────────────────────────────────
+export type BadgeId =
+    | 'first_quiz'       // Play first quiz
+    | 'streak_5'         // 5 correct in a row
+    | 'streak_10'        // 10 correct in a row
+    | 'perfect_round'    // 5/5 in a round
+    | 'speed_demon'      // Answer in < 3s
+    | 'master_prophets'  // 90%+ on Prophets
+    | 'master_companions'// 90%+ on Companions
+    | 'master_verses'    // 90%+ on Verses
+    | 'master_invocations'// 90%+ on Invocations
+    | 'master_structure' // 90%+ on Structure
+    | 'master_ya_ayyuha' // 90%+ on Ya Ayyuha
+    | 'duel_winner'      // Win first duel
+    | 'duel_champion'    // Win 10 duels
+    | 'marathon'         // Play 50 quizzes total
+    | 'sprint_30'        // 30 correct in sprint
+    | 'all_themes'       // Play all 6 themes
+    | 'scholar';         // 500 correct total
+
+export interface Badge {
+    id: BadgeId;
+    name: string;
+    nameAr: string;
+    description: string;
+    emoji: string;
+    condition: string;     // Human-readable condition
+}
+
+export const BADGES: Badge[] = [
+    { id: 'first_quiz', name: 'Première Partie', nameAr: 'البداية', description: 'Joue ta première partie', emoji: '🎮', condition: '1 quiz joué' },
+    { id: 'streak_5', name: 'En Feu', nameAr: 'مشتعل', description: '5 bonnes réponses consécutives', emoji: '🔥', condition: '5 streak' },
+    { id: 'streak_10', name: 'Inarrêtable', nameAr: 'لا يُوقف', description: '10 bonnes réponses consécutives', emoji: '⚡', condition: '10 streak' },
+    { id: 'perfect_round', name: 'Sans Faute', nameAr: 'كامل', description: '5/5 dans une partie', emoji: '💎', condition: '5/5' },
+    { id: 'speed_demon', name: 'Éclair', nameAr: 'البرق', description: 'Réponds en moins de 3 secondes', emoji: '⚡', condition: '< 3s' },
+    { id: 'master_prophets', name: 'Maître Prophètes', nameAr: 'عالم الأنبياء', description: '90%+ en Prophètes (min 20 Q)', emoji: '🕌', condition: '90%+ prophets' },
+    { id: 'master_companions', name: 'Maître Compagnons', nameAr: 'عالم الصحابة', description: '90%+ en Compagnons (min 20 Q)', emoji: '⭐', condition: '90%+ companions' },
+    { id: 'master_verses', name: 'Maître Versets', nameAr: 'عالم الآيات', description: '90%+ en Versets (min 20 Q)', emoji: '📖', condition: '90%+ verses' },
+    { id: 'master_invocations', name: 'Maître Invocations', nameAr: 'عالم الأذكار', description: '90%+ en Invocations (min 20 Q)', emoji: '🤲', condition: '90%+ invocations' },
+    { id: 'master_structure', name: 'Maître Structure', nameAr: 'عالم القرآن', description: '90%+ en Structure (min 20 Q)', emoji: '🏷️', condition: '90%+ structure' },
+    { id: 'master_ya_ayyuha', name: 'Maître Yā Ayyuhā', nameAr: 'عالم يا أيها', description: '90%+ en Yā Ayyuhā (min 20 Q)', emoji: '📢', condition: '90%+ ya-ayyuha' },
+    { id: 'duel_winner', name: 'Victorieux', nameAr: 'المنتصر', description: 'Gagne ton premier duel', emoji: '🏆', condition: '1 duel gagné' },
+    { id: 'duel_champion', name: 'Champion', nameAr: 'البطل', description: 'Gagne 10 duels', emoji: '👑', condition: '10 duels gagnés' },
+    { id: 'marathon', name: 'Marathonien', nameAr: 'الماراثون', description: 'Joue 50 parties au total', emoji: '🏃', condition: '50 quizzes' },
+    { id: 'sprint_30', name: 'Sprinter Pro', nameAr: 'عداء محترف', description: '30 bonnes réponses en mode Sprint', emoji: '🚀', condition: '30 en sprint' },
+    { id: 'all_themes', name: 'Polyvalent', nameAr: 'متعدد', description: 'Joue les 6 thèmes', emoji: '🌟', condition: '6 thèmes joués' },
+    { id: 'scholar', name: 'Érudit', nameAr: 'العالم', description: '500 bonnes réponses au total', emoji: '🎓', condition: '500 correct' },
+];
+
+// ─── Leaderboard ─────────────────────────────────────────
+export interface LeaderboardEntry {
+    id: string;
+    pseudo: string;
+    avatar_emoji: string;
+    total_score: number;
+    total_correct: number;
+    total_played: number;
+    total_wins: number;
+    sprint_best: number;
+    updated_at: string;
 }
 
 export const QUIZ_THEMES: QuizTheme[] = [
@@ -109,3 +183,17 @@ export const QUIZ_THEMES: QuizTheme[] = [
         gradient: 'linear-gradient(135deg, #880e4f, #E91E63)',
     },
 ];
+
+// ─── Difficulty Config ───────────────────────────────────
+export const DIFFICULTY_CONFIG: Record<QuizDifficulty, {
+    label: string;
+    emoji: string;
+    choiceCount: number;
+    timerSeconds: number;
+    questionCount: number;
+    scoreMultiplier: number;
+}> = {
+    easy: { label: 'Facile', emoji: '😊', choiceCount: 2, timerSeconds: 20, questionCount: 5, scoreMultiplier: 0.5 },
+    medium: { label: 'Moyen', emoji: '💪', choiceCount: 4, timerSeconds: 15, questionCount: 5, scoreMultiplier: 1 },
+    hard: { label: 'Expert', emoji: '🧠', choiceCount: 4, timerSeconds: 10, questionCount: 7, scoreMultiplier: 1.5 },
+};
