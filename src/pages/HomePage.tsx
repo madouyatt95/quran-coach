@@ -314,7 +314,22 @@ export function HomePage() {
                     <div className="home-header__hijri">{formatHijriDate(hijri)}</div>
                     <div className="home-header__hijri-ar">{formatHijriDateAr(hijri)}</div>
                 </div>
-                {/* Streak badge */}
+            </div>
+
+            {/* Continue Reading + Streak */}
+            <div className="home-continue-row">
+                <button className="home-continue" onClick={handleContinueReading}>
+                    <div className="home-continue__icon">
+                        <BookMarked size={20} />
+                    </div>
+                    <div className="home-continue__text">
+                        <span className="home-continue__title">Reprendre ma lecture</span>
+                        <span className="home-continue__page">
+                            {SURAH_NAMES[currentSurah] || `Sourate ${currentSurah}`} — Page {currentPage}
+                        </span>
+                    </div>
+                    <span className="home-continue__arrow">→</span>
+                </button>
                 {readingStreak > 0 && (
                     <div className="home-streak">
                         <Flame size={18} className="home-streak__flame" />
@@ -323,20 +338,6 @@ export function HomePage() {
                     </div>
                 )}
             </div>
-
-            {/* Continue Reading */}
-            <button className="home-continue" onClick={handleContinueReading}>
-                <div className="home-continue__icon">
-                    <BookMarked size={20} />
-                </div>
-                <div className="home-continue__text">
-                    <span className="home-continue__title">Reprendre ma lecture</span>
-                    <span className="home-continue__page">
-                        {SURAH_NAMES[currentSurah] || `Sourate ${currentSurah}`} — Page {currentPage}
-                    </span>
-                </div>
-                <span className="home-continue__arrow">→</span>
-            </button>
 
             {/* Next Prayer */}
             {nextPrayer && (
