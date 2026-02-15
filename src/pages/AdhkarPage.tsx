@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sun, Moon, BookOpen, Shield, ChevronRight, Plane, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X } from 'lucide-react';
 import { playTts, playTtsLoop, stopTts } from '../lib/ttsService';
+import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -23,72 +24,6 @@ interface AdhkarCategory {
 }
 
 const ADHKAR_DATA: AdhkarCategory[] = [
-    {
-        id: 'morning',
-        name: 'Adhkar du Matin',
-        nameAr: 'أذكار الصباح',
-        icon: <Sun size={24} />,
-        color: '#FFD54F',
-        adhkar: [
-            { id: 1, arabic: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', translation: 'Nous voilà au matin et le royaume appartient à Allah. Louange à Allah. Nulle divinité sauf Allah, Seul, sans associé. A Lui la royauté, à Lui la louange et Il est capable de toute chose.', count: 1, source: 'Muslim' },
-            { id: 2, arabic: 'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ', translation: 'Ô Allah, c\'est par Toi que nous nous retrouvons au matin et c\'est par Toi que nous nous retrouvons au soir, c\'est par Toi que nous vivons et c\'est par Toi que nous mourons et c\'est vers Toi la résurrection.', count: 1, source: 'Tirmidhi' },
-            { id: 3, arabic: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ', translation: 'Gloire et pureté à Allah et louange à Lui.', count: 100, source: 'Bukhari, Muslim' },
-            { id: 4, arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', translation: 'Nulle divinité sauf Allah, Seul, sans associé. A Lui la royauté, à Lui la louange et Il est capable de toute chose.', count: 10, source: 'Bukhari, Muslim' },
-            { id: 5, arabic: 'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', translation: 'Je cherche refuge dans les paroles parfaites d\'Allah contre le mal de ce qu\'Il a créé.', count: 3, source: 'Muslim' },
-        ]
-    },
-    {
-        id: 'evening',
-        name: 'Adhkar du Soir',
-        nameAr: 'أذكار المساء',
-        icon: <Moon size={24} />,
-        color: '#7986CB',
-        adhkar: [
-            { id: 1, arabic: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', translation: 'Nous voilà au soir et le royaume appartient à Allah. Louange à Allah. Nulle divinité sauf Allah, Seul, sans associé. A Lui la royauté, à Lui la louange et Il est capable de toute chose.', count: 1, source: 'Muslim' },
-            { id: 2, arabic: 'اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ', translation: 'Ô Allah, c\'est par Toi que nous nous retrouvons au soir et c\'est par Toi que nous nous retrouvons au matin, c\'est par Toi que nous vivons et c\'est par Toi que nous mourons et c\'est vers Toi le retour.', count: 1, source: 'Tirmidhi' },
-            { id: 3, arabic: 'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', translation: 'Je cherche refuge dans les paroles parfaites d\'Allah contre le mal de ce qu\'Il a créé.', count: 3, source: 'Muslim' },
-            { id: 4, arabic: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', translation: 'Au nom d\'Allah, Celui dont le nom protège de tout mal sur terre et dans le ciel. Il est l\'Audient, l\'Omniscient.', count: 3, source: 'Abu Dawud, Tirmidhi' },
-        ]
-    },
-    {
-        id: 'afterPrayer',
-        name: 'Après la Prière',
-        nameAr: 'أذكار بعد الصلاة',
-        icon: <BookOpen size={24} />,
-        color: '#4CAF50',
-        adhkar: [
-            { id: 1, arabic: 'أَسْتَغْفِرُ اللَّهَ', translation: 'Je demande pardon à Allah.', count: 3, source: 'Muslim' },
-            { id: 2, arabic: 'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ', translation: 'Ô Allah, Tu es la Paix et de Toi vient la paix. Béni sois-Tu, ô Plein de Majesté et de Noblesse.', count: 1, source: 'Muslim' },
-            { id: 3, arabic: 'سُبْحَانَ اللَّهِ', translation: 'Gloire à Allah.', count: 33, source: 'Bukhari, Muslim' },
-            { id: 4, arabic: 'الْحَمْدُ لِلَّهِ', translation: 'Louange à Allah.', count: 33, source: 'Bukhari, Muslim' },
-            { id: 5, arabic: 'اللَّهُ أَكْبَرُ', translation: 'Allah est le Plus Grand.', count: 33, source: 'Bukhari, Muslim' },
-            { id: 6, arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ', translation: 'Nulle divinité sauf Allah, Seul, sans associé. A Lui la royauté, à Lui la louange et Il est capable de toute chose.', count: 1, source: 'Bukhari, Muslim' },
-        ]
-    },
-    {
-        id: 'protection',
-        name: 'Protection',
-        nameAr: 'أذكار الحماية',
-        icon: <Shield size={24} />,
-        color: '#FF7043',
-        adhkar: [
-            { id: 1, arabic: 'آيَةُ الْكُرْسِيِّ: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ...', translation: 'Ayat Al-Kursi (Sourate Al-Baqara, verset 255) - Allah, nulle divinité sauf Lui, le Vivant, Celui qui subsiste par Lui-même...', count: 1, source: 'Bukhari' },
-            { id: 2, arabic: 'قُلْ هُوَ اللَّهُ أَحَدٌ (الإخلاص)', translation: 'Sourate Al-Ikhlas - Dis: Il est Allah, Unique.', count: 3, source: 'Abu Dawud, Tirmidhi' },
-            { id: 3, arabic: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ (الفلق)', translation: 'Sourate Al-Falaq - Dis: Je cherche refuge auprès du Seigneur de l\'aube.', count: 3, source: 'Abu Dawud, Tirmidhi' },
-            { id: 4, arabic: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ (الناس)', translation: 'Sourate An-Nas - Dis: Je cherche refuge auprès du Seigneur des hommes.', count: 3, source: 'Abu Dawud, Tirmidhi' },
-        ]
-    },
-    {
-        id: 'travel',
-        name: 'En Voyage',
-        nameAr: 'أذكار السفر',
-        icon: <Plane size={24} />,
-        color: '#26C6DA',
-        adhkar: [
-            { id: 1, arabic: 'اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَىٰ رَبِّنا لَمُنْقَلِبُونَ', translation: 'Allah est le Plus Grand (3x). Gloire à Celui qui a mis ceci à notre service alors que nous n\'étions pas capables de le dominer. Et c\'est vers notre Seigneur que nous retournerons.', count: 1, source: 'Muslim' },
-            { id: 2, arabic: 'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَٰذَا الْبِرَّ وَالتَّقْوَىٰ، وَمِنَ الْعَمَلِ مَا تَرْضَىٰ', translation: 'Ô Allah, nous Te demandons dans ce voyage la bonté et la piété, ainsi que les actions qui Te plaisent.', count: 1, source: 'Muslim' },
-        ]
-    },
     {
         id: 'rabanna',
         name: 'Invocations Rabbanā',
@@ -143,11 +78,61 @@ const ADHKAR_DATA: AdhkarCategory[] = [
 export function AdhkarPage() {
     const navigate = useNavigate();
 
+    // ═══ Mega-category navigation layer ═══
+    const [viewLevel, setViewLevel] = useState<'mega' | 'chapters' | 'category'>(() => {
+        const saved = localStorage.getItem('adhkar_view_level');
+        return (saved as 'mega' | 'chapters' | 'category') || 'mega';
+    });
+    const [selectedMega, setSelectedMega] = useState<HisnMegaCategory | null>(() => {
+        const id = localStorage.getItem('adhkar_mega_id');
+        return id ? HISNUL_MUSLIM_DATA.find(m => m.id === id) || null : null;
+    });
+    const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => { localStorage.setItem('adhkar_view_level', viewLevel); }, [viewLevel]);
+    useEffect(() => { localStorage.setItem('adhkar_mega_id', selectedMega?.id || ''); }, [selectedMega]);
+
+    // Search across all Hisnul Muslim chapters + original ADHKAR_DATA
+    const searchResults = useMemo(() => {
+        if (!searchQuery.trim()) return { hisnChapters: [] as { mega: HisnMegaCategory; chapter: HisnChapter }[], legacyCats: [] as AdhkarCategory[] };
+        const q = searchQuery.toLowerCase();
+        const hisnChapters: { mega: HisnMegaCategory; chapter: HisnChapter }[] = [];
+        for (const mega of HISNUL_MUSLIM_DATA) {
+            for (const ch of mega.chapters) {
+                if (ch.title.toLowerCase().includes(q) || ch.titleAr.includes(q)) {
+                    hisnChapters.push({ mega, chapter: ch });
+                }
+            }
+        }
+        const legacyCats = ADHKAR_DATA.filter(c => c.name.toLowerCase().includes(q) || c.nameAr.includes(q));
+        return { hisnChapters, legacyCats };
+    }, [searchQuery]);
+
+    // Convert a HisnChapter to an AdhkarCategory for the existing player/list
+    const hisnChapterToCategory = (chapter: HisnChapter): AdhkarCategory => ({
+        id: `hisn_${chapter.id}`,
+        name: chapter.title,
+        nameAr: chapter.titleAr,
+        icon: <BookOpen size={24} />,
+        color: chapter.color,
+        adhkar: chapter.duas.map(d => ({ id: d.id, arabic: d.arabic, translation: d.translation, count: d.count, source: d.source })),
+    });
+
     // Load persisted state
     const [selectedCategory, setSelectedCategory] = useState<AdhkarCategory | null>(() => {
         const savedCatId = localStorage.getItem('adhkar_category_id');
         if (savedCatId) {
-            return ADHKAR_DATA.find(c => c.id === savedCatId) || null;
+            // Check original data first
+            const found = ADHKAR_DATA.find(c => c.id === savedCatId);
+            if (found) return found;
+            // Check Hisnul Muslim chapters
+            if (savedCatId.startsWith('hisn_')) {
+                const chId = savedCatId.replace('hisn_', '');
+                for (const mega of HISNUL_MUSLIM_DATA) {
+                    const ch = mega.chapters.find(c => c.id === chId);
+                    if (ch) return hisnChapterToCategory(ch);
+                }
+            }
         }
         return null;
     });
@@ -189,21 +174,38 @@ export function AdhkarPage() {
         setRepetitions({});
         stopAudioLoop();
         setShowList(true); // Always start with List View
+        setViewLevel('category');
+    };
+
+    const handleHisnChapterClick = (chapter: HisnChapter) => {
+        handleCategoryClick(hisnChapterToCategory(chapter));
+        setSearchQuery('');
     };
 
     const handleBackClick = () => {
-        if (!selectedCategory) {
-            navigate(-1);
-        } else if (!showList) {
-            // If in Player, go back to List
-            stopAudioLoop();
-            setShowList(true);
+        if (viewLevel === 'category' && selectedCategory) {
+            if (!showList) {
+                // If in Player, go back to List
+                stopAudioLoop();
+                setShowList(true);
+            } else {
+                // If in List, go back to previous level
+                stopAudioLoop();
+                setSelectedCategory(null);
+                setShowList(true);
+                setCurrentDhikrIndex(0);
+                // If came from a Hisnul Muslim chapter, go back to chapters
+                if (selectedCategory.id.startsWith('hisn_') && selectedMega) {
+                    setViewLevel('chapters');
+                } else {
+                    setViewLevel('mega');
+                }
+            }
+        } else if (viewLevel === 'chapters') {
+            setSelectedMega(null);
+            setViewLevel('mega');
         } else {
-            // If in List, go back to Categories
-            stopAudioLoop();
-            setSelectedCategory(null);
-            setShowList(true);
-            setCurrentDhikrIndex(0);
+            navigate(-1);
         }
     };
 
@@ -295,8 +297,10 @@ export function AdhkarPage() {
         stopAudioLoop();
     }, [currentDhikrIndex, stopAudioLoop]);
 
-    // Category Selection View
-    if (!selectedCategory) {
+    // ═══════════════════════════════════════
+    // VIEW: Mega Categories (home)
+    // ═══════════════════════════════════════
+    if (viewLevel === 'mega' && !selectedCategory) {
         return (
             <div className="adhkar-page">
                 <div className="adhkar-header">
@@ -308,27 +312,122 @@ export function AdhkarPage() {
                 </div>
 
                 <div className="adhkar-subtitle">
-                    <span className="adhkar-subtitle-ar">الأذكار</span>
-                    <span>De la Citadelle du Musulman</span>
+                    <span className="adhkar-subtitle-ar">حصن المسلم</span>
+                    <span>La Citadelle du Musulman</span>
                 </div>
 
+                {/* Search */}
+                <div className="adhkar-search">
+                    <Search size={18} />
+                    <input
+                        type="text"
+                        placeholder="Rechercher une invocation..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                        <button className="adhkar-search-clear" onClick={() => setSearchQuery('')}>
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
+
+                {searchQuery.trim() ? (
+                    <div className="adhkar-categories">
+                        {searchResults.hisnChapters.map(({ chapter }) => (
+                            <button key={chapter.id} className="adhkar-category-card" onClick={() => handleHisnChapterClick(chapter)}>
+                                <div className="category-icon" style={{ color: chapter.color }}>📿</div>
+                                <div className="category-info">
+                                    <span className="category-name">{chapter.title}</span>
+                                    <span className="category-name-ar">{chapter.titleAr}</span>
+                                </div>
+                                <div className="category-count">{chapter.duas.length} dua</div>
+                                <ChevronRight size={20} className="category-arrow" />
+                            </button>
+                        ))}
+                        {searchResults.legacyCats.map(cat => (
+                            <button key={cat.id} className="adhkar-category-card" onClick={() => handleCategoryClick(cat)}>
+                                <div className="category-icon" style={{ color: cat.color }}>{cat.icon}</div>
+                                <div className="category-info">
+                                    <span className="category-name">{cat.name}</span>
+                                    <span className="category-name-ar">{cat.nameAr}</span>
+                                </div>
+                                <div className="category-count">{cat.adhkar.length} dhikr</div>
+                                <ChevronRight size={20} className="category-arrow" />
+                            </button>
+                        ))}
+                        {searchResults.hisnChapters.length === 0 && searchResults.legacyCats.length === 0 && (
+                            <div className="adhkar-empty">Aucun résultat pour "{searchQuery}"</div>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        {/* Mega categories grid (Hisnul Muslim) */}
+                        <div className="adhkar-mega-grid">
+                            {HISNUL_MUSLIM_DATA.map(mega => (
+                                <button key={mega.id} className="adhkar-mega-card" onClick={() => { setSelectedMega(mega); setViewLevel('chapters'); }}>
+                                    <span className="mega-emoji">{mega.emoji}</span>
+                                    <span className="mega-name">{mega.name}</span>
+                                    <span className="mega-count">{mega.chapters.length}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Original categories (including Rabbanā — untouched) */}
+                        <div className="adhkar-section-label">Collections</div>
+                        <div className="adhkar-categories">
+                            {ADHKAR_DATA.map((category) => (
+                                <button
+                                    key={category.id}
+                                    className={`adhkar-category-card ${category.id === 'rabanna' ? 'rabbana-card' : ''}`}
+                                    onClick={() => handleCategoryClick(category)}
+                                >
+                                    <div className="category-icon" style={{ color: category.color }}>
+                                        {category.icon}
+                                    </div>
+                                    <div className="category-info">
+                                        <span className="category-name">{category.name}</span>
+                                        <span className="category-name-ar">{category.nameAr}</span>
+                                    </div>
+                                    <div className="category-count">
+                                        {category.adhkar.length} dhikr
+                                    </div>
+                                    <ChevronRight size={20} className="category-arrow" />
+                                </button>
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
+        );
+    }
+
+    // ═══════════════════════════════════════
+    // VIEW: Chapters (inside a mega-category)
+    // ═══════════════════════════════════════
+    if (viewLevel === 'chapters' && selectedMega && !selectedCategory) {
+        return (
+            <div className="adhkar-page">
+                <div className="adhkar-header">
+                    <button className="adhkar-back-btn" onClick={handleBackClick}>
+                        <ArrowLeft size={24} />
+                    </button>
+                    <h1 className="adhkar-title">{selectedMega.emoji} {selectedMega.name}</h1>
+                    <div style={{ width: 44 }} />
+                </div>
+                <div className="adhkar-subtitle">
+                    <span className="adhkar-subtitle-ar">{selectedMega.nameAr}</span>
+                    <span>{selectedMega.chapters.length} chapitres</span>
+                </div>
                 <div className="adhkar-categories">
-                    {ADHKAR_DATA.map((category) => (
-                        <button
-                            key={category.id}
-                            className="adhkar-category-card"
-                            onClick={() => handleCategoryClick(category)}
-                        >
-                            <div className="category-icon" style={{ color: category.color }}>
-                                {category.icon}
-                            </div>
+                    {selectedMega.chapters.map(chapter => (
+                        <button key={chapter.id} className="adhkar-category-card" onClick={() => handleHisnChapterClick(chapter)}>
+                            <div className="category-icon" style={{ color: chapter.color }}>📿</div>
                             <div className="category-info">
-                                <span className="category-name">{category.name}</span>
-                                <span className="category-name-ar">{category.nameAr}</span>
+                                <span className="category-name">{chapter.title}</span>
+                                <span className="category-name-ar">{chapter.titleAr}</span>
                             </div>
-                            <div className="category-count">
-                                {category.adhkar.length} dhikr
-                            </div>
+                            <div className="category-count">{chapter.duas.length} dua</div>
                             <ChevronRight size={20} className="category-arrow" />
                         </button>
                     ))}
@@ -338,6 +437,7 @@ export function AdhkarPage() {
     }
 
     // Detail / List View
+    if (!selectedCategory) return null;
     const currentDhikr = selectedCategory.adhkar[currentDhikrIndex];
 
     return (
