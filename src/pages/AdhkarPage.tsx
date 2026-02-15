@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X } from 'lucide-react';
 import { playTts, playTtsLoop, stopTts } from '../lib/ttsService';
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
+import { useFavoritesStore } from '../stores/favoritesStore';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -77,6 +78,7 @@ const ADHKAR_DATA: AdhkarCategory[] = [
 
 export function AdhkarPage() {
     const navigate = useNavigate();
+    const { toggleFavoriteDua, isFavoriteDua } = useFavoritesStore();
 
     // ═══ Mega-category navigation layer ═══
     const [viewLevel, setViewLevel] = useState<'mega' | 'chapters' | 'category'>(() => {
@@ -475,6 +477,23 @@ export function AdhkarPage() {
                                 >
                                     {isAudioLoading ? <Loader2 size={14} className="spin" /> : <Volume2 size={14} />}
                                 </button>
+                                <button
+                                    className={`list-item-fav-btn ${isFavoriteDua(selectedCategory.id, dhikr.id) ? 'active' : ''}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleFavoriteDua({
+                                            chapterId: selectedCategory.id,
+                                            duaId: dhikr.id,
+                                            arabic: dhikr.arabic,
+                                            translation: dhikr.translation,
+                                            source: dhikr.source || '',
+                                            chapterTitle: selectedCategory.name,
+                                        });
+                                    }}
+                                    title={isFavoriteDua(selectedCategory.id, dhikr.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                                >
+                                    <Heart size={14} fill={isFavoriteDua(selectedCategory.id, dhikr.id) ? 'currentColor' : 'none'} />
+                                </button>
                                 {dhikr.source && <span className="item-source">{dhikr.source}</span>}
                             </div>
                             <p className="item-arabic">{dhikr.arabic.substring(0, 80)}...</p>
@@ -498,6 +517,22 @@ export function AdhkarPage() {
                                     📚 {currentDhikr.source}
                                 </div>
                             )}
+                            <button
+                                className={`dhikr-fav-btn ${isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'active' : ''}`}
+                                onClick={() => {
+                                    toggleFavoriteDua({
+                                        chapterId: selectedCategory.id,
+                                        duaId: currentDhikr.id,
+                                        arabic: currentDhikr.arabic,
+                                        translation: currentDhikr.translation,
+                                        source: currentDhikr.source || '',
+                                        chapterTitle: selectedCategory.name,
+                                    });
+                                }}
+                            >
+                                <Heart size={18} fill={isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'currentColor' : 'none'} />
+                                {isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'En favoris' : 'Ajouter aux favoris'}
+                            </button>
                         </div>
 
                         {/* Audio Loop Player */}

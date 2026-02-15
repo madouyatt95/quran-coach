@@ -631,3 +631,59 @@
         background: transparent;
     }
 }
+
+/* ========================================
+   Favorite Buttons
+   ======================================== */
+/* List view ❤️ */
+.list-item-fav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(231, 76, 60, 0.08);
+    border: 1px solid rgba(231, 76, 60, 0.15);
+    border-radius: 50%;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.list-item-fav-btn:active {
+    transform: scale(0.9);
+}
+
+.list-item-fav-btn.active {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.15);
+    border-color: rgba(231, 76, 60, 0.4);
+}
+
+/* Player view ❤️ */
+.dhikr-fav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: rgba(231, 76, 60, 0.08);
+    border: 1px solid rgba(231, 76, 60, 0.15);
+    border-radius: 10px;
+    color: #888;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dhikr-fav-btn.active {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.15);
+    border-color: rgba(231, 76, 60, 0.4);
+}
+
+/* HomePage hadith fav active */
+.hadith-fav-active {
+    color: #e74c3c !important;
+}

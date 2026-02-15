@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw } from 'lucide-react';
+import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
+import { useFavoritesStore } from '../stores/favoritesStore';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -400,6 +401,21 @@ export function HomePage() {
                         <div className="hadith-card__narrator">Rapporté par {hadith.narrator}</div>
                     </div>
                     <div className="hadith-card__actions">
+                        <button
+                            className={`hadith-card__action-btn ${useFavoritesStore.getState().isFavoriteHadith(hadith.id) ? 'hadith-fav-active' : ''}`}
+                            onClick={() => {
+                                useFavoritesStore.getState().toggleFavoriteHadith({
+                                    id: hadith.id,
+                                    ar: hadith.textAr,
+                                    fr: hadith.textFr,
+                                    src: hadith.source,
+                                    nar: hadith.narrator,
+                                    cat: 'general',
+                                });
+                            }}
+                        >
+                            <Heart size={14} fill={useFavoritesStore.getState().isFavoriteHadith(hadith.id) ? 'currentColor' : 'none'} /> Favoris
+                        </button>
                         <button className="hadith-card__action-btn" onClick={handleShare}>
                             <Share2 size={14} /> Partager
                         </button>

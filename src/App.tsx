@@ -18,6 +18,7 @@ import { FavoritesPage } from './pages/FavoritesPage';
 import { ThemesPage } from './pages/ThemesPage';
 import { QuizPage } from './pages/QuizPage';
 import { HomePage } from './pages/HomePage';
+import { HadithsPage } from './pages/HadithsPage';
 import { QiblaPage } from './pages/QiblaPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
@@ -143,6 +144,7 @@ function AppContent() {
           <Route path="/themes" element={<ThemesPage />} />
           <Route path="/qibla" element={<QiblaPage />} />
           <Route path="/quiz" element={<QuizPage />} />
+          <Route path="/hadiths" element={<HadithsPage />} />
         </Routes>
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
