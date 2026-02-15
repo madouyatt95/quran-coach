@@ -449,7 +449,7 @@ function generateVirtuesQuestions(): QuizQuestion[] {
         { q: "La récitation de quelle sourate empêche Shaytan d'entrer dans une maison ?", a: "Al-Baqarah", p: ["Al-Imran", "Al-Falaq", "An-Nas"] },
         { q: "Quelles sont les deux sourates protectrices (Al-Mu'awwidhatayn) ?", a: "Al-Falaq et An-Nas", p: ["Al-Ikhlas et Al-Falaq", "An-Nas et Al-Ikhlas", "Al-Kursi et Al-Falaq"] },
         { q: "Quelle sourate est la 'Guérison' (Ash-Shifa) et la 'Mère du Livre' ?", a: "Al-Fatihah", p: ["Ar-Rahman", "Al-Falaq", "An-Nas"] },
-        { q: "Récite une sourate et tu auras 10 récompenses par lettre. Laquelle ?", a: "Toutes les sourates du Coran", a: "Toutes les sourates", p: ["Seulement Al-Fatihah", "Seulement Al-Ikhlas", "Seulement Ya-Sin"] }
+        { q: "Récite une sourate et tu auras 10 récompenses par lettre. Laquelle ?", a: "Toutes les sourates du Coran", p: ["Seulement Al-Fatihah", "Seulement Al-Ikhlas", "Seulement Ya-Sin"] }
     ];
     return data.map(d => buildMCQ('virtues', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
