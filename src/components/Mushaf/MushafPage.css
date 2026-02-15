@@ -381,20 +381,20 @@
     margin-right: 4px;
 }
 
-/* Specific fix for Android where the gear button gets masked */
-.is-android .mih-header__right {
+/* Specific fix for Mobile where the gear button gets masked if toolbar is wide */
+.is-mobile .mih-header__right {
     flex: 1;
     justify-content: flex-end;
     min-width: 0;
 }
 
-.is-android .mih-toolbar {
+.is-mobile .mih-toolbar {
     max-width: calc(100vw - 120px);
     overflow-x: auto;
     scrollbar-width: none;
 }
 
-.is-android .mih-toolbar::-webkit-scrollbar {
+.is-mobile .mih-toolbar::-webkit-scrollbar {
     display: none;
 }
 

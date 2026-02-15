@@ -81,8 +81,8 @@ const JUZ_START_PAGES: number[] = [
     402, 422, 442, 462, 482, 502, 522, 542, 562, 582
 ];
 
-// simple Android detection
-const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+// simple Mobile detection (Android + iOS)
+const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 type WordState = 'correct' | 'error' | 'current' | 'unread';
 
@@ -790,7 +790,7 @@ export function MushafPage() {
     }
 
     return (
-        <div className={`mushaf-page ${isAndroid ? 'is-android' : ''}`} data-arabic-size={arabicFontSize}>
+        <div className={`mushaf-page ${isMobile ? 'is-mobile' : ''}`} data-arabic-size={arabicFontSize}>
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -894,8 +894,8 @@ export function MushafPage() {
             {/* ===== Khatm Page Badge ===== */}
             <KhatmPageBadge currentPage={currentPage} />
 
-            {/* ===== Floating Navigation (desktop only, hidden on touch and android) ===== */}
-            {!isAndroid && (
+            {/* ===== Floating Navigation (desktop only, hidden on touch and mobile) ===== */}
+            {!isMobile && (
                 <>
                     <button
                         className="mih-float-nav mih-float-nav--left"
