@@ -26,7 +26,6 @@ import {
     Share2,
     Copy,
     Check,
-    ListPlus,
     Square,
     MicOff
 } from 'lucide-react';
@@ -38,7 +37,6 @@ import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { useFavoritesStore } from '../../stores/favoritesStore';
-import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
 import { speechRecognitionService } from '../../lib/speechRecognition';
 import { getSupportedMimeType } from '../../lib/audioUnlock';
 import { playTts } from '../../lib/ttsService';
@@ -118,7 +116,6 @@ export function MushafPage() {
 
     const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter, showTranslation, toggleTranslation, showTransliteration, toggleTransliteration } = useSettingsStore();
     const { toggleFavorite, isFavorite } = useFavoritesStore();
-    const { playlist, addToQueue, removeFromQueue } = useAudioPlayerStore();
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
