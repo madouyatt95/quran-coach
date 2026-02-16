@@ -930,11 +930,11 @@ export function MushafPage() {
                             onClick={playPrevAyah}
                             disabled={playingIndex <= 0}
                         >
-                            <SkipBack size={18} />
+                            <SkipBack size={16} />
                         </button>
 
                         <button className="mih-header-player__play-btn" onClick={toggleAudio}>
-                            {audioPlaying ? <Pause size={20} /> : <Play size={20} />}
+                            {audioPlaying ? <Pause size={18} /> : <Play size={18} />}
                         </button>
 
                         <button
@@ -942,7 +942,7 @@ export function MushafPage() {
                             onClick={playNextAyah}
                             disabled={playingIndex >= pageAyahs.length - 1}
                         >
-                            <SkipForward size={18} />
+                            <SkipForward size={16} />
                         </button>
 
                         <div className="mih-header-player__divider" />
@@ -952,7 +952,7 @@ export function MushafPage() {
                         </div>
 
                         <button className="mih-header-player__stop" onClick={stopAudio}>
-                            <X size={18} />
+                            <X size={16} />
                         </button>
                     </div>
                 )}

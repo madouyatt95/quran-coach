@@ -1236,12 +1236,12 @@
 .mih-header-player {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     background: rgba(0, 0, 0, 0.04);
-    padding: 4px 12px;
+    padding: 2px 8px;
     border-radius: 20px;
-    margin: 0 12px;
-    height: 40px;
+    margin: 0 8px;
+    height: 32px;
     transition: all 0.3s ease;
 }
 
@@ -1253,8 +1253,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     background: none;
     border: none;
     color: #555;
@@ -1280,8 +1280,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 30px;
+    height: 30px;
     background: #4CAF50;
     color: #fff;
     border: none;
@@ -1343,23 +1343,23 @@
 @media (max-width: 500px) {
     .mih-header-player {
         margin: 0 4px;
-        padding: 4px 6px;
-        gap: 4px;
+        padding: 2px 4px;
+        gap: 2px;
     }
 
     .mih-header-player__divider,
-    .mih-header-player__speed {
+    .mih-header-player__speed,
+    .mih-header-player__stop {
         display: none;
+        /* Hide non-core controls on mobile */
     }
 
-    .mih-header__info {
-        display: none;
-        /* Hide Surah info when player is active on very small screens */
+    .mih-header__surah {
+        max-width: 80px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-}
-
-.mushaf-page[data-mushaf-dark="true"] .mih-audio-bar__btn {
-    color: #fff;
 }
 
 /* ========================================
