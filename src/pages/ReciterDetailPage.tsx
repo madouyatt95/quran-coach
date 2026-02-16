@@ -7,7 +7,9 @@ import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { useQuranStore } from '../stores/quranStore';
 import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
 import { getReciterColor } from '../lib/assetPipeline';
-import { ChevronLeft, Play, Download, CheckCircle2, Clock, ListPlus, X, Plus } from 'lucide-react';
+import { ChevronLeft, Play, Download, CheckCircle2, Clock, Plus } from 'lucide-react';
+import { AddToPlaylistModal } from '../components/Playlist/AddToPlaylistModal';
+import type { PlaylistItem } from '../types';
 import './ReciterDetailPage.css';
 
 export function ReciterDetailPage() {
@@ -17,12 +19,11 @@ export function ReciterDetailPage() {
     const { assets } = useAssetsStore();
     const { surahs: quranSurahs } = useQuranStore();
     const { isDownloaded, downloadSurah, removeDownload, isDownloading } = useDownloadStore();
-    const { setPlaylist, isPlaying, currentSurahNumber, addBatchToQueue } = useAudioPlayerStore();
+    const { setPlaylist, isPlaying, currentSurahNumber } = useAudioPlayerStore();
 
     const [surahs, setSurahs] = useState<any[]>([]);
     const [loadingSurahs, setLoadingSurahs] = useState(true);
-    const [multiSelectMode, setMultiSelectMode] = useState(false);
-    const [selectedSurahIds, setSelectedSurahIds] = useState<Set<number>>(new Set());
+    const [playlistModalItem, setPlaylistModalItem] = useState<PlaylistItem | null>(null);
 
     // Find reciter
     const reciter = id === ARABIC_FRENCH_COLLECTION.id
@@ -74,41 +75,6 @@ export function ReciterDetailPage() {
         useAudioPlayerStore.setState({ isPlaying: true });
     };
 
-    const toggleSurahSelection = (surahId: number) => {
-        const newSelected = new Set(selectedSurahIds);
-        if (newSelected.has(surahId)) {
-            newSelected.delete(surahId);
-        } else {
-            newSelected.add(surahId);
-        }
-        setSelectedSurahIds(newSelected);
-    };
-
-    const handleBatchAddToQueue = () => {
-        const tracksToQueue = surahs
-            .filter(s => selectedSurahIds.has(s.id))
-            .map(s => {
-                const qSurah = quranSurahs.find(qs => qs.number === s.id);
-                const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
-                    ? ARABIC_FRENCH_COLLECTION.getAudioUrl(s.id)
-                    : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, s.id);
-
-                return {
-                    surahNumber: s.id,
-                    surahName: s.name,
-                    surahNameAr: qSurah?.name || s.name,
-                    transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || s.name,
-                    totalAyahs: qSurah?.numberOfAyahs || 0,
-                    audioUrl,
-                    playbackType: 'surah' as const
-                };
-            });
-
-        addBatchToQueue(tracksToQueue);
-        setMultiSelectMode(false);
-        setSelectedSurahIds(new Set());
-    };
-
     return (
         <div className="reciter-detail-page">
             <div className="detail-header-nav">
@@ -141,19 +107,7 @@ export function ReciterDetailPage() {
             <div className="surah-list-container">
                 <div className="list-header">
                     <h2>Sourates ({surahs.length})</h2>
-                    <div className="list-actions">
-                        <button
-                            className={`select-mode-btn ${multiSelectMode ? 'active' : ''}`}
-                            onClick={() => {
-                                setMultiSelectMode(!multiSelectMode);
-                                if (multiSelectMode) setSelectedSurahIds(new Set());
-                            }}
-                        >
-                            {multiSelectMode ? <X size={18} /> : <Plus size={18} />}
-                            {multiSelectMode ? 'Annuler' : 'Sélectionner'}
-                        </button>
-                        {!multiSelectMode && <button className="download-all-btn">Tout télécharger</button>}
-                    </div>
+                    <button className="download-all-btn">Tout télécharger</button>
                 </div>
 
                 {loadingSurahs ? (
@@ -167,23 +121,14 @@ export function ReciterDetailPage() {
                             const qSurah = quranSurahs.find(qs => qs.number === surah.id);
                             const transliteration = qSurah?.englishName.toUpperCase().replace('-', ' ');
 
-                            const isSelected = selectedSurahIds.has(surah.id);
 
                             return (
                                 <div
                                     key={surah.id}
-                                    className={`surah-row ${isCurrent ? 'active' : ''} ${isSelected ? 'selected' : ''} ${multiSelectMode ? 'in-selection' : ''}`}
-                                    onClick={() => multiSelectMode ? toggleSurahSelection(surah.id) : null}
+                                    className={`surah-row ${isCurrent ? 'active' : ''}`}
                                 >
-                                    {multiSelectMode && (
-                                        <div className="selection-indicator">
-                                            <div className={`checkbox ${isSelected ? 'checked' : ''}`}>
-                                                {isSelected && <CheckCircle2 size={20} />}
-                                            </div>
-                                        </div>
-                                    )}
                                     <div className="surah-number">{surah.id}</div>
-                                    <div className="surah-info-main" onClick={() => !multiSelectMode && handlePlaySurah(surah)}>
+                                    <div className="surah-info-main" onClick={() => handlePlaySurah(surah)}>
                                         <div className="surah-names-container">
                                             <div className="surah-names-top">
                                                 <span className="surah-name-fr">{surah.name}</span>
@@ -195,52 +140,63 @@ export function ReciterDetailPage() {
                                             {surah.makkia === 1 ? 'Mecquoise' : 'Médinoise'} • {qSurah?.numberOfAyahs} versets
                                         </span>
                                     </div>
-                                    {!multiSelectMode && (
-                                        <div className="surah-actions">
-                                            {downloading ? (
-                                                <Clock size={20} className="icon-downloading" />
-                                            ) : downloaded ? (
-                                                <div className="downloaded-badge" onClick={() => removeDownload(reciter.id.toString(), surah.id)}>
-                                                    <CheckCircle2 size={20} color="#4CAF50" />
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    className="action-btn"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        const url = id === ARABIC_FRENCH_COLLECTION.id
-                                                            ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
-                                                            : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, surah.id);
-                                                        downloadSurah(reciter.id.toString(), surah.id, url);
-                                                    }}
-                                                >
-                                                    <Download size={20} />
-                                                </button>
-                                            )}
-                                            <button className="action-btn play-btn" onClick={(e) => { e.stopPropagation(); handlePlaySurah(surah); }}>
-                                                {isCurrent ? <div className="playing-bars"><span></span><span></span><span></span></div> : <Play size={20} />}
+                                    <div className="surah-actions">
+                                        <button
+                                            className="action-btn add-playlist-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const qSurah = quranSurahs.find(qs => qs.number === surah.id);
+                                                setPlaylistModalItem({
+                                                    surahNumber: surah.id,
+                                                    surahName: surah.name,
+                                                    surahNameAr: qSurah?.name || surah.name,
+                                                    totalAyahs: qSurah?.numberOfAyahs || 0,
+                                                    transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || surah.name,
+                                                    reciterId: reciter.id.toString(),
+                                                    reciterName: reciter.name,
+                                                    playbackType: 'surah'
+                                                });
+                                            }}
+                                        >
+                                            <Plus size={20} />
+                                        </button>
+                                        {downloading ? (
+                                            <Clock size={20} className="icon-downloading" />
+                                        ) : downloaded ? (
+                                            <div className="downloaded-badge" onClick={() => removeDownload(reciter.id.toString(), surah.id)}>
+                                                <CheckCircle2 size={20} color="#4CAF50" />
+                                            </div>
+                                        ) : (
+                                            <button
+                                                className="action-btn"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const url = id === ARABIC_FRENCH_COLLECTION.id
+                                                        ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
+                                                        : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, surah.id);
+                                                    downloadSurah(reciter.id.toString(), surah.id, url);
+                                                }}
+                                            >
+                                                <Download size={20} />
                                             </button>
-                                        </div>
-                                    )}
+                                        )}
+                                        <button className="action-btn play-btn" onClick={(e) => { e.stopPropagation(); handlePlaySurah(surah); }}>
+                                            {isCurrent ? <div className="playing-bars"><span></span><span></span><span></span></div> : <Play size={20} />}
+                                        </button>
+                                    </div>
                                 </div>
                             );
                         })}
                     </div>
                 )}
-
-                {multiSelectMode && selectedSurahIds.size > 0 && (
-                    <div className="selection-bar-floating">
-                        <div className="selection-info">
-                            <span className="count">{selectedSurahIds.size}</span>
-                            <span>sourates sélectionnées</span>
-                        </div>
-                        <button className="add-to-queue-batch-btn" onClick={handleBatchAddToQueue}>
-                            <ListPlus size={20} />
-                            Ajouter à la file
-                        </button>
-                    </div>
-                )}
             </div>
+
+            {playlistModalItem && (
+                <AddToPlaylistModal
+                    item={playlistModalItem}
+                    onClose={() => setPlaylistModalItem(null)}
+                />
+            )}
         </div>
     );
 }

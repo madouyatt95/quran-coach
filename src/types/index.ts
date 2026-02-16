@@ -94,3 +94,22 @@ export interface Settings {
     autoPlayAudio: boolean;
     repeatCount: number;
 }
+
+export interface PlaylistItem {
+    surahNumber: number;
+    surahName: string;
+    surahNameAr: string;
+    totalAyahs: number;
+    audioUrl?: string;
+    playbackType?: 'ayah' | 'surah';
+    transliteration?: string;
+    reciterId?: string;
+    reciterName?: string;
+}
+
+export interface Playlist {
+    id: string;
+    name: string;
+    items: PlaylistItem[];
+    createdAt: number;
+}

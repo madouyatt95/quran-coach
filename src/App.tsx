@@ -12,6 +12,7 @@ import { PrayerTimesPage } from './pages/PrayerTimesPage';
 import { AdhkarPage } from './pages/AdhkarPage';
 import { ListenPage } from './pages/ListenPage';
 import { ReciterDetailPage } from './pages/ReciterDetailPage';
+import { PlaylistDetailPage } from './pages/PlaylistDetailPage';
 import { AdminAssetsPage } from './pages/AdminAssetsPage';
 import { TafsirPage } from './pages/TafsirPage';
 import { ShazamPage } from './pages/ShazamPage';
@@ -140,6 +141,7 @@ function AppContent() {
           <Route path="/adhkar" element={<AdhkarPage />} />
           <Route path="/listen" element={<ListenPage />} />
           <Route path="/listen/:id" element={<ReciterDetailPage />} />
+          <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
           <Route path="/admin/assets" element={<AdminAssetsPage />} />
           <Route path="/tafsir" element={<TafsirPage />} />
           <Route path="/shazam" element={<ShazamPage />} />

@@ -15,7 +15,6 @@ export function MiniPlayer() {
         currentSurahName,
         currentSurahNameAr,
         currentAyahInSurah,
-        totalAyahsInSurah,
         ayahs,
         playlist,
         currentPlaylistIndex,
@@ -33,8 +32,7 @@ export function MiniPlayer() {
         seek,
         toggleRepeatMode,
         jumpToPlaylistIndex,
-        removeFromQueue,
-        clearQueue,
+        removeFromQueue
     } = useAudioPlayerStore();
 
     const [expanded, setExpanded] = useState(false);
@@ -103,7 +101,6 @@ export function MiniPlayer() {
                     <div className="mini-player__surah">{currentSurahNameAr || currentSurahName}</div>
                     <div className="mini-player__detail">
                         {currentSurahName}
-                        {playbackType === 'ayah' && ` · Verset ${currentAyahInSurah}/${totalAyahsInSurah}`}
                         {upcomingSurahs.length > 0 && <span className="mini-player__queue-badge">📋 {upcomingSurahs.length} à suivre</span>}
                     </div>
                 </div>
@@ -156,16 +153,11 @@ export function MiniPlayer() {
                     {/* Tab toggle: Versets vs File d'attente */}
                     <div className="mini-player__tabs">
                         <button className={`mini-player__tab ${!showQueue ? 'active' : ''}`} onClick={() => setShowQueue(false)}>
-                            Versets
+                            Texte
                         </button>
                         <button className={`mini-player__tab ${showQueue ? 'active' : ''}`} onClick={() => setShowQueue(true)}>
                             <ListMusic size={14} /> File ({playlist.length})
                         </button>
-                        {showQueue && upcomingSurahs.length > 0 && (
-                            <button className="mini-player__tab mini-player__tab--clear" onClick={clearQueue}>
-                                <Trash2 size={14} /> Tout vider
-                            </button>
-                        )}
                     </div>
 
                     {!showQueue ? (
@@ -195,7 +187,7 @@ export function MiniPlayer() {
                                             <span className="mini-player__queue-trans">{s.transliteration || s.surahName}</span>
                                             <span className="mini-player__queue-ar">{s.surahNameAr}</span>
                                         </div>
-                                        <span className="mini-player__queue-detail">{s.surahName} · {s.totalAyahs} versets</span>
+                                        <span className="mini-player__queue-detail">{s.surahName}</span>
                                     </div>
                                     <button
                                         className="mini-player__queue-remove"

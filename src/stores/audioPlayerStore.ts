@@ -1,15 +1,7 @@
 import { create } from 'zustand';
 import { getAudioUrl } from '../lib/quranApi';
+import type { PlaylistItem } from '../types';
 
-export interface PlaylistItem {
-    surahNumber: number;
-    surahName: string;
-    surahNameAr: string;
-    totalAyahs: number;
-    audioUrl?: string; // For direct streaming (Listen page)
-    playbackType?: 'ayah' | 'surah';
-    transliteration?: string;
-}
 
 interface AudioPlayerState {
     // Playback state
@@ -51,9 +43,7 @@ interface AudioPlayerState {
     jumpToPlaylistIndex: (index: number) => void;
     getAudioRef: () => HTMLAudioElement;
     addToQueue: (surah: PlaylistItem) => void;
-    addBatchToQueue: (tracks: PlaylistItem[]) => void;
     removeFromQueue: (index: number) => void;
-    clearQueue: () => void;
 }
 
 // Single shared audio element for the global player
@@ -319,28 +309,5 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
         if (index <= currentPlaylistIndex) return; // Can't remove current or past items
         const newPlaylist = playlist.filter((_, i) => i !== index);
         set({ playlist: newPlaylist });
-    },
-
-    clearQueue: () => {
-        const { playlist, currentPlaylistIndex } = get();
-        // Keep everything up to the current track
-        const newPlaylist = playlist.slice(0, currentPlaylistIndex + 1);
-        set({ playlist: newPlaylist });
-    },
-
-    addBatchToQueue: (tracks) => {
-        const { playlist, currentSurahNumber, reciterId } = get();
-        if (tracks.length === 0) return;
-
-        if (currentSurahNumber === 0) {
-            // Nothing playing — start the first track and queue the rest
-            get().playSurah(tracks[0], reciterId);
-            if (tracks.length > 1) {
-                set({ playlist: [tracks[0], ...tracks.slice(1)] });
-            }
-        } else {
-            // Append all to playlist
-            set({ playlist: [...playlist, ...tracks] });
-        }
     },
 }));

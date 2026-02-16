@@ -3,6 +3,8 @@ import { useListenStore } from '../stores/listenStore';
 import { useAssetsStore } from '../stores/assetsStore';
 import { searchWikimediaForReciter, getReciterColor } from '../lib/assetPipeline';
 import { useNavigate } from 'react-router-dom';
+import { usePlaylistsStore } from '../stores/playlistsStore';
+import { ListMusic } from 'lucide-react';
 import './ListenPage.css';
 
 export function ListenPage() {
@@ -11,6 +13,8 @@ export function ListenPage() {
         reciters, featuredReciters, isLoading, searchQuery,
         fetchReciters, setSearchQuery, getFilteredReciters
     } = useListenStore();
+
+    const { playlists } = usePlaylistsStore();
 
     const { assets, fetchAssets, addPendingAsset } = useAssetsStore();
 
@@ -56,6 +60,33 @@ export function ListenPage() {
             </div>
 
             <div className="listen-content">
+                {/* User Playlists Section */}
+                {!searchQuery && playlists.length > 0 && (
+                    <section className="listen-section playlist-section">
+                        <div className="section-header">
+                            <h2 className="section-title">📂 Mes Playlists</h2>
+                        </div>
+                        <div className="popular-reciters-scroll">
+                            {playlists.map(playlist => (
+                                <div
+                                    key={playlist.id}
+                                    className="popular-reciter-card playlist-card"
+                                    onClick={() => navigate(`/playlists/${playlist.id}`)}
+                                >
+                                    <div className="popular-card-photo playlist-icon">
+                                        <div className="playlist-avatar">
+                                            <ListMusic size={32} />
+                                            {playlist.items.length > 0 && (
+                                                <span className="playlist-badge">{playlist.items.length}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <span className="popular-card-name">{playlist.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
                 {/* Popular Reciters Section */}
                 {!searchQuery && popularReciters.length > 0 && (
                     <section className="listen-section">
