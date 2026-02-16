@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, ChevronDown, Loader2, Users, MessageCircle, Volume2 } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronLeft, Loader2, Users, MessageCircle, Volume2 } from 'lucide-react';
 import { playTts, stopTts } from '../lib/ttsService';
 import { useQuranStore } from '../stores/quranStore';
+import { useNavigate } from 'react-router-dom';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
 import './TafsirPage.css';
 
@@ -37,6 +38,7 @@ const NARRATIVE_SURAHS = [12, 18, 19, 20, 26, 27, 28]; // Yusuf, Kahf, Maryam, T
 
 export function TafsirPage() {
     const { surahs } = useQuranStore();
+    const navigate = useNavigate();
 
     // Selection state
     const [selectedSurah, setSelectedSurah] = useState(1);
@@ -147,6 +149,9 @@ export function TafsirPage() {
         <div className="tafsir-page">
             {/* Header */}
             <div className="tafsir-header">
+                <button className="tafsir-back-btn" onClick={() => navigate(-1)}>
+                    <ChevronLeft size={24} />
+                </button>
                 <h1 className="tafsir-title">
                     <BookOpen size={24} />
                     Tafsir

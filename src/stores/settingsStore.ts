@@ -49,11 +49,11 @@ export const useSettingsStore = create<SettingsState>()(
         (set) => ({
             // Default settings
             theme: 'dark',
-            arabicFontSize: 'md',
+            arabicFontSize: 'xl',
             viewMode: 'mushaf',
             lineSpacing: 2.4,
             showTranslation: true,
-            showTransliteration: false,
+            showTransliteration: true,
             translationLanguage: 'fr',
             tajwidEnabled: true,
             tajwidLayers: ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'],
@@ -91,14 +91,16 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'quran-coach-settings',
-            version: 5, // Increment for revert
+            version: 6, // Bump to apply new defaults
             migrate: (persistedState: any, version: number) => {
                 const originalLayers = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
 
-                if (version < 5) {
+                if (version < 6) {
                     return {
                         ...persistedState,
                         tajwidLayers: originalLayers,
+                        arabicFontSize: 'xl',
+                        showTransliteration: true,
                     };
                 }
                 return persistedState;

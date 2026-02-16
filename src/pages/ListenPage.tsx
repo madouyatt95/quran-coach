@@ -4,7 +4,7 @@ import { useAssetsStore } from '../stores/assetsStore';
 import { searchWikimediaForReciter, getReciterColor } from '../lib/assetPipeline';
 import { useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
-import { ListMusic } from 'lucide-react';
+import { ListMusic, ChevronLeft } from 'lucide-react';
 import './ListenPage.css';
 
 export function ListenPage() {
@@ -43,6 +43,9 @@ export function ListenPage() {
     return (
         <div className="listen-page">
             <header className="listen-header">
+                <button className="listen-back-btn" onClick={() => navigate(-1)}>
+                    <ChevronLeft size={24} />
+                </button>
                 <h1>Écoute</h1>
                 <p>Découvrez les plus belles récitations du Noble Coran</p>
             </header>
