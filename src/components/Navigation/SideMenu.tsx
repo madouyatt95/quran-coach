@@ -13,10 +13,8 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     const menuItems = [
         { path: '/listen', emoji: '🎧', label: 'Écoute', color: '#4CAF50' },
         { path: '/hadiths', emoji: '📜', label: 'Hadiths', color: '#c9a84c' },
-        { path: '/prophets', emoji: '🕌', label: 'Prophètes', color: '#FF9800' },
         { path: '/tafsir', emoji: '📚', label: 'Tafsir', color: '#2196F3' },
         { path: '/shazam', emoji: '🔍', label: 'Shazam', color: '#9C27B0' },
-        { path: '/admin/assets', emoji: '⚙️', label: 'Modération', color: '#607D8B' },
         { path: '/settings', emoji: '⚙️', label: 'Réglages', color: '#607D8B' },
     ];
     return (

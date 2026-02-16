@@ -4,7 +4,6 @@ import {
     ListMusic, Trash2, Repeat, Repeat1, RotateCcw, RotateCw
 } from 'lucide-react';
 import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
-import { fetchSurah } from '../../lib/quranApi';
 import { useState } from 'react';
 import './MiniPlayer.css';
 
@@ -14,17 +13,13 @@ export function MiniPlayer() {
         currentSurahNumber,
         currentSurahName,
         currentSurahNameAr,
-        currentAyahInSurah,
-        ayahs,
         playlist,
         currentPlaylistIndex,
-        playbackType,
         repeatMode,
         togglePlay,
         nextAyah,
         prevAyah,
         stop,
-        setAyahs,
         getAudioRef,
         updateTime,
         currentTime,
@@ -36,21 +31,8 @@ export function MiniPlayer() {
     } = useAudioPlayerStore();
 
     const [expanded, setExpanded] = useState(false);
-    const [showQueue, setShowQueue] = useState(false);
     const setupDoneRef = useRef(false);
 
-    // Fetch ayahs when surah changes (ONLY in ayah mode)
-    useEffect(() => {
-        if (currentSurahNumber > 0 && ayahs.length === 0 && playbackType === 'ayah') {
-            fetchSurah(currentSurahNumber).then(data => {
-                setAyahs(data.ayahs.map(a => ({
-                    number: a.number,
-                    numberInSurah: a.numberInSurah,
-                    text: a.text,
-                })));
-            }).catch(console.error);
-        }
-    }, [currentSurahNumber, ayahs.length, setAyahs, playbackType]);
 
     // Setup audio event listeners
     useEffect(() => {
@@ -150,59 +132,37 @@ export function MiniPlayer() {
                         <span>{formatTime(duration)}</span>
                     </div>
 
-                    {/* Tab toggle: Versets vs File d'attente */}
-                    <div className="mini-player__tabs">
-                        <button className={`mini-player__tab ${!showQueue ? 'active' : ''}`} onClick={() => setShowQueue(false)}>
-                            Texte
-                        </button>
-                        <button className={`mini-player__tab ${showQueue ? 'active' : ''}`} onClick={() => setShowQueue(true)}>
-                            <ListMusic size={14} /> File ({playlist.length})
-                        </button>
+                    <div className="mini-player__tabs-header">
+                        <ListMusic size={14} /> File d'attente ({playlist.length})
                     </div>
 
-                    {!showQueue ? (
-                        <div className="mini-player__scroll">
-                            {ayahs.map(ayah => (
-                                <div
-                                    key={ayah.number}
-                                    className={`mini-player__ayah ${ayah.numberInSurah === currentAyahInSurah ? 'active' : ''}`}
-                                    onClick={() => useAudioPlayerStore.getState().playAyah(ayah.number, ayah.numberInSurah)}
-                                >
-                                    <span className="mini-player__ayah-num">{ayah.numberInSurah}</span>
-                                    <span className="mini-player__ayah-text" dir="rtl">{ayah.text.length > 80 ? ayah.text.slice(0, 80) + '…' : ayah.text}</span>
-                                </div>
-                            ))}
-                            {ayahs.length === 0 && <div className="mini-player__empty">Chargement des versets...</div>}
-                        </div>
-                    ) : (
-                        <div className="mini-player__scroll">
-                            {playlist.map((s, idx) => (
-                                <div
-                                    key={`${s.surahNumber}-${idx}`}
-                                    className={`mini-player__queue-item ${idx === currentPlaylistIndex ? 'active' : ''}`}
-                                    onClick={() => jumpToPlaylistIndex(idx)}
-                                >
-                                    <div className="mini-player__queue-info">
-                                        <div className="mini-player__queue-names">
-                                            <span className="mini-player__queue-trans">{s.transliteration || s.surahName}</span>
-                                            <span className="mini-player__queue-ar">{s.surahNameAr}</span>
-                                        </div>
-                                        <span className="mini-player__queue-detail">{s.surahName}</span>
+                    <div className="mini-player__scroll">
+                        {playlist.map((s, idx) => (
+                            <div
+                                key={`${s.surahNumber}-${idx}`}
+                                className={`mini-player__queue-item ${idx === currentPlaylistIndex ? 'active' : ''}`}
+                                onClick={() => jumpToPlaylistIndex(idx)}
+                            >
+                                <div className="mini-player__queue-info">
+                                    <div className="mini-player__queue-names">
+                                        <span className="mini-player__queue-trans">{s.transliteration || s.surahName}</span>
+                                        <span className="mini-player__queue-ar">{s.surahNameAr}</span>
                                     </div>
-                                    <button
-                                        className="mini-player__queue-remove"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeFromQueue(idx);
-                                        }}
-                                        disabled={idx <= currentPlaylistIndex}
-                                    >
-                                        <Trash2 size={14} />
-                                    </button>
+                                    <span className="mini-player__queue-detail">{s.surahName}</span>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                <button
+                                    className="mini-player__queue-remove"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeFromQueue(idx);
+                                    }}
+                                    disabled={idx <= currentPlaylistIndex}
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

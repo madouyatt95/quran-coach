@@ -146,6 +146,10 @@ export function ReciterDetailPage() {
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 const qSurah = quranSurahs.find(qs => qs.number === surah.id);
+                                                const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
+                                                    ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
+                                                    : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, surah.id);
+
                                                 setPlaylistModalItem({
                                                     surahNumber: surah.id,
                                                     surahName: surah.name,
@@ -154,7 +158,8 @@ export function ReciterDetailPage() {
                                                     transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || surah.name,
                                                     reciterId: reciter.id.toString(),
                                                     reciterName: reciter.name,
-                                                    playbackType: 'surah'
+                                                    playbackType: 'surah',
+                                                    audioUrl
                                                 });
                                             }}
                                         >

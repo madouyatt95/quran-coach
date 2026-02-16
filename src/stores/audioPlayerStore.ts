@@ -100,22 +100,13 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     },
 
     setPlaylist: (items, startIndex, reciterId) => {
-        const surah = items[startIndex];
-        const pMode = surah.playbackType || 'ayah';
         set({
             playlist: items,
             currentPlaylistIndex: startIndex,
-            currentSurahNumber: surah.surahNumber,
-            currentSurahName: surah.surahName,
-            currentSurahNameAr: surah.surahNameAr,
-            totalAyahsInSurah: surah.totalAyahs,
-            currentAyahInSurah: pMode === 'surah' ? 0 : 1,
-            currentAyahNumber: 0,
-            isPlaying: false,
-            reciterId,
-            ayahs: [],
-            playbackType: pMode,
+            reciterId: reciterId || items[startIndex].reciterId || 'ar.alafasy'
         });
+        // Auto-play the selected item
+        get().jumpToPlaylistIndex(startIndex);
     },
 
     setAyahs: (ayahs) => {
@@ -172,30 +163,32 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     },
 
     jumpToPlaylistIndex: (index) => {
-        const { playlist, reciterId } = get();
+        const { playlist } = get();
         if (!playlist[index]) return;
 
         const surah = playlist[index];
         const audio = getOrCreateAudio();
-        const pMode = surah.playbackType || 'ayah';
+        const pMode = surah.playbackType || 'surah';
 
         set({
             currentPlaylistIndex: index,
             currentSurahNumber: surah.surahNumber,
             currentSurahName: surah.surahName,
             currentSurahNameAr: surah.surahNameAr,
-            totalAyahsInSurah: surah.totalAyahs,
+            totalAyahsInSurah: surah.totalAyahs || 0,
             currentAyahInSurah: pMode === 'surah' ? 0 : 1,
             currentAyahNumber: 0,
             isPlaying: true,
-            reciterId,
+            reciterId: surah.reciterId || get().reciterId,
             ayahs: [],
             playbackType: pMode,
         });
 
-        if (pMode === 'surah' && surah.audioUrl) {
+        if (surah.audioUrl) {
             audio.src = surah.audioUrl;
             audio.play().catch(console.error);
+        } else {
+            console.error('[AudioPlayer] No audioUrl for surah', surah.surahNumber);
         }
     },
 

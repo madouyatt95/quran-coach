@@ -26,15 +26,11 @@ export function PlaylistDetailPage() {
 
     const handlePlayAll = () => {
         if (playlist.items.length === 0) return;
-        const firstItem = playlist.items[0];
-        setPlaylist(playlist.items, 0, firstItem.reciterId || '1');
-        useAudioPlayerStore.getState().playSurah(firstItem, firstItem.reciterId || '1');
+        setPlaylist(playlist.items, 0, playlist.items[0].reciterId || '1');
     };
 
     const handlePlayItem = (index: number) => {
-        const item = playlist.items[index];
-        setPlaylist(playlist.items, index, item.reciterId || '1');
-        useAudioPlayerStore.getState().playSurah(item, item.reciterId || '1');
+        setPlaylist(playlist.items, index, playlist.items[index].reciterId || '1');
     };
 
     const handleDeletePlaylist = () => {
