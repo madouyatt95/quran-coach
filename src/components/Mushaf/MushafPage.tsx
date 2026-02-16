@@ -87,10 +87,9 @@ type WordState = 'correct' | 'error' | 'current' | 'unread';
 // Masking modes
 type MaskMode = 'visible' | 'hidden' | 'partial' | 'minimal';
 
-// Convert Western numbers to Arabic-Indic numerals
+// Convert Western numbers to Arabic-Indic numerals (Only for specific stylistic needs if any)
 function toArabicNumbers(num: number): string {
-    const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
+    return num.toString(); // Standard numerals as requested by user
 }
 
 // Juz info helper
@@ -923,6 +922,41 @@ export function MushafPage() {
                     </div>
                 </div>
 
+                {/* ===== Header Audio Player (Compact) ===== */}
+                {audioActive && (
+                    <div className="mih-header-player">
+                        <button
+                            className="mih-header-player__btn"
+                            onClick={playPrevAyah}
+                            disabled={playingIndex <= 0}
+                        >
+                            <SkipBack size={18} />
+                        </button>
+
+                        <button className="mih-header-player__play-btn" onClick={toggleAudio}>
+                            {audioPlaying ? <Pause size={20} /> : <Play size={20} />}
+                        </button>
+
+                        <button
+                            className="mih-header-player__btn"
+                            onClick={playNextAyah}
+                            disabled={playingIndex >= pageAyahs.length - 1}
+                        >
+                            <SkipForward size={18} />
+                        </button>
+
+                        <div className="mih-header-player__divider" />
+
+                        <div className="mih-header-player__speed" onClick={() => setPlaybackSpeed(s => s >= 2 ? 0.5 : s + 0.25)}>
+                            {playbackSpeed}x
+                        </div>
+
+                        <button className="mih-header-player__stop" onClick={stopAudio}>
+                            <X size={18} />
+                        </button>
+                    </div>
+                )}
+
                 <div className="mih-header__right">
                     {showToolbar && (
                         <div className="mih-toolbar">
@@ -1422,46 +1456,6 @@ export function MushafPage() {
 
 
 
-            {/* ===== Floating Audio Player ===== */}
-            {audioActive && (
-                <div className="mih-audio-bar">
-                    <div className="mih-audio-bar__info">
-                        <div className="mih-audio-bar__title">Lecture en cours</div>
-                        <div className="mih-audio-bar__subtitle">Ayat {currentPlayingAyah}</div>
-                    </div>
-
-                    <div className="mih-audio-bar__controls">
-                        <button
-                            className="mih-audio-bar__btn"
-                            onClick={playPrevAyah}
-                            disabled={playingIndex <= 0}
-                        >
-                            <SkipBack size={20} />
-                        </button>
-
-                        <button className="mih-audio-bar__play-btn" onClick={toggleAudio}>
-                            {audioPlaying ? <Pause size={24} /> : <Play size={24} />}
-                        </button>
-
-                        <button
-                            className="mih-audio-bar__btn"
-                            onClick={playNextAyah}
-                            disabled={playingIndex >= pageAyahs.length - 1}
-                        >
-                            <SkipForward size={20} />
-                        </button>
-                    </div>
-
-
-                    <div className="mih-audio-bar__speed" onClick={() => setPlaybackSpeed(s => s >= 2 ? 0.5 : s + 0.25)}>
-                        {playbackSpeed}x
-                    </div>
-
-                    <button className="mih-audio-bar__stop" onClick={stopAudio}>
-                        <X size={20} />
-                    </button>
-                </div>
-            )}
 
 
             {/* Share modal */}

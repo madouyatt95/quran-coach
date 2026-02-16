@@ -1231,173 +1231,133 @@
 }
 
 /* ========================================
-   Audio Player Bar (Floating)
+   Header Audio Player (Compact)
    ======================================== */
-.mih-audio-bar {
-    position: fixed;
-    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-    left: 0;
-    right: 0;
-    height: 64px;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+.mih-header-player {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
-    z-index: 1000;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
-    animation: mih-audio-slide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin: 0 12px;
+    height: 40px;
+    transition: all 0.3s ease;
 }
 
-/* Compact audio bar on smaller screens */
-@media (max-width: 420px) {
-    .mih-audio-bar {
-        height: 58px;
-        padding: 0 8px;
-    }
-
-    .mih-audio-bar__controls {
-        gap: 6px;
-        margin: 0 8px;
-    }
-
-    .mih-audio-bar__play-btn {
-        width: 40px;
-        height: 40px;
-    }
-
-    .mih-audio-bar__btn {
-        width: 30px;
-        height: 30px;
-    }
-
-    .mih-audio-bar__info {
-        max-width: 80px;
-    }
+[data-theme="dark"] .mih-header-player {
+    background: rgba(255, 255, 255, 0.08);
 }
 
-@keyframes mih-audio-slide {
-    from {
-        transform: translateY(100%);
-    }
-
-    to {
-        transform: translateY(0);
-    }
-}
-
-.mih-audio-bar__info {
-    flex: 1;
-    min-width: 0;
-}
-
-.mih-audio-bar__title {
-    font-size: 0.7rem;
-    color: #8bc34a;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.mih-audio-bar__subtitle {
-    font-size: 0.9rem;
-    color: #1a1a2e;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mih-audio-bar__controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0 16px;
-}
-
-.mih-audio-bar__btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: none;
-    border: none;
-    color: #333;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.mih-audio-bar__btn:disabled {
-    opacity: 0.3;
-}
-
-.mih-audio-bar__btn:active:not(:disabled) {
-    background: rgba(0, 0, 0, 0.05);
-    transform: scale(0.9);
-}
-
-.mih-audio-bar__play-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-    transition: all 0.2s;
-}
-
-.mih-audio-bar__play-btn:active {
-    transform: scale(0.9);
-    box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
-}
-
-.mih-audio-bar__speed {
-    font-size: 0.75rem;
-    font-weight: 700;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 4px 8px;
-    border-radius: 12px;
-    color: #666;
-    cursor: pointer;
-    user-select: none;
-}
-
-.mih-audio-bar__stop {
+.mih-header-player__btn {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 32px;
     height: 32px;
-    background: #f5f5f5;
+    background: none;
+    border: none;
+    color: #555;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+[data-theme="dark"] .mih-header-player__btn {
+    color: #ccc;
+}
+
+.mih-header-player__btn:disabled {
+    opacity: 0.3;
+}
+
+.mih-header-player__btn:active:not(:disabled) {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(0.9);
+}
+
+.mih-header-player__play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+    transition: all 0.2s;
+}
+
+.mih-header-player__play-btn:active {
+    transform: scale(0.9);
+}
+
+.mih-header-player__divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 0 4px;
+}
+
+[data-theme="dark"] .mih-header-player__divider {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.mih-header-player__speed {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    user-select: none;
+    min-width: 32px;
+    text-align: center;
+}
+
+[data-theme="dark"] .mih-header-player__speed {
+    color: #aaa;
+}
+
+.mih-header-player__stop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.05);
     color: #999;
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    margin-left: 8px;
+    margin-left: 4px;
 }
 
-[data-theme="dark"] .mih-audio-bar,
-.mushaf-page[data-mushaf-dark="true"] .mih-audio-bar {
-    background: rgba(22, 33, 62, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
+[data-theme="dark"] .mih-header-player__stop {
+    background: rgba(255, 255, 255, 0.1);
+    color: #888;
 }
 
-[data-theme="dark"] .mih-audio-bar__subtitle,
-.mushaf-page[data-mushaf-dark="true"] .mih-audio-bar__subtitle {
-    color: #f0e6d3;
+/* Responsive adjustments for header player */
+@media (max-width: 500px) {
+    .mih-header-player {
+        margin: 0 4px;
+        padding: 4px 6px;
+        gap: 4px;
+    }
+
+    .mih-header-player__divider,
+    .mih-header-player__speed {
+        display: none;
+    }
+
+    .mih-header__info {
+        display: none;
+        /* Hide Surah info when player is active on very small screens */
+    }
 }
 
-[data-theme="dark"] .mih-audio-bar__btn,
 .mushaf-page[data-mushaf-dark="true"] .mih-audio-bar__btn {
     color: #fff;
 }
