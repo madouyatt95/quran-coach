@@ -1348,8 +1348,7 @@
     }
 
     .mih-header-player__divider,
-    .mih-header-player__speed,
-    .mih-header-player__stop {
+    .mih-header-player__speed {
         display: none;
         /* Hide non-core controls on mobile */
     }
