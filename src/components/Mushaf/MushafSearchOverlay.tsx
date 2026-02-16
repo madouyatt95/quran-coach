@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { searchQuran } from '../../lib/quranApi';
 import { SURAH_NAMES_FR, JUZ_START_PAGES } from './mushafConstants';
 import type { Ayah } from '../../types';
@@ -52,25 +52,29 @@ export function MushafSearchOverlay({
             if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
             searchTimerRef.current = setTimeout(async () => {
                 try {
-                    const [arRes, frRes] = await Promise.all([
-                        searchQuran(searchQuery, 'ar'),
-                        searchQuran(searchQuery, 'fr.hamidullah').catch(() => null)
-                    ]);
+                    const arRes = await searchQuran(searchQuery);
+
+                    // Also search French via alquran.cloud
+                    let frenchResults: Array<{ number: number; text: string }> = [];
+                    try {
+                        const frResponse = await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(searchQuery)}/all/fr.hamidullah`);
+                        const frData = await frResponse.json();
+                        if (frData.code === 200 && frData.data?.matches) {
+                            frenchResults = frData.data.matches.map((m: any) => ({
+                                number: m.number,
+                                text: m.text,
+                            }));
+                        }
+                    } catch { /* ignore French search errors */ }
 
                     const merged = new Map<number, SearchResult>();
-                    if (arRes?.matches) {
-                        for (const m of arRes.matches) {
-                            merged.set(m.number, { ...m, page: m.page || 0 });
-                        }
+                    for (const m of arRes) {
+                        merged.set(m.number, { ...m, page: m.page || 0 });
                     }
-                    if (frRes?.matches) {
-                        for (const f of frRes.matches) {
-                            if (merged.has(f.number)) {
-                                const existing = merged.get(f.number)!;
-                                merged.set(f.number, { ...existing, translation: f.text });
-                            } else {
-                                merged.set(f.number, { ...f, translation: f.text, text: '', page: f.page || 0 });
-                            }
+                    for (const f of frenchResults) {
+                        if (merged.has(f.number)) {
+                            const existing = merged.get(f.number)!;
+                            merged.set(f.number, { ...existing, translation: f.text });
                         }
                     }
 
