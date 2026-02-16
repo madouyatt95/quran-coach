@@ -6,8 +6,11 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
-      includeAssets: ['icon-512.png', 'apple-touch-icon.png'],
+      injectRegister: 'auto',
       manifest: {
         name: 'Quran Coach',
         short_name: 'QuranCoach',
@@ -36,55 +39,12 @@ export default defineConfig({
           }
         ]
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api\.alquran\.cloud\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'quran-api-cache',
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            // Quran.com API for word timings
-            urlPattern: /^https:\/\/api\.quran\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'qurancom-api-cache',
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            // Large fingerprint database (only fetched when Shazam is used)
-            urlPattern: /\/data\/reciterFingerprints\.json$/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'fingerprint-db-cache',
-              expiration: {
-                maxEntries: 1,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
-      }
+      },
+      devOptions: {
+        enabled: false,
+      },
     })
   ]
 })

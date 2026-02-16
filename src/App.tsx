@@ -12,8 +12,7 @@ import { useStatsStore } from './stores/statsStore';
 import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
-import { useNotificationStore } from './stores/notificationStore';
-import { initNotifications, updateLastVisit, checkInactivityReminder } from './lib/notificationService';
+import { updateLastVisit } from './lib/notificationService';
 import './index.css';
 
 // Lazy-loaded pages (code splitting)
@@ -60,23 +59,12 @@ function AppContent() {
   const { theme, arabicFontSize } = useSettingsStore();
   const { surahs, setSurahs } = useQuranStore();
   const { startSession, endSession } = useStatsStore();
-  const notifStore = useNotificationStore();
   const hasUnlockedAudio = useRef(false);
   const [showSideMenu, setShowSideMenu] = useState(false);
 
-  // Init notifications on mount
+  // Track last visit for inactivity detection
   useEffect(() => {
     updateLastVisit();
-    if (notifStore.enabled) {
-      initNotifications({
-        prayerEnabled: notifStore.prayerEnabled,
-        hadithEnabled: notifStore.hadithEnabled,
-        challengeEnabled: notifStore.challengeEnabled,
-        prayerMinutesBefore: notifStore.prayerMinutesBefore,
-      });
-    }
-    checkInactivityReminder();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Unlock audio on first user interaction (critical for iOS PWA)

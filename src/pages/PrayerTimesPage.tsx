@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, Sun, Sunrise, Sunset, Moon, CloudSun, MapPin, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useNotificationStore } from '../stores/notificationStore';
-import { schedulePrayerReminders } from '../lib/notificationService';
+import { updatePushLocation } from '../lib/notificationService';
 import './PrayerTimesPage.css';
 
 interface PrayerTimes {
@@ -57,13 +57,6 @@ export function PrayerTimesPage() {
     const [nextPrayer, setNextPrayer] = useState<string | null>(null);
     const [countdown, setCountdown] = useState<string>('');
     const notifPrefs = useNotificationStore();
-
-    // Schedule prayer notifications when times are fetched
-    useEffect(() => {
-        if (prayerTimes && notifPrefs.enabled && notifPrefs.prayerEnabled) {
-            schedulePrayerReminders(prayerTimes, notifPrefs.prayerMinutesBefore);
-        }
-    }, [prayerTimes, notifPrefs.enabled, notifPrefs.prayerEnabled, notifPrefs.prayerMinutesBefore]);
 
     // Get today's date in Hijri
     const getHijriDate = () => {
@@ -125,6 +118,10 @@ export function PrayerTimesPage() {
                     fetchPrayerTimes(latitude, longitude),
                     fetchCityName(latitude, longitude),
                 ]);
+                // Send GPS to Supabase for background prayer notifications
+                if (notifPrefs.enabled && notifPrefs.prayerEnabled) {
+                    updatePushLocation(latitude, longitude);
+                }
                 setLoading(false);
             },
             (err) => {

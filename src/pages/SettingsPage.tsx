@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../stores/settingsStore';
 import { useNotificationStore } from '../stores/notificationStore';
-import { requestNotificationPermission, sendTestNotification, initNotifications, cancelAllNotifications, scheduleDailyHadith, scheduleDailyChallenge } from '../lib/notificationService';
+import {
+    requestNotificationPermission,
+    sendTestNotification,
+    subscribeToPush,
+    unsubscribeFromPush,
+    updatePushPreferences,
+} from '../lib/notificationService';
 import type { Theme, ArabicFontSize } from '../types';
 import { Stars, Bell, BellOff } from 'lucide-react';
 import './SettingsPage.css';
@@ -41,26 +47,66 @@ export function SettingsPage() {
 
     const notif = useNotificationStore();
     const [testSent, setTestSent] = useState(false);
+    const [subscribing, setSubscribing] = useState(false);
+    const [permDenied, setPermDenied] = useState(false);
+
+    useEffect(() => {
+        if ('Notification' in window) {
+            setPermDenied(Notification.permission === 'denied');
+        }
+    }, []);
 
     const handleToggleNotifications = async () => {
         if (!notif.enabled) {
-            // Enabling
+            // Enabling — subscribe to Web Push
+            setSubscribing(true);
             const perm = await requestNotificationPermission();
-            notif.setPermission(perm);
+            if (perm === 'denied') {
+                setPermDenied(true);
+                setSubscribing(false);
+                return;
+            }
             if (perm === 'granted') {
-                notif.setEnabled(true);
-                initNotifications({
+                const ok = await subscribeToPush({
                     prayerEnabled: notif.prayerEnabled,
+                    prayerMinutesBefore: notif.prayerMinutesBefore,
                     hadithEnabled: notif.hadithEnabled,
                     challengeEnabled: notif.challengeEnabled,
-                    prayerMinutesBefore: notif.prayerMinutesBefore,
                 });
+                if (ok) {
+                    notif.setEnabled(true);
+                    notif.setPermission('granted');
+                }
             }
+            setSubscribing(false);
         } else {
-            // Disabling
+            // Disabling — unsubscribe
+            await unsubscribeFromPush();
             notif.setEnabled(false);
-            cancelAllNotifications();
         }
+    };
+
+    const handleTogglePrayer = async () => {
+        const newVal = !notif.prayerEnabled;
+        notif.setPrayerEnabled(newVal);
+        await updatePushPreferences({ prayerEnabled: newVal });
+    };
+
+    const handleMinutesBefore = async (m: number) => {
+        notif.setPrayerMinutesBefore(m);
+        await updatePushPreferences({ prayerMinutesBefore: m });
+    };
+
+    const handleToggleHadith = async () => {
+        const newVal = !notif.hadithEnabled;
+        notif.setHadithEnabled(newVal);
+        await updatePushPreferences({ hadithEnabled: newVal });
+    };
+
+    const handleToggleChallenge = async () => {
+        const newVal = !notif.challengeEnabled;
+        notif.setChallengeEnabled(newVal);
+        await updatePushPreferences({ challengeEnabled: newVal });
     };
 
     const handleTest = async () => {
@@ -238,10 +284,13 @@ export function SettingsPage() {
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        {notif.enabled ? <Bell size={18} style={{ marginRight: 8, color: '#4CAF50' }} /> : <BellOff size={18} style={{ marginRight: 8, color: '#999' }} />}
+                        {notif.enabled
+                            ? <Bell size={18} style={{ marginRight: 8, color: '#4CAF50' }} />
+                            : <BellOff size={18} style={{ marginRight: 8, color: '#999' }} />
+                        }
                         <span className="settings-item__title">Activer les notifications</span>
                         <span className="settings-item__description">
-                            {Notification.permission === 'denied'
+                            {permDenied
                                 ? 'Bloqué par le navigateur — active dans les paramètres'
                                 : 'Rappels de prière, hadith du jour, défis'}
                         </span>
@@ -249,7 +298,7 @@ export function SettingsPage() {
                     <button
                         className={`toggle ${notif.enabled ? 'active' : ''}`}
                         onClick={handleToggleNotifications}
-                        disabled={Notification.permission === 'denied'}
+                        disabled={permDenied || subscribing}
                     >
                         <span className="toggle__knob" />
                     </button>
@@ -266,7 +315,7 @@ export function SettingsPage() {
                             </div>
                             <button
                                 className={`toggle ${notif.prayerEnabled ? 'active' : ''}`}
-                                onClick={() => notif.setPrayerEnabled(!notif.prayerEnabled)}
+                                onClick={handleTogglePrayer}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -282,7 +331,7 @@ export function SettingsPage() {
                                         <button
                                             key={m}
                                             className={`segment-control__btn ${notif.prayerMinutesBefore === m ? 'active' : ''}`}
-                                            onClick={() => notif.setPrayerMinutesBefore(m)}
+                                            onClick={() => handleMinutesBefore(m)}
                                         >
                                             {m}
                                         </button>
@@ -298,11 +347,7 @@ export function SettingsPage() {
                             </div>
                             <button
                                 className={`toggle ${notif.hadithEnabled ? 'active' : ''}`}
-                                onClick={() => {
-                                    const newVal = !notif.hadithEnabled;
-                                    notif.setHadithEnabled(newVal);
-                                    if (newVal) scheduleDailyHadith();
-                                }}
+                                onClick={handleToggleHadith}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -315,11 +360,7 @@ export function SettingsPage() {
                             </div>
                             <button
                                 className={`toggle ${notif.challengeEnabled ? 'active' : ''}`}
-                                onClick={() => {
-                                    const newVal = !notif.challengeEnabled;
-                                    notif.setChallengeEnabled(newVal);
-                                    if (newVal) scheduleDailyChallenge();
-                                }}
+                                onClick={handleToggleChallenge}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -327,10 +368,9 @@ export function SettingsPage() {
 
                         <div className="settings-item">
                             <div className="settings-item__label">
-                                <span className="settings-item__title">🧪 Tester les notifications</span>
+                                <span className="settings-item__title">🧪 Tester</span>
                             </div>
                             <button
-                                className="settings-test-btn"
                                 onClick={handleTest}
                                 style={{
                                     padding: '8px 16px',
