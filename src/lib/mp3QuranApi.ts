@@ -79,10 +79,10 @@ export const ARABIC_FRENCH_COLLECTION = {
     name: 'Ali Al-Hudhayfi × Youssouf Leclerc',
     nameArabic: 'علي الحذيفي × يوسف لوكلير',
     type: 'arabic_french',
-    baseUrl: 'https://archive.org/download/Ali_al-Hudhaifi_and_Youssouf_Leclerc/',
+    baseUrl: 'https://archive.org/download/Coran_Arabe_Franais_HoudeyfaInconnu/',
     surahs: Array.from({ length: 114 }, (_, i) => i + 1),
     getAudioUrl: (surahId: number) => {
         const formattedId = surahId.toString().padStart(3, '0');
-        return `https://archive.org/download/Ali_al-Hudhaifi_and_Youssouf_Leclerc/${formattedId}.mp3`;
+        return `https://archive.org/download/Coran_Arabe_Franais_HoudeyfaInconnu/${formattedId}.mp3`;
     }
 };

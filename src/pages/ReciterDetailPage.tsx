@@ -4,6 +4,7 @@ import { useListenStore } from '../stores/listenStore';
 import { useAssetsStore } from '../stores/assetsStore';
 import { useDownloadStore } from '../stores/downloadStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
+import { useQuranStore } from '../stores/quranStore';
 import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
 import { getReciterColor } from '../lib/assetPipeline';
 import { ChevronLeft, Play, Download, CheckCircle2, Clock } from 'lucide-react';
@@ -14,8 +15,9 @@ export function ReciterDetailPage() {
     const navigate = useNavigate();
     const { reciters } = useListenStore();
     const { assets } = useAssetsStore();
+    const { surahs: quranSurahs } = useQuranStore();
     const { isDownloaded, downloadSurah, removeDownload, isDownloading } = useDownloadStore();
-    const { playSurah, isPlaying, currentSurahNumber } = useAudioPlayerStore();
+    const { setPlaylist, isPlaying, currentSurahNumber } = useAudioPlayerStore();
 
     const [surahs, setSurahs] = useState<any[]>([]);
     const [loadingSurahs, setLoadingSurahs] = useState(true);
@@ -42,18 +44,31 @@ export function ReciterDetailPage() {
     const initials = reciter.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
     const handlePlaySurah = (surah: any) => {
-        const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
-            ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
-            : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, surah.id);
+        // Create a playlist from this surah to the end for auto-play
+        const startIndex = surahs.findIndex(s => s.id === surah.id);
+        const playlistItems = surahs.slice(startIndex).map(s => {
+            const qSurah = quranSurahs.find(qs => qs.number === s.id);
+            const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
+                ? ARABIC_FRENCH_COLLECTION.getAudioUrl(s.id)
+                : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, s.id);
 
-        playSurah({
-            surahNumber: surah.id,
-            surahName: surah.name,
-            surahNameAr: surah.name,
-            totalAyahs: 0,
-            audioUrl,
-            playbackType: 'surah'
-        }, id || 'default');
+            return {
+                surahNumber: s.id,
+                surahName: s.name,
+                surahNameAr: qSurah?.name || s.name,
+                totalAyahs: qSurah?.numberOfAyahs || 0,
+                audioUrl,
+                playbackType: 'surah' as const
+            };
+        });
+
+        setPlaylist(playlistItems, 0, id || 'default');
+
+        // Start playback immediately
+        const audio = useAudioPlayerStore.getState().getAudioRef();
+        audio.src = playlistItems[0].audioUrl!;
+        audio.play().catch(console.error);
+        useAudioPlayerStore.setState({ isPlaying: true });
     };
 
     return (
@@ -99,14 +114,18 @@ export function ReciterDetailPage() {
                             const isCurrent = currentSurahNumber === surah.id && isPlaying;
                             const downloaded = isDownloaded(reciter.id.toString(), surah.id);
                             const downloading = isDownloading.has(`${reciter.id}-${surah.id}`);
+                            const qSurah = quranSurahs.find(qs => qs.number === surah.id);
 
                             return (
                                 <div key={surah.id} className={`surah-row ${isCurrent ? 'active' : ''}`}>
                                     <div className="surah-number">{surah.id}</div>
                                     <div className="surah-info-main" onClick={() => handlePlaySurah(surah)}>
-                                        <span className="surah-name-fr">{surah.name}</span>
+                                        <div className="surah-names-container">
+                                            <span className="surah-name-fr">{surah.name}</span>
+                                            <span className="surah-name-ar">{qSurah?.name}</span>
+                                        </div>
                                         <span className="surah-meta">
-                                            {surah.makkia === 1 ? 'Mecquoise' : 'Médinoise'}
+                                            {surah.makkia === 1 ? 'Mecquoise' : 'Médinoise'} • {qSurah?.numberOfAyahs} versets
                                         </span>
                                     </div>
                                     <div className="surah-actions">
