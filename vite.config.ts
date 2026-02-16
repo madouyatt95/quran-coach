@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-512.png', 'apple-touch-icon.png', 'fonts/*.woff2'],
+      includeAssets: ['icon-512.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Quran Coach',
         short_name: 'QuranCoach',
@@ -61,6 +61,21 @@ export default defineConfig({
               cacheName: 'qurancom-api-cache',
               expiration: {
                 maxEntries: 500,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            // Large fingerprint database (only fetched when Shazam is used)
+            urlPattern: /\/data\/reciterFingerprints\.json$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fingerprint-db-cache',
+              expiration: {
+                maxEntries: 1,
                 maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
               },
               cacheableResponse: {

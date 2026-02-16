@@ -1,28 +1,11 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { Menu } from 'lucide-react';
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
-import { HifdhPage } from './pages/HifdhPage';
 import { SideMenu } from './components/Navigation/SideMenu';
 import { MiniPlayer } from './components/MiniPlayer/MiniPlayer';
-
-import { SettingsPage } from './pages/SettingsPage';
-import { PrayerTimesPage } from './pages/PrayerTimesPage';
-import { AdhkarPage } from './pages/AdhkarPage';
-import { ListenPage } from './pages/ListenPage';
-import { ReciterDetailPage } from './pages/ReciterDetailPage';
-import { PlaylistDetailPage } from './pages/PlaylistDetailPage';
-import { AdminAssetsPage } from './pages/AdminAssetsPage';
-import { TafsirPage } from './pages/TafsirPage';
-import { ShazamPage } from './pages/ShazamPage';
-import { ProphetsPage } from './pages/ProphetsPage';
-import { FavoritesPage } from './pages/FavoritesPage';
-import { ThemesPage } from './pages/ThemesPage';
-import { QuizPage } from './pages/QuizPage';
 import { HomePage } from './pages/HomePage';
-import { HadithsPage } from './pages/HadithsPage';
-import { QiblaPage } from './pages/QiblaPage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
@@ -30,6 +13,34 @@ import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
 import './index.css';
+
+// Lazy-loaded pages (code splitting)
+const HifdhPage = lazy(() => import('./pages/HifdhPage').then(m => ({ default: m.HifdhPage })));
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const PrayerTimesPage = lazy(() => import('./pages/PrayerTimesPage').then(m => ({ default: m.PrayerTimesPage })));
+const AdhkarPage = lazy(() => import('./pages/AdhkarPage').then(m => ({ default: m.AdhkarPage })));
+const ListenPage = lazy(() => import('./pages/ListenPage').then(m => ({ default: m.ListenPage })));
+const ReciterDetailPage = lazy(() => import('./pages/ReciterDetailPage').then(m => ({ default: m.ReciterDetailPage })));
+const PlaylistDetailPage = lazy(() => import('./pages/PlaylistDetailPage').then(m => ({ default: m.PlaylistDetailPage })));
+const AdminAssetsPage = lazy(() => import('./pages/AdminAssetsPage').then(m => ({ default: m.AdminAssetsPage })));
+const TafsirPage = lazy(() => import('./pages/TafsirPage').then(m => ({ default: m.TafsirPage })));
+const ShazamPage = lazy(() => import('./pages/ShazamPage').then(m => ({ default: m.ShazamPage })));
+const ProphetsPage = lazy(() => import('./pages/ProphetsPage').then(m => ({ default: m.ProphetsPage })));
+const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then(m => ({ default: m.FavoritesPage })));
+const ThemesPage = lazy(() => import('./pages/ThemesPage').then(m => ({ default: m.ThemesPage })));
+const QuizPage = lazy(() => import('./pages/QuizPage').then(m => ({ default: m.QuizPage })));
+const HadithsPage = lazy(() => import('./pages/HadithsPage').then(m => ({ default: m.HadithsPage })));
+const QiblaPage = lazy(() => import('./pages/QiblaPage').then(m => ({ default: m.QiblaPage })));
+
+// Minimal loading fallback
+function PageLoader() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+      <div style={{ width: 32, height: 32, border: '3px solid var(--color-bg-tertiary)', borderTopColor: 'var(--color-accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    </div>
+  );
+}
 
 // ReadPage is always mounted, hidden when on other routes
 // This preserves audio state, player UI, and reading tracking
@@ -131,27 +142,29 @@ function AppContent() {
       <main style={{ flex: 1, paddingBottom: '80px' }}>
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/read" element={null} />
-          <Route path="/hifdh" element={<HifdhPage />} />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/read" element={null} />
+            <Route path="/hifdh" element={<HifdhPage />} />
 
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/prayers" element={<PrayerTimesPage />} />
-          <Route path="/adhkar" element={<AdhkarPage />} />
-          <Route path="/listen" element={<ListenPage />} />
-          <Route path="/listen/:id" element={<ReciterDetailPage />} />
-          <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
-          <Route path="/admin/assets" element={<AdminAssetsPage />} />
-          <Route path="/tafsir" element={<TafsirPage />} />
-          <Route path="/shazam" element={<ShazamPage />} />
-          <Route path="/prophets" element={<ProphetsPage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
-          <Route path="/themes" element={<ThemesPage />} />
-          <Route path="/qibla" element={<QiblaPage />} />
-          <Route path="/quiz" element={<QuizPage />} />
-          <Route path="/hadiths" element={<HadithsPage />} />
-        </Routes>
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/prayers" element={<PrayerTimesPage />} />
+            <Route path="/adhkar" element={<AdhkarPage />} />
+            <Route path="/listen" element={<ListenPage />} />
+            <Route path="/listen/:id" element={<ReciterDetailPage />} />
+            <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
+            <Route path="/admin/assets" element={<AdminAssetsPage />} />
+            <Route path="/tafsir" element={<TafsirPage />} />
+            <Route path="/shazam" element={<ShazamPage />} />
+            <Route path="/prophets" element={<ProphetsPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/themes" element={<ThemesPage />} />
+            <Route path="/qibla" element={<QiblaPage />} />
+            <Route path="/quiz" element={<QuizPage />} />
+            <Route path="/hadiths" element={<HadithsPage />} />
+          </Routes>
+        </Suspense>
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
       <InstallPrompt />
