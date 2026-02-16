@@ -79,80 +79,71 @@ export function renderTajweedWords(
     // Clean up
     let cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
 
-    // Simple word splitting by space, but we need to keep tags intact
-    // This is tricky: <tajweed class=X>word1 word2</tajweed>
-    // We want: 
-    // <span click index=0><tajweed class=X>word1</tajweed></span>
-    // <span click index=1><tajweed class=X>word2</tajweed></span>
+    // Tokenize the HTML: tags vs text
+    // Matches <tajweed...>, </tajweed>, or anything else
+    const tokens = cleanHtml.split(/(<\/?[^>]+>)/g);
 
     const words: React.ReactNode[] = [];
+    let currentWordParts: React.ReactNode[] = [];
     let currentWordIndex = 0;
-
-    // First, let's tokenize the HTML into "active tags", "text", etc.
-    // But a simpler way for Quran text: split the raw string by spaces.
-    // If a space is inside a tag, we close the tag, add the space, and reopen the tag.
-
-    // Normalize spaces and split
-    const parts = cleanHtml.split(/(\s+)/);
-
     let activeTags: string[] = [];
 
-    parts.forEach((part) => {
-        if (part.trim() === '') {
-            // It's a space or multiple spaces
-            return;
+    const flushWord = () => {
+        if (currentWordParts.length > 0) {
+            const wordIdx = currentWordIndex++;
+            words.push(
+                <span
+                    key={wordIdx}
+                    className={getWordClass(wordIdx)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onWordClick(wordIdx);
+                    }}
+                >
+                    {[...currentWordParts]}
+                    {' '}
+                </span>
+            );
+            currentWordParts = [];
         }
+    };
 
-        // It's a "word" (might contain tags)
-        const wordParts: React.ReactNode[] = [];
-        let key = 0;
+    tokens.forEach((token, idx) => {
+        if (token.startsWith('<tajweed')) {
+            const className = token.match(/class=([^> ]+)/)?.[1] || '';
+            activeTags.push(className.replace(/['"]/g, ''));
+        } else if (token.startsWith('</tajweed')) {
+            activeTags.pop();
+        } else if (token.startsWith('<')) {
+            // Ignore other tags
+        } else if (token) {
+            // It's text. We need to split it by spaces.
+            const parts = token.split(/(\s+)/);
+            parts.forEach(part => {
+                if (part === '') return;
 
-        // Regex to match tags or text
-        const tokenRegex = /(<tajweed\s+class=[^>]+>)|(<\/tajweed>)|([^<]+)/g;
-        let match;
-
-        while ((match = tokenRegex.exec(part)) !== null) {
-            if (match[1]) {
-                // Opening tag
-                const className = match[1].match(/class=([^>]+)/)?.[1] || '';
-                activeTags.push(className);
-            } else if (match[2]) {
-                // Closing tag
-                activeTags.pop();
-            } else if (match[3]) {
-                // Text content
-                const content = match[3];
-                const ruleId = activeTags.length > 0 ? activeTags[activeTags.length - 1] : null;
-                const isEnabled = ruleId ? isRuleEnabled(ruleId, enabledLayers) : false;
-
-                if (isEnabled && ruleId) {
-                    wordParts.push(
-                        <span key={key++} className={`tajweed-highlight tj-${ruleId}`}>
-                            {content}
-                        </span>
-                    );
+                if (part.trim() === '') {
+                    // It's a space. Flush the current word.
+                    flushWord();
                 } else {
-                    wordParts.push(content);
-                }
-            }
-        }
+                    // It's actual text content
+                    const ruleId = activeTags.length > 0 ? activeTags[activeTags.length - 1] : null;
+                    const isEnabled = ruleId ? isRuleEnabled(ruleId, enabledLayers) : false;
 
-        // Wrap this whole word in a clickable span
-        const wordIdx = currentWordIndex++;
-        words.push(
-            <span
-                key={wordIdx}
-                className={getWordClass(wordIdx)}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onWordClick(wordIdx);
-                }}
-            >
-                {wordParts}
-                {' '}
-            </span>
-        );
+                    const content = isEnabled && ruleId ? (
+                        <span key={`t-${idx}-${currentWordParts.length}`} className={`tajweed-highlight tj-${ruleId}`}>
+                            {part}
+                        </span>
+                    ) : part;
+
+                    currentWordParts.push(content);
+                }
+            });
+        }
     });
+
+    // Don't forget the last word
+    flushWord();
 
     return words;
 }
