@@ -1272,48 +1272,6 @@ export function MushafPage() {
                                             {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
                                         </div>
                                     </div>
-                                    <button
-                                        className="mih-search-item__play"
-                                        title="Écouter la sourate"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            useAudioPlayerStore.getState().playSurah({
-                                                surahNumber: s.number,
-                                                surahName: s.englishName,
-                                                surahNameAr: s.name,
-                                                totalAyahs: s.numberOfAyahs,
-                                            }, selectedReciter);
-                                            setShowSearch(false);
-                                            setSearchQuery('');
-                                        }}
-                                    >
-                                        <Play size={16} />
-                                    </button>
-                                    {(() => {
-                                        const playlistIdx = playlist.findIndex((p, idx) => p.surahNumber === s.number && idx > useAudioPlayerStore.getState().currentPlaylistIndex);
-                                        const inPlaylist = playlistIdx !== -1;
-                                        return (
-                                            <button
-                                                className={`mih-search-item__play mih-search-item__queue ${inPlaylist ? 'mih-search-item__queue--added' : ''}`}
-                                                title={inPlaylist ? 'Retirer de la playlist' : 'Ajouter à la playlist'}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    if (inPlaylist) {
-                                                        removeFromQueue(playlistIdx);
-                                                    } else {
-                                                        addToQueue({
-                                                            surahNumber: s.number,
-                                                            surahName: s.englishName,
-                                                            surahNameAr: s.name,
-                                                            totalAyahs: s.numberOfAyahs,
-                                                        });
-                                                    }
-                                                }}
-                                            >
-                                                {inPlaylist ? <Check size={16} /> : <ListPlus size={16} />}
-                                            </button>
-                                        );
-                                    })()}
                                 </div>
                             ))}
                         </div>
