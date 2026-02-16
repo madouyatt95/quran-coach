@@ -51,6 +51,7 @@ interface AudioPlayerState {
     jumpToPlaylistIndex: (index: number) => void;
     getAudioRef: () => HTMLAudioElement;
     addToQueue: (surah: PlaylistItem) => void;
+    addBatchToQueue: (tracks: PlaylistItem[]) => void;
     removeFromQueue: (index: number) => void;
     clearQueue: () => void;
 }
@@ -325,5 +326,21 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
         // Keep everything up to the current track
         const newPlaylist = playlist.slice(0, currentPlaylistIndex + 1);
         set({ playlist: newPlaylist });
+    },
+
+    addBatchToQueue: (tracks) => {
+        const { playlist, currentSurahNumber, reciterId } = get();
+        if (tracks.length === 0) return;
+
+        if (currentSurahNumber === 0) {
+            // Nothing playing — start the first track and queue the rest
+            get().playSurah(tracks[0], reciterId);
+            if (tracks.length > 1) {
+                set({ playlist: [tracks[0], ...tracks.slice(1)] });
+            }
+        } else {
+            // Append all to playlist
+            set({ playlist: [...playlist, ...tracks] });
+        }
     },
 }));

@@ -280,3 +280,128 @@
 [data-theme="dark"] .detail-header-nav {
     background: var(--color-bg-primary);
 }
+
+/* Multi-selection styles */
+.list-actions {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+.select-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.select-mode-btn.active {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.surah-row.in-selection {
+    cursor: pointer;
+}
+
+.surah-row.selected {
+    background: rgba(201, 168, 76, 0.12);
+    border-color: rgba(201, 168, 76, 0.4);
+}
+
+.selection-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkbox {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: transparent;
+}
+
+.checkbox.checked {
+    background: #c9a84c;
+    border-color: #c9a84c;
+    color: white;
+}
+
+.selection-bar-floating {
+    position: fixed;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    width: calc(100% - 40px);
+    max-width: 500px;
+    animation: slideUp 0.3s ease-out;
+}
+
+.selection-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.selection-info .count {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #c9a84c;
+}
+
+.selection-info span:last-child {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.add-to-queue-batch-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #c9a84c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+}
+
+.add-to-queue-batch-btn:active {
+    transform: scale(0.95);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, 20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}

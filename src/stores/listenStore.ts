@@ -16,21 +16,20 @@ interface ListenState {
     getPopularReciters: () => MP3QuranReciter[];
 }
 
-// List of universally recognized popular reciter IDs from MP3Quran API
+// List of popular reciter IDs verified for the French MP3Quran API
 const POPULAR_RECITER_IDS = [
-    54,  // Abdul Rahman Al-Sudais
-    34,  // Saud Al-Shuraim
-    114, // Mishary Rashid Alafasy
-    33,  // Saad Al-Ghamdi
-    108, // Maher Al-Muaiqly
-    120, // Yasser Al-Dosari
-    4,   // Ahmad Al-Ajmi
-    98,  // Mohamed Siddiq El-Minshawi
-    51,  // Abdul Basit Abdul Samad
-    47,  // Mahmoud Khalil Al-Husary
-    119, // Nasser Al Qatami
-    32,  // Fares Abbad
-    29   // Abu Bakr Al Shatri
+    54,  // Abderrahmane Soudais
+    31,  // Saoud Al Cherim
+    123, // Mishary Al Afasi
+    30,  // Saad El Ghamidi
+    102, // Maher Al Meaqli
+    92,  // Yasser Al Doussari
+    5,   // Ahmed El-Ajami
+    112, // Mohamed Seddik El Manchaoui
+    51,  // Abdelbassit Abdelsamad
+    118, // Mahmoud Khalil Al-Hussary
+    81,  // Faress Abbad
+    4    // Shaik Aboubaker Al-Chateri
 ];
 
 export const useListenStore = create<ListenState>()((set, get) => ({
