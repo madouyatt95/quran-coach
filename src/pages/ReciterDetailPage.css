@@ -159,10 +159,27 @@
     gap: 2px;
 }
 
+.surah-names-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .surah-name-fr {
     font-weight: 600;
     color: var(--text-primary);
     font-size: 1.05rem;
+}
+
+.surah-name-trans {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    background: rgba(var(--accent-primary-rgb, 76, 175, 80), 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
 }
 
 .surah-name-ar {

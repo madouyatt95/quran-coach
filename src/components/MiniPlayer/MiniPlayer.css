@@ -16,9 +16,14 @@
 
 /* Progress bar */
 .mini-player__progress {
-    height: 3px;
+    height: 4px;
     background: #e8e4da;
     position: relative;
+    cursor: pointer;
+}
+
+.mini-player__progress:hover {
+    height: 6px;
 }
 
 .mini-player__progress-fill {
@@ -85,6 +90,11 @@
     background: rgba(0, 0, 0, 0.05);
 }
 
+.mini-player__btn.active {
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
 .mini-player__btn--play {
     background: #4CAF50;
     color: #fff;
@@ -108,7 +118,13 @@
     color: #bbb;
 }
 
-/* Expanded view */
+/* Expanded content area (replaces ayah-list for clarity) */
+.mini-player__expanded-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+}
+
 .mini-player__time-row {
     display: flex;
     justify-content: space-between;
@@ -188,6 +204,11 @@
 
 [data-theme="dark"] .mini-player__detail {
     color: #888;
+}
+
+[data-theme="dark"] .mini-player__btn.active {
+    color: #66BB6A;
+    background: rgba(102, 187, 106, 0.15);
 }
 
 [data-theme="dark"] .mini-player__btn {
@@ -297,6 +318,29 @@
     background: rgba(0, 0, 0, 0.03);
 }
 
+.mini-player__queue-item.active {
+    background: rgba(76, 175, 80, 0.08);
+    border-left: 3px solid #4CAF50;
+}
+
+.mini-player__queue-names {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.mini-player__queue-trans {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.mini-player__queue-ar {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1rem;
+    color: #4CAF50;
+}
+
 .mini-player__queue-num {
     flex-shrink: 0;
     width: 24px;
@@ -316,7 +360,20 @@
     min-width: 0;
 }
 
-.mini-player__queue-name {
+[data-theme="dark"] .mini-player__queue-item.active {
+    background: rgba(102, 187, 106, 0.12);
+    border-left-color: #66BB6A;
+}
+
+[data-theme="dark"] .mini-player__queue-trans {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .mini-player__queue-ar {
+    color: #66BB6A;
+}
+
+[data-theme="dark"] .mini-player__queue-name {
     font-family: var(--font-arabic, 'Scheherazade New', serif);
     font-size: 1rem;
     color: #333;

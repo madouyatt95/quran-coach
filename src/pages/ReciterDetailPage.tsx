@@ -56,6 +56,7 @@ export function ReciterDetailPage() {
                 surahNumber: s.id,
                 surahName: s.name,
                 surahNameAr: qSurah?.name || s.name,
+                transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || s.name,
                 totalAyahs: qSurah?.numberOfAyahs || 0,
                 audioUrl,
                 playbackType: 'surah' as const
@@ -115,13 +116,17 @@ export function ReciterDetailPage() {
                             const downloaded = isDownloaded(reciter.id.toString(), surah.id);
                             const downloading = isDownloading.has(`${reciter.id}-${surah.id}`);
                             const qSurah = quranSurahs.find(qs => qs.number === surah.id);
+                            const transliteration = qSurah?.englishName.toUpperCase().replace('-', ' ');
 
                             return (
                                 <div key={surah.id} className={`surah-row ${isCurrent ? 'active' : ''}`}>
                                     <div className="surah-number">{surah.id}</div>
                                     <div className="surah-info-main" onClick={() => handlePlaySurah(surah)}>
                                         <div className="surah-names-container">
-                                            <span className="surah-name-fr">{surah.name}</span>
+                                            <div className="surah-names-top">
+                                                <span className="surah-name-fr">{surah.name}</span>
+                                                <span className="surah-name-trans">{transliteration}</span>
+                                            </div>
                                             <span className="surah-name-ar">{qSurah?.name}</span>
                                         </div>
                                         <span className="surah-meta">

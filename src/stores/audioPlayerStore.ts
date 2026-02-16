@@ -8,6 +8,7 @@ export interface PlaylistItem {
     totalAyahs: number;
     audioUrl?: string; // For direct streaming (Listen page)
     playbackType?: 'ayah' | 'surah';
+    transliteration?: string;
 }
 
 interface AudioPlayerState {
@@ -22,6 +23,7 @@ interface AudioPlayerState {
     duration: number;
     currentTime: number;
     playbackType: 'ayah' | 'surah';
+    repeatMode: 'none' | 'one' | 'all';
 
     // Playlist
     playlist: PlaylistItem[];
@@ -44,6 +46,9 @@ interface AudioPlayerState {
     stop: () => void;
     setAyahs: (ayahs: { number: number; numberInSurah: number; text: string }[]) => void;
     updateTime: (current: number, dur: number) => void;
+    seek: (time: number) => void;
+    toggleRepeatMode: () => void;
+    jumpToPlaylistIndex: (index: number) => void;
     getAudioRef: () => HTMLAudioElement;
     addToQueue: (surah: PlaylistItem) => void;
     removeFromQueue: (index: number) => void;
@@ -71,6 +76,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     duration: 0,
     currentTime: 0,
     playbackType: 'ayah',
+    repeatMode: 'none',
     playlist: [],
     currentPlaylistIndex: 0,
     reciterId: 'ar.alafasy',
@@ -149,32 +155,79 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     },
 
     togglePlay: () => {
-        const { isPlaying, currentAyahNumber } = get();
+        const { isPlaying, currentAyahNumber, playbackType } = get();
         const audio = getOrCreateAudio();
         if (isPlaying) {
             audio.pause();
             set({ isPlaying: false });
-        } else if (currentAyahNumber > 0) {
+        } else if (playbackType === 'surah' || currentAyahNumber > 0) {
             audio.play().catch(() => { });
             set({ isPlaying: true });
         }
     },
 
+    seek: (time) => {
+        const audio = getOrCreateAudio();
+        audio.currentTime = time;
+        set({ currentTime: time });
+    },
+
+    toggleRepeatMode: () => {
+        const { repeatMode } = get();
+        const modes: ('none' | 'one' | 'all')[] = ['none', 'one', 'all'];
+        const nextMode = modes[(modes.indexOf(repeatMode) + 1) % modes.length];
+        set({ repeatMode: nextMode });
+    },
+
+    jumpToPlaylistIndex: (index) => {
+        const { playlist, reciterId } = get();
+        if (!playlist[index]) return;
+
+        const surah = playlist[index];
+        const audio = getOrCreateAudio();
+        const pMode = surah.playbackType || 'ayah';
+
+        set({
+            currentPlaylistIndex: index,
+            currentSurahNumber: surah.surahNumber,
+            currentSurahName: surah.surahName,
+            currentSurahNameAr: surah.surahNameAr,
+            totalAyahsInSurah: surah.totalAyahs,
+            currentAyahInSurah: pMode === 'surah' ? 0 : 1,
+            currentAyahNumber: 0,
+            isPlaying: true,
+            reciterId,
+            ayahs: [],
+            playbackType: pMode,
+        });
+
+        if (pMode === 'surah' && surah.audioUrl) {
+            audio.src = surah.audioUrl;
+            audio.play().catch(console.error);
+        }
+    },
+
     nextAyah: () => {
-        const { ayahs, currentAyahInSurah, totalAyahsInSurah, playbackType } = get();
+        const { ayahs, currentAyahInSurah, totalAyahsInSurah, playbackType, repeatMode } = get();
+
+        if (repeatMode === 'one') {
+            const audio = getOrCreateAudio();
+            audio.currentTime = 0;
+            audio.play().catch(() => { });
+            return;
+        }
+
         if (playbackType === 'surah') {
-            // In surah mode, nextAyah simply skips to next surah
             get().nextSurah();
             return;
         }
 
         if (currentAyahInSurah < totalAyahsInSurah) {
-            const nextIdx = currentAyahInSurah; // 0-indexed = currentAyahInSurah (since it's 1-based)
+            const nextIdx = currentAyahInSurah;
             if (ayahs[nextIdx]) {
                 get().playAyah(ayahs[nextIdx].number, ayahs[nextIdx].numberInSurah);
             }
         } else {
-            // End of surah — try next in playlist
             get().nextSurah();
         }
     },
@@ -198,31 +251,22 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     },
 
     nextSurah: () => {
-        const { playlist, currentPlaylistIndex, reciterId } = get();
-        if (currentPlaylistIndex < playlist.length - 1) {
-            const nextIdx = currentPlaylistIndex + 1;
-            const nextSurah = playlist[nextIdx];
-            const audio = getOrCreateAudio();
-            const pMode = nextSurah.playbackType || 'ayah';
+        const { playlist, currentPlaylistIndex, repeatMode } = get();
 
-            set({
-                currentPlaylistIndex: nextIdx,
-                currentSurahNumber: nextSurah.surahNumber,
-                currentSurahName: nextSurah.surahName,
-                currentSurahNameAr: nextSurah.surahNameAr,
-                totalAyahsInSurah: nextSurah.totalAyahs,
-                currentAyahInSurah: pMode === 'surah' ? 0 : 1,
-                currentAyahNumber: 0,
-                isPlaying: pMode === 'surah',
-                reciterId,
-                ayahs: [],
-                playbackType: pMode,
-            });
-
-            if (pMode === 'surah' && nextSurah.audioUrl) {
-                audio.src = nextSurah.audioUrl;
+        if (repeatMode === 'one') {
+            const currentItem = playlist[currentPlaylistIndex];
+            if (currentItem?.playbackType === 'surah' && currentItem.audioUrl) {
+                const audio = getOrCreateAudio();
+                audio.currentTime = 0;
                 audio.play().catch(() => { });
+                return;
             }
+        }
+
+        if (currentPlaylistIndex < playlist.length - 1) {
+            get().jumpToPlaylistIndex(currentPlaylistIndex + 1);
+        } else if (repeatMode === 'all' && playlist.length > 0) {
+            get().jumpToPlaylistIndex(0);
         } else {
             // End of playlist
             get().stop();
