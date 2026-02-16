@@ -33,6 +33,23 @@ const POPULAR_RECITER_IDS = [
     4    // Shaik Aboubaker Al-Chateri
 ];
 
+// Display name overrides for popular reciters (API uses French transliterations)
+const POPULAR_NAME_OVERRIDES: Record<number, string> = {
+    54: 'Abdurrahman As-Sudais',
+    31: 'Saud Ash-Shuraim',
+    123: 'Mishary Rashid Alafasy',
+    30: 'Saad Al-Ghamidi',
+    102: 'Maher Al-Muaiqly',
+    92: 'Yasser Ad-Dossari',
+    5: 'Ahmed Al-Ajmi',
+    112: 'Mohamed Siddiq Al-Minshawi',
+    51: 'Abdulbasit Abdussamad',
+    118: 'Mahmoud Khalil Al-Hussary',
+    2: 'Ibrahim Al-Jibreen',
+    81: 'Fares Abbad',
+    4: 'Abu Bakr Ash-Shatri',
+};
+
 export const useListenStore = create<ListenState>()((set, get) => ({
     reciters: [],
     featuredReciters: [ARABIC_FRENCH_COLLECTION],
@@ -64,8 +81,8 @@ export const useListenStore = create<ListenState>()((set, get) => ({
 
     getPopularReciters: () => {
         const { reciters } = get();
-        // Priority to those in the popular ID list, then maybe those with images?
-        // For now, just those in the list
-        return reciters.filter(r => POPULAR_RECITER_IDS.includes(r.id));
+        return reciters
+            .filter(r => POPULAR_RECITER_IDS.includes(r.id))
+            .map(r => POPULAR_NAME_OVERRIDES[r.id] ? { ...r, name: POPULAR_NAME_OVERRIDES[r.id] } : r);
     }
 }));
