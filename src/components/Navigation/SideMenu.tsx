@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { X, Stars, Bell, BellOff } from 'lucide-react';
 import { useNotificationStore } from '../../stores/notificationStore';
@@ -15,28 +16,60 @@ interface SideMenuProps {
 
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     const notif = useNotificationStore();
+    const [isLoading, setIsLoading] = useState(false);
 
     if (!isOpen) return null;
 
     const handleToggleNotifications = async (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent accidental close or navigation
-        if (!notif.enabled) {
-            const perm = await requestNotificationPermission();
-            if (perm === 'granted') {
-                const ok = await subscribeToPush({
-                    prayerEnabled: notif.prayerEnabled,
-                    prayerMinutesBefore: notif.prayerMinutesBefore,
-                    hadithEnabled: notif.hadithEnabled,
-                    challengeEnabled: notif.challengeEnabled,
-                });
-                if (ok) {
-                    notif.setEnabled(true);
-                    notif.setPermission('granted');
-                }
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isLoading) return;
+
+        console.log('[SideMenu] Toggle clicked. Current state:', notif.enabled);
+
+        try {
+            setIsLoading(true);
+
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                alert("Votre navigateur ne supporte pas les notifications Web Push.");
+                return;
             }
-        } else {
-            await unsubscribeFromPush();
-            notif.setEnabled(false);
+
+            if (!notif.enabled) {
+                console.log('[SideMenu] Requesting permission...');
+                const perm = await requestNotificationPermission();
+                console.log('[SideMenu] Permission:', perm);
+
+                if (perm === 'granted') {
+                    console.log('[SideMenu] Subscribing to push...');
+                    const ok = await subscribeToPush({
+                        prayerEnabled: notif.prayerEnabled,
+                        prayerMinutesBefore: notif.prayerMinutesBefore,
+                        hadithEnabled: notif.hadithEnabled,
+                        challengeEnabled: notif.challengeEnabled,
+                    });
+                    console.log('[SideMenu] Subscription result:', ok);
+
+                    if (ok) {
+                        notif.setEnabled(true);
+                        notif.setPermission('granted');
+                    } else {
+                        alert("Erreur lors de l'abonnement aux notifications. Vérifiez votre connexion.");
+                    }
+                } else if (perm === 'denied') {
+                    alert("Les notifications sont bloquées par votre navigateur. Activez-les dans les paramètres du site.");
+                }
+            } else {
+                console.log('[SideMenu] Unsubscribing...');
+                await unsubscribeFromPush();
+                notif.setEnabled(false);
+            }
+        } catch (err) {
+            console.error('[SideMenu] Toggle error:', err);
+            alert("Une erreur inattendue est survenue: " + (err instanceof Error ? err.message : String(err)));
+        } finally {
+            setIsLoading(false);
         }
     };
 
