@@ -52,6 +52,7 @@ interface AudioPlayerState {
     getAudioRef: () => HTMLAudioElement;
     addToQueue: (surah: PlaylistItem) => void;
     removeFromQueue: (index: number) => void;
+    clearQueue: () => void;
 }
 
 // Single shared audio element for the global player
@@ -316,6 +317,13 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
         const { playlist, currentPlaylistIndex } = get();
         if (index <= currentPlaylistIndex) return; // Can't remove current or past items
         const newPlaylist = playlist.filter((_, i) => i !== index);
+        set({ playlist: newPlaylist });
+    },
+
+    clearQueue: () => {
+        const { playlist, currentPlaylistIndex } = get();
+        // Keep everything up to the current track
+        const newPlaylist = playlist.slice(0, currentPlaylistIndex + 1);
         set({ playlist: newPlaylist });
     },
 }));

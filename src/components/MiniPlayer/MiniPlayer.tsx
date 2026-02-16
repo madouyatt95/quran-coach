@@ -34,6 +34,7 @@ export function MiniPlayer() {
         toggleRepeatMode,
         jumpToPlaylistIndex,
         removeFromQueue,
+        clearQueue,
     } = useAudioPlayerStore();
 
     const [expanded, setExpanded] = useState(false);
@@ -160,6 +161,11 @@ export function MiniPlayer() {
                         <button className={`mini-player__tab ${showQueue ? 'active' : ''}`} onClick={() => setShowQueue(true)}>
                             <ListMusic size={14} /> File ({playlist.length})
                         </button>
+                        {showQueue && upcomingSurahs.length > 0 && (
+                            <button className="mini-player__tab mini-player__tab--clear" onClick={clearQueue}>
+                                <Trash2 size={14} /> Tout vider
+                            </button>
+                        )}
                     </div>
 
                     {!showQueue ? (

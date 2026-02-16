@@ -61,6 +61,13 @@
     margin-bottom: var(--space-xl);
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
 .section-title {
     font-size: 1.1rem;
     font-weight: 700;
@@ -249,4 +256,87 @@
 
 [data-theme="dark"] .reciter-mini-card {
     background: #1a1a2e;
+}
+/* Popular Reciters Horizontal Scroll */
+.popular-reciters-scroll {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    padding-bottom: var(--space-md);
+    margin: 0 calc(var(--space-md) * -1);
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+}
+
+.popular-reciters-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.popular-reciter-card {
+    flex: 0 0 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: transform 0.2s ease;
+}
+
+.popular-reciter-card:active {
+    transform: scale(0.95);
+}
+
+.popular-card-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-bg-tertiary);
+    border: 3px solid rgba(201, 168, 76, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.popular-card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.popular-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.popular-card-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+    .popular-reciter-card {
+        flex: 0 0 130px;
+    }
+    .popular-card-photo {
+        width: 110px;
+        height: 110px;
+    }
+    .popular-card-name {
+        font-size: 0.85rem;
+    }
 }

@@ -20,6 +20,7 @@ export function ListenPage() {
     }, []);
 
     const filteredReciters = getFilteredReciters();
+    const popularReciters = useListenStore.getState().getPopularReciters();
 
     // Background task: search for missing assets
     useEffect(() => {
@@ -33,7 +34,7 @@ export function ListenPage() {
                 }
             });
         }
-    }, [isLoading, reciters.length]);
+    }, [isLoading, reciters.length, assets, addPendingAsset]);
 
     return (
         <div className="listen-page">
@@ -55,7 +56,45 @@ export function ListenPage() {
             </div>
 
             <div className="listen-content">
-                {/* Featured Section */}
+                {/* Popular Reciters Section */}
+                {!searchQuery && popularReciters.length > 0 && (
+                    <section className="listen-section">
+                        <div className="section-header">
+                            <h2 className="section-title">⭐ Récitants Populaires</h2>
+                        </div>
+                        <div className="popular-reciters-scroll">
+                            {popularReciters.map(reciter => {
+                                const asset = assets.get(reciter.id.toString());
+                                const isApproved = asset?.status === 'approved';
+                                const initials = reciter.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+                                return (
+                                    <div
+                                        key={reciter.id}
+                                        className="popular-reciter-card"
+                                        onClick={() => navigate(`/listen/${reciter.id}`)}
+                                    >
+                                        <div className="popular-card-photo">
+                                            {isApproved ? (
+                                                <img src={asset.image_url} alt={reciter.name} />
+                                            ) : (
+                                                <div
+                                                    className="popular-avatar-fallback"
+                                                    style={{ backgroundColor: getReciterColor(reciter.id.toString()) }}
+                                                >
+                                                    {initials}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className="popular-card-name" title={reciter.name}>{reciter.name}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+
+                {/* Featured Section (Arabe + Français) */}
                 {!searchQuery && (
                     <section className="listen-section">
                         <h2 className="section-title">✨ Arabe + Français</h2>

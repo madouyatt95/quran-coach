@@ -303,6 +303,17 @@
     color: #fff;
 }
 
+.mini-player__tab--clear {
+    background: rgba(231, 76, 60, 0.08);
+    color: #e74c3c;
+    flex: 0.8;
+}
+
+.mini-player__tab--clear:hover {
+    background: #e74c3c;
+    color: #fff;
+}
+
 /* ========================================
    Queue Items
    ======================================== */
