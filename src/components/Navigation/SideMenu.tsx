@@ -1,5 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { X, Stars } from 'lucide-react';
+import { X, Stars, Bell, BellOff } from 'lucide-react';
+import { useNotificationStore } from '../../stores/notificationStore';
+import {
+    requestNotificationPermission,
+    subscribeToPush,
+    unsubscribeFromPush
+} from '../../lib/notificationService';
 import './SideMenu.css';
 
 interface SideMenuProps {
@@ -8,7 +14,31 @@ interface SideMenuProps {
 }
 
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {
+    const notif = useNotificationStore();
+
     if (!isOpen) return null;
+
+    const handleToggleNotifications = async (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent accidental close or navigation
+        if (!notif.enabled) {
+            const perm = await requestNotificationPermission();
+            if (perm === 'granted') {
+                const ok = await subscribeToPush({
+                    prayerEnabled: notif.prayerEnabled,
+                    prayerMinutesBefore: notif.prayerMinutesBefore,
+                    hadithEnabled: notif.hadithEnabled,
+                    challengeEnabled: notif.challengeEnabled,
+                });
+                if (ok) {
+                    notif.setEnabled(true);
+                    notif.setPermission('granted');
+                }
+            }
+        } else {
+            await unsubscribeFromPush();
+            notif.setEnabled(false);
+        }
+    };
 
     const menuItems = [
         { path: '/listen', emoji: '🎧', label: 'Écoute', color: '#4CAF50' },
@@ -37,6 +67,24 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
                 {/* Navigation */}
                 <nav className="side-menu-nav">
+                    {/* Quick Access Notification Toggle */}
+                    <div className="side-menu-item side-menu-toggle-item" onClick={handleToggleNotifications}>
+                        <div className="side-menu-emoji">
+                            {notif.enabled ? <Bell size={24} color="#4CAF50" /> : <BellOff size={24} color="var(--color-text-muted)" />}
+                        </div>
+                        <div className="side-menu-item-content">
+                            <span>Notifications</span>
+                            <span className="side-menu-item-subtitle">
+                                {notif.enabled ? 'Activées' : 'Désactivées'}
+                            </span>
+                        </div>
+                        <div className={`side-menu-switch ${notif.enabled ? 'active' : ''}`}>
+                            <div className="side-menu-switch-knob" />
+                        </div>
+                    </div>
+
+                    <div className="side-menu-separator" />
+
                     {menuItems.map((item) => (
                         'disabled' in item && item.disabled ? (
                             <div key={item.path} className="side-menu-item disabled">
