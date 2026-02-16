@@ -33,7 +33,7 @@ import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation, fetchPageTransliteration, searchQuran, fetchAyahTiming } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
-import { renderTajweedText } from '../../lib/tajweedParser';
+import { renderTajweedWords } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { useFavoritesStore } from '../../stores/favoritesStore';
@@ -398,22 +398,61 @@ export function MushafPage() {
         const audio = audioRef.current;
 
         const handleEnded = () => playNextAyahRef.current();
-        const handleTimeUpdate = () => {
-            const timeMs = audio.currentTime * 1000;
-            // Find current word based on currentAyahTiming
-            // Segments are [start_time, end_time, word_index]
-            const currentSegment = currentAyahTiming.find(seg => timeMs >= seg[0] && timeMs <= seg[1]);
-            if (currentSegment) {
-                setActiveWordIndex(currentSegment[2] - 1); // word_index is usually 1-indexed in API
-            }
-        };
 
         audio.addEventListener('ended', handleEnded);
-        audio.addEventListener('timeupdate', handleTimeUpdate);
 
         return () => {
             audio.removeEventListener('ended', handleEnded);
-            audio.removeEventListener('timeupdate', handleTimeUpdate);
+        };
+    }, []);
+
+    // High-precision synchronization (Sync with HifdhPage approach)
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        let rafId: number | null = null;
+
+        const checkSync = () => {
+            if (!audio || audio.paused) {
+                rafId = null;
+                return;
+            }
+
+            const timeMs = audio.currentTime * 1000;
+            if (currentAyahTiming.length > 0) {
+                // seg format from API: [word_index, start_time, end_time]
+                const currentSegment = currentAyahTiming.find(seg =>
+                    timeMs >= seg[1] && timeMs <= seg[2]
+                );
+                if (currentSegment) {
+                    setActiveWordIndex(currentSegment[0] - 1);
+                }
+            }
+
+            rafId = requestAnimationFrame(checkSync);
+        };
+
+        const onPlay = () => {
+            if (!rafId) rafId = requestAnimationFrame(checkSync);
+        };
+
+        const onPause = () => {
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+        };
+
+        audio.addEventListener('play', onPlay);
+        audio.addEventListener('pause', onPause);
+
+        if (!audio.paused) onPlay();
+
+        return () => {
+            onPause();
+            audio.removeEventListener('play', onPlay);
+            audio.removeEventListener('pause', onPause);
         };
     }, [currentAyahTiming]);
 
@@ -636,16 +675,12 @@ export function MushafPage() {
         const ayah = ayahs[ayahIndex];
         if (!ayah || !audioRef.current) return;
 
-        // If it's a different ayah, start playing it first
-        if (currentPlayingAyah !== ayah.number) {
-            await playAyahAtIndex(ayahIndex);
-        }
-
-        const seek = () => {
-            if (currentAyahTiming.length > 0) {
-                const segment = currentAyahTiming.find(seg => seg[2] === wordIndex + 1);
+        const seek = (timing: any[]) => {
+            if (timing.length > 0) {
+                // timing[0] is position (1-indexed), timing[1] is start_ms
+                const segment = timing.find(seg => seg[0] === wordIndex + 1);
                 if (segment && audioRef.current) {
-                    audioRef.current.currentTime = segment[0] / 1000;
+                    audioRef.current.currentTime = segment[1] / 1000;
                     setActiveWordIndex(wordIndex);
                     return true;
                 }
@@ -653,15 +688,20 @@ export function MushafPage() {
             return false;
         };
 
-        if (!seek()) {
-            // Wait for timing to load
+        // If it's a different ayah, start playing it first
+        if (currentPlayingAyah !== ayah.number) {
+            await playAyahAtIndex(ayahIndex);
+            // After loading, tries to seek
             let attempts = 0;
             const checkTiming = setInterval(() => {
                 attempts++;
-                if (seek() || attempts > 20) {
+                // We use a closure-safe check or hope state update propagated
+                if (seek(currentAyahTiming) || attempts > 20) {
                     clearInterval(checkTiming);
                 }
             }, 100);
+        } else {
+            seek(currentAyahTiming);
         }
     }, [currentPlayingAyah, currentAyahTiming, playAyahAtIndex]);
 
@@ -1019,74 +1059,44 @@ export function MushafPage() {
                                         const ayahIndex = getAyahIndex(ayah);
                                         const isCurrentlyPlaying = currentPlayingAyah === ayah.number;
 
-                                        // Word-by-word render (coach mode or masking active)
-                                        if (isCoachMode || maskMode !== 'visible') {
-                                            const words = ayah.text.split(/\s+/).filter(w => w.length > 0);
-                                            return (
+                                        // Simplified: Get words (either Tajweed or Plain)
+                                        const words = tajweedHtml
+                                            ? renderTajweedWords(
+                                                tajweedHtml,
+                                                tajwidLayers,
+                                                (wIdx) => {
+                                                    if (isCoachMode) coachJumpToWord(ayahIndex, wIdx);
+                                                    else handleWordClick(ayahIndex, wIdx);
+                                                },
+                                                (wIdx) => getWordClass(ayahIndex, wIdx, ayah.number)
+                                            )
+                                            : ayah.text.split(/\s+/).filter(w => w.length > 0).map((word, wordIdx) => (
                                                 <span
-                                                    key={ayah.number}
-                                                    className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''}`}
-                                                    data-surah={ayah.surah}
-                                                    data-ayah={ayah.numberInSurah}
-                                                    style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
-                                                    onClick={() => {
-                                                        if (isCoachMode) {
-                                                            coachJumpToWord(ayahIndex, 0);
-                                                        } else if (!longPressTriggered.current) {
-                                                            playAyahAtIndex(ayahIndex);
-                                                        }
+                                                    key={`${ayahIndex}-${wordIdx}`}
+                                                    className={getWordClass(ayahIndex, wordIdx, ayah.number)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (isCoachMode) coachJumpToWord(ayahIndex, wordIdx);
+                                                        else handleWordClick(ayahIndex, wordIdx);
                                                     }}
-                                                    onTouchStart={() => { longPressTriggered.current = false; longPressTimerRef.current = setTimeout(() => { longPressTriggered.current = true; setShareAyah(ayah); }, 600); }}
-                                                    onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
-                                                    onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                                 >
-                                                    <button
-                                                        className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
-                                                        onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
-                                                    >
-                                                        <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
-                                                    </button>
-                                                    {words.map((word, wordIndex) => {
-                                                        return (
-                                                            <span
-                                                                key={`${ayahIndex}-${wordIndex}`}
-                                                                className={getWordClass(ayahIndex, wordIndex, ayah.number)}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (isCoachMode) {
-                                                                        coachJumpToWord(ayahIndex, wordIndex);
-                                                                    } else {
-                                                                        handleWordClick(ayahIndex, wordIndex);
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {word}
-                                                            </span>
-                                                        );
-                                                    })}
-                                                    <span className="mih-verse-num">
-                                                        {toArabicNumbers(ayah.numberInSurah)}
-                                                    </span>
-                                                    {showTransliteration && transliterationMap.get(ayah.number) && (
-                                                        <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
-                                                    )}
-                                                    {showTranslation && translationMap.get(ayah.number) && (
-                                                        <div className="mih-translation">{translationMap.get(ayah.number)}</div>
-                                                    )}
-                                                    {' '}
+                                                    {word}{' '}
                                                 </span>
-                                            );
-                                        }
+                                            ));
 
-                                        // Normal render with Tajweed
                                         return (
                                             <span
                                                 key={ayah.number}
-                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''}`}
+                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${isCoachMode || maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
                                                 style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
-                                                onClick={() => { if (!longPressTriggered.current) playAyahAtIndex(ayahIndex); }}
+                                                onClick={() => {
+                                                    if (!longPressTriggered.current) {
+                                                        if (isCoachMode) coachJumpToWord(ayahIndex, 0);
+                                                        else playAyahAtIndex(ayahIndex);
+                                                    }
+                                                }}
                                                 onTouchStart={() => { longPressTriggered.current = false; longPressTimerRef.current = setTimeout(() => { longPressTriggered.current = true; setShareAyah(ayah); }, 600); }}
                                                 onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                                 onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
@@ -1097,32 +1107,13 @@ export function MushafPage() {
                                                 >
                                                     <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
                                                 </button>
-                                                {tajweedHtml ? (
-                                                    <>
-                                                        {renderTajweedText(tajweedHtml as string, tajwidLayers)}
-                                                        <span className="mih-verse-num">
-                                                            {toArabicNumbers(ayah.numberInSurah)}
-                                                        </span>
-                                                    </>
-                                                ) : (
-                                                    <span className="mih-words-container">
-                                                        {ayah.text.split(/\s+/).filter(w => w.length > 0).map((word, wordIdx) => (
-                                                            <span
-                                                                key={`${ayahIndex}-${wordIdx}`}
-                                                                className={getWordClass(ayahIndex, wordIdx, ayah.number)}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleWordClick(ayahIndex, wordIdx);
-                                                                }}
-                                                            >
-                                                                {word}
-                                                            </span>
-                                                        ))}
-                                                        <span className="mih-verse-num">
-                                                            {toArabicNumbers(ayah.numberInSurah)}
-                                                        </span>
-                                                    </span>
-                                                )}
+
+                                                {words}
+
+                                                <span className="mih-verse-num">
+                                                    {toArabicNumbers(ayah.numberInSurah)}
+                                                </span>
+
                                                 {showTransliteration && transliterationMap.get(ayah.number) && (
                                                     <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
                                                 )}

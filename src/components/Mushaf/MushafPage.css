@@ -761,10 +761,17 @@
    Masquage Word Styles
    ======================================== */
 .mih-word {
-    display: inline;
-    padding: 1px 2px;
-    border-radius: 3px;
-    transition: all 0.3s ease;
+    padding: 0 1px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.mih-word--active {
+    background-color: rgba(76, 175, 80, 0.25);
+    color: var(--accent-color, #4CAF50);
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+    transform: scale(1.05);
 }
 
 /* Tout caché */

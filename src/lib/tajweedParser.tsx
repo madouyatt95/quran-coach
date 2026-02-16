@@ -65,6 +65,99 @@ export function renderTajweedText(
 }
 
 /**
+ * Render Tajweed HTML as clickable words
+ * Splits the HTML by space while preserving tags
+ */
+export function renderTajweedWords(
+    tajweedHtml: string,
+    enabledLayers: string[],
+    onWordClick: (wordIndex: number) => void,
+    getWordClass: (wordIndex: number) => string
+): React.ReactNode[] {
+    if (!tajweedHtml) return [];
+
+    // Clean up
+    let cleanHtml = tajweedHtml.replace(/<span\s+class=end>[^<]*<\/span>/g, '');
+
+    // Simple word splitting by space, but we need to keep tags intact
+    // This is tricky: <tajweed class=X>word1 word2</tajweed>
+    // We want: 
+    // <span click index=0><tajweed class=X>word1</tajweed></span>
+    // <span click index=1><tajweed class=X>word2</tajweed></span>
+
+    const words: React.ReactNode[] = [];
+    let currentWordIndex = 0;
+
+    // First, let's tokenize the HTML into "active tags", "text", etc.
+    // But a simpler way for Quran text: split the raw string by spaces.
+    // If a space is inside a tag, we close the tag, add the space, and reopen the tag.
+
+    // Normalize spaces and split
+    const parts = cleanHtml.split(/(\s+)/);
+
+    let activeTags: string[] = [];
+
+    parts.forEach((part) => {
+        if (part.trim() === '') {
+            // It's a space or multiple spaces
+            return;
+        }
+
+        // It's a "word" (might contain tags)
+        const wordParts: React.ReactNode[] = [];
+        let key = 0;
+
+        // Regex to match tags or text
+        const tokenRegex = /(<tajweed\s+class=[^>]+>)|(<\/tajweed>)|([^<]+)/g;
+        let match;
+
+        while ((match = tokenRegex.exec(part)) !== null) {
+            if (match[1]) {
+                // Opening tag
+                const className = match[1].match(/class=([^>]+)/)?.[1] || '';
+                activeTags.push(className);
+            } else if (match[2]) {
+                // Closing tag
+                activeTags.pop();
+            } else if (match[3]) {
+                // Text content
+                const content = match[3];
+                const ruleId = activeTags.length > 0 ? activeTags[activeTags.length - 1] : null;
+                const isEnabled = ruleId ? isRuleEnabled(ruleId, enabledLayers) : false;
+
+                if (isEnabled && ruleId) {
+                    wordParts.push(
+                        <span key={key++} className={`tajweed-highlight tj-${ruleId}`}>
+                            {content}
+                        </span>
+                    );
+                } else {
+                    wordParts.push(content);
+                }
+            }
+        }
+
+        // Wrap this whole word in a clickable span
+        const wordIdx = currentWordIndex++;
+        words.push(
+            <span
+                key={wordIdx}
+                className={getWordClass(wordIdx)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onWordClick(wordIdx);
+                }}
+            >
+                {wordParts}
+                {' '}
+            </span>
+        );
+    });
+
+    return words;
+}
+
+/**
  * Check if a specific rule is enabled based on layer settings
  * Supports both direct rule IDs and category IDs
  */
