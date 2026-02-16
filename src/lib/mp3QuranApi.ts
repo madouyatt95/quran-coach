@@ -68,6 +68,20 @@ export const mp3QuranApi = {
         // Ensure server URL ends with a slash
         const baseUrl = server.endsWith('/') ? server : `${server}/`;
         return `${baseUrl}${formattedId}.mp3`;
+    },
+
+    /**
+     * Find the best moshaf (preferring Hafs/Murattal/Complete)
+     */
+    getBestMoshaf(moshafs: MP3QuranMoshaf[]): MP3QuranMoshaf {
+        if (!moshafs || moshafs.length === 0) return {} as MP3QuranMoshaf;
+
+        // Prioritize: Hafs A'n Assem - Psalmodie (type 11) with most surahs
+        const hafs = moshafs.find(m => m.moshaf_type === 11);
+        if (hafs) return hafs;
+
+        // Fallback to the one with the most surahs
+        return [...moshafs].sort((a, b) => b.surah_total - a.surah_total)[0];
     }
 };
 

@@ -51,9 +51,13 @@ export function ReciterDetailPage() {
         const startIndex = surahs.findIndex(s => s.id === surah.id);
         const playlistItems = surahs.slice(startIndex).map(s => {
             const qSurah = quranSurahs.find(qs => qs.number === s.id);
+            const bestMoshaf = id !== ARABIC_FRENCH_COLLECTION.id && (reciter as any).moshaf
+                ? mp3QuranApi.getBestMoshaf((reciter as any).moshaf)
+                : null;
+
             const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
                 ? ARABIC_FRENCH_COLLECTION.getAudioUrl(s.id)
-                : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, s.id);
+                : mp3QuranApi.getAudioUrl(bestMoshaf?.server || '', s.id);
 
             return {
                 surahNumber: s.id,
@@ -99,7 +103,7 @@ export function ReciterDetailPage() {
                 <div className="profile-text">
                     <h1>{reciter.name}</h1>
                     <p className="profile-moshaf">
-                        {(reciter as any).moshaf?.[0]?.name || 'Coran Complet'}
+                        {mp3QuranApi.getBestMoshaf((reciter as any).moshaf || [])?.name || 'Coran Complet'}
                     </p>
                 </div>
             </div>
@@ -148,7 +152,7 @@ export function ReciterDetailPage() {
                                                 const qSurah = quranSurahs.find(qs => qs.number === surah.id);
                                                 const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
                                                     ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
-                                                    : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, surah.id);
+                                                    : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
 
                                                 setPlaylistModalItem({
                                                     surahNumber: surah.id,
@@ -178,7 +182,7 @@ export function ReciterDetailPage() {
                                                     e.stopPropagation();
                                                     const url = id === ARABIC_FRENCH_COLLECTION.id
                                                         ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
-                                                        : mp3QuranApi.getAudioUrl((reciter as any).moshaf[0].server, surah.id);
+                                                        : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
                                                     downloadSurah(reciter.id.toString(), surah.id, url);
                                                 }}
                                             >
