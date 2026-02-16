@@ -30,8 +30,8 @@ import {
     MicOff
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
-import { useSettingsStore, RECITERS } from '../../stores/settingsStore';
-import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation, fetchPageTransliteration, searchQuran } from '../../lib/quranApi';
+import { useSettingsStore } from '../../stores/settingsStore';
+import { fetchPage, fetchSurahs, getAudioUrl, fetchPageTranslation, fetchPageTransliteration, searchQuran, fetchAyahTiming } from '../../lib/quranApi';
 import { fetchTajweedPage, getTajweedCategories, type TajweedVerse } from '../../lib/tajweedService';
 import { renderTajweedText } from '../../lib/tajweedParser';
 import { SideMenu } from '../Navigation/SideMenu';
@@ -114,7 +114,7 @@ export function MushafPage() {
         goToPage,
     } = useQuranStore();
 
-    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, setReciter, showTranslation, toggleTranslation, showTransliteration, toggleTransliteration } = useSettingsStore();
+    const { arabicFontSize, tajwidLayers, toggleTajwidLayer, selectedReciter, tajwidEnabled, toggleTajwid, setArabicFontSize, showTranslation, toggleTranslation, showTransliteration, toggleTransliteration } = useSettingsStore();
     const { toggleFavorite, isFavorite } = useFavoritesStore();
 
     const [isLoading, setIsLoading] = useState(true);
@@ -130,7 +130,6 @@ export function MushafPage() {
     const [showSearch, setShowSearch] = useState(false);
     const [showToolbar, setShowToolbar] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
-    const [showReciterSheet, setShowReciterSheet] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     // Share modal
@@ -168,6 +167,10 @@ export function MushafPage() {
     const [playingIndex, setPlayingIndex] = useState(-1);
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const shouldAutoPlay = useRef(false);
+
+    // Timing state for word-by-word
+    const [currentAyahTiming, setCurrentAyahTiming] = useState<any[]>([]);
+    const [activeWordIndex, setActiveWordIndex] = useState(-1);
 
     // Refs to avoid stale closures in audio callbacks
     const playingIndexRef = useRef(-1);
@@ -314,7 +317,7 @@ export function MushafPage() {
     const isPageValidated = validatedPages.has(currentPage);
 
     // Audio playback - play all ayahs on page sequentially
-    const playAyahAtIndex = useCallback((idx: number) => {
+    const playAyahAtIndex = useCallback(async (idx: number) => {
         const ayahs = pageAyahsRef.current;
         if (!ayahs[idx] || !audioRef.current) return;
 
@@ -324,6 +327,12 @@ export function MushafPage() {
         const ayah = ayahs[idx];
         setPlayingIndex(idx);
         setCurrentPlayingAyah(ayah.number);
+
+        // Fetch word timing for this ayah
+        setActiveWordIndex(-1);
+        setCurrentAyahTiming([]);
+        fetchAyahTiming(ayah.surah, ayah.numberInSurah).then(setCurrentAyahTiming).catch(() => { });
+
         audioRef.current.src = getAudioUrl(selectedReciter, ayah.number);
         audioRef.current.playbackRate = playbackSpeed;
         audioRef.current.play().catch(() => { });
@@ -379,14 +388,34 @@ export function MushafPage() {
         }
     }, [audioPlaying, playAyahAtIndex]);
 
-    // Handle audio ended - use ref to always have latest callback
+    // Handle audio events
     const playNextAyahRef = useRef(playNextAyah);
     useEffect(() => { playNextAyahRef.current = playNextAyah; }, [playNextAyah]);
 
     useEffect(() => {
         if (!audioRef.current) return;
-        audioRef.current.onended = () => playNextAyahRef.current();
-    }, []);
+
+        const audio = audioRef.current;
+
+        const handleEnded = () => playNextAyahRef.current();
+        const handleTimeUpdate = () => {
+            const timeMs = audio.currentTime * 1000;
+            // Find current word based on currentAyahTiming
+            // Segments are [start_time, end_time, word_index]
+            const currentSegment = currentAyahTiming.find(seg => timeMs >= seg[0] && timeMs <= seg[1]);
+            if (currentSegment) {
+                setActiveWordIndex(currentSegment[2] - 1); // word_index is usually 1-indexed in API
+            }
+        };
+
+        audio.addEventListener('ended', handleEnded);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+
+        return () => {
+            audio.removeEventListener('ended', handleEnded);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+        };
+    }, [currentAyahTiming]);
 
     // Auto-resume after page change
     useEffect(() => {
@@ -601,24 +630,63 @@ export function MushafPage() {
         return verse?.textTajweed || null;
     };
 
-    // Get word class (coach mode + masking)
-    const getWordClass = (ayahIndex: number, wordIndex: number): string => {
+    // Seek to a specific word in an ayah
+    const handleWordClick = useCallback(async (ayahIndex: number, wordIndex: number) => {
+        const ayahs = pageAyahsRef.current;
+        const ayah = ayahs[ayahIndex];
+        if (!ayah || !audioRef.current) return;
+
+        // If it's a different ayah, start playing it first
+        if (currentPlayingAyah !== ayah.number) {
+            await playAyahAtIndex(ayahIndex);
+        }
+
+        const seek = () => {
+            if (currentAyahTiming.length > 0) {
+                const segment = currentAyahTiming.find(seg => seg[2] === wordIndex + 1);
+                if (segment && audioRef.current) {
+                    audioRef.current.currentTime = segment[0] / 1000;
+                    setActiveWordIndex(wordIndex);
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if (!seek()) {
+            // Wait for timing to load
+            let attempts = 0;
+            const checkTiming = setInterval(() => {
+                attempts++;
+                if (seek() || attempts > 20) {
+                    clearInterval(checkTiming);
+                }
+            }, 100);
+        }
+    }, [currentPlayingAyah, currentAyahTiming, playAyahAtIndex]);
+
+    // Get word class (coach mode + masking + active word)
+    const getWordClass = (ayahIndex: number, wordIndex: number, ayahNumber: number): string => {
         const key = `${ayahIndex}-${wordIndex}`;
+        const isActive = currentPlayingAyah === ayahNumber && activeWordIndex === wordIndex;
+
+        let classes = 'mih-word';
+        if (isActive) classes += ' mih-word--active';
 
         // Coach mode states take priority
         if (isCoachMode) {
             const state = wordStates.get(key);
-            if (state === 'correct') return 'mih-word mih-word--correct';
-            if (state === 'error') return 'mih-word mih-word--error';
-            if (state === 'current') return 'mih-word mih-word--current';
+            if (state === 'correct') return classes + ' mih-word--correct';
+            if (state === 'error') return classes + ' mih-word--error';
+            if (state === 'current') return classes + ' mih-word--current';
         }
 
         // Masking mode
         switch (maskMode) {
-            case 'hidden': return 'mih-word mih-word--hidden';
-            case 'partial': return partialHidden.has(key) ? 'mih-word mih-word--hidden' : 'mih-word';
-            case 'minimal': return 'mih-word mih-word--partial';
-            default: return 'mih-word';
+            case 'hidden': return classes + ' mih-word--hidden';
+            case 'partial': return partialHidden.has(key) ? classes + ' mih-word--hidden' : classes;
+            case 'minimal': return classes + ' mih-word--partial';
+            default: return classes;
         }
     };
 
@@ -979,15 +1047,16 @@ export function MushafPage() {
                                                         <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
                                                     </button>
                                                     {words.map((word, wordIndex) => {
-                                                        const key = `${ayahIndex}-${wordIndex}`;
                                                         return (
                                                             <span
-                                                                key={key}
-                                                                className={getWordClass(ayahIndex, wordIndex)}
+                                                                key={`${ayahIndex}-${wordIndex}`}
+                                                                className={getWordClass(ayahIndex, wordIndex, ayah.number)}
                                                                 onClick={(e) => {
+                                                                    e.stopPropagation();
                                                                     if (isCoachMode) {
-                                                                        e.stopPropagation();
                                                                         coachJumpToWord(ayahIndex, wordIndex);
+                                                                    } else {
+                                                                        handleWordClick(ayahIndex, wordIndex);
                                                                     }
                                                                 }}
                                                             >
@@ -1036,12 +1105,23 @@ export function MushafPage() {
                                                         </span>
                                                     </>
                                                 ) : (
-                                                    <>
-                                                        {ayah.text}
+                                                    <span className="mih-words-container">
+                                                        {ayah.text.split(/\s+/).filter(w => w.length > 0).map((word, wordIdx) => (
+                                                            <span
+                                                                key={`${ayahIndex}-${wordIdx}`}
+                                                                className={getWordClass(ayahIndex, wordIdx, ayah.number)}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleWordClick(ayahIndex, wordIdx);
+                                                                }}
+                                                            >
+                                                                {word}
+                                                            </span>
+                                                        ))}
                                                         <span className="mih-verse-num">
                                                             {toArabicNumbers(ayah.numberInSurah)}
                                                         </span>
-                                                    </>
+                                                    </span>
                                                 )}
                                                 {showTransliteration && transliterationMap.get(ayah.number) && (
                                                     <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
@@ -1362,13 +1442,6 @@ export function MushafPage() {
                         </button>
                     </div>
 
-                    <button
-                        className="mih-audio-bar__btn"
-                        onClick={() => setShowReciterSheet(true)}
-                        title="Choisir un récitateur"
-                    >
-                        <Volume2 size={18} />
-                    </button>
 
                     <div className="mih-audio-bar__speed" onClick={() => setPlaybackSpeed(s => s >= 2 ? 0.5 : s + 0.25)}>
                         {playbackSpeed}x
@@ -1380,34 +1453,6 @@ export function MushafPage() {
                 </div>
             )}
 
-            {/* ===== Reciter Selection Sheet ===== */}
-            {showReciterSheet && (
-                <>
-                    <div className="mih-sheet-overlay" onClick={() => setShowReciterSheet(false)} />
-                    <div className="mih-sheet">
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Récitateur</span>
-                            <button className="mih-sheet__close" onClick={() => setShowReciterSheet(false)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-                        <div className="mih-reciter-list">
-                            {RECITERS.map(r => (
-                                <button
-                                    key={r.id}
-                                    className={`mih-reciter-item ${selectedReciter === r.id ? 'active' : ''}`}
-                                    onClick={() => { setReciter(r.id); setShowReciterSheet(false); }}
-                                >
-                                    <span className="mih-reciter-item__flag">{r.country}</span>
-                                    <span className="mih-reciter-item__name">{r.name}</span>
-                                    <span className="mih-reciter-item__arabic">{r.nameArabic}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </>
-            )}
 
             {/* Share modal */}
             {shareAyah && (

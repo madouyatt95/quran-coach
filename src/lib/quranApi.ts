@@ -88,25 +88,25 @@ export async function searchQuran(query: string): Promise<Ayah[]> {
     }));
 }
 
-// Audio URLs for different reciters
-const RECITERS = {
+export async function fetchAyahTiming(surah: number, ayah: number): Promise<any[]> {
+    // Recitation 7 is Mishary Al-Afasy on Quran.com
+    const response = await fetch(`https://api.quran.com/api/v4/recitations/7/by_ayah/${surah}:${ayah}`);
+    const data = await response.json();
+
+    if (data.audio_files && data.audio_files.length > 0) {
+        return data.audio_files[0].segments || [];
+    }
+    return [];
+}
+
+const RECITERS_OLD = {
     'ar.alafasy': 'https://cdn.islamic.network/quran/audio/128/ar.alafasy',
-    'ar.abdulbasit': 'https://cdn.islamic.network/quran/audio/128/ar.abdulbasitmurattal',
-    'ar.husary': 'https://cdn.islamic.network/quran/audio/128/ar.husary',
-    'ar.minshawi': 'https://cdn.islamic.network/quran/audio/128/ar.minshawi',
 };
 
 export function getAudioUrl(reciterId: string, ayahNumber: number): string {
-    const baseUrl = RECITERS[reciterId as keyof typeof RECITERS] || RECITERS['ar.alafasy'];
+    const baseUrl = RECITERS_OLD[reciterId as keyof typeof RECITERS_OLD] || RECITERS_OLD['ar.alafasy'];
     return `${baseUrl}/${ayahNumber}.mp3`;
 }
-
-export function getSurahAudioUrl(_reciterId: string, surahNumber: number): string {
-    // Use the surah audio edition
-    return `https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/${surahNumber}.mp3`;
-}
-
-export { RECITERS };
 
 // Translation editions
 const TRANSLATION_EDITIONS: Record<string, string> = {

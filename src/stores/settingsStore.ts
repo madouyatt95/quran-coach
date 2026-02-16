@@ -6,15 +6,6 @@ import type { Settings, Theme, ArabicFontSize, ViewMode } from '../types';
 // quranComId is used for word timing API (chapter_recitations endpoint)
 export const RECITERS = [
     { id: 'ar.alafasy', name: 'Mishary Al-Afasy', nameArabic: 'مشاري العفاسي', country: '🇰🇼', quranComId: 7 },
-    { id: 'ar.abdulbasit', name: 'Abdul Basit', nameArabic: 'عبد الباسط', country: '🇪🇬', quranComId: 1 },
-    { id: 'ar.husary', name: 'Mahmoud Al-Husary', nameArabic: 'محمود الحصري', country: '🇪🇬', quranComId: 5 },
-    { id: 'ar.minshawi', name: 'Mohamed Al-Minshawi', nameArabic: 'محمد المنشاوي', country: '🇪🇬', quranComId: 6 },
-    { id: 'ar.abdurrahmaansudais', name: 'Abdurrahman As-Sudais', nameArabic: 'عبد الرحمن السديس', country: '🇸🇦', quranComId: 2 },
-    { id: 'ar.saaborehman', name: 'Saad Al-Ghamdi', nameArabic: 'سعد الغامدي', country: '🇸🇦', quranComId: 10 },
-    { id: 'ar.maaborehman', name: 'Maher Al-Muaiqly', nameArabic: 'ماهر المعيقلي', country: '🇸🇦', quranComId: 3 },
-    { id: 'ar.ahmedajamy', name: 'Ahmad Al-Ajmi', nameArabic: 'أحمد العجمي', country: '🇰🇼', quranComId: 8 },
-    { id: 'ar.haborehman', name: 'Hani Ar-Rifai', nameArabic: 'هاني الرفاعي', country: '🇸🇦', quranComId: 9 },
-    { id: 'ar.paborehman', name: 'Fares Abbad', nameArabic: 'فارس عباد', country: '🇸🇦', quranComId: 4 },
 ];
 
 // Playback speed options
