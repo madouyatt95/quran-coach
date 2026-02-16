@@ -16,6 +16,7 @@ export function MiniPlayer() {
         ayahs,
         playlist,
         currentPlaylistIndex,
+        playbackType, // New
         togglePlay,
         nextAyah,
         prevAyah,
@@ -32,9 +33,9 @@ export function MiniPlayer() {
     const [showQueue, setShowQueue] = useState(false);
     const setupDoneRef = useRef(false);
 
-    // Fetch ayahs when surah changes
+    // Fetch ayahs when surah changes (ONLY in ayah mode)
     useEffect(() => {
-        if (currentSurahNumber > 0 && ayahs.length === 0) {
+        if (currentSurahNumber > 0 && ayahs.length === 0 && playbackType === 'ayah') {
             fetchSurah(currentSurahNumber).then(data => {
                 setAyahs(data.ayahs.map(a => ({
                     number: a.number,
@@ -43,7 +44,7 @@ export function MiniPlayer() {
                 })));
             }).catch(console.error);
         }
-    }, [currentSurahNumber, ayahs.length, setAyahs]);
+    }, [currentSurahNumber, ayahs.length, setAyahs, playbackType]);
 
     // Setup audio event listeners
     useEffect(() => {
@@ -84,9 +85,10 @@ export function MiniPlayer() {
             {/* Compact view */}
             <div className="mini-player__main">
                 <div className="mini-player__info" onClick={() => setExpanded(!expanded)}>
-                    <div className="mini-player__surah">{currentSurahNameAr}</div>
+                    <div className="mini-player__surah">{currentSurahNameAr || currentSurahName}</div>
                     <div className="mini-player__detail">
-                        {currentSurahName} · Verset {currentAyahInSurah}/{totalAyahsInSurah}
+                        {currentSurahName}
+                        {playbackType === 'ayah' && ` · Verset ${currentAyahInSurah}/${totalAyahsInSurah}`}
                         {upcomingSurahs.length > 0 && <span className="mini-player__queue-badge">📋 {upcomingSurahs.length} à suivre</span>}
                     </div>
                 </div>

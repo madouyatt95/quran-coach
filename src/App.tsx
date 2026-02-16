@@ -10,7 +10,9 @@ import { MiniPlayer } from './components/MiniPlayer/MiniPlayer';
 import { SettingsPage } from './pages/SettingsPage';
 import { PrayerTimesPage } from './pages/PrayerTimesPage';
 import { AdhkarPage } from './pages/AdhkarPage';
-import { MosquesPage } from './pages/MosquesPage';
+import { ListenPage } from './pages/ListenPage';
+import { ReciterDetailPage } from './pages/ReciterDetailPage';
+import { AdminAssetsPage } from './pages/AdminAssetsPage';
 import { TafsirPage } from './pages/TafsirPage';
 import { ShazamPage } from './pages/ShazamPage';
 import { ProphetsPage } from './pages/ProphetsPage';
@@ -136,7 +138,9 @@ function AppContent() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/prayers" element={<PrayerTimesPage />} />
           <Route path="/adhkar" element={<AdhkarPage />} />
-          <Route path="/mosques" element={<MosquesPage />} />
+          <Route path="/listen" element={<ListenPage />} />
+          <Route path="/listen/:id" element={<ReciterDetailPage />} />
+          <Route path="/admin/assets" element={<AdminAssetsPage />} />
           <Route path="/tafsir" element={<TafsirPage />} />
           <Route path="/shazam" element={<ShazamPage />} />
           <Route path="/prophets" element={<ProphetsPage />} />

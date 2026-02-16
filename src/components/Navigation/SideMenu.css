@@ -105,24 +105,59 @@
     border-radius: var(--radius-lg);
     color: var(--color-text-primary);
     font-size: var(--text-ui-md);
-    transition: all var(--transition-fast);
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: var(--space-xs);
+    border: 1px solid transparent;
+}
+
+.side-menu-emoji {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    width: 32px;
 }
 
 .side-menu-item:active {
     background: var(--color-bg-tertiary);
-    transform: scale(0.98);
+    transform: scale(0.96);
+}
+
+.side-menu-item:hover .side-menu-emoji {
+    transform: scale(1.2) rotate(5deg);
 }
 
 .side-menu-item.active {
-    background: rgba(201, 168, 76, 0.15);
-    border-left: 4px solid #c9a84c;
-    padding-left: calc(var(--space-md) - 4px);
+    background: rgba(201, 168, 76, 0.1);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: #c9a84c;
+    box-shadow: 0 0 15px rgba(201, 168, 76, 0.15),
+        inset 0 0 10px rgba(201, 168, 76, 0.05);
 }
 
-.side-menu-item svg {
-    flex-shrink: 0;
+/* Glowing effect for specific items if needed */
+.side-menu-item.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 25%;
+    height: 50%;
+    width: 3px;
+    background: #c9a84c;
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px #c9a84c;
+}
+
+.side-menu-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
 }
 
 /* Footer */
@@ -131,7 +166,7 @@
     text-align: center;
     font-size: var(--text-ui-xs);
     color: var(--color-text-muted);
-    border-top: 1px solid var(--color-bg-tertiary);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     flex-shrink: 0;
 }
 
@@ -142,6 +177,7 @@
     }
 
     .side-menu-item:hover {
-        background: var(--color-bg-tertiary);
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 }

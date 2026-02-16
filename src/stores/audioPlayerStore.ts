@@ -6,6 +6,8 @@ export interface PlaylistItem {
     surahName: string;
     surahNameAr: string;
     totalAyahs: number;
+    audioUrl?: string; // For direct streaming (Listen page)
+    playbackType?: 'ayah' | 'surah';
 }
 
 interface AudioPlayerState {
@@ -19,6 +21,7 @@ interface AudioPlayerState {
     totalAyahsInSurah: number;
     duration: number;
     currentTime: number;
+    playbackType: 'ayah' | 'surah';
 
     // Playlist
     playlist: PlaylistItem[];
@@ -67,29 +70,40 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     totalAyahsInSurah: 0,
     duration: 0,
     currentTime: 0,
+    playbackType: 'ayah',
     playlist: [],
     currentPlaylistIndex: 0,
     reciterId: 'ar.alafasy',
     ayahs: [],
 
     playSurah: (surah, reciterId) => {
+        const audio = getOrCreateAudio();
+        const pMode = surah.playbackType || 'ayah';
+
         set({
             currentSurahNumber: surah.surahNumber,
             currentSurahName: surah.surahName,
             currentSurahNameAr: surah.surahNameAr,
             totalAyahsInSurah: surah.totalAyahs,
-            currentAyahInSurah: 1,
+            currentAyahInSurah: pMode === 'surah' ? 0 : 1,
             currentAyahNumber: 0,
-            isPlaying: false,
+            isPlaying: pMode === 'surah', // Auto-play if surah mode
             reciterId,
             playlist: [surah],
             currentPlaylistIndex: 0,
             ayahs: [],
+            playbackType: pMode,
         });
+
+        if (pMode === 'surah' && surah.audioUrl) {
+            audio.src = surah.audioUrl;
+            audio.play().catch(() => { });
+        }
     },
 
     setPlaylist: (items, startIndex, reciterId) => {
         const surah = items[startIndex];
+        const pMode = surah.playbackType || 'ayah';
         set({
             playlist: items,
             currentPlaylistIndex: startIndex,
@@ -97,11 +111,12 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
             currentSurahName: surah.surahName,
             currentSurahNameAr: surah.surahNameAr,
             totalAyahsInSurah: surah.totalAyahs,
-            currentAyahInSurah: 1,
+            currentAyahInSurah: pMode === 'surah' ? 0 : 1,
             currentAyahNumber: 0,
             isPlaying: false,
             reciterId,
             ayahs: [],
+            playbackType: pMode,
         });
     },
 
@@ -146,7 +161,13 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     },
 
     nextAyah: () => {
-        const { ayahs, currentAyahInSurah, totalAyahsInSurah } = get();
+        const { ayahs, currentAyahInSurah, totalAyahsInSurah, playbackType } = get();
+        if (playbackType === 'surah') {
+            // In surah mode, nextAyah simply skips to next surah
+            get().nextSurah();
+            return;
+        }
+
         if (currentAyahInSurah < totalAyahsInSurah) {
             const nextIdx = currentAyahInSurah; // 0-indexed = currentAyahInSurah (since it's 1-based)
             if (ayahs[nextIdx]) {
@@ -159,7 +180,15 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     },
 
     prevAyah: () => {
-        const { ayahs, currentAyahInSurah } = get();
+        const { ayahs, currentAyahInSurah, playbackType } = get();
+        if (playbackType === 'surah') {
+            // Reset current surah to 0
+            const audio = getOrCreateAudio();
+            audio.currentTime = 0;
+            set({ currentTime: 0 });
+            return;
+        }
+
         if (currentAyahInSurah > 1) {
             const prevIdx = currentAyahInSurah - 2; // 0-indexed
             if (ayahs[prevIdx]) {
@@ -173,19 +202,27 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
         if (currentPlaylistIndex < playlist.length - 1) {
             const nextIdx = currentPlaylistIndex + 1;
             const nextSurah = playlist[nextIdx];
+            const audio = getOrCreateAudio();
+            const pMode = nextSurah.playbackType || 'ayah';
+
             set({
                 currentPlaylistIndex: nextIdx,
                 currentSurahNumber: nextSurah.surahNumber,
                 currentSurahName: nextSurah.surahName,
                 currentSurahNameAr: nextSurah.surahNameAr,
                 totalAyahsInSurah: nextSurah.totalAyahs,
-                currentAyahInSurah: 1,
+                currentAyahInSurah: pMode === 'surah' ? 0 : 1,
                 currentAyahNumber: 0,
-                isPlaying: false,
+                isPlaying: pMode === 'surah',
                 reciterId,
                 ayahs: [],
+                playbackType: pMode,
             });
-            // The MiniPlayer component will detect surah change and fetch ayahs
+
+            if (pMode === 'surah' && nextSurah.audioUrl) {
+                audio.src = nextSurah.audioUrl;
+                audio.play().catch(() => { });
+            }
         } else {
             // End of playlist
             get().stop();
@@ -195,6 +232,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
     stop: () => {
         const audio = getOrCreateAudio();
         audio.pause();
+        audio.src = '';
         audio.currentTime = 0;
         set({
             isPlaying: false,
@@ -204,6 +242,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>()((set, get) => ({
             currentSurahName: '',
             currentSurahNameAr: '',
             totalAyahsInSurah: 0,
+            playbackType: 'ayah',
             playlist: [],
             currentPlaylistIndex: 0,
             ayahs: [],

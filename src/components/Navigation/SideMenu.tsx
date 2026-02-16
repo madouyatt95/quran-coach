@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { X, Settings, Stars, Building2, Radio, BookOpen, Heart, ScrollText } from 'lucide-react';
+import { X, Stars } from 'lucide-react';
 import './SideMenu.css';
 
 interface SideMenuProps {
@@ -11,14 +11,14 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     if (!isOpen) return null;
 
     const menuItems = [
-        { path: '/hadiths', icon: ScrollText, label: 'Hadiths', color: '#c9a84c' },
-        { path: '/tafsir', icon: BookOpen, label: 'Tafsir', color: '#58A6FF' },
-        { path: '/favorites', icon: Heart, label: 'Favoris', color: '#e74c3c' },
-        { path: '/mosques', icon: Building2, label: 'Mosquées', color: '#26C6DA' },
-        { path: '/shazam', icon: Radio, label: 'Shazam (Bientôt)', color: '#FF6B6B', disabled: true },
-        { path: '/settings', icon: Settings, label: 'Réglages', color: '#888' },
+        { path: '/listen', emoji: '🎧', label: 'Écoute', color: '#4CAF50' },
+        { path: '/hadiths', emoji: '📜', label: 'Hadiths', color: '#c9a84c' },
+        { path: '/prophets', emoji: '🕌', label: 'Prophètes', color: '#FF9800' },
+        { path: '/tafsir', emoji: '📚', label: 'Tafsir', color: '#2196F3' },
+        { path: '/shazam', emoji: '🔍', label: 'Shazam', color: '#9C27B0' },
+        { path: '/admin/assets', emoji: '⚙️', label: 'Modération', color: '#607D8B' },
+        { path: '/settings', emoji: '⚙️', label: 'Réglages', color: '#607D8B' },
     ];
-
     return (
         <>
             {/* Backdrop */}
@@ -40,9 +40,9 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 {/* Navigation */}
                 <nav className="side-menu-nav">
                     {menuItems.map((item) => (
-                        item.disabled ? (
+                        'disabled' in item && item.disabled ? (
                             <div key={item.path} className="side-menu-item disabled">
-                                <item.icon size={22} style={{ color: item.color, opacity: 0.5 }} />
+                                <span className="side-menu-emoji">{item.emoji}</span>
                                 <span>{item.label}</span>
                             </div>
                         ) : (
@@ -52,7 +52,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                                 className={({ isActive }) => `side-menu-item ${isActive ? 'active' : ''}`}
                                 onClick={onClose}
                             >
-                                <item.icon size={22} style={{ color: item.color }} />
+                                <span className="side-menu-emoji">{item.emoji}</span>
                                 <span>{item.label}</span>
                             </NavLink>
                         )
@@ -61,7 +61,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
                 {/* Footer */}
                 <div className="side-menu-footer">
-                    <p>v1.1.0 | Made with ❤️</p>
+                    <p>v1.2.0 | Made with ❤️</p>
                 </div>
             </div>
         </>

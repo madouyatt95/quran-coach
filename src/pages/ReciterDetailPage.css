@@ -1,0 +1,250 @@
+.reciter-detail-page {
+    padding-bottom: 100px;
+    /* Space for miniplayer */
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.detail-header-nav {
+    padding: var(--space-md);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--color-bg-primary);
+}
+
+.back-btn {
+    background: var(--color-bg-secondary);
+    border: none;
+    color: var(--color-text-primary);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Hero Section */
+.reciter-profile-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    background: linear-gradient(to bottom, rgba(201, 168, 76, 0.1), transparent);
+}
+
+.profile-photo-container {
+    width: 120px;
+    height: 120px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(201, 168, 76, 0.2);
+}
+
+.profile-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+}
+
+.profile-text h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.profile-moshaf {
+    color: #c9a84c;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Surah List */
+.surah-list-container {
+    padding: var(--space-md);
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    padding: 0 var(--space-xs);
+}
+
+.list-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.download-all-btn {
+    background: rgba(201, 168, 76, 0.1);
+    color: #c9a84c;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.surah-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.surah-row {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    gap: var(--space-md);
+    transition: transform 0.2s ease, background 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.surah-row:active {
+    transform: scale(0.98);
+}
+
+.surah-row.active {
+    background: rgba(201, 168, 76, 0.08);
+    border-color: rgba(201, 168, 76, 0.3);
+}
+
+.surah-number {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    min-width: 24px;
+}
+
+.surah-info-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.surah-name-fr {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.surah-meta {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.surah-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.action-btn:active {
+    color: var(--color-text-primary);
+}
+
+.play-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--color-bg-tertiary);
+    border-radius: 50%;
+    color: #c9a84c;
+}
+
+.playing-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 16px;
+}
+
+.playing-bars span {
+    width: 3px;
+    background: #c9a84c;
+    border-radius: 10px;
+    animation: musicBars 0.8s infinite ease-in-out;
+}
+
+.playing-bars span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.playing-bars span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes musicBars {
+
+    0%,
+    100% {
+        height: 4px;
+    }
+
+    50% {
+        height: 16px;
+    }
+}
+
+.icon-downloading {
+    color: #c9a84c;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+[data-theme="dark"] .surah-row {
+    background: #1a1a2e;
+}
+
+[data-theme="dark"] .detail-header-nav {
+    background: var(--color-bg-primary);
+}
