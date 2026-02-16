@@ -1,4 +1,100 @@
 /* ========================================
+   Mini Player - Minimized Pill
+   ======================================== */
+.mini-player-pill {
+    position: fixed;
+    bottom: 80px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #fff;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 500;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    animation: pill-enter 0.3s ease;
+}
+
+.mini-player-pill:active {
+    transform: scale(0.95);
+}
+
+.mini-player-pill__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #4CAF50, #66BB6A);
+    border-radius: 0 2px 0 0;
+    transition: width 0.3s linear;
+}
+
+.mini-player-pill__play {
+    background: #4CAF50;
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.mini-player-pill__name {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-player-pill__expand {
+    color: #bbb;
+    flex-shrink: 0;
+}
+
+@keyframes pill-enter {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Dark theme */
+[data-theme="dark"] .mini-player-pill {
+    background: #1a1a2e;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .mini-player-pill__play {
+    background: #66BB6A;
+    color: #111;
+}
+
+[data-theme="dark"] .mini-player-pill__name {
+    color: #e8e0d4;
+}
+
+[data-theme="dark"] .mini-player-pill__expand {
+    color: #666;
+}
+
+/* ========================================
    Mini Player - Persistent Audio Controls
    ======================================== */
 .mini-player {
@@ -115,6 +211,10 @@
 }
 
 .mini-player__btn--expand {
+    color: #bbb;
+}
+
+.mini-player__btn--minimize {
     color: #bbb;
 }
 

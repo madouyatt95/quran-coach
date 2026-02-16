@@ -31,6 +31,7 @@ export function MiniPlayer() {
     } = useAudioPlayerStore();
 
     const [expanded, setExpanded] = useState(false);
+    const [minimized, setMinimized] = useState(false);
     const setupDoneRef = useRef(false);
 
 
@@ -70,6 +71,24 @@ export function MiniPlayer() {
         seek(clickedProgress * duration);
     };
 
+    // ── Minimized pill view ──
+    if (minimized) {
+        return (
+            <div className="mini-player-pill" onClick={() => setMinimized(false)}>
+                <div className="mini-player-pill__progress" style={{ width: `${progress}%` }} />
+                <button
+                    className="mini-player-pill__play"
+                    onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+                >
+                    {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                </button>
+                <span className="mini-player-pill__name">{currentSurahNameAr || currentSurahName}</span>
+                <ChevronUp size={14} className="mini-player-pill__expand" />
+            </div>
+        );
+    }
+
+    // ── Full player view ──
     return (
         <div className={`mini-player ${expanded ? 'expanded' : ''}`}>
             {/* Progress bar */}
@@ -115,6 +134,9 @@ export function MiniPlayer() {
                         </button>
                     )}
 
+                    <button onClick={() => { setMinimized(true); setExpanded(false); }} className="mini-player__btn mini-player__btn--minimize" title="Réduire">
+                        <ChevronDown size={16} />
+                    </button>
                     <button onClick={() => setExpanded(!expanded)} className="mini-player__btn mini-player__btn--expand">
                         {expanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
                     </button>
