@@ -46,8 +46,9 @@ export async function subscribeToPush(options: {
     longitude?: number;
 }): Promise<boolean> {
     try {
-        const permission = await requestNotificationPermission();
-        if (permission !== 'granted') return false;
+        if (!VAPID_PUBLIC_KEY) {
+            throw new Error('VITE_VAPID_PUBLIC_KEY manquante dans le fichier .env');
+        }
 
         const registration = await navigator.serviceWorker.ready;
 
@@ -58,9 +59,9 @@ export async function subscribeToPush(options: {
         });
 
         const subJson = subscription.toJSON();
-        if (!subJson.endpoint || !subJson.keys) {
-            console.error('[Push] Invalid subscription');
-            return false;
+        if (!subJson.endpoint || !subJson.keys || !subJson.keys.p256dh || !subJson.keys.auth) {
+            console.error('[Push] Invalid subscription JSON:', subJson);
+            throw new Error('Le navigateur a renvoyé un abonnement push invalide.');
         }
 
         // Determine timezone
@@ -88,14 +89,15 @@ export async function subscribeToPush(options: {
 
         if (error) {
             console.error('[Push] Failed to save subscription:', error);
-            return false;
+            // Propagate error message for debugging
+            throw new Error(`Supabase Error: ${error.message} (${error.code})`);
         }
 
         console.log('[Push] Subscription saved successfully');
         return true;
     } catch (err) {
         console.error('[Push] Subscribe error:', err);
-        return false;
+        throw err; // Re-throw to be caught by the UI
     }
 }
 
