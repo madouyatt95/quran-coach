@@ -52,6 +52,9 @@ const SHORTCUTS = [
     { path: '/prayers', emoji: '🕌', label: 'Prières', desc: 'Horaires', gradient: 'linear-gradient(135deg, rgba(255,152,0,0.2), rgba(255,152,0,0.05))' },
     { path: '/themes', emoji: '📚', label: 'Thèmes', desc: 'Coraniques', gradient: 'linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.05))' },
     { path: '/adhkar', emoji: '🤲', label: 'Invocations', desc: 'Adhkar', gradient: 'linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.05))' },
+    { path: '/listen', emoji: '🎧', label: 'Écoute', desc: 'Récitations', gradient: 'linear-gradient(135deg, rgba(76,175,80,0.2), rgba(76,175,80,0.05))' },
+    { path: '/hadiths', emoji: '📜', label: 'Hadiths', desc: 'Prophétiques', gradient: 'linear-gradient(135deg, rgba(156,39,176,0.2), rgba(156,39,176,0.05))' },
+    { path: '/tafsir', emoji: '📖', label: 'Tafsir', desc: 'Exégèse', gradient: 'linear-gradient(135deg, rgba(121,85,72,0.2), rgba(121,85,72,0.05))' },
 ];
 
 interface EssentialSurah {
@@ -275,8 +278,8 @@ export function HomePage() {
     const seasonalTags = useMemo(() => getSeasonalTags(now), [now]);
     const seasonalEvent = HIJRI_MONTH_EVENTS[hijri.month];
 
-    const { totalPagesRead, totalMinutesSpent, readingStreak } = useStatsStore();
     const { currentPage, currentSurah, goToSurah } = useQuranStore();
+    const { readingStreak } = useStatsStore();
     const navigate = useNavigate();
     const nextPrayer = useNextPrayer();
     const dhikr = useDhikr();
@@ -505,25 +508,6 @@ export function HomePage() {
                             <span className="home-shortcut__desc">{s.desc}</span>
                         </Link>
                     ))}
-                </div>
-            </div>
-
-            {/* Stats */}
-            <div className="home-stats">
-                <div className="home-stats__title">Ma progression</div>
-                <div className="home-stats__grid">
-                    <div className="home-stat">
-                        <div className="home-stat__value">{totalPagesRead || 0}</div>
-                        <div className="home-stat__label">Pages lues</div>
-                    </div>
-                    <div className="home-stat">
-                        <div className="home-stat__value">{totalMinutesSpent || 0}</div>
-                        <div className="home-stat__label">Minutes</div>
-                    </div>
-                    <div className="home-stat">
-                        <div className="home-stat__value">{Math.floor((totalPagesRead || 0) / 20)}</div>
-                        <div className="home-stat__label">Juz lus</div>
-                    </div>
                 </div>
             </div>
         </div>

@@ -9,6 +9,7 @@ interface PlaylistsState {
     addItemToPlaylist: (playlistId: string, item: PlaylistItem) => void;
     removeItemFromPlaylist: (playlistId: string, index: number) => void;
     renamePlaylist: (id: string, newName: string) => void;
+    reorderItem: (playlistId: string, fromIndex: number, toIndex: number) => void;
 }
 
 export const usePlaylistsStore = create<PlaylistsState>()(
@@ -61,6 +62,18 @@ export const usePlaylistsStore = create<PlaylistsState>()(
                     playlists: state.playlists.map((p) =>
                         p.id === id ? { ...p, name: newName } : p
                     ),
+                }));
+            },
+
+            reorderItem: (playlistId: string, fromIndex: number, toIndex: number) => {
+                set((state) => ({
+                    playlists: state.playlists.map((p) => {
+                        if (p.id !== playlistId) return p;
+                        const items = [...p.items];
+                        const [moved] = items.splice(fromIndex, 1);
+                        items.splice(toIndex, 0, moved);
+                        return { ...p, items };
+                    }),
                 }));
             },
         }),

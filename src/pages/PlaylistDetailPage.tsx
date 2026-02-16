@@ -1,13 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
-import { ChevronLeft, Play, Trash2, ListMusic, Music } from 'lucide-react';
+import { ChevronLeft, Play, Trash2, ListMusic, Music, ChevronUp, ChevronDown } from 'lucide-react';
 import './PlaylistDetailPage.css';
 
 export function PlaylistDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { playlists, deletePlaylist, removeItemFromPlaylist } = usePlaylistsStore();
+    const { playlists, deletePlaylist, removeItemFromPlaylist, reorderItem } = usePlaylistsStore();
     const { setPlaylist, isPlaying, currentSurahNumber } = useAudioPlayerStore();
 
     const playlist = playlists.find(p => p.id === id);
@@ -101,9 +101,25 @@ export function PlaylistDetailPage() {
                                     </div>
                                     <span className="item-reciter">{item.reciterName}</span>
                                 </div>
-                                <button className="remove-item-btn" onClick={(e) => handleRemoveItem(index, e)}>
-                                    <Trash2 size={16} />
-                                </button>
+                                <div className="item-actions">
+                                    <button
+                                        className="reorder-btn"
+                                        disabled={index === 0}
+                                        onClick={(e) => { e.stopPropagation(); reorderItem(playlist.id, index, index - 1); }}
+                                    >
+                                        <ChevronUp size={16} />
+                                    </button>
+                                    <button
+                                        className="reorder-btn"
+                                        disabled={index === playlist.items.length - 1}
+                                        onClick={(e) => { e.stopPropagation(); reorderItem(playlist.id, index, index + 1); }}
+                                    >
+                                        <ChevronDown size={16} />
+                                    </button>
+                                    <button className="remove-item-btn" onClick={(e) => handleRemoveItem(index, e)}>
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
                             </div>
                         );
                     })

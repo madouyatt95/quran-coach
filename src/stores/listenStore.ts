@@ -28,7 +28,7 @@ const POPULAR_RECITER_IDS = [
     112, // Mohamed Seddik El Manchaoui
     51,  // Abdelbassit Abdelsamad
     118, // Mahmoud Khalil Al-Hussary
-    111, // Mohamed Jibreel
+    2,   // Ibrahime Al Jebrine
     81,  // Faress Abbad
     4    // Shaik Aboubaker Al-Chateri
 ];
