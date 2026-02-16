@@ -5,6 +5,7 @@ export interface WordTiming {
     id: number;
     position: number;
     text: string;
+    textTajweed?: string;
     audioUrl?: string;
     timestampFrom: number;
     timestampTo: number;
@@ -30,7 +31,7 @@ export async function fetchWordTimings(
     // 1. Fetch verse words if not cached (contains text and positions)
     // We'll use a local cache for verse words to avoid redundant calls
     const verseWordsRes = await fetch(
-        `https://api.quran.com/api/v4/verses/by_key/${verseKey}?words=true&word_fields=text_uthmani`
+        `https://api.quran.com/api/v4/verses/by_key/${verseKey}?words=true&word_fields=text_uthmani,text_uthmani_tajweed`
     );
     if (!verseWordsRes.ok) return null;
     const verseData = await verseWordsRes.json();
@@ -78,6 +79,7 @@ export async function fetchWordTimings(
                 id: w.id,
                 position: index + 1,
                 text: w.text_uthmani,
+                textTajweed: w.text_uthmani_tajweed,
                 timestampFrom: relativeFrom,
                 timestampTo: relativeTo,
             };
