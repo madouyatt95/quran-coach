@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getAudioUrl, getSurahAudioUrl, RECITERS } from './quranApi';
+import { getAudioUrl } from './quranApi';
+import { RECITERS } from '../stores/settingsStore';
 
 describe('quranApi', () => {
 
@@ -17,47 +18,29 @@ describe('quranApi', () => {
         });
 
         it('should format ayah number correctly in URL', () => {
-            const url = getAudioUrl('ar.husary', 255);
+            const url = getAudioUrl('ar.alafasy', 255);
             expect(url).toMatch(/\/255\.mp3$/);
-            expect(url).toContain('ar.husary');
+            expect(url).toContain('ar.alafasy');
         });
 
         it('should work for all known reciters', () => {
-            for (const reciterId of Object.keys(RECITERS)) {
-                const url = getAudioUrl(reciterId, 1);
+            for (const reciter of RECITERS) {
+                const url = getAudioUrl(reciter.id, 1);
                 expect(url).toMatch(/\/1\.mp3$/);
                 expect(url.startsWith('https://')).toBe(true);
             }
         });
     });
 
-    // ── getSurahAudioUrl ───────────────────────────────────
-    describe('getSurahAudioUrl', () => {
-        it('should return a valid surah audio URL', () => {
-            const url = getSurahAudioUrl('ar.alafasy', 1);
-            expect(url).toBe('https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/1.mp3');
-        });
-
-        it('should format surah number correctly', () => {
-            const url = getSurahAudioUrl('ar.alafasy', 114);
-            expect(url).toMatch(/\/114\.mp3$/);
-        });
-    });
-
     // ── RECITERS constant ──────────────────────────────────
     describe('RECITERS', () => {
-        it('should contain at least 4 reciters', () => {
-            expect(Object.keys(RECITERS).length).toBeGreaterThanOrEqual(4);
+        it('should contain Mishary Al-Afasy', () => {
+            expect(RECITERS.some(r => r.id === 'ar.alafasy')).toBe(true);
         });
 
-        it('should contain Alafasy', () => {
-            expect(RECITERS).toHaveProperty('ar.alafasy');
-        });
-
-        it('should have URLs starting with https', () => {
-            for (const url of Object.values(RECITERS)) {
-                expect(url.startsWith('https://')).toBe(true);
-            }
+        it('should have quranComId 7 for Alafasy', () => {
+            const alafasy = RECITERS.find(r => r.id === 'ar.alafasy');
+            expect(alafasy?.quranComId).toBe(7);
         });
     });
 });
