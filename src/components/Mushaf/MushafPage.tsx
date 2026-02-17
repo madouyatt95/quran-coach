@@ -60,8 +60,9 @@ export function MushafPage() {
     const [transliterationMap, setTransliterationMap] = useState<Map<number, string>>(new Map());
 
     // Progressive Rendering
-    const [renderedCount, setRenderedCount] = useState(20);
+    const [renderedCount, setRenderedCount] = useState(10);
     const observerTargetRef = useRef<HTMLDivElement | null>(null);
+    const isSilentJumpRef = useRef(false);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
@@ -122,9 +123,9 @@ export function MushafPage() {
                         if (pageNum !== currentPage || ayahNum !== currentAyah) {
                             setCurrentPage(pageNum);
                             setCurrentAyah(ayahNum);
+
                             // Only update general reading bookmark if we are NOT in a silent search jump
-                            // (We detect this if the user hasn't just clicked a search result)
-                            if (!sessionStorage.getItem('scrollToAyah')) {
+                            if (!isSilentJumpRef.current && !sessionStorage.getItem('scrollToAyah')) {
                                 updateProgress();
                             }
                         }
@@ -143,7 +144,7 @@ export function MushafPage() {
             clearTimeout(timeout);
             observer.disconnect();
         };
-    }, [currentSurahAyahs, currentPage, currentAyah, setCurrentPage, setCurrentAyah]);
+    }, [currentSurahAyahs, currentPage, currentAyah, setCurrentPage, setCurrentAyah, updateProgress]);
 
     // Infinite rendering trigger
     useEffect(() => {
@@ -186,7 +187,7 @@ export function MushafPage() {
     useEffect(() => {
         setIsLoading(true);
         setError(null);
-        setRenderedCount(20); // Reset progressive render
+        setRenderedCount(10); // Reset progressive render
 
         Promise.all([
             fetchSurah(currentSurah),
@@ -216,8 +217,13 @@ export function MushafPage() {
             if (scrollData) {
                 try {
                     const { surah, ayah } = JSON.parse(scrollData);
-                    sessionStorage.removeItem('scrollToAyah');
+                    isSilentJumpRef.current = true;
                     scrollToVerse(surah, ayah);
+                    // Clear the silent jump flag after a delay once the observer has had a chance to fire
+                    setTimeout(() => {
+                        isSilentJumpRef.current = false;
+                        sessionStorage.removeItem('scrollToAyah');
+                    }, 2000);
                 } catch (e) { console.error('Failed to parse scrollToAyah', e); }
             }
         }).catch(() => {
