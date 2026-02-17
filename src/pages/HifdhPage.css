@@ -721,6 +721,105 @@
     font-weight: bold;
 }
 
+/* Blind Recitation Mode */
+.hifdh-word--blind {
+    color: var(--color-bg-tertiary) !important;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    text-shadow: none;
+    user-select: none;
+    min-width: 40px;
+    display: inline-block;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.hifdh-word--revealed {
+    animation: wordReveal 0.4s ease-out;
+}
+
+@keyframes wordReveal {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+        background: rgba(76, 175, 80, 0.3);
+    }
+
+    60% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        background: transparent;
+    }
+}
+
+/* Auto-advance toast */
+.hifdh-auto-advance-toast {
+    position: fixed;
+    bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(76, 175, 80, 0.95);
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-ui-sm);
+    font-weight: 600;
+    z-index: 200;
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+    animation: toastPop 0.3s ease-out;
+}
+
+@keyframes toastPop {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+[data-theme="dark"] .hifdh-word--blind {
+    color: rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Add segment to SRS button */
+.hifdh-add-segment-btn {
+    display: block;
+    margin: 8px auto 0;
+    padding: 6px 16px;
+    border: 1px dashed var(--color-primary);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-primary);
+    font-size: var(--text-ui-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hifdh-add-segment-btn:hover,
+.hifdh-add-segment-btn:active {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.hifdh-segment-added {
+    display: block;
+    text-align: center;
+    margin: 8px auto 0;
+    font-size: var(--text-ui-sm);
+    color: #4CAF50;
+    font-weight: 500;
+}
+
 /* Progress Bar */
 .mih-coach-bar {
     position: sticky;

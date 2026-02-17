@@ -14,6 +14,7 @@ interface UseCoachOptions {
 
 export interface CoachState {
     isCoachMode: boolean;
+    blindMode: boolean;
     wordStates: Map<string, WordState>;
     isListening: boolean;
     coachMistakes: Record<string, { expected: string; spoken: string }>;
@@ -32,6 +33,7 @@ export interface CoachState {
     startCoachListening: () => void;
     stopCoachListening: () => void;
     toggleCoachMode: () => void;
+    toggleBlindMode: () => void;
 }
 
 export function useCoach({
@@ -40,6 +42,7 @@ export function useCoach({
     playingIndex,
 }: UseCoachOptions): CoachState {
     const [isCoachMode, setIsCoachMode] = useState(false);
+    const [blindMode, setBlindMode] = useState(false);
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [isListening, setIsListening] = useState(false);
     const [coachMistakes, setCoachMistakes] = useState<Record<string, { expected: string; spoken: string }>>({});
@@ -193,6 +196,11 @@ export function useCoach({
         }
     }, [isCoachMode, stopCoachListening, resetCoach]);
 
+    // Toggle blind mode
+    const toggleBlindMode = useCallback(() => {
+        setBlindMode(prev => !prev);
+    }, []);
+
     // Coach accuracy
     const coachAccuracy = useMemo(() => {
         if (coachTotalProcessed === 0) return 0;
@@ -218,6 +226,7 @@ export function useCoach({
 
     return {
         isCoachMode,
+        blindMode,
         wordStates,
         isListening,
         coachMistakes,
@@ -236,5 +245,6 @@ export function useCoach({
         startCoachListening,
         stopCoachListening,
         toggleCoachMode,
+        toggleBlindMode,
     };
 }

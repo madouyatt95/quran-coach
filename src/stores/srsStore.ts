@@ -5,9 +5,10 @@ import { persist } from 'zustand/middleware';
 // Quality ratings: 0-5 (0-2 = fail, 3-5 = pass)
 
 export interface SRSCard {
-    id: string; // Format: "surah:ayah" e.g., "1:2"
+    id: string; // Format: "surah:ayah" or "surah:ayahStart-ayahEnd"
     surah: number;
     ayah: number;
+    ayahEnd?: number; // Optional end ayah for segments (undefined = single ayah)
     easeFactor: number; // >= 1.3, starts at 2.5
     interval: number; // Days until next review
     repetitions: number; // Consecutive correct reviews
@@ -21,6 +22,7 @@ export interface SRSState {
 
     // Actions
     addCard: (surah: number, ayah: number) => void;
+    addSegmentCard: (surah: number, ayahStart: number, ayahEnd: number) => void;
     reviewCard: (cardId: string, quality: number) => void;
     removeCard: (cardId: string) => void;
     getDueCards: () => SRSCard[];
@@ -92,6 +94,30 @@ export const useSRSStore = create<SRSState>()(
                     interval: 0,
                     repetitions: 0,
                     nextReviewDate: today, // Due immediately
+                    lastReviewDate: null,
+                    addedDate: today,
+                };
+
+                set((state) => ({
+                    cards: { ...state.cards, [id]: newCard }
+                }));
+            },
+
+            addSegmentCard: (surah, ayahStart, ayahEnd) => {
+                const id = `${surah}:${ayahStart}-${ayahEnd}`;
+                const today = getTodayDate();
+
+                if (get().cards[id]) return; // Already exists
+
+                const newCard: SRSCard = {
+                    id,
+                    surah,
+                    ayah: ayahStart,
+                    ayahEnd,
+                    easeFactor: 2.5,
+                    interval: 0,
+                    repetitions: 0,
+                    nextReviewDate: today,
                     lastReviewDate: null,
                     addedDate: today,
                 };

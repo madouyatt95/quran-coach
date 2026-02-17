@@ -12,7 +12,10 @@ import {
     Square,
     BookmarkCheck,
     Mic,
-    MicOff
+    MicOff,
+    Eye,
+    EyeOff,
+    Lightbulb
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -36,7 +39,7 @@ export function HifdhPage() {
     const { surahs } = useQuranStore();
     const { repeatCount, playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
-    const { getDueCards, cards } = useSRSStore();
+    const { getDueCards, cards, addSegmentCard } = useSRSStore();
 
     // Selection state
     const [selectedSurah, setSelectedSurah] = useState(1);
@@ -71,6 +74,10 @@ export function HifdhPage() {
         playingIndex: currentAyahIndex,
     });
 
+    // Auto-advance state
+    const [autoAdvanceCountdown, setAutoAdvanceCountdown] = useState(false);
+    const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     // Handle incoming verse from navigation state (Deep link)
     useEffect(() => {
         const state = location.state as { surah?: number; ayah?: number };
@@ -88,12 +95,18 @@ export function HifdhPage() {
     const dueCards = getDueCards();
     const allCards = Object.values(cards);
 
-    // Load a verse from SRS card
-    const loadFromSRS = (surah: number, ayah: number) => {
+    // Load a verse or segment from SRS card
+    const loadFromSRS = (surah: number, ayah: number, ayahEnd?: number) => {
         setSelectedSurah(surah);
         setStartAyah(ayah);
-        setEndAyah(ayah);
+        setEndAyah(ayahEnd || ayah);
     };
+
+    // Check if current range is already in SRS
+    const currentSegmentId = startAyah === endAyah
+        ? `${selectedSurah}:${startAyah}`
+        : `${selectedSurah}:${startAyah}-${endAyah}`;
+    const isCurrentRangeInSRS = !!cards[currentSegmentId];
 
     // Update max ayahs when surah changes
     useEffect(() => {
@@ -184,6 +197,57 @@ export function HifdhPage() {
         setSelectionStart(null);
         setSelectionEnd(null);
     };
+
+    // Poke hint — play first 2 words of current ayah
+    const handlePoke = useCallback(() => {
+        if (!wordTimings || !audioRef.current || wordTimings.words.length < 2) return;
+        const startTime = wordTimings.words[0].timestampFrom / 1000;
+        const endIdx = Math.min(1, wordTimings.words.length - 1);
+        const endTime = wordTimings.words[endIdx].timestampTo / 1000;
+        audioRef.current.currentTime = startTime;
+        audioRef.current.play();
+        setIsPlaying(true);
+
+        const checkStop = () => {
+            if (audioRef.current && audioRef.current.currentTime >= endTime) {
+                audioRef.current.pause();
+                setIsPlaying(false);
+                audioRef.current.removeEventListener('timeupdate', checkStop);
+            }
+        };
+        audioRef.current.addEventListener('timeupdate', checkStop);
+    }, [wordTimings]);
+
+    // Auto-advance: when coach reaches 100%, advance after 2s
+    useEffect(() => {
+        if (!coach.isCoachMode || coach.coachProgress < 1.0 || coach.allCoachWords.length === 0) {
+            setAutoAdvanceCountdown(false);
+            if (autoAdvanceTimerRef.current) {
+                clearTimeout(autoAdvanceTimerRef.current);
+                autoAdvanceTimerRef.current = null;
+            }
+            return;
+        }
+
+        // 100% reached
+        if (currentAyahIndex < ayahs.length - 1) {
+            setAutoAdvanceCountdown(true);
+            autoAdvanceTimerRef.current = setTimeout(() => {
+                setAutoAdvanceCountdown(false);
+                setCurrentAyahIndex(prev => prev + 1);
+                coach.resetCoach();
+                // Auto-restart listening on next verse
+                setTimeout(() => coach.startCoachListening(), 300);
+            }, 2000);
+        }
+
+        return () => {
+            if (autoAdvanceTimerRef.current) {
+                clearTimeout(autoAdvanceTimerRef.current);
+                autoAdvanceTimerRef.current = null;
+            }
+        };
+    }, [coach.coachProgress, coach.isCoachMode, coach.allCoachWords.length, currentAyahIndex, ayahs.length]);
 
     const selectedTimeRange = useMemo(() => {
         if (!wordTimings || selectionStart === null || selectionEnd === null) return null;
@@ -355,14 +419,15 @@ export function HifdhPage() {
                             <div className="hifdh-srs-due__list">
                                 {dueCards.slice(0, 5).map(card => {
                                     const surahName = surahs.find(s => s.number === card.surah)?.name || '';
+                                    const label = card.ayahEnd ? `V.${card.ayah}-${card.ayahEnd}` : `:${card.ayah}`;
                                     return (
                                         <button
                                             key={card.id}
                                             className="hifdh-srs-card"
-                                            onClick={() => loadFromSRS(card.surah, card.ayah)}
+                                            onClick={() => loadFromSRS(card.surah, card.ayah, card.ayahEnd)}
                                         >
                                             <span className="hifdh-srs-card__surah">{surahName}</span>
-                                            <span className="hifdh-srs-card__ayah">:{card.ayah}</span>
+                                            <span className="hifdh-srs-card__ayah">{label}</span>
                                         </button>
                                     );
                                 })}
@@ -378,14 +443,15 @@ export function HifdhPage() {
                             <div className="hifdh-srs-due__list">
                                 {allCards.slice(0, 5).map(card => {
                                     const surahName = surahs.find(s => s.number === card.surah)?.name || '';
+                                    const label = card.ayahEnd ? `V.${card.ayah}-${card.ayahEnd}` : `:${card.ayah}`;
                                     return (
                                         <button
                                             key={card.id}
                                             className="hifdh-srs-card"
-                                            onClick={() => loadFromSRS(card.surah, card.ayah)}
+                                            onClick={() => loadFromSRS(card.surah, card.ayah, card.ayahEnd)}
                                         >
                                             <span className="hifdh-srs-card__surah">{surahName}</span>
-                                            <span className="hifdh-srs-card__ayah">:{card.ayah}</span>
+                                            <span className="hifdh-srs-card__ayah">{label}</span>
                                         </button>
                                     );
                                 })}
@@ -479,6 +545,19 @@ export function HifdhPage() {
                         </button>
                     </div>
                 </div>
+
+                {/* Add current range to SRS */}
+                {startAyah !== endAyah && !isCurrentRangeInSRS && (
+                    <button
+                        className="hifdh-add-segment-btn"
+                        onClick={() => addSegmentCard(selectedSurah, startAyah, endAyah)}
+                    >
+                        📌 Ajouter V.{startAyah}-{endAyah} au SRS
+                    </button>
+                )}
+                {startAyah !== endAyah && isCurrentRangeInSRS && (
+                    <span className="hifdh-segment-added">✓ Plage V.{startAyah}-{endAyah} dans le SRS</span>
+                )}
             </div>
 
             {/* Main Player Area */}
@@ -500,13 +579,19 @@ export function HifdhPage() {
 
                                 // Coach word state classes
                                 let coachClass = '';
+                                let wordState: string | undefined;
                                 if (coach.isCoachMode) {
                                     const key = `${currentAyahIndex}-${idx}`;
-                                    const state = coach.wordStates.get(key);
-                                    if (state === 'correct') coachClass = 'hifdh-word--correct';
-                                    else if (state === 'error') coachClass = 'hifdh-word--error';
-                                    else if (state === 'current') coachClass = 'hifdh-word--current';
+                                    wordState = coach.wordStates.get(key);
+                                    if (wordState === 'correct') coachClass = 'hifdh-word--correct';
+                                    else if (wordState === 'error') coachClass = 'hifdh-word--error';
+                                    else if (wordState === 'current') coachClass = 'hifdh-word--current';
                                 }
+
+                                // Blind mode: mask word unless correctly revealed
+                                const isBlind = coach.isCoachMode && coach.blindMode;
+                                const isRevealed = wordState === 'correct';
+                                const showText = !isBlind || isRevealed;
 
                                 return (
                                     <span
@@ -516,10 +601,12 @@ export function HifdhPage() {
                                             ${isSelected ? 'range-selected' : ''}
                                             ${isPartiallySelected ? 'single-selected' : ''}
                                             ${coachClass}
+                                            ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
+                                            ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
                                         `}
                                         onClick={() => handleWordClick(idx)}
                                     >
-                                        {word.text}{' '}
+                                        {showText ? word.text : '●●●'}{' '}
                                     </span>
                                 );
                             })}
@@ -567,6 +654,24 @@ export function HifdhPage() {
                         >
                             {coach.isCoachMode ? <MicOff size={18} /> : <Mic size={18} />}
                         </button>
+                        {coach.isCoachMode && (
+                            <>
+                                <button
+                                    className={`hifdh-coach-toggle ${coach.blindMode ? 'active' : ''}`}
+                                    onClick={coach.toggleBlindMode}
+                                    title={coach.blindMode ? 'Afficher les mots' : 'Récitation aveugle'}
+                                >
+                                    {coach.blindMode ? <Eye size={18} /> : <EyeOff size={18} />}
+                                </button>
+                                <button
+                                    className="hifdh-coach-toggle"
+                                    onClick={handlePoke}
+                                    title="Indice : écouter les 2 premiers mots"
+                                >
+                                    <Lightbulb size={18} />
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -576,6 +681,13 @@ export function HifdhPage() {
                 <div className="hifdh-selection-bar">
                     <span>Boucle active de mots</span>
                     <button onClick={resetSelection}><RotateCcw size={14} /> Réinitialiser</button>
+                </div>
+            )}
+
+            {/* Auto-advance toast */}
+            {autoAdvanceCountdown && (
+                <div className="hifdh-auto-advance-toast">
+                    ✓ Verset suivant dans 2s…
                 </div>
             )}
 
