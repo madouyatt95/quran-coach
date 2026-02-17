@@ -12,6 +12,7 @@ import { computeDay, computeStandard, compareWithStandard, formatDate, type DayR
 import { computeWindows, formatWindow, formatIshaWindow, type FiqhWindows } from '../lib/windowsEngine';
 import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
 import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '../lib/prayerNotificationScheduler';
+import { updatePushPreferences } from '../lib/notificationService';
 import './PrayerTimesPage.css';
 
 // ─── Constants ───────────────────────────────────────────
@@ -536,7 +537,10 @@ export function PrayerTimesPage() {
                     <input
                         type="checkbox"
                         checked={daruriSobhEnabled}
-                        onChange={(e) => setDaruriSobhEnabled(e.target.checked)}
+                        onChange={(e) => {
+                            setDaruriSobhEnabled(e.target.checked);
+                            updatePushPreferences({ daruriSobhEnabled: e.target.checked });
+                        }}
                     />
                     <span className="toggle-slider" />
                 </label>
@@ -545,7 +549,10 @@ export function PrayerTimesPage() {
                     <input
                         type="checkbox"
                         checked={daruriAsrEnabled}
-                        onChange={(e) => setDaruriAsrEnabled(e.target.checked)}
+                        onChange={(e) => {
+                            setDaruriAsrEnabled(e.target.checked);
+                            updatePushPreferences({ daruriAsrEnabled: e.target.checked });
+                        }}
                     />
                     <span className="toggle-slider" />
                 </label>
@@ -554,7 +561,10 @@ export function PrayerTimesPage() {
                     <input
                         type="checkbox"
                         checked={akhirIshaEnabled}
-                        onChange={(e) => setAkhirIshaEnabled(e.target.checked)}
+                        onChange={(e) => {
+                            setAkhirIshaEnabled(e.target.checked);
+                            updatePushPreferences({ akhirIshaEnabled: e.target.checked });
+                        }}
                     />
                     <span className="toggle-slider" />
                 </label>

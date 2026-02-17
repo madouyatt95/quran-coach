@@ -42,6 +42,9 @@ export async function subscribeToPush(options: {
     prayerMinutesBefore: number;
     hadithEnabled: boolean;
     challengeEnabled: boolean;
+    daruriSobhEnabled?: boolean;
+    daruriAsrEnabled?: boolean;
+    akhirIshaEnabled?: boolean;
     latitude?: number;
     longitude?: number;
 }): Promise<boolean> {
@@ -79,6 +82,9 @@ export async function subscribeToPush(options: {
                     prayer_minutes_before: options.prayerMinutesBefore,
                     hadith_enabled: options.hadithEnabled,
                     challenge_enabled: options.challengeEnabled,
+                    daruri_sobh_enabled: options.daruriSobhEnabled ?? false,
+                    daruri_asr_enabled: options.daruriAsrEnabled ?? false,
+                    akhir_isha_enabled: options.akhirIshaEnabled ?? false,
                     latitude: options.latitude || null,
                     longitude: options.longitude || null,
                     timezone,
@@ -107,6 +113,9 @@ export async function updatePushPreferences(prefs: {
     prayerMinutesBefore?: number;
     hadithEnabled?: boolean;
     challengeEnabled?: boolean;
+    daruriSobhEnabled?: boolean;
+    daruriAsrEnabled?: boolean;
+    akhirIshaEnabled?: boolean;
     latitude?: number;
     longitude?: number;
 }): Promise<boolean> {
@@ -115,9 +124,21 @@ export async function updatePushPreferences(prefs: {
         const subscription = await registration.pushManager.getSubscription();
         if (!subscription) return false;
 
+        // Map camelCase to snake_case for Supabase columns
+        const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
+        if (prefs.prayerEnabled !== undefined) updateData.prayer_enabled = prefs.prayerEnabled;
+        if (prefs.prayerMinutesBefore !== undefined) updateData.prayer_minutes_before = prefs.prayerMinutesBefore;
+        if (prefs.hadithEnabled !== undefined) updateData.hadith_enabled = prefs.hadithEnabled;
+        if (prefs.challengeEnabled !== undefined) updateData.challenge_enabled = prefs.challengeEnabled;
+        if (prefs.daruriSobhEnabled !== undefined) updateData.daruri_sobh_enabled = prefs.daruriSobhEnabled;
+        if (prefs.daruriAsrEnabled !== undefined) updateData.daruri_asr_enabled = prefs.daruriAsrEnabled;
+        if (prefs.akhirIshaEnabled !== undefined) updateData.akhir_isha_enabled = prefs.akhirIshaEnabled;
+        if (prefs.latitude !== undefined) updateData.latitude = prefs.latitude;
+        if (prefs.longitude !== undefined) updateData.longitude = prefs.longitude;
+
         const { error } = await supabase
             .from('push_subscriptions')
-            .update({ ...prefs, updated_at: new Date().toISOString() })
+            .update(updateData)
             .eq('endpoint', subscription.endpoint);
 
         if (error) {
