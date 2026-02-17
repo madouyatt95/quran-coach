@@ -42,6 +42,7 @@ export function MushafPage() {
         setSurahAyahs, currentSurahAyahs,
         goToSurah, goToPage, goToAyah,
         nextSurah, updateProgress,
+        jumpSignal,
     } = useQuranStore();
 
     const {
@@ -63,6 +64,11 @@ export function MushafPage() {
     const [renderedCount, setRenderedCount] = useState(20);
     const observerTargetRef = useRef<HTMLDivElement | null>(null);
     const isSilentJumpRef = useRef(false);
+
+    // Diagnostic version log
+    useEffect(() => {
+        console.log('[Quran Coach] v1.2.5 - Robust Silent Nav & Jump Signal Active');
+    }, []);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
@@ -125,7 +131,7 @@ export function MushafPage() {
                             setCurrentAyah(ayahNum);
 
                             // Only update general reading bookmark if we are NOT in a silent search jump
-                            const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump') || !!sessionStorage.getItem('scrollToAyah');
+                            const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump');
                             if (!isSilent) {
                                 updateProgress(); // No {force:true} here -> uses 10v threshold
                             }
@@ -227,38 +233,43 @@ export function MushafPage() {
 
             if (maskMode === 'partial') generatePartialMask(ayahs);
 
-            // Handle explicit scrolls from Search/Shazam
-            const isSilentJump = sessionStorage.getItem('isSilentJump');
-            const pageScroll = sessionStorage.getItem('scrollToPage');
-            const ayahScroll = sessionStorage.getItem('scrollToAyah');
-
-            if (isSilentJump || pageScroll || ayahScroll) {
-                isSilentJumpRef.current = true;
-
-                if (ayahScroll) {
-                    try {
-                        const { surah, ayah } = JSON.parse(ayahScroll);
-                        scrollToVerse(surah, ayah);
-                    } catch (e) { console.error('Verse jump parse failed', e); }
-                } else if (pageScroll) {
-                    const p = parseInt(pageScroll);
-                    if (p > 0) scrollToPageStart(p);
-                    else window.scrollTo({ top: 0, behavior: 'auto' }); // Scroll to top for s.0
-                }
-
-                // Clear flags after a delay to ensure observer is blocked
-                setTimeout(() => {
-                    isSilentJumpRef.current = false;
-                    sessionStorage.removeItem('isSilentJump');
-                    sessionStorage.removeItem('scrollToPage');
-                    sessionStorage.removeItem('scrollToAyah');
-                }, 2000);
-            }
         }).catch(() => {
             setError('Impossible de charger la sourate. Vérifiez votre connexion.');
             setIsLoading(false);
         });
     }, [currentSurah, showTranslation, showTransliteration]);
+
+    // Dedicated Jump Handling Effect - react to signal even if surah stays the same
+    useEffect(() => {
+        if (jumpSignal === 0) return;
+
+        const isSilentJump = sessionStorage.getItem('isSilentJump');
+        const pageScroll = sessionStorage.getItem('scrollToPage');
+        const ayahScroll = sessionStorage.getItem('scrollToAyah');
+
+        if (isSilentJump || pageScroll || ayahScroll) {
+            isSilentJumpRef.current = true;
+            
+            if (ayahScroll) {
+                try {
+                    const { surah, ayah } = JSON.parse(ayahScroll);
+                    scrollToVerse(surah, ayah);
+                } catch (e) { console.error('Verse jump parse failed', e); }
+            } else if (pageScroll) {
+                const p = parseInt(pageScroll);
+                if (p > 0) scrollToPageStart(p);
+                else window.scrollTo({ top: 0, behavior: 'auto' });
+            }
+
+            // Clear flags after a longer delay to ensure observer is blocked
+            setTimeout(() => {
+                isSilentJumpRef.current = false;
+                sessionStorage.removeItem('isSilentJump');
+                sessionStorage.removeItem('scrollToPage');
+                sessionStorage.removeItem('scrollToAyah');
+            }, 3000);
+        }
+    }, [jumpSignal, scrollToVerse, scrollToPageStart]);
 
     // Regenerate partial mask when mode changes
     useEffect(() => {

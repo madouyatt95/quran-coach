@@ -23,6 +23,7 @@ interface QuranState {
     // Reading progress
     progress: ReadingProgress | null;
     isExploring: boolean; // Flag to prevent bookmark updates during search/exploration
+    jumpSignal: number;  // Counter to trigger scroll effects on the same surah
 
     // Actions
     setSurahs: (surahs: Surah[]) => void;
@@ -56,6 +57,7 @@ export const useQuranStore = create<QuranState>()(
             error: null,
             progress: null,
             isExploring: false,
+            jumpSignal: 0,
 
             setSurahs: (surahs) => set({ surahs }),
             setCurrentPage: (currentPage) => set({ currentPage }),
@@ -106,12 +108,13 @@ export const useQuranStore = create<QuranState>()(
                         }
                     }
 
-                    set({
+                    set((state) => ({
                         currentPage: page,
                         currentSurah: surah,
                         currentAyah: 1,
-                        isExploring: !!options.silent
-                    });
+                        isExploring: !!options.silent,
+                        jumpSignal: state.jumpSignal + 1
+                    }));
                     if (!options.silent) {
                         get().updateProgress();
                     }
@@ -120,11 +123,12 @@ export const useQuranStore = create<QuranState>()(
 
             goToSurah: (surah, options = {}) => {
                 if (surah >= 1 && surah <= 114) {
-                    set({
+                    set((state) => ({
                         currentSurah: surah,
                         currentAyah: 1,
-                        isExploring: !!options.silent
-                    });
+                        isExploring: !!options.silent,
+                        jumpSignal: state.jumpSignal + 1
+                    }));
                     if (!options.silent) {
                         get().updateProgress();
                     }
@@ -132,15 +136,15 @@ export const useQuranStore = create<QuranState>()(
             },
 
             goToAyah: (surah, ayah, page, options = {}) => {
-                const updateState: Partial<QuranState> = {
+                const updateState: any = {
                     currentSurah: surah,
                     currentAyah: ayah,
-                    isExploring: !!options.silent
+                    isExploring: !!options.silent,
                 };
                 if (page) {
                     updateState.currentPage = page;
                 }
-                set(updateState);
+                set((state) => ({ ...updateState, jumpSignal: state.jumpSignal + 1 }));
                 if (!options.silent) {
                     get().updateProgress();
                 }
