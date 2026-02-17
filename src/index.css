@@ -80,6 +80,17 @@
   --z-overlay: 90;
   --z-header: 80;
   --z-nav: 70;
+
+  /* Global Aliases for Module Consistency */
+  --background: var(--color-bg-primary);
+  --bg: var(--color-bg-primary);
+  --surface-1: var(--color-bg-secondary);
+  --surface-2: var(--color-bg-tertiary);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border: var(--color-bg-tertiary);
+  --gold: #c9a84c;
 }
 
 /* Light Theme */

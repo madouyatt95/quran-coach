@@ -13,7 +13,21 @@
     color: var(--text-primary);
     transition: background 0.8s ease;
     padding-bottom: 110px;
-    /* space for bottom nav */
+    position: relative;
+    z-index: 0;
+}
+
+.prayer-times-page::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--prayer-bg-gradient);
+    opacity: 0.12;
+    /* Subtle theme overlay for the whole page */
+    filter: blur(60px);
+    z-index: -1;
+    pointer-events: none;
+    transition: background 0.8s ease;
 }
 
 /* ─── Themes ─── */
