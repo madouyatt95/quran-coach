@@ -5,7 +5,8 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, RotateCcw } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
-import { ANGLE_PRESETS, DEFAULT_PRAYER_SETTINGS, type AnglePreset, type HighLatMode } from '../lib/prayerEngine';
+import { useNotificationStore } from '../stores/notificationStore';
+import { ANGLE_PRESETS, DEFAULT_PRAYER_SETTINGS, type AnglePreset, type HighLatMode, SALAT_KEYS, PRAYER_NAMES_FR } from '../lib/prayerEngine';
 import './PrayerSettingsPage.css';
 
 const HIGH_LAT_OPTIONS: { value: HighLatMode; label: string }[] = [
@@ -28,7 +29,9 @@ const PRAYER_ADJ_KEYS = [
 export function PrayerSettingsPage() {
     const navigate = useNavigate();
     const store = usePrayerStore();
+    const notifStore = useNotificationStore();
     const s = store.settings;
+    const nc = notifStore.prayerMinutesConfig;
 
     return (
         <div className="prayer-settings-page">
@@ -285,6 +288,24 @@ export function PrayerSettingsPage() {
                         onChange={(e) => store.updateFajrSafety(parseInt(e.target.value) || 0)}
                     />
                 </div>
+            </div>
+
+            {/* Notification Delays */}
+            <div className="ps-section">
+                <div className="ps-section__title">🔔 Délais de notification (minutes avant)</div>
+                <div className="ps-section__desc">Réglez le délai d'alerte individuellement pour chaque prière</div>
+                {SALAT_KEYS.map((key) => (
+                    <div className="ps-row" key={key}>
+                        <label>{PRAYER_NAMES_FR[key]}</label>
+                        <input
+                            type="number"
+                            min="0"
+                            max="60"
+                            value={nc[key] ?? 10}
+                            onChange={(e) => notifStore.setPrayerMinuteFor(key, parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+                ))}
             </div>
         </div>
     );

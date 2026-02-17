@@ -40,6 +40,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
 export async function subscribeToPush(options: {
     prayerEnabled: boolean;
     prayerMinutesBefore: number;
+    prayerMinutesConfig: Record<string, number>;
     hadithEnabled: boolean;
     challengeEnabled: boolean;
     daruriSobhEnabled?: boolean;
@@ -80,6 +81,7 @@ export async function subscribeToPush(options: {
                     keys_auth: subJson.keys.auth,
                     prayer_enabled: options.prayerEnabled,
                     prayer_minutes_before: options.prayerMinutesBefore,
+                    prayer_minutes_config: options.prayerMinutesConfig,
                     hadith_enabled: options.hadithEnabled,
                     challenge_enabled: options.challengeEnabled,
                     daruri_sobh_enabled: options.daruriSobhEnabled ?? false,
@@ -111,6 +113,7 @@ export async function subscribeToPush(options: {
 export async function updatePushPreferences(prefs: {
     prayerEnabled?: boolean;
     prayerMinutesBefore?: number;
+    prayerMinutesConfig?: Record<string, number>;
     hadithEnabled?: boolean;
     challengeEnabled?: boolean;
     daruriSobhEnabled?: boolean;
@@ -128,6 +131,7 @@ export async function updatePushPreferences(prefs: {
         const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
         if (prefs.prayerEnabled !== undefined) updateData.prayer_enabled = prefs.prayerEnabled;
         if (prefs.prayerMinutesBefore !== undefined) updateData.prayer_minutes_before = prefs.prayerMinutesBefore;
+        if (prefs.prayerMinutesConfig !== undefined) updateData.prayer_minutes_config = prefs.prayerMinutesConfig;
         if (prefs.hadithEnabled !== undefined) updateData.hadith_enabled = prefs.hadithEnabled;
         if (prefs.challengeEnabled !== undefined) updateData.challenge_enabled = prefs.challengeEnabled;
         if (prefs.daruriSobhEnabled !== undefined) updateData.daruri_sobh_enabled = prefs.daruriSobhEnabled;

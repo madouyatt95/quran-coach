@@ -89,6 +89,13 @@ export const ANGLE_PRESETS: Record<AnglePreset, { fajrAngle: number; ishaAngle: 
     CUSTOM: { fajrAngle: 18, ishaAngle: 17, label: 'Personnalisé', labelAr: 'مخصص' },
 };
 
+export const PRAYER_NAMES_FR: Record<string, string> = {
+    fajr: 'Sobh', sunrise: 'Shuruq', dhuhr: 'Dhuhr',
+    asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha',
+};
+
+export const SALAT_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+
 // ─── Default Settings ────────────────────────────────────
 
 export const DEFAULT_PRAYER_SETTINGS: PrayerSettings = {
@@ -305,4 +312,15 @@ export function compareWithStandard(
         deltas[k] = diffMinutes(userTimes[k], standardTimes[k]);
     }
     return deltas;
+}
+
+/**
+ * Format date to Hijri string (UMM AL-QURA).
+ */
+export function getHijriDate(date: Date = new Date()): string {
+    return new Intl.DateTimeFormat('fr-FR-u-ca-islamic-uma', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(date);
 }

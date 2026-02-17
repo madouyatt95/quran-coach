@@ -9,7 +9,6 @@ import { HomePage } from './pages/HomePage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
 import { useStatsStore } from './stores/statsStore';
-import { useAudioPlayerStore } from './stores/audioPlayerStore';
 import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
@@ -50,32 +49,6 @@ function PageLoader() {
 function ReadPagePersistent() {
   const location = useLocation();
   const isActive = location.pathname === '/read';
-  const wasPlayingRef = useRef(false);
-
-  // Auto-pause audio when leaving /read, resume when returning
-  useEffect(() => {
-    const audioStore = useAudioPlayerStore.getState();
-    if (!isActive) {
-      // Leaving: pause if playing, remember state
-      if (audioStore.isPlaying) {
-        wasPlayingRef.current = true;
-        const audio = audioStore.getAudioRef();
-        audio.pause();
-        useAudioPlayerStore.setState({ isPlaying: false });
-      }
-    } else {
-      // Returning: resume if was playing before
-      if (wasPlayingRef.current) {
-        wasPlayingRef.current = false;
-        const audio = audioStore.getAudioRef();
-        if (audio.src) {
-          audio.play().catch(() => { });
-          useAudioPlayerStore.setState({ isPlaying: true });
-        }
-      }
-    }
-  }, [isActive]);
-
   return (
     <div style={{ display: isActive ? 'contents' : 'none' }}>
       <ReadPage />

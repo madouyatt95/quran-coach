@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { getAudioUrl } from '../../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../../lib/wordTimings';
 import type { Ayah } from '../../../types';
@@ -62,12 +63,32 @@ export function useMushafAudio({
     const currentPageRef = useRef(currentPage);
 
     // Background/visibility tracking
+    const location = useLocation();
+    const wasPlayingRef = useRef(false);
     const isHiddenRef = useRef(false);
     const pendingAutoAdvance = useRef(false);
 
     if (!audioRef.current) {
         audioRef.current = new Audio();
     }
+
+    // Auto-pause when leaving /read, resume when returning
+    useEffect(() => {
+        const isActive = location.pathname === '/read';
+        if (!isActive) {
+            if (audioPlaying) {
+                wasPlayingRef.current = true;
+                audioRef.current?.pause();
+                setAudioPlaying(false);
+            }
+        } else {
+            if (wasPlayingRef.current) {
+                wasPlayingRef.current = false;
+                audioRef.current?.play().catch(() => { });
+                setAudioPlaying(true);
+            }
+        }
+    }, [location.pathname, audioPlaying]);
 
     // Sync refs synchronously
     currentPageRef.current = currentPage;

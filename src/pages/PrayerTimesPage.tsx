@@ -8,19 +8,18 @@ import { useNavigate } from 'react-router-dom';
 import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
-import { computeDay, computeStandard, compareWithStandard, formatDate, type DayResult, ANGLE_PRESETS } from '../lib/prayerEngine';
+import {
+    computeDay, computeStandard, compareWithStandard, formatDate, type DayResult,
+    ANGLE_PRESETS, getHijriDate, PRAYER_NAMES_FR, SALAT_KEYS
+} from '../lib/prayerEngine';
 import { computeWindows, formatWindow, formatIshaWindow, type FiqhWindows } from '../lib/windowsEngine';
 import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
 import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '../lib/prayerNotificationScheduler';
 import { updatePushPreferences } from '../lib/notificationService';
+import { PrayerCalendarModal } from '../components/Prayer/PrayerCalendarModal';
 import './PrayerTimesPage.css';
 
 // ─── Constants ───────────────────────────────────────────
-
-const PRAYER_NAMES_FR: Record<string, string> = {
-    fajr: 'Sobh', sunrise: 'Shuruq', dhuhr: 'Dhuhr',
-    asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha',
-};
 
 const PRAYER_NAMES_AR: Record<string, string> = {
     fajr: 'الصبح', sunrise: 'الشروق', dhuhr: 'الظهر',
@@ -33,7 +32,6 @@ const PRAYER_EMOJIS: Record<string, string> = {
 };
 
 const PRAYER_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
-const SALAT_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
 // ─── Geolocation helper (standalone, no hooks) ───────────
 
@@ -98,11 +96,14 @@ export function PrayerTimesPage() {
     const [error, setError] = useState<string | null>(null);
     const [showComparator, setShowComparator] = useState(false);
     const [showTransparency, setShowTransparency] = useState(false);
+    const [showCalendar, setShowCalendar] = useState(false);
     const [dayResult, setDayResult] = useState<DayResult | null>(null);
     const [windows, setWindows] = useState<FiqhWindows | null>(null);
     const [deltas, setDeltas] = useState<Record<string, number> | null>(null);
     const [countdown, setCountdown] = useState('');
     const [nextPrayerName, setNextPrayerName] = useState('');
+    const [progress, setProgress] = useState(0);
+    const [hijriDateLabel, setHijriDateLabel] = useState('');
 
     // Keep a ref to avoid stale closures but NOT in dependency arrays
     const computeIdRef = useRef(0);
@@ -179,31 +180,69 @@ export function PrayerTimesPage() {
 
         const update = () => {
             const now = new Date();
-            const currentMin = now.getHours() * 60 + now.getMinutes();
+            const nowMs = now.getTime();
 
-            for (const key of SALAT_KEYS) {
+            setHijriDateLabel(getHijriDate(now));
+
+            let nextP = 'fajr';
+            let nextPMs = 0;
+            let prevPMs = 0;
+
+            // Find next prayer and previous prayer for progress bar
+            for (let i = 0; i < SALAT_KEYS.length; i++) {
+                const key = SALAT_KEYS[i];
                 const t = dayResult.times[key];
-                const pMin = t.getHours() * 60 + t.getMinutes();
-                if (pMin > currentMin) {
-                    const diff = pMin - currentMin;
-                    const hrs = Math.floor(diff / 60);
-                    setCountdown(hrs > 0 ? `${hrs}h ${diff % 60}min` : `${diff % 60} min`);
-                    setNextPrayerName(key);
-                    return;
+                if (t.getTime() > nowMs) {
+                    nextP = key;
+                    nextPMs = t.getTime();
+                    if (i > 0) {
+                        prevPMs = dayResult.times[SALAT_KEYS[i - 1]].getTime();
+                    } else {
+                        // Previous was Isha yesterday
+                        const yesterday = new Date(now);
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        const yesterdayTimes = computeDay(yesterday, lat || 0, usePrayerStore.getState().lng || 0, settings).times;
+                        prevPMs = yesterdayTimes.isha.getTime();
+                    }
+                    break;
                 }
             }
-            // All prayers passed → Fajr tomorrow
-            const fajrTime = dayResult.times.fajr;
-            const fM = fajrTime.getHours() * 60 + fajrTime.getMinutes();
-            const diff = (24 * 60 - currentMin) + fM;
-            setCountdown(`${Math.floor(diff / 60)}h ${diff % 60}min`);
-            setNextPrayerName('fajr');
+
+            // If all prayers passed (after Isha), next is Fajr tomorrow
+            if (nextPMs === 0) {
+                nextP = 'fajr';
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowTimes = computeDay(tomorrow, lat || 0, usePrayerStore.getState().lng || 0, settings).times;
+                nextPMs = tomorrowTimes.fajr.getTime();
+                prevPMs = dayResult.times.isha.getTime();
+            }
+
+            setNextPrayerName(nextP);
+
+            // Countdown string
+            const diffMs = nextPMs - nowMs;
+            const diffSec = Math.floor(diffMs / 1000);
+            const hrs = Math.floor(diffSec / 3600);
+            const mins = Math.floor((diffSec % 3600) / 60);
+            const secs = diffSec % 60;
+
+            const countdownStr = hrs > 0
+                ? `${hrs}h ${mins}m ${secs}s`
+                : `${mins}m ${secs}s`;
+            setCountdown(countdownStr);
+
+            // Progress percentage
+            const totalWindow = nextPMs - prevPMs;
+            const elapsed = nowMs - prevPMs;
+            const pct = Math.min(100, Math.max(0, (elapsed / totalWindow) * 100));
+            setProgress(pct);
         };
 
         update();
-        const interval = setInterval(update, 30000);
+        const interval = setInterval(update, 1000);
         return () => clearInterval(interval);
-    }, [dayResult]);
+    }, [dayResult, lat, settings]);
 
     // ─── Day navigation ───────────────────────────────────
 
@@ -302,7 +341,10 @@ export function PrayerTimesPage() {
                     <button onClick={() => goDay(-1)} className="prayer-day-nav__btn">
                         <ChevronLeft size={20} />
                     </button>
-                    <span className="prayer-day-nav__label">{dateLabel}</span>
+                    <div className="prayer-day-nav__center">
+                        <span className="prayer-day-nav__label">{dateLabel}</span>
+                        <div className="prayer-day-nav__hijri">{hijriDateLabel}</div>
+                    </div>
                     <button onClick={() => goDay(1)} className="prayer-day-nav__btn">
                         <ChevronRight size={20} />
                     </button>
@@ -327,6 +369,12 @@ export function PrayerTimesPage() {
                         <div className="prayer-next__countdown">
                             <Clock size={12} /> dans {countdown}
                         </div>
+                        <div className="prayer-next__progress-wrap">
+                            <div
+                                className="prayer-next__progress-bar"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
                     </div>
                 </div>
             )}
@@ -342,8 +390,16 @@ export function PrayerTimesPage() {
             {/* Prayer Times List */}
             <div className="prayer-list">
                 <div className="prayer-list__title">
-                    <Clock size={14} />
-                    <span>Horaires</span>
+                    <div className="prayer-list__title-left">
+                        <Clock size={14} />
+                        <span>Horaires</span>
+                    </div>
+                    <button
+                        className="prayer-list__month-btn"
+                        onClick={() => setShowCalendar(true)}
+                    >
+                        Voir le mois
+                    </button>
                 </div>
                 {PRAYER_KEYS.map((key) => (
                     <div
@@ -569,6 +625,17 @@ export function PrayerTimesPage() {
                     <span className="toggle-slider" />
                 </label>
             </div>
+
+            {/* Month View Modal */}
+            <PrayerCalendarModal
+                isOpen={showCalendar}
+                onClose={() => setShowCalendar(false)}
+                lat={lat || 0}
+                lng={usePrayerStore.getState().lng || 0}
+                settings={settings}
+            />
+
+            <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
         </div>
     );
 }

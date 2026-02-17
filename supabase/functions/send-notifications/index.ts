@@ -360,7 +360,8 @@ serve(async (req) => {
                         { key: "Isha", name: "Ishaa", nameAr: "العشاء", emoji: "🌙" },
                     ];
 
-                    const minutesBefore = sub.prayer_minutes_before || 10;
+                    const globalMinutesBefore = sub.prayer_minutes_before || 10;
+                    const config = sub.prayer_minutes_config || {};
 
                     for (const prayer of prayers) {
                         const timeStr = times[prayer.key as keyof PrayerTimesResponse];
@@ -368,6 +369,9 @@ serve(async (req) => {
 
                         const prayerMin = toMin(timeStr);
                         const diff = prayerMin - currentMin;
+
+                        // Use specific minutes for this prayer if configured, else global fallback
+                        const minutesBefore = config[prayer.key.toLowerCase()] ?? globalMinutesBefore;
 
                         // Notify if prayer is within [minutesBefore-3, minutesBefore+3] window (5-min cron)
                         if (diff >= minutesBefore - 3 && diff <= minutesBefore + 3) {
