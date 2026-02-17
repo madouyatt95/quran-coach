@@ -82,6 +82,8 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
+    padding-right: 48px;
+    /* leave space for the fixed burger menu button */
 }
 
 .prayer-header__location {
