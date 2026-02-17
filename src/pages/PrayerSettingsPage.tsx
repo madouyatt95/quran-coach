@@ -2,11 +2,13 @@
  * PrayerSettingsPage — Advanced prayer calculation settings.
  */
 
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, RotateCcw } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import { ANGLE_PRESETS, DEFAULT_PRAYER_SETTINGS, type AnglePreset, type HighLatMode, SALAT_KEYS, PRAYER_NAMES_FR } from '../lib/prayerEngine';
+import { updatePushPreferences } from '../lib/notificationService';
 import './PrayerSettingsPage.css';
 
 const HIGH_LAT_OPTIONS: { value: HighLatMode; label: string }[] = [
@@ -32,6 +34,16 @@ export function PrayerSettingsPage() {
     const notifStore = useNotificationStore();
     const s = store.settings;
     const nc = notifStore.prayerMinutesConfig;
+
+    // Sync settings to Supabase when they change (if notifications enabled)
+    useEffect(() => {
+        if (notifStore.enabled) {
+            updatePushPreferences({
+                prayerSettings: s,
+                prayerMinutesConfig: nc
+            }).catch(err => console.error('[PrayerSettings] Sync error:', err));
+        }
+    }, [s, nc, notifStore.enabled]);
 
     return (
         <div className="prayer-settings-page">

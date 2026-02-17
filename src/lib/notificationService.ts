@@ -48,6 +48,7 @@ export async function subscribeToPush(options: {
     akhirIshaEnabled?: boolean;
     latitude?: number;
     longitude?: number;
+    prayerSettings?: any;
 }): Promise<boolean> {
     try {
         if (!VAPID_PUBLIC_KEY) {
@@ -89,6 +90,7 @@ export async function subscribeToPush(options: {
                     akhir_isha_enabled: options.akhirIshaEnabled ?? false,
                     latitude: options.latitude || null,
                     longitude: options.longitude || null,
+                    prayer_settings: options.prayerSettings || {},
                     timezone,
                     updated_at: new Date().toISOString(),
                 },
@@ -121,6 +123,7 @@ export async function updatePushPreferences(prefs: {
     akhirIshaEnabled?: boolean;
     latitude?: number;
     longitude?: number;
+    prayerSettings?: any;
 }): Promise<boolean> {
     try {
         const registration = await navigator.serviceWorker.ready;
@@ -139,6 +142,7 @@ export async function updatePushPreferences(prefs: {
         if (prefs.akhirIshaEnabled !== undefined) updateData.akhir_isha_enabled = prefs.akhirIshaEnabled;
         if (prefs.latitude !== undefined) updateData.latitude = prefs.latitude;
         if (prefs.longitude !== undefined) updateData.longitude = prefs.longitude;
+        if (prefs.prayerSettings !== undefined) updateData.prayer_settings = prefs.prayerSettings;
 
         const { error } = await supabase
             .from('push_subscriptions')

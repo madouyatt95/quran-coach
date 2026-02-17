@@ -270,20 +270,32 @@ function roundCoord(n: number): number {
     return Math.round(n * 10) / 10; // ~11km precision — same city shares cache
 }
 
-async function fetchPrayerTimes(lat: number, lng: number): Promise<PrayerTimesResponse | null> {
-    const key = `${roundCoord(lat)},${roundCoord(lng)}`;
-    if (prayerTimesCache.has(key)) return prayerTimesCache.get(key)!;
+async function fetchPrayerTimes(
+    lat: number,
+    lng: number,
+    settings: any = {}
+): Promise<PrayerTimesResponse | null> {
+    const anglePreset = settings.anglePreset || "STANDARD_18_17";
+    const asrShadow = settings.asrShadow || 1; // 1=Shafi, 2=Hanafi
+    const school = asrShadow === 2 ? 1 : 0;
+
+    // Map presets to AlAdhan custom angles if needed, or use "method=2" (ISNA) / "method=3" (MWL)
+    // For Quran Coach, we'll use method=99 (Custom) to be precise with user's angles
+    const fAngle = settings.fajrAngle || 18;
+    const iAngle = settings.ishaAngle || 17;
+
+    const cacheKey = `${roundCoord(lat)},${roundCoord(lng)},${fAngle},${iAngle},${school}`;
+    if (prayerTimesCache.has(cacheKey)) return prayerTimesCache.get(cacheKey)!;
 
     try {
-        const resp = await fetch(
-            `https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?latitude=${lat}&longitude=${lng}&method=2`
-        );
+        const url = `https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?latitude=${lat}&longitude=${lng}&method=99&methodSettings=${fAngle},null,${iAngle}&school=${school}`;
+        const resp = await fetch(url);
         const data = await resp.json();
         const times = data.code === 200 ? data.data.timings : null;
-        prayerTimesCache.set(key, times);
+        prayerTimesCache.set(cacheKey, times);
         return times;
     } catch {
-        prayerTimesCache.set(key, null);
+        prayerTimesCache.set(cacheKey, null);
         return null;
     }
 }
@@ -341,7 +353,7 @@ serve(async (req) => {
 
         // ─── Rappels de prière ────────────────────
         if (sub.latitude && sub.longitude) {
-            const times = await fetchPrayerTimes(sub.latitude, sub.longitude);
+            const times = await fetchPrayerTimes(sub.latitude, sub.longitude, sub.prayer_settings);
             if (times) {
                 // Helper: parse "HH:MM" → minutes from midnight
                 const toMin = (t: string) => {
@@ -362,19 +374,31 @@ serve(async (req) => {
 
                     const globalMinutesBefore = sub.prayer_minutes_before || 10;
                     const config = sub.prayer_minutes_config || {};
+                    const settings = sub.prayer_settings || {};
+                    const adjustments = settings.adjustmentsMin || {};
 
                     for (const prayer of prayers) {
-                        const timeStr = times[prayer.key as keyof PrayerTimesResponse];
-                        if (!timeStr) continue;
+                        const rawTimeStr = times[prayer.key as keyof PrayerTimesResponse];
+                        if (!rawTimeStr) continue;
 
-                        const prayerMin = toMin(timeStr);
+                        let prayerMin = toMin(rawTimeStr);
+
+                        // Apply manual adjustments from settings
+                        const adj = adjustments[prayer.key.toLowerCase()] || 0;
+                        prayerMin += adj;
+
                         const diff = prayerMin - currentMin;
 
                         // Use specific minutes for this prayer if configured, else global fallback
                         const minutesBefore = config[prayer.key.toLowerCase()] ?? globalMinutesBefore;
 
-                        // Notify if prayer is within [minutesBefore-3, minutesBefore+3] window (5-min cron)
+                        // Notify if prayer is within window
                         if (diff >= minutesBefore - 3 && diff <= minutesBefore + 3) {
+                            // Format adjusted time for the message
+                            const adjH = Math.floor((prayerMin % 1440) / 60);
+                            const adjM = Math.floor(prayerMin % 60);
+                            const timeStr = `${adjH.toString().padStart(2, '0')}:${adjM.toString().padStart(2, '0')}`;
+
                             const ok = await sendPush(sub, {
                                 title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
                                 body: `${prayer.name} dans ~${minutesBefore} minutes (${timeStr})`,

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { X, Stars, Bell, BellOff } from 'lucide-react';
 import { useNotificationStore } from '../../stores/notificationStore';
+import { usePrayerStore } from '../../stores/prayerStore';
 import {
     requestNotificationPermission,
     subscribeToPush,
@@ -16,6 +17,7 @@ interface SideMenuProps {
 
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     const notif = useNotificationStore();
+    const prayer = usePrayerStore();
     const [isLoading, setIsLoading] = useState(false);
 
     if (!isOpen) return null;
@@ -46,6 +48,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                         daruriSobhEnabled: notif.daruriSobhEnabled,
                         daruriAsrEnabled: notif.daruriAsrEnabled,
                         akhirIshaEnabled: notif.akhirIshaEnabled,
+                        prayerSettings: prayer.settings,
                     });
 
                     if (ok) {
