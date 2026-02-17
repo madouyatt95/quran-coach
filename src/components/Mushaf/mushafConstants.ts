@@ -42,10 +42,9 @@ export const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad
 export type WordState = 'correct' | 'error' | 'current' | 'unread';
 export type MaskMode = 'visible' | 'hidden' | 'partial' | 'minimal';
 
-// Convert Western numbers to Arabic-Indic numerals (٠١٢٣٤٥٦٧٨٩)
+// Convert Western numbers to Arabic-Indic numerals (standard Western numerals as requested)
 export function toArabicNumbers(num: number | string): string {
-    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return num.toString().replace(/\d/g, (d) => arabicDigits[parseInt(d)]);
+    return num.toString();
 }
 
 // Wrap a number in traditional Arabic verse glyphs ﴿ ﴾
