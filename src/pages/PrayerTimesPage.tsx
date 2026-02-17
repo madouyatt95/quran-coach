@@ -17,6 +17,7 @@ import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
 import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '../lib/prayerNotificationScheduler';
 import { updatePushPreferences } from '../lib/notificationService';
 import { PrayerCalendarModal } from '../components/Prayer/PrayerCalendarModal';
+import { SideMenu } from '../components/Navigation/SideMenu';
 import './PrayerTimesPage.css';
 
 // ─── Constants ───────────────────────────────────────────
@@ -97,6 +98,7 @@ export function PrayerTimesPage() {
     const [showComparator, setShowComparator] = useState(false);
     const [showTransparency, setShowTransparency] = useState(false);
     const [showCalendar, setShowCalendar] = useState(false);
+    const [showSideMenu, setShowSideMenu] = useState(false);
     const [dayResult, setDayResult] = useState<DayResult | null>(null);
     const [windows, setWindows] = useState<FiqhWindows | null>(null);
     const [deltas, setDeltas] = useState<Record<string, number> | null>(null);

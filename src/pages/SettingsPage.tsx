@@ -70,8 +70,12 @@ export function SettingsPage() {
                 const ok = await subscribeToPush({
                     prayerEnabled: notif.prayerEnabled,
                     prayerMinutesBefore: notif.prayerMinutesBefore,
+                    prayerMinutesConfig: notif.prayerMinutesConfig,
                     hadithEnabled: notif.hadithEnabled,
                     challengeEnabled: notif.challengeEnabled,
+                    daruriSobhEnabled: notif.daruriSobhEnabled,
+                    daruriAsrEnabled: notif.daruriAsrEnabled,
+                    akhirIshaEnabled: notif.akhirIshaEnabled,
                 });
                 if (ok) {
                     notif.setEnabled(true);
