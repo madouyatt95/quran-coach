@@ -2,7 +2,7 @@
  * PrayerSettingsPage — Advanced prayer calculation settings.
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, RotateCcw } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
