@@ -113,6 +113,38 @@ const TRANSLATION_EDITIONS: Record<string, string> = {
     fr: 'fr.hamidullah',
 };
 
+export async function fetchSurahTranslation(
+    surahNumber: number,
+    language: string = 'fr'
+): Promise<Map<number, string>> {
+    const edition = TRANSLATION_EDITIONS[language] || TRANSLATION_EDITIONS.fr;
+    const response = await fetch(`${API_BASE}/surah/${surahNumber}/${edition}`);
+    const data = await response.json();
+
+    const map = new Map<number, string>();
+    if (data.code === 200 && data.data?.ayahs) {
+        for (const ayah of data.data.ayahs) {
+            map.set(ayah.number, ayah.text);
+        }
+    }
+    return map;
+}
+
+export async function fetchSurahTransliteration(
+    surahNumber: number
+): Promise<Map<number, string>> {
+    const response = await fetch(`${API_BASE}/surah/${surahNumber}/en.transliteration`);
+    const data = await response.json();
+
+    const map = new Map<number, string>();
+    if (data.code === 200 && data.data?.ayahs) {
+        for (const ayah of data.data.ayahs) {
+            map.set(ayah.number, ayah.text);
+        }
+    }
+    return map;
+}
+
 export async function fetchPageTranslation(
     pageNumber: number,
     language: string = 'fr'

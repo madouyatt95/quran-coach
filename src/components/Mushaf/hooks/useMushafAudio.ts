@@ -8,6 +8,7 @@ interface UseMushafAudioOptions {
     pageAyahs: Ayah[];
     currentPage: number;
     nextPage: () => void;
+    nextSurah: () => void;
 }
 
 export interface MushafAudioState {
@@ -39,7 +40,7 @@ export function useMushafAudio({
     selectedReciter,
     pageAyahs,
     currentPage,
-    nextPage,
+    nextSurah,
 }: UseMushafAudioOptions): MushafAudioState {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [audioActive, setAudioActive] = useState(false);
@@ -100,24 +101,24 @@ export function useMushafAudio({
         audioRef.current.play().catch(() => { });
     }, [selectedReciter, playbackSpeed, verseWordsMap]);
 
-    // Play next ayah or advance page
+    // Play next ayah or advance surah
     const playNextAyah = useCallback(() => {
         const idx = playingIndexRef.current;
         const ayahs = pageAyahsRef.current;
-        const page = currentPageRef.current;
+        const surahNum = currentSurahRef.current;
 
         if (idx < ayahs.length - 1) {
             playAyahAtIndex(idx + 1);
-        } else if (page < 604) {
+        } else if (surahNum < 114) {
             shouldAutoPlay.current = true;
-            nextPage();
+            nextSurah();
         } else {
             setAudioPlaying(false);
             setAudioActive(false);
             setPlayingIndex(-1);
             setCurrentPlayingAyah(0);
         }
-    }, [playAyahAtIndex, nextPage]);
+    }, [playAyahAtIndex, nextSurah]);
 
     // Play previous ayah
     const playPrevAyah = useCallback(() => {
@@ -240,13 +241,13 @@ export function useMushafAudio({
             if (!document.hidden && pendingAutoAdvance.current) {
                 pendingAutoAdvance.current = false;
                 shouldAutoPlay.current = true;
-                nextPage();
+                nextSurah();
             }
         };
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, [nextPage]);
+    }, [nextSurah]);
 
     // Seek to a specific word in an ayah
     const handleWordClick = useCallback(async (ayahIndex: number, wordIndex: number) => {

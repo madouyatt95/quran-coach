@@ -14,9 +14,9 @@ import {
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { fetchPage, fetchSurahs, fetchPageTranslation, fetchPageTransliteration } from '../../lib/quranApi';
+import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
-import { fetchTajweedPage } from '../../lib/tajweedService';
+// import { fetchTajweedPage } from '../../lib/tajweedService'; // Optional, might need surah version later
 import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { useFavoritesStore } from '../../stores/favoritesStore';
@@ -37,8 +37,9 @@ import './MushafPage.css';
 export function MushafPage() {
     const {
         currentPage, surahs, setSurahs,
-        nextPage, prevPage,
-        setPageAyahs, pageAyahs,
+        setCurrentPage, setCurrentAyah,
+        currentSurah, currentAyah,
+        setSurahAyahs, currentSurahAyahs,
         goToSurah, goToPage,
     } = useQuranStore();
 
@@ -57,6 +58,10 @@ export function MushafPage() {
     const [translationMap, setTranslationMap] = useState<Map<number, string>>(new Map());
     const [transliterationMap, setTransliterationMap] = useState<Map<number, string>>(new Map());
 
+    // Progressive Rendering
+    const [renderedCount, setRenderedCount] = useState(20);
+    const observerTargetRef = useRef<HTMLDivElement | null>(null);
+
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
     const [showMaskSheet, setShowMaskSheet] = useState(false);
@@ -74,41 +79,80 @@ export function MushafPage() {
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
     const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
 
-
+    const {
+        nextSurah,
+    } = useQuranStore();
 
     // ===== Hooks =====
     const audio = useMushafAudio({
         selectedReciter,
-        pageAyahs,
+        pageAyahs: currentSurahAyahs,
         currentPage,
-        nextPage,
+        nextPage: () => goToPage(currentPage + 1),
+        nextSurah,
     });
 
     const coach = useMushafCoach({
-        pageAyahs,
+        pageAyahs: currentSurahAyahs,
         currentPage,
         playingIndex: audio.playingIndex,
     });
 
     const navigation = useMushafNavigation({
         currentPage,
-        nextPage,
-        prevPage,
+        nextPage: () => goToPage(currentPage + 1),
+        prevPage: () => goToPage(currentPage - 1),
     });
 
-    const currentSurah = pageAyahs[0]?.surah || 1;
-    const juzNumber = useMemo(() => pageAyahs.length > 0 ? getJuzNumber(pageAyahs) : 1, [pageAyahs]);
+    const juzNumber = useMemo(() => currentSurahAyahs.length > 0 ? getJuzNumber(currentSurahAyahs) : 1, [currentSurahAyahs]);
 
-    const groupedAyahs = useMemo(() => {
-        return pageAyahs.reduce((groups, ayah) => {
-            const surahNum = ayah.surah;
-            if (!groups[surahNum]) groups[surahNum] = [];
-            groups[surahNum].push(ayah);
-            return groups;
-        }, {} as Record<number, Ayah[]>);
-    }, [pageAyahs]);
+    // Track visible ayah/page for Header sync
+    useEffect(() => {
+        const container = document.querySelector('.mih-mushaf');
+        if (!container) return;
 
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target as HTMLElement;
+                        const pageNum = parseInt(target.getAttribute('data-page') || '1');
+                        const ayahNum = parseInt(target.getAttribute('data-ayah') || '1');
 
+                        // Update store only if changed to avoid loops
+                        if (pageNum !== currentPage) setCurrentPage(pageNum);
+                        if (ayahNum !== currentAyah) setCurrentAyah(ayahNum);
+                    }
+                });
+            },
+            { root: container, threshold: 0.5 }
+        );
+
+        const updateObservedElements = () => {
+            document.querySelectorAll('.mih-ayah').forEach(el => observer.observe(el));
+        };
+
+        const timeout = setTimeout(updateObservedElements, 1000);
+        return () => {
+            clearTimeout(timeout);
+            observer.disconnect();
+        };
+    }, [currentSurahAyahs, currentPage, currentAyah, setCurrentPage, setCurrentAyah]);
+
+    // Infinite rendering trigger
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && renderedCount < currentSurahAyahs.length) {
+                    setRenderedCount(prev => Math.min(prev + 20, currentSurahAyahs.length));
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (observerTargetRef.current) observer.observe(observerTargetRef.current);
+        return () => observer.disconnect();
+    }, [renderedCount, currentSurahAyahs.length]);
 
     // ===== Fetch logic =====
     useEffect(() => {
@@ -136,22 +180,24 @@ export function MushafPage() {
     useEffect(() => {
         setIsLoading(true);
         setError(null);
+        setRenderedCount(20); // Reset progressive render
 
         Promise.all([
-            fetchPage(currentPage),
-            fetchTajweedPage(currentPage),
-            showTranslation ? fetchPageTranslation(currentPage) : Promise.resolve(new Map<number, string>()),
-            showTransliteration ? fetchPageTransliteration(currentPage) : Promise.resolve(new Map<number, string>())
-        ]).then(async ([ayahs, , translations, transliterations]) => {
-            setPageAyahs(ayahs);
+            fetchSurah(currentSurah),
+            showTranslation ? fetchSurahTranslation(currentSurah) : Promise.resolve(new Map<number, string>()),
+            showTransliteration ? fetchSurahTransliteration(currentSurah) : Promise.resolve(new Map<number, string>())
+        ]).then(async ([surahData, translations, transliterations]) => {
+            const { ayahs } = surahData;
+            setSurahAyahs(ayahs);
             audio.pageAyahsRef.current = ayahs;
             setTranslationMap(translations);
             setTransliterationMap(transliterations);
             setIsLoading(false);
 
-            // Fetch word timings
+            // Fetch word timings (limited to visible range or first 50 for start)
             const wordsMap = new Map<string, VerseWords>();
-            await Promise.all(ayahs.map(async (a) => {
+            const initialTimingAyahs = ayahs.slice(0, 50);
+            await Promise.all(initialTimingAyahs.map(async (a) => {
                 const vw = await fetchWordTimings(a.surah, a.numberInSurah);
                 if (vw) wordsMap.set(`${a.surah}:${a.numberInSurah}`, vw);
             }));
@@ -169,15 +215,15 @@ export function MushafPage() {
                 } catch (e) { console.error('Failed to parse scrollToAyah', e); }
             }
         }).catch(() => {
-            setError('Impossible de charger la page. Vérifiez votre connexion.');
+            setError('Impossible de charger la sourate. Vérifiez votre connexion.');
             setIsLoading(false);
         });
-    }, [currentPage, setPageAyahs, showTranslation, showTransliteration]);
+    }, [currentSurah, showTranslation, showTransliteration]);
 
     // Regenerate partial mask when mode changes
     useEffect(() => {
-        if (maskMode === 'partial') generatePartialMask(pageAyahs);
-    }, [maskMode]);
+        if (maskMode === 'partial') generatePartialMask(currentSurahAyahs);
+    }, [maskMode, currentSurahAyahs]);
 
     const generatePartialMask = useCallback((ayahs: Ayah[]) => {
         const hidden = new Set<string>();
@@ -215,7 +261,17 @@ export function MushafPage() {
         }
     };
 
-    const getAyahIndex = (ayah: Ayah) => pageAyahs.findIndex(a => a.number === ayah.number);
+    const groupedAyahs = useMemo(() => {
+        const limitedAyahs = currentSurahAyahs.slice(0, renderedCount);
+        return limitedAyahs.reduce((groups, ayah) => {
+            const surahNum = ayah.surah;
+            if (!groups[surahNum]) groups[surahNum] = [];
+            groups[surahNum].push(ayah);
+            return groups;
+        }, {} as Record<number, Ayah[]>);
+    }, [currentSurahAyahs, renderedCount]);
+
+    const getAyahIndex = (ayah: Ayah) => currentSurahAyahs.findIndex(a => a.number === ayah.number);
 
     // ===== RENDER =====
     if (isLoading) {
@@ -269,11 +325,11 @@ export function MushafPage() {
                         <button className="mih-header-player__play-btn" onClick={audio.toggleAudio}>
                             {audio.audioPlaying ? <Pause size={18} /> : <Play size={18} />}
                         </button>
-                        <button className="mih-header-player__btn" onClick={audio.playNextAyah} disabled={audio.playingIndex >= pageAyahs.length - 1}>
+                        <button className="mih-header-player__btn" onClick={audio.playNextAyah} disabled={audio.playingIndex >= currentSurahAyahs.length - 1}>
                             <SkipForward size={16} />
                         </button>
                         <div className="mih-header-player__divider" />
-                        <div className="mih-header-player__speed" onClick={() => audio.setPlaybackSpeed(s => s >= 2 ? 0.5 : s + 0.25)}>
+                        <div className="mih-header-player__speed" onClick={() => audio.setPlaybackSpeed((s: number) => s >= 2 ? 0.5 : s + 0.25)}>
                             {audio.playbackSpeed}x
                         </div>
                         <button className="mih-header-player__stop" onClick={audio.stopAudio}>
@@ -327,10 +383,10 @@ export function MushafPage() {
             {/* Floating Navigation (desktop) */}
             {!isMobile && (
                 <>
-                    <button className="mih-float-nav mih-float-nav--left" onClick={prevPage} disabled={currentPage <= 1}>
+                    <button className="mih-float-nav mih-float-nav--left" onClick={() => goToPage(currentPage - 1)} disabled={currentPage <= 1}>
                         <ChevronRight size={24} />
                     </button>
-                    <button className="mih-float-nav mih-float-nav--right" onClick={nextPage} disabled={currentPage >= 604}>
+                    <button className="mih-float-nav mih-float-nav--right" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= 604}>
                         <ChevronLeft size={24} />
                     </button>
                 </>
@@ -383,14 +439,14 @@ export function MushafPage() {
                                 )}
 
                                 <div className="mih-ayahs">
-                                    {ayahs.map((ayah) => {
+                                    {ayahs.map((ayah: Ayah) => {
                                         const ayahIndex = getAyahIndex(ayah);
                                         const isCurrentlyPlaying = audio.currentPlayingAyah === ayah.number;
                                         const vw = audio.verseWordsMap.get(`${ayah.surah}:${ayah.numberInSurah}`);
 
-                                        const rawWords = ayah.text.split(/\s+/).filter(w => w.length > 0);
+                                        const rawWords = ayah.text.split(/\s+/).filter((w: string) => w.length > 0);
 
-                                        const wordElements = vw ? vw.words.map((word, wordIdx) => {
+                                        const wordElements = vw ? vw.words.map((word: any, wordIdx: number) => {
                                             const content = (tajwidEnabled && word.textTajweed)
                                                 ? <span dangerouslySetInnerHTML={{ __html: word.textTajweed }} />
                                                 // NFC normalize fixes vowel/diacritic separation on mobile
@@ -409,7 +465,7 @@ export function MushafPage() {
                                                     {content}{' '}
                                                 </span>
                                             );
-                                        }) : rawWords.map((word, wordIdx) => (
+                                        }) : rawWords.map((word: string, wordIdx: number) => (
                                             <span
                                                 key={`${ayahIndex}-${wordIdx}`}
                                                 className={getWordClass(ayahIndex, wordIdx, ayah.number)}
@@ -429,6 +485,7 @@ export function MushafPage() {
                                                 className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${coach.isCoachMode || maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
+                                                data-page={ayah.page}
                                                 style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
                                                 onClick={() => {
                                                     if (!longPressTriggered.current) {
@@ -467,6 +524,9 @@ export function MushafPage() {
                             </div>
                         );
                     })}
+
+                    {/* Intersection target for progressive rendering */}
+                    <div ref={observerTargetRef} style={{ height: 40, width: '100%' }} />
                 </div>
             </div>
 
@@ -476,7 +536,7 @@ export function MushafPage() {
                 audioPlaying={audio.audioPlaying}
                 stopAudio={audio.stopAudio}
                 playAyahAtIndex={audio.playAyahAtIndex}
-                pageAyahsLength={pageAyahs.length}
+                pageAyahsLength={currentSurahAyahs.length}
             />
 
             {/* Search Overlay */}

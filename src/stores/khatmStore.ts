@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { getAyahCountForPage, TOTAL_VERSES } from '../components/Mushaf/pageVerseData';
 
 interface KhatmState {
     // Config
@@ -72,8 +73,9 @@ export const useKhatmStore = create<KhatmState>()(
             isPageValidated: (page) => get().validatedPages.includes(page),
 
             getOverallProgress: () => {
-                const read = get().validatedPages.length;
-                const total = 604;
+                const validated = get().validatedPages;
+                const read = validated.reduce((sum, p) => sum + getAyahCountForPage(p), 0);
+                const total = TOTAL_VERSES;
                 return { read, total, pct: Math.round((read / total) * 100) };
             },
 
@@ -100,9 +102,13 @@ export const useKhatmStore = create<KhatmState>()(
             },
 
             getDailyGoal: () => {
-                const remaining = 604 - get().validatedPages.length;
+                const validated = get().validatedPages;
+                const read = validated.reduce((sum, p) => sum + getAyahCountForPage(p), 0);
+                const remaining = TOTAL_VERSES - read;
                 const daysLeft = get().getDaysRemaining();
-                return Math.ceil(remaining / daysLeft);
+                const versesPerDay = Math.ceil(remaining / daysLeft);
+                // We return "equivalent pages" for the UI, but calculated from verses
+                return Math.ceil(versesPerDay / 10.3);
             },
 
             getTodayRange: () => {
