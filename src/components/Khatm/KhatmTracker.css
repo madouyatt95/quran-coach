@@ -178,6 +178,25 @@
     color: #fff;
 }
 
+.khatm-btn-primary {
+    background: #c9a84c;
+    color: #000;
+    width: 100%;
+}
+
+.khatm-btn-primary:hover {
+    background: #d4b96a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+}
+
+.khatm-actions-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
 .khatm-btn-danger {
     background: rgba(239, 68, 68, 0.15);
     color: #ef4444;

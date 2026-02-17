@@ -119,6 +119,7 @@ function SetupModal({ onClose }: { onClose: () => void }) {
 
 export function KhatmTracker() {
     const store = useKhatmStore();
+    const { isExploring, progress: qProgress, goToAyah } = useQuranStore();
     const [showDetails, setShowDetails] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
 
@@ -130,6 +131,15 @@ export function KhatmTracker() {
     const streak = store.getStreak();
     const daysLeft = store.getDaysRemaining();
     const motivation = getMotivation(progress.pct, todayRead, dailyGoal);
+
+    const handleResume = () => {
+        if (qProgress) {
+            sessionStorage.setItem('isSilentJump', 'true');
+            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: qProgress.lastSurah, ayah: qProgress.lastAyah }));
+            goToAyah(qProgress.lastSurah, qProgress.lastAyah, qProgress.lastPage, { silent: false });
+            setShowDetails(false);
+        }
+    };
 
     const handleClick = () => {
         if (store.isActive) {
@@ -193,21 +203,31 @@ export function KhatmTracker() {
                             </div>
                         </div>
 
-                        <div className="khatm-actions">
-                            <button className="khatm-btn khatm-btn-secondary" onClick={() => { setShowDetails(false); setShowSetup(true); }}>
-                                Modifier
-                            </button>
-                            <button
-                                className="khatm-btn khatm-btn-danger"
-                                onClick={() => {
-                                    if (confirm('Arrêter le Khatm en cours ?')) {
-                                        store.deactivate();
-                                        setShowDetails(false);
-                                    }
-                                }}
-                            >
-                                Arrêter
-                            </button>
+                        <div className="khatm-actions-stack">
+                            {isExploring && qProgress && (
+                                <button
+                                    className="khatm-btn khatm-btn-primary"
+                                    onClick={handleResume}
+                                >
+                                    Reprendre la lecture
+                                </button>
+                            )}
+                            <div className="khatm-actions">
+                                <button className="khatm-btn khatm-btn-secondary" onClick={() => { setShowDetails(false); setShowSetup(true); }}>
+                                    Modifier
+                                </button>
+                                <button
+                                    className="khatm-btn khatm-btn-danger"
+                                    onClick={() => {
+                                        if (confirm('Arrêter le Khatm en cours ?')) {
+                                            store.deactivate();
+                                            setShowDetails(false);
+                                        }
+                                    }}
+                                >
+                                    Arrêter
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </>
