@@ -270,6 +270,61 @@
     display: inline;
 }
 
+/* Word-level rendering — critical for Arabic diacritics */
+.mih-word {
+    display: inline;
+    unicode-bidi: plaintext;
+    -webkit-text-combine: none;
+    font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    border-radius: 4px;
+    padding: 0 1px;
+}
+
+.mih-word:hover {
+    background: rgba(201, 168, 76, 0.12);
+}
+
+.mih-word--active {
+    color: #c9a84c;
+    background: rgba(201, 168, 76, 0.15);
+    font-weight: bold;
+}
+
+/* Coach mode states */
+.mih-word--correct {
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.mih-word--error {
+    color: #f44336;
+    background: rgba(244, 67, 54, 0.1);
+    text-decoration: underline wavy #f44336;
+}
+
+.mih-word--current {
+    color: #2196F3;
+    background: rgba(33, 150, 243, 0.12);
+    font-weight: bold;
+}
+
+/* Masking states */
+.mih-word--hidden {
+    color: transparent !important;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    user-select: none;
+}
+
+.mih-word--partial {
+    color: transparent !important;
+    text-shadow: 0 0 8px rgba(26, 26, 46, 0.4);
+    user-select: none;
+}
+
 /* Verse numbers (ornamental circles) */
 .mih-verse-num {
     display: inline-flex;
