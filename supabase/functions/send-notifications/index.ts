@@ -263,15 +263,27 @@ interface PrayerTimesResponse {
     Isha: string;
 }
 
+// In-memory cache: rounded coords → prayer times (valid for this invocation)
+const prayerTimesCache = new Map<string, PrayerTimesResponse | null>();
+
+function roundCoord(n: number): number {
+    return Math.round(n * 10) / 10; // ~11km precision — same city shares cache
+}
+
 async function fetchPrayerTimes(lat: number, lng: number): Promise<PrayerTimesResponse | null> {
+    const key = `${roundCoord(lat)},${roundCoord(lng)}`;
+    if (prayerTimesCache.has(key)) return prayerTimesCache.get(key)!;
+
     try {
         const resp = await fetch(
             `https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?latitude=${lat}&longitude=${lng}&method=2`
         );
         const data = await resp.json();
-        if (data.code === 200) return data.data.timings;
-        return null;
+        const times = data.code === 200 ? data.data.timings : null;
+        prayerTimesCache.set(key, times);
+        return times;
     } catch {
+        prayerTimesCache.set(key, null);
         return null;
     }
 }
@@ -305,8 +317,8 @@ serve(async (req) => {
         const localHour = localTime.getHours();
         const localMinute = localTime.getMinutes();
 
-        // ─── Hadith du jour (8:00 - 8:29) ────────
-        if (sub.hadith_enabled && localHour === 8 && localMinute < 30) {
+        // ─── Hadith du jour (8:00 - 8:04) ────────
+        if (sub.hadith_enabled && localHour === 8 && localMinute < 5) {
             const ok = await sendPush(sub, {
                 title: "📖 Hadith du Jour",
                 body: "Découvre le hadith du jour sur Quran Coach",
@@ -317,7 +329,7 @@ serve(async (req) => {
         }
 
         // ─── Défi quotidien (12:00 - 12:29) ──────
-        if (sub.challenge_enabled && localHour === 12 && localMinute < 30) {
+        if (sub.challenge_enabled && localHour === 12 && localMinute < 5) {
             const ok = await sendPush(sub, {
                 title: "🏆 Défi du Jour",
                 body: "Le quiz du jour t'attend ! Relève le défi et gagne des XP bonus.",
@@ -357,8 +369,8 @@ serve(async (req) => {
                         const prayerMin = toMin(timeStr);
                         const diff = prayerMin - currentMin;
 
-                        // Notify if prayer is within [minutesBefore-5, minutesBefore+5] window
-                        if (diff >= minutesBefore - 5 && diff <= minutesBefore + 5) {
+                        // Notify if prayer is within [minutesBefore-3, minutesBefore+3] window (5-min cron)
+                        if (diff >= minutesBefore - 3 && diff <= minutesBefore + 3) {
                             const ok = await sendPush(sub, {
                                 title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
                                 body: `${prayer.name} dans ~${minutesBefore} minutes (${timeStr})`,
@@ -387,7 +399,7 @@ serve(async (req) => {
                     const sunriseMin = toMin(sunriseStr);
                     const daruriSobhMin = sunriseMin - 20;
                     const diff = daruriSobhMin - currentMin;
-                    if (diff >= -5 && diff <= 5) {
+                    if (diff >= -3 && diff <= 3) {
                         const ok = await sendPush(sub, {
                             title: "⚠️ Temps Darûrî Sobh",
                             body: "Le temps Ikhtiyârî (recommandé) pour le Sobh est terminé. Priez avant le lever du soleil !",
@@ -402,7 +414,7 @@ serve(async (req) => {
                 if (sub.daruri_asr_enabled) {
                     const daruriAsrMin = Math.round((asrMin + maghribMin) / 2);
                     const diff = daruriAsrMin - currentMin;
-                    if (diff >= -5 && diff <= 5) {
+                    if (diff >= -3 && diff <= 3) {
                         const ok = await sendPush(sub, {
                             title: "⚠️ Temps Darûrî Asr",
                             body: "Le temps Ikhtiyârî (recommandé) pour l'Asr est terminé. Priez avant le Maghrib !",
@@ -421,7 +433,7 @@ serve(async (req) => {
                     // Handle midnight wrap: check raw diff
                     let diff = akhirIshaMin - currentMin;
                     if (diff < -720) diff += 24 * 60; // wrap around midnight
-                    if (diff >= -5 && diff <= 5) {
+                    if (diff >= -3 && diff <= 3) {
                         const ok = await sendPush(sub, {
                             title: "🌙 Akhir Isha",
                             body: "Le temps Ikhtiyârî (recommandé) pour l'Isha se termine. Priez avant qu'il ne soit trop tard !",
