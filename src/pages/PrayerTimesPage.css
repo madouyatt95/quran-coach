@@ -64,7 +64,8 @@
 /* ─── Hero Section ─── */
 .prayer-hero {
     position: relative;
-    padding: 20px 20px 40px;
+    padding: 20px 20px 44px;
+    /* Increased bottom padding */
     background: var(--prayer-bg-gradient);
     color: #fff;
     border-bottom-left-radius: 40px;
@@ -229,7 +230,8 @@
 
 /* ─── Content ─── */
 .prayer-content {
-    margin-top: -20px;
+    margin-top: -8px;
+    /* Reduced overlap to avoid masking buttons */
     padding: 0 16px;
 }
 
