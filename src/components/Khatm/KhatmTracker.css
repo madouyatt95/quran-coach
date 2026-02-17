@@ -215,6 +215,26 @@
     transform: scale(0.95);
 }
 
+.khatm-page-badge.pulse {
+    animation: khatm-pulse 2s infinite;
+    border-color: #c9a84c;
+    color: #c9a84c;
+}
+
+@keyframes khatm-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 12px rgba(201, 168, 76, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(201, 168, 76, 0);
+    }
+}
+
 .khatm-preset {
     display: flex;
     align-items: center;

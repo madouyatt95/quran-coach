@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { useKhatmStore } from '../../stores/khatmStore';
+import { useQuranStore } from '../../stores/quranStore';
+import type { Ayah } from '../../types';
 import './KhatmTracker.css';
 
 // Approximate Ramadan 1447 AH dates
@@ -219,14 +221,26 @@ export function KhatmTracker() {
 // Exported page validation button for MushafPage
 export function KhatmPageBadge({ currentPage }: { currentPage: number }) {
     const { isActive, isPageValidated, togglePage } = useKhatmStore();
+    const { currentAyah, currentSurahAyahs } = useQuranStore();
 
     if (!isActive) return null;
 
     const validated = isPageValidated(currentPage);
 
+    // Find the first ayah of the current page in the current surah context
+    const pageStartAyah = currentSurahAyahs.find((a: Ayah) => a.page === currentPage)?.numberInSurah;
+
+    // Pulse only if not validated and we are near the start of this page (within first 3 verses)
+    // This gives a visual "New Page" hint without being persistent throughout the whole page.
+    const shouldPulse = !validated && (
+        pageStartAyah !== undefined &&
+        currentAyah >= pageStartAyah &&
+        currentAyah < pageStartAyah + 3
+    );
+
     return (
         <button
-            className={`khatm-page-badge ${validated ? 'validated' : ''}`}
+            className={`khatm-page-badge ${validated ? 'validated' : ''} ${shouldPulse ? 'pulse' : ''}`}
             onClick={() => togglePage(currentPage)}
             title={validated ? 'Page validée – cliquez pour décocher' : 'Valider cette page'}
         >
