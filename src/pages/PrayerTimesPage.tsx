@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw } from 'lucide-react';
+import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw, Compass, Trophy, Navigation } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import {
@@ -33,6 +33,79 @@ const PRAYER_EMOJIS: Record<string, string> = {
 };
 
 const PRAYER_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+
+// ─── Theme Helper ────────────────────────────────────────
+
+function getThemeClass(nextPrayerName: string): string {
+    const p = nextPrayerName.toLowerCase();
+    if (p.includes('fajr')) return 'theme--fajr';
+    if (p.includes('dhuhr')) return 'theme--dhuhr';
+    if (p.includes('asr')) return 'theme--asr';
+    if (p.includes('maghrib')) return 'theme--maghrib';
+    if (p.includes('isha')) return 'theme--isha';
+    return 'theme--default';
+}
+
+// ─── Radial Progress Component ───────────────────────────
+
+function RadialProgress({ progress }: { progress: number }) {
+    const radius = 18;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (progress / 100) * circumference;
+
+    return (
+        <div className="radial-progress-container">
+            <svg width="44" height="44" viewBox="0 0 44 44">
+                <circle
+                    className="radial-progress-bg"
+                    cx="22" cy="22" r={radius}
+                    fill="none" strokeWidth="3"
+                />
+                <circle
+                    className="radial-progress-value"
+                    cx="22" cy="22" r={radius}
+                    fill="none" strokeWidth="3"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                    strokeLinecap="round"
+                    transform="rotate(-90 22 22)"
+                />
+            </svg>
+            <div className="radial-progress-text">{Math.round(progress)}%</div>
+        </div>
+    );
+}
+
+// ─── Express Qibla Component ───────────────────────────
+
+function ExpressQibla({ lat, lng }: { lat: number, lng: number }) {
+    const KAABA_LAT = 21.4225;
+    const KAABA_LNG = 39.8262;
+
+    const latRad = (lat * Math.PI) / 180;
+    const lngRad = (lng * Math.PI) / 180;
+    const kaabaLatRad = (KAABA_LAT * Math.PI) / 180;
+    const kaabaLngRad = (KAABA_LNG * Math.PI) / 180;
+
+    const dLng = kaabaLngRad - lngRad;
+    const x = Math.sin(dLng);
+    const y = Math.cos(latRad) * Math.tan(kaabaLatRad) - Math.sin(latRad) * Math.cos(dLng);
+
+    let qibla = (Math.atan2(x, y) * 180) / Math.PI;
+    qibla = (qibla + 360) % 360;
+
+    return (
+        <div className="express-qibla">
+            <div className="express-qibla__dial">
+                <Compass size={16} />
+                <div className="express-qibla__arrow" style={{ transform: `rotate(${qibla}deg)` }}>
+                    <Navigation size={12} fill="currentColor" />
+                </div>
+            </div>
+            <div className="express-qibla__text">Qibla {Math.round(qibla)}°</div>
+        </div>
+    );
+}
 
 // ─── Geolocation helper (standalone, no hooks) ───────────
 
@@ -104,8 +177,10 @@ export function PrayerTimesPage() {
     const [deltas, setDeltas] = useState<Record<string, number> | null>(null);
     const [countdown, setCountdown] = useState('');
     const [nextPrayerName, setNextPrayerName] = useState('');
-    const [progress, setProgress] = useState(0);
+    const [progressValue, setProgressValue] = useState(0);
     const [hijriDateLabel, setHijriDateLabel] = useState('');
+
+    const themeClass = getThemeClass(nextPrayerName);
 
     // Keep a ref to avoid stale closures but NOT in dependency arrays
     const computeIdRef = useRef(0);
@@ -238,7 +313,7 @@ export function PrayerTimesPage() {
             const totalWindow = nextPMs - prevPMs;
             const elapsed = nowMs - prevPMs;
             const pct = Math.min(100, Math.max(0, (elapsed / totalWindow) * 100));
-            setProgress(pct);
+            setProgressValue(pct);
         };
 
         update();
@@ -320,324 +395,354 @@ export function PrayerTimesPage() {
     }
 
     return (
-        <div className="prayer-page">
-            {/* Header */}
-            <div className="prayer-header">
-                <div className="prayer-header__top">
-                    <div className="prayer-header__location">
+        <div className={`prayer-times-page ${themeClass}`}>
+            {/* Header / Hero */}
+            <div className="prayer-hero">
+                <div className="prayer-hero__top">
+                    <button className="prayer-hero__back" onClick={() => navigate('/')}>
+                        <ChevronLeft size={24} />
+                    </button>
+                    <div className="prayer-hero__location">
                         <MapPin size={14} />
-                        <span>{cityName || 'Localisation…'}</span>
-                        {countryName && <span className="prayer-header__country">{countryName}</span>}
+                        <span>{cityName || 'Localisation...'}</span>
                     </div>
-                    <button
-                        className="prayer-header__settings-btn"
-                        onClick={() => navigate('/prayer-settings')}
-                        title="Réglages prières"
-                    >
-                        <Settings size={18} />
+                    <button className="prayer-hero__settings-btn" onClick={() => navigate('/prayer-settings')}>
+                        <Settings size={22} />
                     </button>
                 </div>
 
-                {/* Day navigation */}
-                <div className="prayer-day-nav">
-                    <button onClick={() => goDay(-1)} className="prayer-day-nav__btn">
-                        <ChevronLeft size={20} />
-                    </button>
-                    <div className="prayer-day-nav__center">
-                        <span className="prayer-day-nav__label">{dateLabel}</span>
-                        <div className="prayer-day-nav__hijri">{hijriDateLabel}</div>
+                <div className="prayer-hero__main">
+                    <div className="prayer-hero__countdown-box">
+                        <RadialProgress progress={progressValue} />
+                        <div className="prayer-hero__countdown-text">
+                            <span className="prayer-hero__next-label">{PRAYER_NAMES_FR[nextPrayerName] || nextPrayerName} dans</span>
+                            <span className="prayer-hero__timer">{countdown || '--:--'}</span>
+                        </div>
                     </div>
-                    <button onClick={() => goDay(1)} className="prayer-day-nav__btn">
-                        <ChevronRight size={20} />
-                    </button>
+
+                    <div className="prayer-hero__hijri-box">
+                        <span className="prayer-hero__hijri">{hijriDateLabel}</span>
+                        {lat && usePrayerStore.getState().lng && (
+                            <ExpressQibla lat={lat} lng={usePrayerStore.getState().lng!} />
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {/* Next Prayer Card */}
-            {isToday && nextPrayerName && (
-                <div className={`prayer-next prayer-next--${nextPrayerName}`}>
-                    <div className="prayer-next__left">
-                        <span className="prayer-next__emoji">{PRAYER_EMOJIS[nextPrayerName]}</span>
-                        <div>
-                            <div className="prayer-next__name">
-                                {PRAYER_NAMES_FR[nextPrayerName]}
-                                <span className="prayer-next__name-ar">{PRAYER_NAMES_AR[nextPrayerName]}</span>
-                            </div>
-                            <div className="prayer-next__label">Prochaine prière</div>
-                        </div>
-                    </div>
-                    <div className="prayer-next__right">
-                        <div className="prayer-next__time">{dayResult.formattedTimes[nextPrayerName]}</div>
-                        <div className="prayer-next__countdown">
-                            <Clock size={12} /> dans {countdown}
-                        </div>
-                        <div className="prayer-next__progress-wrap">
-                            <div
-                                className="prayer-next__progress-bar"
-                                style={{ width: `${progress}%` }}
-                            />
-                        </div>
-                    </div>
+            <div className="prayer-content">
+                {/* Secondary Actions Row */}
+                <div className="prayer-actions-row">
+                    <button className="prayer-action-card" onClick={() => navigate('/adhkar')}>
+                        <Trophy size={18} />
+                        <span>Adhkars après Salat</span>
+                    </button>
+                    <button className="prayer-action-card" onClick={() => setShowCalendar(true)}>
+                        <Clock size={18} />
+                        <span>Calendrier mensuel</span>
+                    </button>
                 </div>
-            )}
 
-            {/* High latitude warning */}
-            {highLatWarning && (
-                <div className="prayer-warning">
-                    <AlertTriangle size={14} />
-                    <span>{highLatWarning}</span>
-                </div>
-            )}
+                {/* High latitude warning */}
+                {highLatWarning && (
+                    <div className="prayer-warning">
+                        <AlertTriangle size={14} />
+                        <span>{highLatWarning}</span>
+                    </div>
+                )}
 
-            {/* Prayer Times List */}
-            <div className="prayer-list">
-                <div className="prayer-list__title">
-                    <div className="prayer-list__title-left">
+                <div className="prayer-list">
+                    <div className="prayer-list__title">
                         <Clock size={14} />
-                        <span>Horaires</span>
+                        <span>Horaires du jour</span>
                     </div>
-                    <button
-                        className="prayer-list__month-btn"
-                        onClick={() => setShowCalendar(true)}
-                    >
-                        Voir le mois
-                    </button>
-                </div>
-                {PRAYER_KEYS.map((key) => (
-                    <div
-                        key={key}
-                        className={`prayer-row ${nextPrayerName === key && isToday ? 'prayer-row--active' : ''} ${key === 'sunrise' ? 'prayer-row--sunrise' : ''}`}
-                    >
-                        <div className="prayer-row__left">
-                            <span className="prayer-row__emoji">{PRAYER_EMOJIS[key]}</span>
-                            <div className="prayer-row__names">
-                                <span className="prayer-row__name">{PRAYER_NAMES_FR[key]}</span>
-                                <span className="prayer-row__name-ar">{PRAYER_NAMES_AR[key]}</span>
-                            </div>
-                        </div>
-                        <div className="prayer-row__time">{dayResult.formattedTimes[key]}</div>
-                    </div>
-                ))}
-            </div>
+                    {PRAYER_KEYS.map((key) => {
+                        const isNext = nextPrayerName === key && isToday;
+                        const t = dayResult.times[key];
+                        const isPassed = isToday && new Date() > t && !isNext;
 
-            {/* Fiqh Windows */}
-            {windows && (
-                <div className="prayer-windows">
-                    <div className="prayer-windows__title">
-                        <Sun size={14} />
-                        <span>Fenêtres Fiqh</span>
-                    </div>
-
-                    {/* Sobh */}
-                    <div className="fiqh-card">
-                        <div className="fiqh-card__header">
-                            <span className="fiqh-card__emoji">🌅</span>
-                            <span className="fiqh-card__name">Sobh (الصبح)</span>
-                        </div>
-                        {(() => {
-                            const fw = formatWindow(windows.sobh);
-                            return (
-                                <>
-                                    <div className="fiqh-bar">
-                                        <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" />
-                                        <div className="fiqh-bar__segment fiqh-bar__segment--daruri" />
-                                    </div>
-                                    <div className="fiqh-times">
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--start" />
-                                            <span>Début</span>
-                                            <span className="fiqh-time__val">{fw.start}</span>
-                                        </div>
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
-                                            <span>Fin Ikhtiyârî (temps recommandé)</span>
-                                            <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
-                                        </div>
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--daruri" />
-                                            <span>Fin Darûrî (temps limite)</span>
-                                            <span className="fiqh-time__val">{fw.endDaruri}</span>
-                                        </div>
-                                    </div>
-                                </>
-                            );
-                        })()}
-                    </div>
-
-                    {/* Asr */}
-                    <div className="fiqh-card">
-                        <div className="fiqh-card__header">
-                            <span className="fiqh-card__emoji">🌇</span>
-                            <span className="fiqh-card__name">Asr (العصر)</span>
-                        </div>
-                        {(() => {
-                            const fw = formatWindow(windows.asr);
-                            return (
-                                <>
-                                    <div className="fiqh-bar">
-                                        <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" />
-                                        <div className="fiqh-bar__segment fiqh-bar__segment--daruri" />
-                                    </div>
-                                    <div className="fiqh-times">
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--start" />
-                                            <span>Début</span>
-                                            <span className="fiqh-time__val">{fw.start}</span>
-                                        </div>
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
-                                            <span>Fin Ikhtiyârî</span>
-                                            <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
-                                        </div>
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--daruri" />
-                                            <span>Fin Darûrî</span>
-                                            <span className="fiqh-time__val">{fw.endDaruri}</span>
-                                        </div>
-                                    </div>
-                                </>
-                            );
-                        })()}
-                    </div>
-
-                    {/* Isha */}
-                    <div className="fiqh-card">
-                        <div className="fiqh-card__header">
-                            <span className="fiqh-card__emoji">🌙</span>
-                            <span className="fiqh-card__name">Isha (العشاء)</span>
-                        </div>
-                        {(() => {
-                            const fw = formatIshaWindow(windows.isha);
-                            return (
-                                <>
-                                    <div className="fiqh-bar">
-                                        <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" style={{ flex: 1 }} />
-                                    </div>
-                                    <div className="fiqh-times">
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--start" />
-                                            <span>Début</span>
-                                            <span className="fiqh-time__val">{fw.start}</span>
-                                        </div>
-                                        <div className="fiqh-time">
-                                            <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
-                                            <span>Akhir Isha (temps recommandé) ({settings.ishaIkhtiyari === 'HALF_NIGHT' ? '½ nuit' : '⅓ nuit'})</span>
-                                            <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
-                                        </div>
-                                    </div>
-                                    <div className="fiqh-night">
-                                        <Moon size={12} />
-                                        <span>Nuit légale : {windows.nightDurationMin} min ({Math.floor(windows.nightDurationMin / 60)}h{(windows.nightDurationMin % 60).toString().padStart(2, '0')})</span>
-                                    </div>
-                                </>
-                            );
-                        })()}
-                    </div>
-                </div>
-            )}
-
-            {/* Comparator */}
-            <button className="prayer-section-toggle" onClick={() => setShowComparator(!showComparator)}>
-                <span>📊 Comparateur Standard</span>
-                <ChevronRight size={16} className={showComparator ? 'rotated' : ''} />
-            </button>
-            {showComparator && deltas && (
-                <div className="prayer-comparator">
-                    <div className="prayer-comparator__info">
-                        <Info size={12} />
-                        <span>Différence avec Standard (MWL 18/17, Asr ×1)</span>
-                    </div>
-                    {SALAT_KEYS.map((key) => {
-                        const d = deltas[key] || 0;
                         return (
-                            <div key={key} className="comparator-row">
-                                <span className="comparator-row__name">{PRAYER_NAMES_FR[key]}</span>
-                                <span className={`comparator-row__delta ${d === 0 ? 'zero' : d > 0 ? 'positive' : 'negative'}`}>
-                                    {d === 0 ? '=' : d > 0 ? `+${d} min` : `${d} min`}
-                                </span>
+                            <div
+                                key={key}
+                                className={`prayer-row ${isNext ? 'prayer-row--active' : ''} ${isPassed ? 'prayer-row--passed' : ''} ${key === 'sunrise' ? 'prayer-row--sunrise' : ''}`}
+                            >
+                                <div className="prayer-row__left">
+                                    <span className="prayer-row__emoji">{PRAYER_EMOJIS[key]}</span>
+                                    <div className="prayer-row__names">
+                                        <span className="prayer-row__name">{PRAYER_NAMES_FR[key]}</span>
+                                        <span className="prayer-row__name-ar">{PRAYER_NAMES_AR[key]}</span>
+                                    </div>
+                                </div>
+                                <div className="prayer-row__time-box">
+                                    <span className="prayer-row__time">{dayResult.formattedTimes[key]}</span>
+                                    {isNext && <span className="prayer-row__active-badge">EN COURS</span>}
+                                </div>
                             </div>
                         );
                     })}
-                </div>
-            )}
 
-            {/* Transparency */}
-            <button className="prayer-section-toggle" onClick={() => setShowTransparency(!showTransparency)}>
-                <span>🔍 Transparence</span>
-                <ChevronRight size={16} className={showTransparency ? 'rotated' : ''} />
-            </button>
-            {showTransparency && (
-                <div className="prayer-transparency">
-                    <div className="prayer-transparency__title">Règles actives</div>
-                    {activeRules.map((rule, i) => (
-                        <div key={i} className="transparency-rule">
-                            <span className="transparency-rule__dot" />
-                            <span>{rule}</span>
-                        </div>
-                    ))}
-                    {isHighLatitude(lat || 0) && (
-                        <div className="transparency-rule transparency-rule--warning">
-                            <AlertTriangle size={12} />
-                            <span>Latitude élevée détectée ({lat?.toFixed(1)}°)</span>
+                    {/* Extra Prayers (Tahajjud/Ishraq) */}
+                    {(settings.showTahajjud || settings.showIshraq) && (
+                        <div className="prayer-extra-section">
+                            <div className="prayer-extra-divider">Options</div>
+                            {settings.showTahajjud && dayResult.formattedTimes.tahajjud && (
+                                <div className="prayer-row prayer-row--extra">
+                                    <div className="prayer-row__left">
+                                        <span className="prayer-row__emoji">🌙</span>
+                                        <div className="prayer-row__names">
+                                            <span className="prayer-row__name">Tahajjud</span>
+                                            <span className="prayer-row__desc">Dernier tiers</span>
+                                        </div>
+                                    </div>
+                                    <span className="prayer-row__time">{dayResult.formattedTimes.tahajjud}</span>
+                                </div>
+                            )}
+                            {settings.showIshraq && dayResult.formattedTimes.ishraq && (
+                                <div className="prayer-row prayer-row--extra">
+                                    <div className="prayer-row__left">
+                                        <span className="prayer-row__emoji">☀️</span>
+                                        <div className="prayer-row__names">
+                                            <span className="prayer-row__name">Ishraq</span>
+                                            <span className="prayer-row__desc">15m après Shuruq</span>
+                                        </div>
+                                    </div>
+                                    <span className="prayer-row__time">{dayResult.formattedTimes.ishraq}</span>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
-            )}
 
-            {/* Notification toggles */}
-            <div className="prayer-notifs">
-                <div className="prayer-notifs__title">
-                    <Bell size={14} />
-                    <span>Notifications avancées</span>
+                <div className="prayer-page-footer">
+                    <div className="prayer-date-selector">
+                        <button onClick={() => goDay(-1)} className="prayer-date-selector__btn">
+                            <ChevronLeft size={20} />
+                        </button>
+                        <span className="prayer-date-selector__label">{dateLabel}</span>
+                        <button onClick={() => goDay(1)} className="prayer-date-selector__btn">
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
                 </div>
-                <label className="prayer-notif-toggle">
-                    <span>⚠️ Darûrî Sobh</span>
-                    <input
-                        type="checkbox"
-                        checked={daruriSobhEnabled}
-                        onChange={(e) => {
-                            setDaruriSobhEnabled(e.target.checked);
-                            updatePushPreferences({ daruriSobhEnabled: e.target.checked });
-                        }}
-                    />
-                    <span className="toggle-slider" />
-                </label>
-                <label className="prayer-notif-toggle">
-                    <span>⚠️ Darûrî Asr</span>
-                    <input
-                        type="checkbox"
-                        checked={daruriAsrEnabled}
-                        onChange={(e) => {
-                            setDaruriAsrEnabled(e.target.checked);
-                            updatePushPreferences({ daruriAsrEnabled: e.target.checked });
-                        }}
-                    />
-                    <span className="toggle-slider" />
-                </label>
-                <label className="prayer-notif-toggle">
-                    <span>🌙 Akhir Isha</span>
-                    <input
-                        type="checkbox"
-                        checked={akhirIshaEnabled}
-                        onChange={(e) => {
-                            setAkhirIshaEnabled(e.target.checked);
-                            updatePushPreferences({ akhirIshaEnabled: e.target.checked });
-                        }}
-                    />
-                    <span className="toggle-slider" />
-                </label>
+
+                {/* Fiqh Windows */}
+                {windows && (
+                    <div className="prayer-windows">
+                        <div className="prayer-windows__title">
+                            <Sun size={14} />
+                            <span>Fenêtres Fiqh</span>
+                        </div>
+
+                        {/* Sobh */}
+                        <div className="fiqh-card">
+                            <div className="fiqh-card__header">
+                                <span className="fiqh-card__emoji">🌅</span>
+                                <span className="fiqh-card__name">Sobh (الصبح)</span>
+                            </div>
+                            {(() => {
+                                const fw = formatWindow(windows.sobh);
+                                return (
+                                    <>
+                                        <div className="fiqh-bar">
+                                            <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" />
+                                            <div className="fiqh-bar__segment fiqh-bar__segment--daruri" />
+                                        </div>
+                                        <div className="fiqh-times">
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--start" />
+                                                <span>Début</span>
+                                                <span className="fiqh-time__val">{fw.start}</span>
+                                            </div>
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
+                                                <span>Fin Ikhtiyârî (temps recommandé)</span>
+                                                <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
+                                            </div>
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--daruri" />
+                                                <span>Fin Darûrî (temps limite)</span>
+                                                <span className="fiqh-time__val">{fw.endDaruri}</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        {/* Asr */}
+                        <div className="fiqh-card">
+                            <div className="fiqh-card__header">
+                                <span className="fiqh-card__emoji">🌇</span>
+                                <span className="fiqh-card__name">Asr (العصر)</span>
+                            </div>
+                            {(() => {
+                                const fw = formatWindow(windows.asr);
+                                return (
+                                    <>
+                                        <div className="fiqh-bar">
+                                            <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" />
+                                            <div className="fiqh-bar__segment fiqh-bar__segment--daruri" />
+                                        </div>
+                                        <div className="fiqh-times">
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--start" />
+                                                <span>Début</span>
+                                                <span className="fiqh-time__val">{fw.start}</span>
+                                            </div>
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
+                                                <span>Fin Ikhtiyârî</span>
+                                                <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
+                                            </div>
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--daruri" />
+                                                <span>Fin Darûrî</span>
+                                                <span className="fiqh-time__val">{fw.endDaruri}</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        {/* Isha */}
+                        <div className="fiqh-card">
+                            <div className="fiqh-card__header">
+                                <span className="fiqh-card__emoji">🌙</span>
+                                <span className="fiqh-card__name">Isha (العشاء)</span>
+                            </div>
+                            {(() => {
+                                const fw = formatIshaWindow(windows.isha);
+                                return (
+                                    <>
+                                        <div className="fiqh-bar">
+                                            <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" style={{ flex: 1 }} />
+                                        </div>
+                                        <div className="fiqh-times">
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--start" />
+                                                <span>Début</span>
+                                                <span className="fiqh-time__val">{fw.start}</span>
+                                            </div>
+                                            <div className="fiqh-time">
+                                                <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
+                                                <span>Akhir Isha (temps recommandé) ({settings.ishaIkhtiyari === 'HALF_NIGHT' ? '½ nuit' : '⅓ nuit'})</span>
+                                                <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
+                                            </div>
+                                        </div>
+                                        <div className="fiqh-night">
+                                            <Moon size={12} />
+                                            <span>Nuit légale : {windows.nightDurationMin} min ({Math.floor(windows.nightDurationMin / 60)}h{(windows.nightDurationMin % 60).toString().padStart(2, '0')})</span>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+                    </div>
+                )}
+
+                {/* Comparator */}
+                <button className="prayer-section-toggle" onClick={() => setShowComparator(!showComparator)}>
+                    <span>📊 Comparateur Standard</span>
+                    <ChevronRight size={16} className={showComparator ? 'rotated' : ''} />
+                </button>
+                {showComparator && deltas && (
+                    <div className="prayer-comparator">
+                        <div className="prayer-comparator__info">
+                            <Info size={12} />
+                            <span>Différence avec Standard (MWL 18/17, Asr ×1)</span>
+                        </div>
+                        {SALAT_KEYS.map((key) => {
+                            const d = deltas[key] || 0;
+                            return (
+                                <div key={key} className="comparator-row">
+                                    <span className="comparator-row__name">{PRAYER_NAMES_FR[key]}</span>
+                                    <span className={`comparator-row__delta ${d === 0 ? 'zero' : d > 0 ? 'positive' : 'negative'}`}>
+                                        {d === 0 ? '=' : d > 0 ? `+${d} min` : `${d} min`}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Transparency */}
+                <button className="prayer-section-toggle" onClick={() => setShowTransparency(!showTransparency)}>
+                    <span>🔍 Transparence</span>
+                    <ChevronRight size={16} className={showTransparency ? 'rotated' : ''} />
+                </button>
+                {showTransparency && (
+                    <div className="prayer-transparency">
+                        <div className="prayer-transparency__title">Règles actives</div>
+                        {activeRules.map((rule, i) => (
+                            <div key={i} className="transparency-rule">
+                                <span className="transparency-rule__dot" />
+                                <span>{rule}</span>
+                            </div>
+                        ))}
+                        {isHighLatitude(lat || 0) && (
+                            <div className="transparency-rule transparency-rule--warning">
+                                <AlertTriangle size={12} />
+                                <span>Latitude élevée détectée ({lat?.toFixed(1)}°)</span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Notification toggles */}
+                <div className="prayer-notifs">
+                    <div className="prayer-notifs__title">
+                        <Bell size={14} />
+                        <span>Notifications avancées</span>
+                    </div>
+                    <label className="prayer-notif-toggle">
+                        <span>⚠️ Darûrî Sobh</span>
+                        <input
+                            type="checkbox"
+                            checked={daruriSobhEnabled}
+                            onChange={(e) => {
+                                setDaruriSobhEnabled(e.target.checked);
+                                updatePushPreferences({ daruriSobhEnabled: e.target.checked });
+                            }}
+                        />
+                        <span className="toggle-slider" />
+                    </label>
+                    <label className="prayer-notif-toggle">
+                        <span>⚠️ Darûrî Asr</span>
+                        <input
+                            type="checkbox"
+                            checked={daruriAsrEnabled}
+                            onChange={(e) => {
+                                setDaruriAsrEnabled(e.target.checked);
+                                updatePushPreferences({ daruriAsrEnabled: e.target.checked });
+                            }}
+                        />
+                        <span className="toggle-slider" />
+                    </label>
+                    <label className="prayer-notif-toggle">
+                        <span>🌙 Akhir Isha</span>
+                        <input
+                            type="checkbox"
+                            checked={akhirIshaEnabled}
+                            onChange={(e) => {
+                                setAkhirIshaEnabled(e.target.checked);
+                                updatePushPreferences({ akhirIshaEnabled: e.target.checked });
+                            }}
+                        />
+                        <span className="toggle-slider" />
+                    </label>
+                </div>
+
+                {/* Month View Modal */}
+                <PrayerCalendarModal
+                    isOpen={showCalendar}
+                    onClose={() => setShowCalendar(false)}
+                    lat={lat || 0}
+                    lng={usePrayerStore.getState().lng || 0}
+                    settings={settings}
+                />
+
+                <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
             </div>
-
-            {/* Month View Modal */}
-            <PrayerCalendarModal
-                isOpen={showCalendar}
-                onClose={() => setShowCalendar(false)}
-                lat={lat || 0}
-                lng={usePrayerStore.getState().lng || 0}
-                settings={settings}
-            />
-
-            <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
         </div>
     );
 }

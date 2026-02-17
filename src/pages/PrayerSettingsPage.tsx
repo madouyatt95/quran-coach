@@ -306,6 +306,48 @@ export function PrayerSettingsPage() {
                         />
                     </div>
                 ))}
+                {/* Affichage */}
+                <div className="ps-section">
+                    <div className="ps-section__title">👁️ Options d'affichage</div>
+                    <div className="ps-section__desc">Afficher les temps de prières facultatifs</div>
+                    <div className="ps-toggle-row">
+                        <label className="ps-checkbox-label">
+                            <input
+                                type="checkbox"
+                                checked={s.showTahajjud}
+                                onChange={(e) => store.updateDisplaySettings({ showTahajjud: e.target.checked })}
+                            />
+                            <span>Afficher Tahajjud</span>
+                        </label>
+                    </div>
+                    <div className="ps-toggle-row">
+                        <label className="ps-checkbox-label">
+                            <input
+                                type="checkbox"
+                                checked={s.showIshraq}
+                                onChange={(e) => store.updateDisplaySettings({ showIshraq: e.target.checked })}
+                            />
+                            <span>Afficher Ishraq</span>
+                        </label>
+                    </div>
+                </div>
+
+                {/* Adhan Sound */}
+                <div className="ps-section">
+                    <div className="ps-section__title">🔊 Son de l'Adhan</div>
+                    <div className="ps-section__desc">Choisir le muezzin pour les notifications</div>
+                    <div className="ps-presets ps-presets--small">
+                        {['Mecque', 'Médine', 'Al-Aqsa', 'Égypte', 'Turquie', 'Maroc'].map((sound) => (
+                            <button
+                                key={sound}
+                                className={`ps-toggle ${notifStore.adhanSound === sound ? 'ps-toggle--active' : ''}`}
+                                onClick={() => notifStore.setAdhanSound(sound)}
+                            >
+                                {sound}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );

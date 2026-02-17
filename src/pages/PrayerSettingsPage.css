@@ -241,6 +241,35 @@
     border-color: var(--gold, #c9a84c);
 }
 
+/* ─── Toggles & Inputs ─── */
+.ps-toggle-row {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.ps-toggle-row:last-child {
+    border-bottom: none;
+}
+
+.ps-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.ps-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--gold, #c9a84c);
+}
+
+.ps-presets--small {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
 /* ─── Responsive ───────────────────────────── */
 
 @media (min-width: 500px) {

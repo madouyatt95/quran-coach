@@ -61,6 +61,8 @@ export interface PrayerSettings {
     adjustmentsMin: PrayerAdjustments;
     fajrSafetyMin: number;
     rounding: Rounding;
+    showTahajjud: boolean;
+    showIshraq: boolean;
 }
 
 export interface DayTimes {
@@ -70,13 +72,26 @@ export interface DayTimes {
     asr: Date;
     maghrib: Date;
     isha: Date;
+    tahajjud?: Date;
+    ishraq?: Date;
+}
+
+export interface FormattedTimes {
+    fajr: string;
+    sunrise: string;
+    dhuhr: string;
+    asr: string;
+    maghrib: string;
+    isha: string;
+    tahajjud?: string;
+    ishraq?: string;
 }
 
 export interface DayResult {
     date: string; // YYYY-MM-DD
     times: DayTimes;
     nextPrayer: string | null;
-    formattedTimes: Record<string, string>;
+    formattedTimes: Record<string, string>; // Keep Record<string, string> for simplicity in existing UI but add specific keys
 }
 
 // ─── Preset Values ──────────────────────────────────────
@@ -92,6 +107,7 @@ export const ANGLE_PRESETS: Record<AnglePreset, { fajrAngle: number; ishaAngle: 
 export const PRAYER_NAMES_FR: Record<string, string> = {
     fajr: 'Sobh', sunrise: 'Shuruq', dhuhr: 'Dhuhr',
     asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha',
+    tahajjud: 'Tahajjud', ishraq: 'Ishraq'
 };
 
 export const SALAT_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
@@ -110,6 +126,8 @@ export const DEFAULT_PRAYER_SETTINGS: PrayerSettings = {
     adjustmentsMin: { fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0 },
     fajrSafetyMin: 0,
     rounding: 'NEAREST_MIN',
+    showTahajjud: false,
+    showIshraq: false,
 };
 
 // ─── Core Compute ────────────────────────────────────────
@@ -179,13 +197,29 @@ export function computeDay(
     // Apply rounding
     const roundFn = getRoundingFn(settings.rounding);
     for (const key of Object.keys(times) as (keyof DayTimes)[]) {
-        times[key] = roundFn(times[key]);
+        if (times[key]) times[key] = roundFn(times[key] as Date);
     }
+
+    // ─── Extra Times (Tahajjud & Ishraq) ───
+
+    // Ishraq: 15 min after sunrise
+    times.ishraq = new Date(times.sunrise.getTime() + 15 * 60 * 1000);
+
+    // Tahajjud: start of the last third of the night
+    // Night = Today's Maghrib to tomorrow's Fajr
+    const tomorrow = new Date(date);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowPt = new PrayerTimes(coords, tomorrow, params);
+    const tomorrowFajr = roundFn(tomorrowPt.fajr);
+
+    const nightDurationMs = tomorrowFajr.getTime() - times.maghrib.getTime();
+    const oneThirdMs = nightDurationMs / 3;
+    times.tahajjud = new Date(tomorrowFajr.getTime() - oneThirdMs);
 
     // Formatted
     const formattedTimes: Record<string, string> = {};
     for (const key of Object.keys(times) as (keyof DayTimes)[]) {
-        formattedTimes[key] = formatTime(times[key]);
+        if (times[key]) formattedTimes[key] = formatTime(times[key] as Date);
     }
 
     // Next prayer
@@ -309,7 +343,7 @@ export function compareWithStandard(
     const keys: (keyof DayTimes)[] = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
     const deltas: Record<string, number> = {};
     for (const k of keys) {
-        deltas[k] = diffMinutes(userTimes[k], standardTimes[k]);
+        deltas[k] = diffMinutes(userTimes[k] as Date, standardTimes[k] as Date);
     }
     return deltas;
 }

@@ -253,6 +253,22 @@
 }
 
 /* ─── Next Prayer ─────────────────────────────────────── */
+.home-prayer-link {
+    text-decoration: none;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.home-prayer-link:hover .home-prayer {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.home-prayer-link:active .home-prayer {
+    transform: scale(0.98);
+}
+
 .home-prayer {
     margin: 0 16px 14px;
     padding: 14px 18px;

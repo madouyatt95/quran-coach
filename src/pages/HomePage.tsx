@@ -358,19 +358,21 @@ export function HomePage() {
 
             {/* Next Prayer */}
             {nextPrayer && (
-                <div className="home-prayer">
-                    <div className="home-prayer__left">
-                        <span className="home-prayer__emoji">🕌</span>
-                        <div>
-                            <span className="home-prayer__name">{nextPrayer.name}</span>
-                            <span className="home-prayer__name-ar">{nextPrayer.nameAr}</span>
+                <Link to="/prayers" className="home-prayer-link">
+                    <div className="home-prayer">
+                        <div className="home-prayer__left">
+                            <span className="home-prayer__emoji">🕌</span>
+                            <div>
+                                <span className="home-prayer__name">{nextPrayer.name}</span>
+                                <span className="home-prayer__name-ar">{nextPrayer.nameAr}</span>
+                            </div>
+                        </div>
+                        <div className="home-prayer__right">
+                            <span className="home-prayer__time">{nextPrayer.time}</span>
+                            <span className="home-prayer__countdown">dans {nextPrayer.countdown}</span>
                         </div>
                     </div>
-                    <div className="home-prayer__right">
-                        <span className="home-prayer__time">{nextPrayer.time}</span>
-                        <span className="home-prayer__countdown">dans {nextPrayer.countdown}</span>
-                    </div>
-                </div>
+                </Link>
             )}
 
             {/* Seasonal Banner */}

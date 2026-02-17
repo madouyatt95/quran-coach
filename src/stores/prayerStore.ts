@@ -49,6 +49,8 @@ interface PrayerStoreState {
     updateAdjustments: (adj: PrayerAdjustments) => void;
     updateFajrSafety: (min: number) => void;
     updateRounding: (r: Rounding) => void;
+    updateShowTahajjud: (show: boolean) => void;
+    updateShowIshraq: (show: boolean) => void;
     updateCoords: (lat: number, lng: number, city: string, country: string) => void;
 
     // Computation
@@ -167,6 +169,18 @@ export const usePrayerStore = create<PrayerStoreState>()(
                     settings: { ...state.settings, rounding: r },
                 }));
                 get().invalidateCache();
+            },
+
+            updateShowTahajjud: (show) => {
+                set((state) => ({
+                    settings: { ...state.settings, showTahajjud: show },
+                }));
+            },
+
+            updateShowIshraq: (show) => {
+                set((state) => ({
+                    settings: { ...state.settings, showIshraq: show },
+                }));
             },
 
             updateCoords: (lat, lng, city, country) => {
