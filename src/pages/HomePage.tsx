@@ -379,7 +379,12 @@ export function HomePage() {
                 <div className="home-moods__title">Comment vous sentez-vous ?</div>
                 <div className="home-moods__scroll">
                     {MOODS.map(mood => (
-                        <button key={mood.id} className="home-mood-chip" style={{ '--mood-color': mood.color } as any}>
+                        <button
+                            key={mood.id}
+                            className="home-mood-chip"
+                            style={{ '--mood-color': mood.color } as any}
+                            onClick={() => navigate(`/path/${mood.id}`)}
+                        >
                             <span className="home-mood-chip__emoji">{mood.emoji}</span>
                             <span className="home-mood-chip__label">{mood.label}</span>
                         </button>
@@ -397,9 +402,14 @@ export function HomePage() {
                         <Clock size={14} />
                         <span>{FEATURED_PATH.duration}</span>
                     </div>
-                    <button className="home-path-card__btn">Commencer →</button>
+                    <button className="home-path-card__btn" onClick={() => navigate('/path/serenity')}>
+                        Commencer →
+                    </button>
                 </div>
-                <div className="home-path-card__overlay" style={{ backgroundImage: `url(${FEATURED_PATH.image})` }} />
+                <div className="home-path-card__overlay"
+                    style={{ backgroundImage: `url(${FEATURED_PATH.image})` }}
+                    onClick={() => navigate('/path/serenity')}
+                />
             </div>
 
             {/* Next Prayer */}
