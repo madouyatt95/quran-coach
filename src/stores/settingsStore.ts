@@ -46,7 +46,7 @@ export const useSettingsStore = create<SettingsState>()(
             showTranslation: true,
             showTransliteration: true,
             translationLanguage: 'fr',
-            tajwidEnabled: true,
+            tajwidEnabled: false,
             tajwidLayers: ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar', 'other'],
             selectedReciter: 'ar.alafasy',
             autoPlayAudio: false,
