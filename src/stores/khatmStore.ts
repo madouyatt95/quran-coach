@@ -166,11 +166,10 @@ export const useKhatmStore = create<KhatmState>()(
             getNextPage: () => {
                 const validated = get().validatedPages;
                 if (validated.length === 0) return 1;
-                // Find first missing page in sequence
-                for (let i = 1; i <= 604; i++) {
-                    if (!validated.includes(i)) return i;
-                }
-                return 604; // All done
+                // Target the page right after the LATEST validated one
+                const maxPage = Math.max(...validated);
+                if (maxPage >= 604) return 604;
+                return maxPage + 1;
             },
         }),
         {
