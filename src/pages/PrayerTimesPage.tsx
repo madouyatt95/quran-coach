@@ -155,7 +155,6 @@ export function PrayerTimesPage() {
 
     // Subscribe only to the specific slices we display in JSX
     const cityName = usePrayerStore((s) => s.cityName);
-    const countryName = usePrayerStore((s) => s.countryName);
     const lat = usePrayerStore((s) => s.lat);
     const settings = usePrayerStore((s) => s.settings);
     const daruriSobhEnabled = useNotificationStore((s) => s.daruriSobhEnabled);

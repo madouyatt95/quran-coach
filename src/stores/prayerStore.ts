@@ -51,6 +51,7 @@ interface PrayerStoreState {
     updateRounding: (r: Rounding) => void;
     updateShowTahajjud: (show: boolean) => void;
     updateShowIshraq: (show: boolean) => void;
+    updateDisplaySettings: (settings: Partial<Pick<PrayerSettings, 'showTahajjud' | 'showIshraq'>>) => void;
     updateCoords: (lat: number, lng: number, city: string, country: string) => void;
 
     // Computation
@@ -180,6 +181,12 @@ export const usePrayerStore = create<PrayerStoreState>()(
             updateShowIshraq: (show) => {
                 set((state) => ({
                     settings: { ...state.settings, showIshraq: show },
+                }));
+            },
+
+            updateDisplaySettings: (displaySettings) => {
+                set((state) => ({
+                    settings: { ...state.settings, ...displaySettings },
                 }));
             },
 
