@@ -87,15 +87,13 @@ export function MushafToolbar({
             {/* ===== Inline Toolbar ===== */}
             {showToolbar && (
                 <div className="mih-toolbar">
-                    {!isMobile && (
-                        <button
-                            className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
-                            onClick={() => setShowTajweedSheet(true)}
-                            title="Tajweed"
-                        >
-                            <Palette size={18} />
-                        </button>
-                    )}
+                    <button
+                        className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
+                        onClick={() => setShowTajweedSheet(true)}
+                        title="Tajweed"
+                    >
+                        <Palette size={18} />
+                    </button>
 
                     <button
                         className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
