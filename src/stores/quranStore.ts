@@ -23,6 +23,8 @@ interface QuranState {
     // Reading progress
     progress: ReadingProgress | null;
     isExploring: boolean; // Flag to prevent bookmark updates during search/exploration
+    explorationSurah: number;
+    explorationAyah: number;
     jumpSignal: number;  // Counter to trigger scroll effects on the same surah
 
     // Actions
@@ -58,8 +60,10 @@ export const useQuranStore = create<QuranState>()(
             error: null,
             progress: null,
             isExploring: false,
+            explorationSurah: 0,
+            explorationAyah: 0,
             jumpSignal: 0,
-            version: '1.2.6', // Diagnostic internal version
+            version: '1.2.7', // Diagnostic internal version
 
             setSurahs: (surahs) => set({ surahs }),
             setCurrentPage: (currentPage) => set({ currentPage }),
@@ -71,19 +75,40 @@ export const useQuranStore = create<QuranState>()(
             setError: (error) => set({ error }),
 
             updateProgress: (options = {}) => {
-                const { currentSurah, currentAyah, currentPage, progress, isExploring } = get();
+                const {
+                    currentSurah, currentAyah, currentPage,
+                    progress, isExploring,
+                    explorationSurah, explorationAyah
+                } = get();
 
-                // If exploring (from search), DO NOT update progress automatically
-                if (isExploring && !options.force) {
+                if (options.force) {
+                    set({
+                        isExploring: false,
+                        progress: { lastSurah: currentSurah, lastAyah: currentAyah, lastPage: currentPage, updatedAt: Date.now() }
+                    });
                     return;
                 }
 
-                // If not forced, check threshold (5 verses or surah change)
-                if (!options.force && progress) {
+                if (isExploring) {
+                    // Check if we moved 10 verses from the exploration start destination
+                    const sameSurah = currentSurah === explorationSurah;
+                    const verseDiff = Math.abs(currentAyah - explorationAyah);
+
+                    if (sameSurah && verseDiff < 10) {
+                        return; // Still in "silent" exploration zone
+                    }
+
+                    // If we shifted surah or scrolled 10 verses, we "take over"
+                    // progress will be updated below
+                    set({ isExploring: false });
+                }
+
+                // Normal threshold check (10 verses from last saved)
+                if (progress) {
                     const surahChanged = currentSurah !== progress.lastSurah;
                     const verseDiff = Math.abs(currentAyah - progress.lastAyah);
 
-                    if (!surahChanged && verseDiff < 5 && currentPage === progress.lastPage) {
+                    if (!surahChanged && verseDiff < 10 && currentPage === progress.lastPage) {
                         return; // Skip update
                     }
                 }
@@ -117,6 +142,8 @@ export const useQuranStore = create<QuranState>()(
                         currentSurah: surah,
                         currentAyah: 1,
                         isExploring: !!options.silent,
+                        explorationSurah: !!options.silent ? surah : 0,
+                        explorationAyah: !!options.silent ? 1 : 0,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -131,6 +158,8 @@ export const useQuranStore = create<QuranState>()(
                         currentSurah: surah,
                         currentAyah: 1,
                         isExploring: !!options.silent,
+                        explorationSurah: !!options.silent ? surah : 0,
+                        explorationAyah: !!options.silent ? 1 : 0,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -148,7 +177,12 @@ export const useQuranStore = create<QuranState>()(
                 if (page) {
                     updateState.currentPage = page;
                 }
-                set((state) => ({ ...updateState, jumpSignal: state.jumpSignal + 1 }));
+                set((state) => ({
+                    ...updateState,
+                    explorationSurah: !!options.silent ? surah : 0,
+                    explorationAyah: !!options.silent ? ayah : 0,
+                    jumpSignal: state.jumpSignal + 1
+                }));
                 if (!options.silent) {
                     get().updateProgress();
                 }

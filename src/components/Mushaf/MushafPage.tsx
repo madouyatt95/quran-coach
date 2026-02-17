@@ -41,7 +41,7 @@ export function MushafPage() {
         currentSurah, currentAyah,
         setSurahAyahs, currentSurahAyahs,
         goToSurah, goToPage, goToAyah,
-        nextSurah, updateProgress, stopExploring,
+        nextSurah, updateProgress,
         jumpSignal,
     } = useQuranStore();
 
@@ -67,7 +67,7 @@ export function MushafPage() {
 
     // Diagnostic version log
     useEffect(() => {
-        console.log('[Quran Coach] v1.2.6 - Deep Jump & Exploration Fix Active');
+        console.log('[Quran Coach] v1.2.7 - Exploration Auto-Cutoff (10v) Active');
     }, []);
 
     // Panels
@@ -133,8 +133,7 @@ export function MushafPage() {
                             // Only update general reading bookmark if we are NOT in a silent search jump
                             const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump');
                             if (!isSilent) {
-                                stopExploring(); // Break exploration mode if the user is scrolling manually
-                                updateProgress(); // No {force:true} here -> uses threshold
+                                updateProgress(); // No {force:true} here -> uses threshold in store (10v)
                             }
                         }
                     }
@@ -184,9 +183,9 @@ export function MushafPage() {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 el.classList.add('highlighted-from-shazam');
                 setTimeout(() => el.classList.remove('highlighted-from-shazam'), 3000);
-            } else if (attempts < 15) {
+            } else if (attempts < 25) { // Increased persistence
                 attempts++;
-                setTimeout(tryScroll, 150);
+                setTimeout(tryScroll, 200);
             }
         };
         setTimeout(tryScroll, 200);
@@ -266,6 +265,7 @@ export function MushafPage() {
         const ayahScroll = sessionStorage.getItem('scrollToAyah');
 
         if (isSilentJump || pageScroll || ayahScroll) {
+            console.log('[Mushaf] Processing Jump Signal:', { isSilentJump, pageScroll, ayahScroll });
             isSilentJumpRef.current = true;
 
             if (ayahScroll) {
