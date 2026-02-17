@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Surah, Ayah, ReadingProgress } from '../types';
+import { SURAH_START_PAGES } from '../components/Mushaf/mushafConstants';
+
+interface NavigationOptions {
+    silent?: boolean;
+}
 
 interface QuranState {
     // Data
@@ -28,9 +33,9 @@ interface QuranState {
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
     updateProgress: () => void;
-    goToPage: (page: number) => void;
-    goToSurah: (surah: number) => void;
-    goToAyah: (surah: number, ayah: number, page?: number) => void;
+    goToPage: (page: number, options?: NavigationOptions) => void;
+    goToSurah: (surah: number, options?: NavigationOptions) => void;
+    goToAyah: (surah: number, ayah: number, page?: number, options?: NavigationOptions) => void;
     nextPage: () => void;
     prevPage: () => void;
     nextSurah: () => void;
@@ -71,21 +76,35 @@ export const useQuranStore = create<QuranState>()(
                 });
             },
 
-            goToPage: (page) => {
+            goToPage: (page, options = {}) => {
                 if (page >= 1 && page <= 604) {
-                    set({ currentPage: page });
-                    get().updateProgress();
+                    // Find surah that contains this page
+                    // SURAH_START_PAGES is 1-indexed (index 0 is Surah 1)
+                    let surah = 1;
+                    for (let i = SURAH_START_PAGES.length - 1; i >= 0; i--) {
+                        if (page >= SURAH_START_PAGES[i]) {
+                            surah = i + 1;
+                            break;
+                        }
+                    }
+
+                    set({ currentPage: page, currentSurah: surah, currentAyah: 1 });
+                    if (!options.silent) {
+                        get().updateProgress();
+                    }
                 }
             },
 
-            goToSurah: (surah) => {
+            goToSurah: (surah, options = {}) => {
                 if (surah >= 1 && surah <= 114) {
                     set({ currentSurah: surah, currentAyah: 1 });
-                    get().updateProgress();
+                    if (!options.silent) {
+                        get().updateProgress();
+                    }
                 }
             },
 
-            goToAyah: (surah, ayah, page?: number) => {
+            goToAyah: (surah, ayah, page, options = {}) => {
                 const updateState: Partial<QuranState> = {
                     currentSurah: surah,
                     currentAyah: ayah
@@ -94,7 +113,9 @@ export const useQuranStore = create<QuranState>()(
                     updateState.currentPage = page;
                 }
                 set(updateState);
-                get().updateProgress();
+                if (!options.silent) {
+                    get().updateProgress();
+                }
             },
 
             nextPage: () => {

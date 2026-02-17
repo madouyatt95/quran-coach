@@ -40,7 +40,8 @@ export function MushafPage() {
         setCurrentPage, setCurrentAyah,
         currentSurah, currentAyah,
         setSurahAyahs, currentSurahAyahs,
-        goToSurah, goToPage,
+        goToSurah, goToPage, goToAyah,
+        nextSurah,
     } = useQuranStore();
 
     const {
@@ -79,9 +80,7 @@ export function MushafPage() {
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
     const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
 
-    const {
-        nextSurah,
-    } = useQuranStore();
+
 
     // ===== Hooks =====
     const audio = useMushafAudio({
@@ -546,7 +545,7 @@ export function MushafPage() {
                     currentPage={currentPage}
                     goToSurah={goToSurah}
                     goToPage={goToPage}
-                    scrollToVerse={scrollToVerse}
+                    goToAyah={goToAyah}
                     onClose={() => setShowSearch(false)}
                 />
             )}

@@ -12,9 +12,9 @@ interface SearchResult extends Ayah {
 interface MushafSearchOverlayProps {
     surahs: Array<{ number: number; name: string; englishName: string; englishNameTranslation: string; numberOfAyahs: number; revelationType: string }>;
     currentPage: number;
-    goToSurah: (num: number) => void;
-    goToPage: (page: number) => void;
-    scrollToVerse: (surah: number, ayah: number) => void;
+    goToSurah: (surah: number, options?: { silent?: boolean }) => void;
+    goToPage: (page: number, options?: { silent?: boolean }) => void;
+    goToAyah: (surah: number, ayah: number, page?: number, options?: { silent?: boolean }) => void;
     onClose: () => void;
 }
 
@@ -23,7 +23,7 @@ export function MushafSearchOverlay({
     currentPage,
     goToSurah,
     goToPage,
-    scrollToVerse,
+    goToAyah,
     onClose,
 }: MushafSearchOverlayProps) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -160,8 +160,7 @@ export function MushafSearchOverlay({
                                         const response = await fetch(`https://api.alquran.cloud/v1/ayah/${surahNum}:${ayahNum}`);
                                         const data = await response.json();
                                         if (data.code === 200 && data.data.page) {
-                                            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: surahNum, ayah: ayahNum }));
-                                            goToPage(data.data.page);
+                                            goToAyah(surahNum, ayahNum, data.data.page, { silent: true });
                                             handleClose();
                                         }
                                     } catch (e) { console.error('Verse jump failed', e); }
@@ -185,13 +184,13 @@ export function MushafSearchOverlay({
                     <div className="mih-search-label">Naviguer par Juz</div>
                     <div className="mih-juz-scroll">
                         {JUZ_START_PAGES.map((page, idx) => (
-                            <button
+                            <div
                                 key={idx}
                                 className={`mih-juz-pill ${currentPage >= page && (idx === 29 || currentPage < JUZ_START_PAGES[idx + 1]) ? 'active' : ''}`}
-                                onClick={() => { goToPage(page); handleClose(); }}
+                                onClick={() => { goToPage(page, { silent: true }); handleClose(); }}
                             >
                                 {idx + 1}
-                            </button>
+                            </div>
                         ))}
                     </div>
                 </>
@@ -206,7 +205,7 @@ export function MushafSearchOverlay({
                     <div
                         key={s.number}
                         className="mih-search-item"
-                        onClick={() => { goToSurah(s.number); handleClose(); }}
+                        onClick={() => { goToSurah(s.number, { silent: true }); handleClose(); }}
                     >
                         <div className="mih-search-item__icon">{s.number}</div>
                         <div className="mih-search-item__info">
@@ -236,12 +235,8 @@ export function MushafSearchOverlay({
                                     key={v.number}
                                     className="mih-search-item"
                                     onClick={() => {
-                                        if (v.page === currentPage) {
-                                            scrollToVerse(v.surah, v.numberInSurah);
-                                        } else {
-                                            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: v.surah, ayah: v.numberInSurah }));
-                                            goToPage(v.page);
-                                        }
+                                        sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: v.surah, ayah: v.numberInSurah }));
+                                        goToAyah(v.surah, v.numberInSurah, v.page, { silent: true });
                                         handleClose();
                                     }}
                                 >
