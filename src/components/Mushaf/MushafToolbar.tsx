@@ -56,7 +56,6 @@ interface MushafToolbarProps {
 
 export function MushafToolbar({
     showToolbar,
-    isMobile,
     showTajweedSheet,
     setShowTajweedSheet,
     tajwidEnabled,
