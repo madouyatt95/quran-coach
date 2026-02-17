@@ -41,7 +41,7 @@ export function MushafPage() {
         currentSurah, currentAyah,
         setSurahAyahs, currentSurahAyahs,
         goToSurah, goToPage, goToAyah,
-        nextSurah,
+        nextSurah, updateProgress,
     } = useQuranStore();
 
     const {
@@ -119,8 +119,15 @@ export function MushafPage() {
                         const ayahNum = parseInt(target.getAttribute('data-ayah') || '1');
 
                         // Update store only if changed to avoid loops
-                        if (pageNum !== currentPage) setCurrentPage(pageNum);
-                        if (ayahNum !== currentAyah) setCurrentAyah(ayahNum);
+                        if (pageNum !== currentPage || ayahNum !== currentAyah) {
+                            setCurrentPage(pageNum);
+                            setCurrentAyah(ayahNum);
+                            // Only update general reading bookmark if we are NOT in a silent search jump
+                            // (We detect this if the user hasn't just clicked a search result)
+                            if (!sessionStorage.getItem('scrollToAyah')) {
+                                updateProgress();
+                            }
+                        }
                     }
                 });
             },
