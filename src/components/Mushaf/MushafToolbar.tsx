@@ -2,7 +2,6 @@ import {
     Palette,
     Languages,
     Type,
-    Music,
     Layout,
     Mic,
     CheckCircle2,
@@ -38,9 +37,6 @@ interface MushafToolbarProps {
     setShowFontSheet: (v: boolean) => void;
     arabicFontSize: 'sm' | 'md' | 'lg' | 'xl';
     setArabicFontSize: (size: 'sm' | 'md' | 'lg' | 'xl') => void;
-    // Audio
-    audioPlaying: boolean;
-    toggleAudio: () => void;
     // Mask
     showMaskSheet: boolean;
     setShowMaskSheet: (v: boolean) => void;
@@ -58,6 +54,7 @@ export function MushafToolbar({
     showToolbar,
     showTajweedSheet,
     setShowTajweedSheet,
+    isMobile,
     tajwidEnabled,
     toggleTajwid,
     tajwidLayers,
@@ -74,8 +71,6 @@ export function MushafToolbar({
     setShowMaskSheet,
     maskMode,
     setMaskMode,
-    audioPlaying,
-    toggleAudio,
     isCoachMode,
     toggleCoachMode,
     isPageValidated,
@@ -86,13 +81,15 @@ export function MushafToolbar({
             {/* ===== Inline Toolbar ===== */}
             {showToolbar && (
                 <div className="mih-toolbar">
-                    <button
-                        className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
-                        onClick={() => setShowTajweedSheet(true)}
-                        title="Tajweed"
-                    >
-                        <Palette size={18} />
-                    </button>
+                    {!isMobile && (
+                        <button
+                            className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
+                            onClick={() => setShowTajweedSheet(true)}
+                            title="Tajweed"
+                        >
+                            <Palette size={18} />
+                        </button>
+                    )}
 
                     <button
                         className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
@@ -116,14 +113,6 @@ export function MushafToolbar({
                         title="Taille police"
                     >
                         <Type size={18} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${audioPlaying ? 'active' : ''}`}
-                        onClick={toggleAudio}
-                        title="Audio"
-                    >
-                        <Music size={18} />
                     </button>
 
                     <button

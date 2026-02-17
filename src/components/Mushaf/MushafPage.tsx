@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import {
     Settings,
     Menu,
-    Search,
     Loader2,
     SkipBack,
     SkipForward,
@@ -324,21 +323,14 @@ export function MushafPage() {
                         setShowMaskSheet={setShowMaskSheet}
                         maskMode={maskMode}
                         setMaskMode={setMaskMode}
-                        audioPlaying={audio.audioPlaying}
-                        toggleAudio={audio.toggleAudio}
                         isCoachMode={coach.isCoachMode}
                         toggleCoachMode={coach.toggleCoachMode}
                         isPageValidated={isPageValidated}
                         togglePageValidation={togglePageValidation}
                     />
                     <button
-                        className={`mih-toolbar__btn ${showSearch ? 'active' : ''}`}
-                        onClick={() => setShowSearch(true)}
-                    >
-                        <Search size={20} />
-                    </button>
-                    <button
                         className={`mih-toolbar__btn ${showToolbar ? 'active' : ''}`}
+                        style={{ marginLeft: 4 }}
                         onClick={() => setShowToolbar(!showToolbar)}
                     >
                         <Settings size={20} />

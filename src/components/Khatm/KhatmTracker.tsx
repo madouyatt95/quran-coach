@@ -37,12 +37,15 @@ function SetupModal({ onClose }: { onClose: () => void }) {
 
     return (
         <>
-            <div className="khatm-modal-backdrop" onClick={onClose} />
-            <div className="khatm-modal">
-                <h2>🌙 Objectif Khatm</h2>
-                <p className="khatm-modal-desc">
-                    Définissez votre période pour lire l'intégralité du Coran (604 pages).
-                    L'objectif quotidien s'adaptera automatiquement à votre avancement.
+            <div className="khatm-popup-backdrop" onClick={onClose} />
+            <div className="khatm-popup">
+                <div className="khatm-popup-header">
+                    <h3>🌙 Objectif Khatm</h3>
+                    <button className="khatm-popup-close" onClick={onClose}>&times;</button>
+                </div>
+
+                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginBottom: 20, textAlign: 'center' }}>
+                    Définissez votre période pour lire les 604 pages du Coran.
                 </p>
 
                 {/* Ramadan Preset */}
@@ -53,9 +56,9 @@ function SetupModal({ onClose }: { onClose: () => void }) {
                     <span className="khatm-preset-icon">🌙</span>
                     <div className="khatm-preset-info">
                         <div className="khatm-preset-title">Ramadan 1447</div>
-                        <div className="khatm-preset-dates">18 fév → 19 mars 2026 (30 jours)</div>
+                        <div className="khatm-preset-dates">18 fév → 19 mars (30j)</div>
                     </div>
-                    {usePreset && <Check size={20} color="#c9a84c" />}
+                    {usePreset && <Check size={18} color="#c9a84c" />}
                 </div>
 
                 {/* Custom dates */}
@@ -65,25 +68,25 @@ function SetupModal({ onClose }: { onClose: () => void }) {
                 >
                     <span className="khatm-preset-icon">📅</span>
                     <div className="khatm-preset-info">
-                        <div className="khatm-preset-title">Dates personnalisées</div>
-                        <div className="khatm-preset-dates">Choisissez votre propre période</div>
+                        <div className="khatm-preset-title">Période personnalisée</div>
+                        <div className="khatm-preset-dates">Choisissez vos dates</div>
                     </div>
-                    {!usePreset && <Check size={20} color="#c9a84c" />}
+                    {!usePreset && <Check size={18} color="#c9a84c" />}
                 </div>
 
                 {!usePreset && (
-                    <div className="khatm-custom">
+                    <div className="khatm-custom" style={{ marginTop: 15 }}>
                         <div className="khatm-date-row">
-                            <div className="khatm-date-field">
-                                <label>Date de début</label>
+                            <div className="khatm-popup-field">
+                                <label>Début</label>
                                 <input
                                     type="date"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                 />
                             </div>
-                            <div className="khatm-date-field">
-                                <label>Date de fin</label>
+                            <div className="khatm-popup-field">
+                                <label>Fin</label>
                                 <input
                                     type="date"
                                     value={endDate}
@@ -94,16 +97,19 @@ function SetupModal({ onClose }: { onClose: () => void }) {
                     </div>
                 )}
 
-                <button
-                    className="khatm-start-btn"
-                    onClick={handleStart}
-                    disabled={!isValid}
-                >
-                    🚀 Commencer le Khatm
-                </button>
-                <button className="khatm-cancel-btn" onClick={onClose}>
-                    Annuler
-                </button>
+                <div className="khatm-actions" style={{ marginTop: 24 }}>
+                    <button
+                        className="khatm-btn"
+                        style={{ background: '#c9a84c', color: '#000' }}
+                        onClick={handleStart}
+                        disabled={!isValid}
+                    >
+                        Commencer
+                    </button>
+                    <button className="khatm-btn khatm-btn-secondary" onClick={onClose}>
+                        Annuler
+                    </button>
+                </div>
             </div>
         </>
     );

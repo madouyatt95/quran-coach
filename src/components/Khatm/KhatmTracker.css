@@ -183,9 +183,113 @@
     color: #ef4444;
 }
 
+/* Page Validation Badge */
+.khatm-page-badge {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 56px;
+    height: 56px;
+    background: #1b2838;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.khatm-page-badge.validated {
+    background: #111;
+    border-color: #22c55e;
+    color: #22c55e;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    transform: scale(1.1);
+}
+
+.khatm-page-badge:active {
+    transform: scale(0.95);
+}
+
+.khatm-preset {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.khatm-preset.selected {
+    background: rgba(201, 168, 76, 0.1);
+    border-color: #c9a84c;
+}
+
+.khatm-preset-icon {
+    font-size: 1.2rem;
+}
+
+.khatm-preset-info {
+    flex: 1;
+}
+
+.khatm-preset-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.khatm-preset-dates {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.khatm-date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.khatm-popup-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.khatm-popup-field label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #c9a84c;
+    text-transform: uppercase;
+}
+
+.khatm-popup-field input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px;
+    color: #fff;
+    font-size: 0.8rem;
+    width: 100%;
+}
+
 /* Legacy banner cleanup */
 .khatm-banner,
 .khatm-setup-banner {
+    display: none;
+}
+
+/* Legacy modal cleanup */
+.khatm-modal,
+.khatm-modal-backdrop {
     display: none;
 }
 

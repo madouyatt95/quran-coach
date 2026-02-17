@@ -613,8 +613,9 @@
 }
 
 .mih-toolbar__validate.validated {
-    background: #E8F5E9;
-    color: #4CAF50;
+    color: #22c55e;
+    transform: scale(1.1);
+    background: rgba(34, 197, 94, 0.1);
 }
 
 /* Old Nav Removed */
