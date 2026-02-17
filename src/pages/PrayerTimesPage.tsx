@@ -3,7 +3,7 @@
  * Replaces the old AlAdhan API-based page with local computation + fiqh windows.
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
@@ -34,12 +34,63 @@ const PRAYER_EMOJIS: Record<string, string> = {
 const PRAYER_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 const SALAT_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
+// ─── Geolocation helper (standalone, no hooks) ───────────
+
+async function resolveCoords(): Promise<{ lat: number; lng: number }> {
+    // 1) Check store for existing coords
+    const state = usePrayerStore.getState();
+    if (state.lat != null && state.lng != null) {
+        return { lat: state.lat, lng: state.lng };
+    }
+
+    // 2) Try browser geolocation (3s timeout — fast fail)
+    try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 })
+        );
+        const { latitude, longitude } = pos.coords;
+
+        // Reverse geocode (non-blocking — don't await if slow)
+        let city = `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
+        let country = '';
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 2000);
+            const res = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`,
+                { signal: controller.signal }
+            );
+            clearTimeout(timer);
+            const geo = await res.json();
+            city = geo.city || geo.locality || city;
+            country = geo.countryName || '';
+        } catch { /* use coord fallback */ }
+
+        usePrayerStore.getState().updateCoords(latitude, longitude, city, country);
+        return { lat: latitude, lng: longitude };
+    } catch {
+        // 3) Fallback: Paris
+        usePrayerStore.getState().updateCoords(48.8566, 2.3522, 'Paris', 'France');
+        return { lat: 48.8566, lng: 2.3522 };
+    }
+}
+
 // ─── Component ───────────────────────────────────────────
 
 export function PrayerTimesPage() {
     const navigate = useNavigate();
-    const store = usePrayerStore();
-    const notifStore = useNotificationStore();
+
+    // Subscribe only to the specific slices we display in JSX
+    const cityName = usePrayerStore((s) => s.cityName);
+    const countryName = usePrayerStore((s) => s.countryName);
+    const lat = usePrayerStore((s) => s.lat);
+    const settings = usePrayerStore((s) => s.settings);
+    const daruriSobhEnabled = useNotificationStore((s) => s.daruriSobhEnabled);
+    const daruriAsrEnabled = useNotificationStore((s) => s.daruriAsrEnabled);
+    const akhirIshaEnabled = useNotificationStore((s) => s.akhirIshaEnabled);
+    const setDaruriSobhEnabled = useNotificationStore((s) => s.setDaruriSobhEnabled);
+    const setDaruriAsrEnabled = useNotificationStore((s) => s.setDaruriAsrEnabled);
+    const setAkhirIshaEnabled = useNotificationStore((s) => s.setAkhirIshaEnabled);
 
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [loading, setLoading] = useState(true);
@@ -52,95 +103,73 @@ export function PrayerTimesPage() {
     const [countdown, setCountdown] = useState('');
     const [nextPrayerName, setNextPrayerName] = useState('');
 
-    // ─── Geolocation ──────────────────────────────────────
-
-    const fetchLocation = useCallback(async () => {
-        try {
-            const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 })
-            );
-            const { latitude, longitude } = pos.coords;
-
-            // Reverse geocode for city name
-            let city = '';
-            let country = '';
-            try {
-                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`);
-                const geo = await res.json();
-                city = geo.city || geo.locality || '';
-                country = geo.countryName || '';
-            } catch {
-                city = `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
-            }
-
-            store.updateCoords(latitude, longitude, city, country);
-            return { lat: latitude, lng: longitude };
-        } catch {
-            // Fallback: Paris
-            store.updateCoords(48.8566, 2.3522, 'Paris', 'France');
-            return { lat: 48.8566, lng: 2.3522 };
-        }
-    }, [store]);
+    // Keep a ref to avoid stale closures but NOT in dependency arrays
+    const computeIdRef = useRef(0);
 
     // ─── Compute times for selected date ──────────────────
 
-    const computeTimes = useCallback(async () => {
+    const computeTimes = async () => {
+        const id = ++computeIdRef.current; // debounce: only latest wins
         setLoading(true);
         setError(null);
 
         try {
-            let lat = store.lat;
-            let lng = store.lng;
+            const { lat: cLat, lng: cLng } = await resolveCoords();
 
-            if (lat == null || lng == null) {
-                const coords = await fetchLocation();
-                lat = coords.lat;
-                lng = coords.lng;
-            }
+            // If a newer compute started, bail out
+            if (id !== computeIdRef.current) return;
+
+            const currentSettings = usePrayerStore.getState().settings;
 
             // Compute today
-            const result = computeDay(selectedDate, lat, lng, store.settings);
+            const result = computeDay(selectedDate, cLat, cLng, currentSettings);
             setDayResult(result);
 
             // Compute tomorrow for night duration
             const tomorrow = new Date(selectedDate);
             tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowResult = computeDay(tomorrow, lat, lng, store.settings);
+            const tomorrowResult = computeDay(tomorrow, cLat, cLng, currentSettings);
 
             // Compute fiqh windows
-            const w = computeWindows(result.times, tomorrowResult.times.fajr, store.settings);
+            const w = computeWindows(result.times, tomorrowResult.times.fajr, currentSettings);
             setWindows(w);
 
             // Compute comparison deltas
-            const standard = computeStandard(selectedDate, lat, lng);
+            const standard = computeStandard(selectedDate, cLat, cLng);
             const d = compareWithStandard(result.times, standard);
             setDeltas(d);
 
             // Schedule notifications (only for today)
             const today = new Date();
             if (formatDate(selectedDate) === formatDate(today)) {
-                const settHash = hashSettings(store.settings);
-                schedulePrayerNotifications(w, result.date, lat, lng, settHash, {
-                    daruriSobhEnabled: notifStore.daruriSobhEnabled,
-                    daruriAsrEnabled: notifStore.daruriAsrEnabled,
-                    akhirIshaEnabled: notifStore.akhirIshaEnabled,
+                const notifState = useNotificationStore.getState();
+                const settHash = hashSettings(currentSettings);
+                schedulePrayerNotifications(w, result.date, cLat, cLng, settHash, {
+                    daruriSobhEnabled: notifState.daruriSobhEnabled,
+                    daruriAsrEnabled: notifState.daruriAsrEnabled,
+                    akhirIshaEnabled: notifState.akhirIshaEnabled,
                 });
             }
 
-            // Cache range
-            store.computeAndCache(selectedDate, 7);
+            // Cache range (fire-and-forget)
+            usePrayerStore.getState().computeAndCache(selectedDate, 7);
         } catch (err) {
+            if (id !== computeIdRef.current) return;
             console.error('[Prayer] Computation error:', err);
             setError('Erreur de calcul. Vérifiez votre connexion et réessayez.');
         } finally {
-            setLoading(false);
+            if (id === computeIdRef.current) {
+                setLoading(false);
+            }
         }
-    }, [selectedDate, store, fetchLocation, notifStore]);
+    };
 
+    // Re-run when selectedDate or settings change
     useEffect(() => {
         computeTimes();
         return () => cancelAllScheduled();
-    }, [computeTimes]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDate, settings]);
 
     // ─── Countdown timer ──────────────────────────────────
 
@@ -197,14 +226,14 @@ export function PrayerTimesPage() {
     // ─── High latitude warning ────────────────────────────
 
     const highLatWarning = useMemo(() => {
-        if (!store.lat || !dayResult) return null;
-        return getHighLatWarning(store.lat, dayResult.times);
-    }, [store.lat, dayResult]);
+        if (!lat || !dayResult) return null;
+        return getHighLatWarning(lat, dayResult.times);
+    }, [lat, dayResult]);
 
     // ─── Active rules (transparency) ─────────────────────
 
     const activeRules = useMemo(() => {
-        const s = store.settings;
+        const s = settings;
         const preset = ANGLE_PRESETS[s.anglePreset];
         const rules = [
             `Angles : ${preset.label} (Fajr ${s.fajrAngle}° / Isha ${s.ishaAngle}°)`,
@@ -219,7 +248,7 @@ export function PrayerTimesPage() {
             rules.push(`Ajustements : ${adj.map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}min`).join(', ')}`);
         }
         return rules;
-    }, [store.settings]);
+    }, [settings]);
 
     // ─── Render ───────────────────────────────────────────
 
@@ -255,8 +284,8 @@ export function PrayerTimesPage() {
                 <div className="prayer-header__top">
                     <div className="prayer-header__location">
                         <MapPin size={14} />
-                        <span>{store.cityName || 'Localisation…'}</span>
-                        {store.countryName && <span className="prayer-header__country">{store.countryName}</span>}
+                        <span>{cityName || 'Localisation…'}</span>
+                        {countryName && <span className="prayer-header__country">{countryName}</span>}
                     </div>
                     <button
                         className="prayer-header__settings-btn"
@@ -433,7 +462,7 @@ export function PrayerTimesPage() {
                                         </div>
                                         <div className="fiqh-time">
                                             <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
-                                            <span>Akhir Isha ({store.settings.ishaIkhtiyari === 'HALF_NIGHT' ? '½ nuit' : '⅓ nuit'})</span>
+                                            <span>Akhir Isha ({settings.ishaIkhtiyari === 'HALF_NIGHT' ? '½ nuit' : '⅓ nuit'})</span>
                                             <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
                                         </div>
                                     </div>
@@ -487,10 +516,10 @@ export function PrayerTimesPage() {
                             <span>{rule}</span>
                         </div>
                     ))}
-                    {isHighLatitude(store.lat || 0) && (
+                    {isHighLatitude(lat || 0) && (
                         <div className="transparency-rule transparency-rule--warning">
                             <AlertTriangle size={12} />
-                            <span>Latitude élevée détectée ({store.lat?.toFixed(1)}°)</span>
+                            <span>Latitude élevée détectée ({lat?.toFixed(1)}°)</span>
                         </div>
                     )}
                 </div>
@@ -506,8 +535,8 @@ export function PrayerTimesPage() {
                     <span>⚠️ Darûrî Sobh</span>
                     <input
                         type="checkbox"
-                        checked={notifStore.daruriSobhEnabled}
-                        onChange={(e) => notifStore.setDaruriSobhEnabled(e.target.checked)}
+                        checked={daruriSobhEnabled}
+                        onChange={(e) => setDaruriSobhEnabled(e.target.checked)}
                     />
                     <span className="toggle-slider" />
                 </label>
@@ -515,8 +544,8 @@ export function PrayerTimesPage() {
                     <span>⚠️ Darûrî Asr</span>
                     <input
                         type="checkbox"
-                        checked={notifStore.daruriAsrEnabled}
-                        onChange={(e) => notifStore.setDaruriAsrEnabled(e.target.checked)}
+                        checked={daruriAsrEnabled}
+                        onChange={(e) => setDaruriAsrEnabled(e.target.checked)}
                     />
                     <span className="toggle-slider" />
                 </label>
@@ -524,8 +553,8 @@ export function PrayerTimesPage() {
                     <span>🌙 Akhir Isha</span>
                     <input
                         type="checkbox"
-                        checked={notifStore.akhirIshaEnabled}
-                        onChange={(e) => notifStore.setAkhirIshaEnabled(e.target.checked)}
+                        checked={akhirIshaEnabled}
+                        onChange={(e) => setAkhirIshaEnabled(e.target.checked)}
                     />
                     <span className="toggle-slider" />
                 </label>
