@@ -119,7 +119,7 @@ function SetupModal({ onClose }: { onClose: () => void }) {
 
 export function KhatmTracker() {
     const store = useKhatmStore();
-    const { isExploring, progress: qProgress, goToAyah } = useQuranStore();
+    const { isExploring, goToPage } = useQuranStore();
     const [showDetails, setShowDetails] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
 
@@ -132,13 +132,13 @@ export function KhatmTracker() {
     const daysLeft = store.getDaysRemaining();
     const motivation = getMotivation(progress.pct, todayRead, dailyGoal);
 
-    const handleResume = () => {
-        if (qProgress) {
-            sessionStorage.setItem('isSilentJump', 'true');
-            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: qProgress.lastSurah, ayah: qProgress.lastAyah }));
-            goToAyah(qProgress.lastSurah, qProgress.lastAyah, qProgress.lastPage, { silent: false });
-            setShowDetails(false);
-        }
+    const handleResumeKhatm = () => {
+        const nextPage = store.getNextPage();
+        sessionStorage.setItem('isSilentJump', 'true');
+        sessionStorage.setItem('scrollToPage', nextPage.toString());
+        // Jump to page without updating general progress bookmark
+        goToPage(nextPage, { silent: true });
+        setShowDetails(false);
     };
 
     const handleClick = () => {
@@ -204,12 +204,12 @@ export function KhatmTracker() {
                         </div>
 
                         <div className="khatm-actions-stack">
-                            {isExploring && qProgress && (
+                            {isExploring && (
                                 <button
                                     className="khatm-btn khatm-btn-primary"
-                                    onClick={handleResume}
+                                    onClick={handleResumeKhatm}
                                 >
-                                    Reprendre la lecture
+                                    Reprendre mon Khatm
                                 </button>
                             )}
                             <div className="khatm-actions">

@@ -27,6 +27,7 @@ interface KhatmState {
     getTodayRange: () => { start: number; end: number }; // suggested pages for today
     getTodayRead: () => number;   // pages read today (within today's range)
     getStreak: () => number;
+    getNextPage: () => number; // First unvalidated page
 }
 
 function todayStr(): string {
@@ -160,6 +161,16 @@ export const useKhatmStore = create<KhatmState>()(
                     }
                 }
                 return streak;
+            },
+
+            getNextPage: () => {
+                const validated = get().validatedPages;
+                if (validated.length === 0) return 1;
+                // Find first missing page in sequence
+                for (let i = 1; i <= 604; i++) {
+                    if (!validated.includes(i)) return i;
+                }
+                return 604; // All done
             },
         }),
         {
