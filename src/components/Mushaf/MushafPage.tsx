@@ -125,7 +125,8 @@ export function MushafPage() {
                             setCurrentAyah(ayahNum);
 
                             // Only update general reading bookmark if we are NOT in a silent search jump
-                            if (!isSilentJumpRef.current && !sessionStorage.getItem('scrollToAyah')) {
+                            const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump') || !!sessionStorage.getItem('scrollToAyah');
+                            if (!isSilent) {
                                 updateProgress(); // No {force:true} here -> uses 10v threshold
                             }
                         }
@@ -176,7 +177,21 @@ export function MushafPage() {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 el.classList.add('highlighted-from-shazam');
                 setTimeout(() => el.classList.remove('highlighted-from-shazam'), 3000);
-            } else if (attempts < 10) {
+            } else if (attempts < 15) {
+                attempts++;
+                setTimeout(tryScroll, 150);
+            }
+        };
+        setTimeout(tryScroll, 200);
+    }, []);
+
+    const scrollToPageStart = useCallback((page: number) => {
+        let attempts = 0;
+        const tryScroll = () => {
+            const el = document.querySelector(`[data-page="${page}"]`);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else if (attempts < 15) {
                 attempts++;
                 setTimeout(tryScroll, 150);
             }
@@ -212,19 +227,32 @@ export function MushafPage() {
 
             if (maskMode === 'partial') generatePartialMask(ayahs);
 
-            // Handle scrollToAyah from Shazam / Search
-            const scrollData = sessionStorage.getItem('scrollToAyah');
-            if (scrollData) {
-                try {
-                    const { surah, ayah } = JSON.parse(scrollData);
-                    isSilentJumpRef.current = true;
-                    scrollToVerse(surah, ayah);
-                    // Clear the silent jump flag after a delay once the observer has had a chance to fire
-                    setTimeout(() => {
-                        isSilentJumpRef.current = false;
-                        sessionStorage.removeItem('scrollToAyah');
-                    }, 2000);
-                } catch (e) { console.error('Failed to parse scrollToAyah', e); }
+            // Handle explicit scrolls from Search/Shazam
+            const isSilentJump = sessionStorage.getItem('isSilentJump');
+            const pageScroll = sessionStorage.getItem('scrollToPage');
+            const ayahScroll = sessionStorage.getItem('scrollToAyah');
+
+            if (isSilentJump || pageScroll || ayahScroll) {
+                isSilentJumpRef.current = true;
+
+                if (ayahScroll) {
+                    try {
+                        const { surah, ayah } = JSON.parse(ayahScroll);
+                        scrollToVerse(surah, ayah);
+                    } catch (e) { console.error('Verse jump parse failed', e); }
+                } else if (pageScroll) {
+                    const p = parseInt(pageScroll);
+                    if (p > 0) scrollToPageStart(p);
+                    else window.scrollTo({ top: 0, behavior: 'auto' }); // Scroll to top for s.0
+                }
+
+                // Clear flags after a delay to ensure observer is blocked
+                setTimeout(() => {
+                    isSilentJumpRef.current = false;
+                    sessionStorage.removeItem('isSilentJump');
+                    sessionStorage.removeItem('scrollToPage');
+                    sessionStorage.removeItem('scrollToAyah');
+                }, 2000);
             }
         }).catch(() => {
             setError('Impossible de charger la sourate. Vérifiez votre connexion.');

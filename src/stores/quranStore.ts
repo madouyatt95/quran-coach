@@ -22,6 +22,7 @@ interface QuranState {
 
     // Reading progress
     progress: ReadingProgress | null;
+    isExploring: boolean; // Flag to prevent bookmark updates during search/exploration
 
     // Actions
     setSurahs: (surahs: Surah[]) => void;
@@ -54,6 +55,7 @@ export const useQuranStore = create<QuranState>()(
             isLoading: false,
             error: null,
             progress: null,
+            isExploring: false,
 
             setSurahs: (surahs) => set({ surahs }),
             setCurrentPage: (currentPage) => set({ currentPage }),
@@ -65,7 +67,12 @@ export const useQuranStore = create<QuranState>()(
             setError: (error) => set({ error }),
 
             updateProgress: (options = {}) => {
-                const { currentSurah, currentAyah, currentPage, progress } = get();
+                const { currentSurah, currentAyah, currentPage, progress, isExploring } = get();
+
+                // If exploring (from search), DO NOT update progress automatically
+                if (isExploring && !options.force) {
+                    return;
+                }
 
                 // If not forced, check threshold (10 verses or surah change)
                 if (!options.force && progress) {
@@ -99,7 +106,12 @@ export const useQuranStore = create<QuranState>()(
                         }
                     }
 
-                    set({ currentPage: page, currentSurah: surah, currentAyah: 1 });
+                    set({
+                        currentPage: page,
+                        currentSurah: surah,
+                        currentAyah: 1,
+                        isExploring: !!options.silent
+                    });
                     if (!options.silent) {
                         get().updateProgress();
                     }
@@ -108,7 +120,11 @@ export const useQuranStore = create<QuranState>()(
 
             goToSurah: (surah, options = {}) => {
                 if (surah >= 1 && surah <= 114) {
-                    set({ currentSurah: surah, currentAyah: 1 });
+                    set({
+                        currentSurah: surah,
+                        currentAyah: 1,
+                        isExploring: !!options.silent
+                    });
                     if (!options.silent) {
                         get().updateProgress();
                     }
@@ -118,7 +134,8 @@ export const useQuranStore = create<QuranState>()(
             goToAyah: (surah, ayah, page, options = {}) => {
                 const updateState: Partial<QuranState> = {
                     currentSurah: surah,
-                    currentAyah: ayah
+                    currentAyah: ayah,
+                    isExploring: !!options.silent
                 };
                 if (page) {
                     updateState.currentPage = page;
@@ -132,7 +149,7 @@ export const useQuranStore = create<QuranState>()(
             nextPage: () => {
                 const { currentPage } = get();
                 if (currentPage < 604) {
-                    set({ currentPage: currentPage + 1 });
+                    set({ currentPage: currentPage + 1, isExploring: false });
                     get().updateProgress();
                 }
             },
@@ -140,7 +157,7 @@ export const useQuranStore = create<QuranState>()(
             prevPage: () => {
                 const { currentPage } = get();
                 if (currentPage > 1) {
-                    set({ currentPage: currentPage - 1 });
+                    set({ currentPage: currentPage - 1, isExploring: false });
                     get().updateProgress();
                 }
             },
@@ -148,7 +165,7 @@ export const useQuranStore = create<QuranState>()(
             nextSurah: () => {
                 const { currentSurah } = get();
                 if (currentSurah < 114) {
-                    set({ currentSurah: currentSurah + 1, currentAyah: 1 });
+                    set({ currentSurah: currentSurah + 1, currentAyah: 1, isExploring: false });
                     get().updateProgress();
                 }
             },
@@ -156,7 +173,7 @@ export const useQuranStore = create<QuranState>()(
             prevSurah: () => {
                 const { currentSurah } = get();
                 if (currentSurah > 1) {
-                    set({ currentSurah: currentSurah - 1, currentAyah: 1 });
+                    set({ currentSurah: currentSurah - 1, currentAyah: 1, isExploring: false });
                     get().updateProgress();
                 }
             },

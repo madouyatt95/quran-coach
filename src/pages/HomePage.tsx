@@ -293,7 +293,7 @@ export function HomePage() {
 
     const handleContinueReading = useCallback(() => {
         if (progress) {
-            goToAyah(progress.lastSurah, progress.lastAyah, progress.lastPage);
+            goToAyah(progress.lastSurah, progress.lastAyah, progress.lastPage, { silent: false });
         }
         navigate('/read');
     }, [navigate, progress, goToAyah]);

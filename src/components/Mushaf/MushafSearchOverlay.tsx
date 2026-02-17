@@ -131,7 +131,13 @@ export function MushafSearchOverlay({
             {/^\d+$/.test(searchQuery) && parseInt(searchQuery) >= 1 && parseInt(searchQuery) <= 604 && (
                 <div
                     className="mih-search-item"
-                    onClick={() => { goToPage(parseInt(searchQuery)); handleClose(); }}
+                    onClick={() => {
+                        const page = parseInt(searchQuery);
+                        sessionStorage.setItem('isSilentJump', 'true');
+                        sessionStorage.setItem('scrollToPage', page.toString());
+                        goToPage(page, { silent: true });
+                        handleClose();
+                    }}
                 >
                     <div className="mih-search-item__icon"><Search size={18} /></div>
                     <div className="mih-search-item__info">
@@ -160,6 +166,8 @@ export function MushafSearchOverlay({
                                         const response = await fetch(`https://api.alquran.cloud/v1/ayah/${surahNum}:${ayahNum}`);
                                         const data = await response.json();
                                         if (data.code === 200 && data.data.page) {
+                                            sessionStorage.setItem('isSilentJump', 'true');
+                                            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: surahNum, ayah: ayahNum }));
                                             goToAyah(surahNum, ayahNum, data.data.page, { silent: true });
                                             handleClose();
                                         }
@@ -187,7 +195,12 @@ export function MushafSearchOverlay({
                             <div
                                 key={idx}
                                 className={`mih-juz-pill ${currentPage >= page && (idx === 29 || currentPage < JUZ_START_PAGES[idx + 1]) ? 'active' : ''}`}
-                                onClick={() => { goToPage(page, { silent: true }); handleClose(); }}
+                                onClick={() => {
+                                    sessionStorage.setItem('isSilentJump', 'true');
+                                    sessionStorage.setItem('scrollToPage', page.toString());
+                                    goToPage(page, { silent: true });
+                                    handleClose();
+                                }}
                             >
                                 {idx + 1}
                             </div>
@@ -205,7 +218,12 @@ export function MushafSearchOverlay({
                     <div
                         key={s.number}
                         className="mih-search-item"
-                        onClick={() => { goToSurah(s.number, { silent: true }); handleClose(); }}
+                        onClick={() => {
+                            sessionStorage.setItem('isSilentJump', 'true');
+                            sessionStorage.setItem('scrollToPage', '0'); // Signals scroll to top of surah
+                            goToSurah(s.number, { silent: true });
+                            handleClose();
+                        }}
                     >
                         <div className="mih-search-item__icon">{s.number}</div>
                         <div className="mih-search-item__info">
@@ -235,6 +253,7 @@ export function MushafSearchOverlay({
                                     key={v.number}
                                     className="mih-search-item"
                                     onClick={() => {
+                                        sessionStorage.setItem('isSilentJump', 'true');
                                         sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: v.surah, ayah: v.numberInSurah }));
                                         goToAyah(v.surah, v.numberInSurah, v.page, { silent: true });
                                         handleClose();
