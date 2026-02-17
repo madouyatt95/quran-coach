@@ -362,12 +362,27 @@ export function MushafPage() {
             {/* ===== Mushaf Content ===== */}
             <div
                 className="mih-mushaf"
+                ref={navigation.containerRef}
                 onTouchStart={navigation.handleTouchStart}
                 onTouchMove={navigation.handleTouchMove}
                 onTouchEnd={navigation.handleTouchEnd}
-                onScroll={navigation.handleScroll}
             >
-                <div className="mih-mushaf__content">
+                {/* Pull indicator */}
+                {navigation.pullIndicator.visible && (
+                    <div className={`mih-pull-indicator mih-pull-indicator--${navigation.pullIndicator.direction}`}>
+                        <div
+                            className="mih-pull-indicator__bar"
+                            style={{ transform: `scaleX(${navigation.pullIndicator.progress})` }}
+                        />
+                        <span className="mih-pull-indicator__text">
+                            {navigation.pullIndicator.progress >= 1
+                                ? (navigation.pullIndicator.direction === 'up' ? '← Page précédente' : 'Page suivante →')
+                                : 'Tirez pour changer de page'
+                            }
+                        </span>
+                    </div>
+                )}
+                <div className={`mih-mushaf__content ${navigation.pageTransitionClass}`}>
                     {Object.entries(groupedAyahs).map(([surahNum, ayahs]) => {
                         const surahNumber = parseInt(surahNum);
                         const surah = surahs.find(s => s.number === surahNumber);
@@ -396,16 +411,13 @@ export function MushafPage() {
                                         const isCurrentlyPlaying = audio.currentPlayingAyah === ayah.number;
                                         const vw = audio.verseWordsMap.get(`${ayah.surah}:${ayah.numberInSurah}`);
 
-                                        const wordElements = vw ? vw.words.map((word, wordIdx) => {
-                                            // On mobile with Tajweed disabled, use plain text to avoid vowel separation
-                                            const useRawText = !tajwidEnabled && isMobile;
-                                            const content = (tajwidEnabled && word.textTajweed)
-                                                ? <span dangerouslySetInnerHTML={{ __html: word.textTajweed }} />
-                                                : useRawText
-                                                    ? (ayah.text.split(/\s+/).filter(w => w.length > 0)[wordIdx] || word.text)
-                                                    : word.text;
+                                        // On mobile with Tajweed disabled, always use raw text to avoid vowel separation
+                                        const useRawText = !tajwidEnabled && isMobile;
+                                        const rawWords = ayah.text.split(/\s+/).filter(w => w.length > 0);
 
-                                            return (
+                                        const wordElements = useRawText
+                                            // Mobile without Tajweed: always use raw ayah text (avoids API Unicode issues)
+                                            ? rawWords.map((word, wordIdx) => (
                                                 <span
                                                     key={`${ayahIndex}-${wordIdx}`}
                                                     className={getWordClass(ayahIndex, wordIdx, ayah.number)}
@@ -415,22 +427,40 @@ export function MushafPage() {
                                                         else audio.handleWordClick(ayahIndex, wordIdx);
                                                     }}
                                                 >
-                                                    {content}{' '}
+                                                    {word}{' '}
                                                 </span>
-                                            );
-                                        }) : ayah.text.split(/\s+/).filter(w => w.length > 0).map((word, wordIdx) => (
-                                            <span
-                                                key={`${ayahIndex}-${wordIdx}`}
-                                                className={getWordClass(ayahIndex, wordIdx, ayah.number)}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    if (coach.isCoachMode) coach.coachJumpToWord(ayahIndex, wordIdx);
-                                                    else audio.handleWordClick(ayahIndex, wordIdx);
-                                                }}
-                                            >
-                                                {word}{' '}
-                                            </span>
-                                        ));
+                                            ))
+                                            : vw ? vw.words.map((word, wordIdx) => {
+                                                const content = (tajwidEnabled && word.textTajweed)
+                                                    ? <span dangerouslySetInnerHTML={{ __html: word.textTajweed }} />
+                                                    : word.text;
+
+                                                return (
+                                                    <span
+                                                        key={`${ayahIndex}-${wordIdx}`}
+                                                        className={getWordClass(ayahIndex, wordIdx, ayah.number)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (coach.isCoachMode) coach.coachJumpToWord(ayahIndex, wordIdx);
+                                                            else audio.handleWordClick(ayahIndex, wordIdx);
+                                                        }}
+                                                    >
+                                                        {content}{' '}
+                                                    </span>
+                                                );
+                                            }) : rawWords.map((word, wordIdx) => (
+                                                <span
+                                                    key={`${ayahIndex}-${wordIdx}`}
+                                                    className={getWordClass(ayahIndex, wordIdx, ayah.number)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (coach.isCoachMode) coach.coachJumpToWord(ayahIndex, wordIdx);
+                                                        else audio.handleWordClick(ayahIndex, wordIdx);
+                                                    }}
+                                                >
+                                                    {word}{' '}
+                                                </span>
+                                            ));
 
                                         return (
                                             <span
