@@ -42,9 +42,15 @@ export const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad
 export type WordState = 'correct' | 'error' | 'current' | 'unread';
 export type MaskMode = 'visible' | 'hidden' | 'partial' | 'minimal';
 
-// Convert Western numbers to Arabic-Indic numerals (standard numerals as requested)
-export function toArabicNumbers(num: number): string {
-    return num.toString();
+// Convert Western numbers to Arabic-Indic numerals (٠١٢٣٤٥٦٧٨٩)
+export function toArabicNumbers(num: number | string): string {
+    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return num.toString().replace(/\d/g, (d) => arabicDigits[parseInt(d)]);
+}
+
+// Wrap a number in traditional Arabic verse glyphs ﴿ ﴾
+export function toVerseGlyph(num: number): string {
+    return `\uFD3E${toArabicNumbers(num)}\uFD3F`;
 }
 
 // Juz info helper

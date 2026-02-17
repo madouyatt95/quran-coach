@@ -31,7 +31,7 @@ import { MushafToolbar } from './MushafToolbar';
 import { MushafSearchOverlay } from './MushafSearchOverlay';
 import { MushafShareModal } from './MushafShareModal';
 import { CoachOverlay } from './CoachOverlay';
-import { BISMILLAH, isMobile, toArabicNumbers, getJuzNumber } from './mushafConstants';
+import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, getJuzNumber } from './mushafConstants';
 import type { MaskMode } from './mushafConstants';
 import './MushafPage.css';
 
@@ -473,7 +473,7 @@ export function MushafPage() {
                                                 {wordElements}
 
                                                 <span className="mih-verse-num">
-                                                    {toArabicNumbers(ayah.numberInSurah)}
+                                                    {toVerseGlyph(ayah.numberInSurah)}
                                                 </span>
 
                                                 {showTransliteration && transliterationMap.get(ayah.number) && (

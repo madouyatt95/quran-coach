@@ -140,6 +140,45 @@ export function MushafSearchOverlay({
                 </div>
             )}
 
+            {/* Direct Verse Jump (Surah:Verse) */}
+            {/^(\d+)\s*[:\s-]\s*(\d+)$/.test(searchQuery) && (
+                (() => {
+                    const match = searchQuery.match(/^(\d+)\s*[:\s-]\s*(\d+)$/);
+                    if (!match) return null;
+                    const surahNum = parseInt(match[1]);
+                    const ayahNum = parseInt(match[2]);
+                    const surah = surahs.find(s => s.number === surahNum);
+
+                    if (surah && ayahNum >= 1 && ayahNum <= surah.numberOfAyahs) {
+                        return (
+                            <div
+                                className="mih-search-item"
+                                style={{ background: 'rgba(201, 168, 76, 0.12)' }}
+                                onClick={async () => {
+                                    try {
+                                        // Fetch the ayah to find its page
+                                        const response = await fetch(`https://api.alquran.cloud/v1/ayah/${surahNum}:${ayahNum}`);
+                                        const data = await response.json();
+                                        if (data.code === 200 && data.data.page) {
+                                            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: surahNum, ayah: ayahNum }));
+                                            goToPage(data.data.page);
+                                            handleClose();
+                                        }
+                                    } catch (e) { console.error('Verse jump failed', e); }
+                                }}
+                            >
+                                <div className="mih-search-item__icon"><Search size={18} /></div>
+                                <div className="mih-search-item__info">
+                                    <div className="mih-search-item__name">Aller au verset {surahNum}:{ayahNum}</div>
+                                    <div className="mih-search-item__detail">{surah.englishName} • {SURAH_NAMES_FR[surahNum]}</div>
+                                </div>
+                            </div>
+                        );
+                    }
+                    return null;
+                })()
+            )}
+
             {/* Juz Quick Navigation */}
             {!searchQuery && (
                 <>

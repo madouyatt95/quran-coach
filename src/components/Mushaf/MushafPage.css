@@ -90,12 +90,18 @@
 }
 
 .mih-mushaf__content {
-    padding: 16px 12px 24px;
-    max-width: 600px;
-    margin: 0 auto;
-    min-height: 100%;
+    padding: 32px 24px 40px;
+    max-width: 650px;
+    margin: 10px auto;
+    min-height: 95%;
     transform-style: preserve-3d;
     perspective: 1200px;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 12px double #e8d48b;
+    border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M0 0 L100 0 L100 100 L0 100 Z" fill="none" stroke="%23c9a84c" stroke-width="4" stroke-dasharray="10 5"/></svg>') 12 round;
+    position: relative;
+    border-radius: 4px;
 }
 
 /* 3D Page Turn Animations */
@@ -181,19 +187,20 @@
 
 /* Surah Header Frame (ornamental) */
 .mih-surah-frame {
+    margin: 24px 0 16px;
     text-align: center;
-    margin: 8px 0 12px;
-    padding: 0;
+    position: relative;
+    padding: 12px 0;
 }
 
 .mih-surah-frame__border {
     display: inline-block;
-    border: 2px solid #1a1a2e;
-    border-radius: 0;
-    padding: 10px 40px;
+    border: 2px solid #c9a84c;
+    padding: 8px 32px;
+    border-radius: 40px;
+    background: rgba(201, 168, 76, 0.05);
     position: relative;
-    background: #fff;
-    min-width: 60%;
+    min-width: 180px;
 }
 
 /* Ornamental corners */
@@ -217,44 +224,32 @@
 
 .mih-surah-frame__top-line,
 .mih-surah-frame__bottom-line {
-    display: block;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #1a1a2e 20%, #1a1a2e 80%, transparent);
-    margin: 0 auto;
-    width: 90%;
-}
-
-.mih-surah-frame__top-line {
-    margin-bottom: 4px;
-}
-
-.mih-surah-frame__bottom-line {
-    margin-top: 4px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+    width: 80%;
+    margin: 4px auto;
 }
 
 .mih-surah-name {
-    font-family: var(--font-arabic), 'Traditional Arabic', serif;
-    font-size: 1.6rem;
-    font-weight: 700;
+    font-family: var(--font-arabic);
+    font-size: 1.8rem;
     color: #1a1a2e;
-    line-height: 1.4;
 }
 
-/* Bismillah */
+/* Arabic Bismillah */
 .mih-bismillah {
+    font-family: var(--font-arabic);
+    font-size: 1.8rem;
     text-align: center;
-    font-family: var(--font-arabic), 'Traditional Arabic', serif;
-    font-size: 1.3rem;
-    color: #333;
-    margin: 8px 0 16px;
-    direction: rtl;
+    margin: 16px 0 24px;
+    color: #1a1a2e;
 }
 
-/* Ayahs inline */
+/* Ayah container */
 .mih-ayahs {
     font-family: var(--font-arabic), 'Traditional Arabic', serif;
     font-size: 1.5rem;
-    line-height: 2.4;
+    line-height: 2.8;
     direction: rtl;
     text-align: justify;
     text-justify: inter-word;
@@ -268,6 +263,9 @@
 
 .mih-ayah {
     display: inline;
+    position: relative;
+    padding: 0 2px;
+    transition: background 0.2s;
 }
 
 /* Word-level rendering — critical for Arabic diacritics */
@@ -325,21 +323,15 @@
     user-select: none;
 }
 
-/* Verse numbers (ornamental circles) */
+/* Verse numbers (traditional glyph style) */
 .mih-verse-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border: 1.5px solid #8b7333;
-    border-radius: 50%;
-    font-size: 0.65rem;
-    color: #8b7333;
-    margin: 0 2px;
-    vertical-align: middle;
+    display: inline;
     font-family: var(--font-arabic);
-    background: rgba(201, 168, 76, 0.06);
+    color: #c9a84c;
+    margin: 0 4px;
+    font-size: 1.1em;
+    vertical-align: baseline;
+    font-weight: normal;
 }
 
 /* Font sizes */

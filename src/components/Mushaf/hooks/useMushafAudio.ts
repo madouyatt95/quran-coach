@@ -220,6 +220,19 @@ export function useMushafAudio({
         }
     }, [pageAyahs, audioActive, playAyahAtIndex]);
 
+    // Auto-scroll to current ayah
+    useEffect(() => {
+        if (currentPlayingAyah && audioPlaying) {
+            const ayah = pageAyahsRef.current[playingIndexRef.current];
+            if (ayah) {
+                const el = document.querySelector(`[data-surah="${ayah.surah}"][data-ayah="${ayah.numberInSurah}"]`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+    }, [currentPlayingAyah, audioPlaying]);
+
     // Visibility change handler - preserve audio in background
     useEffect(() => {
         const handleVisibilityChange = () => {
