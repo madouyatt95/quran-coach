@@ -328,35 +328,105 @@ serve(async (req) => {
         }
 
         // ─── Rappels de prière ────────────────────
-        if (sub.prayer_enabled && sub.latitude && sub.longitude) {
+        if (sub.latitude && sub.longitude) {
             const times = await fetchPrayerTimes(sub.latitude, sub.longitude);
             if (times) {
-                const prayers = [
-                    { key: "Fajr", name: "Fajr", nameAr: "الفجر", emoji: "🌅" },
-                    { key: "Dhuhr", name: "Dhouhr", nameAr: "الظهر", emoji: "☀️" },
-                    { key: "Asr", name: "Asr", nameAr: "العصر", emoji: "🌤️" },
-                    { key: "Maghrib", name: "Maghrib", nameAr: "المغرب", emoji: "🌅" },
-                    { key: "Isha", name: "Ishaa", nameAr: "العشاء", emoji: "🌙" },
-                ];
+                // Helper: parse "HH:MM" → minutes from midnight
+                const toMin = (t: string) => {
+                    const [h, m] = t.split(":").map(Number);
+                    return h * 60 + m;
+                };
+                const currentMin = localHour * 60 + localMinute;
 
-                const minutesBefore = sub.prayer_minutes_before || 10;
+                // ── Classic prayer reminders (X minutes before) ──
+                if (sub.prayer_enabled) {
+                    const prayers = [
+                        { key: "Fajr", name: "Fajr", nameAr: "الفجر", emoji: "🌅" },
+                        { key: "Dhuhr", name: "Dhouhr", nameAr: "الظهر", emoji: "☀️" },
+                        { key: "Asr", name: "Asr", nameAr: "العصر", emoji: "🌤️" },
+                        { key: "Maghrib", name: "Maghrib", nameAr: "المغرب", emoji: "🌅" },
+                        { key: "Isha", name: "Ishaa", nameAr: "العشاء", emoji: "🌙" },
+                    ];
 
-                for (const prayer of prayers) {
-                    const timeStr = times[prayer.key as keyof PrayerTimesResponse];
-                    if (!timeStr) continue;
+                    const minutesBefore = sub.prayer_minutes_before || 10;
 
-                    const [h, m] = timeStr.split(":").map(Number);
-                    const prayerMinutesFromMidnight = h * 60 + m;
-                    const currentMinutesFromMidnight = localHour * 60 + localMinute;
-                    const diff = prayerMinutesFromMidnight - currentMinutesFromMidnight;
+                    for (const prayer of prayers) {
+                        const timeStr = times[prayer.key as keyof PrayerTimesResponse];
+                        if (!timeStr) continue;
 
-                    // Notify if prayer is within [minutesBefore-5, minutesBefore+5] window
-                    if (diff >= minutesBefore - 5 && diff <= minutesBefore + 5) {
+                        const prayerMin = toMin(timeStr);
+                        const diff = prayerMin - currentMin;
+
+                        // Notify if prayer is within [minutesBefore-5, minutesBefore+5] window
+                        if (diff >= minutesBefore - 5 && diff <= minutesBefore + 5) {
+                            const ok = await sendPush(sub, {
+                                title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
+                                body: `${prayer.name} dans ~${minutesBefore} minutes (${timeStr})`,
+                                url: "/prieres",
+                                tag: `prayer-${prayer.key}`,
+                            });
+                            if (ok) sent++;
+                        }
+                    }
+                }
+
+                // ── Advanced Fiqh notifications (Darûrî / Akhir Isha) ──
+                // Approximations basées sur les horaires AlAdhan:
+                // - Darûrî Sobh ≈ 20 min avant le lever du soleil (Sunrise)
+                // - Darûrî Asr ≈ mi-chemin entre Asr et Maghrib
+                // - Akhir Isha ≈ 1/3 de la nuit après Isha
+
+                const sunriseStr = (times as any)["Sunrise"];
+                const fajrMin = toMin(times.Fajr);
+                const asrMin = toMin(times.Asr);
+                const maghribMin = toMin(times.Maghrib);
+                const ishaMin = toMin(times.Isha);
+
+                // Darûrî Sobh: ~20 min before sunrise
+                if (sub.daruri_sobh_enabled && sunriseStr) {
+                    const sunriseMin = toMin(sunriseStr);
+                    const daruriSobhMin = sunriseMin - 20;
+                    const diff = daruriSobhMin - currentMin;
+                    if (diff >= -5 && diff <= 5) {
                         const ok = await sendPush(sub, {
-                            title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
-                            body: `${prayer.name} dans ~${minutesBefore} minutes (${timeStr})`,
+                            title: "⚠️ Temps Darûrî Sobh",
+                            body: "Le temps Ikhtiyârî (recommandé) pour le Sobh est terminé. Priez avant le lever du soleil !",
                             url: "/prieres",
-                            tag: `prayer-${prayer.key}`,
+                            tag: "daruri-sobh",
+                        });
+                        if (ok) sent++;
+                    }
+                }
+
+                // Darûrî Asr: midpoint between Asr and Maghrib
+                if (sub.daruri_asr_enabled) {
+                    const daruriAsrMin = Math.round((asrMin + maghribMin) / 2);
+                    const diff = daruriAsrMin - currentMin;
+                    if (diff >= -5 && diff <= 5) {
+                        const ok = await sendPush(sub, {
+                            title: "⚠️ Temps Darûrî Asr",
+                            body: "Le temps Ikhtiyârî (recommandé) pour l'Asr est terminé. Priez avant le Maghrib !",
+                            url: "/prieres",
+                            tag: "daruri-asr",
+                        });
+                        if (ok) sent++;
+                    }
+                }
+
+                // Akhir Isha: 1/3 of the night after Isha
+                if (sub.akhir_isha_enabled) {
+                    // Night duration = Fajr(tomorrow) - Isha ≈ simplified as (24*60 - Isha + Fajr)
+                    const nightDuration = (24 * 60 - ishaMin) + fajrMin;
+                    const akhirIshaMin = (ishaMin + Math.round(nightDuration / 3)) % (24 * 60);
+                    // Handle midnight wrap: check raw diff
+                    let diff = akhirIshaMin - currentMin;
+                    if (diff < -720) diff += 24 * 60; // wrap around midnight
+                    if (diff >= -5 && diff <= 5) {
+                        const ok = await sendPush(sub, {
+                            title: "🌙 Akhir Isha",
+                            body: "Le temps Ikhtiyârî (recommandé) pour l'Isha se termine. Priez avant qu'il ne soit trop tard !",
+                            url: "/prieres",
+                            tag: "akhir-isha",
                         });
                         if (ok) sent++;
                     }
