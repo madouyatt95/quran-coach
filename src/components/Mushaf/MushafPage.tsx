@@ -365,6 +365,7 @@ export function MushafPage() {
                 onTouchStart={navigation.handleTouchStart}
                 onTouchMove={navigation.handleTouchMove}
                 onTouchEnd={navigation.handleTouchEnd}
+                onScroll={navigation.handleScroll}
             >
                 <div className="mih-mushaf__content">
                     {Object.entries(groupedAyahs).map(([surahNum, ayahs]) => {
@@ -396,9 +397,13 @@ export function MushafPage() {
                                         const vw = audio.verseWordsMap.get(`${ayah.surah}:${ayah.numberInSurah}`);
 
                                         const wordElements = vw ? vw.words.map((word, wordIdx) => {
+                                            // On mobile with Tajweed disabled, use plain text to avoid vowel separation
+                                            const useRawText = !tajwidEnabled && isMobile;
                                             const content = (tajwidEnabled && word.textTajweed)
                                                 ? <span dangerouslySetInnerHTML={{ __html: word.textTajweed }} />
-                                                : word.text;
+                                                : useRawText
+                                                    ? (ayah.text.split(/\s+/).filter(w => w.length > 0)[wordIdx] || word.text)
+                                                    : word.text;
 
                                             return (
                                                 <span

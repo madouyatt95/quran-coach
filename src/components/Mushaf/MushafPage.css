@@ -94,6 +94,20 @@
     max-width: 600px;
     margin: 0 auto;
     min-height: 100%;
+    animation: mih-page-enter 0.35s ease-out;
+}
+
+/* Page turn animation */
+@keyframes mih-page-enter {
+    0% {
+        opacity: 0;
+        transform: translateX(-30px) scale(0.97);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
 }
 
 /* Surah Header Frame (ornamental) */
