@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, Check, Flame, BookOpen, Target, Calendar } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useKhatmStore } from '../../stores/khatmStore';
 import './KhatmTracker.css';
 
@@ -7,26 +7,7 @@ import './KhatmTracker.css';
 const RAMADAN_START = '2026-02-18';
 const RAMADAN_END = '2026-03-19';
 
-function ProgressRing({ pct }: { pct: number }) {
-    const r = 19;
-    const circ = 2 * Math.PI * r;
-    const offset = circ - (pct / 100) * circ;
 
-    return (
-        <div className="khatm-ring-container">
-            <svg className="khatm-ring-svg" viewBox="0 0 48 48">
-                <circle className="khatm-ring-bg" cx="24" cy="24" r={r} />
-                <circle
-                    className="khatm-ring-progress"
-                    cx="24" cy="24" r={r}
-                    strokeDasharray={circ}
-                    strokeDashoffset={offset}
-                />
-            </svg>
-            <div className="khatm-ring-text">{pct}%</div>
-        </div>
-    );
-}
 
 function getMotivation(pct: number, todayRead: number, dailyGoal: number): string {
     if (todayRead >= dailyGoal) return 'ما شاء الله ! Objectif atteint pour aujourd\'hui ! 🎉';
@@ -130,115 +111,90 @@ function SetupModal({ onClose }: { onClose: () => void }) {
 
 export function KhatmTracker() {
     const store = useKhatmStore();
-    const [expanded, setExpanded] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
 
-    // Not active – show setup prompt
-    if (!store.isActive) {
-        return (
-            <>
-                <div className="khatm-setup-banner" onClick={() => setShowSetup(true)}>
-                    <div className="khatm-setup-icon">🌙</div>
-                    <div className="khatm-setup-text">Objectif Khatm</div>
-                    <div className="khatm-setup-sub">Configurez votre lecture complète du Coran</div>
-                </div>
-                {showSetup && <SetupModal onClose={() => setShowSetup(false)} />}
-            </>
-        );
-    }
-
     const progress = store.getOverallProgress();
-    const dayNum = store.getDayNumber();
-    const totalDays = store.getTotalDays();
     const todayRange = store.getTodayRange();
     const todayRead = store.getTodayRead();
     const dailyGoal = todayRange.end - todayRange.start + 1;
-    const todayPct = Math.min(100, Math.round((todayRead / dailyGoal) * 100));
-    const daysLeft = store.getDaysRemaining();
-    const streak = store.getStreak();
     const adaptiveGoal = store.getDailyGoal();
+    const streak = store.getStreak();
+    const daysLeft = store.getDaysRemaining();
     const motivation = getMotivation(progress.pct, todayRead, dailyGoal);
+
+    const handleClick = () => {
+        if (store.isActive) {
+            setShowDetails(true);
+        } else {
+            setShowSetup(true);
+        }
+    };
 
     return (
         <>
-            <div className="khatm-banner">
-                {/* Compact view */}
-                <div className="khatm-compact" onClick={() => setExpanded(!expanded)}>
-                    <ProgressRing pct={progress.pct} />
-
-                    <div className="khatm-info">
-                        <div className="khatm-title-row">
-                            <span className="khatm-title">🌙 Khatm</span>
-                            <span className="khatm-day-badge">Jour {dayNum}/{totalDays}</span>
-                        </div>
-                        <div className="khatm-today-goal">
-                            Aujourd'hui : pages <strong>{todayRange.start}</strong> → <strong>{todayRange.end}</strong>
-                            {' '}({todayRead}/{dailyGoal})
-                        </div>
-                        <div className="khatm-mini-bar">
-                            <div className="khatm-mini-fill" style={{ width: `${todayPct}%` }} />
-                        </div>
+            <div className="khatm-header-trigger" onClick={handleClick}>
+                {!store.isActive ? (
+                    <div className="khatm-trigger-inactive" title="Configurer l'objectif Khatm">
+                        <span className="khatm-trigger-emoji">🌙</span>
+                        <span className="khatm-trigger-label">Khatm</span>
                     </div>
+                ) : (
+                    <div className="khatm-trigger-active">
+                        <div className="khatm-trigger-pct">{progress.pct}%</div>
+                        <div className="khatm-trigger-pages">{progress.read}/604</div>
+                    </div>
+                )}
+            </div>
 
-                    <ChevronDown size={18} className={`khatm-chevron ${expanded ? 'open' : ''}`} />
-                </div>
+            {/* Details Popup */}
+            {showDetails && (
+                <>
+                    <div className="khatm-popup-backdrop" onClick={() => setShowDetails(false)} />
+                    <div className="khatm-popup">
+                        <div className="khatm-popup-header">
+                            <h3>🌙 Objectif Khatm</h3>
+                            <button className="khatm-popup-close" onClick={() => setShowDetails(false)}>&times;</button>
+                        </div>
 
-                {/* Expanded view */}
-                {expanded && (
-                    <div className="khatm-expanded">
                         <div className="khatm-stats">
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">
-                                    <BookOpen size={16} style={{ display: 'inline', verticalAlign: -2 }} />
-                                    {' '}{progress.read}
-                                </span>
-                                <span className="khatm-stat-label">Pages lues</span>
+                                <span className="khatm-stat-value">{progress.pct}%</span>
+                                <span className="khatm-stat-label">Total</span>
                             </div>
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">
-                                    <Target size={16} style={{ display: 'inline', verticalAlign: -2 }} />
-                                    {' '}{adaptiveGoal}
-                                </span>
-                                <span className="khatm-stat-label">Pages/jour</span>
+                                <span className="khatm-stat-value">{todayRead}/{dailyGoal}</span>
+                                <span className="khatm-stat-label">Aujourd'hui</span>
                             </div>
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">
-                                    <Flame size={16} style={{ display: 'inline', verticalAlign: -2 }} />
-                                    {' '}{streak}
-                                </span>
-                                <span className="khatm-stat-label">Streak 🔥</span>
+                                <span className="khatm-stat-value">{streak} 🔥</span>
+                                <span className="khatm-stat-label">Streak</span>
                             </div>
                         </div>
 
                         <div className="khatm-message">{motivation}</div>
 
-                        <div className="khatm-stats" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 8 }}>
+                        <div className="khatm-stats" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 12 }}>
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">
-                                    <Calendar size={16} style={{ display: 'inline', verticalAlign: -2 }} />
-                                    {' '}{daysLeft}
-                                </span>
-                                <span className="khatm-stat-label">Jours restants</span>
+                                <span className="khatm-stat-value">{adaptiveGoal}</span>
+                                <span className="khatm-stat-label">Pages / jour</span>
                             </div>
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">{604 - progress.read}</span>
-                                <span className="khatm-stat-label">Pages restantes</span>
+                                <span className="khatm-stat-value">{daysLeft}</span>
+                                <span className="khatm-stat-label">Jours restants</span>
                             </div>
                         </div>
 
                         <div className="khatm-actions">
-                            <button
-                                className="khatm-btn khatm-btn-secondary"
-                                onClick={() => setShowSetup(true)}
-                            >
-                                📅 Modifier
+                            <button className="khatm-btn khatm-btn-secondary" onClick={() => { setShowDetails(false); setShowSetup(true); }}>
+                                Modifier
                             </button>
                             <button
                                 className="khatm-btn khatm-btn-danger"
                                 onClick={() => {
                                     if (confirm('Arrêter le Khatm en cours ?')) {
                                         store.deactivate();
-                                        setExpanded(false);
+                                        setShowDetails(false);
                                     }
                                 }}
                             >
@@ -246,8 +202,8 @@ export function KhatmTracker() {
                             </button>
                         </div>
                     </div>
-                )}
-            </div>
+                </>
+            )}
 
             {showSetup && <SetupModal onClose={() => setShowSetup(false)} />}
         </>

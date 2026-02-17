@@ -1,206 +1,181 @@
-/* Khatm Tracker Banner */
-.khatm-banner {
-    margin: 8px 12px;
-    background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(201, 168, 76, 0.2);
-}
-
-.khatm-compact {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    cursor: pointer;
-    user-select: none;
-}
-
-/* Progress ring */
-.khatm-ring-container {
-    position: relative;
-    width: 48px;
-    height: 48px;
-    flex-shrink: 0;
-}
-
-.khatm-ring-svg {
-    width: 48px;
-    height: 48px;
-    transform: rotate(-90deg);
-}
-
-.khatm-ring-bg {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 4;
-}
-
-.khatm-ring-progress {
-    fill: none;
-    stroke: #c9a84c;
-    stroke-width: 4;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.6s ease;
-}
-
-.khatm-ring-text {
-    position: absolute;
-    inset: 0;
+/* Khatm Header Integration - Compact Styles */
+.khatm-header-trigger {
+    background: rgba(201, 168, 76, 0.1);
+    border: 1.5px solid rgba(201, 168, 76, 0.3);
+    border-radius: 20px;
+    padding: 6px 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #c9a84c;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    min-width: 60px;
 }
 
-/* Info section */
-.khatm-info {
-    flex: 1;
-    min-width: 0;
+.khatm-header-trigger:hover {
+    background: rgba(201, 168, 76, 0.15);
+    border-color: #c9a84c;
+    transform: translateY(-1px);
 }
 
-.khatm-title-row {
+.khatm-trigger-inactive {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 4px;
 }
 
-.khatm-title {
+.khatm-trigger-emoji {
+    font-size: 1.1rem;
+}
+
+.khatm-trigger-label {
     font-size: 0.8rem;
     font-weight: 700;
     color: #c9a84c;
 }
 
-.khatm-day-badge {
-    font-size: 0.65rem;
-    background: rgba(201, 168, 76, 0.2);
+.khatm-trigger-active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+}
+
+.khatm-trigger-pct {
+    font-size: 0.85rem;
+    font-weight: 800;
     color: #c9a84c;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 600;
 }
 
-.khatm-today-goal {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 6px;
+.khatm-trigger-pages {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
 }
 
-.khatm-today-goal strong {
-    color: #fff;
+/* Details Popup */
+.khatm-popup-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9998;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease;
 }
 
-/* Mini progress bar */
-.khatm-mini-bar {
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
+.khatm-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 340px;
+    background: #1b2838;
+    border-radius: 20px;
+    padding: 24px;
+    z-index: 9999;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 1.5px solid rgba(201, 168, 76, 0.3);
+    animation: popupScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.khatm-mini-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #c9a84c, #e8d48b);
-    border-radius: 4px;
-    transition: width 0.4s ease;
-}
-
-.khatm-chevron {
-    color: rgba(255, 255, 255, 0.4);
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-}
-
-.khatm-chevron.open {
-    transform: rotate(180deg);
-}
-
-/* Expanded view */
-.khatm-expanded {
-    padding: 0 14px 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    animation: khatmSlide 0.25s ease;
-}
-
-@keyframes khatmSlide {
+@keyframes popupScale {
     from {
         opacity: 0;
-        max-height: 0;
+        transform: translate(-50%, -45%) scale(0.95);
     }
 
     to {
         opacity: 1;
-        max-height: 300px;
+        transform: translate(-50%, -50%) scale(1);
     }
+}
+
+.khatm-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.khatm-popup-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #c9a84c;
+    font-weight: 700;
+}
+
+.khatm-popup-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
 }
 
 .khatm-stats {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
 }
 
 .khatm-stat {
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 10px 8px;
+    padding: 12px 8px;
+    border-radius: 14px;
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .khatm-stat-value {
-    font-size: 1.1rem;
+    display: block;
+    font-size: 1rem;
     font-weight: 800;
     color: #c9a84c;
-    display: block;
+    margin-bottom: 2px;
 }
 
 .khatm-stat-label {
     font-size: 0.65rem;
     color: rgba(255, 255, 255, 0.5);
-    margin-top: 2px;
-    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .khatm-message {
-    margin-top: 12px;
-    padding: 10px 12px;
-    background: rgba(201, 168, 76, 0.1);
+    margin: 16px 0;
+    padding: 12px;
+    background: rgba(201, 168, 76, 0.08);
     border-radius: 12px;
-    border-left: 3px solid #c9a84c;
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.4;
+    border-left: 3px solid #c9a84c;
 }
 
 .khatm-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 12px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .khatm-btn {
     flex: 1;
-    padding: 8px 12px;
+    padding: 10px;
+    border-radius: 12px;
     border: none;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.khatm-btn:active {
-    opacity: 0.7;
+    transition: all 0.2s;
 }
 
 .khatm-btn-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
 }
 
 .khatm-btn-danger {
@@ -208,217 +183,38 @@
     color: #ef4444;
 }
 
-/* Setup state (no active khatm) */
+/* Legacy banner cleanup */
+.khatm-banner,
 .khatm-setup-banner {
-    margin: 8px 12px;
-    background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
-    border-radius: 16px;
-    padding: 16px;
-    text-align: center;
-    border: 1px dashed rgba(201, 168, 76, 0.3);
-    cursor: pointer;
+    display: none;
 }
 
-.khatm-setup-icon {
-    font-size: 2rem;
-    margin-bottom: 8px;
+/* Rest of previous styles for modal etc */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
-.khatm-setup-text {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #c9a84c;
-    margin-bottom: 4px;
+@keyframes slideUpModal {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
 }
 
-.khatm-setup-sub {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-/* Setup Modal */
+/* Setup Modal fixes (make sure it's on top) */
 .khatm-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 9998;
-    animation: fadeIn 0.2s ease;
+    z-index: 10000;
 }
 
 .khatm-modal {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-height: 80vh;
-    background: var(--card-bg, #1b2838);
-    border-radius: 20px 20px 0 0;
-    z-index: 9999;
-    padding: 24px 20px 32px;
-    animation: slideUpModal 0.3s ease;
-    overflow-y: auto;
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
-}
-
-.khatm-modal h2 {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #c9a84c;
-    margin: 0 0 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.khatm-modal-desc {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 20px;
-    line-height: 1.4;
-}
-
-.khatm-preset {
-    background: rgba(201, 168, 76, 0.1);
-    border: 2px solid rgba(201, 168, 76, 0.3);
-    border-radius: 14px;
-    padding: 14px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.khatm-preset:hover,
-.khatm-preset.selected {
-    border-color: #c9a84c;
-}
-
-.khatm-preset-icon {
-    font-size: 1.8rem;
-}
-
-.khatm-preset-info {
-    flex: 1;
-}
-
-.khatm-preset-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #c9a84c;
-}
-
-.khatm-preset-dates {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin-top: 2px;
-}
-
-.khatm-custom {
-    margin-top: 16px;
-}
-
-.khatm-custom-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 12px;
-}
-
-.khatm-date-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.khatm-date-field {
-    flex: 1;
-}
-
-.khatm-date-field label {
-    display: block;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 4px;
-}
-
-.khatm-date-field input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    font-size: 0.9rem;
-    outline: none;
-    box-sizing: border-box;
-}
-
-.khatm-date-field input:focus {
-    border-color: #c9a84c;
-}
-
-.khatm-start-btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #c9a84c, #b8963e);
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(201, 168, 76, 0.3);
-    transition: transform 0.15s;
-}
-
-.khatm-start-btn:active {
-    transform: scale(0.97);
-}
-
-.khatm-start-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.khatm-cancel-btn {
-    width: 100%;
-    margin-top: 8px;
-    padding: 10px;
-    border: none;
-    border-radius: 12px;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.85rem;
-    cursor: pointer;
-}
-
-/* Page validation badge in MushafPage */
-.khatm-page-badge {
-    position: fixed;
-    bottom: 146px;
-    right: 12px;
-    z-index: 40;
-    background: rgba(201, 168, 76, 0.95);
-    color: #fff;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 14px rgba(201, 168, 76, 0.4);
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-    border: none;
-}
-
-.khatm-page-badge:active {
-    transform: scale(0.9);
-}
-
-.khatm-page-badge.validated {
-    background: rgba(46, 204, 113, 0.95);
-    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.4);
+    z-index: 10001;
 }

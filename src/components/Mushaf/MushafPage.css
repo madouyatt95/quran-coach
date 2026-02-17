@@ -29,6 +29,25 @@
     z-index: 100;
 }
 
+.mih-header-left,
+.mih-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.mih-header-right {
+    justify-content: flex-end;
+}
+
+.mih-header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
 .mih-header__right {
     display: flex;
     align-items: center;
@@ -241,7 +260,7 @@
 .mih-surah-name {
     font-family: var(--font-arabic);
     font-size: 1.8rem;
-    color: #000000;
+    color: #000000 !important;
 }
 
 /* Arabic Bismillah */
@@ -250,7 +269,7 @@
     font-size: 1.8rem;
     text-align: center;
     margin: 16px 0 24px;
-    color: #000000;
+    color: #000000 !important;
 }
 
 /* Ayah container */
@@ -261,7 +280,7 @@
     direction: rtl;
     text-align: justify;
     text-justify: inter-word;
-    color: #000000;
+    color: #000000 !important;
     word-spacing: 2px;
     /* Fix iOS vowel ligatures */
     font-feature-settings: "liga" 1, "clig" 1, "calt" 1;

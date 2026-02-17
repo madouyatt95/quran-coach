@@ -31,7 +31,7 @@ import { MushafToolbar } from './MushafToolbar';
 import { MushafSearchOverlay } from './MushafSearchOverlay';
 import { MushafShareModal } from './MushafShareModal';
 import { CoachOverlay } from './CoachOverlay';
-import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, getJuzNumber } from './mushafConstants';
+import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, getJuzNumber, SURAH_NAMES_FR } from './mushafConstants';
 import type { MaskMode } from './mushafConstants';
 import './MushafPage.css';
 
@@ -103,16 +103,8 @@ export function MushafPage() {
         prevPage,
     });
 
-    // ===== Derived state =====
-    const pageSurahNames = useMemo(() => {
-        const surahNums = [...new Set(pageAyahs.map(a => a.surah))];
-        return surahNums.map(num => {
-            const s = surahs.find(s => s.number === num);
-            return s ? { number: num, name: s.name, englishName: s.englishName } : null;
-        }).filter(Boolean) as { number: number; name: string; englishName: string }[];
-    }, [pageAyahs, surahs]);
-
-    const juzNumber = useMemo(() => getJuzNumber(pageAyahs), [pageAyahs]);
+    const currentSurah = pageAyahs[0]?.surah || 1;
+    const juzNumber = useMemo(() => pageAyahs.length > 0 ? getJuzNumber(pageAyahs) : 1, [pageAyahs]);
 
     const groupedAyahs = useMemo(() => {
         return pageAyahs.reduce((groups, ayah) => {
@@ -269,14 +261,13 @@ export function MushafPage() {
         <div className={`mushaf-page ${isMobile ? 'is-mobile' : ''}`} data-arabic-size={arabicFontSize}>
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="mih-header-left">
                     <button onClick={() => setShowSideMenu(true)} className="mih-header__icon-btn">
                         <Menu size={20} />
                     </button>
                     <div className="mih-header__info" onClick={() => setShowSearch(true)}>
-                        <div className="mih-header__surah">
-                            {pageSurahNames.map(s => s.englishName).join(' • ')}
-                            <Search size={12} style={{ marginLeft: 4, opacity: 0.5 }} />
+                        <div className="mih-header__surah-name">
+                            {SURAH_NAMES_FR[currentSurah]}
                         </div>
                         <div className="mih-header__page-num">
                             Page {toArabicNumbers(currentPage)} • Juz {juzNumber}
@@ -306,7 +297,12 @@ export function MushafPage() {
                     </div>
                 )}
 
-                <div className="mih-header__right">
+                {/* Center: Khatm Tracker (Compact) */}
+                <div className="mih-header-center">
+                    <KhatmTracker />
+                </div>
+
+                <div className="mih-header-right">
                     <MushafToolbar
                         showToolbar={showToolbar}
                         isMobile={isMobile}
@@ -336,7 +332,13 @@ export function MushafPage() {
                         togglePageValidation={togglePageValidation}
                     />
                     <button
-                        className={`mih-header__icon-btn ${showToolbar ? 'active' : ''}`}
+                        className={`mih-toolbar__btn ${showSearch ? 'active' : ''}`}
+                        onClick={() => setShowSearch(true)}
+                    >
+                        <Search size={20} />
+                    </button>
+                    <button
+                        className={`mih-toolbar__btn ${showToolbar ? 'active' : ''}`}
                         onClick={() => setShowToolbar(!showToolbar)}
                     >
                         <Settings size={20} />
@@ -344,7 +346,6 @@ export function MushafPage() {
                 </div>
             </div>
 
-            <KhatmTracker />
             <KhatmPageBadge currentPage={currentPage} />
 
             {/* Floating Navigation (desktop) */}
