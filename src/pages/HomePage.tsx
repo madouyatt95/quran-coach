@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Clock } from 'lucide-react';
+import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
@@ -85,23 +85,6 @@ const DHIKR_SEQUENCE = [
     { text: 'اللَّهُ أَكْبَر', textFr: 'Allahu Akbar', target: 34, color: '#38ef7d' },
 ];
 
-// ─── Moods & Thematic Paths ──────────────────────────────
-const MOODS = [
-    { id: 'serenity', emoji: '😌', label: 'Sérénité', color: '#4facfe' },
-    { id: 'energy', emoji: '🔋', label: 'Énergie', color: '#38ef7d' },
-    { id: 'gratitude', emoji: '✨', label: 'Gratitude', color: '#c9a84c' },
-    { id: 'patience', emoji: '🌿', label: 'Patience', color: '#f093fb' },
-    { id: 'night', emoji: '🌙', label: 'Soir', color: '#a18cd1' },
-];
-
-const FEATURED_PATH = {
-    id: 'path-serenity',
-    title: 'Retrouver la Paix Intérieure',
-    duration: '5 min',
-    desc: 'Un voyage spirituel pour apaiser le cœur et l\'esprit.',
-    gradient: 'linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d)',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=300',
-};
 
 // ─── "Aujourd'hui" contextual tips ───────────────────────
 function getTodayTips(dayOfWeek: number, hijriMonth: number, hijriDay: number): { emoji: string; text: string }[] {
@@ -374,43 +357,6 @@ export function HomePage() {
                 )}
             </div>
 
-            {/* Mood Selector (Thematic Paths Entry) */}
-            <div className="home-moods">
-                <div className="home-moods__title">Comment vous sentez-vous ?</div>
-                <div className="home-moods__scroll">
-                    {MOODS.map(mood => (
-                        <button
-                            key={mood.id}
-                            className="home-mood-chip"
-                            style={{ '--mood-color': mood.color } as any}
-                            onClick={() => navigate(`/path/${mood.id}`)}
-                        >
-                            <span className="home-mood-chip__emoji">{mood.emoji}</span>
-                            <span className="home-mood-chip__label">{mood.label}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Featured Thematic Path Card */}
-            <div className="home-path-card" style={{ '--path-gradient': FEATURED_PATH.gradient } as any}>
-                <div className="home-path-card__content">
-                    <div className="home-path-card__badge">À la une</div>
-                    <h3 className="home-path-card__title">{FEATURED_PATH.title}</h3>
-                    <p className="home-path-card__desc">{FEATURED_PATH.desc}</p>
-                    <div className="home-path-card__meta">
-                        <Clock size={14} />
-                        <span>{FEATURED_PATH.duration}</span>
-                    </div>
-                    <button className="home-path-card__btn" onClick={() => navigate('/path/serenity')}>
-                        Commencer →
-                    </button>
-                </div>
-                <div className="home-path-card__overlay"
-                    style={{ backgroundImage: `url(${FEATURED_PATH.image})` }}
-                    onClick={() => navigate('/path/serenity')}
-                />
-            </div>
 
             {/* Next Prayer */}
             {nextPrayer && (
