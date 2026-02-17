@@ -47,6 +47,8 @@ export function StatsPage() {
 
     const handleChallengeClick = (challenge: typeof dailyChallenges[0]) => {
         if (challenge.type === 'memorize_ayah' && challenge.surah && challenge.ayah) {
+            sessionStorage.setItem('isSilentJump', 'true');
+            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: challenge.surah, ayah: challenge.ayah }));
             goToAyah(challenge.surah, challenge.ayah);
             navigate('/read');
         } else if (challenge.type === 'read_pages') {
@@ -164,6 +166,8 @@ export function StatsPage() {
                 <button
                     className="ayah-of-day"
                     onClick={() => {
+                        sessionStorage.setItem('isSilentJump', 'true');
+                        sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: ayahOfTheDay.surah, ayah: ayahOfTheDay.ayah }));
                         goToAyah(ayahOfTheDay.surah, ayahOfTheDay.ayah);
                         navigate('/read');
                     }}

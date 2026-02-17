@@ -293,6 +293,8 @@ export function HomePage() {
 
     const handleContinueReading = useCallback(() => {
         if (progress) {
+            sessionStorage.setItem('isSilentJump', 'true');
+            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: progress.lastSurah, ayah: progress.lastAyah }));
             goToAyah(progress.lastSurah, progress.lastAyah, progress.lastPage, { silent: false });
         }
         navigate('/read');

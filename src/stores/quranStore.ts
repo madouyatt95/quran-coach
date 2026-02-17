@@ -63,7 +63,7 @@ export const useQuranStore = create<QuranState>()(
             explorationSurah: 0,
             explorationAyah: 0,
             jumpSignal: 0,
-            version: '1.2.7', // Diagnostic internal version
+            version: '1.2.8', // Diagnostic internal version
 
             setSurahs: (surahs) => set({ surahs }),
             setCurrentPage: (currentPage) => set({ currentPage }),

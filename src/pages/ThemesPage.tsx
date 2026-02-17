@@ -22,6 +22,7 @@ export function ThemesPage() {
             .then(res => res.json())
             .then(data => {
                 if (data.code === 200 && data.data?.page) {
+                    sessionStorage.setItem('isSilentJump', 'true');
                     sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah, ayah }));
                     goToPage(data.data.page);
                     navigate('/');

@@ -67,7 +67,7 @@ export function MushafPage() {
 
     // Diagnostic version log
     useEffect(() => {
-        console.log('[Quran Coach] v1.2.7 - Exploration Auto-Cutoff (10v) Active');
+        console.log('[Quran Coach] v1.2.8 - Full Jump Protection Active');
     }, []);
 
     // Panels
@@ -127,12 +127,12 @@ export function MushafPage() {
 
                         // Update store only if changed to avoid loops
                         if (pageNum !== currentPage || ayahNum !== currentAyah) {
-                            setCurrentPage(pageNum);
-                            setCurrentAyah(ayahNum);
-
-                            // Only update general reading bookmark if we are NOT in a silent search jump
+                            // Only update store/bookmark if we are NOT in a silent jump
                             const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump');
+
                             if (!isSilent) {
+                                setCurrentPage(pageNum);
+                                setCurrentAyah(ayahNum);
                                 updateProgress(); // No {force:true} here -> uses threshold in store (10v)
                             }
                         }
