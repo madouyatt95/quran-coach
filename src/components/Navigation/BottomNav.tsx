@@ -10,7 +10,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     { path: '/', emoji: '🏠', label: 'Accueil' },
     { path: '/read', emoji: '📖', label: 'Lecture' },
-    { path: '/hifdh', emoji: '🎧', label: 'Hifdh' },
+    { path: '/hifdh', emoji: '🎧', label: 'Mémorisation' },
     { path: '/prophets', emoji: '📜', label: 'Prophètes' },
     { path: '/quiz', emoji: '⚔️', label: 'Quiz' },
 ];

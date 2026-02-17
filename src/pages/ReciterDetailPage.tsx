@@ -6,6 +6,7 @@ import { useDownloadStore } from '../stores/downloadStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { useQuranStore } from '../stores/quranStore';
 import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
+import { SURAH_NAMES_FR } from '../components/Mushaf/mushafConstants';
 import { getReciterColor } from '../lib/assetPipeline';
 import { ChevronLeft, Play, Download, CheckCircle2, Clock, Plus } from 'lucide-react';
 import { AddToPlaylistModal } from '../components/Playlist/AddToPlaylistModal';
@@ -135,7 +136,7 @@ export function ReciterDetailPage() {
                                     <div className="surah-info-main" onClick={() => handlePlaySurah(surah)}>
                                         <div className="surah-names-container">
                                             <div className="surah-names-top">
-                                                <span className="surah-name-fr">{surah.name}</span>
+                                                <span className="surah-name-fr">{SURAH_NAMES_FR[surah.id] || surah.name}</span>
                                                 <span className="surah-name-trans">{transliteration}</span>
                                             </div>
                                             <span className="surah-name-ar">{qSurah?.name}</span>

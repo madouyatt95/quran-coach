@@ -391,12 +391,12 @@ export function PrayerTimesPage() {
                                         </div>
                                         <div className="fiqh-time">
                                             <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
-                                            <span>Fin Ikhtiyârî</span>
+                                            <span>Fin Ikhtiyârî (temps recommandé)</span>
                                             <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
                                         </div>
                                         <div className="fiqh-time">
                                             <span className="fiqh-time__dot fiqh-time__dot--daruri" />
-                                            <span>Fin Darûrî</span>
+                                            <span>Fin Darûrî (temps limite)</span>
                                             <span className="fiqh-time__val">{fw.endDaruri}</span>
                                         </div>
                                     </div>
@@ -462,7 +462,7 @@ export function PrayerTimesPage() {
                                         </div>
                                         <div className="fiqh-time">
                                             <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
-                                            <span>Akhir Isha ({settings.ishaIkhtiyari === 'HALF_NIGHT' ? '½ nuit' : '⅓ nuit'})</span>
+                                            <span>Akhir Isha (temps recommandé) ({settings.ishaIkhtiyari === 'HALF_NIGHT' ? '½ nuit' : '⅓ nuit'})</span>
                                             <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
                                         </div>
                                     </div>
