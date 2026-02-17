@@ -123,92 +123,95 @@ function getTodayTips(dayOfWeek: number, hijriMonth: number, hijriDay: number): 
     return tips;
 }
 
-// ─── Next Prayer Hook ────────────────────────────────────
+// ─── Next Prayer Hook (uses local engine) ────────────────
 function useNextPrayer() {
     const [data, setData] = useState<{ name: string; nameAr: string; time: string; countdown: string } | null>(null);
 
     useEffect(() => {
         const PRAYER_NAMES: Record<string, string> = {
-            Fajr: 'الفجر', Dhuhr: 'الظهر', Asr: 'العصر', Maghrib: 'المغرب', Isha: 'العشاء'
+            fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء'
+        };
+        const PRAYER_NAMES_FR: Record<string, string> = {
+            fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha'
         };
 
-        const fetchAndCalc = async () => {
+        const computeNextPrayer = async () => {
             try {
-                // Try cached first
-                const cached = sessionStorage.getItem('prayerTimesCache');
-                let timings: Record<string, string>;
+                const { usePrayerStore } = await import('../stores/prayerStore');
+                const { computeDay, DEFAULT_PRAYER_SETTINGS } = await import('../lib/prayerEngine');
+                const store = usePrayerStore.getState();
 
-                if (cached) {
-                    const parsed = JSON.parse(cached);
-                    if (parsed.date === new Date().toDateString()) {
-                        timings = parsed.timings;
-                    } else {
-                        throw new Error('expired');
+                let lat = store.lat;
+                let lng = store.lng;
+
+                // If no coords in store yet, get from geolocation
+                if (lat == null || lng == null) {
+                    try {
+                        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+                            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+                        );
+                        lat = pos.coords.latitude;
+                        lng = pos.coords.longitude;
+                    } catch {
+                        // Fallback: Paris
+                        lat = 48.8566;
+                        lng = 2.3522;
                     }
-                } else {
-                    throw new Error('no cache');
                 }
 
-                updateCountdown(timings, PRAYER_NAMES);
+                const settings = store.settings || DEFAULT_PRAYER_SETTINGS;
+                const result = computeDay(new Date(), lat, lng, settings);
+                const timings = result.formattedTimes;
+                updateCountdown(timings, PRAYER_NAMES, PRAYER_NAMES_FR);
             } catch {
-                // Fetch from API with geolocation
+                // Fallback: API as last resort
                 try {
-                    const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
-                    );
-                    const res = await fetch(
-                        `https://api.aladhan.com/v1/timings/${Date.now() / 1000}?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&method=2`
-                    );
+                    const res = await fetch(`https://api.aladhan.com/v1/timings/${Date.now() / 1000}?latitude=48.8566&longitude=2.3522&method=2`);
                     const json = await res.json();
                     if (json.code === 200) {
-                        const timings = json.data.timings;
-                        sessionStorage.setItem('prayerTimesCache', JSON.stringify({ date: new Date().toDateString(), timings }));
-                        updateCountdown(timings, PRAYER_NAMES);
+                        updateCountdown(json.data.timings, PRAYER_NAMES, PRAYER_NAMES_FR);
                     }
-                } catch {
-                    // Fallback Paris
-                    try {
-                        const res = await fetch(`https://api.aladhan.com/v1/timings/${Date.now() / 1000}?latitude=48.8566&longitude=2.3522&method=2`);
-                        const json = await res.json();
-                        if (json.code === 200) {
-                            updateCountdown(json.data.timings, PRAYER_NAMES);
-                        }
-                    } catch { /* silent */ }
-                }
+                } catch { /* silent */ }
             }
         };
 
-        const updateCountdown = (timings: Record<string, string>, names: Record<string, string>) => {
-            const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+        const updateCountdown = (timings: Record<string, string>, namesAr: Record<string, string>, namesFr: Record<string, string>) => {
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            // Also check original API keys if fallback
+            const apiKeys: Record<string, string> = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
             const now = new Date();
             const currentMin = now.getHours() * 60 + now.getMinutes();
 
             for (const p of prayers) {
-                const [h, m] = timings[p].split(':').map(Number);
+                const timeStr = timings[p] || timings[apiKeys[p]] || '';
+                if (!timeStr) continue;
+                const [h, m] = timeStr.split(':').map(Number);
+                if (isNaN(h) || isNaN(m)) continue;
                 const pMin = h * 60 + m;
                 if (pMin > currentMin) {
                     const diff = pMin - currentMin;
                     const hrs = Math.floor(diff / 60);
                     setData({
-                        name: p,
-                        nameAr: names[p],
-                        time: timings[p],
+                        name: namesFr[p] || p,
+                        nameAr: namesAr[p] || '',
+                        time: timeStr,
                         countdown: hrs > 0 ? `${hrs}h ${diff % 60}min` : `${diff % 60} min`,
                     });
                     return;
                 }
             }
-            // All passed => Fajr tomorrow
-            const [fH, fM] = timings.Fajr.split(':').map(Number);
-            const diff = (24 * 60 - currentMin) + fH * 60 + fM;
+            // All passed → Fajr tomorrow
+            const fajrStr = timings.fajr || timings.Fajr || '05:00';
+            const [fH, fM] = fajrStr.split(':').map(Number);
+            const diff = (24 * 60 - currentMin) + (fH || 5) * 60 + (fM || 0);
             setData({
-                name: 'Fajr', nameAr: names.Fajr, time: timings.Fajr,
+                name: namesFr.fajr || 'Fajr', nameAr: namesAr.fajr || 'الفجر', time: fajrStr,
                 countdown: `${Math.floor(diff / 60)}h ${diff % 60}min`,
             });
         };
 
-        fetchAndCalc();
-        const interval = setInterval(fetchAndCalc, 60000); // update every minute
+        computeNextPrayer();
+        const interval = setInterval(computeNextPrayer, 60000);
         return () => clearInterval(interval);
     }, []);
 

@@ -32,6 +32,7 @@ const ThemesPage = lazy(() => import('./pages/ThemesPage').then(m => ({ default:
 const QuizPage = lazy(() => import('./pages/QuizPage').then(m => ({ default: m.QuizPage })));
 const HadithsPage = lazy(() => import('./pages/HadithsPage').then(m => ({ default: m.HadithsPage })));
 const QiblaPage = lazy(() => import('./pages/QiblaPage').then(m => ({ default: m.QiblaPage })));
+const PrayerSettingsPage = lazy(() => import('./pages/PrayerSettingsPage').then(m => ({ default: m.PrayerSettingsPage })));
 
 // Minimal loading fallback
 function PageLoader() {
@@ -156,6 +157,7 @@ function AppContent() {
 
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/prayers" element={<PrayerTimesPage />} />
+            <Route path="/prayer-settings" element={<PrayerSettingsPage />} />
             <Route path="/adhkar" element={<AdhkarPage />} />
             <Route path="/listen" element={<ListenPage />} />
             <Route path="/listen/:id" element={<ReciterDetailPage />} />

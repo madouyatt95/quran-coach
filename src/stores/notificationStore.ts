@@ -9,6 +9,11 @@ interface NotificationState {
     hadithEnabled: boolean;
     challengeEnabled: boolean;
 
+    // Advanced prayer notifications (Sprint 3)
+    daruriSobhEnabled: boolean;
+    daruriAsrEnabled: boolean;
+    akhirIshaEnabled: boolean;
+
     // Runtime state
     permission: NotificationPermission;
 
@@ -18,6 +23,9 @@ interface NotificationState {
     setPrayerMinutesBefore: (minutes: number) => void;
     setHadithEnabled: (enabled: boolean) => void;
     setChallengeEnabled: (enabled: boolean) => void;
+    setDaruriSobhEnabled: (enabled: boolean) => void;
+    setDaruriAsrEnabled: (enabled: boolean) => void;
+    setAkhirIshaEnabled: (enabled: boolean) => void;
     setPermission: (permission: NotificationPermission) => void;
 }
 
@@ -30,6 +38,9 @@ export const useNotificationStore = create<NotificationState>()(
             prayerMinutesBefore: 10,
             hadithEnabled: true,
             challengeEnabled: true,
+            daruriSobhEnabled: false,
+            daruriAsrEnabled: false,
+            akhirIshaEnabled: false,
             permission: 'default' as NotificationPermission,
 
             // Actions
@@ -38,6 +49,9 @@ export const useNotificationStore = create<NotificationState>()(
             setPrayerMinutesBefore: (prayerMinutesBefore) => set({ prayerMinutesBefore }),
             setHadithEnabled: (hadithEnabled) => set({ hadithEnabled }),
             setChallengeEnabled: (challengeEnabled) => set({ challengeEnabled }),
+            setDaruriSobhEnabled: (daruriSobhEnabled) => set({ daruriSobhEnabled }),
+            setDaruriAsrEnabled: (daruriAsrEnabled) => set({ daruriAsrEnabled }),
+            setAkhirIshaEnabled: (akhirIshaEnabled) => set({ akhirIshaEnabled }),
             setPermission: (permission) => set({ permission }),
         }),
         {
@@ -50,6 +64,9 @@ export const useNotificationStore = create<NotificationState>()(
                 prayerMinutesBefore: state.prayerMinutesBefore,
                 hadithEnabled: state.hadithEnabled,
                 challengeEnabled: state.challengeEnabled,
+                daruriSobhEnabled: state.daruriSobhEnabled,
+                daruriAsrEnabled: state.daruriAsrEnabled,
+                akhirIshaEnabled: state.akhirIshaEnabled,
             }),
         }
     )

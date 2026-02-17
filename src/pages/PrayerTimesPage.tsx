@@ -1,319 +1,534 @@
-import { useState, useEffect } from 'react';
+/**
+ * PrayerTimesPage — Advanced Fiqh Module (Sprint 3)
+ * Replaces the old AlAdhan API-based page with local computation + fiqh windows.
+ */
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, Sun, Sunrise, Sunset, Moon, CloudSun, MapPin, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw } from 'lucide-react';
+import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
-import { updatePushLocation } from '../lib/notificationService';
+import { computeDay, computeStandard, compareWithStandard, formatDate, type DayResult, ANGLE_PRESETS } from '../lib/prayerEngine';
+import { computeWindows, formatWindow, formatIshaWindow, type FiqhWindows } from '../lib/windowsEngine';
+import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
+import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '../lib/prayerNotificationScheduler';
 import './PrayerTimesPage.css';
 
-interface PrayerTimes {
-    Fajr: string;
-    Sunrise: string;
-    Dhuhr: string;
-    Asr: string;
-    Maghrib: string;
-    Isha: string;
-}
+// ─── Constants ───────────────────────────────────────────
 
-interface PrayerInfo {
-    name: string;
-    nameAr: string;
-    icon: React.ReactNode;
-    startTime: string;
-    endTime: string;
-    color: string;
-}
-
-const PRAYER_ICONS: Record<string, React.ReactNode> = {
-    Fajr: <Sunrise size={24} />,
-    Dhuhr: <Sun size={24} />,
-    Asr: <CloudSun size={24} />,
-    Maghrib: <Sunset size={24} />,
-    Isha: <Moon size={24} />,
+const PRAYER_NAMES_FR: Record<string, string> = {
+    fajr: 'Sobh', sunrise: 'Shuruq', dhuhr: 'Dhuhr',
+    asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha',
 };
 
 const PRAYER_NAMES_AR: Record<string, string> = {
-    Fajr: 'الفجر',
-    Dhuhr: 'الظهر',
-    Asr: 'العصر',
-    Maghrib: 'المغرب',
-    Isha: 'العشاء',
+    fajr: 'الصبح', sunrise: 'الشروق', dhuhr: 'الظهر',
+    asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء',
 };
 
-const PRAYER_COLORS: Record<string, string> = {
-    Fajr: '#4FC3F7',
-    Dhuhr: '#FFD54F',
-    Asr: '#FFB74D',
-    Maghrib: '#FF8A65',
-    Isha: '#7986CB',
+const PRAYER_EMOJIS: Record<string, string> = {
+    fajr: '🌅', sunrise: '☀️', dhuhr: '🌤️',
+    asr: '🌇', maghrib: '🌆', isha: '🌙',
 };
+
+const PRAYER_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+const SALAT_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+
+// ─── Component ───────────────────────────────────────────
 
 export function PrayerTimesPage() {
     const navigate = useNavigate();
-    const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
+    const store = usePrayerStore();
+    const notifStore = useNotificationStore();
+
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [location, setLocation] = useState<{ city: string; country: string } | null>(null);
-    const [currentTime, setCurrentTime] = useState(new Date());
-    const [nextPrayer, setNextPrayer] = useState<string | null>(null);
-    const [countdown, setCountdown] = useState<string>('');
-    const notifPrefs = useNotificationStore();
+    const [showComparator, setShowComparator] = useState(false);
+    const [showTransparency, setShowTransparency] = useState(false);
+    const [dayResult, setDayResult] = useState<DayResult | null>(null);
+    const [windows, setWindows] = useState<FiqhWindows | null>(null);
+    const [deltas, setDeltas] = useState<Record<string, number> | null>(null);
+    const [countdown, setCountdown] = useState('');
+    const [nextPrayerName, setNextPrayerName] = useState('');
 
-    // Get today's date in Hijri
-    const getHijriDate = () => {
-        const formatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        });
-        return formatter.format(new Date());
-    };
+    // ─── Geolocation ──────────────────────────────────────
 
-    // Fetch prayer times from AlAdhan API
-    const fetchPrayerTimes = async (lat: number, lng: number) => {
+    const fetchLocation = useCallback(async () => {
         try {
-            const response = await fetch(
-                `https://api.aladhan.com/v1/timings/${Date.now() / 1000}?latitude=${lat}&longitude=${lng}&method=2`
+            const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 })
             );
-            const data = await response.json();
+            const { latitude, longitude } = pos.coords;
 
-            if (data.code === 200) {
-                setPrayerTimes(data.data.timings);
-            } else {
-                throw new Error('Failed to fetch prayer times');
+            // Reverse geocode for city name
+            let city = '';
+            let country = '';
+            try {
+                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`);
+                const geo = await res.json();
+                city = geo.city || geo.locality || '';
+                country = geo.countryName || '';
+            } catch {
+                city = `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
             }
-        } catch (err) {
-            setError('Impossible de récupérer les horaires');
-            console.error(err);
-        }
-    };
 
-    // Get city name from coordinates
-    const fetchCityName = async (lat: number, lng: number) => {
-        try {
-            const response = await fetch(
-                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=fr`
-            );
-            const data = await response.json();
-            setLocation({
-                city: data.city || data.locality || 'Ville inconnue',
-                country: data.countryName || '',
-            });
+            store.updateCoords(latitude, longitude, city, country);
+            return { lat: latitude, lng: longitude };
         } catch {
-            setLocation({ city: 'Position actuelle', country: '' });
+            // Fallback: Paris
+            store.updateCoords(48.8566, 2.3522, 'Paris', 'France');
+            return { lat: 48.8566, lng: 2.3522 };
         }
-    };
+    }, [store]);
 
-    // Get user location
-    useEffect(() => {
-        if (!navigator.geolocation) {
-            setError('Géolocalisation non supportée');
+    // ─── Compute times for selected date ──────────────────
+
+    const computeTimes = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            let lat = store.lat;
+            let lng = store.lng;
+
+            if (lat == null || lng == null) {
+                const coords = await fetchLocation();
+                lat = coords.lat;
+                lng = coords.lng;
+            }
+
+            // Compute today
+            const result = computeDay(selectedDate, lat, lng, store.settings);
+            setDayResult(result);
+
+            // Compute tomorrow for night duration
+            const tomorrow = new Date(selectedDate);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowResult = computeDay(tomorrow, lat, lng, store.settings);
+
+            // Compute fiqh windows
+            const w = computeWindows(result.times, tomorrowResult.times.fajr, store.settings);
+            setWindows(w);
+
+            // Compute comparison deltas
+            const standard = computeStandard(selectedDate, lat, lng);
+            const d = compareWithStandard(result.times, standard);
+            setDeltas(d);
+
+            // Schedule notifications (only for today)
+            const today = new Date();
+            if (formatDate(selectedDate) === formatDate(today)) {
+                const settHash = hashSettings(store.settings);
+                schedulePrayerNotifications(w, result.date, lat, lng, settHash, {
+                    daruriSobhEnabled: notifStore.daruriSobhEnabled,
+                    daruriAsrEnabled: notifStore.daruriAsrEnabled,
+                    akhirIshaEnabled: notifStore.akhirIshaEnabled,
+                });
+            }
+
+            // Cache range
+            store.computeAndCache(selectedDate, 7);
+        } catch (err) {
+            console.error('[Prayer] Computation error:', err);
+            setError('Erreur de calcul. Vérifiez votre connexion et réessayez.');
+        } finally {
             setLoading(false);
-            return;
         }
+    }, [selectedDate, store, fetchLocation, notifStore]);
 
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                await Promise.all([
-                    fetchPrayerTimes(latitude, longitude),
-                    fetchCityName(latitude, longitude),
-                ]);
-                // Send GPS to Supabase for background prayer notifications
-                if (notifPrefs.enabled && notifPrefs.prayerEnabled) {
-                    updatePushLocation(latitude, longitude);
+    useEffect(() => {
+        computeTimes();
+        return () => cancelAllScheduled();
+    }, [computeTimes]);
+
+    // ─── Countdown timer ──────────────────────────────────
+
+    useEffect(() => {
+        if (!dayResult) return;
+
+        const update = () => {
+            const now = new Date();
+            const currentMin = now.getHours() * 60 + now.getMinutes();
+
+            for (const key of SALAT_KEYS) {
+                const t = dayResult.times[key];
+                const pMin = t.getHours() * 60 + t.getMinutes();
+                if (pMin > currentMin) {
+                    const diff = pMin - currentMin;
+                    const hrs = Math.floor(diff / 60);
+                    setCountdown(hrs > 0 ? `${hrs}h ${diff % 60}min` : `${diff % 60} min`);
+                    setNextPrayerName(key);
+                    return;
                 }
-                setLoading(false);
-            },
-            (err) => {
-                console.error('Geolocation error:', err);
-                // Fallback to Paris
-                fetchPrayerTimes(48.8566, 2.3522);
-                setLocation({ city: 'Paris', country: 'France' });
-                setLoading(false);
             }
-        );
-    }, []);
+            // All prayers passed → Fajr tomorrow
+            const fajrTime = dayResult.times.fajr;
+            const fM = fajrTime.getHours() * 60 + fajrTime.getMinutes();
+            const diff = (24 * 60 - currentMin) + fM;
+            setCountdown(`${Math.floor(diff / 60)}h ${diff % 60}min`);
+            setNextPrayerName('fajr');
+        };
 
-    // Update current time every second
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
+        update();
+        const interval = setInterval(update, 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, [dayResult]);
 
-    // Calculate next prayer and countdown
-    useEffect(() => {
-        if (!prayerTimes) return;
+    // ─── Day navigation ───────────────────────────────────
 
-        const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-        const now = currentTime;
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-        let foundNext = false;
-        for (const prayer of prayers) {
-            const [hours, minutes] = prayerTimes[prayer as keyof PrayerTimes].split(':').map(Number);
-            const prayerMinutes = hours * 60 + minutes;
-
-            if (prayerMinutes > currentMinutes) {
-                setNextPrayer(prayer);
-
-                // Calculate countdown
-                const diffMinutes = prayerMinutes - currentMinutes;
-                const h = Math.floor(diffMinutes / 60);
-                const m = diffMinutes % 60;
-                setCountdown(h > 0 ? `${h}h ${m}min` : `${m} min`);
-                foundNext = true;
-                break;
-            }
-        }
-
-        if (!foundNext) {
-            // Next prayer is Fajr tomorrow
-            setNextPrayer('Fajr');
-            const [fajrH, fajrM] = prayerTimes.Fajr.split(':').map(Number);
-            const fajrMinutes = fajrH * 60 + fajrM;
-            const diffMinutes = (24 * 60 - currentMinutes) + fajrMinutes;
-            const h = Math.floor(diffMinutes / 60);
-            const m = diffMinutes % 60;
-            setCountdown(`${h}h ${m}min`);
-        }
-    }, [prayerTimes, currentTime]);
-
-    const getPrayersList = (): PrayerInfo[] => {
-        if (!prayerTimes) return [];
-
-        // Calculate Islamic midnight (midpoint between Maghrib and Fajr)
-        const calculateIslamicMidnight = (): string => {
-            const [maghribH, maghribM] = prayerTimes.Maghrib.split(':').map(Number);
-            const [fajrH, fajrM] = prayerTimes.Fajr.split(':').map(Number);
-
-            const maghribMinutes = maghribH * 60 + maghribM;
-            const fajrMinutes = fajrH * 60 + fajrM;
-
-            // Night duration (Fajr is next day, so add 24h if needed)
-            const nightDuration = fajrMinutes < maghribMinutes
-                ? (24 * 60 - maghribMinutes) + fajrMinutes
-                : fajrMinutes - maghribMinutes;
-
-            // Islamic midnight = Maghrib + half of night duration
-            const midnightMinutes = (maghribMinutes + Math.floor(nightDuration / 2)) % (24 * 60);
-            const midnightH = Math.floor(midnightMinutes / 60);
-            const midnightM = midnightMinutes % 60;
-
-            return `${midnightH.toString().padStart(2, '0')}:${midnightM.toString().padStart(2, '0')}`;
-        };
-
-        const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-        const endTimeMap: Record<string, string> = {
-            Fajr: prayerTimes.Sunrise,
-            Dhuhr: prayerTimes.Asr,
-            Asr: prayerTimes.Maghrib,
-            Maghrib: prayerTimes.Isha,
-            Isha: calculateIslamicMidnight(), // Islamic midnight (midpoint Maghrib-Fajr)
-        };
-
-        return prayers.map((prayer) => ({
-            name: prayer,
-            nameAr: PRAYER_NAMES_AR[prayer],
-            icon: PRAYER_ICONS[prayer],
-            startTime: prayerTimes[prayer as keyof PrayerTimes],
-            endTime: endTimeMap[prayer],
-            color: PRAYER_COLORS[prayer],
-        }));
+    const goDay = (offset: number) => {
+        const d = new Date(selectedDate);
+        d.setDate(d.getDate() + offset);
+        setSelectedDate(d);
     };
 
-    const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    };
+    const isToday = useMemo(() =>
+        formatDate(selectedDate) === formatDate(new Date()),
+        [selectedDate]);
+
+    const dateLabel = useMemo(() => {
+        if (isToday) return "Aujourd'hui";
+        return selectedDate.toLocaleDateString('fr-FR', {
+            weekday: 'long', day: 'numeric', month: 'long',
+        });
+    }, [selectedDate, isToday]);
+
+    // ─── High latitude warning ────────────────────────────
+
+    const highLatWarning = useMemo(() => {
+        if (!store.lat || !dayResult) return null;
+        return getHighLatWarning(store.lat, dayResult.times);
+    }, [store.lat, dayResult]);
+
+    // ─── Active rules (transparency) ─────────────────────
+
+    const activeRules = useMemo(() => {
+        const s = store.settings;
+        const preset = ANGLE_PRESETS[s.anglePreset];
+        const rules = [
+            `Angles : ${preset.label} (Fajr ${s.fajrAngle}° / Isha ${s.ishaAngle}°)`,
+            `Asr : ombre × ${s.asrShadow}`,
+            `Akhir Isha : ${s.ishaIkhtiyari === 'HALF_NIGHT' ? '1/2 nuit' : '1/3 nuit'}`,
+        ];
+        if (s.highLatFajrIsha !== 'NONE') {
+            rules.push(`Haute latitude : ${s.highLatFajrIsha.replace(/_/g, ' ')}`);
+        }
+        const adj = Object.entries(s.adjustmentsMin).filter(([, v]) => v !== 0);
+        if (adj.length > 0) {
+            rules.push(`Ajustements : ${adj.map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}min`).join(', ')}`);
+        }
+        return rules;
+    }, [store.settings]);
+
+    // ─── Render ───────────────────────────────────────────
 
     if (loading) {
         return (
-            <div className="prayer-times-page">
+            <div className="prayer-page">
                 <div className="prayer-loading">
-                    <RefreshCw size={48} className="spin" />
-                    <p>Chargement des horaires...</p>
+                    <div className="prayer-loading__spinner" />
+                    <span>Calcul des horaires…</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !dayResult) {
+        return (
+            <div className="prayer-page">
+                <div className="prayer-error">
+                    <AlertTriangle size={32} />
+                    <p>{error || 'Impossible de calculer les horaires.'}</p>
+                    <button onClick={() => { setError(null); computeTimes(); }}>
+                        <RefreshCw size={16} /> Réessayer
+                    </button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="prayer-times-page">
-            {/* Back button */}
-            <button className="page-back-btn" onClick={() => navigate(-1)}>
-                <ArrowLeft size={22} />
-            </button>
-
+        <div className="prayer-page">
             {/* Header */}
             <div className="prayer-header">
-                <div className="prayer-header-top">
-                    <div className="prayer-location">
-                        <MapPin size={16} />
-                        <span>{location?.city}{location?.country ? `, ${location.country}` : ''}</span>
+                <div className="prayer-header__top">
+                    <div className="prayer-header__location">
+                        <MapPin size={14} />
+                        <span>{store.cityName || 'Localisation…'}</span>
+                        {store.countryName && <span className="prayer-header__country">{store.countryName}</span>}
                     </div>
-                    <div className="prayer-current-time">
-                        <Clock size={16} />
-                        <span>{formatTime(currentTime)}</span>
-                    </div>
+                    <button
+                        className="prayer-header__settings-btn"
+                        onClick={() => navigate('/prayer-settings')}
+                        title="Réglages prières"
+                    >
+                        <Settings size={18} />
+                    </button>
                 </div>
-                <div className="prayer-hijri-date">
-                    {getHijriDate()}
+
+                {/* Day navigation */}
+                <div className="prayer-day-nav">
+                    <button onClick={() => goDay(-1)} className="prayer-day-nav__btn">
+                        <ChevronLeft size={20} />
+                    </button>
+                    <span className="prayer-day-nav__label">{dateLabel}</span>
+                    <button onClick={() => goDay(1)} className="prayer-day-nav__btn">
+                        <ChevronRight size={20} />
+                    </button>
                 </div>
             </div>
 
-            {/* Next Prayer Highlight */}
-            {nextPrayer && prayerTimes && (
-                <div className="next-prayer-card" style={{ borderColor: PRAYER_COLORS[nextPrayer] }}>
-                    <div className="next-prayer-label">Prochaine prière</div>
-                    <div className="next-prayer-info">
-                        <div className="next-prayer-icon" style={{ color: PRAYER_COLORS[nextPrayer] }}>
-                            {PRAYER_ICONS[nextPrayer]}
+            {/* Next Prayer Card */}
+            {isToday && nextPrayerName && (
+                <div className={`prayer-next prayer-next--${nextPrayerName}`}>
+                    <div className="prayer-next__left">
+                        <span className="prayer-next__emoji">{PRAYER_EMOJIS[nextPrayerName]}</span>
+                        <div>
+                            <div className="prayer-next__name">
+                                {PRAYER_NAMES_FR[nextPrayerName]}
+                                <span className="prayer-next__name-ar">{PRAYER_NAMES_AR[nextPrayerName]}</span>
+                            </div>
+                            <div className="prayer-next__label">Prochaine prière</div>
                         </div>
-                        <div className="next-prayer-details">
-                            <span className="next-prayer-name">{nextPrayer}</span>
-                            <span className="next-prayer-name-ar">{PRAYER_NAMES_AR[nextPrayer]}</span>
-                        </div>
-                        <div className="next-prayer-time">
-                            <span className="next-prayer-hour">{prayerTimes[nextPrayer as keyof PrayerTimes]}</span>
-                            <span className="next-prayer-countdown">dans {countdown}</span>
+                    </div>
+                    <div className="prayer-next__right">
+                        <div className="prayer-next__time">{dayResult.formattedTimes[nextPrayerName]}</div>
+                        <div className="prayer-next__countdown">
+                            <Clock size={12} /> dans {countdown}
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* High latitude warning */}
+            {highLatWarning && (
+                <div className="prayer-warning">
+                    <AlertTriangle size={14} />
+                    <span>{highLatWarning}</span>
+                </div>
+            )}
+
             {/* Prayer Times List */}
-            <div className="prayer-times-list">
-                {error ? (
-                    <div className="prayer-error">
-                        <p>{error}</p>
-                        <button onClick={() => window.location.reload()}>Réessayer</button>
-                    </div>
-                ) : (
-                    getPrayersList().map((prayer) => (
-                        <div
-                            key={prayer.name}
-                            className={`prayer-time-item ${prayer.name === nextPrayer ? 'next' : ''}`}
-                        >
-                            <div className="prayer-time-icon" style={{ color: prayer.color }}>
-                                {prayer.icon}
-                            </div>
-                            <div className="prayer-time-names">
-                                <span className="prayer-time-name">{prayer.name}</span>
-                                <span className="prayer-time-name-ar">{prayer.nameAr}</span>
-                            </div>
-                            <div className="prayer-time-value">
-                                <span className="prayer-start">{prayer.startTime}</span>
-                                <span className="prayer-end">→ {prayer.endTime}</span>
+            <div className="prayer-list">
+                <div className="prayer-list__title">
+                    <Clock size={14} />
+                    <span>Horaires</span>
+                </div>
+                {PRAYER_KEYS.map((key) => (
+                    <div
+                        key={key}
+                        className={`prayer-row ${nextPrayerName === key && isToday ? 'prayer-row--active' : ''} ${key === 'sunrise' ? 'prayer-row--sunrise' : ''}`}
+                    >
+                        <div className="prayer-row__left">
+                            <span className="prayer-row__emoji">{PRAYER_EMOJIS[key]}</span>
+                            <div className="prayer-row__names">
+                                <span className="prayer-row__name">{PRAYER_NAMES_FR[key]}</span>
+                                <span className="prayer-row__name-ar">{PRAYER_NAMES_AR[key]}</span>
                             </div>
                         </div>
-                    ))
-                )}
+                        <div className="prayer-row__time">{dayResult.formattedTimes[key]}</div>
+                    </div>
+                ))}
             </div>
 
-            {/* Footer note */}
-            <div className="prayer-footer">
-                <p>Méthode de calcul : Muslim World League</p>
+            {/* Fiqh Windows */}
+            {windows && (
+                <div className="prayer-windows">
+                    <div className="prayer-windows__title">
+                        <Sun size={14} />
+                        <span>Fenêtres Fiqh</span>
+                    </div>
+
+                    {/* Sobh */}
+                    <div className="fiqh-card">
+                        <div className="fiqh-card__header">
+                            <span className="fiqh-card__emoji">🌅</span>
+                            <span className="fiqh-card__name">Sobh (الصبح)</span>
+                        </div>
+                        {(() => {
+                            const fw = formatWindow(windows.sobh);
+                            return (
+                                <>
+                                    <div className="fiqh-bar">
+                                        <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" />
+                                        <div className="fiqh-bar__segment fiqh-bar__segment--daruri" />
+                                    </div>
+                                    <div className="fiqh-times">
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--start" />
+                                            <span>Début</span>
+                                            <span className="fiqh-time__val">{fw.start}</span>
+                                        </div>
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
+                                            <span>Fin Ikhtiyârî</span>
+                                            <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
+                                        </div>
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--daruri" />
+                                            <span>Fin Darûrî</span>
+                                            <span className="fiqh-time__val">{fw.endDaruri}</span>
+                                        </div>
+                                    </div>
+                                </>
+                            );
+                        })()}
+                    </div>
+
+                    {/* Asr */}
+                    <div className="fiqh-card">
+                        <div className="fiqh-card__header">
+                            <span className="fiqh-card__emoji">🌇</span>
+                            <span className="fiqh-card__name">Asr (العصر)</span>
+                        </div>
+                        {(() => {
+                            const fw = formatWindow(windows.asr);
+                            return (
+                                <>
+                                    <div className="fiqh-bar">
+                                        <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" />
+                                        <div className="fiqh-bar__segment fiqh-bar__segment--daruri" />
+                                    </div>
+                                    <div className="fiqh-times">
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--start" />
+                                            <span>Début</span>
+                                            <span className="fiqh-time__val">{fw.start}</span>
+                                        </div>
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
+                                            <span>Fin Ikhtiyârî</span>
+                                            <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
+                                        </div>
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--daruri" />
+                                            <span>Fin Darûrî</span>
+                                            <span className="fiqh-time__val">{fw.endDaruri}</span>
+                                        </div>
+                                    </div>
+                                </>
+                            );
+                        })()}
+                    </div>
+
+                    {/* Isha */}
+                    <div className="fiqh-card">
+                        <div className="fiqh-card__header">
+                            <span className="fiqh-card__emoji">🌙</span>
+                            <span className="fiqh-card__name">Isha (العشاء)</span>
+                        </div>
+                        {(() => {
+                            const fw = formatIshaWindow(windows.isha);
+                            return (
+                                <>
+                                    <div className="fiqh-bar">
+                                        <div className="fiqh-bar__segment fiqh-bar__segment--ikhtiyari" style={{ flex: 1 }} />
+                                    </div>
+                                    <div className="fiqh-times">
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--start" />
+                                            <span>Début</span>
+                                            <span className="fiqh-time__val">{fw.start}</span>
+                                        </div>
+                                        <div className="fiqh-time">
+                                            <span className="fiqh-time__dot fiqh-time__dot--ikhtiyari" />
+                                            <span>Akhir Isha ({store.settings.ishaIkhtiyari === 'HALF_NIGHT' ? '½ nuit' : '⅓ nuit'})</span>
+                                            <span className="fiqh-time__val">{fw.endIkhtiyari}</span>
+                                        </div>
+                                    </div>
+                                    <div className="fiqh-night">
+                                        <Moon size={12} />
+                                        <span>Nuit légale : {windows.nightDurationMin} min ({Math.floor(windows.nightDurationMin / 60)}h{(windows.nightDurationMin % 60).toString().padStart(2, '0')})</span>
+                                    </div>
+                                </>
+                            );
+                        })()}
+                    </div>
+                </div>
+            )}
+
+            {/* Comparator */}
+            <button className="prayer-section-toggle" onClick={() => setShowComparator(!showComparator)}>
+                <span>📊 Comparateur Standard</span>
+                <ChevronRight size={16} className={showComparator ? 'rotated' : ''} />
+            </button>
+            {showComparator && deltas && (
+                <div className="prayer-comparator">
+                    <div className="prayer-comparator__info">
+                        <Info size={12} />
+                        <span>Différence avec Standard (MWL 18/17, Asr ×1)</span>
+                    </div>
+                    {SALAT_KEYS.map((key) => {
+                        const d = deltas[key] || 0;
+                        return (
+                            <div key={key} className="comparator-row">
+                                <span className="comparator-row__name">{PRAYER_NAMES_FR[key]}</span>
+                                <span className={`comparator-row__delta ${d === 0 ? 'zero' : d > 0 ? 'positive' : 'negative'}`}>
+                                    {d === 0 ? '=' : d > 0 ? `+${d} min` : `${d} min`}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Transparency */}
+            <button className="prayer-section-toggle" onClick={() => setShowTransparency(!showTransparency)}>
+                <span>🔍 Transparence</span>
+                <ChevronRight size={16} className={showTransparency ? 'rotated' : ''} />
+            </button>
+            {showTransparency && (
+                <div className="prayer-transparency">
+                    <div className="prayer-transparency__title">Règles actives</div>
+                    {activeRules.map((rule, i) => (
+                        <div key={i} className="transparency-rule">
+                            <span className="transparency-rule__dot" />
+                            <span>{rule}</span>
+                        </div>
+                    ))}
+                    {isHighLatitude(store.lat || 0) && (
+                        <div className="transparency-rule transparency-rule--warning">
+                            <AlertTriangle size={12} />
+                            <span>Latitude élevée détectée ({store.lat?.toFixed(1)}°)</span>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Notification toggles */}
+            <div className="prayer-notifs">
+                <div className="prayer-notifs__title">
+                    <Bell size={14} />
+                    <span>Notifications avancées</span>
+                </div>
+                <label className="prayer-notif-toggle">
+                    <span>⚠️ Darûrî Sobh</span>
+                    <input
+                        type="checkbox"
+                        checked={notifStore.daruriSobhEnabled}
+                        onChange={(e) => notifStore.setDaruriSobhEnabled(e.target.checked)}
+                    />
+                    <span className="toggle-slider" />
+                </label>
+                <label className="prayer-notif-toggle">
+                    <span>⚠️ Darûrî Asr</span>
+                    <input
+                        type="checkbox"
+                        checked={notifStore.daruriAsrEnabled}
+                        onChange={(e) => notifStore.setDaruriAsrEnabled(e.target.checked)}
+                    />
+                    <span className="toggle-slider" />
+                </label>
+                <label className="prayer-notif-toggle">
+                    <span>🌙 Akhir Isha</span>
+                    <input
+                        type="checkbox"
+                        checked={notifStore.akhirIshaEnabled}
+                        onChange={(e) => notifStore.setAkhirIshaEnabled(e.target.checked)}
+                    />
+                    <span className="toggle-slider" />
+                </label>
             </div>
         </div>
     );

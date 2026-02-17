@@ -1,0 +1,254 @@
+/* ═══════════════════════════════════════════════
+   Prayer Settings Page
+   ═══════════════════════════════════════════════ */
+
+.prayer-settings-page {
+    padding: 0 16px 120px;
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Header ───────────────────────────────── */
+
+.ps-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+}
+
+.ps-header__back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--surface-2, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.ps-header__title {
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ps-header__reset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--surface-2, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ps-header__reset:hover {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+/* ─── Sections ─────────────────────────────── */
+
+.ps-section {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: var(--surface-2, rgba(255, 255, 255, 0.04));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.ps-section__title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.ps-section__desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+/* ─── Preset Cards ─────────────────────────── */
+
+.ps-presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.ps-preset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 12px 8px;
+    background: var(--surface-3, rgba(255, 255, 255, 0.06));
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.ps-preset:hover {
+    border-color: var(--border);
+}
+
+.ps-preset--active {
+    border-color: var(--gold, #c9a84c) !important;
+    background: rgba(201, 168, 76, 0.1);
+}
+
+.ps-preset__name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.ps-preset__name-ar {
+    font-family: 'Amiri', serif;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.ps-preset__angles {
+    font-size: 0.68rem;
+    color: var(--gold, #c9a84c);
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* ─── Toggle Group ─────────────────────────── */
+
+.ps-toggle-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.ps-toggle {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 12px;
+    background: var(--surface-3, rgba(255, 255, 255, 0.06));
+    border: 2px solid transparent;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.ps-toggle:hover {
+    border-color: var(--border);
+}
+
+.ps-toggle--active {
+    border-color: var(--gold, #c9a84c) !important;
+    color: var(--gold, #c9a84c);
+    background: rgba(201, 168, 76, 0.1);
+}
+
+/* ─── Row (label + input) ──────────────────── */
+
+.ps-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.ps-row:last-child {
+    border-bottom: none;
+}
+
+.ps-row label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.ps-row input[type="number"] {
+    width: 72px;
+    padding: 6px 10px;
+    background: var(--surface-3, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.ps-row input[type="number"]:focus {
+    outline: none;
+    border-color: var(--gold, #c9a84c);
+}
+
+/* ─── Select ───────────────────────────────── */
+
+.ps-select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--surface-3, rgba(255, 255, 255, 0.06));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.ps-select:focus {
+    outline: none;
+    border-color: var(--gold, #c9a84c);
+}
+
+/* ─── Responsive ───────────────────────────── */
+
+@media (min-width: 500px) {
+    .prayer-settings-page {
+        padding: 0 24px 120px;
+    }
+
+    .ps-presets {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
