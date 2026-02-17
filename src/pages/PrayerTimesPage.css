@@ -80,6 +80,8 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 30px;
+    padding-right: 48px;
+    /* Offset for global menu button */
 }
 
 .prayer-hero__back,

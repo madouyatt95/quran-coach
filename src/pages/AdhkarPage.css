@@ -17,7 +17,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-md);
+    padding: var(--space-md) 48px var(--space-md) var(--space-md);
+    /* Space for global menu button */
     background: rgba(0, 0, 0, 0.3);
     min-height: 56px;
 }
