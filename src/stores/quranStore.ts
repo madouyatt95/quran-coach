@@ -35,6 +35,7 @@ interface QuranState {
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
     updateProgress: (options?: { force?: boolean }) => void;
+    stopExploring: () => void;
     goToPage: (page: number, options?: NavigationOptions) => void;
     goToSurah: (surah: number, options?: NavigationOptions) => void;
     goToAyah: (surah: number, ayah: number, page?: number, options?: NavigationOptions) => void;
@@ -58,6 +59,7 @@ export const useQuranStore = create<QuranState>()(
             progress: null,
             isExploring: false,
             jumpSignal: 0,
+            version: '1.2.6', // Diagnostic internal version
 
             setSurahs: (surahs) => set({ surahs }),
             setCurrentPage: (currentPage) => set({ currentPage }),
@@ -76,12 +78,12 @@ export const useQuranStore = create<QuranState>()(
                     return;
                 }
 
-                // If not forced, check threshold (10 verses or surah change)
+                // If not forced, check threshold (5 verses or surah change)
                 if (!options.force && progress) {
                     const surahChanged = currentSurah !== progress.lastSurah;
                     const verseDiff = Math.abs(currentAyah - progress.lastAyah);
 
-                    if (!surahChanged && verseDiff < 10 && currentPage === progress.lastPage) {
+                    if (!surahChanged && verseDiff < 5 && currentPage === progress.lastPage) {
                         return; // Skip update
                     }
                 }
@@ -95,6 +97,8 @@ export const useQuranStore = create<QuranState>()(
                     }
                 });
             },
+
+            stopExploring: () => set({ isExploring: false }),
 
             goToPage: (page, options = {}) => {
                 if (page >= 1 && page <= 604) {

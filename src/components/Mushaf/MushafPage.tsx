@@ -41,7 +41,7 @@ export function MushafPage() {
         currentSurah, currentAyah,
         setSurahAyahs, currentSurahAyahs,
         goToSurah, goToPage, goToAyah,
-        nextSurah, updateProgress,
+        nextSurah, updateProgress, stopExploring,
         jumpSignal,
     } = useQuranStore();
 
@@ -67,7 +67,7 @@ export function MushafPage() {
 
     // Diagnostic version log
     useEffect(() => {
-        console.log('[Quran Coach] v1.2.5 - Robust Silent Nav & Jump Signal Active');
+        console.log('[Quran Coach] v1.2.6 - Deep Jump & Exploration Fix Active');
     }, []);
 
     // Panels
@@ -133,7 +133,8 @@ export function MushafPage() {
                             // Only update general reading bookmark if we are NOT in a silent search jump
                             const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump');
                             if (!isSilent) {
-                                updateProgress(); // No {force:true} here -> uses 10v threshold
+                                stopExploring(); // Break exploration mode if the user is scrolling manually
+                                updateProgress(); // No {force:true} here -> uses threshold
                             }
                         }
                     }
@@ -233,6 +234,23 @@ export function MushafPage() {
 
             if (maskMode === 'partial') generatePartialMask(ayahs);
 
+            // Handle pending jumps that were waiting for surah data
+            const ayahScroll = sessionStorage.getItem('scrollToAyah');
+            const pageScroll = sessionStorage.getItem('scrollToPage');
+            if (ayahScroll || pageScroll) {
+                if (ayahScroll) {
+                    try {
+                        const { surah, ayah } = JSON.parse(ayahScroll);
+                        const idx = ayahs.findIndex(a => a.surah === surah && a.numberInSurah === ayah);
+                        if (idx !== -1) setRenderedCount(Math.max(20, idx + 10));
+                    } catch (e) { /* ignore */ }
+                } else if (pageScroll) {
+                    const p = parseInt(pageScroll);
+                    const idx = ayahs.findIndex(a => a.page === p);
+                    if (idx !== -1) setRenderedCount(Math.max(20, idx + 10));
+                }
+            }
+
         }).catch(() => {
             setError('Impossible de charger la sourate. Vérifiez votre connexion.');
             setIsLoading(false);
@@ -249,14 +267,22 @@ export function MushafPage() {
 
         if (isSilentJump || pageScroll || ayahScroll) {
             isSilentJumpRef.current = true;
-            
+
             if (ayahScroll) {
                 try {
                     const { surah, ayah } = JSON.parse(ayahScroll);
+                    // Ensure renderedCount is large enough for existing data
+                    const idx = currentSurahAyahs.findIndex(a => a.surah === surah && a.numberInSurah === ayah);
+                    if (idx !== -1) setRenderedCount(Math.max(renderedCount, idx + 10));
+
                     scrollToVerse(surah, ayah);
                 } catch (e) { console.error('Verse jump parse failed', e); }
             } else if (pageScroll) {
                 const p = parseInt(pageScroll);
+                // Ensure renderedCount is large enough
+                const idx = currentSurahAyahs.findIndex(a => a.page === p);
+                if (idx !== -1) setRenderedCount(Math.max(renderedCount, idx + 10));
+
                 if (p > 0) scrollToPageStart(p);
                 else window.scrollTo({ top: 0, behavior: 'auto' });
             }
@@ -269,7 +295,7 @@ export function MushafPage() {
                 sessionStorage.removeItem('scrollToAyah');
             }, 3000);
         }
-    }, [jumpSignal, scrollToVerse, scrollToPageStart]);
+    }, [jumpSignal, scrollToVerse, scrollToPageStart, currentSurahAyahs]);
 
     // Regenerate partial mask when mode changes
     useEffect(() => {
