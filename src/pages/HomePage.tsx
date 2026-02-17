@@ -278,7 +278,7 @@ export function HomePage() {
     const seasonalTags = useMemo(() => getSeasonalTags(now), [now]);
     const seasonalEvent = HIJRI_MONTH_EVENTS[hijri.month];
 
-    const { currentPage, currentSurah, goToSurah } = useQuranStore();
+    const { currentPage, currentSurah, goToSurah, goToAyah, progress } = useQuranStore();
     const { readingStreak } = useStatsStore();
     const navigate = useNavigate();
     const nextPrayer = useNextPrayer();
@@ -292,8 +292,14 @@ export function HomePage() {
     }, [goToSurah, navigate]);
 
     const handleContinueReading = useCallback(() => {
+        if (progress) {
+            goToAyah(progress.lastSurah, progress.lastAyah, progress.lastPage);
+        }
         navigate('/read');
-    }, [navigate]);
+    }, [navigate, progress, goToAyah]);
+
+    const displaySurah = progress?.lastSurah ?? currentSurah;
+    const displayPage = progress?.lastPage ?? currentPage;
 
     const handleShare = async () => {
         const text = `📜 Hadith du Jour\n\n${hadith.textAr}\n\n${hadith.textFr}\n\n— ${hadith.source} (${hadith.narrator})\n\nvia Quran Coach`;
@@ -329,7 +335,7 @@ export function HomePage() {
                     <div className="home-continue__text">
                         <span className="home-continue__title">Reprendre ma lecture</span>
                         <span className="home-continue__page">
-                            {SURAH_NAMES[currentSurah] || `Sourate ${currentSurah}`} — Page {currentPage}
+                            {SURAH_NAMES[displaySurah] || `Sourate ${displaySurah}`} — Page {displayPage}
                         </span>
                     </div>
                     <span className="home-continue__arrow">→</span>
