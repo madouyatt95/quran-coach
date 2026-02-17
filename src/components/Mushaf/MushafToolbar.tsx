@@ -4,8 +4,6 @@ import {
     Type,
     Layout,
     Mic,
-    CheckCircle2,
-    Circle,
     X,
     Eye,
     EyeOff,
@@ -45,9 +43,6 @@ interface MushafToolbarProps {
     // Coach
     isCoachMode: boolean;
     toggleCoachMode: () => void;
-    // Page validation
-    isPageValidated: boolean;
-    togglePageValidation: () => void;
 }
 
 export function MushafToolbar({
@@ -73,8 +68,6 @@ export function MushafToolbar({
     setMaskMode,
     isCoachMode,
     toggleCoachMode,
-    isPageValidated,
-    togglePageValidation,
 }: MushafToolbarProps) {
     return (
         <>
@@ -129,16 +122,6 @@ export function MushafToolbar({
                         title={isCoachMode ? 'Désactiver le Coach' : 'Activer le Coach'}
                     >
                         {isCoachMode ? <MicOff size={18} /> : <Mic size={18} />}
-                    </button>
-
-                    <div className="mih-toolbar__divider" />
-
-                    <button
-                        className={`mih-toolbar__validate ${isPageValidated ? 'validated' : ''}`}
-                        onClick={togglePageValidation}
-                        title="Valider la page"
-                    >
-                        {isPageValidated ? <CheckCircle2 size={16} /> : <Circle size={16} />}
                     </button>
                 </div>
             )}

@@ -539,14 +539,17 @@
 }
 
 /* Specific fix for Mobile where the gear button gets masked if toolbar is wide */
-.is-mobile .mih-header__right {
+.is-mobile .mih-header-right {
     flex: 1;
     justify-content: flex-end;
     min-width: 0;
+    gap: 4px;
+    /* Smaller gap on mobile to save space */
 }
 
 .is-mobile .mih-toolbar {
-    max-width: calc(100vw - 120px);
+    max-width: calc(100vw - 160px);
+    /* Increased reserved space for gear button */
     overflow-x: auto;
     scrollbar-width: none;
 }

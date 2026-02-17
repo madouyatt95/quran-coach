@@ -74,13 +74,7 @@ export function MushafPage() {
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
     const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
 
-    // Page validation
-    const [validatedPages, setValidatedPages] = useState<Set<number>>(() => {
-        try {
-            const saved = localStorage.getItem('quran-coach-validated-pages');
-            return saved ? new Set(JSON.parse(saved)) : new Set();
-        } catch { return new Set(); }
-    });
+
 
     // ===== Hooks =====
     const audio = useMushafAudio({
@@ -114,7 +108,7 @@ export function MushafPage() {
         }, {} as Record<number, Ayah[]>);
     }, [pageAyahs]);
 
-    const isPageValidated = validatedPages.has(currentPage);
+
 
     // ===== Fetch logic =====
     useEffect(() => {
@@ -196,15 +190,7 @@ export function MushafPage() {
         setPartialHidden(hidden);
     }, []);
 
-    const togglePageValidation = useCallback(() => {
-        setValidatedPages(prev => {
-            const next = new Set(prev);
-            if (next.has(currentPage)) next.delete(currentPage);
-            else next.add(currentPage);
-            localStorage.setItem('quran-coach-validated-pages', JSON.stringify([...next]));
-            return next;
-        });
-    }, [currentPage]);
+
 
     // Word class helper (coach + mask + active)
     const getWordClass = (ayahIndex: number, wordIndex: number, ayahNumber: number): string => {
@@ -325,8 +311,6 @@ export function MushafPage() {
                         setMaskMode={setMaskMode}
                         isCoachMode={coach.isCoachMode}
                         toggleCoachMode={coach.toggleCoachMode}
-                        isPageValidated={isPageValidated}
-                        togglePageValidation={togglePageValidation}
                     />
                     <button
                         className={`mih-toolbar__btn ${showToolbar ? 'active' : ''}`}
