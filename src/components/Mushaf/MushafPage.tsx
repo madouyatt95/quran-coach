@@ -60,7 +60,7 @@ export function MushafPage() {
     const [transliterationMap, setTransliterationMap] = useState<Map<number, string>>(new Map());
 
     // Progressive Rendering
-    const [renderedCount, setRenderedCount] = useState(10);
+    const [renderedCount, setRenderedCount] = useState(20);
     const observerTargetRef = useRef<HTMLDivElement | null>(null);
     const isSilentJumpRef = useRef(false);
 
@@ -126,7 +126,7 @@ export function MushafPage() {
 
                             // Only update general reading bookmark if we are NOT in a silent search jump
                             if (!isSilentJumpRef.current && !sessionStorage.getItem('scrollToAyah')) {
-                                updateProgress();
+                                updateProgress(); // No {force:true} here -> uses 10v threshold
                             }
                         }
                     }
@@ -187,7 +187,7 @@ export function MushafPage() {
     useEffect(() => {
         setIsLoading(true);
         setError(null);
-        setRenderedCount(10); // Reset progressive render
+        setRenderedCount(20); // Reset progressive render
 
         Promise.all([
             fetchSurah(currentSurah),

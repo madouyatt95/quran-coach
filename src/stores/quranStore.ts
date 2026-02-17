@@ -32,7 +32,7 @@ interface QuranState {
     setSurahAyahs: (ayahs: Ayah[]) => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
-    updateProgress: () => void;
+    updateProgress: (options?: { force?: boolean }) => void;
     goToPage: (page: number, options?: NavigationOptions) => void;
     goToSurah: (surah: number, options?: NavigationOptions) => void;
     goToAyah: (surah: number, ayah: number, page?: number, options?: NavigationOptions) => void;
@@ -64,8 +64,19 @@ export const useQuranStore = create<QuranState>()(
             setLoading: (isLoading) => set({ isLoading }),
             setError: (error) => set({ error }),
 
-            updateProgress: () => {
-                const { currentSurah, currentAyah, currentPage } = get();
+            updateProgress: (options = {}) => {
+                const { currentSurah, currentAyah, currentPage, progress } = get();
+
+                // If not forced, check threshold (10 verses or surah change)
+                if (!options.force && progress) {
+                    const surahChanged = currentSurah !== progress.lastSurah;
+                    const verseDiff = Math.abs(currentAyah - progress.lastAyah);
+
+                    if (!surahChanged && verseDiff < 10 && currentPage === progress.lastPage) {
+                        return; // Skip update
+                    }
+                }
+
                 set({
                     progress: {
                         lastSurah: currentSurah,
