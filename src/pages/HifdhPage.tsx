@@ -10,7 +10,9 @@ import {
     Plus,
     RotateCcw,
     Square,
-    BookmarkCheck
+    BookmarkCheck,
+    Mic,
+    MicOff
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -19,6 +21,8 @@ import { fetchSurah, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
 import { useSRSStore } from '../stores/srsStore';
+import { useCoach } from '../hooks/useCoach';
+import { CoachOverlay } from '../components/Coach/CoachOverlay';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
@@ -59,6 +63,13 @@ export function HifdhPage() {
     // Word timings
     const [wordTimings, setWordTimings] = useState<VerseWords | null>(null);
     const [activeWordIndex, setActiveWordIndex] = useState(-1);
+
+    // Coach mode
+    const coach = useCoach({
+        ayahs,
+        scoreKey: `${selectedSurah}:${startAyah}-${endAyah}`,
+        playingIndex: currentAyahIndex,
+    });
 
     // Handle incoming verse from navigation state (Deep link)
     useEffect(() => {
@@ -149,8 +160,13 @@ export function HifdhPage() {
         }
     }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah]);
 
-    // Handle Word Selection for Loop
+    // Handle Word Selection for Loop (disabled in Coach mode)
     const handleWordClick = (index: number) => {
+        if (coach.isCoachMode) {
+            // In coach mode, tapping a word jumps the ASR cursor
+            coach.coachJumpToWord(currentAyahIndex, index);
+            return;
+        }
         if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
             setSelectionStart(index);
             setSelectionEnd(null);
@@ -482,6 +498,16 @@ export function HifdhPage() {
                                     idx >= selectionStart && idx <= selectionEnd;
                                 const isPartiallySelected = selectionStart !== null && idx === selectionStart && selectionEnd === null;
 
+                                // Coach word state classes
+                                let coachClass = '';
+                                if (coach.isCoachMode) {
+                                    const key = `${currentAyahIndex}-${idx}`;
+                                    const state = coach.wordStates.get(key);
+                                    if (state === 'correct') coachClass = 'hifdh-word--correct';
+                                    else if (state === 'error') coachClass = 'hifdh-word--error';
+                                    else if (state === 'current') coachClass = 'hifdh-word--current';
+                                }
+
                                 return (
                                     <span
                                         key={idx}
@@ -489,6 +515,7 @@ export function HifdhPage() {
                                             ${activeWordIndex === idx ? 'highlight' : ''} 
                                             ${isSelected ? 'range-selected' : ''}
                                             ${isPartiallySelected ? 'single-selected' : ''}
+                                            ${coachClass}
                                         `}
                                         onClick={() => handleWordClick(idx)}
                                     >
@@ -533,17 +560,33 @@ export function HifdhPage() {
                         <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
                             <Repeat size={20} />
                         </button>
+                        <button
+                            className={`hifdh-coach-toggle ${coach.isCoachMode ? 'active' : ''}`}
+                            onClick={coach.toggleCoachMode}
+                            title={coach.isCoachMode ? 'Désactiver le Coach' : 'Activer le Coach'}
+                        >
+                            {coach.isCoachMode ? <MicOff size={18} /> : <Mic size={18} />}
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Actions Selection info */}
-            {selectionStart !== null && (
+            {/* Bottom Actions — Selection info */}
+            {selectionStart !== null && !coach.isCoachMode && (
                 <div className="hifdh-selection-bar">
                     <span>Boucle active de mots</span>
                     <button onClick={resetSelection}><RotateCcw size={14} /> Réinitialiser</button>
                 </div>
             )}
+
+            {/* Coach Overlay (progress bar, mic, modals) */}
+            <CoachOverlay
+                coach={coach}
+                audioPlaying={isPlaying}
+                stopAudio={() => { if (audioRef.current) { audioRef.current.pause(); setIsPlaying(false); } }}
+                playAyahAtIndex={async () => { if (audioRef.current) { audioRef.current.currentTime = 0; audioRef.current.play(); setIsPlaying(true); } }}
+                pageAyahsLength={ayahs.length}
+            />
 
             {/* SRS Memorization Controls */}
             {currentAyah && (

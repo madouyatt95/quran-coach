@@ -3,11 +3,9 @@ import {
     Languages,
     Type,
     Layout,
-    Mic,
     X,
     Eye,
     EyeOff,
-    MicOff
 } from 'lucide-react';
 import { getTajweedCategories } from '../../lib/tajweedService';
 import type { MaskMode } from './mushafConstants';
@@ -40,9 +38,6 @@ interface MushafToolbarProps {
     setShowMaskSheet: (v: boolean) => void;
     maskMode: MaskMode;
     setMaskMode: (mode: MaskMode) => void;
-    // Coach
-    isCoachMode: boolean;
-    toggleCoachMode: () => void;
 }
 
 export function MushafToolbar({
@@ -66,8 +61,6 @@ export function MushafToolbar({
     setShowMaskSheet,
     maskMode,
     setMaskMode,
-    isCoachMode,
-    toggleCoachMode,
 }: MushafToolbarProps) {
     return (
         <>
@@ -114,14 +107,6 @@ export function MushafToolbar({
                         title="Masquage"
                     >
                         <Layout size={18} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${isCoachMode ? 'active' : ''}`}
-                        onClick={toggleCoachMode}
-                        title={isCoachMode ? 'Désactiver le Coach' : 'Activer le Coach'}
-                    >
-                        {isCoachMode ? <MicOff size={18} /> : <Mic size={18} />}
                     </button>
                 </div>
             )}

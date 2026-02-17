@@ -1,12 +1,12 @@
 import { Mic, Square, Volume2, X } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
-import type { MushafCoachState } from './hooks/useMushafCoach';
+import type { CoachState } from '../../hooks/useCoach';
 
 interface CoachOverlayProps {
-    coach: MushafCoachState;
+    coach: CoachState;
     audioPlaying: boolean;
     stopAudio: () => void;
-    playAyahAtIndex: (idx: number) => Promise<void>;
+    playAyahAtIndex: (idx: number) => Promise<void> | void;
     pageAyahsLength: number;
 }
 
@@ -66,7 +66,7 @@ export function CoachOverlay({
                             playAyahAtIndex(0);
                         }
                     }}
-                    title={audioPlaying ? "Arrêter l'écoute" : "Écouter la page (Récitateur)"}
+                    title={audioPlaying ? "Arrêter l'écoute" : "Écouter le verset (Récitateur)"}
                 >
                     {audioPlaying ? <Square size={18} /> : <Volume2 size={18} />}
                 </button>

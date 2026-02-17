@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { speechRecognitionService } from '../../../lib/speechRecognition';
-import { getSupportedMimeType } from '../../../lib/audioUnlock';
-import type { Ayah } from '../../../types';
-import type { WordState } from '../mushafConstants';
+import { speechRecognitionService } from '../lib/speechRecognition';
+import { getSupportedMimeType } from '../lib/audioUnlock';
+import type { Ayah } from '../types';
 
-interface UseMushafCoachOptions {
-    pageAyahs: Ayah[];
-    currentPage: number;
+export type WordState = 'correct' | 'error' | 'current' | 'unread';
+
+interface UseCoachOptions {
+    ayahs: Ayah[];
+    /** Identifier for score persistence (page number, surah:ayah, etc.) */
+    scoreKey: string;
     playingIndex: number;
 }
 
-export interface MushafCoachState {
+export interface CoachState {
     isCoachMode: boolean;
     wordStates: Map<string, WordState>;
     isListening: boolean;
@@ -32,11 +34,11 @@ export interface MushafCoachState {
     toggleCoachMode: () => void;
 }
 
-export function useMushafCoach({
-    pageAyahs,
-    currentPage,
+export function useCoach({
+    ayahs,
+    scoreKey,
     playingIndex,
-}: UseMushafCoachOptions): MushafCoachState {
+}: UseCoachOptions): CoachState {
     const [isCoachMode, setIsCoachMode] = useState(false);
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [isListening, setIsListening] = useState(false);
@@ -52,14 +54,14 @@ export function useMushafCoach({
     // Build a flat word list for ASR matching
     const allCoachWords = useMemo(() => {
         const words: Array<{ text: string; ayahIndex: number; wordIndex: number }> = [];
-        pageAyahs.forEach((ayah, ayahIndex) => {
+        ayahs.forEach((ayah, ayahIndex) => {
             const w = ayah.text.split(/\s+/).filter(w => w.length > 0);
             w.forEach((text, wordIndex) => {
                 words.push({ text, ayahIndex, wordIndex });
             });
         });
         return words;
-    }, [pageAyahs]);
+    }, [ayahs]);
 
     // Reset coach state
     const resetCoach = useCallback(() => {
@@ -113,10 +115,10 @@ export function useMushafCoach({
 
     // Start listening (ASR)
     const startCoachListening = useCallback(() => {
-        if (pageAyahs.length === 0) return;
+        if (ayahs.length === 0) return;
         resetCoach();
 
-        const expectedText = pageAyahs.map(a => a.text).join(' ');
+        const expectedText = ayahs.map(a => a.text).join(' ');
 
         const currentAyahIdx = playingIndex >= 0 ? playingIndex : 0;
         const startWordIndex = allCoachWords.findIndex(w => w.ayahIndex === currentAyahIdx);
@@ -168,7 +170,7 @@ export function useMushafCoach({
         } else {
             startWhisperBackup();
         }
-    }, [pageAyahs, allCoachWords, resetCoach, playingIndex, startWhisperBackup]);
+    }, [ayahs, allCoachWords, resetCoach, playingIndex, startWhisperBackup]);
 
     // Stop listening
     const stopCoachListening = useCallback(() => {
@@ -203,16 +205,16 @@ export function useMushafCoach({
         return coachTotalProcessed / allCoachWords.length;
     }, [coachTotalProcessed, allCoachWords.length]);
 
-    // Save score when coach finishes a page
+    // Save score when coach finishes
     useEffect(() => {
         if (isCoachMode && coachTotalProcessed > 0 && coachTotalProcessed >= allCoachWords.length) {
             try {
                 const saved = JSON.parse(localStorage.getItem('quran-coach-scores') || '{}');
-                saved[currentPage] = { accuracy: coachAccuracy, date: new Date().toISOString() };
+                saved[scoreKey] = { accuracy: coachAccuracy, date: new Date().toISOString() };
                 localStorage.setItem('quran-coach-scores', JSON.stringify(saved));
             } catch { /* ignore */ }
         }
-    }, [isCoachMode, coachTotalProcessed, allCoachWords.length, coachAccuracy, currentPage]);
+    }, [isCoachMode, coachTotalProcessed, allCoachWords.length, coachAccuracy, scoreKey]);
 
     return {
         isCoachMode,

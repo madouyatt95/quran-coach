@@ -24,12 +24,12 @@ import type { Ayah } from '../../types';
 
 // Sub-components & hooks
 import { useMushafAudio } from './hooks/useMushafAudio';
-import { useMushafCoach } from './hooks/useMushafCoach';
+
 import { useMushafNavigation } from './hooks/useMushafNavigation';
 import { MushafToolbar } from './MushafToolbar';
 import { MushafSearchOverlay } from './MushafSearchOverlay';
 import { MushafShareModal } from './MushafShareModal';
-import { CoachOverlay } from './CoachOverlay';
+
 import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, getJuzNumber, SURAH_NAMES_FR } from './mushafConstants';
 import type { MaskMode } from './mushafConstants';
 import './MushafPage.css';
@@ -98,11 +98,7 @@ export function MushafPage() {
         nextSurah,
     });
 
-    const coach = useMushafCoach({
-        pageAyahs: currentSurahAyahs,
-        currentPage,
-        playingIndex: audio.playingIndex,
-    });
+
 
     const navigation = useMushafNavigation({
         currentPage,
@@ -315,20 +311,13 @@ export function MushafPage() {
 
 
 
-    // Word class helper (coach + mask + active)
+    // Word class helper (mask + active)
     const getWordClass = (ayahIndex: number, wordIndex: number, ayahNumber: number): string => {
         const key = `${ayahIndex}-${wordIndex}`;
         const isActive = audio.currentPlayingAyah === ayahNumber && audio.activeWordIndex === wordIndex;
 
         let classes = 'mih-word';
         if (isActive) classes += ' mih-word--active';
-
-        if (coach.isCoachMode) {
-            const state = coach.wordStates.get(key);
-            if (state === 'correct') return classes + ' mih-word--correct';
-            if (state === 'error') return classes + ' mih-word--error';
-            if (state === 'current') return classes + ' mih-word--current';
-        }
 
         switch (maskMode) {
             case 'hidden': return classes + ' mih-word--hidden';
@@ -442,8 +431,7 @@ export function MushafPage() {
                         setShowMaskSheet={setShowMaskSheet}
                         maskMode={maskMode}
                         setMaskMode={setMaskMode}
-                        isCoachMode={coach.isCoachMode}
-                        toggleCoachMode={coach.toggleCoachMode}
+
                     />
                     <button
                         className={`mih-toolbar__btn ${showToolbar ? 'active' : ''}`}
@@ -535,8 +523,7 @@ export function MushafPage() {
                                                     className={getWordClass(ayahIndex, wordIdx, ayah.number)}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        if (coach.isCoachMode) coach.coachJumpToWord(ayahIndex, wordIdx);
-                                                        else audio.handleWordClick(ayahIndex, wordIdx);
+                                                        audio.handleWordClick(ayahIndex, wordIdx);
                                                     }}
                                                 >
                                                     {content}{' '}
@@ -548,8 +535,7 @@ export function MushafPage() {
                                                 className={getWordClass(ayahIndex, wordIdx, ayah.number)}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    if (coach.isCoachMode) coach.coachJumpToWord(ayahIndex, wordIdx);
-                                                    else audio.handleWordClick(ayahIndex, wordIdx);
+                                                    audio.handleWordClick(ayahIndex, wordIdx);
                                                 }}
                                             >
                                                 {word}{' '}
@@ -559,15 +545,14 @@ export function MushafPage() {
                                         return (
                                             <span
                                                 key={ayah.number}
-                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${coach.isCoachMode || maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''}`}
+                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
                                                 data-page={ayah.page}
                                                 style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
                                                 onClick={() => {
                                                     if (!longPressTriggered.current) {
-                                                        if (coach.isCoachMode) coach.coachJumpToWord(ayahIndex, 0);
-                                                        else audio.playAyahAtIndex(ayahIndex);
+                                                        audio.playAyahAtIndex(ayahIndex);
                                                     }
                                                 }}
                                                 onTouchStart={() => { longPressTriggered.current = false; longPressTimerRef.current = setTimeout(() => { longPressTriggered.current = true; setShareAyah(ayah); }, 600); }}
@@ -607,14 +592,7 @@ export function MushafPage() {
                 </div>
             </div>
 
-            {/* Coach Overlay (progress bar, mic, modals) */}
-            <CoachOverlay
-                coach={coach}
-                audioPlaying={audio.audioPlaying}
-                stopAudio={audio.stopAudio}
-                playAyahAtIndex={audio.playAyahAtIndex}
-                pageAyahsLength={currentSurahAyahs.length}
-            />
+
 
             {/* Search Overlay */}
             {showSearch && (
