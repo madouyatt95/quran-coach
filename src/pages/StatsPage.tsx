@@ -27,7 +27,7 @@ export function StatsPage() {
         updateChallengeProgress
     } = useChallengesStore();
 
-    const { goToAyah } = useQuranStore();
+    const { goToAyah, goToSurah } = useQuranStore();
 
     // Initialize on mount
     useEffect(() => {
@@ -49,12 +49,23 @@ export function StatsPage() {
         if (challenge.type === 'memorize_ayah' && challenge.surah && challenge.ayah) {
             sessionStorage.setItem('isSilentJump', 'true');
             sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: challenge.surah, ayah: challenge.ayah }));
-            goToAyah(challenge.surah, challenge.ayah);
+            goToAyah(challenge.surah, challenge.ayah, undefined, { silent: true });
             navigate('/read');
         } else if (challenge.type === 'read_pages') {
+            sessionStorage.setItem('isSilentJump', 'true');
+            sessionStorage.setItem('scrollToPage', '0');
+            if (challenge.surah) goToSurah(challenge.surah, { silent: true });
+            else navigate('/read');
             navigate('/read');
         } else if (challenge.type === 'revision') {
-            navigate('/hifdh');
+            if (challenge.surah) {
+                sessionStorage.setItem('isSilentJump', 'true');
+                sessionStorage.setItem('scrollToPage', '0');
+                goToSurah(challenge.surah, { silent: true });
+                navigate('/read');
+            } else {
+                navigate('/hifdh');
+            }
         }
     };
 
@@ -168,7 +179,7 @@ export function StatsPage() {
                     onClick={() => {
                         sessionStorage.setItem('isSilentJump', 'true');
                         sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: ayahOfTheDay.surah, ayah: ayahOfTheDay.ayah }));
-                        goToAyah(ayahOfTheDay.surah, ayahOfTheDay.ayah);
+                        goToAyah(ayahOfTheDay.surah, ayahOfTheDay.ayah, undefined, { silent: true });
                         navigate('/read');
                     }}
                 >

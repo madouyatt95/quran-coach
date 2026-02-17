@@ -24,7 +24,7 @@ export function ThemesPage() {
                 if (data.code === 200 && data.data?.page) {
                     sessionStorage.setItem('isSilentJump', 'true');
                     sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah, ayah }));
-                    goToPage(data.data.page);
+                    goToPage(data.data.page, { silent: true });
                     navigate('/');
                 }
             })

@@ -287,7 +287,9 @@ export function HomePage() {
     const todayTips = useMemo(() => getTodayTips(now.getDay(), hijri.month, hijri.day), [now, hijri]);
 
     const handleSurahClick = useCallback((surahNumber: number) => {
-        goToSurah(surahNumber);
+        sessionStorage.setItem('isSilentJump', 'true');
+        sessionStorage.setItem('scrollToPage', '0'); // Scroll to top of surah
+        goToSurah(surahNumber, { silent: true });
         navigate('/read');
     }, [goToSurah, navigate]);
 
