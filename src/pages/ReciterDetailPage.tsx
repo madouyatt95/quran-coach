@@ -25,8 +25,7 @@ export function ReciterDetailPage() {
     const [surahs, setSurahs] = useState<any[]>([]);
     const [loadingSurahs, setLoadingSurahs] = useState(true);
     const [playlistModalItem, setPlaylistModalItem] = useState<PlaylistItem | null>(null);
-    const positionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const { setLastListened, updateLastPosition } = useListenStore();
+    const { setLastListened } = useListenStore();
 
     // Find reciter
     const reciter = id === ARABIC_FRENCH_COLLECTION.id
