@@ -790,6 +790,39 @@
     background: rgba(255, 255, 255, 0.08);
 }
 
+/* Mushaf-Style Continuous Block */
+.hifdh-mushaf-block {
+    justify-content: flex-start !important;
+    text-align: justify;
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    line-height: 2.8 !important;
+}
+
+.hifdh-word--active-ayah {
+    font-weight: 500;
+}
+
+.hifdh-word--dimmed {
+    opacity: 0.6;
+    color: var(--color-text-secondary);
+}
+
+.hifdh-verse-marker {
+    font-family: var(--font-arabic);
+    font-size: var(--text-arabic-md);
+    color: var(--color-primary);
+    margin: 0 8px;
+    opacity: 0.7;
+}
+
+.hifdh-verse-marker--active {
+    color: var(--color-accent);
+    opacity: 1;
+    font-weight: bold;
+}
+
 .mih-coach-bar {
     position: sticky;
     top: 0;

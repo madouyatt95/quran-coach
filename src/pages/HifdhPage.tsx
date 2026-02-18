@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Play,
@@ -547,46 +547,91 @@ export function HifdhPage() {
                     onEnded={handleAudioEnded}
                 />
 
-                {/* Ayah View */}
+                {/* Ayah View — Mushaf-style continuous block */}
                 <div className="hifdh-ayah-container" dir="rtl">
-                    {wordTimings ? (
-                        <div className="hifdh-words-grid">
-                            {wordTimings.words.map((word, idx) => {
-                                const isSelected = selectionStart !== null && selectionEnd !== null &&
-                                    idx >= selectionStart && idx <= selectionEnd;
-                                const isPartiallySelected = selectionStart !== null && idx === selectionStart && selectionEnd === null;
+                    {ayahs.length > 0 ? (
+                        <div className="hifdh-words-grid hifdh-mushaf-block">
+                            {ayahs.map((ayah, aIdx) => {
+                                const isActive = aIdx === currentAyahIndex;
+                                const wordsContent = isActive && wordTimings
+                                    ? wordTimings.words.map((word, wIdx) => {
+                                        const isSelected = selectionStart !== null && selectionEnd !== null &&
+                                            wIdx >= selectionStart && wIdx <= selectionEnd;
+                                        const isPartiallySelected = selectionStart !== null && wIdx === selectionStart && selectionEnd === null;
 
-                                // Coach word state classes
-                                let coachClass = '';
-                                let wordState: string | undefined;
-                                if (coach.isCoachMode) {
-                                    const key = `${currentAyahIndex}-${idx}`;
-                                    wordState = coach.wordStates.get(key);
-                                    if (wordState === 'correct') coachClass = 'hifdh-word--correct';
-                                    else if (wordState === 'error') coachClass = 'hifdh-word--error';
-                                    else if (wordState === 'current') coachClass = 'hifdh-word--current';
-                                }
+                                        let coachClass = '';
+                                        let wordState: string | undefined;
+                                        if (coach.isCoachMode) {
+                                            const key = `${aIdx}-${wIdx}`;
+                                            wordState = coach.wordStates.get(key);
+                                            if (wordState === 'correct') coachClass = 'hifdh-word--correct';
+                                            else if (wordState === 'error') coachClass = 'hifdh-word--error';
+                                            else if (wordState === 'current') coachClass = 'hifdh-word--current';
+                                        }
 
-                                // Blind mode: mask word unless correctly revealed
-                                const isBlind = coach.isCoachMode && coach.blindMode;
-                                const isRevealed = wordState === 'correct';
-                                const showText = !isBlind || isRevealed;
+                                        const isBlind = coach.isCoachMode && coach.blindMode;
+                                        const isRevealed = wordState === 'correct';
+                                        const showText = !isBlind || isRevealed;
+
+                                        return (
+                                            <span
+                                                key={`${aIdx}-${wIdx}`}
+                                                className={`hifdh-word hifdh-word--active-ayah
+                                                    ${activeWordIndex === wIdx ? 'highlight' : ''}
+                                                    ${isSelected ? 'range-selected' : ''}
+                                                    ${isPartiallySelected ? 'single-selected' : ''}
+                                                    ${coachClass}
+                                                    ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
+                                                    ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
+                                                `}
+                                                onClick={() => handleWordClick(wIdx)}
+                                            >
+                                                {showText ? word.text : '●●●'}{' '}
+                                            </span>
+                                        );
+                                    })
+                                    : ayah.text.split(/\s+/).filter(w => w.length > 0).map((wordText, wIdx) => {
+                                        let coachClass = '';
+                                        let wordState: string | undefined;
+                                        if (coach.isCoachMode) {
+                                            const key = `${aIdx}-${wIdx}`;
+                                            wordState = coach.wordStates.get(key);
+                                            if (wordState === 'correct') coachClass = 'hifdh-word--correct';
+                                            else if (wordState === 'error') coachClass = 'hifdh-word--error';
+                                            else if (wordState === 'current') coachClass = 'hifdh-word--current';
+                                        }
+
+                                        const isBlind = coach.isCoachMode && coach.blindMode;
+                                        const isRevealed = wordState === 'correct';
+                                        const showText = !isBlind || isRevealed;
+
+                                        return (
+                                            <span
+                                                key={`${aIdx}-${wIdx}`}
+                                                className={`hifdh-word hifdh-word--dimmed
+                                                    ${coachClass}
+                                                    ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
+                                                    ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
+                                                `}
+                                                onClick={() => {
+                                                    setCurrentAyahIndex(aIdx);
+                                                    setCurrentRepeat(1);
+                                                    resetSelection();
+                                                }}
+                                            >
+                                                {showText ? wordText : '●●●'}{' '}
+                                            </span>
+                                        );
+                                    });
 
                                 return (
-                                    <span
-                                        key={idx}
-                                        className={`hifdh-word 
-                                            ${activeWordIndex === idx ? 'highlight' : ''} 
-                                            ${isSelected ? 'range-selected' : ''}
-                                            ${isPartiallySelected ? 'single-selected' : ''}
-                                            ${coachClass}
-                                            ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
-                                            ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
-                                        `}
-                                        onClick={() => handleWordClick(idx)}
-                                    >
-                                        {showText ? word.text : '●●●'}{' '}
-                                    </span>
+                                    <React.Fragment key={ayah.number}>
+                                        {wordsContent}
+                                        {/* Verse-end marker ﴿N﴾ */}
+                                        <span className={`hifdh-verse-marker ${isActive ? 'hifdh-verse-marker--active' : ''}`}>
+                                            ﴿{ayah.numberInSurah}﴾
+                                        </span>
+                                    </React.Fragment>
                                 );
                             })}
                         </div>
