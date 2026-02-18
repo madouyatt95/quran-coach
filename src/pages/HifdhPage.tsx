@@ -270,14 +270,26 @@ export function HifdhPage() {
         setSelectionEnd(null);
     };
 
-    // Poke hint — play first 2 words of current ayah
+    // Poke hint — play 2 words starting from the first masked/current word
     const handlePoke = useCallback(() => {
-        if (!wordTimings || !audioRef.current || wordTimings.words.length < 2) return;
+        if (!wordTimings || !audioRef.current) return;
 
-        // Ensure we are playing the current timings (from fetchWordTimings in the effect above)
-        const startTime = wordTimings.words[0].timestampFrom / 1000;
-        const endIdx = Math.min(1, wordTimings.words.length - 1);
-        const endTime = wordTimings.words[endIdx].timestampTo / 1000;
+        let startWordIdx = 0;
+        if (coach.isCoachMode && coach.blindMode) {
+            // Find the first word that hasn't been correctly recited yet
+            for (let i = 0; i < wordTimings.words.length; i++) {
+                if (coach.wordStates.get(`${currentAyahIndex}-${i}`) !== 'correct') {
+                    startWordIdx = i;
+                    break;
+                }
+            }
+        }
+
+        const wordsToPlay = wordTimings.words.slice(startWordIdx, startWordIdx + 2);
+        if (wordsToPlay.length === 0) return;
+
+        const startTime = wordsToPlay[0].timestampFrom / 1000;
+        const endTime = wordsToPlay[wordsToPlay.length - 1].timestampTo / 1000;
 
         audioRef.current.currentTime = startTime;
         audioRef.current.play();
@@ -291,7 +303,7 @@ export function HifdhPage() {
             }
         };
         audioRef.current.addEventListener('timeupdate', checkStop);
-    }, [wordTimings]);
+    }, [wordTimings, coach.isCoachMode, coach.blindMode, coach.wordStates, currentAyahIndex]);
 
     // Auto-advance: when coach reaches 100%, advance after 2s
     useEffect(() => {
