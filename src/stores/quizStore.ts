@@ -34,6 +34,7 @@ interface QuizState {
     // Duel state
     matchId: string | null;
     matchCode: string | null;
+    isDuelCreator: boolean;
     opponent: QuizPlayer | null;
     opponentScore: number;
     opponentAnswers: QuizAnswer[];
@@ -177,6 +178,7 @@ export const useQuizStore = create<QuizState>()(
             // Duel
             matchId: null,
             matchCode: null,
+            isDuelCreator: false,
             opponent: null,
             opponentScore: 0,
             opponentAnswers: [],
@@ -348,6 +350,7 @@ export const useQuizStore = create<QuizState>()(
                 set({
                     matchId: data.id,
                     matchCode: code,
+                    isDuelCreator: true,
                     duelAllQuestions: roundQuestions,
                     duelRounds: themes,
                     duelRound: 0,
@@ -408,6 +411,7 @@ export const useQuizStore = create<QuizState>()(
                     matchId: match.id,
                     matchCode: code.toUpperCase(),
                     mode: 'duel',
+                    isDuelCreator: false,
                     opponent: {
                         id: match.player1_id,
                         pseudo: match.player1_pseudo || 'Adversaire',
@@ -657,8 +661,8 @@ export const useQuizStore = create<QuizState>()(
 
                 // Sync to Supabase in duel mode
                 if (mode === 'duel' && matchId && player) {
-                    const isPlayer1 = get().opponent?.id !== player.id;
-                    const updateField = isPlayer1
+                    const isP1 = get().isDuelCreator;
+                    const updateField = isP1
                         ? { player1_answers: newAnswers, player1_score: newScore }
                         : { player2_answers: newAnswers, player2_score: newScore };
 
@@ -674,8 +678,8 @@ export const useQuizStore = create<QuizState>()(
                                 .eq('id', matchId)
                                 .single();
                             if (m) {
-                                const oppScore = isPlayer1 ? (m.player2_score || 0) : (m.player1_score || 0);
-                                const oppAnswers = isPlayer1 ? (m.player2_answers || []) : (m.player1_answers || []);
+                                const oppScore = isP1 ? (m.player2_score || 0) : (m.player1_score || 0);
+                                const oppAnswers = isP1 ? (m.player2_answers || []) : (m.player1_answers || []);
                                 set({ opponentScore: oppScore, opponentAnswers: oppAnswers });
                             }
                         });
@@ -718,8 +722,7 @@ export const useQuizStore = create<QuizState>()(
 
                     // For duel: fetch final opponent score before determining winner
                     if (isDuel && matchId) {
-                        const { player: myPlayer } = get();
-                        const isP1 = get().opponent?.id !== myPlayer?.id;
+                        const isP1 = get().isDuelCreator;
                         const { data: finalMatch } = await supabase
                             .from('quiz_matches')
                             .select('player1_score,player1_answers,player2_score,player2_answers')
@@ -841,6 +844,7 @@ export const useQuizStore = create<QuizState>()(
                     score: 0,
                     matchId: null,
                     matchCode: null,
+                    isDuelCreator: false,
                     opponent: null,
                     opponentScore: 0,
                     opponentAnswers: [],
