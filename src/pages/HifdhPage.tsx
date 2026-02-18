@@ -67,6 +67,7 @@ export function HifdhPage() {
 
     // Seeking state for cross-audio transitions
     const [seekOnLoad, setSeekOnLoad] = useState<number | null>(null);
+    const [pokeEndTime, setPokeEndTime] = useState<number | null>(null);
 
 
     // Word timings
@@ -215,6 +216,7 @@ export function HifdhPage() {
 
     // Handle Word Selection for Loop (disabled in Coach mode)
     const handleWordClick = async (aIdx: number, wIdx: number) => {
+        setPokeEndTime(null);
         if (coach.isCoachMode) {
             coach.coachJumpToWord(aIdx, wIdx);
             return;
@@ -270,40 +272,57 @@ export function HifdhPage() {
         setSelectionEnd(null);
     };
 
-    // Poke hint — play 2 words starting from the first masked/current word
-    const handlePoke = useCallback(() => {
-        if (!wordTimings || !audioRef.current) return;
+    // Poke hint — play 2 words starting from the first masked/current word (Cross-Verse)
+    const handlePoke = useCallback(async () => {
+        if (!audioRef.current) return;
 
-        let startWordIdx = 0;
+        let targetAyahIdx = currentAyahIndex;
+        let targetWordIdx = 0;
+        let found = false;
+
         if (coach.isCoachMode && coach.blindMode) {
-            // Find the first word that hasn't been correctly recited yet
-            for (let i = 0; i < wordTimings.words.length; i++) {
-                if (coach.wordStates.get(`${currentAyahIndex}-${i}`) !== 'correct') {
-                    startWordIdx = i;
-                    break;
+            // Search starting from current ayah to subsequent ones
+            for (let a = currentAyahIndex; a < ayahs.length; a++) {
+                const timings = allTimings.get(a);
+                if (!timings) continue;
+
+                for (let w = 0; w < timings.words.length; w++) {
+                    if (coach.wordStates.get(`${a}-${w}`) !== 'correct') {
+                        targetAyahIdx = a;
+                        targetWordIdx = w;
+                        found = true;
+                        break;
+                    }
                 }
+                if (found) break;
             }
         }
 
-        const wordsToPlay = wordTimings.words.slice(startWordIdx, startWordIdx + 2);
+        const targetTimings = allTimings.get(targetAyahIdx);
+        if (!targetTimings) return;
+
+        const wordsToPlay = targetTimings.words.slice(targetWordIdx, targetWordIdx + 2);
         if (wordsToPlay.length === 0) return;
 
         const startTime = wordsToPlay[0].timestampFrom / 1000;
         const endTime = wordsToPlay[wordsToPlay.length - 1].timestampTo / 1000;
 
-        audioRef.current.currentTime = startTime;
-        audioRef.current.play();
-        setIsPlaying(true);
-
-        const checkStop = () => {
-            if (audioRef.current && audioRef.current.currentTime >= endTime) {
-                audioRef.current.pause();
-                setIsPlaying(false);
-                audioRef.current.removeEventListener('timeupdate', checkStop);
+        if (targetAyahIdx !== currentAyahIndex) {
+            // Jump to next verse if needed
+            setCurrentAyahIndex(targetAyahIdx);
+            setSeekOnLoad(startTime);
+            setPokeEndTime(endTime);
+            setIsPlaying(true);
+        } else {
+            // Same verse, just play and stop
+            audioRef.current.currentTime = startTime;
+            setPokeEndTime(endTime);
+            if (!isPlaying) {
+                audioRef.current.play();
+                setIsPlaying(true);
             }
-        };
-        audioRef.current.addEventListener('timeupdate', checkStop);
-    }, [wordTimings, coach.isCoachMode, coach.blindMode, coach.wordStates, currentAyahIndex]);
+        }
+    }, [wordTimings, coach.isCoachMode, coach.blindMode, coach.wordStates, currentAyahIndex, ayahs, allTimings, isPlaying]);
 
     // Auto-advance: when coach reaches 100%, advance after 2s
     useEffect(() => {
@@ -359,6 +378,7 @@ export function HifdhPage() {
 
     // Player logic
     const handlePlayPause = () => {
+        setPokeEndTime(null);
         if (audioRef.current) {
             if (isPlaying) {
                 audioRef.current.pause();
@@ -375,6 +395,7 @@ export function HifdhPage() {
     };
 
     const handleNext = useCallback(() => {
+        setPokeEndTime(null);
         if (currentAyahIndex < ayahs.length - 1) {
             setCurrentAyahIndex(prev => prev + 1);
             setCurrentRepeat(1);
@@ -388,6 +409,7 @@ export function HifdhPage() {
     }, [currentAyahIndex, ayahs.length, isLooping, recordPageRead]);
 
     const handlePrev = () => {
+        setPokeEndTime(null);
         if (currentAyahIndex > 0) {
             setCurrentAyahIndex(prev => prev - 1);
             setCurrentRepeat(1);
@@ -427,6 +449,14 @@ export function HifdhPage() {
             }
 
             setCurrentTime(audio.currentTime);
+
+            // Poke stop logic
+            if (pokeEndTime !== null && audio.currentTime >= pokeEndTime) {
+                audio.pause();
+                setIsPlaying(false);
+                setPokeEndTime(null);
+                return;
+            }
 
             // Loop logic with larger margin for iOS
             if (selectedTimeRange && isPlaying) {
