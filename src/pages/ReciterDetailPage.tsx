@@ -81,7 +81,7 @@ export function ReciterDetailPage() {
         audio.play().catch(console.error);
         useAudioPlayerStore.setState({ isPlaying: true });
 
-        // Save last listened for resume feature
+        // Save last listened for resume feature (Initial entry)
         setLastListened({
             reciterId: Number(id),
             reciterName: reciter.name,
@@ -90,21 +90,7 @@ export function ReciterDetailPage() {
             audioUrl: playlistItems[0].audioUrl!,
             position: 0,
         });
-
-        // Track position every 5s
-        if (positionIntervalRef.current) clearInterval(positionIntervalRef.current);
-        positionIntervalRef.current = setInterval(() => {
-            const currentPos = useAudioPlayerStore.getState().currentTime;
-            if (currentPos > 0) updateLastPosition(currentPos);
-        }, 5000);
     };
-
-    // Cleanup position tracker on unmount
-    useEffect(() => {
-        return () => {
-            if (positionIntervalRef.current) clearInterval(positionIntervalRef.current);
-        };
-    }, []);
 
     return (
         <div className="reciter-detail-page">

@@ -4,6 +4,7 @@ import {
     ListMusic, Trash2, Repeat, Repeat1, RotateCcw, RotateCw
 } from 'lucide-react';
 import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
+import { useListenStore } from '../../stores/listenStore';
 import { useState } from 'react';
 import './MiniPlayer.css';
 
@@ -27,8 +28,11 @@ export function MiniPlayer() {
         seek,
         toggleRepeatMode,
         jumpToPlaylistIndex,
-        removeFromQueue
+        removeFromQueue,
+        playbackType
     } = useAudioPlayerStore();
+
+    const { updateLastPosition } = useListenStore();
 
     const [expanded, setExpanded] = useState(false);
     const [minimized, setMinimized] = useState(false);
@@ -47,9 +51,24 @@ export function MiniPlayer() {
         });
 
         audio.addEventListener('timeupdate', () => {
-            useAudioPlayerStore.getState().updateTime(audio.currentTime, audio.duration || 0);
+            const current = audio.currentTime;
+            useAudioPlayerStore.getState().updateTime(current, audio.duration || 0);
         });
     }, [getAudioRef, updateTime]);
+
+    // Persistent position sync for Listen Page (MP3 Quran)
+    // Only triggers if playbackType is 'surah' (consistently with user request to not touch Mushaf/Read page)
+    useEffect(() => {
+        if (playbackType !== 'surah' || currentTime === 0) return;
+
+        // Update store position (throttled/debounced via the natural gap of timeupdate or manual interval)
+        // We sync if position is > 0 to avoid resetting progress on accidental load
+        const timeout = setTimeout(() => {
+            updateLastPosition(currentTime);
+        }, 1000); // Small buffer to avoid too frequent disk writes, though localStorage is fast
+
+        return () => clearTimeout(timeout);
+    }, [currentTime, playbackType, updateLastPosition]);
 
     // Don't render if no surah is active
     if (currentSurahNumber === 0) return null;
