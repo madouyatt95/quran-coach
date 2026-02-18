@@ -90,7 +90,19 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
+// ─── Install: skip waiting so new SW activates immediately ──
+self.addEventListener('install', () => {
+    self.skipWaiting();
+});
+
 // ─── Activate: claim clients immediately ────────────
 self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
+});
+
+// ─── Message handler: allow app to trigger skipWaiting ──
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });

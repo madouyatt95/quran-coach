@@ -12,6 +12,7 @@ import { useStatsStore } from './stores/statsStore';
 import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
+import { UpdateBanner } from './components/UpdateBanner';
 import { updateLastVisit } from './lib/notificationService';
 import { trackAppOpen, trackPageView } from './lib/analyticsService';
 import './index.css';
@@ -183,6 +184,7 @@ function AppContent() {
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
       <InstallPrompt />
+      <UpdateBanner />
       <MiniPlayer />
       <BottomNav />
     </>
