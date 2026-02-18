@@ -40,8 +40,9 @@ export function PrayerSettingsPage() {
     useEffect(() => {
         if (notifStore.enabled) {
             const sync = async () => {
-                let currentLat = store.lat;
-                let currentLng = store.lng;
+                const prayerState = usePrayerStore.getState();
+                let currentLat = prayerState.lat;
+                let currentLng = prayerState.lng;
 
                 if (currentLat == null || currentLng == null) {
                     const resolved = await resolveCoords();
@@ -58,7 +59,7 @@ export function PrayerSettingsPage() {
             };
             sync().catch(err => console.error('[PrayerSettings] Sync error:', err));
         }
-    }, [s, nc, notifStore.enabled, store.lat, store.lng]);
+    }, [s, nc, notifStore.enabled]);
 
     return (
         <div className="prayer-settings-page">

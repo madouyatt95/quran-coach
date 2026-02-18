@@ -4,8 +4,9 @@
  */
 
 import { supabase } from './supabase';
+import { usePrayerStore } from '../stores/prayerStore';
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+let VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
 // ─── Permission ──────────────────────────────────────
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
@@ -72,6 +73,11 @@ export async function subscribeToPush(options: {
         // Determine timezone
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+        // Get coords from store if missing in options
+        const prayerState = usePrayerStore.getState();
+        const lat = options.latitude !== undefined ? options.latitude : prayerState.lat;
+        const lng = options.longitude !== undefined ? options.longitude : prayerState.lng;
+
         // Upsert to Supabase
         const data: any = {
             endpoint: subJson.endpoint,
@@ -86,12 +92,11 @@ export async function subscribeToPush(options: {
             daruri_asr_enabled: options.daruriAsrEnabled ?? false,
             akhir_isha_enabled: options.akhirIshaEnabled ?? false,
             prayer_settings: options.prayerSettings || {},
+            latitude: lat || null,
+            longitude: lng || null,
             timezone,
             updated_at: new Date().toISOString(),
         };
-
-        if (options.latitude !== undefined) data.latitude = options.latitude;
-        if (options.longitude !== undefined) data.longitude = options.longitude;
 
         const { error } = await supabase
             .from('push_subscriptions')
@@ -140,9 +145,15 @@ export async function updatePushPreferences(prefs: {
         if (prefs.daruriSobhEnabled !== undefined) updateData.daruri_sobh_enabled = prefs.daruriSobhEnabled;
         if (prefs.daruriAsrEnabled !== undefined) updateData.daruri_asr_enabled = prefs.daruriAsrEnabled;
         if (prefs.akhirIshaEnabled !== undefined) updateData.akhir_isha_enabled = prefs.akhirIshaEnabled;
-        if (prefs.latitude !== undefined) updateData.latitude = prefs.latitude;
-        if (prefs.longitude !== undefined) updateData.longitude = prefs.longitude;
         if (prefs.prayerSettings !== undefined) updateData.prayer_settings = prefs.prayerSettings;
+
+        // Add coords from prefs or fallback to store
+        const prayerState = usePrayerStore.getState();
+        const lat = prefs.latitude !== undefined ? prefs.latitude : prayerState.lat;
+        const lng = prefs.longitude !== undefined ? prefs.longitude : prayerState.lng;
+
+        if (lat != null) updateData.latitude = lat;
+        if (lng != null) updateData.longitude = lng;
 
         const { error } = await supabase
             .from('push_subscriptions')
