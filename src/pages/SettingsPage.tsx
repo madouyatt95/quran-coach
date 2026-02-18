@@ -83,9 +83,9 @@ export function SettingsPage() {
                         notif.setPermission('granted');
                     }
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error('[Settings] Failed to enable notifications:', err);
-                alert('Erreur lors de l\'activation des notifications. Réessayez.');
+                alert(`Erreur lors de l'activation des notifications: ${err.message || err}`);
             }
             setSubscribing(false);
         } else {

@@ -55,13 +55,17 @@ export async function subscribeToPush(options: {
             throw new Error('VITE_VAPID_PUBLIC_KEY manquante dans le fichier .env');
         }
 
+        console.log('[Push] Waiting for service worker...');
         const registration = await navigator.serviceWorker.ready;
+        console.log('[Push] Service worker ready');
 
         // Subscribe to push with VAPID key
+        console.log('[Push] Subscribing with VAPID key...');
         const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
         });
+        console.log('[Push] Subscription received');
 
         const subJson = subscription.toJSON();
         if (!subJson.endpoint || !subJson.keys || !subJson.keys.p256dh || !subJson.keys.auth) {
@@ -73,6 +77,7 @@ export async function subscribeToPush(options: {
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         // Upsert to Supabase
+        console.log('[Push] Saving to Supabase...');
         const { error } = await supabase
             .from('push_subscriptions')
             .upsert(
