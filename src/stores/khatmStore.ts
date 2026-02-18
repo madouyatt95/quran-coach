@@ -67,11 +67,13 @@ export const useKhatmStore = create<KhatmState>()(
                 lastKhatmPage: 1,
             }),
 
-            updateLastRead: (surah, ayah, page) => set({
-                lastKhatmSurah: surah,
-                lastKhatmAyah: ayah,
-                lastKhatmPage: page,
-            }),
+            updateLastRead: (surah, ayah, page) => {
+                const { lastKhatmPage, lastKhatmAyah } = get();
+                // Only move forward — never overwrite with an earlier position
+                if (page > lastKhatmPage || (page === lastKhatmPage && ayah > lastKhatmAyah)) {
+                    set({ lastKhatmSurah: surah, lastKhatmAyah: ayah, lastKhatmPage: page });
+                }
+            },
 
             deactivate: () => set({ isActive: false }),
 
