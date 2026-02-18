@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Copy, Share2 } from 'lucide-react';
+import { ArrowLeft, Copy, Share2, RefreshCw } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
 
 export function DuelLobby() {
-    const { matchCode, createDuel, setView, opponent } = useQuizStore();
+    const { matchCode, createDuel, setView, opponent, syncMatch } = useQuizStore();
     const [creating, setCreating] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -13,6 +13,16 @@ export function DuelLobby() {
             createDuel().then(() => setCreating(false));
         }
     }, [matchCode, creating, createDuel]);
+
+    // Polling fallback: check every 3s if opponent joined
+    // (in case Supabase Realtime is not delivering events)
+    useEffect(() => {
+        if (!matchCode || opponent) return;
+        const interval = setInterval(() => {
+            syncMatch();
+        }, 3000);
+        return () => clearInterval(interval);
+    }, [matchCode, opponent, syncMatch]);
 
     const copyCode = async () => {
         if (matchCode) {
@@ -74,10 +84,10 @@ export function DuelLobby() {
                             <div className="quiz-spinner" />
                             <p>En attente d'un adversaire...</p>
                         </div>
-                        <p className="quiz-lobby-hint">
-                            Si ton adversaire a déjà rejoint et que tu es bloqué ici,
-                            la resynchronisation automatique devrait s'en charger...
-                        </p>
+                        <button className="quiz-btn-secondary" onClick={() => syncMatch()} style={{ marginTop: '12px' }}>
+                            <RefreshCw size={16} />
+                            Rafraîchir
+                        </button>
                     </>
                 )}
             </div>
