@@ -8,6 +8,7 @@ import {
     unsubscribeFromPush,
     updatePushPreferences,
 } from '../lib/notificationService';
+import { usePrayerStore } from '../stores/prayerStore';
 import type { Theme, ArabicFontSize } from '../types';
 import { Stars, Bell, BellOff } from 'lucide-react';
 import './SettingsPage.css';
@@ -46,6 +47,7 @@ export function SettingsPage() {
     } = useSettingsStore();
 
     const notif = useNotificationStore();
+    const prayerStore = usePrayerStore();
     const [testSent, setTestSent] = useState(false);
     const [subscribing, setSubscribing] = useState(false);
     const [permDenied, setPermDenied] = useState(false);
@@ -77,6 +79,9 @@ export function SettingsPage() {
                         daruriSobhEnabled: notif.daruriSobhEnabled,
                         daruriAsrEnabled: notif.daruriAsrEnabled,
                         akhirIshaEnabled: notif.akhirIshaEnabled,
+                        latitude: prayerStore.lat || undefined,
+                        longitude: prayerStore.lng || undefined,
+                        prayerSettings: prayerStore.settings,
                     });
                     if (ok) {
                         notif.setEnabled(true);

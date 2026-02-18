@@ -40,10 +40,12 @@ export function PrayerSettingsPage() {
         if (notifStore.enabled) {
             updatePushPreferences({
                 prayerSettings: s,
-                prayerMinutesConfig: nc
+                prayerMinutesConfig: nc,
+                latitude: store.lat || undefined,
+                longitude: store.lng || undefined
             }).catch(err => console.error('[PrayerSettings] Sync error:', err));
         }
-    }, [s, nc, notifStore.enabled]);
+    }, [s, nc, notifStore.enabled, store.lat, store.lng]);
 
     return (
         <div className="prayer-settings-page">
