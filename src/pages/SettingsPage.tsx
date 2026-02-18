@@ -414,7 +414,7 @@ export function SettingsPage() {
             </section>
             {/* Footer / Build */}
             <div className="settings-footer">
-                <p>Quran Coach App — Version 0.0.0 (Build 7c46858)</p>
+                <p>Quran Coach App — Version 0.0.0 (Build b6819da)</p>
                 <p>© 2026</p>
             </div>
         </div>
