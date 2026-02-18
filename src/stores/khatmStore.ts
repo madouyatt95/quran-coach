@@ -68,9 +68,19 @@ export const useKhatmStore = create<KhatmState>()(
             }),
 
             updateLastRead: (surah, ayah, page) => {
-                const { lastKhatmPage, lastKhatmAyah } = get();
-                // Only move forward — never overwrite with an earlier position
-                if (page > lastKhatmPage || (page === lastKhatmPage && ayah > lastKhatmAyah)) {
+                const { lastKhatmPage, lastKhatmSurah, lastKhatmAyah, isActive } = get();
+                if (!isActive) return;
+
+                // Better forward-only check: 
+                // 1. If page is further ahead
+                // 2. OR if same page but surah is further ahead
+                // 3. OR if same page and same surah but ayah is further ahead
+                const isForward =
+                    page > lastKhatmPage ||
+                    (page === lastKhatmPage && (surah > lastKhatmSurah || (surah === lastKhatmSurah && ayah > lastKhatmAyah)));
+
+                if (isForward) {
+                    console.log(`[Khatm] Updating last read to S${surah}:A${ayah} (Page ${page})`);
                     set({ lastKhatmSurah: surah, lastKhatmAyah: ayah, lastKhatmPage: page });
                 }
             },

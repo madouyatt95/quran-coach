@@ -135,6 +135,8 @@ export function KhatmTracker() {
     const handleResumeKhatm = () => {
         // Resume at the exact last khatm reading position (stored separately from general reading)
         const { lastKhatmSurah, lastKhatmAyah, lastKhatmPage } = store;
+        console.log(`[Khatm] Resuming at S${lastKhatmSurah}:A${lastKhatmAyah} (Page ${lastKhatmPage})`);
+
         sessionStorage.setItem('isSilentJump', 'true');
         sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: lastKhatmSurah, ayah: lastKhatmAyah }));
         goToAyah(lastKhatmSurah, lastKhatmAyah, lastKhatmPage, { silent: true });
