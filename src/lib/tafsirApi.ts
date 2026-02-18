@@ -7,6 +7,7 @@ const API_BASE = 'https://api.qurancdn.com/api/v4';
 export const AVAILABLE_TAFSIRS = [
     { id: 'french_rashid', name: 'Rashid Maash (Exégèse)', nameAr: 'راشد معاش', language: 'fr', type: 'quranenc' },
     { id: 'french_montada', name: 'Montada Islamic (Exégèse)', nameAr: 'المنتدى الإسلامي', language: 'fr', type: 'quranenc' },
+    { id: 'french_mokhtasar', name: 'Mokhtasar (Exégèse Simplifiée)', nameAr: 'المختصر في التفسير', language: 'fr', type: 'quranenc' },
     { id: 'french_ibnkathir_local', name: 'Ibn Kathir (Français - LOCAL)', nameAr: 'ابن كثير (محلي)', language: 'fr', type: 'local' },
     { id: 169, name: 'Ibn Kathir (English)', nameAr: 'ابن كثير', language: 'en', type: 'quran' },
 ];
@@ -125,16 +126,22 @@ async function fetchFrenchTafsir(
         if (!result) return null;
 
         // We combine translation and footnotes for a complete explanation
-        const fullContent = result.footnotes
+        const fullText = result.footnotes
             ? `${result.translation}\n\nNotes :\n${result.footnotes}`
             : result.translation;
 
+        const resourceNames: Record<string, string> = {
+            'french_rashid': 'Rashid Maash',
+            'french_montada': 'Montada Islamic',
+            'french_mokhtasar': 'Mokhtasar (Exégèse Simplifiée)'
+        };
+
         return {
             resource_id: 0,
-            text: fullContent,
+            text: fullText,
             verse_key: `${surah}:${ayah}`,
             language_id: 0,
-            resource_name: resourceId === 'french_rashid' ? 'Rashid Maash' : 'Montada Islamic'
+            resource_name: resourceNames[resourceId] || 'Exégèse Française'
         };
     } catch (error) {
         console.error('Error fetching French tafsir:', error);
