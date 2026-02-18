@@ -54,10 +54,21 @@ async function createVapidJWT(endpoint: string): Promise<string> {
     const headerB64 = urlBase64Encode(new TextEncoder().encode(JSON.stringify(header)));
     const payloadB64 = urlBase64Encode(new TextEncoder().encode(JSON.stringify(payload)));
 
+    // Import the raw 32-byte private key via JWK (more reliable than PKCS8 on Deno)
     const privKeyBytes = urlBase64Decode(VAPID_PRIVATE_KEY);
-    const pkcs8 = wrapRawKeyInPKCS8(privKeyBytes);
+    const pubKeyBytes = urlBase64Decode(VAPID_PUBLIC_KEY);
+
+    // Build JWK from raw key bytes
+    const jwk = {
+        kty: "EC",
+        crv: "P-256",
+        d: urlBase64Encode(privKeyBytes),     // private scalar (32 bytes)
+        x: urlBase64Encode(pubKeyBytes.slice(1, 33)),  // public key X (skip 0x04 prefix)
+        y: urlBase64Encode(pubKeyBytes.slice(33, 65)), // public key Y
+    };
+
     const privateKey = await crypto.subtle.importKey(
-        "pkcs8", pkcs8,
+        "jwk", jwk,
         { name: "ECDSA", namedCurve: "P-256" },
         false, ["sign"]
     );
@@ -68,20 +79,6 @@ async function createVapidJWT(endpoint: string): Promise<string> {
     ));
 
     return `${headerB64}.${payloadB64}.${urlBase64Encode(sigRaw)}`;
-}
-
-function wrapRawKeyInPKCS8(rawKey: Uint8Array): Uint8Array {
-    const header = new Uint8Array([
-        0x30, 0x81, 0x87, 0x02, 0x01, 0x00, 0x30, 0x13,
-        0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
-        0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d,
-        0x03, 0x01, 0x07, 0x04, 0x6d, 0x30, 0x6b, 0x02,
-        0x01, 0x01, 0x04, 0x20
-    ]);
-    const result = new Uint8Array(header.length + rawKey.length);
-    result.set(header);
-    result.set(rawKey, header.length);
-    return result;
 }
 
 // ─── RFC 8291 Web Push Encryption (aes128gcm) ──────
