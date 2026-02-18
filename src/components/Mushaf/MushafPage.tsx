@@ -55,6 +55,7 @@ export function MushafPage() {
 
     const { toggleFavorite, isFavorite } = useFavoritesStore();
     const { isActive: khatmActive, isPageValidated, togglePage: khatmTogglePage, updateLastRead: khatmUpdateLastRead } = useKhatmStore();
+    const isExploring = useQuranStore(state => state.isExploring);
 
     // ===== Local state =====
     const [isLoading, setIsLoading] = useState(true);
@@ -69,23 +70,27 @@ export function MushafPage() {
 
     // Diagnostic version log
     useEffect(() => {
-        console.log('[Quran Coach] v1.2.8 - Full Jump Protection Active');
+        console.log('[Quran Coach] v1.3.0 - Natural Khatm Logic Active');
     }, []);
 
-    // Auto-validate khatm page after 3s + track reading position
+    // Immediate Khatm Reading Position Update (Natural progression only)
+    useEffect(() => {
+        if (!khatmActive || isExploring) return;
+
+        // Update Khatm position immediately when reading naturally
+        khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
+    }, [currentPage, currentSurah, currentAyah, khatmActive, isExploring]);
+
+    // Delayed Khatm Page Validation (3s stability check)
     const khatmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
-        if (!khatmActive) return;
+        if (!khatmActive || isPageValidated(currentPage)) return;
 
-        // Clear any pending timer for a previous page/position
         if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
 
-        // Validate page AND track reading position after 3 seconds of staying on this page/verse
         khatmTimerRef.current = setTimeout(() => {
-            // Track the last reading position only after it's stable
-            khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
-
             if (!isPageValidated(currentPage)) {
+                console.log(`[Khatm] Auto-validating page ${currentPage}`);
                 khatmTogglePage(currentPage);
             }
         }, 3000);
@@ -93,7 +98,7 @@ export function MushafPage() {
         return () => {
             if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
         };
-    }, [currentPage, currentSurah, currentAyah, khatmActive]);
+    }, [currentPage, khatmActive, isPageValidated]);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
@@ -154,7 +159,11 @@ export function MushafPage() {
                             if (!isSilent) {
                                 setCurrentPage(pageNum);
                                 setCurrentAyah(ayahNum);
-                                updateProgress(); // No {force:true} here -> uses threshold in store (10v)
+
+                                // Only update general reading progress if Khatm is NOT active
+                                if (!khatmActive) {
+                                    updateProgress();
+                                }
                             }
                         }
                     }
