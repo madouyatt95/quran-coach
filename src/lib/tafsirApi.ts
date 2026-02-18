@@ -7,6 +7,7 @@ const API_BASE = 'https://api.qurancdn.com/api/v4';
 export const AVAILABLE_TAFSIRS = [
     { id: 'french_rashid', name: 'Rashid Maash (Exégèse)', nameAr: 'راشد معاش', language: 'fr', type: 'quranenc' },
     { id: 'french_montada', name: 'Montada Islamic (Exégèse)', nameAr: 'المنتدى الإسلامي', language: 'fr', type: 'quranenc' },
+    { id: 'french_ibnkathir_local', name: 'Ibn Kathir (Français - LOCAL)', nameAr: 'ابن كثير (محلي)', language: 'fr', type: 'local' },
     { id: 169, name: 'Ibn Kathir (English)', nameAr: 'ابن كثير', language: 'en', type: 'quran' },
 ];
 
@@ -50,6 +51,9 @@ export async function fetchTafsir(
 ): Promise<TafsirContent | null> {
     // If it's a QuranEnc resource
     if (typeof tafsirId === 'string' && tafsirId.startsWith('french_')) {
+        if (tafsirId === 'french_ibnkathir_local') {
+            return fetchLocalTafsir(tafsirId, surah, ayah);
+        }
         return fetchFrenchTafsir(tafsirId, surah, ayah);
     }
 
@@ -67,6 +71,36 @@ export async function fetchTafsir(
         return data.tafsir;
     } catch (error) {
         console.error('Error fetching tafsir:', error);
+        return null;
+    }
+}
+
+async function fetchLocalTafsir(
+    resourceId: string,
+    surah: number,
+    ayah: number
+): Promise<TafsirContent | null> {
+    try {
+        // Local JSON files are stored in /public/tafsirs/{resourceId}.json
+        // Format: { "1:1": "Text...", "1:2": "Text...", ... }
+        const response = await fetch(`/tafsirs/${resourceId}.json`);
+        if (!response.ok) throw new Error('Local tafsir file not found');
+
+        const data = await response.json();
+        const verseKey = `${surah}:${ayah}`;
+        const text = data[verseKey];
+
+        if (!text) return null;
+
+        return {
+            resource_id: 0,
+            text: text,
+            verse_key: verseKey,
+            language_id: 0,
+            resource_name: 'Ibn Kathir (Français)'
+        };
+    } catch (error) {
+        console.error('Error fetching local tafsir:', error);
         return null;
     }
 }

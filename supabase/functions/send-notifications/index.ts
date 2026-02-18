@@ -389,12 +389,17 @@ serve(async (req) => {
                         const targetMin = prayerMin - minutesBefore;
                         const diff = currentMin - targetMin;
 
+                        if (sub.endpoint.includes("tester") || Math.abs(diff) <= 20) {
+                            console.log(`[Push] Sub ${sub.id}: ${prayer.name} at ${rawTimeStr}, target ${Math.floor(targetMin / 60)}:${targetMin % 60}, current ${localHour}:${localMinute}, diff ${diff}`);
+                        }
+
                         // Within ±WINDOW_MIN of target AND not recently sent
                         if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub[prayer.dedupKey])) {
                             const adjH = Math.floor((prayerMin % 1440) / 60);
                             const adjM = Math.floor(prayerMin % 60);
                             const timeStr = `${adjH.toString().padStart(2, "0")}:${adjM.toString().padStart(2, "0")}`;
 
+                            console.log(`[Push] Triggering ${prayer.name} for ${sub.endpoint.slice(0, 30)}...`);
                             const ok = await sendPush(sub, {
                                 title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
                                 body: `${prayer.name} dans ~${minutesBefore} minutes (${timeStr})`,
