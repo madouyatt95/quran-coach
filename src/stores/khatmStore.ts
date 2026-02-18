@@ -164,12 +164,12 @@ export const useKhatmStore = create<KhatmState>()(
             },
 
             getNextPage: () => {
-                const validated = get().validatedPages;
-                if (validated.length === 0) return 1;
-                // Target the page right after the LATEST validated one
-                const maxPage = Math.max(...validated);
-                if (maxPage >= 604) return 604;
-                return maxPage + 1;
+                const validated = new Set(get().validatedPages);
+                // Return the first unvalidated page (1-604)
+                for (let p = 1; p <= 604; p++) {
+                    if (!validated.has(p)) return p;
+                }
+                return 604; // All done
             },
         }),
         {
