@@ -60,27 +60,32 @@ export function SettingsPage() {
         if (!notif.enabled) {
             // Enabling — subscribe to Web Push
             setSubscribing(true);
-            const perm = await requestNotificationPermission();
-            if (perm === 'denied') {
-                setPermDenied(true);
-                setSubscribing(false);
-                return;
-            }
-            if (perm === 'granted') {
-                const ok = await subscribeToPush({
-                    prayerEnabled: notif.prayerEnabled,
-                    prayerMinutesBefore: notif.prayerMinutesBefore,
-                    prayerMinutesConfig: notif.prayerMinutesConfig,
-                    hadithEnabled: notif.hadithEnabled,
-                    challengeEnabled: notif.challengeEnabled,
-                    daruriSobhEnabled: notif.daruriSobhEnabled,
-                    daruriAsrEnabled: notif.daruriAsrEnabled,
-                    akhirIshaEnabled: notif.akhirIshaEnabled,
-                });
-                if (ok) {
-                    notif.setEnabled(true);
-                    notif.setPermission('granted');
+            try {
+                const perm = await requestNotificationPermission();
+                if (perm === 'denied') {
+                    setPermDenied(true);
+                    setSubscribing(false);
+                    return;
                 }
+                if (perm === 'granted') {
+                    const ok = await subscribeToPush({
+                        prayerEnabled: notif.prayerEnabled,
+                        prayerMinutesBefore: notif.prayerMinutesBefore,
+                        prayerMinutesConfig: notif.prayerMinutesConfig,
+                        hadithEnabled: notif.hadithEnabled,
+                        challengeEnabled: notif.challengeEnabled,
+                        daruriSobhEnabled: notif.daruriSobhEnabled,
+                        daruriAsrEnabled: notif.daruriAsrEnabled,
+                        akhirIshaEnabled: notif.akhirIshaEnabled,
+                    });
+                    if (ok) {
+                        notif.setEnabled(true);
+                        notif.setPermission('granted');
+                    }
+                }
+            } catch (err) {
+                console.error('[Settings] Failed to enable notifications:', err);
+                alert('Erreur lors de l\'activation des notifications. Réessayez.');
             }
             setSubscribing(false);
         } else {
