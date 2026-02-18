@@ -15,9 +15,7 @@ import {
     MicOff,
     Eye,
     EyeOff,
-    Lightbulb,
-    Layout,
-    X
+    Lightbulb
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -35,86 +33,6 @@ import './HifdhPage.css';
 // Hifdh always uses Mishari Al-Afasy — only reciter with reliable word-by-word timings
 const HIFDH_RECITER = 'ar.alafasy';
 const HIFDH_RECITER_QURAN_COM_ID = 7;
-
-interface AyahSelectionGridProps {
-    maxAyahs: number;
-    startAyah: number;
-    endAyah: number;
-    onSelect: (start: number, end: number) => void;
-    onClose: () => void;
-}
-
-function AyahSelectionGrid({ maxAyahs, startAyah, endAyah, onSelect, onClose }: AyahSelectionGridProps) {
-    const [tempStart, setTempStart] = useState<number | null>(startAyah);
-    const [tempEnd, setTempEnd] = useState<number | null>(endAyah);
-
-    const handleAyahClick = (n: number) => {
-        if (!tempStart || (tempStart && tempEnd)) {
-            setTempStart(n);
-            setTempEnd(null);
-        } else {
-            if (n < tempStart) {
-                setTempEnd(tempStart);
-                setTempStart(n);
-            } else {
-                setTempEnd(n);
-            }
-        }
-    };
-
-    const handleConfirm = () => {
-        if (tempStart) {
-            onSelect(tempStart, tempEnd || tempStart);
-            onClose();
-        }
-    };
-
-    return (
-        <div className="hifdh-grid-modal">
-            <div className="hifdh-grid-modal__content">
-                <div className="hifdh-grid-modal__header">
-                    <h3>Sélectionner les versets</h3>
-                    <button onClick={onClose}><X size={20} /></button>
-                </div>
-
-                <div className="hifdh-grid-modal__grid">
-                    {Array.from({ length: maxAyahs }, (_, i) => i + 1).map(n => {
-                        const isSelected = (tempStart && tempEnd)
-                            ? (n >= tempStart && n <= tempEnd)
-                            : (n === tempStart);
-                        const isStart = n === tempStart;
-                        const isEnd = n === tempEnd;
-
-                        return (
-                            <button
-                                key={n}
-                                className={`hifdh-grid-modal__item ${isSelected ? 'selected' : ''} ${isStart ? 'start' : ''} ${isEnd ? 'end' : ''}`}
-                                onClick={() => handleAyahClick(n)}
-                            >
-                                {n}
-                            </button>
-                        );
-                    })}
-                </div>
-
-                <div className="hifdh-grid-modal__footer">
-                    <p className="hifdh-grid-modal__summary">
-                        {tempStart ? (
-                            tempEnd ? `Versets ${tempStart} à ${tempEnd}` : `Verset ${tempStart}`
-                        ) : 'Choisir un verset'}
-                    </p>
-                    <button
-                        className="hifdh-grid-modal__confirm"
-                        onClick={handleConfirm}
-                        disabled={!tempStart}
-                    >
-                        Valider la sélection
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 export function HifdhPage() {
     const location = useLocation();
@@ -159,9 +77,6 @@ export function HifdhPage() {
     // Auto-advance state
     const [autoAdvanceCountdown, setAutoAdvanceCountdown] = useState(false);
     const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    // Grid selection state
-    const [showSelectionGrid, setShowSelectionGrid] = useState(false);
 
     // Handle incoming verse from navigation state (Deep link)
     useEffect(() => {
@@ -480,14 +395,6 @@ export function HifdhPage() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    // Auto-scroll to active ayah
-    useEffect(() => {
-        const activeBlock = document.querySelector('.hifdh-ayah-block.active');
-        if (activeBlock) {
-            activeBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }, [currentAyahIndex]);
-
     return (
         <div className="hifdh-page">
             <div className="hifdh-page__header-row">
@@ -549,14 +456,6 @@ export function HifdhPage() {
             {/* Selection */}
             <div className="hifdh-selection">
                 <div className="hifdh-selection__row">
-                    <button
-                        className="hifdh-selection__grid-btn"
-                        onClick={() => setShowSelectionGrid(true)}
-                    >
-                        <Layout size={18} />
-                        <span>{startAyah === endAyah ? `Verset ${startAyah}` : `Versets ${startAyah} - ${endAyah}`}</span>
-                    </button>
-
                     <select
                         className="hifdh-selection__select"
                         value={selectedSurah}
@@ -648,110 +547,53 @@ export function HifdhPage() {
                     onEnded={handleAudioEnded}
                 />
 
-                {/* Ayah View (Multi-Ayah) */}
+                {/* Ayah View */}
                 <div className="hifdh-ayah-container" dir="rtl">
-                    {ayahs.length > 0 ? (
-                        <div className="hifdh-multi-ayah-list">
-                            {ayahs.map((ayah, aIdx) => {
-                                const isActiveAyah = aIdx === currentAyahIndex;
+                    {wordTimings ? (
+                        <div className="hifdh-words-grid">
+                            {wordTimings.words.map((word, idx) => {
+                                const isSelected = selectionStart !== null && selectionEnd !== null &&
+                                    idx >= selectionStart && idx <= selectionEnd;
+                                const isPartiallySelected = selectionStart !== null && idx === selectionStart && selectionEnd === null;
+
+                                // Coach word state classes
+                                let coachClass = '';
+                                let wordState: string | undefined;
+                                if (coach.isCoachMode) {
+                                    const key = `${currentAyahIndex}-${idx}`;
+                                    wordState = coach.wordStates.get(key);
+                                    if (wordState === 'correct') coachClass = 'hifdh-word--correct';
+                                    else if (wordState === 'error') coachClass = 'hifdh-word--error';
+                                    else if (wordState === 'current') coachClass = 'hifdh-word--current';
+                                }
+
+                                // Blind mode: mask word unless correctly revealed
+                                const isBlind = coach.isCoachMode && coach.blindMode;
+                                const isRevealed = wordState === 'correct';
+                                const showText = !isBlind || isRevealed;
+
                                 return (
-                                    <div
-                                        key={ayah.number}
-                                        className={`hifdh-ayah-block ${isActiveAyah ? 'active' : ''}`}
-                                        onClick={() => {
-                                            if (currentAyahIndex !== aIdx) {
-                                                setCurrentAyahIndex(aIdx);
-                                                setCurrentRepeat(1);
-                                                resetSelection();
-                                            }
-                                        }}
+                                    <span
+                                        key={idx}
+                                        className={`hifdh-word 
+                                            ${activeWordIndex === idx ? 'highlight' : ''} 
+                                            ${isSelected ? 'range-selected' : ''}
+                                            ${isPartiallySelected ? 'single-selected' : ''}
+                                            ${coachClass}
+                                            ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
+                                            ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
+                                        `}
+                                        onClick={() => handleWordClick(idx)}
                                     >
-                                        <div className="hifdh-ayah-number-badge">{ayah.numberInSurah}</div>
-                                        <div className="hifdh-words-grid">
-                                            {isActiveAyah && wordTimings ? (
-                                                // Precise Timings for Active Ayah
-                                                wordTimings.words.map((word, wIdx) => {
-                                                    const isSelected = selectionStart !== null && selectionEnd !== null &&
-                                                        wIdx >= selectionStart && wIdx <= selectionEnd;
-                                                    const isPartiallySelected = selectionStart !== null && wIdx === selectionStart && selectionEnd === null;
-
-                                                    let coachClass = '';
-                                                    let wordState: string | undefined;
-                                                    if (coach.isCoachMode) {
-                                                        const key = `${aIdx}-${wIdx}`;
-                                                        wordState = coach.wordStates.get(key);
-                                                        if (wordState === 'correct') coachClass = 'hifdh-word--correct';
-                                                        else if (wordState === 'error') coachClass = 'hifdh-word--error';
-                                                        else if (wordState === 'current') coachClass = 'hifdh-word--current';
-                                                    }
-
-                                                    const isBlind = coach.isCoachMode && coach.blindMode;
-                                                    const isRevealed = wordState === 'correct';
-                                                    const showText = !isBlind || isRevealed;
-
-                                                    return (
-                                                        <span
-                                                            key={wIdx}
-                                                            className={`hifdh-word 
-                                                                ${activeWordIndex === wIdx ? 'highlight' : ''} 
-                                                                ${isSelected ? 'range-selected' : ''}
-                                                                ${isPartiallySelected ? 'single-selected' : ''}
-                                                                ${coachClass}
-                                                                ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
-                                                                ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
-                                                            `}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleWordClick(wIdx);
-                                                            }}
-                                                        >
-                                                            {showText ? word.text : '●●●'}{' '}
-                                                        </span>
-                                                    );
-                                                })
-                                            ) : (
-                                                // Simple Text for Inactive Ayahs (with Coach marks)
-                                                ayah.text.split(/\s+/).filter(w => w.length > 0).map((wordText, wIdx) => {
-                                                    let coachClass = '';
-                                                    let wordState: string | undefined;
-                                                    if (coach.isCoachMode) {
-                                                        const key = `${aIdx}-${wIdx}`;
-                                                        wordState = coach.wordStates.get(key);
-                                                        if (wordState === 'correct') coachClass = 'hifdh-word--correct';
-                                                        else if (wordState === 'error') coachClass = 'hifdh-word--error';
-                                                        else if (wordState === 'current') coachClass = 'hifdh-word--current';
-                                                    }
-
-                                                    const isBlind = coach.isCoachMode && coach.blindMode;
-                                                    const isRevealed = wordState === 'correct';
-                                                    const showText = !isBlind || isRevealed;
-
-                                                    return (
-                                                        <span
-                                                            key={wIdx}
-                                                            className={`hifdh-word ${coachClass} ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''} ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}`}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (coach.isCoachMode) {
-                                                                    setCurrentAyahIndex(aIdx);
-                                                                    setTimeout(() => coach.coachJumpToWord(aIdx, wIdx), 50);
-                                                                } else {
-                                                                    setCurrentAyahIndex(aIdx);
-                                                                }
-                                                            }}
-                                                        >
-                                                            {showText ? wordText : '●●●'}{' '}
-                                                        </span>
-                                                    );
-                                                })
-                                            )}
-                                        </div>
-                                    </div>
+                                        {showText ? word.text : '●●●'}{' '}
+                                    </span>
                                 );
                             })}
                         </div>
                     ) : (
-                        <div className="hifdh-loading-ayah">Chargement...</div>
+                        <div className="hifdh-loading-ayah">
+                            {currentAyah?.text || "Chargement..."}
+                        </div>
                     )}
                 </div>
 
@@ -867,19 +709,6 @@ export function HifdhPage() {
                 </div>
             </div>
 
-            {/* Selection Grid Modal */}
-            {showSelectionGrid && (
-                <AyahSelectionGrid
-                    maxAyahs={maxAyahs}
-                    startAyah={startAyah}
-                    endAyah={endAyah}
-                    onSelect={(start, end) => {
-                        setStartAyah(start);
-                        setEndAyah(end);
-                    }}
-                    onClose={() => setShowSelectionGrid(false)}
-                />
-            )}
         </div>
     );
 }
