@@ -37,21 +37,24 @@ const HIFDH_RECITER_QURAN_COM_ID = 7;
 export function HifdhPage() {
     const location = useLocation();
     const { surahs } = useQuranStore();
-    const { repeatCount, playbackSpeed, setPlaybackSpeed } = useSettingsStore();
+    const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
     const { getDueCards, cards } = useSRSStore();
 
     // Selection state
     const [selectedSurah, setSelectedSurah] = useState(1);
     const [startAyah, setStartAyah] = useState(1);
-    const [endAyah, setEndAyah] = useState(7);
-    const [maxAyahs, setMaxAyahs] = useState(7);
+    const [endAyah, setEndAyah] = useState(5);
+    const [maxAyahs, setMaxAyahs] = useState(5);
     const [ayahs, setAyahs] = useState<Ayah[]>([]);
     const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
 
     // Partial selection (Word loop)
-    const [selectionStart, setSelectionStart] = useState<number | null>(null);
-    const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
+    const [selectionStart, setSelectionStart] = useState<{ ayahIndex: number; wordIndex: number } | null>(null);
+    const [selectionEnd, setSelectionEnd] = useState<{ ayahIndex: number; wordIndex: number } | null>(null);
+
+    // Timing cache for all ayahs in the current range
+    const [allTimings, setAllTimings] = useState<Map<number, VerseWords>>(new Map());
 
     // Player state
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -60,7 +63,7 @@ export function HifdhPage() {
     const [duration, setDuration] = useState(0);
     const [isLooping, setIsLooping] = useState(true);
     const [currentRepeat, setCurrentRepeat] = useState(1);
-    const [maxRepeats, setMaxRepeats] = useState(repeatCount);
+    const [maxRepeats, setMaxRepeats] = useState(1);
 
 
     // Word timings
@@ -129,9 +132,9 @@ export function HifdhPage() {
 
         if (surahChanged && surah && !isDeepLink) {
             fetchStart = 1;
-            fetchEnd = surah.numberOfAyahs;
+            fetchEnd = Math.min(5, surah.numberOfAyahs);
             setStartAyah(1);
-            setEndAyah(surah.numberOfAyahs);
+            setEndAyah(fetchEnd);
         }
 
         fetchSurah(selectedSurah).then(({ ayahs: allAyahs }) => {
@@ -146,7 +149,7 @@ export function HifdhPage() {
         });
     }, [selectedSurah, startAyah, endAyah, surahs]);
 
-    // Load audio and fetch timings
+    // Load audio and fetch current timings
     useEffect(() => {
         if (ayahs.length > 0 && audioRef.current) {
             const ayah = ayahs[currentAyahIndex];
@@ -154,7 +157,6 @@ export function HifdhPage() {
 
             const audioUrl = getAudioUrl(HIFDH_RECITER, ayah.number);
 
-            // Only update src if it changed to avoid restart loops
             if (audioRef.current.src !== audioUrl) {
                 audioRef.current.src = audioUrl;
                 audioRef.current.load();
@@ -163,26 +165,52 @@ export function HifdhPage() {
             audioRef.current.playbackRate = playbackSpeed;
             setActiveWordIndex(-1);
 
-            fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).then(setWordTimings);
+            fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).then(timings => {
+                if (timings) setWordTimings(timings);
+            });
         }
     }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah]);
 
+    // Pre-fetch all timings in the selected range for cross-verse loops
+    useEffect(() => {
+        if (ayahs.length > 0) {
+            const fetchAll = async () => {
+                const newMap = new Map<number, VerseWords>();
+                const results = await Promise.all(ayahs.map(async (ayah, idx) => {
+                    const timings = await fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID);
+                    return { idx, timings };
+                }));
+
+                results.forEach(({ idx, timings }) => {
+                    if (timings) newMap.set(idx, timings);
+                });
+
+                setAllTimings(newMap);
+            };
+            fetchAll();
+        }
+    }, [ayahs, selectedSurah]);
+
     // Handle Word Selection for Loop (disabled in Coach mode)
-    const handleWordClick = (index: number) => {
+    const handleWordClick = (aIdx: number, wIdx: number) => {
         if (coach.isCoachMode) {
-            // In coach mode, tapping a word jumps the ASR cursor
-            coach.coachJumpToWord(currentAyahIndex, index);
+            coach.coachJumpToWord(aIdx, wIdx);
             return;
         }
+
+        const clickPos = aIdx * 1000 + wIdx;
+
         if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
-            setSelectionStart(index);
+            setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
             setSelectionEnd(null);
         } else {
-            if (index < selectionStart) {
+            const startPos = selectionStart.ayahIndex * 1000 + selectionStart.wordIndex;
+
+            if (clickPos < startPos) {
                 setSelectionEnd(selectionStart);
-                setSelectionStart(index);
+                setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
             } else {
-                setSelectionEnd(index);
+                setSelectionEnd({ ayahIndex: aIdx, wordIndex: wIdx });
             }
         }
     };
@@ -195,9 +223,12 @@ export function HifdhPage() {
     // Poke hint — play first 2 words of current ayah
     const handlePoke = useCallback(() => {
         if (!wordTimings || !audioRef.current || wordTimings.words.length < 2) return;
+
+        // Ensure we are playing the current timings (from fetchWordTimings in the effect above)
         const startTime = wordTimings.words[0].timestampFrom / 1000;
         const endIdx = Math.min(1, wordTimings.words.length - 1);
         const endTime = wordTimings.words[endIdx].timestampTo / 1000;
+
         audioRef.current.currentTime = startTime;
         audioRef.current.play();
         setIsPlaying(true);
@@ -244,11 +275,25 @@ export function HifdhPage() {
     }, [coach.coachProgress, coach.isCoachMode, coach.allCoachWords.length, currentAyahIndex, ayahs.length]);
 
     const selectedTimeRange = useMemo(() => {
-        if (!wordTimings || selectionStart === null || selectionEnd === null) return null;
-        const startWord = wordTimings.words[selectionStart];
-        const endWord = wordTimings.words[selectionEnd];
-        return { start: startWord.timestampFrom / 1000, end: endWord.timestampTo / 1000 };
-    }, [wordTimings, selectionStart, selectionEnd]);
+        if (selectionStart === null || selectionEnd === null) return null;
+
+        const startT = allTimings.get(selectionStart.ayahIndex);
+        const endT = allTimings.get(selectionEnd.ayahIndex);
+
+        if (!startT || !endT) return null;
+
+        const startWord = startT.words[selectionStart.wordIndex];
+        const endWord = endT.words[selectionEnd.wordIndex];
+
+        if (!startWord || !endWord) return null;
+
+        return {
+            start: startWord.timestampFrom / 1000,
+            end: endWord.timestampTo / 1000,
+            startAyahIdx: selectionStart.ayahIndex,
+            endAyahIdx: selectionEnd.ayahIndex
+        };
+    }, [allTimings, selectionStart, selectionEnd]);
 
     // Player logic
     const handlePlayPause = () => {
@@ -323,28 +368,32 @@ export function HifdhPage() {
 
             // Loop logic with larger margin for iOS
             if (selectedTimeRange && isPlaying) {
-                // iOS needs much larger margin due to audio processing delays
                 const margin = isIOS ? 0.3 : 0.05;
-                const endWithMargin = selectedTimeRange.end - margin;
+                const isFinalVerseInRange = currentAyahIndex === selectedTimeRange.endAyahIdx;
+                const isStartVerseInRange = currentAyahIndex === selectedTimeRange.startAyahIdx;
 
-                if (audio.currentTime >= endWithMargin) {
+                // Handle end of range
+                if (isFinalVerseInRange && audio.currentTime >= (selectedTimeRange.end - margin)) {
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
 
-                        // iOS: pause-seek-play for reliable seeking
-                        if (isIOS) {
-                            audio.pause();
-                            audio.currentTime = selectedTimeRange.start;
-                            audio.play().catch(() => { });
-                        } else {
-                            audio.currentTime = selectedTimeRange.start;
-                        }
+                        // Restart at start vertex
+                        setCurrentAyahIndex(selectedTimeRange.startAyahIdx);
+                        // Seeking happens when effect re-triggers since currentAyahIndex change loads new audio
                     } else {
                         audio.pause();
                         setIsPlaying(false);
                         setCurrentRepeat(1);
                         return;
                     }
+                } else if (!isFinalVerseInRange && audio.currentTime >= (audio.duration - margin)) {
+                    // Navigate to next ayah normally within the range
+                    setCurrentAyahIndex(prev => prev + 1);
+                }
+
+                // Force seek on start verse if needed
+                if (isStartVerseInRange && audio.currentTime < selectedTimeRange.start) {
+                    audio.currentTime = selectedTimeRange.start;
                 }
             }
 
@@ -556,8 +605,10 @@ export function HifdhPage() {
                                 const wordsContent = isActive && wordTimings
                                     ? wordTimings.words.map((word, wIdx) => {
                                         const isSelected = selectionStart !== null && selectionEnd !== null &&
-                                            wIdx >= selectionStart && wIdx <= selectionEnd;
-                                        const isPartiallySelected = selectionStart !== null && wIdx === selectionStart && selectionEnd === null;
+                                            (aIdx * 1000 + wIdx) >= (selectionStart.ayahIndex * 1000 + selectionStart.wordIndex) &&
+                                            (aIdx * 1000 + wIdx) <= (selectionEnd.ayahIndex * 1000 + selectionEnd.wordIndex);
+                                        const isPartiallySelected = selectionStart !== null && selectionEnd === null &&
+                                            selectionStart.ayahIndex === aIdx && selectionStart.wordIndex === wIdx;
 
                                         let coachClass = '';
                                         let wordState: string | undefined;
@@ -584,13 +635,19 @@ export function HifdhPage() {
                                                     ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
                                                     ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
                                                 `}
-                                                onClick={() => handleWordClick(wIdx)}
+                                                onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
                                                 {showText ? word.text : '●●●'}{' '}
                                             </span>
                                         );
                                     })
                                     : ayah.text.split(/\s+/).filter(w => w.length > 0).map((wordText, wIdx) => {
+                                        const isSelected = selectionStart !== null && selectionEnd !== null &&
+                                            (aIdx * 1000 + wIdx) >= (selectionStart.ayahIndex * 1000 + selectionStart.wordIndex) &&
+                                            (aIdx * 1000 + wIdx) <= (selectionEnd.ayahIndex * 1000 + selectionEnd.wordIndex);
+                                        const isPartiallySelected = selectionStart !== null && selectionEnd === null &&
+                                            selectionStart.ayahIndex === aIdx && selectionStart.wordIndex === wIdx;
+
                                         let coachClass = '';
                                         let wordState: string | undefined;
                                         if (coach.isCoachMode) {
@@ -609,15 +666,13 @@ export function HifdhPage() {
                                             <span
                                                 key={`${aIdx}-${wIdx}`}
                                                 className={`hifdh-word hifdh-word--dimmed
+                                                    ${isSelected ? 'range-selected' : ''}
+                                                    ${isPartiallySelected ? 'single-selected' : ''}
                                                     ${coachClass}
                                                     ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
                                                     ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
                                                 `}
-                                                onClick={() => {
-                                                    setCurrentAyahIndex(aIdx);
-                                                    setCurrentRepeat(1);
-                                                    resetSelection();
-                                                }}
+                                                onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
                                                 {showText ? wordText : '●●●'}{' '}
                                             </span>
