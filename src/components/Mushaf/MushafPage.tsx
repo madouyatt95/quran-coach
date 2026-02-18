@@ -54,7 +54,7 @@ export function MushafPage() {
     } = useSettingsStore();
 
     const { toggleFavorite, isFavorite } = useFavoritesStore();
-    const { isActive: khatmActive, isPageValidated, togglePage: khatmTogglePage } = useKhatmStore();
+    const { isActive: khatmActive, isPageValidated, togglePage: khatmTogglePage, updateLastRead: khatmUpdateLastRead } = useKhatmStore();
 
     // ===== Local state =====
     const [isLoading, setIsLoading] = useState(true);
@@ -72,10 +72,14 @@ export function MushafPage() {
         console.log('[Quran Coach] v1.2.8 - Full Jump Protection Active');
     }, []);
 
-    // Auto-validate khatm page after 3s of reading
+    // Auto-validate khatm page after 3s + track reading position
     const khatmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
         if (!khatmActive) return;
+
+        // Always track the last reading position when khatm is active
+        khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
+
         if (isPageValidated(currentPage)) return;
 
         // Clear any pending timer for a previous page
@@ -91,7 +95,7 @@ export function MushafPage() {
         return () => {
             if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
         };
-    }, [currentPage, khatmActive]);
+    }, [currentPage, currentSurah, currentAyah, khatmActive]);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);

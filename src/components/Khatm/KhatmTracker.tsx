@@ -119,7 +119,7 @@ function SetupModal({ onClose }: { onClose: () => void }) {
 
 export function KhatmTracker() {
     const store = useKhatmStore();
-    const { goToPage } = useQuranStore();
+    const { goToAyah } = useQuranStore();
     const [showDetails, setShowDetails] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
 
@@ -133,11 +133,10 @@ export function KhatmTracker() {
     const motivation = getMotivation(progress.pct, todayRead, dailyGoal);
 
     const handleResumeKhatm = () => {
-        const nextPage = store.getNextPage();
+        // Resume at the exact last khatm reading position (stored separately from general reading)
+        const { lastKhatmSurah, lastKhatmAyah, lastKhatmPage } = store;
         sessionStorage.setItem('isSilentJump', 'true');
-        sessionStorage.setItem('scrollToPage', nextPage.toString());
-        // Jump to page without updating general progress bookmark
-        goToPage(nextPage, { silent: true });
+        goToAyah(lastKhatmSurah, lastKhatmAyah, lastKhatmPage, { silent: true });
         setShowDetails(false);
     };
 

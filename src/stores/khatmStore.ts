@@ -11,23 +11,29 @@ interface KhatmState {
     // Progress - stored as sorted array for persistence
     validatedPages: number[];
 
+    // Last reading position (dedicated to khatm, independent from quranStore)
+    lastKhatmSurah: number;
+    lastKhatmAyah: number;
+    lastKhatmPage: number;
+
     // Actions
     activate: (start: string, end: string) => void;
     deactivate: () => void;
     togglePage: (page: number) => void;
+    updateLastRead: (surah: number, ayah: number, page: number) => void;
     reset: () => void;
 
     // Computed helpers
     isPageValidated: (page: number) => boolean;
     getOverallProgress: () => { read: number; total: number; pct: number };
     getTotalDays: () => number;
-    getDayNumber: () => number;   // which day of the khatm we're on (1-based)
+    getDayNumber: () => number;
     getDaysRemaining: () => number;
-    getDailyGoal: () => number;   // adaptive pages/day
-    getTodayRange: () => { start: number; end: number }; // suggested pages for today
-    getTodayRead: () => number;   // pages read today (within today's range)
+    getDailyGoal: () => number;
+    getTodayRange: () => { start: number; end: number };
+    getTodayRead: () => number;
     getStreak: () => number;
-    getNextPage: () => number; // First unvalidated page
+    getNextPage: () => number;
 }
 
 function todayStr(): string {
@@ -47,12 +53,24 @@ export const useKhatmStore = create<KhatmState>()(
             startDate: '',
             endDate: '',
             validatedPages: [],
+            lastKhatmSurah: 1,
+            lastKhatmAyah: 1,
+            lastKhatmPage: 1,
 
             activate: (start, end) => set({
                 isActive: true,
                 startDate: start,
                 endDate: end,
                 validatedPages: [],
+                lastKhatmSurah: 1,
+                lastKhatmAyah: 1,
+                lastKhatmPage: 1,
+            }),
+
+            updateLastRead: (surah, ayah, page) => set({
+                lastKhatmSurah: surah,
+                lastKhatmAyah: ayah,
+                lastKhatmPage: page,
             }),
 
             deactivate: () => set({ isActive: false }),
@@ -69,7 +87,7 @@ export const useKhatmStore = create<KhatmState>()(
                 return { validatedPages: pages };
             }),
 
-            reset: () => set({ validatedPages: [], isActive: false, startDate: '', endDate: '' }),
+            reset: () => set({ validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1 }),
 
             isPageValidated: (page) => get().validatedPages.includes(page),
 
