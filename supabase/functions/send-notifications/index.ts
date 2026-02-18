@@ -458,18 +458,25 @@ serve(async (req) => {
                     }
                 }
 
-                // Akhir Isha: 1/3 of the night after Isha
+                // Akhir Isha: 1/3 of the night (Maghrib → Fajr)
+                // In fiqh, the "night" starts at Maghrib and ends at Fajr.
+                // The Ikhtiyârî time for Isha ends at 1/3 of this night.
                 if (sub.akhir_isha_enabled) {
-                    const nightDuration = (24 * 60 - ishaMin) + fajrMin;
-                    const akhirIshaMin = (ishaMin + Math.round(nightDuration / 3)) % (24 * 60);
+                    const nightDuration = (24 * 60 - maghribMin) + fajrMin;
+                    const akhirIshaMin = (maghribMin + Math.round(nightDuration / 3)) % (24 * 60);
                     let diff = currentMin - akhirIshaMin;
                     // Handle midnight wrap
                     if (diff > 720) diff -= 24 * 60;
                     if (diff < -720) diff += 24 * 60;
+
+                    console.log(`[Push] Sub ${sub.id}: Akhir Isha at ${Math.floor(akhirIshaMin / 60)}:${(akhirIshaMin % 60).toString().padStart(2, '0')}, current ${localHour}:${localMinute}, diff ${diff}`);
+
                     if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_akhir_isha)) {
+                        const akhirH = Math.floor(akhirIshaMin / 60);
+                        const akhirM = akhirIshaMin % 60;
                         const ok = await sendPush(sub, {
                             title: "🌙 Akhir Isha",
-                            body: "Le temps Ikhtiyârî (recommandé) pour l'Isha se termine. Priez avant qu'il ne soit trop tard !",
+                            body: `Le temps Ikhtiyârî pour l'Isha se termine à ${akhirH.toString().padStart(2, '0')}:${akhirM.toString().padStart(2, '0')}. Priez avant qu'il ne soit trop tard !`,
                             url: "/prieres",
                             tag: "akhir-isha",
                         });
