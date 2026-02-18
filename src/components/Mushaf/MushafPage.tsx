@@ -77,16 +77,14 @@ export function MushafPage() {
     useEffect(() => {
         if (!khatmActive) return;
 
-        // Always track the last reading position when khatm is active
-        khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
-
-        if (isPageValidated(currentPage)) return;
-
-        // Clear any pending timer for a previous page
+        // Clear any pending timer for a previous page/position
         if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
 
-        // Validate after 3 seconds of staying on this page
+        // Validate page AND track reading position after 3 seconds of staying on this page/verse
         khatmTimerRef.current = setTimeout(() => {
+            // Track the last reading position only after it's stable
+            khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
+
             if (!isPageValidated(currentPage)) {
                 khatmTogglePage(currentPage);
             }
