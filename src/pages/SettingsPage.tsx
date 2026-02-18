@@ -85,7 +85,6 @@ export function SettingsPage() {
                 }
             } catch (err: any) {
                 console.error('[Settings] Failed to enable notifications:', err);
-                alert(`Erreur lors de l'activation des notifications: ${err.message || err}`);
             }
             setSubscribing(false);
         } else {
@@ -119,10 +118,16 @@ export function SettingsPage() {
     };
 
     const handleTest = async () => {
-        const ok = await sendTestNotification();
-        if (ok) {
-            setTestSent(true);
-            setTimeout(() => setTestSent(false), 3000);
+        try {
+            const ok = await sendTestNotification();
+            if (ok) {
+                setTestSent(true);
+                setTimeout(() => setTestSent(false), 3000);
+            } else {
+                alert("Vérifiez que les notifications sont autorisées dans votre navigateur.");
+            }
+        } catch (err) {
+            console.error('[Settings] Test notification failed:', err);
         }
     };
 
