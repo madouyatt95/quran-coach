@@ -81,24 +81,13 @@ export function MushafPage() {
         khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
     }, [currentPage, currentSurah, currentAyah, khatmActive, isExploring]);
 
-    // Delayed Khatm Page Validation (3s stability check)
-    const khatmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Immediate Khatm Page Validation (Natural progression only)
     useEffect(() => {
-        if (!khatmActive || isPageValidated(currentPage)) return;
+        if (!khatmActive || isPageValidated(currentPage) || isExploring) return;
 
-        if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
-
-        khatmTimerRef.current = setTimeout(() => {
-            if (!isPageValidated(currentPage)) {
-                console.log(`[Khatm] Auto-validating page ${currentPage}`);
-                khatmTogglePage(currentPage);
-            }
-        }, 3000);
-
-        return () => {
-            if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
-        };
-    }, [currentPage, khatmActive, isPageValidated]);
+        console.log(`[Khatm] Auto-validating page ${currentPage}`);
+        khatmTogglePage(currentPage);
+    }, [currentPage, khatmActive, isPageValidated, isExploring]);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
