@@ -27,7 +27,7 @@ export function PlaylistDetailPage() {
         );
     }
 
-    const saveLastListened = (item: typeof playlist.items[0]) => {
+    const saveLastListened = (item: typeof playlist.items[0], index: number) => {
         setLastListened({
             reciterId: Number(item.reciterId || 0),
             reciterName: item.reciterName || playlist.name,
@@ -35,18 +35,20 @@ export function PlaylistDetailPage() {
             surahName: item.surahName,
             audioUrl: item.audioUrl || '',
             position: 0,
+            playlist: playlist.items,
+            playlistIndex: index,
         });
     };
 
     const handlePlayAll = () => {
         if (playlist.items.length === 0) return;
         setPlaylist(playlist.items, 0, playlist.items[0].reciterId || '1');
-        saveLastListened(playlist.items[0]);
+        saveLastListened(playlist.items[0], 0);
     };
 
     const handlePlayItem = (index: number) => {
         setPlaylist(playlist.items, index, playlist.items[index].reciterId || '1');
-        saveLastListened(playlist.items[index]);
+        saveLastListened(playlist.items[index], index);
     };
 
     const handleDeletePlaylist = () => {

@@ -80,7 +80,7 @@ export function ReciterDetailPage() {
         audio.play().catch(console.error);
         useAudioPlayerStore.setState({ isPlaying: true });
 
-        // Save last listened for resume feature (Initial entry)
+        // Save last listened for resume feature (with full playlist context)
         setLastListened({
             reciterId: Number(id),
             reciterName: reciter.name,
@@ -88,6 +88,8 @@ export function ReciterDetailPage() {
             surahName: SURAH_NAMES_FR[surah.id] || surah.name,
             audioUrl: playlistItems[0].audioUrl!,
             position: 0,
+            playlist: playlistItems,
+            playlistIndex: 0,
         });
     };
 

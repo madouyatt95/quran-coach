@@ -18,7 +18,7 @@ export function ListenPage() {
 
     const { playlists } = usePlaylistsStore();
     const { assets, fetchAssets, addPendingAsset } = useAssetsStore();
-    const { getAudioRef, currentSurahNumber } = useAudioPlayerStore();
+    const { getAudioRef } = useAudioPlayerStore();
 
     // Format seconds to mm:ss
     const formatPos = (sec: number) => {
@@ -27,17 +27,33 @@ export function ListenPage() {
         return `${m}:${s.toString().padStart(2, '0')}`;
     };
 
-    // Resume: restore audio to saved position
+    // Resume: restore audio + full playlist to saved position
     const handleResume = () => {
         if (!lastListened) return;
         const audio = getAudioRef();
-        // If the same surah is already loaded, just seek
-        if (currentSurahNumber === lastListened.surahNumber && audio.src) {
+
+        // Restore full playlist context if available
+        const savedPlaylist = lastListened.playlist;
+        const savedIndex = lastListened.playlistIndex ?? 0;
+
+        if (savedPlaylist && savedPlaylist.length > 0) {
+            // Full playlist resume: restore all items from saved index onward
+            useAudioPlayerStore.setState({
+                isPlaying: true,
+                currentSurahNumber: lastListened.surahNumber,
+                currentSurahName: lastListened.surahName,
+                currentSurahNameAr: savedPlaylist[savedIndex]?.surahNameAr || '',
+                playbackType: 'surah',
+                playlist: savedPlaylist,
+                currentPlaylistIndex: savedIndex,
+                reciterId: lastListened.reciterId.toString(),
+            });
+
+            audio.src = lastListened.audioUrl;
             audio.currentTime = lastListened.position;
             audio.play().catch(() => { });
-            useAudioPlayerStore.setState({ isPlaying: true });
         } else {
-            // Load the audio URL and seek to saved position
+            // Fallback: single track resume
             audio.src = lastListened.audioUrl;
             audio.currentTime = lastListened.position;
             audio.play().catch(() => { });
@@ -59,8 +75,6 @@ export function ListenPage() {
                 reciterId: lastListened.reciterId.toString(),
             });
         }
-        // Navigate to reciter page
-        navigate(`/listen/${lastListened.reciterId}`);
     };
 
     useEffect(() => {

@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { MP3QuranReciter } from '../lib/mp3QuranApi';
-import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
+import type { PlaylistItem } from '../types';
 
 interface LastListened {
     reciterId: number;
@@ -10,16 +9,19 @@ interface LastListened {
     surahName: string;
     audioUrl: string;
     position: number; // seconds
+    playlist?: PlaylistItem[]; // full playlist for resume
+    playlistIndex?: number; // current index in playlist
 }
+
+import type { MP3QuranReciter } from '../lib/mp3QuranApi';
+import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
 
 interface ListenState {
     reciters: MP3QuranReciter[];
-    featuredReciters: any[]; // For Hudhayfi x Leclerc
+    featuredReciters: any[];
     isLoading: boolean;
     error: string | null;
     searchQuery: string;
-
-    // Last listened (persisted)
     lastListened: LastListened | null;
 
     // Actions
@@ -29,6 +31,7 @@ interface ListenState {
     getPopularReciters: () => MP3QuranReciter[];
     setLastListened: (data: LastListened) => void;
     updateLastPosition: (position: number) => void;
+    updateLastPlaylistIndex: (index: number) => void;
     clearLastListened: () => void;
 }
 
@@ -110,6 +113,12 @@ export const useListenStore = create<ListenState>()(
             updateLastPosition: (position) => set((state) => ({
                 lastListened: state.lastListened
                     ? { ...state.lastListened, position }
+                    : null
+            })),
+
+            updateLastPlaylistIndex: (index) => set((state) => ({
+                lastListened: state.lastListened
+                    ? { ...state.lastListened, playlistIndex: index }
                     : null
             })),
 
