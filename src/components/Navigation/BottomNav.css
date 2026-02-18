@@ -37,12 +37,15 @@
     transition-duration: 0.1s;
 }
 
-/* ─── Emoji ───────────────────────────────────────────── */
-.bottom-nav__emoji {
-    font-size: 1.35rem;
+/* ─── Icon ──────────────────────────────────────────── */
+.bottom-nav__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: grayscale(0.7) opacity(0.6);
+    opacity: 0.5;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 /* ─── Label ───────────────────────────────────────────── */
@@ -68,10 +71,11 @@
     color: #e8d48b;
 }
 
-.bottom-nav__item.active .bottom-nav__emoji {
-    filter: grayscale(0) opacity(1);
+.bottom-nav__item.active .bottom-nav__icon {
+    opacity: 1;
+    color: #c9a84c;
     transform: scale(1.15) translateY(-2px);
-    text-shadow: 0 0 12px rgba(201, 168, 76, 0.4);
+    filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.5));
 }
 
 .bottom-nav__item.active .bottom-nav__label {

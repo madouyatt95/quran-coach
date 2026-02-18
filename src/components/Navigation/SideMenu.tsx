@@ -68,6 +68,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     };
 
     const menuItems = [
+        { path: '/quiz', emoji: '⚔️', label: 'Quiz', color: '#c9a84c' },
         { path: '/listen', emoji: '🎧', label: 'Écoute', color: '#4CAF50' },
         { path: '/hadiths', emoji: '📜', label: 'Hadiths', color: '#c9a84c' },
         { path: '/tafsir', emoji: '📚', label: 'Tafsir', color: '#2196F3' },

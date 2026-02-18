@@ -5,6 +5,9 @@
  * with fallback to Web Speech API (SpeechSynthesisUtterance).
  * 
  * Includes audio caching to avoid re-synthesis of the same text.
+ * 
+ * FIX: Uses a single shared audio element (ttsAudio) instead of creating
+ * new Audio() instances each time, preventing ghost audio that can't be stopped.
  */
 
 const TTS_SPACE_URL = 'https://ibrahimsalah-arabic-tts-spark.hf.space';
@@ -12,8 +15,18 @@ const TTS_SPACE_URL = 'https://ibrahimsalah-arabic-tts-spark.hf.space';
 // In-memory audio cache (text → ObjectURL)
 const audioCache = new Map<string, string>();
 
+// Single shared TTS audio element — prevents ghost audio instances
+let ttsAudio: HTMLAudioElement | null = null;
+
+function getTtsAudio(): HTMLAudioElement {
+    if (!ttsAudio) {
+        ttsAudio = new Audio();
+        ttsAudio.preload = 'none';
+    }
+    return ttsAudio;
+}
+
 // State
-let currentAudio: HTMLAudioElement | null = null;
 let _isPlaying = false;
 let _isLoading = false;
 let onStateChange: (() => void) | null = null;
@@ -47,11 +60,10 @@ export function isTtsLoading(): boolean {
  * Stop any currently playing TTS audio
  */
 export function stopTts() {
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio = null;
-    }
+    const audio = getTtsAudio();
+    audio.pause();
+    audio.src = '';
+    audio.currentTime = 0;
     window.speechSynthesis?.cancel();
     _isPlaying = false;
     _isLoading = false;
@@ -159,7 +171,7 @@ export async function playTts(
 ): Promise<void> {
     const rate = options?.rate ?? 1.0;
 
-    // Stop any current playback
+    // Stop any current playback (uses shared element — no ghost audio)
     stopTts();
 
     _isLoading = true;
@@ -179,18 +191,21 @@ export async function playTts(
     _isLoading = false;
     notifyChange();
 
-    // Play via Audio element if we have a URL
+    // Play via shared Audio element if we have a URL
     if (audioUrl) {
         return new Promise<void>((resolve) => {
-            const audio = new Audio(audioUrl);
+            const audio = getTtsAudio();
+            audio.src = audioUrl!;
             audio.playbackRate = rate;
-            currentAudio = audio;
             _isPlaying = true;
             notifyChange();
 
+            // Remove old listeners before adding new ones
+            audio.onended = null;
+            audio.onerror = null;
+
             audio.onended = () => {
                 _isPlaying = false;
-                currentAudio = null;
                 notifyChange();
                 options?.onEnd?.();
                 resolve();
@@ -198,7 +213,6 @@ export async function playTts(
 
             audio.onerror = () => {
                 _isPlaying = false;
-                currentAudio = null;
                 notifyChange();
                 // Fallback to Web Speech on audio error
                 speakWithWebSpeech(text, rate).then(() => {
@@ -210,7 +224,6 @@ export async function playTts(
             audio.play().catch(() => {
                 // Fallback to Web Speech
                 _isPlaying = false;
-                currentAudio = null;
                 speakWithWebSpeech(text, rate).then(() => {
                     options?.onEnd?.();
                     resolve();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useListenStore } from '../stores/listenStore';
 import { useAssetsStore } from '../stores/assetsStore';
@@ -25,6 +25,8 @@ export function ReciterDetailPage() {
     const [surahs, setSurahs] = useState<any[]>([]);
     const [loadingSurahs, setLoadingSurahs] = useState(true);
     const [playlistModalItem, setPlaylistModalItem] = useState<PlaylistItem | null>(null);
+    const positionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const { setLastListened, updateLastPosition } = useListenStore();
 
     // Find reciter
     const reciter = id === ARABIC_FRENCH_COLLECTION.id
@@ -78,7 +80,31 @@ export function ReciterDetailPage() {
         audio.src = playlistItems[0].audioUrl!;
         audio.play().catch(console.error);
         useAudioPlayerStore.setState({ isPlaying: true });
+
+        // Save last listened for resume feature
+        setLastListened({
+            reciterId: Number(id),
+            reciterName: reciter.name,
+            surahNumber: surah.id,
+            surahName: SURAH_NAMES_FR[surah.id] || surah.name,
+            audioUrl: playlistItems[0].audioUrl!,
+            position: 0,
+        });
+
+        // Track position every 5s
+        if (positionIntervalRef.current) clearInterval(positionIntervalRef.current);
+        positionIntervalRef.current = setInterval(() => {
+            const currentPos = useAudioPlayerStore.getState().currentTime;
+            if (currentPos > 0) updateLastPosition(currentPos);
+        }, 5000);
     };
+
+    // Cleanup position tracker on unmount
+    useEffect(() => {
+        return () => {
+            if (positionIntervalRef.current) clearInterval(positionIntervalRef.current);
+        };
+    }, []);
 
     return (
         <div className="reciter-detail-page">

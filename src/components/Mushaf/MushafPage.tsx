@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { useKhatmStore } from '../../stores/khatmStore';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
 // import { fetchTajweedPage } from '../../lib/tajweedService'; // Optional, might need surah version later
@@ -53,6 +54,7 @@ export function MushafPage() {
     } = useSettingsStore();
 
     const { toggleFavorite, isFavorite } = useFavoritesStore();
+    const { isActive: khatmActive, isPageValidated, togglePage: khatmTogglePage } = useKhatmStore();
 
     // ===== Local state =====
     const [isLoading, setIsLoading] = useState(true);
@@ -69,6 +71,27 @@ export function MushafPage() {
     useEffect(() => {
         console.log('[Quran Coach] v1.2.8 - Full Jump Protection Active');
     }, []);
+
+    // Auto-validate khatm page after 3s of reading
+    const khatmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(() => {
+        if (!khatmActive) return;
+        if (isPageValidated(currentPage)) return;
+
+        // Clear any pending timer for a previous page
+        if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
+
+        // Validate after 3 seconds of staying on this page
+        khatmTimerRef.current = setTimeout(() => {
+            if (!isPageValidated(currentPage)) {
+                khatmTogglePage(currentPage);
+            }
+        }, 3000);
+
+        return () => {
+            if (khatmTimerRef.current) clearTimeout(khatmTimerRef.current);
+        };
+    }, [currentPage, khatmActive]);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);

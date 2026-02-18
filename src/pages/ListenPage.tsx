@@ -4,19 +4,64 @@ import { useAssetsStore } from '../stores/assetsStore';
 import { searchWikimediaForReciter, getReciterColor } from '../lib/assetPipeline';
 import { useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
-import { ListMusic, ChevronLeft } from 'lucide-react';
+import { useAudioPlayerStore } from '../stores/audioPlayerStore';
+import { ListMusic, ChevronLeft, Play } from 'lucide-react';
 import './ListenPage.css';
 
 export function ListenPage() {
     const navigate = useNavigate();
     const {
         reciters, featuredReciters, isLoading, searchQuery,
-        fetchReciters, setSearchQuery, getFilteredReciters
+        fetchReciters, setSearchQuery, getFilteredReciters,
+        lastListened,
     } = useListenStore();
 
     const { playlists } = usePlaylistsStore();
-
     const { assets, fetchAssets, addPendingAsset } = useAssetsStore();
+    const { getAudioRef, currentSurahNumber } = useAudioPlayerStore();
+
+    // Format seconds to mm:ss
+    const formatPos = (sec: number) => {
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
+
+    // Resume: restore audio to saved position
+    const handleResume = () => {
+        if (!lastListened) return;
+        const audio = getAudioRef();
+        // If the same surah is already loaded, just seek
+        if (currentSurahNumber === lastListened.surahNumber && audio.src) {
+            audio.currentTime = lastListened.position;
+            audio.play().catch(() => { });
+            useAudioPlayerStore.setState({ isPlaying: true });
+        } else {
+            // Load the audio URL and seek to saved position
+            audio.src = lastListened.audioUrl;
+            audio.currentTime = lastListened.position;
+            audio.play().catch(() => { });
+            useAudioPlayerStore.setState({
+                isPlaying: true,
+                currentSurahNumber: lastListened.surahNumber,
+                currentSurahName: lastListened.surahName,
+                currentSurahNameAr: '',
+                playbackType: 'surah',
+                playlist: [{
+                    surahNumber: lastListened.surahNumber,
+                    surahName: lastListened.surahName,
+                    surahNameAr: '',
+                    totalAyahs: 0,
+                    audioUrl: lastListened.audioUrl,
+                    playbackType: 'surah',
+                }],
+                currentPlaylistIndex: 0,
+                reciterId: lastListened.reciterId.toString(),
+            });
+        }
+        // Navigate to reciter page
+        navigate(`/listen/${lastListened.reciterId}`);
+    };
 
     useEffect(() => {
         fetchReciters();
@@ -49,6 +94,28 @@ export function ListenPage() {
                 <h1>Écoute</h1>
                 <p>Découvrez les plus belles récitations du Noble Coran</p>
             </header>
+
+            {/* Resume Banner */}
+            {lastListened && (
+                <div className="listen-resume-banner">
+                    <div className="listen-resume-info">
+                        <span className="listen-resume-icon">🎧</span>
+                        <div className="listen-resume-text">
+                            <span className="listen-resume-reciter">{lastListened.reciterName}</span>
+                            <span className="listen-resume-surah">
+                                {lastListened.surahName}
+                                {lastListened.position > 5 && (
+                                    <span className="listen-resume-pos"> · {formatPos(lastListened.position)}</span>
+                                )}
+                            </span>
+                        </div>
+                    </div>
+                    <button className="listen-resume-btn" onClick={handleResume}>
+                        <Play size={16} />
+                        Reprendre
+                    </button>
+                </div>
+            )}
 
             <div className="listen-search">
                 <div className="audio-search-box">

@@ -1,6 +1,16 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { MP3QuranReciter } from '../lib/mp3QuranApi';
 import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
+
+interface LastListened {
+    reciterId: number;
+    reciterName: string;
+    surahNumber: number;
+    surahName: string;
+    audioUrl: string;
+    position: number; // seconds
+}
 
 interface ListenState {
     reciters: MP3QuranReciter[];
@@ -9,11 +19,17 @@ interface ListenState {
     error: string | null;
     searchQuery: string;
 
+    // Last listened (persisted)
+    lastListened: LastListened | null;
+
     // Actions
     fetchReciters: () => Promise<void>;
     setSearchQuery: (query: string) => void;
     getFilteredReciters: () => MP3QuranReciter[];
     getPopularReciters: () => MP3QuranReciter[];
+    setLastListened: (data: LastListened) => void;
+    updateLastPosition: (position: number) => void;
+    clearLastListened: () => void;
 }
 
 // List of popular reciter IDs verified for the French MP3Quran API
@@ -50,39 +66,58 @@ const POPULAR_NAME_OVERRIDES: Record<number, string> = {
     4: 'Abu Bakr Ash-Shatri',
 };
 
-export const useListenStore = create<ListenState>()((set, get) => ({
-    reciters: [],
-    featuredReciters: [ARABIC_FRENCH_COLLECTION],
-    isLoading: false,
-    error: null,
-    searchQuery: '',
+export const useListenStore = create<ListenState>()(
+    persist(
+        (set, get) => ({
+            reciters: [],
+            featuredReciters: [ARABIC_FRENCH_COLLECTION],
+            isLoading: false,
+            error: null,
+            searchQuery: '',
+            lastListened: null,
 
-    fetchReciters: async () => {
-        set({ isLoading: true, error: null });
-        try {
-            const reciters = await mp3QuranApi.getReciters('fr');
-            set({ reciters, isLoading: false });
-        } catch (error) {
-            set({ error: 'Failed to load reciters', isLoading: false });
+            fetchReciters: async () => {
+                set({ isLoading: true, error: null });
+                try {
+                    const reciters = await mp3QuranApi.getReciters('fr');
+                    set({ reciters, isLoading: false });
+                } catch (error) {
+                    set({ error: 'Failed to load reciters', isLoading: false });
+                }
+            },
+
+            setSearchQuery: (query: string) => {
+                set({ searchQuery: query });
+            },
+
+            getFilteredReciters: () => {
+                const { reciters, searchQuery } = get();
+                if (!searchQuery) return reciters;
+                return reciters.filter(r =>
+                    r.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            },
+
+            getPopularReciters: () => {
+                const { reciters } = get();
+                return reciters
+                    .filter(r => POPULAR_RECITER_IDS.includes(r.id))
+                    .map(r => POPULAR_NAME_OVERRIDES[r.id] ? { ...r, name: POPULAR_NAME_OVERRIDES[r.id] } : r);
+            },
+
+            setLastListened: (data) => set({ lastListened: data }),
+
+            updateLastPosition: (position) => set((state) => ({
+                lastListened: state.lastListened
+                    ? { ...state.lastListened, position }
+                    : null
+            })),
+
+            clearLastListened: () => set({ lastListened: null }),
+        }),
+        {
+            name: 'quran-coach-listen',
+            partialize: (state) => ({ lastListened: state.lastListened }),
         }
-    },
-
-    setSearchQuery: (query: string) => {
-        set({ searchQuery: query });
-    },
-
-    getFilteredReciters: () => {
-        const { reciters, searchQuery } = get();
-        if (!searchQuery) return reciters;
-        return reciters.filter(r =>
-            r.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    },
-
-    getPopularReciters: () => {
-        const { reciters } = get();
-        return reciters
-            .filter(r => POPULAR_RECITER_IDS.includes(r.id))
-            .map(r => POPULAR_NAME_OVERRIDES[r.id] ? { ...r, name: POPULAR_NAME_OVERRIDES[r.id] } : r);
-    }
-}));
+    )
+);

@@ -119,7 +119,7 @@ function SetupModal({ onClose }: { onClose: () => void }) {
 
 export function KhatmTracker() {
     const store = useKhatmStore();
-    const { isExploring, goToPage } = useQuranStore();
+    const { goToPage } = useQuranStore();
     const [showDetails, setShowDetails] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
 
@@ -204,14 +204,12 @@ export function KhatmTracker() {
                         </div>
 
                         <div className="khatm-actions-stack">
-                            {isExploring && (
-                                <button
-                                    className="khatm-btn khatm-btn-primary"
-                                    onClick={handleResumeKhatm}
-                                >
-                                    Reprendre mon Khatm
-                                </button>
-                            )}
+                            <button
+                                className="khatm-btn khatm-btn-primary"
+                                onClick={handleResumeKhatm}
+                            >
+                                Reprendre mon Khatm
+                            </button>
                             <div className="khatm-actions">
                                 <button className="khatm-btn khatm-btn-secondary" onClick={() => { setShowDetails(false); setShowSetup(true); }}>
                                     Modifier
