@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useListenStore } from '../stores/listenStore';
 import { useAssetsStore } from '../stores/assetsStore';
