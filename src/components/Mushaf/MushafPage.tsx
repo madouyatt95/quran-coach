@@ -201,15 +201,19 @@ export function MushafPage() {
         const tryScroll = () => {
             const el = document.querySelector(`[data-surah="${surah}"][data-ayah="${ayah}"]`);
             if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                console.log(`[Mushaf] Found scroll target S${surah}:A${ayah}, scrolling...`);
+                // Use 'auto' behavior for jumps to be more resilient than 'smooth'
+                el.scrollIntoView({ behavior: 'auto', block: 'center' });
                 el.classList.add('highlighted-from-shazam');
                 setTimeout(() => el.classList.remove('highlighted-from-shazam'), 3000);
-            } else if (attempts < 25) { // Increased persistence
+            } else if (attempts < 40) {
                 attempts++;
-                setTimeout(tryScroll, 200);
+                setTimeout(tryScroll, 100);
+            } else {
+                console.warn(`[Mushaf] Scroll target S${surah}:A${ayah} not found after 40 attempts`);
             }
         };
-        setTimeout(tryScroll, 200);
+        setTimeout(tryScroll, 50);
     }, []);
 
     const scrollToPageStart = useCallback((page: number) => {
@@ -217,13 +221,13 @@ export function MushafPage() {
         const tryScroll = () => {
             const el = document.querySelector(`[data-page="${page}"]`);
             if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else if (attempts < 15) {
+                el.scrollIntoView({ behavior: 'auto', block: 'start' });
+            } else if (attempts < 30) {
                 attempts++;
-                setTimeout(tryScroll, 150);
+                setTimeout(tryScroll, 100);
             }
         };
-        setTimeout(tryScroll, 200);
+        setTimeout(tryScroll, 50);
     }, []);
 
     useEffect(() => {
@@ -262,12 +266,19 @@ export function MushafPage() {
                     try {
                         const { surah, ayah } = JSON.parse(ayahScroll);
                         const idx = ayahs.findIndex(a => a.surah === surah && a.numberInSurah === ayah);
-                        if (idx !== -1) setRenderedCount(Math.max(20, idx + 10));
+                        if (idx !== -1) {
+                            setRenderedCount(Math.max(20, idx + 10));
+                            // Trigger scroll again now that we have data and updated count
+                            setTimeout(() => scrollToVerse(surah, ayah), 100);
+                        }
                     } catch (e) { /* ignore */ }
                 } else if (pageScroll) {
                     const p = parseInt(pageScroll);
                     const idx = ayahs.findIndex(a => a.page === p);
-                    if (idx !== -1) setRenderedCount(Math.max(20, idx + 10));
+                    if (idx !== -1) {
+                        setRenderedCount(Math.max(20, idx + 10));
+                        setTimeout(() => scrollToPageStart(p), 100);
+                    }
                 }
             }
 
