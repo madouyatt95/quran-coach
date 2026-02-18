@@ -105,10 +105,7 @@ export const useListenStore = create<ListenState>()(
                     .map(r => POPULAR_NAME_OVERRIDES[r.id] ? { ...r, name: POPULAR_NAME_OVERRIDES[r.id] } : r);
             },
 
-            setLastListened: (data) => {
-                console.log('[ListenStore] setLastListened:', data);
-                set({ lastListened: data });
-            },
+            setLastListened: (data) => set({ lastListened: data }),
 
             updateLastPosition: (position) => set((state) => ({
                 lastListened: state.lastListened

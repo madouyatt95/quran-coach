@@ -20,13 +20,6 @@ export function ListenPage() {
     const { assets, fetchAssets, addPendingAsset } = useAssetsStore();
     const { getAudioRef, currentSurahNumber } = useAudioPlayerStore();
 
-    // Debug: log lastListened state on mount
-    useEffect(() => {
-        const raw = localStorage.getItem('quran-coach-listen');
-        console.log('[ListenPage] localStorage raw:', raw);
-        console.log('[ListenPage] lastListened from store:', lastListened);
-    }, [lastListened]);
-
     // Format seconds to mm:ss
     const formatPos = (sec: number) => {
         const m = Math.floor(sec / 60);
@@ -101,12 +94,6 @@ export function ListenPage() {
                 <h1>Écoute</h1>
                 <p>Découvrez les plus belles récitations du Noble Coran</p>
             </header>
-
-            {/* DEBUG: temporary — will remove once confirmed working */}
-            <div style={{ background: '#333', color: '#0f0', fontSize: 10, padding: 8, margin: 8, borderRadius: 6, fontFamily: 'monospace', wordBreak: 'break-all' }}>
-                <div>lastListened: {lastListened ? `${lastListened.reciterName} / ${lastListened.surahName} @ ${Math.floor(lastListened.position)}s` : 'null'}</div>
-                <div>localStorage: {typeof window !== 'undefined' ? (localStorage.getItem('quran-coach-listen') ? '✅ exists' : '❌ empty') : '?'}</div>
-            </div>
 
             {/* Resume Banner */}
             {lastListened && (

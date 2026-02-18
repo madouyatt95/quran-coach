@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
+import { useListenStore } from '../stores/listenStore';
 import { ChevronLeft, Play, Trash2, ListMusic, Music, ChevronUp, ChevronDown } from 'lucide-react';
 import './PlaylistDetailPage.css';
 
@@ -9,6 +10,8 @@ export function PlaylistDetailPage() {
     const navigate = useNavigate();
     const { playlists, deletePlaylist, removeItemFromPlaylist, reorderItem } = usePlaylistsStore();
     const { setPlaylist, isPlaying, currentSurahNumber } = useAudioPlayerStore();
+
+    const { setLastListened } = useListenStore();
 
     const playlist = playlists.find(p => p.id === id);
 
@@ -24,13 +27,26 @@ export function PlaylistDetailPage() {
         );
     }
 
+    const saveLastListened = (item: typeof playlist.items[0]) => {
+        setLastListened({
+            reciterId: Number(item.reciterId || 0),
+            reciterName: item.reciterName || playlist.name,
+            surahNumber: item.surahNumber,
+            surahName: item.surahName,
+            audioUrl: item.audioUrl || '',
+            position: 0,
+        });
+    };
+
     const handlePlayAll = () => {
         if (playlist.items.length === 0) return;
         setPlaylist(playlist.items, 0, playlist.items[0].reciterId || '1');
+        saveLastListened(playlist.items[0]);
     };
 
     const handlePlayItem = (index: number) => {
         setPlaylist(playlist.items, index, playlist.items[index].reciterId || '1');
+        saveLastListened(playlist.items[index]);
     };
 
     const handleDeletePlaylist = () => {
