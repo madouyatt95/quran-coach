@@ -2,6 +2,10 @@
 // Supabase Edge Function: send-notifications
 // Sends Web Push notifications for prayer reminders, daily hadith, and quiz challenges.
 // Invoked by pg_cron every 30 minutes.
+//
+// FIX: Detection window widened to ±14 min (safe for 30-min cron without duplicates).
+//      Deduplication via last_notified_* columns — each notification type sent at most
+//      once per 20-minute cooldown window per subscription.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -13,6 +17,15 @@ const VAPID_SUBJECT = "mailto:contact@qurancoach.app";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+// ─── Detection window ───────────────────────────────
+// Cron runs every 30 min → window must be > 15 min to guarantee coverage.
+// We use 14 min on each side = 28-min window, safe with a 30-min cron.
+// Deduplication prevents double-sends when two cron ticks both see the window.
+const WINDOW_MIN = 14;
+
+// Cooldown: don't re-send the same notification type within this many minutes
+const COOLDOWN_MIN = 20;
 
 // ─── Base64 helpers ─────────────────────────────────
 function urlBase64Decode(str: string): Uint8Array {
@@ -41,9 +54,7 @@ async function createVapidJWT(endpoint: string): Promise<string> {
     const headerB64 = urlBase64Encode(new TextEncoder().encode(JSON.stringify(header)));
     const payloadB64 = urlBase64Encode(new TextEncoder().encode(JSON.stringify(payload)));
 
-    // Import VAPID private key for signing
     const privKeyBytes = urlBase64Decode(VAPID_PRIVATE_KEY);
-    // VAPID private key is raw 32-byte scalar, need to wrap in PKCS8
     const pkcs8 = wrapRawKeyInPKCS8(privKeyBytes);
     const privateKey = await crypto.subtle.importKey(
         "pkcs8", pkcs8,
@@ -59,9 +70,7 @@ async function createVapidJWT(endpoint: string): Promise<string> {
     return `${headerB64}.${payloadB64}.${urlBase64Encode(sigRaw)}`;
 }
 
-// Wrap a raw 32-byte P-256 private key scalar into PKCS8 DER format
 function wrapRawKeyInPKCS8(rawKey: Uint8Array): Uint8Array {
-    // PKCS8 header for P-256 ECDSA
     const header = new Uint8Array([
         0x30, 0x81, 0x87, 0x02, 0x01, 0x00, 0x30, 0x13,
         0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
@@ -69,13 +78,6 @@ function wrapRawKeyInPKCS8(rawKey: Uint8Array): Uint8Array {
         0x03, 0x01, 0x07, 0x04, 0x6d, 0x30, 0x6b, 0x02,
         0x01, 0x01, 0x04, 0x20
     ]);
-    const footer = new Uint8Array([
-        0xa1, 0x44, 0x03, 0x42, 0x00
-    ]);
-
-    // We need to append the public key, but for signing we can skip it
-    // Actually for PKCS8 import to work, we need a valid structure
-    // Simplified: just the private key without public key
     const result = new Uint8Array(header.length + rawKey.length);
     result.set(header);
     result.set(rawKey, header.length);
@@ -88,29 +90,24 @@ async function encryptPayload(
     p256dhKey: string,
     authSecret: string
 ): Promise<{ encrypted: Uint8Array; localPublicKey: Uint8Array }> {
-    // 1. Decode subscriber keys
     const subscriberPubBytes = urlBase64Decode(p256dhKey);
     const authBytes = urlBase64Decode(authSecret);
 
-    // 2. Import subscriber's public key
     const subscriberKey = await crypto.subtle.importKey(
         "raw", subscriberPubBytes,
         { name: "ECDH", namedCurve: "P-256" },
         false, []
     );
 
-    // 3. Generate ephemeral ECDH key pair
     const localKeyPair = await crypto.subtle.generateKey(
         { name: "ECDH", namedCurve: "P-256" },
         true, ["deriveBits"]
     );
 
-    // 4. Export local public key (65 bytes uncompressed)
     const localPubRaw = new Uint8Array(
         await crypto.subtle.exportKey("raw", localKeyPair.publicKey)
     );
 
-    // 5. ECDH shared secret
     const sharedSecret = new Uint8Array(
         await crypto.subtle.deriveBits(
             { name: "ECDH", public: subscriberKey },
@@ -118,20 +115,16 @@ async function encryptPayload(
         )
     );
 
-    // 6. HKDF to derive PRK (using auth as IKM salt)
-    // info = "WebPush: info\0" + subscriber_pub + local_pub
     const infoPrefix = new TextEncoder().encode("WebPush: info\0");
     const ikm_info = new Uint8Array(infoPrefix.length + 65 + 65);
     ikm_info.set(infoPrefix);
     ikm_info.set(subscriberPubBytes, infoPrefix.length);
     ikm_info.set(localPubRaw, infoPrefix.length + 65);
 
-    // Import shared secret as HKDF key material
     const ikmKey = await crypto.subtle.importKey(
         "raw", sharedSecret, "HKDF", false, ["deriveBits"]
     );
 
-    // Derive IKM (32 bytes)
     const ikm = new Uint8Array(
         await crypto.subtle.deriveBits(
             { name: "HKDF", salt: authBytes, info: ikm_info, hash: "SHA-256" },
@@ -139,10 +132,8 @@ async function encryptPayload(
         )
     );
 
-    // 7. Generate 16-byte salt
     const salt = crypto.getRandomValues(new Uint8Array(16));
 
-    // 8. Derive CEK and nonce from IKM using salt
     const prkKey = await crypto.subtle.importKey(
         "raw", ikm, "HKDF", false, ["deriveBits"]
     );
@@ -163,13 +154,11 @@ async function encryptPayload(
         )
     );
 
-    // 9. Pad the plaintext (add 0x02 delimiter + zero padding)
     const payloadBytes = new TextEncoder().encode(payload);
-    const padded = new Uint8Array(payloadBytes.length + 1); // minimal padding
+    const padded = new Uint8Array(payloadBytes.length + 1);
     padded.set(payloadBytes);
-    padded[payloadBytes.length] = 0x02; // delimiter
+    padded[payloadBytes.length] = 0x02;
 
-    // 10. AES-128-GCM encrypt
     const aesKey = await crypto.subtle.importKey(
         "raw", cek, "AES-GCM", false, ["encrypt"]
     );
@@ -180,21 +169,16 @@ async function encryptPayload(
         )
     );
 
-    // 11. Build aes128gcm body: salt(16) + rs(4) + idlen(1) + keyid(65) + ciphertext
     const rs = 4096;
     const header = new Uint8Array(16 + 4 + 1 + 65);
     header.set(salt, 0);
-    // Record size (4 bytes big-endian)
     header[16] = (rs >> 24) & 0xff;
     header[17] = (rs >> 16) & 0xff;
     header[18] = (rs >> 8) & 0xff;
     header[19] = rs & 0xff;
-    // Key ID length
     header[20] = 65;
-    // Key ID (local public key)
     header.set(localPubRaw, 21);
 
-    // Combine header + ciphertext
     const encrypted = new Uint8Array(header.length + ciphertext.length);
     encrypted.set(header);
     encrypted.set(ciphertext, header.length);
@@ -209,15 +193,12 @@ async function sendPush(
 ): Promise<boolean> {
     try {
         const payloadStr = JSON.stringify(payload);
-
-        // Encrypt the payload per RFC 8291
         const { encrypted } = await encryptPayload(
             payloadStr,
             subscription.keys_p256dh,
             subscription.keys_auth
         );
 
-        // Create VAPID JWT
         const jwt = await createVapidJWT(subscription.endpoint);
 
         const response = await fetch(subscription.endpoint, {
@@ -234,7 +215,6 @@ async function sendPush(
         });
 
         if (response.status === 410 || response.status === 404) {
-            // Subscription expired — remove it
             const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
             await supabase.from("push_subscriptions").delete().eq("endpoint", subscription.endpoint);
             console.log(`[Push] Cleaned expired: ${subscription.endpoint.slice(0, 50)}...`);
@@ -254,6 +234,15 @@ async function sendPush(
     }
 }
 
+// ─── Deduplication helper ───────────────────────────
+// Returns true if we should skip sending (already sent within cooldown window).
+function recentlySent(lastNotifiedIso: string | null): boolean {
+    if (!lastNotifiedIso) return false;
+    const lastMs = new Date(lastNotifiedIso).getTime();
+    const diffMin = (Date.now() - lastMs) / 60000;
+    return diffMin < COOLDOWN_MIN;
+}
+
 // ─── Prayer times from AlAdhan API ─────────────────
 interface PrayerTimesResponse {
     Fajr: string;
@@ -261,13 +250,13 @@ interface PrayerTimesResponse {
     Asr: string;
     Maghrib: string;
     Isha: string;
+    Sunrise?: string;
 }
 
-// In-memory cache: rounded coords → prayer times (valid for this invocation)
 const prayerTimesCache = new Map<string, PrayerTimesResponse | null>();
 
 function roundCoord(n: number): number {
-    return Math.round(n * 10) / 10; // ~11km precision — same city shares cache
+    return Math.round(n * 10) / 10;
 }
 
 async function fetchPrayerTimes(
@@ -275,12 +264,8 @@ async function fetchPrayerTimes(
     lng: number,
     settings: any = {}
 ): Promise<PrayerTimesResponse | null> {
-    const anglePreset = settings.anglePreset || "STANDARD_18_17";
-    const asrShadow = settings.asrShadow || 1; // 1=Shafi, 2=Hanafi
+    const asrShadow = settings.asrShadow || 1;
     const school = asrShadow === 2 ? 1 : 0;
-
-    // Map presets to AlAdhan custom angles if needed, or use "method=2" (ISNA) / "method=3" (MWL)
-    // For Quran Coach, we'll use method=99 (Custom) to be precise with user's angles
     const fAngle = settings.fajrAngle || 18;
     const iAngle = settings.ishaAngle || 17;
 
@@ -302,7 +287,6 @@ async function fetchPrayerTimes(
 
 // ─── Main handler ──────────────────────────────────
 serve(async (req) => {
-    // Allow only POST or cron invocations
     if (req.method !== "POST") {
         return new Response("Method not allowed", { status: 405 });
     }
@@ -328,48 +312,65 @@ serve(async (req) => {
         const localTime = new Date(now.toLocaleString("en-US", { timeZone: tz }));
         const localHour = localTime.getHours();
         const localMinute = localTime.getMinutes();
+        const currentMin = localHour * 60 + localMinute;
 
-        // ─── Hadith du jour (8:00 - 8:04) ────────
-        if (sub.hadith_enabled && localHour === 8 && localMinute < 5) {
-            const ok = await sendPush(sub, {
-                title: "📖 Hadith du Jour",
-                body: "Découvre le hadith du jour sur Quran Coach",
-                url: "/hadiths",
-                tag: "daily-hadith",
-            });
-            if (ok) sent++;
+        // Batch of dedup updates to apply after processing this subscription
+        const dedupUpdates: Record<string, string> = {};
+
+        // ─── Hadith du jour (target: 8:00) ────────────────
+        if (sub.hadith_enabled) {
+            const targetMin = 8 * 60; // 8:00
+            const diff = currentMin - targetMin;
+            // Within ±14 min of 8:00 AND not sent in last 20 min
+            if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_hadith)) {
+                const ok = await sendPush(sub, {
+                    title: "📖 Hadith du Jour",
+                    body: "Découvre le hadith du jour sur Quran Coach",
+                    url: "/hadiths",
+                    tag: "daily-hadith",
+                });
+                if (ok) {
+                    sent++;
+                    dedupUpdates.last_notified_hadith = now.toISOString();
+                }
+            }
         }
 
-        // ─── Défi quotidien (12:00 - 12:29) ──────
-        if (sub.challenge_enabled && localHour === 12 && localMinute < 5) {
-            const ok = await sendPush(sub, {
-                title: "🏆 Défi du Jour",
-                body: "Le quiz du jour t'attend ! Relève le défi et gagne des XP bonus.",
-                url: "/quiz",
-                tag: "daily-challenge",
-            });
-            if (ok) sent++;
+        // ─── Défi quotidien (target: 12:00) ──────────────
+        if (sub.challenge_enabled) {
+            const targetMin = 12 * 60; // 12:00
+            const diff = currentMin - targetMin;
+            if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_challenge)) {
+                const ok = await sendPush(sub, {
+                    title: "🏆 Défi du Jour",
+                    body: "Le quiz du jour t'attend ! Relève le défi et gagne des XP bonus.",
+                    url: "/quiz",
+                    tag: "daily-challenge",
+                });
+                if (ok) {
+                    sent++;
+                    dedupUpdates.last_notified_challenge = now.toISOString();
+                }
+            }
         }
 
-        // ─── Rappels de prière ────────────────────
+        // ─── Rappels de prière ────────────────────────────
         if (sub.latitude && sub.longitude) {
             const times = await fetchPrayerTimes(sub.latitude, sub.longitude, sub.prayer_settings);
             if (times) {
-                // Helper: parse "HH:MM" → minutes from midnight
                 const toMin = (t: string) => {
                     const [h, m] = t.split(":").map(Number);
                     return h * 60 + m;
                 };
-                const currentMin = localHour * 60 + localMinute;
 
                 // ── Classic prayer reminders (X minutes before) ──
                 if (sub.prayer_enabled) {
                     const prayers = [
-                        { key: "Fajr", name: "Fajr", nameAr: "الفجر", emoji: "🌅" },
-                        { key: "Dhuhr", name: "Dhouhr", nameAr: "الظهر", emoji: "☀️" },
-                        { key: "Asr", name: "Asr", nameAr: "العصر", emoji: "🌤️" },
-                        { key: "Maghrib", name: "Maghrib", nameAr: "المغرب", emoji: "🌅" },
-                        { key: "Isha", name: "Ishaa", nameAr: "العشاء", emoji: "🌙" },
+                        { key: "Fajr", name: "Fajr", nameAr: "الفجر", emoji: "🌅", dedupKey: "last_notified_fajr" },
+                        { key: "Dhuhr", name: "Dhouhr", nameAr: "الظهر", emoji: "☀️", dedupKey: "last_notified_dhuhr" },
+                        { key: "Asr", name: "Asr", nameAr: "العصر", emoji: "🌤️", dedupKey: "last_notified_asr" },
+                        { key: "Maghrib", name: "Maghrib", nameAr: "المغرب", emoji: "🌅", dedupKey: "last_notified_maghrib" },
+                        { key: "Isha", name: "Ishaa", nameAr: "العشاء", emoji: "🌙", dedupKey: "last_notified_isha" },
                     ];
 
                     const globalMinutesBefore = sub.prayer_minutes_before || 10;
@@ -381,23 +382,21 @@ serve(async (req) => {
                         const rawTimeStr = times[prayer.key as keyof PrayerTimesResponse];
                         if (!rawTimeStr) continue;
 
-                        let prayerMin = toMin(rawTimeStr);
-
-                        // Apply manual adjustments from settings
+                        let prayerMin = toMin(rawTimeStr as string);
                         const adj = adjustments[prayer.key.toLowerCase()] || 0;
                         prayerMin += adj;
 
-                        const diff = prayerMin - currentMin;
-
-                        // Use specific minutes for this prayer if configured, else global fallback
                         const minutesBefore = config[prayer.key.toLowerCase()] ?? globalMinutesBefore;
 
-                        // Notify if prayer is within window
-                        if (diff >= minutesBefore - 3 && diff <= minutesBefore + 3) {
-                            // Format adjusted time for the message
+                        // Target moment = prayerMin - minutesBefore
+                        const targetMin = prayerMin - minutesBefore;
+                        const diff = currentMin - targetMin;
+
+                        // Within ±WINDOW_MIN of target AND not recently sent
+                        if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub[prayer.dedupKey])) {
                             const adjH = Math.floor((prayerMin % 1440) / 60);
                             const adjM = Math.floor(prayerMin % 60);
-                            const timeStr = `${adjH.toString().padStart(2, '0')}:${adjM.toString().padStart(2, '0')}`;
+                            const timeStr = `${adjH.toString().padStart(2, "0")}:${adjM.toString().padStart(2, "0")}`;
 
                             const ok = await sendPush(sub, {
                                 title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
@@ -405,18 +404,16 @@ serve(async (req) => {
                                 url: "/prieres",
                                 tag: `prayer-${prayer.key}`,
                             });
-                            if (ok) sent++;
+                            if (ok) {
+                                sent++;
+                                dedupUpdates[prayer.dedupKey] = now.toISOString();
+                            }
                         }
                     }
                 }
 
-                // ── Advanced Fiqh notifications (Darûrî / Akhir Isha) ──
-                // Approximations basées sur les horaires AlAdhan:
-                // - Darûrî Sobh ≈ 20 min avant le lever du soleil (Sunrise)
-                // - Darûrî Asr ≈ mi-chemin entre Asr et Maghrib
-                // - Akhir Isha ≈ 1/3 de la nuit après Isha
-
-                const sunriseStr = (times as any)["Sunrise"];
+                // ── Advanced Fiqh notifications ──────────────────
+                const sunriseStr = times["Sunrise"];
                 const fajrMin = toMin(times.Fajr);
                 const asrMin = toMin(times.Asr);
                 const maghribMin = toMin(times.Maghrib);
@@ -426,52 +423,69 @@ serve(async (req) => {
                 if (sub.daruri_sobh_enabled && sunriseStr) {
                     const sunriseMin = toMin(sunriseStr);
                     const daruriSobhMin = sunriseMin - 20;
-                    const diff = daruriSobhMin - currentMin;
-                    if (diff >= -3 && diff <= 3) {
+                    const diff = currentMin - daruriSobhMin;
+                    if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_daruri_sobh)) {
                         const ok = await sendPush(sub, {
                             title: "⚠️ Temps Darûrî Sobh",
                             body: "Le temps Ikhtiyârî (recommandé) pour le Sobh est terminé. Priez avant le lever du soleil !",
                             url: "/prieres",
                             tag: "daruri-sobh",
                         });
-                        if (ok) sent++;
+                        if (ok) {
+                            sent++;
+                            dedupUpdates.last_notified_daruri_sobh = now.toISOString();
+                        }
                     }
                 }
 
                 // Darûrî Asr: midpoint between Asr and Maghrib
                 if (sub.daruri_asr_enabled) {
                     const daruriAsrMin = Math.round((asrMin + maghribMin) / 2);
-                    const diff = daruriAsrMin - currentMin;
-                    if (diff >= -3 && diff <= 3) {
+                    const diff = currentMin - daruriAsrMin;
+                    if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_daruri_asr)) {
                         const ok = await sendPush(sub, {
                             title: "⚠️ Temps Darûrî Asr",
                             body: "Le temps Ikhtiyârî (recommandé) pour l'Asr est terminé. Priez avant le Maghrib !",
                             url: "/prieres",
                             tag: "daruri-asr",
                         });
-                        if (ok) sent++;
+                        if (ok) {
+                            sent++;
+                            dedupUpdates.last_notified_daruri_asr = now.toISOString();
+                        }
                     }
                 }
 
                 // Akhir Isha: 1/3 of the night after Isha
                 if (sub.akhir_isha_enabled) {
-                    // Night duration = Fajr(tomorrow) - Isha ≈ simplified as (24*60 - Isha + Fajr)
                     const nightDuration = (24 * 60 - ishaMin) + fajrMin;
                     const akhirIshaMin = (ishaMin + Math.round(nightDuration / 3)) % (24 * 60);
-                    // Handle midnight wrap: check raw diff
-                    let diff = akhirIshaMin - currentMin;
-                    if (diff < -720) diff += 24 * 60; // wrap around midnight
-                    if (diff >= -3 && diff <= 3) {
+                    let diff = currentMin - akhirIshaMin;
+                    // Handle midnight wrap
+                    if (diff > 720) diff -= 24 * 60;
+                    if (diff < -720) diff += 24 * 60;
+                    if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_akhir_isha)) {
                         const ok = await sendPush(sub, {
                             title: "🌙 Akhir Isha",
                             body: "Le temps Ikhtiyârî (recommandé) pour l'Isha se termine. Priez avant qu'il ne soit trop tard !",
                             url: "/prieres",
                             tag: "akhir-isha",
                         });
-                        if (ok) sent++;
+                        if (ok) {
+                            sent++;
+                            dedupUpdates.last_notified_akhir_isha = now.toISOString();
+                        }
                     }
                 }
             }
+        }
+
+        // ─── Apply dedup updates ──────────────────────────
+        if (Object.keys(dedupUpdates).length > 0) {
+            await supabase
+                .from("push_subscriptions")
+                .update({ ...dedupUpdates, updated_at: now.toISOString() })
+                .eq("endpoint", sub.endpoint);
         }
     }
 
