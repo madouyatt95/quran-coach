@@ -65,6 +65,9 @@ export function HifdhPage() {
     const [currentRepeat, setCurrentRepeat] = useState(1);
     const [maxRepeats, setMaxRepeats] = useState(1);
 
+    // Seeking state for cross-audio transitions
+    const [seekOnLoad, setSeekOnLoad] = useState<number | null>(null);
+
 
     // Word timings
     const [wordTimings, setWordTimings] = useState<VerseWords | null>(null);
@@ -156,20 +159,39 @@ export function HifdhPage() {
             if (!ayah) return;
 
             const audioUrl = getAudioUrl(HIFDH_RECITER, ayah.number);
+            const audio = audioRef.current;
 
-            if (audioRef.current.src !== audioUrl) {
-                audioRef.current.src = audioUrl;
-                audioRef.current.load();
+            const handleMetadata = () => {
+                if (seekOnLoad !== null) {
+                    audio.currentTime = seekOnLoad;
+                    setSeekOnLoad(null);
+                }
+                if (isPlaying) {
+                    audio.play().catch(() => setIsPlaying(false));
+                }
+            };
+
+            if (audio.src !== audioUrl) {
+                audio.src = audioUrl;
+                audio.load();
+                audio.addEventListener('loadedmetadata', handleMetadata, { once: true });
+            } else {
+                // If src is same, just handle seek/play immediately
+                handleMetadata();
             }
 
-            audioRef.current.playbackRate = playbackSpeed;
+            audio.playbackRate = playbackSpeed;
             setActiveWordIndex(-1);
 
             fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).then(timings => {
                 if (timings) setWordTimings(timings);
             });
+
+            return () => {
+                audio.removeEventListener('loadedmetadata', handleMetadata);
+            };
         }
-    }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah]);
+    }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah, isPlaying, seekOnLoad]);
 
     // Pre-fetch all timings in the selected range for cross-verse loops
     useEffect(() => {
@@ -192,25 +214,53 @@ export function HifdhPage() {
     }, [ayahs, selectedSurah]);
 
     // Handle Word Selection for Loop (disabled in Coach mode)
-    const handleWordClick = (aIdx: number, wIdx: number) => {
+    const handleWordClick = async (aIdx: number, wIdx: number) => {
         if (coach.isCoachMode) {
             coach.coachJumpToWord(aIdx, wIdx);
             return;
         }
 
         const clickPos = aIdx * 1000 + wIdx;
+        const clickedAyah = ayahs[aIdx];
+
+        // Fetch timings for the clicked ayah if not already cached
+        let timings: VerseWords | null | undefined = allTimings.get(aIdx);
+        if (!timings) {
+            const fetched = await fetchWordTimings(selectedSurah, clickedAyah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID);
+            if (fetched) {
+                setAllTimings(prev => new Map(prev).set(aIdx, fetched));
+                timings = fetched;
+            }
+        }
+
+        if (!timings) return;
+
+        const word = timings.words[wIdx];
+        const startTime = word.timestampFrom / 1000;
 
         if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
+            // Start of a new selection OR single word playback
             setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
             setSelectionEnd(null);
+
+            // Immediate Playback like Mushaf page
+            setCurrentAyahIndex(aIdx);
+            setSeekOnLoad(startTime);
+            setIsPlaying(true);
         } else {
+            // Completing a selection range
             const startPos = selectionStart.ayahIndex * 1000 + selectionStart.wordIndex;
 
             if (clickPos < startPos) {
                 setSelectionEnd(selectionStart);
                 setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
+
+                // Play from the new start
+                setCurrentAyahIndex(aIdx);
+                setSeekOnLoad(startTime);
             } else {
                 setSelectionEnd({ ayahIndex: aIdx, wordIndex: wIdx });
+                // Keep playing from current position
             }
         }
     };
@@ -377,9 +427,9 @@ export function HifdhPage() {
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
 
-                        // Restart at start vertex
+                        // Restart at start position
                         setCurrentAyahIndex(selectedTimeRange.startAyahIdx);
-                        // Seeking happens when effect re-triggers since currentAyahIndex change loads new audio
+                        setSeekOnLoad(selectedTimeRange.start);
                     } else {
                         audio.pause();
                         setIsPlaying(false);
@@ -389,10 +439,11 @@ export function HifdhPage() {
                 } else if (!isFinalVerseInRange && audio.currentTime >= (audio.duration - margin)) {
                     // Navigate to next ayah normally within the range
                     setCurrentAyahIndex(prev => prev + 1);
+                    setSeekOnLoad(0); // Ensure next start from 0
                 }
 
-                // Force seek on start verse if needed
-                if (isStartVerseInRange && audio.currentTime < selectedTimeRange.start) {
+                // Force seek on start verse if needed (extra safety)
+                if (isStartVerseInRange && seekOnLoad === null && audio.currentTime < selectedTimeRange.start - 0.2) {
                     audio.currentTime = selectedTimeRange.start;
                 }
             }
