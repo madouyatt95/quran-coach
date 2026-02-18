@@ -9,6 +9,7 @@ import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import { ANGLE_PRESETS, DEFAULT_PRAYER_SETTINGS, type AnglePreset, type HighLatMode, SALAT_KEYS, PRAYER_NAMES_FR } from '../lib/prayerEngine';
 import { updatePushPreferences } from '../lib/notificationService';
+import { resolveCoords } from '../lib/locationService';
 import './PrayerSettingsPage.css';
 
 const HIGH_LAT_OPTIONS: { value: HighLatMode; label: string }[] = [
@@ -38,12 +39,24 @@ export function PrayerSettingsPage() {
     // Sync settings to Supabase when they change (if notifications enabled)
     useEffect(() => {
         if (notifStore.enabled) {
-            updatePushPreferences({
-                prayerSettings: s,
-                prayerMinutesConfig: nc,
-                latitude: store.lat || undefined,
-                longitude: store.lng || undefined
-            }).catch(err => console.error('[PrayerSettings] Sync error:', err));
+            const sync = async () => {
+                let currentLat = store.lat;
+                let currentLng = store.lng;
+
+                if (currentLat == null || currentLng == null) {
+                    const resolved = await resolveCoords();
+                    currentLat = resolved.lat;
+                    currentLng = resolved.lng;
+                }
+
+                await updatePushPreferences({
+                    prayerSettings: s,
+                    prayerMinutesConfig: nc,
+                    latitude: currentLat || undefined,
+                    longitude: currentLng || undefined
+                });
+            };
+            sync().catch(err => console.error('[PrayerSettings] Sync error:', err));
         }
     }, [s, nc, notifStore.enabled, store.lat, store.lng]);
 

@@ -9,6 +9,7 @@ import {
     updatePushPreferences,
 } from '../lib/notificationService';
 import { usePrayerStore } from '../stores/prayerStore';
+import { resolveCoords } from '../lib/locationService';
 import type { Theme, ArabicFontSize } from '../types';
 import { Stars, Bell, BellOff } from 'lucide-react';
 import './SettingsPage.css';
@@ -70,6 +71,9 @@ export function SettingsPage() {
                     return;
                 }
                 if (perm === 'granted') {
+                    // Force resolve coords if missing
+                    const coords = await resolveCoords();
+
                     const ok = await subscribeToPush({
                         prayerEnabled: notif.prayerEnabled,
                         prayerMinutesBefore: notif.prayerMinutesBefore,
@@ -79,8 +83,8 @@ export function SettingsPage() {
                         daruriSobhEnabled: notif.daruriSobhEnabled,
                         daruriAsrEnabled: notif.daruriAsrEnabled,
                         akhirIshaEnabled: notif.akhirIshaEnabled,
-                        latitude: prayerStore.lat || undefined,
-                        longitude: prayerStore.lng || undefined,
+                        latitude: coords.lat,
+                        longitude: coords.lng,
                         prayerSettings: prayerStore.settings,
                     });
                     if (ok) {

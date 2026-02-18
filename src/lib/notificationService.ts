@@ -73,29 +73,29 @@ export async function subscribeToPush(options: {
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         // Upsert to Supabase
+        const data: any = {
+            endpoint: subJson.endpoint,
+            keys_p256dh: subJson.keys.p256dh,
+            keys_auth: subJson.keys.auth,
+            prayer_enabled: options.prayerEnabled,
+            prayer_minutes_before: options.prayerMinutesBefore,
+            prayer_minutes_config: options.prayerMinutesConfig,
+            hadith_enabled: options.hadithEnabled,
+            challenge_enabled: options.challengeEnabled,
+            daruri_sobh_enabled: options.daruriSobhEnabled ?? false,
+            daruri_asr_enabled: options.daruriAsrEnabled ?? false,
+            akhir_isha_enabled: options.akhirIshaEnabled ?? false,
+            prayer_settings: options.prayerSettings || {},
+            timezone,
+            updated_at: new Date().toISOString(),
+        };
+
+        if (options.latitude !== undefined) data.latitude = options.latitude;
+        if (options.longitude !== undefined) data.longitude = options.longitude;
+
         const { error } = await supabase
             .from('push_subscriptions')
-            .upsert(
-                {
-                    endpoint: subJson.endpoint,
-                    keys_p256dh: subJson.keys.p256dh,
-                    keys_auth: subJson.keys.auth,
-                    prayer_enabled: options.prayerEnabled,
-                    prayer_minutes_before: options.prayerMinutesBefore,
-                    prayer_minutes_config: options.prayerMinutesConfig,
-                    hadith_enabled: options.hadithEnabled,
-                    challenge_enabled: options.challengeEnabled,
-                    daruri_sobh_enabled: options.daruriSobhEnabled ?? false,
-                    daruri_asr_enabled: options.daruriAsrEnabled ?? false,
-                    akhir_isha_enabled: options.akhirIshaEnabled ?? false,
-                    latitude: options.latitude || null,
-                    longitude: options.longitude || null,
-                    prayer_settings: options.prayerSettings || {},
-                    timezone,
-                    updated_at: new Date().toISOString(),
-                },
-                { onConflict: 'endpoint' }
-            );
+            .upsert(data, { onConflict: 'endpoint' });
 
         if (error) {
             console.error('[Push] Failed to save subscription:', error);
