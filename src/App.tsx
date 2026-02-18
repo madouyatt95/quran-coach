@@ -13,6 +13,7 @@ import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
 import { updateLastVisit } from './lib/notificationService';
+import { trackAppOpen, trackPageView } from './lib/analyticsService';
 import './index.css';
 
 // Lazy-loaded pages (code splitting)
@@ -66,6 +67,7 @@ function AppContent() {
   // Track last visit for inactivity detection
   useEffect(() => {
     updateLastVisit();
+    trackAppOpen();
   }, []);
 
   // Unlock audio on first user interaction (critical for iOS PWA)
@@ -132,6 +134,11 @@ function AppContent() {
 
   const location = useLocation();
   const isLecturePage = location.pathname === '/read';
+
+  // Track page views on route changes
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
 
   return (
     <>

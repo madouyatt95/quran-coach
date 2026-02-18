@@ -8,6 +8,7 @@ import { useQuranStore } from '../stores/quranStore';
 import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
 import { SURAH_NAMES_FR } from '../components/Mushaf/mushafConstants';
 import { getReciterColor } from '../lib/assetPipeline';
+import { trackAudioPlay } from '../lib/analyticsService';
 import { ChevronLeft, Play, Download, CheckCircle2, Clock, Plus } from 'lucide-react';
 import { AddToPlaylistModal } from '../components/Playlist/AddToPlaylistModal';
 import type { PlaylistItem } from '../types';
@@ -91,6 +92,8 @@ export function ReciterDetailPage() {
             playlist: playlistItems,
             playlistIndex: 0,
         });
+
+        trackAudioPlay(surah.id, SURAH_NAMES_FR[surah.id] || surah.name, reciter.name, 'reciter');
     };
 
     return (

@@ -5,6 +5,7 @@ import { searchWikimediaForReciter, getReciterColor } from '../lib/assetPipeline
 import { useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
+import { trackAudioResume } from '../lib/analyticsService';
 import { ListMusic, ChevronLeft, Play } from 'lucide-react';
 import './ListenPage.css';
 
@@ -31,6 +32,8 @@ export function ListenPage() {
     const handleResume = () => {
         if (!lastListened) return;
         const audio = getAudioRef();
+
+        trackAudioResume(lastListened.surahNumber, lastListened.position);
 
         // Restore full playlist context if available
         const savedPlaylist = lastListened.playlist;

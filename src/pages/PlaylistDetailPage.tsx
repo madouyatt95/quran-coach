@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { useListenStore } from '../stores/listenStore';
+import { trackAudioPlay } from '../lib/analyticsService';
 import { ChevronLeft, Play, Trash2, ListMusic, Music, ChevronUp, ChevronDown } from 'lucide-react';
 import './PlaylistDetailPage.css';
 
@@ -44,11 +45,14 @@ export function PlaylistDetailPage() {
         if (playlist.items.length === 0) return;
         setPlaylist(playlist.items, 0, playlist.items[0].reciterId || '1');
         saveLastListened(playlist.items[0], 0);
+        trackAudioPlay(playlist.items[0].surahNumber, playlist.items[0].surahName, playlist.items[0].reciterName || '', 'playlist');
     };
 
     const handlePlayItem = (index: number) => {
-        setPlaylist(playlist.items, index, playlist.items[index].reciterId || '1');
-        saveLastListened(playlist.items[index], index);
+        const item = playlist.items[index];
+        setPlaylist(playlist.items, index, item.reciterId || '1');
+        saveLastListened(item, index);
+        trackAudioPlay(item.surahNumber, item.surahName, item.reciterName || '', 'playlist');
     };
 
     const handleDeletePlaylist = () => {
