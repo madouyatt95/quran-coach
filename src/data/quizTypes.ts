@@ -39,7 +39,10 @@ export type QuizThemeId =
     | 'stories'
     | 'geography'
     | 'virtues'
-    | 'women';
+    | 'women'
+    | 'pillars'
+    | 'hadiths'
+    | 'culture';
 
 export type QuizDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -256,6 +259,30 @@ export const QUIZ_THEMES: QuizTheme[] = [
         emoji: '🧕',
         color: '#AD1457',
         gradient: 'linear-gradient(135deg, #880e4f, #AD1457)',
+    },
+    {
+        id: 'pillars',
+        name: 'Piliers & Pratique',
+        nameAr: 'أركان الإسلام',
+        emoji: '🕋',
+        color: '#1B5E20',
+        gradient: 'linear-gradient(135deg, #0d3b0d, #2E7D32)',
+    },
+    {
+        id: 'hadiths',
+        name: 'Hadiths Célèbres',
+        nameAr: 'أحاديث مشهورة',
+        emoji: '📿',
+        color: '#BF360C',
+        gradient: 'linear-gradient(135deg, #7f1d00, #BF360C)',
+    },
+    {
+        id: 'culture',
+        name: 'Culture Islamique',
+        nameAr: 'الثقافة الإسلامية',
+        emoji: '🌙',
+        color: '#F9A825',
+        gradient: 'linear-gradient(135deg, #e65100, #F9A825)',
     },
 ];
 
