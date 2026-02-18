@@ -56,7 +56,7 @@ interface QuizState {
     createDuel: (customThemes?: QuizThemeId[]) => Promise<string>;
     joinDuel: (code: string) => Promise<boolean>;
     submitAnswer: (chosenIndex: number) => void;
-    nextQuestion: () => void;
+    nextQuestion: () => Promise<void>;
     applyPowerUp: (id: PowerUpId) => void;
     nextRound: () => void;
     selectRandomSolo: () => void;
@@ -666,7 +666,19 @@ export const useQuizStore = create<QuizState>()(
                         .from('quiz_matches')
                         .update(updateField)
                         .eq('id', matchId)
-                        .then();
+                        .then(async () => {
+                            // Fetch opponent's latest score (Realtime fallback)
+                            const { data: m } = await supabase
+                                .from('quiz_matches')
+                                .select('player1_score,player1_answers,player2_score,player2_answers')
+                                .eq('id', matchId)
+                                .single();
+                            if (m) {
+                                const oppScore = isPlayer1 ? (m.player2_score || 0) : (m.player1_score || 0);
+                                const oppAnswers = isPlayer1 ? (m.player2_answers || []) : (m.player1_answers || []);
+                                set({ opponentScore: oppScore, opponentAnswers: oppAnswers });
+                            }
+                        });
                 }
 
                 // In sprint, auto-advance to next question
@@ -681,9 +693,9 @@ export const useQuizStore = create<QuizState>()(
                 }
             },
 
-            nextQuestion: () => {
+            nextQuestion: async () => {
                 const state = get();
-                const { currentIndex, questions, mode, score, totalPlayed, totalWins, opponentScore, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest, duelRound, duelRounds, duelRoundScores } = state;
+                const { currentIndex, questions, mode, score, totalPlayed, totalWins, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest, duelRound, duelRounds, duelRoundScores } = state;
 
                 // In duel mode: check if current round is done (3 questions per round)
                 if (mode === 'duel' && currentIndex + 1 >= questions.length && duelRound < duelRounds.length - 1) {
@@ -703,14 +715,33 @@ export const useQuizStore = create<QuizState>()(
                 if (currentIndex + 1 >= questions.length || mode === 'sprint') {
                     // End of match
                     const isDuel = mode === 'duel';
-                    const isWin = mode === 'solo' || mode === 'sprint' || mode === 'revision' || score > opponentScore;
+
+                    // For duel: fetch final opponent score before determining winner
+                    if (isDuel && matchId) {
+                        const { player: myPlayer } = get();
+                        const isP1 = get().opponent?.id !== myPlayer?.id;
+                        const { data: finalMatch } = await supabase
+                            .from('quiz_matches')
+                            .select('player1_score,player1_answers,player2_score,player2_answers')
+                            .eq('id', matchId)
+                            .single();
+                        if (finalMatch) {
+                            const finalOppScore = isP1 ? (finalMatch.player2_score || 0) : (finalMatch.player1_score || 0);
+                            const finalOppAnswers = isP1 ? (finalMatch.player2_answers || []) : (finalMatch.player1_answers || []);
+                            set({ opponentScore: finalOppScore, opponentAnswers: finalOppAnswers });
+                        }
+                    }
+
+                    // Re-read opponentScore after potential update
+                    const latestOpponentScore = get().opponentScore;
+                    const isWin = mode === 'solo' || mode === 'sprint' || mode === 'revision' || score > latestOpponentScore;
                     const newHighScores = { ...soloHighScores };
                     if (mode === 'solo' && theme) {
                         const prev = newHighScores[theme] || 0;
                         if (score > prev) newHighScores[theme] = score;
                     }
 
-                    const newDuelWins = isDuel && score > opponentScore ? duelWins + 1 : duelWins;
+                    const newDuelWins = isDuel && score > latestOpponentScore ? duelWins + 1 : duelWins;
                     const newSprintBest = mode === 'sprint' ? Math.max(sprintBest, sprintCorrect) : sprintBest;
 
                     // Mark match finished in duel mode
