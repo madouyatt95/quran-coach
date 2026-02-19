@@ -133,6 +133,9 @@ export function MushafPage() {
 
     const juzNumber = useMemo(() => currentSurahAyahs.length > 0 ? getJuzNumber(currentSurahAyahs) : 1, [currentSurahAyahs]);
 
+    const currentSurahRef = useRef(currentSurah);
+    useEffect(() => { currentSurahRef.current = currentSurah; }, [currentSurah]);
+
     // Track visible ayah/page for Header sync
     useEffect(() => {
         const container = document.querySelector('.mih-mushaf');
@@ -148,10 +151,10 @@ export function MushafPage() {
 
                         const elementSurah = parseInt(target.getAttribute('data-surah') || '0');
 
-                        // CRITICAL: Only process elements that belong to the current surah.
-                        // During surah switches, old elements might still be in the viewport.
-                        if (elementSurah !== currentSurah) {
-                            console.log(`[Mushaf] Observer: Ignoring old surah element (S${elementSurah} vs Current S${currentSurah})`);
+                        // CRITICAL: Only process elements that belong to THE LATEST current surah.
+                        // We use currentSurahRef.current because the currentSurah closure value
+                        // might be stale during a transition (e.g. going Mulk -> Baqarah).
+                        if (elementSurah !== currentSurahRef.current) {
                             return;
                         }
 
