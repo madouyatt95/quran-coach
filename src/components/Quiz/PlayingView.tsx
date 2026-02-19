@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-// lucide-react icons used via AudioPlayer child
+import { ArrowLeft } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES, DIFFICULTY_CONFIG } from '../../data/quizTypes';
 import { AudioPlayer } from './AudioPlayer';
 
 export function PlayingView() {
-    const { questions, currentIndex, submitAnswer, mode, opponent, score, opponentScore, opponentAnswers, difficulty, sprintCorrect, currentStreak, duelRound, duelRounds, powerUps, applyPowerUp } = useQuizStore();
+    const { questions, currentIndex, submitAnswer, mode, opponent, score, opponentScore, opponentAnswers, difficulty, sprintCorrect, currentStreak, duelRound, duelRounds, powerUps, applyPowerUp, resetQuiz } = useQuizStore();
     const isDuel = mode === 'duel';
     const roundTheme = isDuel && duelRounds.length > 0 ? QUIZ_THEMES.find(t => t.id === duelRounds[duelRound]) : null;
     const question = questions[currentIndex];
@@ -81,6 +81,11 @@ export function PlayingView() {
 
     return (
         <div className="quiz-container quiz-playing">
+            {/* Exit button */}
+            <button className="quiz-exit-btn" onClick={resetQuiz} title="Quitter le quiz">
+                <ArrowLeft size={24} />
+            </button>
+
             {/* Progress + Scores */}
             <div className="quiz-play-header">
                 {!isSprint && (
