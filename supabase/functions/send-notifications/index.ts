@@ -455,9 +455,12 @@ serve(async (req) => {
                             const timeStr = `${adjH.toString().padStart(2, "0")}:${adjM.toString().padStart(2, "0")}`;
 
                             console.log(`[Push] Triggering ${prayer.name} for ${sub.endpoint.slice(0, 30)}...`);
+                            const actualMinLeft = Math.max(0, prayerMin - currentMin);
                             const ok = await sendPush(sub, {
                                 title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
-                                body: `${prayer.name} dans ~${minutesBefore} minutes (${timeStr})`,
+                                body: actualMinLeft > 0
+                                    ? `${prayer.name} dans ~${actualMinLeft} minutes (${timeStr})`
+                                    : `C'est l'heure de ${prayer.name} (${timeStr})`,
                                 url: "/prieres",
                                 tag: `prayer-${prayer.key}`,
                             });
