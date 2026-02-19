@@ -155,10 +155,8 @@ export function MushafPage() {
                                 setCurrentPage(pageNum);
                                 setCurrentAyah(ayahNum);
 
-                                // Only update general reading progress if Khatm is NOT active
-                                if (!khatmActive) {
-                                    updateProgress();
-                                }
+                                // Always update general reading progress (independent from Khatm)
+                                updateProgress();
                             }
                         }
                     }
