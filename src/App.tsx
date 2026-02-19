@@ -113,7 +113,10 @@ function AppContent() {
 
   // Apply Arabic font family
   useEffect(() => {
-    document.documentElement.setAttribute('data-arabic-font', arabicFontFamily);
+    const fontValue = arabicFontFamily === 'amiri'
+      ? "'Amiri', 'Traditional Arabic', serif"
+      : "'Scheherazade New', 'Amiri', 'Traditional Arabic', serif";
+    document.documentElement.style.setProperty('--font-arabic', fontValue);
   }, [arabicFontFamily]);
 
   // Prefetch surahs

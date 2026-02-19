@@ -62,7 +62,13 @@ export const useSettingsStore = create<SettingsState>()(
                 set({ theme });
             },
             setArabicFontSize: (arabicFontSize) => set({ arabicFontSize }),
-            setArabicFontFamily: (arabicFontFamily) => set({ arabicFontFamily }),
+            setArabicFontFamily: (arabicFontFamily) => {
+                const fontValue = arabicFontFamily === 'amiri'
+                    ? "'Amiri', 'Traditional Arabic', serif"
+                    : "'Scheherazade New', 'Amiri', 'Traditional Arabic', serif";
+                document.documentElement.style.setProperty('--font-arabic', fontValue);
+                set({ arabicFontFamily });
+            },
             setViewMode: (viewMode) => set({ viewMode }),
             setLineSpacing: (lineSpacing) => set({ lineSpacing }),
             toggleTranslation: () => set((state) => ({ showTranslation: !state.showTranslation })),
