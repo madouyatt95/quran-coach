@@ -59,7 +59,7 @@ function ReadPagePersistent() {
 }
 
 function AppContent() {
-  const { theme, arabicFontSize } = useSettingsStore();
+  const { theme, arabicFontSize, arabicFontFamily } = useSettingsStore();
   const { surahs, setSurahs } = useQuranStore();
   const { startSession, endSession } = useStatsStore();
   const hasUnlockedAudio = useRef(false);
@@ -110,6 +110,11 @@ function AppContent() {
   useEffect(() => {
     document.documentElement.setAttribute('data-arabic-size', arabicFontSize);
   }, [arabicFontSize]);
+
+  // Apply Arabic font family
+  useEffect(() => {
+    document.documentElement.setAttribute('data-arabic-font', arabicFontFamily);
+  }, [arabicFontFamily]);
 
   // Prefetch surahs
   useEffect(() => {

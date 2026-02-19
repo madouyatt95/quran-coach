@@ -51,6 +51,7 @@ export function MushafPage() {
         selectedReciter, tajwidEnabled, toggleTajwid,
         setArabicFontSize, showTranslation, toggleTranslation,
         showTransliteration, toggleTransliteration,
+        arabicFontFamily, setArabicFontFamily,
     } = useSettingsStore();
 
     const { toggleFavorite, isFavorite } = useFavoritesStore();
@@ -478,6 +479,8 @@ export function MushafPage() {
                         setShowFontSheet={setShowFontSheet}
                         arabicFontSize={arabicFontSize}
                         setArabicFontSize={setArabicFontSize}
+                        arabicFontFamily={arabicFontFamily}
+                        setArabicFontFamily={setArabicFontFamily}
                         showMaskSheet={showMaskSheet}
                         setShowMaskSheet={setShowMaskSheet}
                         maskMode={maskMode}

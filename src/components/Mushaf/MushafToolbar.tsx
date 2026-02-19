@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { getTajweedCategories } from '../../lib/tajweedService';
 import type { MaskMode } from './mushafConstants';
+import type { ArabicFontFamily } from '../../types';
 
 const tajweedCategories = getTajweedCategories();
 
@@ -33,6 +34,8 @@ interface MushafToolbarProps {
     setShowFontSheet: (v: boolean) => void;
     arabicFontSize: 'sm' | 'md' | 'lg' | 'xl';
     setArabicFontSize: (size: 'sm' | 'md' | 'lg' | 'xl') => void;
+    arabicFontFamily: ArabicFontFamily;
+    setArabicFontFamily: (family: ArabicFontFamily) => void;
     // Mask
     showMaskSheet: boolean;
     setShowMaskSheet: (v: boolean) => void;
@@ -57,6 +60,8 @@ export function MushafToolbar({
     setShowFontSheet,
     arabicFontSize,
     setArabicFontSize,
+    arabicFontFamily,
+    setArabicFontFamily,
     showMaskSheet,
     setShowMaskSheet,
     maskMode,
@@ -204,11 +209,36 @@ export function MushafToolbar({
                     <div className="mih-sheet">
                         <div className="mih-sheet__handle" />
                         <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Taille de police</span>
+                            <span className="mih-sheet__title">Police & Taille</span>
                             <button className="mih-sheet__close" onClick={() => setShowFontSheet(false)}>
                                 <X size={18} />
                             </button>
                         </div>
+
+                        {/* Font Family Selector */}
+                        <div style={{ marginBottom: 16 }}>
+                            <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Style calligraphique</div>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <button
+                                    className={`mih-fontsize-btn ${arabicFontFamily === 'scheherazade' ? 'active' : ''}`}
+                                    onClick={() => setArabicFontFamily('scheherazade')}
+                                    style={{ flex: 1 }}
+                                >
+                                    <span style={{ fontSize: '18px', fontFamily: "'Scheherazade New', serif" }}>بِسْمِ</span>
+                                    <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>Othman</span>
+                                </button>
+                                <button
+                                    className={`mih-fontsize-btn ${arabicFontFamily === 'amiri' ? 'active' : ''}`}
+                                    onClick={() => setArabicFontFamily('amiri')}
+                                    style={{ flex: 1 }}
+                                >
+                                    <span style={{ fontSize: '18px', fontFamily: "'Amiri', serif" }}>بِسْمِ</span>
+                                    <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>Amiri</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Taille</div>
 
                         <div className="mih-fontsize-grid">
                             {(['sm', 'md', 'lg', 'xl'] as const).map(size => (

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Settings, Theme, ArabicFontSize, ViewMode } from '../types';
+import type { Settings, Theme, ArabicFontSize, ArabicFontFamily, ViewMode } from '../types';
 
 // Extended list of reciters with metadata
 // quranComId is used for word timing API (chapter_recitations endpoint)
@@ -23,6 +23,7 @@ interface SettingsState extends Settings {
     // Existing
     setTheme: (theme: Theme) => void;
     setArabicFontSize: (size: ArabicFontSize) => void;
+    setArabicFontFamily: (family: ArabicFontFamily) => void;
     setViewMode: (mode: ViewMode) => void;
     setLineSpacing: (spacing: number) => void;
     toggleTranslation: () => void;
@@ -41,6 +42,7 @@ export const useSettingsStore = create<SettingsState>()(
             // Default settings
             theme: 'dark',
             arabicFontSize: 'xl',
+            arabicFontFamily: 'scheherazade',
             viewMode: 'mushaf',
             lineSpacing: 2.4,
             showTranslation: true,
@@ -60,6 +62,7 @@ export const useSettingsStore = create<SettingsState>()(
                 set({ theme });
             },
             setArabicFontSize: (arabicFontSize) => set({ arabicFontSize }),
+            setArabicFontFamily: (arabicFontFamily) => set({ arabicFontFamily }),
             setViewMode: (viewMode) => set({ viewMode }),
             setLineSpacing: (lineSpacing) => set({ lineSpacing }),
             toggleTranslation: () => set((state) => ({ showTranslation: !state.showTranslation })),
@@ -82,16 +85,17 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'quran-coach-settings',
-            version: 6, // Bump to apply new defaults
+            version: 7, // Bump to apply new defaults
             migrate: (persistedState: any, version: number) => {
                 const originalLayers = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
 
-                if (version < 6) {
+                if (version < 7) {
                     return {
                         ...persistedState,
                         tajwidLayers: originalLayers,
                         arabicFontSize: 'xl',
                         showTransliteration: true,
+                        arabicFontFamily: 'scheherazade',
                     };
                 }
                 return persistedState;

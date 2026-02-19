@@ -78,11 +78,13 @@ export interface TajwidRule {
 
 export type Theme = 'dark' | 'light' | 'sepia';
 export type ArabicFontSize = 'sm' | 'md' | 'lg' | 'xl';
+export type ArabicFontFamily = 'scheherazade' | 'amiri';
 export type ViewMode = 'mushaf' | 'focus' | 'list';
 
 export interface Settings {
     theme: Theme;
     arabicFontSize: ArabicFontSize;
+    arabicFontFamily: ArabicFontFamily;
     viewMode: ViewMode;
     lineSpacing: number;
     showTranslation: boolean;
