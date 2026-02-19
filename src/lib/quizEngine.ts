@@ -772,6 +772,17 @@ function generateTawhidQuestions(): QuizQuestion[] {
         { q: 'Quelles sont les 3 questions posées dans la tombe ?', a: 'Seigneur ? Religion ? Prophète ?', p: ['Richesse ? Famille ? Travail ?', 'Prière ? Jeûne ? Zakat ?', 'Coran ? Langue ? Histoire ?'] },
         { q: 'Quelle est la cause du haut taux de suicide chez les athées ?', a: 'L\'absence de sens à la vie et de quiétude du cœur', p: ['Le manque d\'argent', 'La pression sociale', 'La pollution environnementale'] },
         { q: 'Pourquoi la théorie de Darwin est-elle critiquée ?', a: 'Car elle n\'explique pas le passage de l\'inerte à la vie consciente', p: ['Car elle est trop ancienne', 'Car elle parle des animaux', 'Car elle est trop complexe'] },
+        // --- Tawhid 4 : Innovation (Bid'ah) & Compagnons ---
+        { q: 'Que signifie linguistiquement le mot "Bid\'ah" (innovation) ?', a: 'Une chose qui n\'a pas de modèle précédent', p: ['Un acte obligatoire', 'Une tradition ancienne', 'Une interdiction ferme'] },
+        { q: 'Quelle est la définition religieuse de la Bid\'ah ?', a: 'Une voie d\'adoration inventée sans preuve dans le Coran ni la Sunna', p: ['Un acte de piété recommandé', 'Un rappel du Prophète ﷺ', 'Une habitude mondaine quelconque'] },
+        { q: 'Quel est le jugement de toute innovation dans la religion selon le Prophète ﷺ ?', a: 'Toute innovation est un égarement', p: ['Elle est recommandée si l\'intention est bonne', 'Elle est autorisée si les savants l\'approuvent', 'Elle est parfois obligatoire'] },
+        { q: 'Qu\'a dit l\'imam Mâlick sur celui qui innove dans l\'islam en la voyant bonne ?', a: 'Il prétend que le Prophète ﷺ a trahi le message', p: ['Il est un grand savant', 'Il sera récompensé', 'Il fait revivre la Sunna'] },
+        { q: 'Quelle est la différence entre les habitudes mondaines et les adorations concernant l\'innovation ?', a: 'L\'innovation concerne uniquement les adorations, pas les habitudes', p: ['Les deux sont concernées de la même manière', 'Seules les habitudes sont interdites', 'Aucune différence n\'existe'] },
+        { q: 'Pourquoi Sufyân At-thawri a-t-il dit qu\'Iblis préfère l\'innovation au péché ?', a: 'Car on se repent du péché mais on ne se repent pas de l\'innovation', p: ['Car le péché est plus grave', 'Car l\'innovation est visible', 'Car elle rapporte de la récompense'] },
+        { q: 'Qu\'a dit Omar (radhiAllahu anhu) en voyant les gens prier le Tarawih en commun ?', a: '"Quelle belle innovation que voici !" (au sens linguistique)', p: ['"C\'est une innovation religieuse blâmable"', '"Le Prophète ﷺ l\'a interdit"', '"Cette prière est obligatoire"'] },
+        { q: 'Quel est le meilleur des compagnons de façon absolue selon les gens de la Sunna ?', a: 'Abû Bakr, puis Omar, puis Othman, puis Ali', p: ['Ali, puis Omar, puis Abû Bakr, puis Othman', 'Omar seulement', 'Ils sont tous au même degré sans distinction'] },
+        { q: 'Que prétendent les Rawâfid (chiites extrémistes) au sujet des compagnons ?', a: 'Qu\'ils ont apostasié après la mort du Prophète ﷺ', p: ['Qu\'ils sont tous au Paradis', 'Qu\'ils sont tous égaux', 'Qu\'ils étaient des savants'] },
+        { q: 'Qu\'implique insulter les compagnons selon Sheikh Ibn Outhaimine ?', a: 'Un dénigrement du Prophète ﷺ, de la législation et d\'Allah Lui-même', p: ['Un simple péché mineur', 'Aucune conséquence religieuse', 'Uniquement un manque de respect social'] },
     ];
     return data.map(d => buildMCQ('tawhid', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
@@ -838,6 +849,17 @@ function generateFiqhQuestions(): QuizQuestion[] {
         { q: 'Où se tient l\'Imam lors de la prière funéraire pour un homme ?', a: 'Au niveau de la poitrine', p: ['Au niveau du ventre', 'À côté des pieds', 'À 10 mètres du corps'] },
         { q: 'Quelle est la durée du deuil obligatoire pour une femme dont l\'époux est décédé ?', a: '4 mois et 10 jours', p: ['3 mois', '1 an', '40 jours'] },
         { q: 'Que signifie "Janâba" ?', a: 'L\'état d\'impureté majeure nécessitant le Ghusl', p: ['L\'état de prière constante', 'Le nom d\'une mosquée', 'Un type de tissu pour linceul'] },
+        // --- Fiqh 4 : Vente, Usure & Échange ---
+        { q: 'Combien de piliers (Arkân) la vente (Al-Bay\') comporte-t-elle ?', a: 'Trois : le vendeur et l\'acheteur, l\'article et le prix, la formule d\'accord', p: ['Un seul : le prix', 'Deux : l\'acheteur et le vendeur', 'Cinq : dont la publicité et le témoin'] },
+        { q: 'Que dit Allah dans S2:V275 au sujet du commerce ?', a: 'Allah a permis le commerce (la vente)', p: ['Allah a interdit tout commerce', 'Le commerce est détestable', 'Seul le troc est autorisé'] },
+        { q: 'Quel type de vente est interdit après le deuxième appel à la prière du Vendredi ?', a: 'Toute vente et achat pour celui sur qui la prière du Vendredi est obligatoire', p: ['La vente de nourriture uniquement', 'Aucune restriction n\'existe', 'La vente en ligne seulement'] },
+        { q: 'Qu\'est-ce que la vente aléatoire (Al-Gharar) ?', a: 'Vendre ce qu\'on ne possède pas, ce qu\'on ne peut livrer, ou un produit inconnu', p: ['Vendre au plus bas prix possible', 'Vendre en gros', 'Vendre à un ami sans bénéfice'] },
+        { q: 'Qu\'est-ce que la vente "Al-\'Ina" (vente collusoire) ?', a: 'Acheter à crédit puis revendre au même vendeur comptant à un prix moindre (astuce usuraire)', p: ['Une vente aux enchères ordinaire', 'Un échange de cadeaux', 'Une vente en ligne légale'] },
+        { q: 'Combien d\'articles usuraires (Ribawi) le Prophète ﷺ a-t-il cités ?', a: 'Six : l\'or, l\'argent, le froment, l\'orge, les dattes et le sel', p: ['Trois : l\'or, l\'argent et le sel', 'Dix articles', 'Seulement l\'or et l\'argent'] },
+        { q: 'Que faut-il respecter lors de l\'échange de deux biens ribawi du même genre ?', a: 'Quantités identiques et échange donnant-donnant (comptant)', p: ['Seulement que le prix soit juste', 'Aucune condition particulière', 'Uniquement la présence de témoins'] },
+        { q: 'Est-il permis d\'échanger de l\'or usagé contre de l\'or neuf en réglant la différence ?', a: 'Non, il faut vendre l\'ancien, encaisser, puis acheter le neuf séparément', p: ['Oui, si la différence est minime', 'Oui, c\'est une simple transaction', 'Oui, si les deux parties sont d\'accord'] },
+        { q: 'Quelle est la condition obligatoire lors de l\'échange de devises de genres différents (ex: dollars contre francs) ?', a: 'Que l\'échange soit donnant-donnant (comptant) sans échéance', p: ['Que la somme soit identique dans les deux devises', 'Qu\'un notaire soit présent', 'Aucune condition'] },
+        { q: 'Qu\'est-ce que l\'option de l\'endroit (Khiyâr al-Majlis) dans la vente ?', a: 'L\'acheteur et le vendeur peuvent renoncer tant qu\'ils ne se sont pas séparés du lieu', p: ['L\'obligation d\'acheter dans un lieu précis', 'Le droit de revendre au même endroit', 'La possibilité d\'annuler après 1 mois'] },
     ];
     return data.map(d => buildMCQ('fiqh', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
