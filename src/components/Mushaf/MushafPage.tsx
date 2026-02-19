@@ -252,6 +252,7 @@ export function MushafPage() {
             showTransliteration ? fetchSurahTransliteration(currentSurah) : Promise.resolve(new Map<number, string>())
         ]).then(async ([surahData, translations, transliterations]) => {
             const { ayahs } = surahData;
+            console.log(`[Mushaf] DATA LOADED for S${currentSurah}. Total ayahs: ${ayahs.length}. State: ${currentSurah}`);
             setSurahAyahs(ayahs);
             audio.pageAyahsRef.current = ayahs;
             setTranslationMap(translations);
@@ -317,6 +318,7 @@ export function MushafPage() {
             if (ayahScroll) {
                 try {
                     const { surah, ayah } = JSON.parse(ayahScroll);
+                    console.log(`[Mushaf] Jump Signal Processing: TARGET S${surah}:A${ayah}. currentSurahAyahs matches?: ${currentSurahAyahs[0]?.surah === surah}`);
                     // Ensure renderedCount is large enough for existing data
                     const idx = currentSurahAyahs.findIndex(a => a.surah === surah && a.numberInSurah === ayah);
                     if (idx !== -1) setRenderedCount(Math.max(renderedCount, idx + 10));
@@ -390,6 +392,7 @@ export function MushafPage() {
     const getAyahIndex = (ayah: Ayah) => currentSurahAyahs.findIndex(a => a.number === ayah.number);
 
     // ===== RENDER =====
+    console.log(`[Mushaf] RENDER. S${currentSurah}:A${currentAyah} (P${currentPage}). Loading=${isLoading}. JumpSig=${jumpSignal}`);
     if (isLoading) {
         return (
             <div className="mushaf-page">
