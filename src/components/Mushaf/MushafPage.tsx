@@ -255,7 +255,6 @@ export function MushafPage() {
             showTransliteration ? fetchSurahTransliteration(currentSurah) : Promise.resolve(new Map<number, string>())
         ]).then(async ([surahData, translations, transliterations]) => {
             const { ayahs } = surahData;
-            console.log(`[Mushaf] DATA LOADED for S${currentSurah}. Total ayahs: ${ayahs.length}. State: ${currentSurah}`);
             setSurahAyahs(ayahs);
             audio.pageAyahsRef.current = ayahs;
             setTranslationMap(translations);
@@ -315,13 +314,11 @@ export function MushafPage() {
         const ayahScroll = sessionStorage.getItem('scrollToAyah');
 
         if (isSilentJump || pageScroll || ayahScroll) {
-            console.log('[Mushaf] Processing Jump Signal:', { isSilentJump, pageScroll, ayahScroll });
             isSilentJumpRef.current = true;
 
             if (ayahScroll) {
                 try {
                     const { surah, ayah } = JSON.parse(ayahScroll);
-                    console.log(`[Mushaf] Jump Signal Processing: TARGET S${surah}:A${ayah}. currentSurahAyahs matches?: ${currentSurahAyahs[0]?.surah === surah}`);
                     // Ensure renderedCount is large enough for existing data
                     const idx = currentSurahAyahs.findIndex(a => a.surah === surah && a.numberInSurah === ayah);
                     if (idx !== -1) setRenderedCount(Math.max(renderedCount, idx + 10));
@@ -338,13 +335,12 @@ export function MushafPage() {
                 else window.scrollTo({ top: 0, behavior: 'auto' });
             }
 
-            // Clear only the observer-blocking flag after delay
-            // NOTE: scrollToAyah/scrollToPage are NOT cleared here — they must
-            // persist until the data-load handler (line ~264) processes them
+            // Clear only the observer-blocking flag after a longer delay
+            // to ensure automatic scrolling has fully stabilized.
             setTimeout(() => {
                 isSilentJumpRef.current = false;
                 sessionStorage.removeItem('isSilentJump');
-            }, 3000);
+            }, 5000);
         }
     }, [jumpSignal, scrollToVerse, scrollToPageStart, currentSurahAyahs]);
 
@@ -395,7 +391,6 @@ export function MushafPage() {
     const getAyahIndex = (ayah: Ayah) => currentSurahAyahs.findIndex(a => a.number === ayah.number);
 
     // ===== RENDER =====
-    console.log(`[Mushaf] RENDER. S${currentSurah}:A${currentAyah} (P${currentPage}). Loading=${isLoading}. JumpSig=${jumpSignal}`);
     if (isLoading) {
         return (
             <div className="mushaf-page">

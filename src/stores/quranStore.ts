@@ -94,12 +94,14 @@ export const useQuranStore = create<QuranState>()(
                     const sameSurah = currentSurah === explorationSurah;
                     const verseDiff = Math.abs(currentAyah - explorationAyah);
 
-                    if (sameSurah && verseDiff < 10) {
+                    // CRITICAL: Only stop exploring if we are in the SAME surah 
+                    // and moved significantly. This prevents "passing through" 
+                    // other surahs during auto-scroll from resetting the mode.
+                    if (!sameSurah || verseDiff < 10) {
                         return; // Still in "silent" exploration zone
                     }
 
-                    // If we shifted surah or scrolled 10 verses, we "take over"
-                    // progress will be updated below
+                    // User has clearly started reading from the new location
                     set({ isExploring: false });
                 }
 
@@ -171,7 +173,6 @@ export const useQuranStore = create<QuranState>()(
             },
 
             goToAyah: (surah, ayah, page, options = {}) => {
-                console.log(`[Quran Store] goToAyah S${surah}:A${ayah} (Page ${page}) silent=${!!options.silent}`);
                 const updateState: any = {
                     currentSurah: surah,
                     currentAyah: ayah,
@@ -179,7 +180,6 @@ export const useQuranStore = create<QuranState>()(
                     isExploring: !!options.silent,
                 };
                 set((state) => {
-                    console.log(`[Quran Store] Applying state update jumpSignal ${state.jumpSignal} -> ${state.jumpSignal + 1}`);
                     return {
                         ...updateState,
                         explorationSurah: !!options.silent ? surah : 0,
