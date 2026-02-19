@@ -8,6 +8,11 @@ import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { trackAudioResume } from '../lib/analyticsService';
 import { ListMusic, ChevronLeft, Play } from 'lucide-react';
 import './ListenPage.css';
+import { OMAR_HISHAM_COLLECTION } from '../lib/mp3QuranApi';
+
+// Route synthetic reciters (id=-1) to their custom collection ID
+const getReciterRoute = (reciterId: number) =>
+    reciterId === -1 ? `/listen/${OMAR_HISHAM_COLLECTION.id}` : `/listen/${reciterId}`;
 
 export function ListenPage() {
     const navigate = useNavigate();
@@ -190,7 +195,7 @@ export function ListenPage() {
                                     <div
                                         key={reciter.id}
                                         className="popular-reciter-card"
-                                        onClick={() => navigate(`/listen/${reciter.id}`)}
+                                        onClick={() => navigate(getReciterRoute(reciter.id))}
                                     >
                                         <div className="popular-card-photo">
                                             {isApproved ? (
@@ -245,7 +250,7 @@ export function ListenPage() {
                                     <div
                                         key={reciter.id}
                                         className="reciter-mini-card"
-                                        onClick={() => navigate(`/listen/${reciter.id}`)}
+                                        onClick={() => navigate(getReciterRoute(reciter.id))}
                                     >
                                         <div className="reciter-card-photo">
                                             {isApproved ? (

@@ -14,7 +14,7 @@ interface LastListened {
 }
 
 import type { MP3QuranReciter } from '../lib/mp3QuranApi';
-import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
+import { mp3QuranApi, ARABIC_FRENCH_COLLECTION, OMAR_HISHAM_COLLECTION } from '../lib/mp3QuranApi';
 
 interface ListenState {
     reciters: MP3QuranReciter[];
@@ -83,7 +83,15 @@ export const useListenStore = create<ListenState>()(
                 set({ isLoading: true, error: null });
                 try {
                     const reciters = await mp3QuranApi.getReciters('fr');
-                    set({ reciters, isLoading: false });
+                    // Inject custom collections as synthetic reciters
+                    const omarHishamSynthetic: MP3QuranReciter = {
+                        id: -1, // special ID, routed via OMAR_HISHAM_COLLECTION.id
+                        name: OMAR_HISHAM_COLLECTION.name,
+                        letter: 'O',
+                        date: '',
+                        moshaf: [{ id: -1, name: 'Hafs An Asim - Murattal', server: OMAR_HISHAM_COLLECTION.baseUrl, surah_total: OMAR_HISHAM_COLLECTION.surahs.length, moshaf_type: 11, surah_list: OMAR_HISHAM_COLLECTION.surahs.join(',') }]
+                    };
+                    set({ reciters: [omarHishamSynthetic, ...reciters], isLoading: false });
                 } catch (error) {
                     set({ error: 'Failed to load reciters', isLoading: false });
                 }
@@ -103,9 +111,13 @@ export const useListenStore = create<ListenState>()(
 
             getPopularReciters: () => {
                 const { reciters } = get();
-                return reciters
+                const popular = reciters
                     .filter(r => POPULAR_RECITER_IDS.includes(r.id))
                     .map(r => POPULAR_NAME_OVERRIDES[r.id] ? { ...r, name: POPULAR_NAME_OVERRIDES[r.id] } : r);
+                // Also include Omar Hisham (synthetic reciter with id -1)
+                const omarHisham = reciters.find(r => r.id === -1);
+                if (omarHisham) popular.unshift(omarHisham);
+                return popular;
             },
 
             setLastListened: (data) => set({ lastListened: data }),

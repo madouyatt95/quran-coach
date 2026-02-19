@@ -5,7 +5,7 @@ import { useAssetsStore } from '../stores/assetsStore';
 import { useDownloadStore } from '../stores/downloadStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { useQuranStore } from '../stores/quranStore';
-import { mp3QuranApi, ARABIC_FRENCH_COLLECTION } from '../lib/mp3QuranApi';
+import { mp3QuranApi, ARABIC_FRENCH_COLLECTION, OMAR_HISHAM_COLLECTION } from '../lib/mp3QuranApi';
 import { SURAH_NAMES_FR } from '../components/Mushaf/mushafConstants';
 import { getReciterColor } from '../lib/assetPipeline';
 import { trackAudioPlay } from '../lib/analyticsService';
@@ -28,10 +28,15 @@ export function ReciterDetailPage() {
     const [playlistModalItem, setPlaylistModalItem] = useState<PlaylistItem | null>(null);
     const { setLastListened } = useListenStore();
 
-    // Find reciter
-    const reciter = id === ARABIC_FRENCH_COLLECTION.id
-        ? ARABIC_FRENCH_COLLECTION
-        : reciters.find(r => r.id.toString() === id);
+    // Resolve custom collections by their string id
+    const CUSTOM_COLLECTIONS = [ARABIC_FRENCH_COLLECTION, OMAR_HISHAM_COLLECTION];
+    const customCollection = CUSTOM_COLLECTIONS.find(c => c.id === id);
+    const isCustom = !!customCollection;
+
+    // Find reciter: custom collection, synthetic (-1 for Omar Hisham), or API reciter
+    const reciter = customCollection
+        ? customCollection
+        : reciters.find(r => r.id.toString() === id || (id === OMAR_HISHAM_COLLECTION.id && r.id === -1));
 
     useEffect(() => {
         async function loadSurahs() {
@@ -54,12 +59,12 @@ export function ReciterDetailPage() {
         const startIndex = surahs.findIndex(s => s.id === surah.id);
         const playlistItems = surahs.slice(startIndex).map(s => {
             const qSurah = quranSurahs.find(qs => qs.number === s.id);
-            const bestMoshaf = id !== ARABIC_FRENCH_COLLECTION.id && (reciter as any).moshaf
+            const bestMoshaf = !isCustom && (reciter as any).moshaf
                 ? mp3QuranApi.getBestMoshaf((reciter as any).moshaf)
                 : null;
 
-            const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
-                ? ARABIC_FRENCH_COLLECTION.getAudioUrl(s.id)
+            const audioUrl = isCustom
+                ? customCollection!.getAudioUrl(s.id)
                 : mp3QuranApi.getAudioUrl(bestMoshaf?.server || '', s.id);
 
             return {
@@ -167,8 +172,8 @@ export function ReciterDetailPage() {
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 const qSurah = quranSurahs.find(qs => qs.number === surah.id);
-                                                const audioUrl = id === ARABIC_FRENCH_COLLECTION.id
-                                                    ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
+                                                const audioUrl = isCustom
+                                                    ? customCollection!.getAudioUrl(surah.id)
                                                     : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
 
                                                 setPlaylistModalItem({
@@ -197,8 +202,8 @@ export function ReciterDetailPage() {
                                                 className="action-btn"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    const url = id === ARABIC_FRENCH_COLLECTION.id
-                                                        ? ARABIC_FRENCH_COLLECTION.getAudioUrl(surah.id)
+                                                    const url = isCustom
+                                                        ? customCollection!.getAudioUrl(surah.id)
                                                         : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
                                                     downloadSurah(reciter.id.toString(), surah.id, url);
                                                 }}

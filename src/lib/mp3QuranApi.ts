@@ -100,3 +100,19 @@ export const ARABIC_FRENCH_COLLECTION = {
         return `https://archive.org/download/Coran_Arabe_Franais_HoudeyfaInconnu/${formattedId}.mp3`;
     }
 };
+
+/**
+ * Custom Collection: Omar Hisham Al-Arabi (71 surahs on archive.org)
+ */
+export const OMAR_HISHAM_COLLECTION = {
+    id: 'omar-hisham',
+    name: 'Omar Hisham Al-Arabi',
+    nameArabic: 'عمر هشام العربي',
+    type: 'custom',
+    baseUrl: 'https://archive.org/download/omar-hisham-al-arabi/',
+    surahs: [1, 12, 14, 16, 17, 18, 19, 20, 22, 25, 32, 36, 40, 44, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 61, 62, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 111, 112, 113, 114],
+    getAudioUrl: (surahId: number) => {
+        const formattedId = surahId.toString().padStart(3, '0');
+        return `https://archive.org/download/omar-hisham-al-arabi/${formattedId}.mp3`;
+    }
+};
