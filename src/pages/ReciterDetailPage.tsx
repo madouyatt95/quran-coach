@@ -57,7 +57,11 @@ export function ReciterDetailPage() {
     const handlePlaySurah = (surah: any) => {
         // Create a playlist from this surah to the end for auto-play
         const startIndex = surahs.findIndex(s => s.id === surah.id);
-        const playlistItems = surahs.slice(startIndex).map(s => {
+        // For custom collections, only include available surahs in playlist
+        const availableSurahs = isCustom
+            ? surahs.slice(startIndex).filter(s => customCollection!.surahs.includes(s.id))
+            : surahs.slice(startIndex);
+        const playlistItems = availableSurahs.map(s => {
             const qSurah = quranSurahs.find(qs => qs.number === s.id);
             const bestMoshaf = !isCustom && (reciter as any).moshaf
                 ? mp3QuranApi.getBestMoshaf((reciter as any).moshaf)
@@ -132,7 +136,7 @@ export function ReciterDetailPage() {
 
             <div className="surah-list-container">
                 <div className="list-header">
-                    <h2>Sourates ({surahs.length})</h2>
+                    <h2>Sourates {isCustom ? `(${customCollection!.surahs.length} / ${surahs.length})` : `(${surahs.length})`}</h2>
                     <button className="download-all-btn">Tout télécharger</button>
                 </div>
 
@@ -146,15 +150,16 @@ export function ReciterDetailPage() {
                             const downloading = isDownloading.has(`${reciter.id}-${surah.id}`);
                             const qSurah = quranSurahs.find(qs => qs.number === surah.id);
                             const transliteration = qSurah?.englishName.toUpperCase().replace('-', ' ');
+                            const isAvailable = !isCustom || customCollection!.surahs.includes(surah.id);
 
 
                             return (
                                 <div
                                     key={surah.id}
-                                    className={`surah-row ${isCurrent ? 'active' : ''}`}
+                                    className={`surah-row ${isCurrent ? 'active' : ''} ${!isAvailable ? 'unavailable' : ''}`}
                                 >
                                     <div className="surah-number">{surah.id}</div>
-                                    <div className="surah-info-main" onClick={() => handlePlaySurah(surah)}>
+                                    <div className="surah-info-main" onClick={() => isAvailable && handlePlaySurah(surah)}>
                                         <div className="surah-names-container">
                                             <div className="surah-names-top">
                                                 <span className="surah-name-fr">{SURAH_NAMES_FR[surah.id] || surah.name}</span>
@@ -166,55 +171,59 @@ export function ReciterDetailPage() {
                                             {surah.makkia === 1 ? 'Mecquoise' : 'Médinoise'} • {qSurah?.numberOfAyahs} versets
                                         </span>
                                     </div>
-                                    <div className="surah-actions">
-                                        <button
-                                            className="action-btn add-playlist-btn"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                const qSurah = quranSurahs.find(qs => qs.number === surah.id);
-                                                const audioUrl = isCustom
-                                                    ? customCollection!.getAudioUrl(surah.id)
-                                                    : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
-
-                                                setPlaylistModalItem({
-                                                    surahNumber: surah.id,
-                                                    surahName: surah.name,
-                                                    surahNameAr: qSurah?.name || surah.name,
-                                                    totalAyahs: qSurah?.numberOfAyahs || 0,
-                                                    transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || surah.name,
-                                                    reciterId: reciter.id.toString(),
-                                                    reciterName: reciter.name,
-                                                    playbackType: 'surah',
-                                                    audioUrl
-                                                });
-                                            }}
-                                        >
-                                            <Plus size={20} />
-                                        </button>
-                                        {downloading ? (
-                                            <Clock size={20} className="icon-downloading" />
-                                        ) : downloaded ? (
-                                            <div className="downloaded-badge" onClick={() => removeDownload(reciter.id.toString(), surah.id)}>
-                                                <CheckCircle2 size={20} color="#4CAF50" />
-                                            </div>
-                                        ) : (
+                                    {isAvailable ? (
+                                        <div className="surah-actions">
                                             <button
-                                                className="action-btn"
+                                                className="action-btn add-playlist-btn"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    const url = isCustom
+                                                    const qSurah = quranSurahs.find(qs => qs.number === surah.id);
+                                                    const audioUrl = isCustom
                                                         ? customCollection!.getAudioUrl(surah.id)
                                                         : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
-                                                    downloadSurah(reciter.id.toString(), surah.id, url);
+
+                                                    setPlaylistModalItem({
+                                                        surahNumber: surah.id,
+                                                        surahName: surah.name,
+                                                        surahNameAr: qSurah?.name || surah.name,
+                                                        totalAyahs: qSurah?.numberOfAyahs || 0,
+                                                        transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || surah.name,
+                                                        reciterId: reciter.id.toString(),
+                                                        reciterName: reciter.name,
+                                                        playbackType: 'surah',
+                                                        audioUrl
+                                                    });
                                                 }}
                                             >
-                                                <Download size={20} />
+                                                <Plus size={20} />
                                             </button>
-                                        )}
-                                        <button className="action-btn play-btn" onClick={(e) => { e.stopPropagation(); handlePlaySurah(surah); }}>
-                                            {isCurrent ? <div className="playing-bars"><span></span><span></span><span></span></div> : <Play size={20} />}
-                                        </button>
-                                    </div>
+                                            {downloading ? (
+                                                <Clock size={20} className="icon-downloading" />
+                                            ) : downloaded ? (
+                                                <div className="downloaded-badge" onClick={() => removeDownload(reciter.id.toString(), surah.id)}>
+                                                    <CheckCircle2 size={20} color="#4CAF50" />
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    className="action-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const url = isCustom
+                                                            ? customCollection!.getAudioUrl(surah.id)
+                                                            : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
+                                                        downloadSurah(reciter.id.toString(), surah.id, url);
+                                                    }}
+                                                >
+                                                    <Download size={20} />
+                                                </button>
+                                            )}
+                                            <button className="action-btn play-btn" onClick={(e) => { e.stopPropagation(); handlePlaySurah(surah); }}>
+                                                {isCurrent ? <div className="playing-bars"><span></span><span></span><span></span></div> : <Play size={20} />}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <span className="unavailable-badge">Indisponible</span>
+                                    )}
                                 </div>
                             );
                         })}

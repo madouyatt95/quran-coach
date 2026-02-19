@@ -277,6 +277,27 @@
     background: #1a1a2e;
 }
 
+/* Unavailable surah (not in custom collection) */
+.surah-row.unavailable {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.surah-row.unavailable .surah-info-main {
+    pointer-events: none;
+}
+
+.unavailable-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background: rgba(150, 150, 150, 0.15);
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
 [data-theme="dark"] .detail-header-nav {
     background: var(--color-bg-primary);
 }
