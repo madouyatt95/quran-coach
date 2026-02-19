@@ -88,7 +88,7 @@ export function ReciterDetailPage() {
 
         // Save last listened for resume feature (with full playlist context)
         setLastListened({
-            reciterId: Number(id),
+            reciterId: isNaN(Number(id)) ? -1 : Number(id),
             reciterName: reciter.name,
             surahNumber: surah.id,
             surahName: SURAH_NAMES_FR[surah.id] || surah.name,
