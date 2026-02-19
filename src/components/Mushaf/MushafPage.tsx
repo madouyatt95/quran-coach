@@ -146,6 +146,15 @@ export function MushafPage() {
                         const pageNum = parseInt(target.getAttribute('data-page') || '1');
                         const ayahNum = parseInt(target.getAttribute('data-ayah') || '1');
 
+                        const elementSurah = parseInt(target.getAttribute('data-surah') || '0');
+
+                        // CRITICAL: Only process elements that belong to the current surah.
+                        // During surah switches, old elements might still be in the viewport.
+                        if (elementSurah !== currentSurah) {
+                            console.log(`[Mushaf] Observer: Ignoring old surah element (S${elementSurah} vs Current S${currentSurah})`);
+                            return;
+                        }
+
                         // Update store only if changed to avoid loops
                         if (pageNum !== currentPage || ayahNum !== currentAyah) {
                             // Only update store/bookmark if we are NOT in a silent jump
@@ -174,7 +183,7 @@ export function MushafPage() {
             clearTimeout(timeout);
             observer.disconnect();
         };
-    }, [currentSurahAyahs, currentPage, currentAyah, setCurrentPage, setCurrentAyah, updateProgress]);
+    }, [currentSurah, currentSurahAyahs, currentPage, currentAyah, setCurrentPage, setCurrentAyah, updateProgress]);
 
     // Infinite rendering trigger
     useEffect(() => {

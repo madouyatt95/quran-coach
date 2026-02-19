@@ -169,6 +169,7 @@ export const useQuranStore = create<QuranState>()(
             },
 
             goToAyah: (surah, ayah, page, options = {}) => {
+                console.log(`[Quran Store] goToAyah S${surah}:A${ayah} (Page ${page}) silent=${!!options.silent}`);
                 const updateState: any = {
                     currentSurah: surah,
                     currentAyah: ayah,
@@ -177,12 +178,15 @@ export const useQuranStore = create<QuranState>()(
                 if (page) {
                     updateState.currentPage = page;
                 }
-                set((state) => ({
-                    ...updateState,
-                    explorationSurah: !!options.silent ? surah : 0,
-                    explorationAyah: !!options.silent ? ayah : 0,
-                    jumpSignal: state.jumpSignal + 1
-                }));
+                set((state) => {
+                    console.log(`[Quran Store] Applying state update jumpSignal ${state.jumpSignal} -> ${state.jumpSignal + 1}`);
+                    return {
+                        ...updateState,
+                        explorationSurah: !!options.silent ? surah : 0,
+                        explorationAyah: !!options.silent ? ayah : 0,
+                        jumpSignal: state.jumpSignal + 1
+                    };
+                });
                 if (!options.silent) {
                     get().updateProgress();
                 }
