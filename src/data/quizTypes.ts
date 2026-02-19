@@ -42,7 +42,8 @@ export type QuizThemeId =
     | 'women'
     | 'pillars'
     | 'hadiths'
-    | 'culture';
+    | 'culture'
+    | 'tawhid';
 
 export type QuizDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -283,6 +284,14 @@ export const QUIZ_THEMES: QuizTheme[] = [
         emoji: '🌙',
         color: '#F9A825',
         gradient: 'linear-gradient(135deg, #e65100, #F9A825)',
+    },
+    {
+        id: 'tawhid',
+        name: 'Tawhid & Aqidah',
+        nameAr: 'التوحيد والعقيدة',
+        emoji: '☝️',
+        color: '#006064',
+        gradient: 'linear-gradient(135deg, #00363a, #006064)',
     },
 ];
 

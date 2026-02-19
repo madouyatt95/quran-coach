@@ -719,6 +719,64 @@ function generateCultureQuestions(): QuizQuestion[] {
     return data.map(d => buildMCQ('culture', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
 
+// ─── Tawhid & Aqidah (PDF Vol. 1) ───────────────────────
+function generateTawhidQuestions(): QuizQuestion[] {
+    const data = [
+        { q: 'Que signifie linguistiquement le mot "Aqidah" ?', a: 'Le fait d\'attacher une chose avec force et précision', p: ['La science de l\'unicité', 'Le jugement sans doute', 'Le chemin de la droiture'] },
+        { q: 'Quel est le sens global de la science de la "Aqidah" ?', a: 'La croyance affirmative en Allah et Ses fondements (anges, livres, messagers...)', p: ['La mémorisation complète du Coran', 'La connaissance exclusive du Fiqh', 'L\'étude de la langue arabe uniquement'] },
+        { q: 'Quelles autres appellations les pieux prédécesseurs donnaient-ils à l\'Aqidah ?', a: 'L\'Unicité, les Fondements de la religion, la Grande compréhension', p: ['Le Tafsir, le Hadith, la Sirah', 'La jurisprudence et l\'éthique', 'La lecture et l\'exégèse'] },
+        { q: 'Quelle est la condition indispensable pour qu\'une bonne action soit acceptée ?', a: 'Qu\'elle soit basée sur une croyance authentique (Tawhid)', p: ['Qu\'elle soit faite devant les gens', 'Qu\'elle soit faite le jour du vendredi', 'Qu\'elle soit accompagnée de richesses'] },
+        { q: 'Quel est le but unique de la création des djinns et des hommes ?', a: 'Pour qu\'ils adorent Allah Seul', p: ['Pour qu\'ils construisent des cités', 'Pour qu\'ils voyagent sur terre', 'Pour qu\'ils étudient les sciences matérielles'] },
+        { q: 'Quel a été l\'appel commun de TOUS les messagers ?', a: 'Adorez Allah et écartez-vous du Tagût', p: ['Construisez des lieux de culte', 'Apprenez l\'histoire des anciens', 'Priez uniquement la nuit'] },
+        { q: 'Comment définit-on le "Tagût" ?', a: 'Tout être adoré en dehors d\'Allah qui accepte cette adoration', p: ['Unique terme pour désigner Satan', 'Uniquement les idoles en pierre', 'Chaque personne qui commet un péché'] },
+        { q: 'Quels sont les 3 piliers/niveaux nécessaires pour que le Tawhid soit valide ?', a: 'Acceptation du cœur, prononciation de la langue, actes des membres', p: ['Prière, Jeûne et Hajj', 'Science, Patience et Sincérité', 'Intention, État et Parole'] },
+        { q: 'Dans le hadith de Mu\'adh, quel est le droit d\'Allah sur Ses serviteurs ?', a: 'Qu\'ils L\'adorent sans rien Lui associer', p: ['Qu\'ils Lui fassent des dons matériels', 'Qu\'ils lisent le Coran chaque jour', 'Qu\'ils demandent pardon 100 fois'] },
+        { q: 'Comment appelle-t-on l\'Unicité d\'Allah dans Ses actes comme la Création, la Royauté et l\'Administration ?', a: 'Le Tawhid Ar-Rubûbiya (Seigneurie)', p: ['Le Tawhid Al-Uloûhiya', 'Le Tawhid Al-Asma Wa As-Sifât', 'Le Tawhid Al-Ittiba\''] },
+        { q: 'Est-ce que les polythéistes reconnaissaient le Tawhid Ar-Rubûbiya ?', a: 'Oui, ils admettaient qu\'Allah est le Créateur et Pourvoyeur', p: ['Non, ils croyaient que les idoles avaient tout créé', 'Seulement une petite minorité', 'Jamais, ils niaient tout créateur'] },
+        { q: 'Reconnaître qu\'Allah est le seul Créateur suffit-il pour entrer dans l\'Islam ?', a: 'Non, il faut aussi Lui vouer un culte exclusif (Uloûhiya)', p: ['Oui, c\'est l\'essence même de la foi', 'Oui, si on le dit avec la langue', 'Non, il faut aussi parler arabe'] },
+        { q: 'Quels sont les deux piliers indissociables de l\'attestation de foi ?', a: 'La Négation (de toute autre divinité) et l\'Affirmation (d\'Allah Seul)', p: ['La Prière et la Zakat', 'La Peur et l\'Espoir', 'Le Coeur et le Cerveau'] },
+        { q: 'Quelle parole du Prophète Ibrahim rassemble la Négation et l\'Affirmation ?', a: 'Je désavoue ce que vous adorez, à l\'exception de Celui qui m\'a créé', p: ['Allah est mon Seigneur et le vôtre', 'Adorez Allah dans la paix', 'Craignez votre Seigneur'] },
+        { q: 'Selon le hadith, dans quelle disposition naît chaque nouveau-né ?', a: 'Sur la nature saine (la Fitrah/l\'Islam)', p: ['Sans aucune connaissance', 'Sur la religion de ses parents', 'Sur une nature rebelle'] },
+        { q: 'Les prophètes sont décrits comme des "frères" ayant une religion unique. Laquelle ?', a: 'L\'Islam (le Tawhid)', p: ['Le Judaïsme', 'Le Christianisme', 'Le Sabéisme'] },
+        { q: 'Que font les hommes, même mécréants, lorsqu\'ils sont en danger en mer ?', a: 'Ils invoquent Allah exclusivement avec sincérité', p: ['Ils demandent l\'aide de leurs idoles', 'Ils se découragent totalement', 'Ils invoquent les anges'] },
+        { q: 'Quelle est la définition de l\'orgueil (Al-Kibr) ?', a: 'Le rejet de la vérité et le mépris des gens', p: ['Porter de beaux vêtements', 'Être fier de sa réussite', 'Vouloir commander les autres'] },
+        { q: 'Quel comportement le Coran reproche-t-il à ceux qui refusent la vérité ?', a: 'Suivre aveuglément les ancêtres sans preuve', p: ['Chercher trop de preuves', 'Vouloir trop réfléchir', 'Être trop généreux avec les pauvres'] },
+        { q: 'Quel est l\'impact majeur du Tawhid sur la vie du croyant ?', a: 'Le bonheur, la tranquillité du cœur et la sécurité absolue', p: ['L\'obtention immédiate de richesses', 'La fin de toutes les épreuves physiques', 'La célébrité auprès des gens'] },
+        // --- Levels 2 & 3 Additions ---
+        { q: 'Quelles sont les deux conditions de la Shahada qui s\'opposent à l\'hypocrisie et au doute ?', a: 'La Sincérité et la Certitude', p: ['La Science et l\'Amour', 'L\'Acceptation et la Soumission', 'La Véracité et la Pratique'] },
+        { q: 'Pourquoi les mécréants de la Mecque refusaient l\'Islam s\'ils croyaient en un Créateur ?', a: 'Car ils refusaient de Lui vouer un culte exclusif (Uloûhiya)', p: ['Car ils ne comprenaient pas l\'arabe', 'Car ils pensaient qu\'Allah n\'existait pas', 'Car ils ne croyaient pas aux miracles'] },
+        { q: 'Quel est l\'ultime degré de l\'amour selon Ibn Al-Qayyim ?', a: 'L\'adoration', p: ['L\'amitié', 'La fraternité', 'Le respect'] },
+        { q: 'Pour qu\'un acte soit accepté, il faut la Sincérité et une deuxième condition, laquelle ?', a: 'Le suivi de la Sunna du Prophète ﷺ', p: ['Le faire devant témoins', 'Qu\'il soit difficile à accomplir', 'Qu\'il soit fait à la Mecque'] },
+        { q: 'De quoi les anges sont-ils créés ?', a: 'De lumière', p: ['D\'argile', 'De feu', 'D\'eau'] },
+        { q: 'Combien d\'ailes le Prophète ﷺ a-t-il vu à l\'ange Gabriel dans sa forme originelle ?', a: '600 ailes', p: ['2 ailes', '7 ailes', '99 ailes'] },
+        { q: 'Comment l\'ange de la mort est-il appelé dans le Coran et la Sunna ?', a: 'Malak al-Mawt (l\'Ange de la mort)', p: ['Izrâ\'îl', 'Isrâfîl', 'Mikaïl'] },
+        { q: 'Quel est le rôle de l\'ange Isrâfîl ?', a: 'Souffler dans la trompe pour la résurrection', p: ['Apporter la pluie', 'Transmettre la révélation', 'Garder les portes du Paradis'] },
+        { q: 'Qui est l\'ange Mâlick dans la croyance islamique ?', a: 'Le gardien de l\'Enfer', p: ['Le gardien du Paradis', 'Le porteur du Trône', 'L\'ange de la pluie'] },
+        { q: 'À quel Prophète les Psaumes (Az-Zabour) ont-ils été révélés ?', a: 'David (Dawoûd)', p: ['Moïse (Moussa)', 'Jésus (Issa)', 'Abraham (Ibrahim)'] },
+        { q: 'Que signifie linguistiquement le mot grec "Évangile" ?', a: 'La bonne nouvelle', p: ['Le livre sacré', 'L\'unicité', 'Le chemin droit'] },
+        { q: 'Quelle est la différence entre un Messager (Rasoûl) et un Prophète (Nabî) ?', a: 'Le Messager apporte une nouvelle législation', p: ['Le Prophète est plus important', 'Il n\'y a aucune différence', 'Seul le Messager reçoit la révélation'] },
+        { q: 'Qui est surnommé le "Sceau des Prophètes" ?', a: 'Mohammed ﷺ', p: ['Ibrahim ', 'Moussa ', 'Nuh '] },
+        { q: 'Quels sont les 4 degrés (étapes) de la foi au destin (Al-Qadr) ?', a: 'Science, Écriture, Volonté et Création', p: ['Prière, Jeûne, Zakat et Hajj', 'Crainte, Espoir, Amour et Confiance', 'Unicité, Sincérité, Suivi et Acte'] },
+        { q: 'Combien de temps avant la création de l\'univers les destinées ont-elles été écrites ?', a: '50 000 ans', p: ['1 000 ans', '1 million d\'années', 'Depuis l\'éternité'] },
+        { q: 'La volonté de l\'homme est-elle indépendante de celle d\'Allah ?', a: 'Non, elle est dépendante de la volonté d\'Allah', p: ['Oui, l\'homme est totalement libre', 'Oui, Allah n\'intervient pas dans nos choix', 'Non, l\'homme n\'a aucune volonté'] },
+        { q: 'Peut-on nommer Allah par un nom qu\'Il ne S\'est pas attribué (ex: L\'Architecte) ?', a: 'Non, car Ses Noms sont d\'institution divine uniquement', p: ['Oui, si le sens est beau', 'Oui, pour expliquer aux non-musulmans', 'Seulement en période de guerre'] },
+        { q: 'Que signifie le terme "Tahrîf" concernant les noms d\'Allah ?', a: 'Le fait de falsifier le sens ou les mots', p: ['Le fait de nier l\'existence d\'Allah', 'Le fait d\'adorer des idoles', 'Le fait de douter du destin'] },
+        { q: 'Les Noms d\'Allah sont-ils limités au nombre de 99 ?', a: 'Non, Il possède des Noms dont Lui seul a la connaissance', p: ['Oui, le chiffre est fixe et définitif', 'Oui, c\'est ce que dit le Coran', 'Non, il y en a exactement 1000'] },
+        { q: 'Quelle règle suit-on pour les attributs comme la "Main" d\'Allah ?', a: 'On les affirme tels quels, sans ressemblance avec les créatures', p: ['On les nie totalement', 'On dit que c\'est purement imaginaire', 'On les compare aux mains humaines'] },
+        { q: 'Que signifie linguistiquement le mot "Koufr" ?', a: 'Le fait de couvrir ou cacher une chose', p: ['Le fait de détester', 'Le fait de combattre', 'Le fait de s\'éloigner'] },
+        { q: 'Quel est le jugement de celui qui annule un projet à cause d\'un mauvais présage ?', a: 'C\'est du polythéisme mineur (Shirk Asghar)', p: ['C\'est une bonne précaution', 'C\'est une obligation religieuse', 'C\'est une mécréance majeure d\'office'] },
+        { q: 'Porter une "Main de Fatma" en pensant qu\'elle protège par elle-même est... ?', a: 'De l\'association majeure (Shirk Akbar)', p: ['Une simple tradition décorative', 'Une protection recommandée', 'Un petit péché sans gravité'] },
+        { q: 'Quel est le jugement de la sorcellerie impliquant les démons ?', a: 'C\'est de la mécréance majeure', p: ['C\'est un métier autorisé', 'C\'est une simple illusion sans péché', 'C\'est un péché mineur'] },
+        { q: 'Qu\'est-ce que l\'ostentation (Riyâ\') ?', a: 'Faire une adoration pour être vu et loué par les gens', p: ['Être fier de son travail', 'Faire la prière devant sa famille', 'Apprendre le Coran avec un professeur'] },
+        { q: 'Quel moyen de Tawassul (rapprochement) est licite ?', a: 'Par les Noms d\'Allah ou ses propres bonnes actions', p: ['Par l\’invocation d\’un mort pieux', 'Par le degré d\'un saint décédé', 'Par le sacrifice d\'une bête sur une tombe'] },
+        { q: 'Quelles sont les 3 questions posées dans la tombe ?', a: 'Seigneur ? Religion ? Prophète ?', p: ['Richesse ? Famille ? Travail ?', 'Prière ? Jeûne ? Zakat ?', 'Coran ? Langue ? Histoire ?'] },
+        { q: 'Quelle est la cause du haut taux de suicide chez les athées ?', a: 'L\'absence de sens à la vie et de quiétude du cœur', p: ['Le manque d\'argent', 'La pression sociale', 'La pollution environnementale'] },
+        { q: 'Pourquoi la théorie de Darwin est-elle critiquée ?', a: 'Car elle n\'explique pas le passage de l\'inerte à la vie consciente', p: ['Car elle est trop ancienne', 'Car elle parle des animaux', 'Car elle est trop complexe'] },
+    ];
+    return data.map(d => buildMCQ('tawhid', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
+}
+
+
 // ─── Audio Questions ────────────────────────────────────
 
 function generateAudioQuestions(): QuizQuestion[] {
@@ -783,6 +841,7 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
         pillars: generatePillarsQuestions(),
         hadiths: generateHadithsQuestions(),
         culture: generateCultureQuestions(),
+        tawhid: generateTawhidQuestions(),
     };
 
     console.log('[QuizEngine] Question bank generated:',
@@ -845,7 +904,7 @@ export function getSprintQuestions(count: number = 30): QuizQuestion[] {
 /** Build 3 rounds of duel questions, each round = random theme × 3 questions */
 export function getDuelRoundQuestions(customThemes?: QuizThemeId[]): { themes: QuizThemeId[]; questions: QuizQuestion[][] } {
     const bank = getQuestionBank();
-    const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture'];
+    const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture', 'tawhid'];
     const selectedThemes = customThemes || pick(allThemeIds, 3);
 
     const rounds = selectedThemes.map(themeId => {
