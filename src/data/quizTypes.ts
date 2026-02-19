@@ -43,7 +43,8 @@ export type QuizThemeId =
     | 'pillars'
     | 'hadiths'
     | 'culture'
-    | 'tawhid';
+    | 'tawhid'
+    | 'fiqh';
 
 export type QuizDifficulty = 'easy' | 'medium' | 'hard';
 
@@ -292,6 +293,14 @@ export const QUIZ_THEMES: QuizTheme[] = [
         emoji: '☝️',
         color: '#006064',
         gradient: 'linear-gradient(135deg, #00363a, #006064)',
+    },
+    {
+        id: 'fiqh',
+        name: 'Fiqh & Jurisprudence',
+        nameAr: 'الفقه الإسلامي',
+        emoji: '⚖️',
+        color: '#2E7D32',
+        gradient: 'linear-gradient(135deg, #1B5E20, #2E7D32)',
     },
 ];
 

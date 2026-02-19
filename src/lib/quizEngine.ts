@@ -776,6 +776,72 @@ function generateTawhidQuestions(): QuizQuestion[] {
     return data.map(d => buildMCQ('tawhid', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
 }
 
+// ─── Fiqh & Jurisprudence (PDF Levels 1, 2, 3) ─────────
+function generateFiqhQuestions(): QuizQuestion[] {
+    const data = [
+        // --- Purification ---
+        { q: 'Quel est le statut d\'une eau dont le goût a été changé par un élément propre au point de changer son nom (ex: eau + café) ?', a: 'Elle n\'est plus purifiante pour les ablutions', p: ['Elle reste purifiante', 'Elle est impure d\'office', 'Elle est seulement déconseillée'] },
+        { q: 'Comment doit être purifié un récipient dans lequel un chien a lapé ?', a: 'Le laver 7 fois, dont la première avec de la terre', p: ['Le laver une fois avec de l\'eau', 'Le jeter immédiatement', 'Le laver 3 fois avec du savon'] },
+        { q: 'Comment se purifie l\'urine d\'un petit garçon qui ne mange pas encore de nourriture solide ?', a: 'On asperge légèrement la partie touchée', p: ['On doit laver et essorer obligatoirement', 'On doit jeter le vêtement', 'On ne fait rien'] },
+        { q: 'Quel est le jugement du port d\'amulettes ou le recours à la superstition ?', a: 'C\'est une forme de polythéisme (Shirk)', p: ['C\'est une sunna recommandée', 'C\'est une obligation en voyage', 'C\'est une tradition sans statut religieux'] },
+        { q: 'L\'intention pour les ablutions doit-elle être prononcée à voix haute ?', a: 'Non, elle réside exclusivement dans le cœur', p: ['Oui, avant de commencer', 'Oui, après avoir fini', 'Seulement si on est seul'] },
+        { q: 'Que doit faire celui qui a oublié de se laver les mains jusqu\'aux coudes lors de ses ablutions ?', a: 'Il doit refaire ses ablutions entièrement pour respecter l\'ordre', p: ['Il lave juste ses mains', 'Il continue sa prière', 'Il fait le Tayammum'] },
+        { q: 'Quelle est la durée autorisée pour essuyer sur les chaussettes pour une personne résidente ?', a: '24 heures (un jour et une nuit)', p: ['12 heures', '3 jours et 3 nuits', 'Indéfiniment tant qu\'on ne les retire pas'] },
+        { q: 'Que signifie linguistiquement le mot "Ghusl" ?', a: 'Le fait de verser de l\'eau sur le corps en le frottant', p: ['Le fait de se parfumer', 'Le fait de changer de vêtements', 'La purification du cœur'] },
+
+        // --- Salat (Prayer) ---
+        { q: 'À quel moment la prière a-t-elle été légiférée ?', a: 'Lors de la nuit de l\'Ascension (Al-Isra wal Mi\'raj)', p: ['La première année de l\'hégire', 'Avant la prophétie', 'À Médine'] },
+        { q: 'À quel moment s\'arrête le temps de la prière de l\'Icha selon l\'avis fort ?', a: 'À la moitié de la nuit religieuse', p: ['À minuit pile', 'À l\'apparition de l\'aube', 'Au milieu de la nuit civile'] },
+        { q: 'Le Takbir de sacralisation peut-il être remplacé par une autre formule ?', a: 'Non, aucune autre formule n\'est acceptée', p: ['Oui, par "SoubhanAllah"', 'Oui, par "Al Hamdulillah"', 'Oui, si on oublie les mots'] },
+        { q: 'Quel est le jugement du rire s\'il y a émission d\'un son pendant la prière ?', a: 'Il annule la prière de manière unanime', p: ['Il est simplement déconseillé', 'Il ne fait rien', 'Il nécessite une prosternation d\'oubli'] },
+        { q: 'À partir de quel âge doit-on ordonner la prière à un enfant ?', a: '7 ans', p: ['10 ans', 'À la puberté', '5 ans'] },
+        { q: 'Une femme peut-elle diriger la prière mortuaire devant d\'autres femmes ?', a: 'Oui, c\'est autorisé', p: ['Non, c\'est interdit', 'Seulement si l\'imam est absent', 'Seulement le jour du vendredi'] },
+        { q: 'Que doit faire celui qui délaisse un pilier de la prière par oubli ?', a: 'Il doit obligatoirement accomplir le pilier manquant', p: ['Faire deux prosternations d\'oubli', 'Il ne fait rien', 'Recommencer la prière d\'office'] },
+        { q: 'Est-ce que le sourire (sans son) annule la prière ?', a: 'Non, il ne l\'annule pas', p: ['Oui, totalement', 'Oui, s\'il est répété 3 fois', 'Seulement si on est l\'imam'] },
+        { q: 'Pourquoi est-il recommandé de pointer l\'index lors du Tashahhoud ?', a: 'C\'est un signe d\'unicité éprouvant pour Satan', p: ['Pour compter les versets', 'C\'est un simple exercice physique', 'Pour appeler les anges'] },
+        { q: 'Quel est le statut de la prière du Vendredi pour le voyageur ?', a: 'Elle n\'est pas obligatoire', p: ['Elle reste obligatoire', 'Elle est interdite', 'Elle est remplacée par la prière du Maghreb'] },
+        { q: 'Peut-on prier derrière un imam pécheur selon la majorité des jurisconsultes ?', a: 'Oui, la prière est valide', p: ['Non, elle est nulle', 'Seulement si c\'est un petit péché', 'Seulement une fois par an'] },
+        { q: 'À quel moment l\'Imam doit-il saluer les fidèles le vendredi ?', a: 'Lorsqu\'il monte sur sa chaire (Minbar)', p: ['Avant d\'entrer dans la mosquée', 'Après le deuxième sermon', 'Pendant l\'appel à la prière'] },
+
+        // --- Zakat ---
+        { q: 'Quelle est la définition religieuse de la Zakat ?', a: 'Un droit prélevé sur une richesse spécifique pour des bénéficiaires précis', p: ['Un don volontaire sans limite', 'Une taxe d\'état civile', 'Une amende pour les péchés'] },
+        { q: 'Combien de catégories de bénéficiaires de la Zakat le Coran mentionne-t-il ?', a: '8 catégories', p: ['3 catégories', '10 catégories', '5 catégories'] },
+        { q: 'Quel est le seuil imposable (Nissab) pour l\'or ?', a: '85 grammes', p: ['100 grammes', '595 grammes', '50 grammes'] },
+        { q: 'À quel moment la Zakat al-Fitr doit-elle être donnée au plus tard ?', a: 'Avant la prière de l\'Aïd', p: ['Avant la fin du mois de Ramadan', 'Avant le coucher du soleil de l\'Aïd', 'Le lendemain de la fête'] },
+        { q: 'Peut-on donner la Zakat pour la construction d\'une route ou d\'un hôpital ?', a: 'Non, elle est réservée aux 8 catégories coraniques', p: ['Oui, c\'est un acte de bienfaisance', 'Oui, si on ne trouve pas de pauvres', 'Uniquement avec l\'accord de l\'imam'] },
+        { q: 'Quel est le jugement de celui qui refuse de payer la Zakat par avarice ?', a: 'C\'est un péché majeur mais il reste musulman', p: ['Il devient mécréant immédiatement', 'Ce n\'est pas un péché grave', 'Il doit redoubler son jeûne'] },
+        { q: 'La Zakat al-Fitr est-elle due pour le fœtus de plus de 4 mois ?', a: 'C\'est recommandé selon les pieux prédécesseurs', p: ['C\'est strictement interdit', 'C\'est une obligation ferme', 'Seulement si l\'enfant bouge beaucoup'] },
+        { q: 'Quelle est la quantité de Zakat al-Fitr à verser par personne ?', a: 'Un Sa\'a (environ 2,5 kg de denrée alimentaire)', p: ['Un repas complet au restaurant', 'Un montant fixe de 100 euros', 'Une demi-datte'] },
+        { q: 'La Zakat est-elle due sur les bijoux destinés à une utilisation licite selon l\'avis fort ?', a: 'Oui, il est obligatoire de s\'en acquitter', p: ['Non, aucune Zakat sur les bijoux portés', 'Uniquement s\'ils sont en argent', 'Seulement s\'ils sont très chers'] },
+        { q: 'À quel moment précis la Zakat al-Fitr devient-elle obligatoire ?', a: 'Au coucher du soleil la veille de l\'Aïd', p: ['Le premier jour de Ramadan', 'Après la prière du Maghreb le jour de l\'Aïd', 'Le matin même de la naissance'] },
+
+        // --- Hajj & Umrah ---
+        { q: 'Qu\'est-ce que le "Mîqât" dans le cadre du pèlerinage ?', a: 'La limite géographique où l\'on se met en état de sacralisation', p: ['Le nom d\'un pilier de la Ka\'ba', 'La montagne de Arafat', 'La fin du pèlerinage'] },
+        { q: 'Quels sont les 4 piliers fondamentaux sans lesquels le Hajj n\'est pas valide ?', a: 'Ihram, Arafat, Tawaf Ifada et Sa\'y (Safa/Marwa)', p: ['Prière, Jeûne, Zakat et Hajj', 'Ihram, Mina, Muzdalifa et Safa', 'Tawaf, Lapidation, Sacrifice et Rasage'] },
+        { q: 'Où doit obligatoirement avoir lieu le stationnement (Wouqouf) du pèlerin ?', a: 'À Arafat', p: ['À Mina', 'À Muzdalifa', 'Sur le mont Safa'] },
+        { q: 'Combien de tours comporte le Tawâf autour de la Ka\'ba ?', a: '7 tours', p: ['3 tours', '10 tours', '5 tours'] },
+        { q: 'Le parcours entre Safa et Marwa nécessite-t-il obligatoirement les ablutions ?', a: 'Non, c\'est recommandé mais pas obligatoire', p: ['Oui, c\'est une condition de validité', 'Oui, seulement pour les hommes', 'C\'est interdit sans ablutions'] },
+        { q: 'Qu\'est-ce que le Hajj "Tamattu" ?', a: 'Effectuer une Umra, se désacraliser, puis faire le Hajj', p: ['Faire le Hajj seul sans Umra', 'Faire la Umra et le Hajj avec un seul Ihram', 'Rattraper un pèlerinage manqué'] },
+        { q: 'À partir de quel endroit se sacralisent les habitants de Médine ?', a: 'Dhul-Hulayfa', p: ['Al-Juhfa', 'Yalamlam', 'Dhât \'Irq'] },
+        { q: 'Que célèbre-t-on par le sacrifice d\'une bête (Al-Oudhiya) ?', a: 'Le souvenir de l\'acte de foi du Prophète Ibrahim', p: ['La naissance d\'un enfant', 'Le départ en voyage', 'La fin de l\'année hégirienne'] },
+        { q: 'Combien d\'Umra le Prophète ﷺ a-t-il accomplies ?', a: 'Quatre', p: ['Une seule', 'Dix', 'Aucune'] },
+        { q: 'Sur quel côté doit se trouver la Ka\'ba pendant le Tawâf ?', a: 'Le côté gauche du pèlerin', p: ['Le côté droit', 'En face du pèlerin', 'Derrière le pèlerin'] },
+        { q: 'Comment s\'appelle l\'acte de trotter rapidement entre les deux signes verts ?', a: 'Al-Khabab', p: ['Al-Mîqât', 'Al-Maqâm', 'Al-Ihrâm'] },
+        { q: 'Quel est le signe de la nuit du destin ?', a: 'Le soleil se lève blanc et sans rayons le matin suivant', p: ['Il pleut toute la nuit', 'La lune est rouge', 'Les étoiles sont plus brillantes'] },
+        { q: 'Combien de temps avant la création de l\'univers les destinées ont-elles été écrites ?', a: '50 000 ans', p: ['1 000 ans', '1 million d\'années', '10 000 ans'] },
+        { q: 'Quel est l\'endroit où le Prophète ﷺ a dit que "tout entier est un lieu de station" ?', a: 'Arafat', p: ['Mina', 'Muzdalifa', 'Le mont de la Miséricorde'] },
+        { q: 'Peut-on se parfumer APRÈS s\'être mis en état de sacralisation (Ihram) ?', a: 'Non, c\'est interdit', p: ['Oui, avec du parfum naturel', 'Oui, uniquement le premier jour', 'C\'est seulement déconseillé'] },
+
+        // --- Sacrifices & Funerals ---
+        { q: 'Comment s\'appelle le sacrifice effectué pour la naissance d\'un enfant ?', a: 'La \'Aqîqah', p: ['Al-Oudhiya', 'Al-Hady', 'Al-Fidya'] },
+        { q: 'Quelle est la quantité de moutons pour la naissance d\'un garçon ?', a: 'Deux moutons', p: ['Un seul', 'Trois moutons', 'Une vache'] },
+        { q: 'Où se tient l\'Imam lors de la prière funéraire pour un homme ?', a: 'Au niveau de la poitrine', p: ['Au niveau du ventre', 'À côté des pieds', 'À 10 mètres du corps'] },
+        { q: 'Quelle est la durée du deuil obligatoire pour une femme dont l\'époux est décédé ?', a: '4 mois et 10 jours', p: ['3 mois', '1 an', '40 jours'] },
+        { q: 'Que signifie "Janâba" ?', a: 'L\'état d\'impureté majeure nécessitant le Ghusl', p: ['L\'état de prière constante', 'Le nom d\'une mosquée', 'Un type de tissu pour linceul'] },
+    ];
+    return data.map(d => buildMCQ('fiqh', d.q, d.a, [...d.p, d.a])).filter(q => q !== null) as QuizQuestion[];
+}
+
 
 // ─── Audio Questions ────────────────────────────────────
 
@@ -842,6 +908,7 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
         hadiths: generateHadithsQuestions(),
         culture: generateCultureQuestions(),
         tawhid: generateTawhidQuestions(),
+        fiqh: generateFiqhQuestions(),
     };
 
     console.log('[QuizEngine] Question bank generated:',
@@ -904,7 +971,7 @@ export function getSprintQuestions(count: number = 30): QuizQuestion[] {
 /** Build 3 rounds of duel questions, each round = random theme × 3 questions */
 export function getDuelRoundQuestions(customThemes?: QuizThemeId[]): { themes: QuizThemeId[]; questions: QuizQuestion[][] } {
     const bank = getQuestionBank();
-    const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture', 'tawhid'];
+    const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture', 'tawhid', 'fiqh'];
     const selectedThemes = customThemes || pick(allThemeIds, 3);
 
     const rounds = selectedThemes.map(themeId => {
