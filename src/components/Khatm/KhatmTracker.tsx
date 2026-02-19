@@ -139,10 +139,9 @@ export function KhatmTracker() {
 
         sessionStorage.setItem('isSilentJump', 'true');
         sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: lastKhatmSurah, ayah: lastKhatmAyah }));
-        // Navigate WITHOUT silent flag — Khatm resume is legitimate, not exploration
-        goToAyah(lastKhatmSurah, lastKhatmAyah, lastKhatmPage);
-        // Ensure isExploring is cleared in case it was stuck
-        useQuranStore.getState().stopExploring();
+        // Use silent: true to preserve general reading progress (Reprendre ma lecture)
+        // isExploring deadlock is no longer an issue because updateProgress() always runs
+        goToAyah(lastKhatmSurah, lastKhatmAyah, lastKhatmPage, { silent: true });
         setShowDetails(false);
     };
 
