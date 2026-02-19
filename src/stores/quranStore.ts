@@ -154,9 +154,11 @@ export const useQuranStore = create<QuranState>()(
 
             goToSurah: (surah, options = {}) => {
                 if (surah >= 1 && surah <= 114) {
+                    const page = SURAH_START_PAGES[surah - 1];
                     set((state) => ({
                         currentSurah: surah,
                         currentAyah: 1,
+                        currentPage: page,
                         isExploring: !!options.silent,
                         explorationSurah: !!options.silent ? surah : 0,
                         explorationAyah: !!options.silent ? 1 : 0,
@@ -173,11 +175,9 @@ export const useQuranStore = create<QuranState>()(
                 const updateState: any = {
                     currentSurah: surah,
                     currentAyah: ayah,
+                    currentPage: page || SURAH_START_PAGES[surah - 1],
                     isExploring: !!options.silent,
                 };
-                if (page) {
-                    updateState.currentPage = page;
-                }
                 set((state) => {
                     console.log(`[Quran Store] Applying state update jumpSignal ${state.jumpSignal} -> ${state.jumpSignal + 1}`);
                     return {
@@ -211,7 +211,9 @@ export const useQuranStore = create<QuranState>()(
             nextSurah: () => {
                 const { currentSurah } = get();
                 if (currentSurah < 114) {
-                    set({ currentSurah: currentSurah + 1, currentAyah: 1, isExploring: false });
+                    const nextS = currentSurah + 1;
+                    const page = SURAH_START_PAGES[nextS - 1];
+                    set({ currentSurah: nextS, currentAyah: 1, currentPage: page, isExploring: false });
                     get().updateProgress();
                 }
             },
@@ -219,7 +221,9 @@ export const useQuranStore = create<QuranState>()(
             prevSurah: () => {
                 const { currentSurah } = get();
                 if (currentSurah > 1) {
-                    set({ currentSurah: currentSurah - 1, currentAyah: 1, isExploring: false });
+                    const prevS = currentSurah - 1;
+                    const page = SURAH_START_PAGES[prevS - 1];
+                    set({ currentSurah: prevS, currentAyah: 1, currentPage: page, isExploring: false });
                     get().updateProgress();
                 }
             },
