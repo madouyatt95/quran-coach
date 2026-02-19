@@ -270,7 +270,7 @@ export function MushafPage() {
                         const idx = ayahs.findIndex(a => a.surah === surah && a.numberInSurah === ayah);
                         if (idx !== -1) {
                             setRenderedCount(Math.max(20, idx + 10));
-                            // Trigger scroll again now that we have data and updated count
+                            // Trigger scroll now that we have data and updated count
                             setTimeout(() => scrollToVerse(surah, ayah), 100);
                         }
                     } catch (e) { /* ignore */ }
@@ -282,6 +282,9 @@ export function MushafPage() {
                         setTimeout(() => scrollToPageStart(p), 100);
                     }
                 }
+                // Clear scroll items after processing — they've served their purpose
+                sessionStorage.removeItem('scrollToAyah');
+                sessionStorage.removeItem('scrollToPage');
             }
 
         }).catch(() => {
@@ -321,12 +324,12 @@ export function MushafPage() {
                 else window.scrollTo({ top: 0, behavior: 'auto' });
             }
 
-            // Clear flags after a longer delay to ensure observer is blocked
+            // Clear only the observer-blocking flag after delay
+            // NOTE: scrollToAyah/scrollToPage are NOT cleared here — they must
+            // persist until the data-load handler (line ~264) processes them
             setTimeout(() => {
                 isSilentJumpRef.current = false;
                 sessionStorage.removeItem('isSilentJump');
-                sessionStorage.removeItem('scrollToPage');
-                sessionStorage.removeItem('scrollToAyah');
             }, 3000);
         }
     }, [jumpSignal, scrollToVerse, scrollToPageStart, currentSurahAyahs]);
