@@ -131,7 +131,7 @@ export const useQuranStore = create<QuranState>()(
                         currentPage: page,
                         currentSurah: surah,
                         currentAyah: 1,
-                        isExploring: !!options.silent,
+                        isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -147,7 +147,7 @@ export const useQuranStore = create<QuranState>()(
                         currentSurah: surah,
                         currentAyah: 1,
                         currentPage: page,
-                        isExploring: !!options.silent,
+                        isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -161,11 +161,11 @@ export const useQuranStore = create<QuranState>()(
                     currentSurah: surah,
                     currentAyah: ayah,
                     currentPage: page || SURAH_START_PAGES[surah - 1],
-                    isExploring: !!options.silent,
                 };
                 set((state) => {
                     return {
                         ...updateState,
+                        isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
                         jumpSignal: state.jumpSignal + 1
                     };
                 });
@@ -177,7 +177,7 @@ export const useQuranStore = create<QuranState>()(
             nextPage: () => {
                 const { currentPage } = get();
                 if (currentPage < 604) {
-                    set({ currentPage: currentPage + 1, isExploring: false });
+                    set({ currentPage: currentPage + 1 });
                     get().updateProgress();
                 }
             },
@@ -185,7 +185,7 @@ export const useQuranStore = create<QuranState>()(
             prevPage: () => {
                 const { currentPage } = get();
                 if (currentPage > 1) {
-                    set({ currentPage: currentPage - 1, isExploring: false });
+                    set({ currentPage: currentPage - 1 });
                     get().updateProgress();
                 }
             },
@@ -195,7 +195,7 @@ export const useQuranStore = create<QuranState>()(
                 if (currentSurah < 114) {
                     const nextS = currentSurah + 1;
                     const page = SURAH_START_PAGES[nextS - 1];
-                    set({ currentSurah: nextS, currentAyah: 1, currentPage: page, isExploring: false });
+                    set({ currentSurah: nextS, currentAyah: 1, currentPage: page });
                     get().updateProgress();
                 }
             },
@@ -205,7 +205,7 @@ export const useQuranStore = create<QuranState>()(
                 if (currentSurah > 1) {
                     const prevS = currentSurah - 1;
                     const page = SURAH_START_PAGES[prevS - 1];
-                    set({ currentSurah: prevS, currentAyah: 1, currentPage: page, isExploring: false });
+                    set({ currentSurah: prevS, currentAyah: 1, currentPage: page });
                     get().updateProgress();
                 }
             },
