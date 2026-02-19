@@ -275,8 +275,8 @@
 /* Ayah container */
 .mih-ayahs {
     font-family: var(--font-arabic), 'Traditional Arabic', serif;
-    font-size: 1.7rem;
-    line-height: 2.8;
+    font-size: 1.6rem;
+    line-height: 3.0;
     direction: rtl;
     text-align: justify;
     text-justify: inter-word;
@@ -363,18 +363,18 @@
 
 /* Font sizes */
 [data-arabic-size="sm"] .mih-ayahs {
-    font-size: 1.4rem;
-    line-height: 2;
+    font-size: 1.3rem;
+    line-height: 2.4;
 }
 
 [data-arabic-size="lg"] .mih-ayahs {
-    font-size: 2.0rem;
-    line-height: 2.6;
+    font-size: 1.9rem;
+    line-height: 3.0;
 }
 
 [data-arabic-size="xl"] .mih-ayahs {
-    font-size: 2.4rem;
-    line-height: 2.8;
+    font-size: 2.3rem;
+    line-height: 3.2;
 }
 
 /* ========================================

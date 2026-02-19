@@ -2,6 +2,7 @@
 
 /* Arabic Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/kfgqpc-uthmanic-script-hafs');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -32,7 +33,7 @@
   --tajwid-iqlab: #87CEEB;
 
   /* Typography */
-  --font-arabic: 'Amiri', 'Traditional Arabic', serif;
+  --font-arabic: 'KFGQPC Uthmanic Script HAFS', 'Amiri', 'Traditional Arabic', serif;
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
   --text-arabic-xl: 2.5rem;
