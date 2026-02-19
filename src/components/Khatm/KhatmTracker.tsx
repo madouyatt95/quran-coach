@@ -141,7 +141,7 @@ export function KhatmTracker() {
         sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: lastKhatmSurah, ayah: lastKhatmAyah }));
         // Use silent: true to preserve general reading progress (Reprendre ma lecture)
         // isExploring deadlock is no longer an issue because updateProgress() always runs
-        goToAyah(lastKhatmSurah, lastKhatmAyah, lastKhatmPage, { silent: true });
+        (goToAyah as any)(lastKhatmSurah, lastKhatmAyah, lastKhatmPage, { silent: true, khatm: true });
         setShowDetails(false);
     };
 

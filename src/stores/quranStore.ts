@@ -22,7 +22,8 @@ interface QuranState {
 
     // Reading progress
     progress: ReadingProgress | null;
-    isExploring: boolean; // Flag to prevent bookmark updates during search/exploration
+    isExploring: boolean; // Flag for search/manual jumps (resumes tracking after 10 verses)
+    isKhatmMode: boolean; // Flag for Khatm sessions (strictly freezes general bookmark)
     jumpSignal: number;  // Counter to trigger scroll effects on the same surah
 
     // Actions
@@ -58,6 +59,7 @@ export const useQuranStore = create<QuranState>()(
             error: null,
             progress: null,
             isExploring: false,
+            isKhatmMode: false,
             jumpSignal: 0,
             version: '1.2.8', // Diagnostic internal version
 
@@ -73,7 +75,7 @@ export const useQuranStore = create<QuranState>()(
             updateProgress: (options = {}) => {
                 const {
                     currentSurah, currentAyah, currentPage,
-                    progress, isExploring
+                    progress, isExploring, isKhatmMode
                 } = get();
 
                 if (options.force) {
@@ -84,13 +86,22 @@ export const useQuranStore = create<QuranState>()(
                     return;
                 }
 
-                if (isExploring) {
-                    // SILENT MODE PROTECTION:
-                    // If we reached this via a silent jump (like Resume Khatm),
-                    // we NEVER automatically resume general progress tracking here.
-                    // This keeps "Reprendre ma lecture" frozen at its old position
-                    // even if the user reads many pages of their Khatm.
+                if (isKhatmMode) {
+                    // KHATM MODE: Strictly frozen. Never update general bookmark.
                     return;
+                }
+
+                if (isExploring) {
+                    // SEARCH/EXPLORATION MODE:
+                    // If we moved 10 verses, we assume the user has started a new reading session
+                    const verseDiff = progress ? Math.abs(currentAyah - progress.lastAyah) : 0;
+
+                    if (verseDiff < 10 && currentSurah === progress?.lastSurah) {
+                        return; // Still in "silent" zone
+                    }
+
+                    // Take over bookmark
+                    set({ isExploring: false });
                 }
 
                 // Normal threshold check (10 verses from last saved)
@@ -132,6 +143,7 @@ export const useQuranStore = create<QuranState>()(
                         currentSurah: surah,
                         currentAyah: 1,
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
+                        isKhatmMode: (options as any).khatm || false,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -148,6 +160,7 @@ export const useQuranStore = create<QuranState>()(
                         currentAyah: 1,
                         currentPage: page,
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
+                        isKhatmMode: (options as any).khatm || false,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -166,6 +179,7 @@ export const useQuranStore = create<QuranState>()(
                     return {
                         ...updateState,
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
+                        isKhatmMode: (options as any).khatm || false,
                         jumpSignal: state.jumpSignal + 1
                     };
                 });
@@ -177,7 +191,7 @@ export const useQuranStore = create<QuranState>()(
             nextPage: () => {
                 const { currentPage } = get();
                 if (currentPage < 604) {
-                    set({ currentPage: currentPage + 1 });
+                    set({ currentPage: currentPage + 1, isKhatmMode: false });
                     get().updateProgress();
                 }
             },
@@ -185,7 +199,7 @@ export const useQuranStore = create<QuranState>()(
             prevPage: () => {
                 const { currentPage } = get();
                 if (currentPage > 1) {
-                    set({ currentPage: currentPage - 1 });
+                    set({ currentPage: currentPage - 1, isKhatmMode: false });
                     get().updateProgress();
                 }
             },
@@ -217,6 +231,7 @@ export const useQuranStore = create<QuranState>()(
                 currentSurah: state.currentSurah,
                 currentAyah: state.currentAyah,
                 progress: state.progress,
+                isKhatmMode: state.isKhatmMode,
             }),
         }
     )
