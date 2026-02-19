@@ -23,8 +23,6 @@ interface QuranState {
     // Reading progress
     progress: ReadingProgress | null;
     isExploring: boolean; // Flag to prevent bookmark updates during search/exploration
-    explorationSurah: number;
-    explorationAyah: number;
     jumpSignal: number;  // Counter to trigger scroll effects on the same surah
 
     // Actions
@@ -60,8 +58,6 @@ export const useQuranStore = create<QuranState>()(
             error: null,
             progress: null,
             isExploring: false,
-            explorationSurah: 0,
-            explorationAyah: 0,
             jumpSignal: 0,
             version: '1.2.8', // Diagnostic internal version
 
@@ -77,8 +73,7 @@ export const useQuranStore = create<QuranState>()(
             updateProgress: (options = {}) => {
                 const {
                     currentSurah, currentAyah, currentPage,
-                    progress, isExploring,
-                    explorationSurah, explorationAyah
+                    progress, isExploring
                 } = get();
 
                 if (options.force) {
@@ -90,19 +85,12 @@ export const useQuranStore = create<QuranState>()(
                 }
 
                 if (isExploring) {
-                    // Check if we moved 10 verses from the exploration start destination
-                    const sameSurah = currentSurah === explorationSurah;
-                    const verseDiff = Math.abs(currentAyah - explorationAyah);
-
-                    // CRITICAL: Only stop exploring if we are in the SAME surah 
-                    // and moved significantly. This prevents "passing through" 
-                    // other surahs during auto-scroll from resetting the mode.
-                    if (!sameSurah || verseDiff < 10) {
-                        return; // Still in "silent" exploration zone
-                    }
-
-                    // User has clearly started reading from the new location
-                    set({ isExploring: false });
+                    // SILENT MODE PROTECTION:
+                    // If we reached this via a silent jump (like Resume Khatm),
+                    // we NEVER automatically resume general progress tracking here.
+                    // This keeps "Reprendre ma lecture" frozen at its old position
+                    // even if the user reads many pages of their Khatm.
+                    return;
                 }
 
                 // Normal threshold check (10 verses from last saved)
@@ -144,8 +132,6 @@ export const useQuranStore = create<QuranState>()(
                         currentSurah: surah,
                         currentAyah: 1,
                         isExploring: !!options.silent,
-                        explorationSurah: !!options.silent ? surah : 0,
-                        explorationAyah: !!options.silent ? 1 : 0,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -162,8 +148,6 @@ export const useQuranStore = create<QuranState>()(
                         currentAyah: 1,
                         currentPage: page,
                         isExploring: !!options.silent,
-                        explorationSurah: !!options.silent ? surah : 0,
-                        explorationAyah: !!options.silent ? 1 : 0,
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -182,8 +166,6 @@ export const useQuranStore = create<QuranState>()(
                 set((state) => {
                     return {
                         ...updateState,
-                        explorationSurah: !!options.silent ? surah : 0,
-                        explorationAyah: !!options.silent ? ayah : 0,
                         jumpSignal: state.jumpSignal + 1
                     };
                 });
