@@ -139,7 +139,10 @@ export function KhatmTracker() {
 
         sessionStorage.setItem('isSilentJump', 'true');
         sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: lastKhatmSurah, ayah: lastKhatmAyah }));
-        goToAyah(lastKhatmSurah, lastKhatmAyah, lastKhatmPage, { silent: true });
+        // Navigate WITHOUT silent flag — Khatm resume is legitimate, not exploration
+        goToAyah(lastKhatmSurah, lastKhatmAyah, lastKhatmPage);
+        // Ensure isExploring is cleared in case it was stuck
+        useQuranStore.getState().stopExploring();
         setShowDetails(false);
     };
 

@@ -55,7 +55,7 @@ export function MushafPage() {
 
     const { toggleFavorite, isFavorite } = useFavoritesStore();
     const { isActive: khatmActive, isPageValidated, togglePage: khatmTogglePage, updateLastRead: khatmUpdateLastRead } = useKhatmStore();
-    const isExploring = useQuranStore(state => state.isExploring);
+    // isExploring is used by quranStore for general reading progress, not needed for Khatm
 
     // ===== Local state =====
     const [isLoading, setIsLoading] = useState(true);
@@ -73,18 +73,19 @@ export function MushafPage() {
         console.log('[Quran Coach] v1.3.0 - Natural Khatm Logic Active');
     }, []);
 
-    // Immediate Khatm Reading Position Update (Natural progression only)
+    // Immediate Khatm Reading Position Update
+    // Note: updateLastRead has its own page ±1 sequential check, so no need for isExploring guard
     useEffect(() => {
-        if (!khatmActive || isExploring) return;
+        if (!khatmActive) return;
 
-        // Update Khatm position immediately when reading naturally
+        // Update Khatm position — updateLastRead rejects non-sequential jumps
         khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
-    }, [currentPage, currentSurah, currentAyah, khatmActive, isExploring]);
+    }, [currentPage, currentSurah, currentAyah, khatmActive]);
 
     // Immediate Khatm Page Validation (Sequential reading only)
     const lastKhatmPage = useKhatmStore(state => state.lastKhatmPage);
     useEffect(() => {
-        if (!khatmActive || isPageValidated(currentPage) || isExploring) return;
+        if (!khatmActive || isPageValidated(currentPage)) return;
 
         // Only auto-validate if reading sequentially (same page or ±1)
         const pageDiff = Math.abs(currentPage - lastKhatmPage);
@@ -92,7 +93,7 @@ export function MushafPage() {
 
         console.log(`[Khatm] Auto-validating page ${currentPage}`);
         khatmTogglePage(currentPage);
-    }, [currentPage, khatmActive, isPageValidated, isExploring, lastKhatmPage]);
+    }, [currentPage, khatmActive, isPageValidated, lastKhatmPage]);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
