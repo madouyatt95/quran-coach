@@ -71,16 +71,26 @@ export const useKhatmStore = create<KhatmState>()(
                 const { lastKhatmPage, lastKhatmSurah, lastKhatmAyah, isActive } = get();
                 if (!isActive) return;
 
-                // Better forward-only check: 
-                // 1. If page is further ahead
-                // 2. OR if same page but surah is further ahead
-                // 3. OR if same page and same surah but ayah is further ahead
+                // STRICT SEQUENTIAL CHECK:
+                // Page ±1 = sequential reading (scroll/swipe) → accept if forward
+                // Page diff > 1 = distant jump → reject
+                const pageDiff = page - lastKhatmPage;
+
+                if (pageDiff < 0 || pageDiff > 1) {
+                    console.log(`[Khatm] Rejected: page jump P${lastKhatmPage} → P${page} (diff=${pageDiff})`);
+                    return;
+                }
+
+                // Within sequential range: accept any forward progress
                 const isForward =
                     page > lastKhatmPage ||
-                    (page === lastKhatmPage && (surah > lastKhatmSurah || (surah === lastKhatmSurah && ayah > lastKhatmAyah)));
+                    (page === lastKhatmPage && (
+                        surah > lastKhatmSurah ||
+                        (surah === lastKhatmSurah && ayah > lastKhatmAyah)
+                    ));
 
                 if (isForward) {
-                    console.log(`[Khatm] Updating last read to S${surah}:A${ayah} (Page ${page})`);
+                    console.log(`[Khatm] ✓ S${lastKhatmSurah}:A${lastKhatmAyah}(P${lastKhatmPage}) → S${surah}:A${ayah}(P${page})`);
                     set({ lastKhatmSurah: surah, lastKhatmAyah: ayah, lastKhatmPage: page });
                 }
             },

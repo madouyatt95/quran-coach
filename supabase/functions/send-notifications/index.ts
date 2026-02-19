@@ -22,10 +22,13 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 // Cron runs every 30 min → window must be > 15 min to guarantee coverage.
 // We use 14 min on each side = 28-min window, safe with a 30-min cron.
 // Deduplication prevents double-sends when two cron ticks both see the window.
-const WINDOW_MIN = 14;
+// FIX: Detection window widened to ±16 min (guarantees coverage for 30-min cron).
+//      Deduplication via last_notified_* columns and COOLDOWN_MIN prevents double-sends.
+const WINDOW_MIN = 16;
 
-// Cooldown: don't re-send the same notification type within this many minutes
-const COOLDOWN_MIN = 20;
+// Cooldown: don't re-send the same notification type within this many minutes.
+// Must be > 30 (cron interval) to prevent double trigger when window overlaps cycle.
+const COOLDOWN_MIN = 50;
 
 // ─── Base64 helpers ─────────────────────────────────
 function urlBase64Decode(str: string): Uint8Array {
@@ -266,17 +269,29 @@ async function fetchPrayerTimes(
     const fAngle = settings.fajrAngle || 18;
     const iAngle = settings.ishaAngle || 17;
 
-    const cacheKey = `${roundCoord(lat)},${roundCoord(lng)},${fAngle},${iAngle},${school}`;
-    if (prayerTimesCache.has(cacheKey)) return prayerTimesCache.get(cacheKey)!;
+    const dateStr = new Date().toISOString().split('T')[0];
+    const cacheKey = `${dateStr},${roundCoord(lat)},${roundCoord(lng)},${fAngle},${iAngle},${school}`;
+    if (prayerTimesCache.has(cacheKey)) {
+        console.log(`[Diag] Prayer times from cache for key: ${cacheKey}`);
+        return prayerTimesCache.get(cacheKey)!;
+    }
 
     try {
         const url = `https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?latitude=${lat}&longitude=${lng}&method=99&methodSettings=${fAngle},null,${iAngle}&school=${school}`;
+        console.log(`[Diag] Fetching prayer times: ${url}`);
         const resp = await fetch(url);
         const data = await resp.json();
+        console.log(`[Diag] AlAdhan response code: ${data.code}, status: ${data.status}`);
         const times = data.code === 200 ? data.data.timings : null;
+        if (times) {
+            console.log(`[Diag] Prayer times: Fajr=${times.Fajr}, Dhuhr=${times.Dhuhr}, Asr=${times.Asr}, Maghrib=${times.Maghrib}, Isha=${times.Isha}, Sunrise=${times.Sunrise}`);
+        } else {
+            console.error(`[Diag] AlAdhan returned non-200 code. Full response: ${JSON.stringify(data).slice(0, 500)}`);
+        }
         prayerTimesCache.set(cacheKey, times);
         return times;
-    } catch {
+    } catch (err) {
+        console.error(`[Diag] AlAdhan API FETCH ERROR: ${err}`);
         prayerTimesCache.set(cacheKey, null);
         return null;
     }
@@ -290,6 +305,10 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // ─── Parse body for test mode ───────────────────────
+    let body: any = {};
+    try { body = await req.json(); } catch { /* empty body = normal cron */ }
+
     const { data: subscriptions, error } = await supabase
         .from("push_subscriptions")
         .select("*");
@@ -301,7 +320,29 @@ serve(async (req) => {
 
     console.log(`[Push] Processing ${subscriptions.length} subscriptions`);
 
+    // ─── TEST MODE: send immediate notification ─────────
+    if (body.test === true) {
+        console.log(`[TEST] Test mode activated! Sending test push to ${subscriptions.length} subscribers`);
+        let testSent = 0;
+        for (const sub of subscriptions) {
+            console.log(`[TEST] Sending to endpoint: ${sub.endpoint.slice(0, 60)}...`);
+            const ok = await sendPush(sub, {
+                title: "🔔 Test Quran Coach",
+                body: `Test réussi ! Pipeline push OK. (${new Date().toLocaleTimeString("fr-FR", { timeZone: sub.timezone || "Europe/Paris" })})`,
+                url: "/",
+                tag: "test-push",
+            });
+            console.log(`[TEST] Result for sub ${sub.id}: ${ok ? "✅ SUCCESS" : "❌ FAILED"}`);
+            if (ok) testSent++;
+        }
+        console.log(`[TEST] Done: ${testSent}/${subscriptions.length} sent`);
+        return new Response(JSON.stringify({ ok: true, test: true, sent: testSent, total: subscriptions.length }), {
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+
     const now = new Date();
+    console.log(`[Diag] Server UTC time: ${now.toISOString()}`);
     let sent = 0;
 
     for (const sub of subscriptions) {
@@ -311,50 +352,65 @@ serve(async (req) => {
         const localMinute = localTime.getMinutes();
         const currentMin = localHour * 60 + localMinute;
 
+        console.log(`[Diag] Sub ${sub.id}: tz=${tz}, localTime=${localHour}:${String(localMinute).padStart(2, '0')}, lat=${sub.latitude}, lng=${sub.longitude}, prayer_enabled=${sub.prayer_enabled}`);
+
         // Batch of dedup updates to apply after processing this subscription
         const dedupUpdates: Record<string, string> = {};
 
         // ─── Hadith du jour (target: 8:00) ────────────────
+        console.log(`[Diag] Sub ${sub.id}: hadith_enabled=${sub.hadith_enabled}`);
         if (sub.hadith_enabled) {
             const targetMin = 8 * 60; // 8:00
             const diff = currentMin - targetMin;
-            // Within ±14 min of 8:00 AND not sent in last 20 min
+            console.log(`[Diag] Sub ${sub.id}: HADITH target=08:00 current=${localHour}:${String(localMinute).padStart(2, '0')} diff=${diff} window=±${WINDOW_MIN} recentlySent=${recentlySent(sub.last_notified_hadith)}`);
             if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_hadith)) {
+                console.log(`[Diag] Sub ${sub.id}: HADITH → SENDING!`);
                 const ok = await sendPush(sub, {
                     title: "📖 Hadith du Jour",
                     body: "Découvre le hadith du jour sur Quran Coach",
                     url: "/hadiths",
                     tag: "daily-hadith",
                 });
+                console.log(`[Diag] Sub ${sub.id}: HADITH sendPush result=${ok}`);
                 if (ok) {
                     sent++;
                     dedupUpdates.last_notified_hadith = now.toISOString();
                 }
             }
+        } else {
+            console.log(`[Diag] Sub ${sub.id}: HADITH skipped (disabled)`);
         }
 
         // ─── Défi quotidien (target: 12:00) ──────────────
+        console.log(`[Diag] Sub ${sub.id}: challenge_enabled=${sub.challenge_enabled}`);
         if (sub.challenge_enabled) {
             const targetMin = 12 * 60; // 12:00
             const diff = currentMin - targetMin;
+            console.log(`[Diag] Sub ${sub.id}: CHALLENGE target=12:00 current=${localHour}:${String(localMinute).padStart(2, '0')} diff=${diff} window=±${WINDOW_MIN} recentlySent=${recentlySent(sub.last_notified_challenge)}`);
             if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub.last_notified_challenge)) {
+                console.log(`[Diag] Sub ${sub.id}: CHALLENGE → SENDING!`);
                 const ok = await sendPush(sub, {
                     title: "🏆 Défi du Jour",
                     body: "Le quiz du jour t'attend ! Relève le défi et gagne des XP bonus.",
                     url: "/quiz",
                     tag: "daily-challenge",
                 });
+                console.log(`[Diag] Sub ${sub.id}: CHALLENGE sendPush result=${ok}`);
                 if (ok) {
                     sent++;
                     dedupUpdates.last_notified_challenge = now.toISOString();
                 }
             }
+        } else {
+            console.log(`[Diag] Sub ${sub.id}: CHALLENGE skipped (disabled)`);
         }
 
         // ─── Rappels de prière ────────────────────────────
         if (sub.latitude && sub.longitude) {
+            console.log(`[Diag] Sub ${sub.id}: Fetching prayer times for (${sub.latitude}, ${sub.longitude})`);
             const times = await fetchPrayerTimes(sub.latitude, sub.longitude, sub.prayer_settings);
             if (times) {
+                console.log(`[Diag] Sub ${sub.id}: Got prayer times OK`);
                 const toMin = (t: string) => {
                     const [h, m] = t.split(":").map(Number);
                     return h * 60 + m;
@@ -389,9 +445,8 @@ serve(async (req) => {
                         const targetMin = prayerMin - minutesBefore;
                         const diff = currentMin - targetMin;
 
-                        if (sub.endpoint.includes("tester") || Math.abs(diff) <= 20) {
-                            console.log(`[Push] Sub ${sub.id}: ${prayer.name} at ${rawTimeStr}, target ${Math.floor(targetMin / 60)}:${targetMin % 60}, current ${localHour}:${localMinute}, diff ${diff}`);
-                        }
+                        // Always log for diagnostic
+                        console.log(`[Diag] Sub ${sub.id}: ${prayer.name} prayerTime=${rawTimeStr} adj=${adj} minutesBefore=${minutesBefore} target=${Math.floor(targetMin / 60)}:${String(targetMin % 60).padStart(2, '0')} current=${localHour}:${String(localMinute).padStart(2, '0')} diff=${diff} window=±${WINDOW_MIN} recentlySent=${recentlySent(sub[prayer.dedupKey])}`);
 
                         // Within ±WINDOW_MIN of target AND not recently sent
                         if (Math.abs(diff) <= WINDOW_MIN && !recentlySent(sub[prayer.dedupKey])) {
