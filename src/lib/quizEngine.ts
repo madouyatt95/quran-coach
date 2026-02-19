@@ -899,7 +899,7 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
         verses: shuffle([...generateVerseQuestions(), ...generateAudioQuestions()]).slice(0, 30),
         invocations: shuffle(generateInvocationQuestions()).slice(0, 30),
         structure: shuffle(generateStructureQuestions()).slice(0, 30),
-        'ya-ayyuha': generateYaAyyuhaQuestions(),
+        'ya-ayyuha': shuffle(generateYaAyyuhaQuestions()).slice(0, 30),
         stories: generateStoriesQuestions(),
         geography: generateGeographyQuestions(),
         virtues: generateVirtuesQuestions(),
