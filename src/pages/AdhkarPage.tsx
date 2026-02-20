@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X, Gauge } from 'lucide-react';
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import './AdhkarPage.css';
@@ -222,6 +222,13 @@ export function AdhkarPage() {
     const [isAudioLoading, setIsAudioLoading] = useState(false);
     const [audioLoopCount, setAudioLoopCount] = useState(3);
     const [currentLoop, setCurrentLoop] = useState(0);
+    const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
+
+    const togglePlaybackSpeed = () => {
+        const speeds = [0.75, 1.0, 1.25, 1.5];
+        const nextIndex = (speeds.indexOf(playbackSpeed) + 1) % speeds.length;
+        setPlaybackSpeed(speeds[nextIndex] || 1.0);
+    };
 
     const incrementCount = useCallback((dhikrId: number, maxCount: number) => {
         const key = `${selectedCategory?.id}-${dhikrId}`;
@@ -256,13 +263,13 @@ export function AdhkarPage() {
         setIsAudioLoading(true);
         try {
             const { playAdhkarAudio } = await import('../lib/adhkarAudioService');
-            await playAdhkarAudio(text, dhikrId, categoryId, source, { rate: 0.85 });
+            await playAdhkarAudio(text, dhikrId, categoryId, source, { rate: playbackSpeed });
         } catch (e) {
             console.error(e);
         } finally {
             setIsAudioLoading(false);
         }
-    }, []);
+    }, [playbackSpeed]);
 
     const playAudioLoop = useCallback(async () => {
         if (!selectedCategory) return;
@@ -276,7 +283,7 @@ export function AdhkarPage() {
         try {
             const { playAdhkarAudioLoop } = await import('../lib/adhkarAudioService');
             await playAdhkarAudioLoop(dhikr.arabic, dhikr.id, selectedCategory.id, audioLoopCount, dhikr.source, {
-                rate: 0.85,
+                rate: playbackSpeed,
                 onLoop: (i) => setCurrentLoop(i),
                 onEnd: () => {
                     // Auto-increment counter when loop finishes
@@ -290,7 +297,7 @@ export function AdhkarPage() {
             setIsAudioLoading(false);
             setCurrentLoop(0);
         }
-    }, [selectedCategory, currentDhikrIndex, audioLoopCount, incrementCount]);
+    }, [selectedCategory, currentDhikrIndex, audioLoopCount, incrementCount, playbackSpeed]);
 
     const pauseAudioLoop = useCallback(async () => {
         const { stopAdhkarAudio } = await import('../lib/adhkarAudioService');
@@ -593,6 +600,16 @@ export function AdhkarPage() {
                                     <Plus size={14} />
                                 </button>
                             </div>
+
+                            <button
+                                className="dhikr-hifdh-link dhikr-speed-btn"
+                                onClick={togglePlaybackSpeed}
+                                title="Vitesse de lecture"
+                                style={{ marginLeft: 'auto', padding: '6px 12px', minWidth: '70px', justifyContent: 'center' }}
+                            >
+                                <Gauge size={16} />
+                                <span>{playbackSpeed}x</span>
+                            </button>
 
                             {/* Hifdh Studio Link for Rabbana */}
                             {selectedCategory.id === 'rabanna' && currentDhikr.source && (
