@@ -1,0 +1,217 @@
+/**
+ * Adhkar Audio Service
+ * Handles playback of Adhkar audio, routing to either:
+ * 1. Quranic audio (Mishary) for Rabbana invocations
+ * 2. Pre-recorded MP3s for Hisnul Muslim
+ * 3. Fallback to Google TTS or local Web Speech API
+ */
+
+import { fetchAyahAudioUrl, fetchRabbanaTimings } from './quranApi';
+import { playTts, stopTts } from './ttsService';
+
+let adhkarAudio: HTMLAudioElement | null = null;
+let currentLoopTimeout: ReturnType<typeof setTimeout> | null = null;
+let isPlayingLoop = false;
+let autoStoptimer: ReturnType<typeof setTimeout> | null = null;
+
+function getAdhkarAudio(): HTMLAudioElement {
+    if (!adhkarAudio) {
+        adhkarAudio = new Audio();
+        adhkarAudio.preload = 'none';
+    }
+    return adhkarAudio;
+}
+
+/**
+ * Parses a source string like "2:127" into surah and ayah numbers.
+ */
+function parseQuranicSource(source?: string): { surah: number; ayah: number; isRange: boolean } | null {
+    if (!source) return null;
+    const match = source.match(/^(\d+):(\d+)(?:-(\d+))?$/);
+    if (match) {
+        return {
+            surah: parseInt(match[1], 10),
+            ayah: parseInt(match[2], 10),
+            isRange: !!match[3]
+        };
+    }
+    return null;
+}
+
+
+/**
+ * Plays a single Adhkar audio
+ */
+export async function playAdhkarAudio(
+    text: string,
+    _duaId: number,
+    categoryId: string,
+    source?: string,
+    options?: { rate?: number; onEnd?: () => void }
+): Promise<void> {
+    stopAdhkarAudio();
+    // 1. Check if it's a Quranic Dua (e.g. Rabbana). 
+    const quranicSource = parseQuranicSource(source);
+    if (quranicSource && categoryId === 'rabanna') {
+        try {
+            if (quranicSource.isRange) {
+                // Play range sequentially without slicing
+                // e.g., 10:85-86
+                const endAyah = Number(source!.split('-')[1]);
+                for (let a = quranicSource.ayah; a <= endAyah; a++) {
+                    const url = await fetchAyahAudioUrl(quranicSource.surah, a);
+                    if (!url) break;
+
+                    if (!isPlayingLoop && a > quranicSource.ayah) {
+                        // If looping stopped manually during transition
+                        return; // Actually, we don't have isPlayingLoop check for single plays easily here, 
+                        // but getAdhkarAudio().paused is a hint.
+                    }
+
+                    const played = await new Promise<boolean>((resolve) => {
+                        const audio = getAdhkarAudio();
+                        audio.src = url;
+                        audio.playbackRate = options?.rate || 1.0;
+                        audio.onended = () => resolve(true);
+                        audio.onerror = () => resolve(false);
+                        audio.play().catch(() => resolve(false));
+                    });
+                    if (!played) break; // Error playing, fallback or abort
+                }
+                options?.onEnd?.();
+                return;
+            } else {
+                // Single Ayah playback with precise slicing
+                const timings = await fetchRabbanaTimings(quranicSource.surah, quranicSource.ayah, text);
+                const url = await fetchAyahAudioUrl(quranicSource.surah, quranicSource.ayah);
+
+                if (url && timings) {
+                    const [startMs, endMs] = timings;
+                    const played = await new Promise<boolean>((resolve) => {
+                        const audio = getAdhkarAudio();
+                        audio.src = url;
+                        audio.playbackRate = options?.rate || 1.0;
+
+                        const durationMs = (endMs - startMs) / audio.playbackRate;
+
+                        // Prepare time slicing
+                        audio.currentTime = startMs / 1000;
+
+                        const clearTimeupdate = () => { audio.ontimeupdate = null; };
+
+                        // We ensure exact isolation
+                        audio.ontimeupdate = () => {
+                            if (audio.currentTime >= endMs / 1000) {
+                                audio.pause();
+                                clearTimeupdate();
+                                options?.onEnd?.();
+                                resolve(true);
+                            }
+                        };
+
+                        // Backup safety timeout incase timeupdate misses
+                        if (autoStoptimer) clearTimeout(autoStoptimer);
+                        autoStoptimer = setTimeout(() => {
+                            audio.pause();
+                            clearTimeupdate();
+                            options?.onEnd?.();
+                            resolve(true);
+                        }, durationMs + 300); // 300ms buffer
+
+                        audio.onerror = () => {
+                            console.error('Failed to play sliced Quranic audio for Adhkar');
+                            clearTimeupdate();
+                            if (autoStoptimer) clearTimeout(autoStoptimer);
+                            resolve(false);
+                        };
+
+                        audio.play().catch(() => {
+                            console.error('Play promise rejected for Quranic audio slice');
+                            clearTimeupdate();
+                            if (autoStoptimer) clearTimeout(autoStoptimer);
+                            resolve(false);
+                        });
+                    });
+
+                    if (played) return; // Exist if played successfully. Otherwise, fallback TTS.
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching/playing Quranic audio', e);
+        }
+    }
+
+    // 2. Try Hisnul Muslim Pre-recorded MP3
+    // We are reverting to TTS for Hisnul Muslim due to mappings/audio mix-up
+    // const playedMp3 = await tryPlayHisnulMuslimAudio(duaId, categoryId);
+    // if (playedMp3) {
+    //     options?.onEnd?.();
+    //     return;
+    // }
+
+    // 3. Fallback to TTS (We use the improved ttsService which uses Google TTS / Web Speech)
+    await playTts(text, options);
+}
+
+/**
+ * Plays Adhkar audio in a loop
+ */
+export async function playAdhkarAudioLoop(
+    text: string,
+    duaId: number,
+    categoryId: string,
+    count: number,
+    source?: string,
+    options?: { rate?: number; pauseMs?: number; onLoop?: (current: number) => void; onEnd?: () => void }
+): Promise<void> {
+    const pauseMs = options?.pauseMs ?? 600;
+    isPlayingLoop = true;
+
+    for (let i = 0; i < count; i++) {
+        if (!isPlayingLoop) break;
+
+        options?.onLoop?.(i);
+
+        await new Promise<void>((resolve) => {
+            playAdhkarAudio(text, duaId, categoryId, source, {
+                rate: options?.rate,
+                onEnd: resolve
+            });
+        });
+
+        if (!isPlayingLoop) break;
+
+        // Pause between repetitions
+        if (i < count - 1) {
+            await new Promise<void>(resolve => {
+                currentLoopTimeout = setTimeout(resolve, pauseMs);
+            });
+        }
+    }
+
+    isPlayingLoop = false;
+    options?.onEnd?.();
+}
+
+/**
+ * Stops all Adhkar audio
+ */
+export function stopAdhkarAudio() {
+    isPlayingLoop = false;
+    if (currentLoopTimeout) {
+        clearTimeout(currentLoopTimeout);
+        currentLoopTimeout = null;
+    }
+    if (autoStoptimer) {
+        clearTimeout(autoStoptimer);
+        autoStoptimer = null;
+    }
+
+    if (adhkarAudio) {
+        adhkarAudio.pause();
+        adhkarAudio.ontimeupdate = null;
+        adhkarAudio.currentTime = 0;
+    }
+
+    stopTts();
+}

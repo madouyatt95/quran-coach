@@ -99,6 +99,105 @@ export async function fetchAyahTiming(surah: number, ayah: number): Promise<any[
     return [];
 }
 
+/**
+ * Fetch the exact audio URL for a specific verse (Mishary Al-Afasy by default)
+ */
+export async function fetchAyahAudioUrl(surah: number, ayah: number, reciterId: number = 7): Promise<string | null> {
+    try {
+        const response = await fetch(`https://api.quran.com/api/v4/recitations/${reciterId}/by_ayah/${surah}:${ayah}`);
+        const data = await response.json();
+
+        if (data.audio_files && data.audio_files.length > 0 && data.audio_files[0].url) {
+            let url = data.audio_files[0].url;
+
+            // Handle relative URLs returned by quran.com API (e.g. "alafasy/mp3/002255.mp3")
+            if (!url.startsWith('http') && !url.startsWith('//')) {
+                url = `https://verses.quran.com/${url}`;
+            } else if (url.startsWith('//')) {
+                url = `https:${url}`;
+            }
+            return url;
+        }
+        return null;
+    } catch (e) {
+        console.error('Failed to fetch ayah audio url', e);
+        return null;
+    }
+}
+
+/**
+ * Fetches precise start/end timestamps for an exact dua substring within an Ayah.
+ * Uses QDC (Quran.com V4 private API) which provides exact word-level segments.
+ * Returns relative [startMs, endMs] within the Ayah's MP3 file.
+ */
+export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: string, reciterId: number = 7): Promise<[number, number] | null> {
+    try {
+        const url = `https://api.quran.com/api/qdc/audio/reciters/${reciterId}/audio_files?chapter=${surah}&segments=true`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.audio_files || !data.audio_files[0] || !data.audio_files[0].verse_timings) {
+            return null;
+        }
+
+        const ayahTimings = data.audio_files[0].verse_timings.find((v: any) => v.verse_key === `${surah}:${ayah}`);
+        if (!ayahTimings || !ayahTimings.segments) {
+            return null;
+        }
+
+        const segments = ayahTimings.segments; // Array of [word_index, absolute_start_ms, absolute_end_ms]
+        if (segments.length === 0) return null;
+
+        // Fetch the target ayah text to align segments with words
+        const quranResponse = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/quran-uthmani`);
+        const quranData = await quranResponse.json();
+
+        let startIndex = 0;
+        const duaWords = duaText.trim().split(/\s+/);
+
+        if (quranData.code === 200 && quranData.data.text) {
+            const ayahWords = quranData.data.text.split(/\s+/);
+
+            const removeDiacritics = (s: string) => s.replace(/[\u0617-\u061A\u064B-\u0652\u0670]/g, '');
+            const cleanDuaWords = duaWords.map(removeDiacritics);
+            const cleanAyahWords = ayahWords.map(removeDiacritics);
+
+            let found = false;
+            for (let i = 0; i <= cleanAyahWords.length - cleanDuaWords.length; i++) {
+                let match = true;
+                for (let j = 0; j < cleanDuaWords.length; j++) {
+                    if (!cleanAyahWords[i + j].includes(cleanDuaWords[j]) && !cleanDuaWords[j].includes(cleanAyahWords[i + j])) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    startIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                startIndex = Math.max(0, segments.length - duaWords.length);
+            }
+        } else {
+            startIndex = Math.max(0, segments.length - duaWords.length);
+        }
+
+        const endIndex = Math.min(segments.length - 1, startIndex + duaWords.length - 1);
+
+        // Convert absolute chapter milliseconds to relative ayah milliseconds
+        // Due to slight offsets, use max(0, val)
+        const startMs = Math.max(0, segments[startIndex][1] - ayahTimings.timestamp_from);
+        const endMs = Math.max(0, segments[endIndex][2] - ayahTimings.timestamp_from);
+
+        return [startMs, endMs];
+    } catch (e) {
+        console.error('Failed to fetch rabbana word timings', e);
+        return null;
+    }
+}
+
 const RECITERS_OLD = {
     'ar.alafasy': 'https://cdn.islamic.network/quran/audio/128/ar.alafasy',
 };

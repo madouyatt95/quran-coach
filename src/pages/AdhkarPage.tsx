@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X } from 'lucide-react';
-import { playTts, playTtsLoop, stopTts } from '../lib/ttsService';
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import './AdhkarPage.css';
@@ -246,11 +245,13 @@ export function AdhkarPage() {
         return repetitions[key] || 0;
     };
 
-    // Play a single dhikr text via TTS
-    const playDhikrOnce = useCallback(async (text: string) => {
+    const playDhikrOnce = useCallback(async (text: string, dhikrId: number, categoryId: string, source?: string) => {
         setIsAudioLoading(true);
         try {
-            await playTts(text, { rate: 0.85 });
+            const { playAdhkarAudio } = await import('../lib/adhkarAudioService');
+            await playAdhkarAudio(text, dhikrId, categoryId, source, { rate: 0.85 });
+        } catch (e) {
+            console.error(e);
         } finally {
             setIsAudioLoading(false);
         }
@@ -266,7 +267,8 @@ export function AdhkarPage() {
         setCurrentLoop(0);
 
         try {
-            await playTtsLoop(dhikr.arabic, audioLoopCount, {
+            const { playAdhkarAudioLoop } = await import('../lib/adhkarAudioService');
+            await playAdhkarAudioLoop(dhikr.arabic, dhikr.id, selectedCategory.id, audioLoopCount, dhikr.source, {
                 rate: 0.85,
                 onLoop: (i) => setCurrentLoop(i),
                 onEnd: () => {
@@ -274,6 +276,8 @@ export function AdhkarPage() {
                     incrementCount(dhikr.id, dhikr.count);
                 }
             });
+        } catch (e) {
+            console.error(e);
         } finally {
             setIsAudioPlaying(false);
             setIsAudioLoading(false);
@@ -281,14 +285,16 @@ export function AdhkarPage() {
         }
     }, [selectedCategory, currentDhikrIndex, audioLoopCount, incrementCount]);
 
-    const pauseAudioLoop = useCallback(() => {
-        stopTts();
+    const pauseAudioLoop = useCallback(async () => {
+        const { stopAdhkarAudio } = await import('../lib/adhkarAudioService');
+        stopAdhkarAudio();
         setIsAudioPlaying(false);
         setIsAudioLoading(false);
     }, []);
 
-    const stopAudioLoop = useCallback(() => {
-        stopTts();
+    const stopAudioLoop = useCallback(async () => {
+        const { stopAdhkarAudio } = await import('../lib/adhkarAudioService');
+        stopAdhkarAudio();
         setIsAudioPlaying(false);
         setIsAudioLoading(false);
         setCurrentLoop(0);
@@ -472,7 +478,7 @@ export function AdhkarPage() {
                                 <span className="item-number">#{index + 1}</span>
                                 <button
                                     className="list-item-tts-btn"
-                                    onClick={(e) => { e.stopPropagation(); playDhikrOnce(dhikr.arabic); }}
+                                    onClick={(e) => { e.stopPropagation(); playDhikrOnce(dhikr.arabic, dhikr.id, selectedCategory.id, dhikr.source); }}
                                     title="Écouter"
                                 >
                                     {isAudioLoading ? <Loader2 size={14} className="spin" /> : <Volume2 size={14} />}

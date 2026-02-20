@@ -10,7 +10,6 @@
  * new Audio() instances each time, preventing ghost audio that can't be stopped.
  */
 
-const TTS_SPACE_URL = 'https://ibrahimsalah-arabic-tts-spark.hf.space';
 
 // In-memory audio cache (text → ObjectURL)
 const audioCache = new Map<string, string>();
@@ -71,61 +70,25 @@ export function stopTts() {
 }
 
 /**
- * Synthesize Arabic text to audio using HuggingFace Space.
+ * Synthesize Arabic text to audio using Google Translate TTS (Unofficial API).
  * Returns an ObjectURL to the audio blob, or null if failed.
+ * Note: Google TTS has a ~200 character limit per request. 
+ * For Adhkar, this is usually perfectly enough.
  */
-async function synthesizeWithHuggingFace(text: string): Promise<string | null> {
-    try {
-        // Call the Gradio API predict endpoint
-        const response = await fetch(`${TTS_SPACE_URL}/api/predict`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                data: [text, null, 1.0], // text, reference audio (null = default), speed
-            }),
-        });
-
-        if (!response.ok) {
-            console.warn('TTS Space returned', response.status);
-            return null;
-        }
-
-        const result = await response.json();
-
-        // Gradio returns file path or base64 audio
-        const audioData = result.data?.[0];
-        if (!audioData) return null;
-
-        // If it's a file path, fetch it from the Space
-        if (typeof audioData === 'object' && audioData.name) {
-            const fileUrl = `${TTS_SPACE_URL}/file=${audioData.name}`;
-            const audioResponse = await fetch(fileUrl);
-            if (!audioResponse.ok) return null;
-            const audioBlob = await audioResponse.blob();
-            return URL.createObjectURL(audioBlob);
-        }
-
-        // If it's base64 data
-        if (typeof audioData === 'string' && audioData.startsWith('data:')) {
-            const fetchRes = await fetch(audioData);
-            const blob = await fetchRes.blob();
-            return URL.createObjectURL(blob);
-        }
-
-        return null;
-    } catch (error) {
-        console.warn('TTS HuggingFace synthesis failed:', error);
-        return null;
-    }
+// We use Google TTS API directly via audio source to avoid CORS issues.
+// `client=tw-ob` is the unofficial endpoint parameter that allows direct media playback.
+function getGoogleTtsUrl(text: string): string {
+    return `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q=${encodeURIComponent(text)}`;
 }
 
 /**
  * Fallback: use Web Speech API (SpeechSynthesisUtterance)
  */
 function speakWithWebSpeech(text: string, rate: number = 0.85): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         if (!window.speechSynthesis) {
-            reject(new Error('Speech synthesis not supported'));
+            console.warn('Speech synthesis not supported');
+            resolve();
             return;
         }
 
@@ -146,9 +109,10 @@ function speakWithWebSpeech(text: string, rate: number = 0.85): Promise<void> {
             resolve();
         };
         utterance.onerror = (e) => {
+            console.warn('Web Speech API error:', e);
             _isPlaying = false;
             notifyChange();
-            reject(e);
+            resolve(); // Resolve anyway so it doesn't block the app
         };
 
         _isPlaying = true;
@@ -180,9 +144,9 @@ export async function playTts(
     // Check cache first
     let audioUrl = audioCache.get(text);
 
-    // Try HuggingFace synthesis if not cached
+    // Try Google TTS if not cached
     if (!audioUrl) {
-        audioUrl = await synthesizeWithHuggingFace(text) ?? undefined;
+        audioUrl = getGoogleTtsUrl(text);
         if (audioUrl) {
             audioCache.set(text, audioUrl);
         }
@@ -218,16 +182,17 @@ export async function playTts(
                 speakWithWebSpeech(text, rate).then(() => {
                     options?.onEnd?.();
                     resolve();
-                }).catch(resolve);
+                });
             };
 
-            audio.play().catch(() => {
+            audio.play().catch((e) => {
+                console.warn('Google TTS play failed, CORS or block. Fallback to Web Speech:', e);
                 // Fallback to Web Speech
                 _isPlaying = false;
                 speakWithWebSpeech(text, rate).then(() => {
                     options?.onEnd?.();
                     resolve();
-                }).catch(resolve);
+                });
             });
         });
     }

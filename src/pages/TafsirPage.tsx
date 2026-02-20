@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, ChevronDown, ChevronLeft, Loader2, Users, MessageCircle, Volume2 } from 'lucide-react';
-import { playTts, stopTts } from '../lib/ttsService';
 import { useQuranStore } from '../stores/quranStore';
 import { useNavigate } from 'react-router-dom';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
 import './TafsirPage.css';
+
+declare global {
+    interface Window {
+        tafsirAudioPlayer?: HTMLAudioElement;
+    }
+}
 
 // French surah name translations
 const SURAH_NAMES_FR: Record<number, string> = {
@@ -244,19 +249,49 @@ export function TafsirPage() {
                         className={`tafsir-tts-btn ${isSpeaking ? 'active' : ''}`}
                         onClick={async () => {
                             if (isSpeaking) {
-                                stopTts();
+                                // Stop current audio
+                                const audio = window.tafsirAudioPlayer;
+                                if (audio) {
+                                    audio.pause();
+                                    audio.currentTime = 0;
+                                }
                                 setIsSpeaking(false);
                             } else {
                                 setIsTtsLoadingState(true);
-                                setIsSpeaking(true);
                                 try {
-                                    await playTts(verseText.arabic, {
-                                        rate: 0.85,
-                                        onEnd: () => setIsSpeaking(false)
-                                    });
+                                    // 1. Fetch the exact audio URL for the current Surah and Ayah
+                                    const { fetchAyahAudioUrl } = await import('../lib/quranApi');
+                                    const audioUrl = await fetchAyahAudioUrl(selectedSurah, selectedAyah);
+
+                                    if (!audioUrl) {
+                                        console.error('Audio non disponible pour ce verset.');
+                                        setIsTtsLoadingState(false);
+                                        return;
+                                    }
+
+                                    // 2. Play the audio using a single shared audio element on window to avoid duplicates
+                                    if (!window.tafsirAudioPlayer) {
+                                        window.tafsirAudioPlayer = new Audio();
+                                    }
+                                    const audio = window.tafsirAudioPlayer;
+
+                                    audio.src = Object.assign(audioUrl, { crossOrigin: "anonymous" }); // to handle CORS if needed
+                                    // some quran.com urls don't need crossOrigin, but it's safe to add
+
+                                    audio.onended = () => setIsSpeaking(false);
+                                    audio.onerror = () => {
+                                        console.error('Erreur de lecture audio');
+                                        setIsSpeaking(false);
+                                    };
+
+                                    setIsSpeaking(true);
+                                    await audio.play();
+
+                                } catch (error) {
+                                    console.error('Failed to play audio:', error);
+                                    setIsSpeaking(false);
                                 } finally {
                                     setIsTtsLoadingState(false);
-                                    setIsSpeaking(false);
                                 }
                             }
                         }}
