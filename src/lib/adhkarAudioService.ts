@@ -46,9 +46,12 @@ async function tryPlayHisnulMuslimAudio(duaId: number, categoryId: string, optio
     try {
         let audioId: number | undefined;
 
+        // AdhkarPage passes "hisn_chap_X" to prevent collisions. We strip "hisn_" to match HISNUL_MUSLIM_DATA.
+        const actualCategoryId = categoryId.startsWith('hisn_') ? categoryId.replace('hisn_', '') : categoryId;
+
         // Find the audioId in the mapped dataset
         for (const mega of HISNUL_MUSLIM_DATA) {
-            const chap = mega.chapters.find(c => c.id === categoryId);
+            const chap = mega.chapters.find(c => c.id === actualCategoryId);
             if (chap) {
                 const dua = chap.duas.find(d => d.id === duaId);
                 if (dua && dua.audioId) {
