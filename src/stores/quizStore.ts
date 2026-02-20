@@ -873,6 +873,7 @@ export const useQuizStore = create<QuizState>()(
         }),
         {
             name: 'quiz-store',
+            version: 2, // ← Increment this number to force-reset ALL users' stats on next deploy
             partialize: (state) => ({
                 player: state.player,
                 totalPlayed: state.totalPlayed,
@@ -892,6 +893,30 @@ export const useQuizStore = create<QuizState>()(
                 duelWins: state.duelWins,
                 difficulty: state.difficulty,
             }),
+            migrate: (persistedState: any, version: number) => {
+                // If stored version < current version, reset stats but keep player identity
+                if (version < 2) {
+                    console.log('[QuizStore] Stats reset triggered (v' + version + ' → v2)');
+                    return {
+                        ...persistedState,
+                        player: persistedState?.player || null, // Keep player profile
+                        totalPlayed: 0,
+                        totalWins: 0,
+                        totalCorrect: 0,
+                        totalXP: 0,
+                        level: 1,
+                        title: 'Mubtadi',
+                        soloHighScores: {},
+                        themeStats: {},
+                        unlockedBadges: [],
+                        wrongQuestions: [],
+                        sprintBest: 0,
+                        duelWins: 0,
+                        powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3 },
+                    };
+                }
+                return persistedState;
+            },
         }
     )
 );
