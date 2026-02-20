@@ -44,6 +44,7 @@ const POPULAR_RECITER_IDS = [
     102, // Maher Al Meaqli
     92,  // Yasser Al Doussari
     5,   // Ahmed El-Ajami
+    107, // Mohamed El Louhaydan
     112, // Mohamed Seddik El Manchaoui
     51,  // Abdelbassit Abdelsamad
     118, // Mahmoud Khalil Al-Hussary
@@ -61,6 +62,7 @@ const POPULAR_NAME_OVERRIDES: Record<number, string> = {
     102: 'Maher Al-Muaiqly',
     92: 'Yasser Ad-Dossari',
     5: 'Ahmed Al-Ajmi',
+    107: 'Muhammad Al-Luhaidan',
     112: 'Mohamed Siddiq Al-Minshawi',
     51: 'Abdulbasit Abdussamad',
     118: 'Mahmoud Khalil Al-Hussary',
