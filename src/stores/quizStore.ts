@@ -141,8 +141,8 @@ function checkBadges(state: QuizState): BadgeId[] {
         }
     }
 
-    // All themes played
-    const allThemes = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha'];
+    // All themes played (all 15 themes)
+    const allThemes: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture', 'tawhid', 'fiqh'];
     const allPlayed = allThemes.every(t => state.themeStats[t]?.attempts > 0);
     check('all_themes', allPlayed);
 
@@ -266,8 +266,8 @@ export const useQuizStore = create<QuizState>()(
             },
 
             selectRandomSolo: () => {
-                const allThemes = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha'];
-                const randomTheme = allThemes[Math.floor(Math.random() * allThemes.length)] as QuizThemeId;
+                const allThemes: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture', 'tawhid', 'fiqh'];
+                const randomTheme = allThemes[Math.floor(Math.random() * allThemes.length)];
                 get().selectTheme(randomTheme);
             },
 
@@ -737,7 +737,14 @@ export const useQuizStore = create<QuizState>()(
 
                     // Re-read opponentScore after potential update
                     const latestOpponentScore = get().opponentScore;
-                    const isWin = mode === 'solo' || mode === 'sprint' || mode === 'revision' || score > latestOpponentScore;
+                    // For non-duel modes, win requires ≥80% correct answers
+                    const latestAnswers = get().answers;
+                    const correctCount = latestAnswers.filter(a => a.correct).length;
+                    const totalQ = latestAnswers.length;
+                    const correctRate = totalQ > 0 ? correctCount / totalQ : 0;
+                    const isWin = isDuel
+                        ? score > latestOpponentScore
+                        : correctRate >= 0.8; // 80% threshold for solo/sprint/revision/daily
                     const newHighScores = { ...soloHighScores };
                     if (mode === 'solo' && theme) {
                         const prev = newHighScores[theme] || 0;
@@ -772,6 +779,9 @@ export const useQuizStore = create<QuizState>()(
                         duelWins: newDuelWins,
                         sprintBest: newSprintBest,
                     });
+
+                    // Auto-submit to leaderboard after every game
+                    get().submitToLeaderboard();
 
                     // Check for new badges
                     const updatedState = get();
@@ -812,7 +822,7 @@ export const useQuizStore = create<QuizState>()(
             },
 
             submitToLeaderboard: async () => {
-                const { player, totalCorrect, totalPlayed, totalWins, score, sprintBest } = get();
+                const { player, totalCorrect, totalPlayed, totalWins, totalXP, sprintBest } = get();
                 if (!player) return;
 
                 const { error } = await supabase
@@ -821,7 +831,7 @@ export const useQuizStore = create<QuizState>()(
                         id: player.id,
                         pseudo: player.pseudo,
                         avatar_emoji: player.avatar_emoji,
-                        total_score: score,
+                        total_score: totalXP,          // Cumulative XP, not session score
                         total_correct: totalCorrect,
                         total_played: totalPlayed,
                         total_wins: totalWins,

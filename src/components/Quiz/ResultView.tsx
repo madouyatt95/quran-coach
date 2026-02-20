@@ -8,7 +8,8 @@ export function ResultView() {
     const correctCount = answers.filter(a => a.correct).length;
     const total = answers.length;
     const themeData = QUIZ_THEMES.find(t => t.id === theme);
-    const isWinner = mode === 'solo' || mode === 'sprint' || mode === 'revision' || score >= opponentScore;
+    const correctRate = total > 0 ? correctCount / total : 0;
+    const isWinner = mode === 'duel' ? score >= opponentScore : correctRate >= 0.8;
     const isSprint = mode === 'sprint';
     const isRevision = mode === 'revision';
 
