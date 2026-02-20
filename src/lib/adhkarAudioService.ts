@@ -38,7 +38,31 @@ function parseQuranicSource(source?: string): { surah: number; ayah: number; isR
     return null;
 }
 
-// Hisnul Muslim MP3 logic has been removed as per user request (replaced by phonetics UI).
+/**
+ * Plays a pre-generated Hisnul Muslim MP3 file.
+ * Files are stored at /audio/hisn/dua_{id}.mp3
+ */
+function playHisnMP3(duaId: number, options?: { rate?: number; onEnd?: () => void }): Promise<boolean> {
+    return new Promise((resolve) => {
+        const audio = getAdhkarAudio();
+        const mp3Url = `${import.meta.env.BASE_URL}audio/hisn/dua_${duaId}.mp3`;
+        audio.src = mp3Url;
+        audio.playbackRate = options?.rate || 1.0;
+
+        audio.onended = () => {
+            options?.onEnd?.();
+            resolve(true);
+        };
+        audio.onerror = () => {
+            console.warn(`Hisnul Muslim MP3 not found: dua_${duaId}.mp3`);
+            resolve(false);
+        };
+        audio.play().catch(() => {
+            console.warn(`Play rejected for Hisnul Muslim dua_${duaId}.mp3`);
+            resolve(false);
+        });
+    });
+}
 
 /**
  * Plays a single Adhkar audio
@@ -160,10 +184,11 @@ export async function playAdhkarAudio(
         }
     }
 
-    // 2. Ignore Hisnul Muslim entirely (Play button should be hidden anyway, but just in case)
+    // 2. Hisnul Muslim — play pre-generated MP3
     if (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_')) {
-        options?.onEnd?.();
-        return;
+        const played = await playHisnMP3(_duaId, options);
+        if (played) return;
+        // If MP3 not found, fall through to TTS
     }
 
     // 3. Fallback to TTS for other standard Adhkar (if any remain)
