@@ -4,14 +4,17 @@ import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES, BADGES } from '../../data/quizTypes';
 
 export function ResultView() {
-    const { score, answers, mode, opponent, opponentScore, resetQuiz, theme, player, sprintCorrect, sprintBest, unlockedBadges, currentStreak } = useQuizStore();
+    const { score, answers, mode, opponent, opponentScore, resetQuiz, theme, player, sprintCorrect, sprintBest, unlockedBadges, currentStreak, lastPowerUpGained } = useQuizStore();
     const correctCount = answers.filter(a => a.correct).length;
     const total = answers.length;
     const themeData = QUIZ_THEMES.find(t => t.id === theme);
     const correctRate = total > 0 ? correctCount / total : 0;
+    const pct = Math.round(correctRate * 100);
     const isWinner = mode === 'duel' ? score >= opponentScore : correctRate >= 0.8;
     const isSprint = mode === 'sprint';
-    const isRevision = mode === 'revision';
+
+    // Color based on percentage
+    const pctColor = pct >= 80 ? '#4CAF50' : pct >= 50 ? '#FF9800' : '#f44336';
 
     // Check for newly unlocked badges (last few)
     const [newBadges] = useState(() => {
@@ -25,13 +28,30 @@ export function ResultView() {
                 <h1 className="quiz-result-title">
                     {isSprint
                         ? `⚡ Sprint terminé !`
-                        : isRevision
+                        : mode === 'revision'
                             ? 'Révision terminée'
                             : mode === 'duel'
                                 ? (score > opponentScore ? 'Victoire !' : score === opponentScore ? 'Égalité !' : 'Défaite')
-                                : 'Résultat'}
+                                : isWinner ? '🎉 Victoire !' : 'Partie terminée'}
                 </h1>
             </div>
+
+            {/* Big percentage circle (non-sprint, non-duel) */}
+            {!isSprint && mode !== 'duel' && (
+                <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0' }}>
+                    <div style={{
+                        width: 100, height: 100, borderRadius: '50%',
+                        border: `4px solid ${pctColor}`,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        background: `${pctColor}15`,
+                    }}>
+                        <span style={{ fontSize: 28, fontWeight: 800, color: pctColor }}>{pct}%</span>
+                        <span style={{ fontSize: 11, opacity: 0.7, color: 'var(--text-primary, #fff)' }}>
+                            {pct >= 80 ? '✅ Réussi' : '❌ < 80%'}
+                        </span>
+                    </div>
+                </div>
+            )}
 
             {mode === 'duel' && opponent && (
                 <div className="quiz-result-vs">
@@ -69,7 +89,7 @@ export function ResultView() {
                         </div>
                         <div className="quiz-result-stat">
                             <CheckCircle size={20} />
-                            <span>{correctCount}/{total} bonnes réponses</span>
+                            <span>{correctCount}/{total} bonnes réponses ({pct}%)</span>
                         </div>
                         <div className="quiz-result-stat">
                             <Clock size={20} />
@@ -84,6 +104,17 @@ export function ResultView() {
                     </div>
                 )}
             </div>
+
+            {/* Power-up recharged notification */}
+            {lastPowerUpGained && (
+                <div style={{
+                    textAlign: 'center', padding: '8px 16px', margin: '8px 0',
+                    borderRadius: 12, background: 'rgba(76,175,80,0.15)',
+                    fontSize: 14, color: '#4CAF50', fontWeight: 600,
+                }}>
+                    {lastPowerUpGained === '50-50' ? '🌗' : lastPowerUpGained === 'time-freeze' ? '❄️' : '🛡️'} Power-up rechargé !
+                </div>
+            )}
 
             {!isSprint && themeData && (
                 <div className="quiz-result-theme">
@@ -119,7 +150,7 @@ export function ResultView() {
                 <button className="quiz-btn-secondary" style={{ marginTop: '12px' }} onClick={() => {
                     const text = mode === 'duel'
                         ? `J'ai fait un score de ${score} contre ${opponent?.pseudo} sur Duel Quiz ! 🏆`
-                        : `J'ai fait ${correctCount}/${total} sur le thème ${themeData?.name || ''} ! 🚀`;
+                        : `J'ai fait ${pct}% (${correctCount}/${total}) sur le thème ${themeData?.name || ''} ! 🚀`;
                     if (navigator.share) {
                         navigator.share({ title: 'Quran Coach Quiz', text, url: window.location.href });
                     } else {

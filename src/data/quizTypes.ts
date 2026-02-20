@@ -9,6 +9,7 @@ export type QuizView =
     | 'stats'       // Stats dashboard
     | 'badges'      // Badge gallery
     | 'leaderboard' // Global leaderboard
+    | 'history'     // Game history
     | 'lobby'       // Waiting for opponent
     | 'join'        // Enter code to join
     | 'playing'     // Active quiz

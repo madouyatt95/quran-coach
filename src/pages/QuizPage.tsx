@@ -15,6 +15,7 @@ import { CustomDuel } from '../components/Quiz/CustomDuel';
 import { ProfileView } from '../components/Quiz/ProfileView';
 import { DailyChallengeView } from '../components/Quiz/DailyChallengeView';
 import { RoundEndView } from '../components/Quiz/RoundEndView';
+import { HistoryView } from '../components/Quiz/HistoryView';
 import './QuizPage.css';
 
 // ─── Main Quiz Page ──────────────────────────────────────
@@ -49,6 +50,8 @@ export function QuizPage() {
             return <BadgeView />;
         case 'leaderboard':
             return <LeaderboardView />;
+        case 'history':
+            return <HistoryView />;
         case 'lobby':
             return <DuelLobby />;
         case 'join':

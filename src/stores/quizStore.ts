@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
-import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore } from '../lib/quizEngine';
+import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore, getAudioQuestions } from '../lib/quizEngine';
 import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId, QuizView, QuizMode, PowerUpId } from '../data/quizTypes';
 import { DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
 import type { RealtimeChannel } from '@supabase/supabase-js';
@@ -82,11 +82,16 @@ interface QuizState {
     sprintBest: number;
     duelWins: number;
 
+    // Game history
+    gameHistory: { date: string; mode: string; theme: string | null; score: number; correct: number; total: number; won: boolean }[];
+    lastPowerUpGained: PowerUpId | null;
+
     // Progression Actions
     syncMatch: () => Promise<void>;
     addXP: (amount: number) => void;
     usePowerUp: (id: PowerUpId) => void;
     unlockBadge: (id: BadgeId) => void;
+    startAudio: () => void;
 }
 
 function generateCode(): string {
@@ -207,6 +212,8 @@ export const useQuizStore = create<QuizState>()(
             wrongQuestions: [],
             sprintBest: 0,
             duelWins: 0,
+            gameHistory: [],
+            lastPowerUpGained: null,
 
             addXP: (amount) => {
                 const { totalXP, player } = get();
@@ -299,6 +306,23 @@ export const useQuizStore = create<QuizState>()(
                     answers: [],
                     score: 0,
                     currentStreak: 0,
+                    timerStart: Date.now(),
+                    view: 'playing',
+                });
+            },
+
+            startAudio: () => {
+                const questions = getAudioQuestions(10);
+                if (questions.length === 0) return;
+                set({
+                    mode: 'solo',
+                    theme: null,
+                    questions,
+                    currentIndex: 0,
+                    answers: [],
+                    score: 0,
+                    currentStreak: 0,
+                    lastPowerUpGained: null,
                     timerStart: Date.now(),
                     view: 'playing',
                 });
@@ -778,7 +802,35 @@ export const useQuizStore = create<QuizState>()(
                         soloHighScores: newHighScores,
                         duelWins: newDuelWins,
                         sprintBest: newSprintBest,
+                        lastPowerUpGained: null,
                     });
+
+                    // Power-up recharge: +1 random power-up on win (cap at 5)
+                    if (isWin) {
+                        const { powerUps: currentPUs } = get();
+                        const rechargeOptions: PowerUpId[] = (['50-50', 'time-freeze', 'second-chance'] as PowerUpId[]).filter(id => currentPUs[id] < 5);
+                        if (rechargeOptions.length > 0) {
+                            const chosen = rechargeOptions[Math.floor(Math.random() * rechargeOptions.length)];
+                            set({
+                                powerUps: { ...currentPUs, [chosen]: currentPUs[chosen] + 1 },
+                                lastPowerUpGained: chosen,
+                            });
+                        }
+                    }
+
+                    // Save to game history (keep last 50)
+                    const { gameHistory: prevHistory } = get();
+                    const latestAnswers2 = get().answers;
+                    const historyEntry = {
+                        date: new Date().toISOString(),
+                        mode,
+                        theme: theme || null,
+                        score,
+                        correct: latestAnswers2.filter(a => a.correct).length,
+                        total: latestAnswers2.length,
+                        won: isWin,
+                    };
+                    set({ gameHistory: [historyEntry, ...prevHistory].slice(0, 50) });
 
                     // Auto-submit to leaderboard after every game
                     get().submitToLeaderboard();
@@ -892,6 +944,7 @@ export const useQuizStore = create<QuizState>()(
                 sprintBest: state.sprintBest,
                 duelWins: state.duelWins,
                 difficulty: state.difficulty,
+                gameHistory: state.gameHistory,
             }),
             migrate: (persistedState: any, version: number) => {
                 // If stored version < current version, reset stats but keep player identity

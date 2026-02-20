@@ -1010,6 +1010,12 @@ export function getSprintQuestions(count: number = 30): QuizQuestion[] {
     return pick(allQuestions, Math.min(count, allQuestions.length));
 }
 
+/** Get audio-based quiz questions */
+export function getAudioQuestions(count: number = 10): QuizQuestion[] {
+    const audioQs = generateAudioQuestions();
+    return pick(audioQs, Math.min(count, audioQs.length));
+}
+
 /** Build 3 rounds of duel questions, each round = random theme × 3 questions */
 export function getDuelRoundQuestions(customThemes?: QuizThemeId[]): { themes: QuizThemeId[]; questions: QuizQuestion[][] } {
     const bank = getQuestionBank();

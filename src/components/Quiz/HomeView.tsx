@@ -1,11 +1,11 @@
-import { ArrowLeft, Swords, BarChart3, Award, Globe, User, BookOpen, Timer, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Swords, BarChart3, Award, Globe, User, BookOpen, Timer, GraduationCap, Headphones, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuizStore } from '../../stores/quizStore';
 import { DIFFICULTY_CONFIG, BADGES } from '../../data/quizTypes';
 import type { QuizDifficulty } from '../../data/quizTypes';
 
 export function HomeView() {
-    const { startSolo, setView, player, totalPlayed, totalWins, totalXP, level, title, difficulty, setDifficulty, wrongQuestions, unlockedBadges, sprintBest } = useQuizStore();
+    const { startSolo, setView, player, totalPlayed, totalWins, totalXP, level, title, difficulty, setDifficulty, wrongQuestions, unlockedBadges, sprintBest, startAudio, gameHistory } = useQuizStore();
     const navigate = useNavigate();
 
     return (
@@ -128,6 +128,22 @@ export function HomeView() {
                         <div>
                             <h4>📝 Révision</h4>
                             <p>{wrongQuestions.length} erreurs</p>
+                        </div>
+                    </button>
+                )}
+                <button className="quiz-special-card" onClick={startAudio} style={{ background: 'linear-gradient(135deg, #1a237e, #3F51B5)' }}>
+                    <Headphones size={24} />
+                    <div>
+                        <h4>🎧 Mode Audio</h4>
+                        <p>Reconnais la sourate</p>
+                    </div>
+                </button>
+                {gameHistory.length > 0 && (
+                    <button className="quiz-special-card" onClick={() => setView('history')} style={{ background: 'linear-gradient(135deg, #263238, #455A64)' }}>
+                        <Clock size={24} />
+                        <div>
+                            <h4>📋 Historique</h4>
+                            <p>{gameHistory.length} parties</p>
                         </div>
                     </button>
                 )}

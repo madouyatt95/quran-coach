@@ -8,9 +8,10 @@ export function FeedbackView() {
     const answer = answers[answers.length - 1];
 
     useEffect(() => {
-        const timer = setTimeout(nextQuestion, 2000);
+        const delay = question?.explanation && !answer?.correct ? 4000 : 2000;
+        const timer = setTimeout(nextQuestion, delay);
         return () => clearTimeout(timer);
-    }, [nextQuestion]);
+    }, [nextQuestion, question, answer]);
 
     if (!question || !answer) return null;
 
