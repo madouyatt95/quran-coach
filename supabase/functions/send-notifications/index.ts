@@ -1,11 +1,11 @@
 // @ts-nocheck
 // Supabase Edge Function: send-notifications
 // Sends Web Push notifications for prayer reminders, daily hadith, and quiz challenges.
-// Invoked by pg_cron every 30 minutes.
+// Invoked by pg_cron every 5 minutes.
 //
-// FIX: Detection window widened to ±14 min (safe for 30-min cron without duplicates).
-//      Deduplication via last_notified_* columns — each notification type sent at most
-//      once per 20-minute cooldown window per subscription.
+// Detection window: ±4 min (safe for 5-min cron — 8-min window > 5-min interval).
+// Deduplication via last_notified_* columns — each notification type sent at most
+// once per 20-minute cooldown window per subscription.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -19,16 +19,15 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 // ─── Detection window ───────────────────────────────
-// Cron runs every 30 min → window must be > 15 min to guarantee coverage.
-// We use 14 min on each side = 28-min window, safe with a 30-min cron.
-// Deduplication prevents double-sends when two cron ticks both see the window.
-// FIX: Detection window widened to ±16 min (guarantees coverage for 30-min cron).
-//      Deduplication via last_notified_* columns and COOLDOWN_MIN prevents double-sends.
-const WINDOW_MIN = 16;
+// Cron runs every 5 min → window must be > 2.5 min to guarantee coverage.
+// We use 4 min on each side = 8-min window, safe with a 5-min cron.
+// This ensures notifications arrive within ±4 min of the target time.
+// Deduplication via last_notified_* columns and COOLDOWN_MIN prevents double-sends.
+const WINDOW_MIN = 4;
 
 // Cooldown: don't re-send the same notification type within this many minutes.
-// Must be > 30 (cron interval) to prevent double trigger when window overlaps cycle.
-const COOLDOWN_MIN = 50;
+// Must be > 8 (window width) to prevent double trigger within same window.
+const COOLDOWN_MIN = 20;
 
 // ─── Base64 helpers ─────────────────────────────────
 function urlBase64Decode(str: string): Uint8Array {

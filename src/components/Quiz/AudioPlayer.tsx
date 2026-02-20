@@ -6,7 +6,7 @@ export function AudioPlayer({ url }: { url: string }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
-    // Preload audio when URL changes (no auto-play — mobile blocks it)
+    // Preload audio and auto-play when ready
     useEffect(() => {
         setIsPlaying(false);
         setLoaded(false);
@@ -14,7 +14,13 @@ export function AudioPlayer({ url }: { url: string }) {
         if (!audio) return;
         audio.load();
 
-        const onCanPlay = () => setLoaded(true);
+        const onCanPlay = () => {
+            setLoaded(true);
+            // Auto-play as soon as audio is ready
+            audio.play()
+                .then(() => setIsPlaying(true))
+                .catch(() => { /* browser blocked auto-play, user can tap manually */ });
+        };
         const onError = () => setLoaded(true);
 
         audio.addEventListener('canplaythrough', onCanPlay, { once: true });
