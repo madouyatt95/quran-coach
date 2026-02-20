@@ -225,7 +225,7 @@ export function AdhkarPage() {
     const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
 
     const togglePlaybackSpeed = () => {
-        const speeds = [0.75, 1.0, 1.25, 1.5];
+        const speeds = [0.5, 0.75, 1.0, 1.25, 1.5];
         const nextIndex = (speeds.indexOf(playbackSpeed) + 1) % speeds.length;
         setPlaybackSpeed(speeds[nextIndex] || 1.0);
     };
