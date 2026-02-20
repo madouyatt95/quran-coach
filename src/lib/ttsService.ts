@@ -176,7 +176,15 @@ export async function playTts(
                 const res = await fetch(reqUrl, { referrerPolicy: 'no-referrer' });
                 if (!res.ok) throw new Error(`Google TTS request failed: ${res.status}`);
                 const blob = await res.blob();
-                url = URL.createObjectURL(blob);
+
+                // Convert blob to Base64 Data URI for robust cross-platform mobile playback (Capacitor/iOS)
+                url = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+
                 audioCache.set(chunk, url);
             }
             return url;
