@@ -1038,7 +1038,14 @@ export function getQuestions(
 ): QuizQuestion[] {
     const bank = getQuestionBank();
     const pool = bank[theme] || [];
-    const selected = pick(pool, Math.min(count, pool.length));
+
+    // Inject 1-2 audio questions into every Solo game
+    const audioPool = generateAudioQuestions();
+    const audioCount = Math.min(2, audioPool.length);
+    const themeCount = Math.max(1, count - audioCount);
+    const themeSelected = pick(pool, Math.min(themeCount, pool.length));
+    const audioSelected = pick(audioPool, audioCount);
+    const selected = shuffle([...themeSelected, ...audioSelected]);
 
     const config = DIFFICULTY_CONFIG[difficulty];
 
@@ -1065,7 +1072,11 @@ export function getQuestions(
 export function getSprintQuestions(count: number = 30): QuizQuestion[] {
     const bank = getQuestionBank();
     const allQuestions = Object.values(bank).flat();
-    return pick(allQuestions, Math.min(count, allQuestions.length));
+    // Inject 3 audio questions into Sprint
+    const audioPool = generateAudioQuestions();
+    const audioSelected = pick(audioPool, Math.min(3, audioPool.length));
+    const themeSelected = pick(allQuestions, Math.min(count - 3, allQuestions.length));
+    return shuffle([...themeSelected, ...audioSelected]);
 }
 
 /** Get audio-based quiz questions */
@@ -1080,9 +1091,13 @@ export function getDuelRoundQuestions(customThemes?: QuizThemeId[]): { themes: Q
     const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture', 'tawhid', 'fiqh'];
     const selectedThemes = customThemes || pick(allThemeIds, 3);
 
+    // Inject 1 audio question into each duel round
+    const audioPool = generateAudioQuestions();
     const rounds = selectedThemes.map(themeId => {
         const pool = bank[themeId] || [];
-        return pick(pool, Math.min(3, pool.length));
+        const themeQs = pick(pool, Math.min(2, pool.length));
+        const audioQ = pick(audioPool, 1);
+        return shuffle([...themeQs, ...audioQ]);
     });
 
     return { themes: selectedThemes, questions: rounds };
