@@ -1087,13 +1087,9 @@ export function getDuelRoundQuestions(customThemes?: QuizThemeId[]): { themes: Q
     const allThemeIds: QuizThemeId[] = ['prophets', 'companions', 'verses', 'invocations', 'structure', 'ya-ayyuha', 'stories', 'geography', 'virtues', 'women', 'pillars', 'hadiths', 'culture', 'tawhid', 'fiqh'];
     const selectedThemes = customThemes || pick(allThemeIds, 3);
 
-    // Inject 1 audio question into each duel round
-    const audioPool = generateAudioQuestions();
     const rounds = selectedThemes.map(themeId => {
-        const pool = bank[themeId] || [];
-        const themeQs = pick(pool, Math.min(2, pool.length));
-        const audioQ = pick(audioPool, 1);
-        return shuffle([...themeQs, ...audioQ]);
+        const pool = (bank[themeId] || []).filter(q => !q.audioUrl);
+        return pick(pool, Math.min(3, pool.length));
     });
 
     return { themes: selectedThemes, questions: rounds };
