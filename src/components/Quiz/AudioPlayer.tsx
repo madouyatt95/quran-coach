@@ -54,7 +54,6 @@ export function AudioPlayer({ url }: { url: string }) {
                 ref={audioRef}
                 src={url}
                 preload="auto"
-                crossOrigin="anonymous"
                 onEnded={() => setIsPlaying(false)}
             />
 

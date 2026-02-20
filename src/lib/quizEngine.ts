@@ -888,56 +888,52 @@ function generateFiqhQuestions(): QuizQuestion[] {
 // ─── Audio Questions ────────────────────────────────────
 
 function generateAudioQuestions(): QuizQuestion[] {
-    // Use mp3quran.net CDN — same source as the app's listen feature, reliable and no CORS issues
-    // Format: https://server{N}.mp3quran.net/{reciterFolder}/{surahNum}.mp3
+    // Use cdn.islamic.network — the SAME CDN already used by the app's Mushaf/Hifdh/FocusMode
+    // Format: https://cdn.islamic.network/quran/audio/128/ar.alafasy/{globalAyahNumber}.mp3
+    // globalAyahNumber = absolute ayah number across the entire Quran (1-6236)
+    const CDN = 'https://cdn.islamic.network/quran/audio/128/ar.alafasy';
+
+    // Each sample: surah name, first ayah's global number
+    // Global ayah numbers for first ayah of each surah:
+    // Al-Fatihah=1, Al-Baqarah=8, Al-Imran=294, An-Nisa=493, Al-Maidah=670,
+    // Maryam=2614, Ta-Ha=2655, Al-Qasas=3385, Yasin=3705, Ar-Rahman=4737,
+    // Al-Waqi'ah=4795, Al-Mulk=5241, Al-Muzzammil=5273, Al-Insan=5563, An-Naba=5591,
+    // At-Takwir=5620, Al-Fajr=5664, Ad-Duha=5715, Al-Qadr=5725, Al-Kawthar=5745,
+    // Al-Ikhlas=5753, Al-Falaq=5757, An-Nas=5762
     const samples = [
-        { reciter: 'Mishary Rashid Alafasy', surah: 'Al-Fatihah', surahNum: '001', folder: 'minsh', server: 12 },
-        { reciter: 'Mishary Rashid Alafasy', surah: 'Al-Ikhlas', surahNum: '112', folder: 'minsh', server: 12 },
-        { reciter: 'Abdur-Rahman as-Sudais', surah: 'An-Nas', surahNum: '114', folder: 'sudais/quran-uthmani', server: 13 },
-        { reciter: 'Abdur-Rahman as-Sudais', surah: 'Al-Falaq', surahNum: '113', folder: 'sudais/quran-uthmani', server: 13 },
-        { reciter: 'Saad al-Ghamdi', surah: 'Al-Fatiha', surahNum: '001', folder: 'ghamdi', server: 12 },
-        { reciter: 'Saad al-Ghamdi', surah: 'Al-Kawthar', surahNum: '108', folder: 'ghamdi', server: 12 },
-        { reciter: 'Maher Al-Muaiqly', surah: 'An-Nasr', surahNum: '110', folder: 'maher', server: 12 },
-        { reciter: 'Maher Al-Muaiqly', surah: 'Al-Masad', surahNum: '111', folder: 'maher', server: 12 },
-        { reciter: 'Abdul Basit', surah: 'Al-Fatihah', surahNum: '001', folder: 'basit/Almusshaf-Al-Mojawwad', server: 13 },
-        { reciter: 'Abdul Basit', surah: 'Ad-Duha', surahNum: '093', folder: 'basit/Almusshaf-Al-Mojawwad', server: 13 },
-        { reciter: 'Hani Ar-Rifai', surah: 'Al-Qari\'ah', surahNum: '101', folder: 'rifai', server: 12 },
-        { reciter: 'Muhammad Al-Luhaidan', surah: 'Al-Fatihah', surahNum: '001', folder: 'lhdan', server: 12 },
+        { surah: 'Al-Fatihah', ayah: 1 },
+        { surah: 'Al-Baqarah', ayah: 8 },
+        { surah: 'Maryam', ayah: 2614 },
+        { surah: 'Ta-Ha', ayah: 2655 },
+        { surah: 'Yasin', ayah: 3705 },
+        { surah: 'Ar-Rahman', ayah: 4737 },
+        { surah: 'Al-Mulk', ayah: 5241 },
+        { surah: 'Al-Fajr', ayah: 5664 },
+        { surah: 'Ad-Duha', ayah: 5715 },
+        { surah: 'Al-Qadr', ayah: 5725 },
+        { surah: 'Al-Ikhlas', ayah: 5753 },
+        { surah: 'Al-Falaq', ayah: 5757 },
+        { surah: 'An-Nas', ayah: 5762 },
     ];
 
     const questions: QuizQuestion[] = [];
-    const allReciters = [...new Set(samples.map(s => s.reciter))];
-    const allSurahs = [...new Set(samples.map(s => s.surah))];
+    const allSurahs = samples.map(s => s.surah);
 
     for (const s of samples) {
-        const audioUrl = `https://server${s.server}.mp3quran.net/${s.folder}/${s.surahNum}.mp3`;
+        const audioUrl = `${CDN}/${s.ayah}.mp3`;
 
-        // Q: Who is the reciter?
-        const q1 = buildMCQ(
+        // Q: Which surah is this?
+        const q = buildMCQ(
             'verses' as QuizThemeId,
-            '🎧 Qui est ce récitateur ?',
-            s.reciter,
-            allReciters,
-            undefined,
-            `Il s'agit de ${s.reciter}.`
-        );
-        if (q1) {
-            q1.audioUrl = audioUrl;
-            questions.push(q1);
-        }
-
-        // Q: Which surah?
-        const q2 = buildMCQ(
-            'verses' as QuizThemeId,
-            '🎧 De quelle sourate provient cet extrait ?',
+            '🎧 De quelle sourate provient ce verset ?',
             s.surah,
             allSurahs,
             undefined,
-            `C'est la sourate ${s.surah}.`
+            `C'est le premier verset de la sourate ${s.surah}.`
         );
-        if (q2) {
-            q2.audioUrl = audioUrl;
-            questions.push(q2);
+        if (q) {
+            q.audioUrl = audioUrl;
+            questions.push(q);
         }
     }
     return questions;
