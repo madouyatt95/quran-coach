@@ -15,12 +15,13 @@ import {
     MicOff,
     Eye,
     EyeOff,
-    Lightbulb
+    Lightbulb,
+    Languages
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
 import { useStatsStore } from '../stores/statsStore';
-import { fetchSurah, getAudioUrl } from '../lib/quranApi';
+import { fetchSurah, fetchSurahTransliteration, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
 import { useSRSStore } from '../stores/srsStore';
@@ -55,6 +56,10 @@ export function HifdhPage() {
 
     // Timing cache for all ayahs in the current range
     const [allTimings, setAllTimings] = useState<Map<number, VerseWords>>(new Map());
+
+    // Phonetics state
+    const [showPhonetics, setShowPhonetics] = useState(false);
+    const [transliterations, setTransliterations] = useState<Map<number, string>>(new Map());
 
     // Player state
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -141,13 +146,17 @@ export function HifdhPage() {
             setEndAyah(fetchEnd);
         }
 
-        fetchSurah(selectedSurah).then(({ ayahs: allAyahs }) => {
-            const filtered = allAyahs.filter(
+        Promise.all([
+            fetchSurah(selectedSurah),
+            fetchSurahTransliteration(selectedSurah)
+        ]).then(([surahData, transData]) => {
+            const filtered = surahData.ayahs.filter(
                 a => a.numberInSurah >= fetchStart && a.numberInSurah <= fetchEnd
             );
             setAyahs(filtered);
+            setTransliterations(transData);
             setCurrentAyahIndex(0);
-            setCurrentRepeat(1); // Reset repeat counter when changing verses
+            setCurrentRepeat(1);
             setSelectionStart(null);
             setSelectionEnd(null);
         });
@@ -788,6 +797,15 @@ export function HifdhPage() {
                             {currentAyah?.text || "Chargement..."}
                         </div>
                     )}
+
+                    {/* Phonetics Display */}
+                    {showPhonetics && currentAyah && transliterations.has(currentAyah.number) && (
+                        <div className="hifdh-phonetics-container" dir="ltr">
+                            <p className="hifdh-phonetics-text">
+                                {transliterations.get(currentAyah.number)}
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Player Controls */}
@@ -884,6 +902,14 @@ export function HifdhPage() {
             {/* Secondary Controls (Speed, Repeat) */}
             <div className="hifdh-footer-controls">
                 <div className="hifdh-control-group">
+                    <button
+                        className={`hifdh-footer-btn hifdh-phonetics-toggle ${showPhonetics ? 'active' : ''}`}
+                        onClick={() => setShowPhonetics(!showPhonetics)}
+                        title="Afficher la phonétique"
+                    >
+                        <Languages size={18} />
+                        <span>Phonétique</span>
+                    </button>
                     <div className="hifdh-speed-row">
                         {PLAYBACK_SPEEDS.filter(s => s >= 0.75).map(speed => (
                             <button

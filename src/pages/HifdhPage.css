@@ -612,6 +612,51 @@
     color: var(--color-text-secondary);
 }
 
+/* Phonetics */
+.hifdh-phonetics-container {
+    margin-top: var(--space-xl);
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-accent);
+}
+
+.hifdh-phonetics-text {
+    font-size: var(--text-ui-md);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+[data-theme="dark"] .hifdh-phonetics-container {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.hifdh-phonetics-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.hifdh-phonetics-toggle:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.hifdh-phonetics-toggle.active {
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
 /* SRS Section */
 .hifdh-srs-section {
     background: var(--color-bg-secondary);
