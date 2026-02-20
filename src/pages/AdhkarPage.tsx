@@ -116,7 +116,14 @@ export function AdhkarPage() {
         nameAr: chapter.titleAr,
         icon: <BookOpen size={24} />,
         color: chapter.color,
-        adhkar: chapter.duas.map(d => ({ id: d.id, arabic: d.arabic, translation: d.translation, count: d.count, source: d.source })),
+        adhkar: chapter.duas.map(d => ({
+            id: d.id,
+            arabic: d.arabic,
+            phonetic: d.phonetic,
+            translation: d.translation,
+            count: d.count,
+            source: d.source
+        })),
     });
 
     // Load persisted state
