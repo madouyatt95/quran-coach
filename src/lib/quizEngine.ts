@@ -888,48 +888,59 @@ function generateFiqhQuestions(): QuizQuestion[] {
 // ─── Audio Questions ────────────────────────────────────
 
 function generateAudioQuestions(): QuizQuestion[] {
-    // Use cdn.islamic.network — the SAME CDN already used by the app's Mushaf/Hifdh/FocusMode
-    // Format: https://cdn.islamic.network/quran/audio/128/ar.alafasy/{globalAyahNumber}.mp3
-    // globalAyahNumber = absolute ayah number across the entire Quran (1-6236)
+    // cdn.islamic.network uses GLOBAL ayah numbers (1-6236)
+    // SURAH_STARTS[i] = global ayah number of FIRST ayah of surah (i+1)
+    // Computed from official Quran structure: 7+286+200+176+120+...
+    const SURAH_STARTS = [1, 8, 294, 494, 670, 790, 955, 1161, 1236, 1365, 1474, 1597, 1708, 1751, 1803, 1902, 2030, 2141, 2251, 2349, 2484, 2596, 2674, 2792, 2856, 2933, 3160, 3253, 3341, 3410, 3470, 3504, 3534, 3607, 3661, 3706, 3789, 3971, 4059, 4134, 4219, 4273, 4326, 4415, 4474, 4511, 4546, 4584, 4613, 4631, 4676, 4736, 4785, 4847, 4902, 4980, 5076, 5105, 5127, 5151, 5164, 5178, 5189, 5200, 5218, 5230, 5242, 5272, 5324, 5376, 5420, 5448, 5476, 5496, 5552, 5592, 5623, 5673, 5713, 5759, 5801, 5830, 5849, 5885, 5910, 5932, 5949, 5968, 5994, 6024, 6044, 6059, 6080, 6091, 6099, 6107, 6126, 6131, 6139, 6147, 6158, 6169, 6177, 6180, 6189, 6194, 6198, 6205, 6208, 6214, 6217, 6222, 6226, 6231];
+
     const CDN = 'https://cdn.islamic.network/quran/audio/128/ar.alafasy';
 
-    // Each sample: surah name, first ayah's global number
-    // Global ayah numbers for first ayah of each surah:
-    // Al-Fatihah=1, Al-Baqarah=8, Al-Imran=294, An-Nisa=493, Al-Maidah=670,
-    // Maryam=2614, Ta-Ha=2655, Al-Qasas=3385, Yasin=3705, Ar-Rahman=4737,
-    // Al-Waqi'ah=4795, Al-Mulk=5241, Al-Muzzammil=5273, Al-Insan=5563, An-Naba=5591,
-    // At-Takwir=5620, Al-Fajr=5664, Ad-Duha=5715, Al-Qadr=5725, Al-Kawthar=5745,
-    // Al-Ikhlas=5753, Al-Falaq=5757, An-Nas=5762
-    const samples = [
-        { surah: 'Al-Fatihah', ayah: 1 },
-        { surah: 'Al-Baqarah', ayah: 8 },
-        { surah: 'Maryam', ayah: 2614 },
-        { surah: 'Ta-Ha', ayah: 2655 },
-        { surah: 'Yasin', ayah: 3705 },
-        { surah: 'Ar-Rahman', ayah: 4737 },
-        { surah: 'Al-Mulk', ayah: 5241 },
-        { surah: 'Al-Fajr', ayah: 5664 },
-        { surah: 'Ad-Duha', ayah: 5715 },
-        { surah: 'Al-Qadr', ayah: 5725 },
-        { surah: 'Al-Ikhlas', ayah: 5753 },
-        { surah: 'Al-Falaq', ayah: 5757 },
-        { surah: 'An-Nas', ayah: 5762 },
+    // Use LOCAL ayah numbers 2 or 3 (to skip Basmallah which is in ayah 1's audio).
+    // localAyah → globalAyah = SURAH_STARTS[surahIndex] + (localAyah - 1)
+    // We pick distinctive ayahs that people can recognize.
+    const samples: { surah: string; surahNum: number; localAyah: number }[] = [
+        // Al-Fatihah: ayah 2 = "الحمد لله رب العالمين" — très reconnaissable
+        { surah: 'Al-Fatihah', surahNum: 1, localAyah: 2 },
+        // Al-Baqarah: ayah 2 = "ذلك الكتاب لا ريب فيه" 
+        { surah: 'Al-Baqarah', surahNum: 2, localAyah: 2 },
+        // Yusuf: ayah 3 = "نحن نقص عليك أحسن القصص"
+        { surah: 'Yusuf', surahNum: 12, localAyah: 3 },
+        // Maryam: ayah 2 = "ذكر رحمة ربك عبده زكريا"
+        { surah: 'Maryam', surahNum: 19, localAyah: 2 },
+        // Ta-Ha: ayah 2 = "ما أنزلنا عليك القرآن لتشقى"
+        { surah: 'Ta-Ha', surahNum: 20, localAyah: 2 },
+        // Yasin: ayah 2 = "والقرآن الحكيم"
+        { surah: 'Yasin', surahNum: 36, localAyah: 2 },
+        // Ar-Rahman: ayah 13 = "فبأي آلاء ربكما تكذبان" (le refrain célèbre)
+        { surah: 'Ar-Rahman', surahNum: 55, localAyah: 13 },
+        // Al-Waqi'ah: ayah 2 = "ليس لوقعتها كاذبة"
+        { surah: "Al-Waqi'ah", surahNum: 56, localAyah: 2 },
+        // Al-Mulk: ayah 2 = "الذي خلق الموت والحياة"
+        { surah: 'Al-Mulk', surahNum: 67, localAyah: 2 },
+        // Al-Qiyamah: ayah 2 = "ولا أقسم بالنفس اللوامة"
+        { surah: 'Al-Qiyamah', surahNum: 75, localAyah: 2 },
+        // Ad-Duha: ayah 2 = "ما ودعك ربك وما قلى"
+        { surah: 'Ad-Duha', surahNum: 93, localAyah: 2 },
+        // Al-Ikhlas: ayah 2 = "الله الصمد" — très court et distinctif
+        { surah: 'Al-Ikhlas', surahNum: 112, localAyah: 2 },
+        // An-Nas: ayah 2 = "ملك الناس"
+        { surah: 'An-Nas', surahNum: 114, localAyah: 2 },
     ];
 
     const questions: QuizQuestion[] = [];
     const allSurahs = samples.map(s => s.surah);
 
     for (const s of samples) {
-        const audioUrl = `${CDN}/${s.ayah}.mp3`;
+        const globalAyah = SURAH_STARTS[s.surahNum - 1] + (s.localAyah - 1);
+        const audioUrl = `${CDN}/${globalAyah}.mp3`;
 
-        // Q: Which surah is this?
         const q = buildMCQ(
             'verses' as QuizThemeId,
             '🎧 De quelle sourate provient ce verset ?',
             s.surah,
             allSurahs,
             undefined,
-            `C'est le premier verset de la sourate ${s.surah}.`
+            `C'est le verset ${s.localAyah} de la sourate ${s.surah}.`
         );
         if (q) {
             q.audioUrl = audioUrl;
