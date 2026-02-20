@@ -895,36 +895,73 @@ function generateAudioQuestions(): QuizQuestion[] {
 
     const CDN = 'https://cdn.islamic.network/quran/audio/128/ar.alafasy';
 
-    // Use LOCAL ayah numbers 2 or 3 (to skip Basmallah which is in ayah 1's audio).
+    // Use LOCAL ayah numbers 2+ (to skip Basmallah which is in ayah 1's audio).
     // localAyah → globalAyah = SURAH_STARTS[surahIndex] + (localAyah - 1)
     // We pick distinctive ayahs that people can recognize.
     const samples: { surah: string; surahNum: number; localAyah: number }[] = [
-        // Al-Fatihah: ayah 2 = "الحمد لله رب العالمين" — très reconnaissable
-        { surah: 'Al-Fatihah', surahNum: 1, localAyah: 2 },
-        // Al-Baqarah: ayah 2 = "ذلك الكتاب لا ريب فيه" 
-        { surah: 'Al-Baqarah', surahNum: 2, localAyah: 2 },
-        // Yusuf: ayah 3 = "نحن نقص عليك أحسن القصص"
-        { surah: 'Yusuf', surahNum: 12, localAyah: 3 },
-        // Maryam: ayah 2 = "ذكر رحمة ربك عبده زكريا"
-        { surah: 'Maryam', surahNum: 19, localAyah: 2 },
-        // Ta-Ha: ayah 2 = "ما أنزلنا عليك القرآن لتشقى"
-        { surah: 'Ta-Ha', surahNum: 20, localAyah: 2 },
-        // Yasin: ayah 2 = "والقرآن الحكيم"
-        { surah: 'Yasin', surahNum: 36, localAyah: 2 },
-        // Ar-Rahman: ayah 13 = "فبأي آلاء ربكما تكذبان" (le refrain célèbre)
-        { surah: 'Ar-Rahman', surahNum: 55, localAyah: 13 },
-        // Al-Waqi'ah: ayah 2 = "ليس لوقعتها كاذبة"
-        { surah: "Al-Waqi'ah", surahNum: 56, localAyah: 2 },
-        // Al-Mulk: ayah 2 = "الذي خلق الموت والحياة"
-        { surah: 'Al-Mulk', surahNum: 67, localAyah: 2 },
-        // Al-Qiyamah: ayah 2 = "ولا أقسم بالنفس اللوامة"
-        { surah: 'Al-Qiyamah', surahNum: 75, localAyah: 2 },
-        // Ad-Duha: ayah 2 = "ما ودعك ربك وما قلى"
-        { surah: 'Ad-Duha', surahNum: 93, localAyah: 2 },
-        // Al-Ikhlas: ayah 2 = "الله الصمد" — très court et distinctif
-        { surah: 'Al-Ikhlas', surahNum: 112, localAyah: 2 },
-        // An-Nas: ayah 2 = "ملك الناس"
-        { surah: 'An-Nas', surahNum: 114, localAyah: 2 },
+        // ─── Grandes sourates connues ───
+        { surah: 'Al-Fatihah', surahNum: 1, localAyah: 2 },       // الحمد لله رب العالمين
+        { surah: 'Al-Baqarah', surahNum: 2, localAyah: 2 },       // ذلك الكتاب لا ريب فيه
+        { surah: 'Al-Imran', surahNum: 3, localAyah: 2 },         // الله لا إله إلا هو الحي القيوم
+        { surah: 'Al-Kahf', surahNum: 18, localAyah: 2 },         // قيما لينذر بأسا شديدا
+        { surah: 'Maryam', surahNum: 19, localAyah: 2 },          // ذكر رحمة ربك عبده زكريا
+        { surah: 'Ta-Ha', surahNum: 20, localAyah: 2 },           // ما أنزلنا عليك القرآن لتشقى
+        { surah: 'Al-Anbiya', surahNum: 21, localAyah: 2 },       // ما يأتيهم من ذكر
+        { surah: 'Al-Furqan', surahNum: 25, localAyah: 2 },       // الذي له ملك السماوات
+        { surah: 'Yusuf', surahNum: 12, localAyah: 3 },           // نحن نقص عليك أحسن القصص
+        { surah: 'Luqman', surahNum: 31, localAyah: 2 },          // تلك آيات الكتاب الحكيم
+        { surah: 'Yasin', surahNum: 36, localAyah: 2 },           // والقرآن الحكيم
+        { surah: 'As-Saffat', surahNum: 37, localAyah: 2 },       // فالزاجرات زجرا
+        { surah: 'Sad', surahNum: 38, localAyah: 2 },             // بل الذين كفروا في عزة
+        { surah: 'Az-Zumar', surahNum: 39, localAyah: 2 },        // إنا أنزلنا إليك الكتاب
+        { surah: 'Ghafir', surahNum: 40, localAyah: 2 },          // تنزيل الكتاب من الله
+        { surah: 'Muhammad', surahNum: 47, localAyah: 2 },        // والذين آمنوا وعملوا
+        { surah: 'Al-Hujurat', surahNum: 49, localAyah: 2 },      // لا ترفعوا أصواتكم
+        { surah: 'Ar-Rahman', surahNum: 55, localAyah: 13 },      // فبأي آلاء ربكما تكذبان
+        { surah: "Al-Waqi'ah", surahNum: 56, localAyah: 2 },      // ليس لوقعتها كاذبة
+        { surah: 'Al-Hadid', surahNum: 57, localAyah: 2 },        // له ملك السماوات والأرض
+        { surah: 'Al-Mulk', surahNum: 67, localAyah: 2 },         // الذي خلق الموت والحياة
+        { surah: 'Al-Qalam', surahNum: 68, localAyah: 2 },        // ما أنت بنعمة ربك بمجنون
+        { surah: 'Al-Jinn', surahNum: 72, localAyah: 2 },         // يهدي إلى الرشد فآمنا به
+        { surah: 'Al-Muzzammil', surahNum: 73, localAyah: 2 },    // قم الليل إلا قليلا
+        // ─── Juz Amma (78-114) — les plus mémorisées ───
+        { surah: 'An-Naba', surahNum: 78, localAyah: 2 },         // عن النبإ العظيم
+        { surah: "An-Nazi'at", surahNum: 79, localAyah: 2 },      // والناشطات نشطا
+        { surah: "'Abasa", surahNum: 80, localAyah: 2 },          // أن جاءه الأعمى
+        { surah: 'At-Takwir', surahNum: 81, localAyah: 2 },       // وإذا النجوم انكدرت
+        { surah: 'Al-Infitar', surahNum: 82, localAyah: 2 },      // وإذا الكواكب انتثرت
+        { surah: 'Al-Mutaffifin', surahNum: 83, localAyah: 2 },   // الذين إذا اكتالوا
+        { surah: 'Al-Inshiqaq', surahNum: 84, localAyah: 2 },     // وأذنت لربها وحقت
+        { surah: 'Al-Buruj', surahNum: 85, localAyah: 2 },        // واليوم الموعود
+        { surah: 'At-Tariq', surahNum: 86, localAyah: 2 },        // وما أدراك ما الطارق
+        { surah: "Al-A'la", surahNum: 87, localAyah: 2 },         // الذي خلق فسوى
+        { surah: 'Al-Ghashiyah', surahNum: 88, localAyah: 2 },    // وجوه يومئذ خاشعة
+        { surah: 'Al-Fajr', surahNum: 89, localAyah: 2 },         // وليال عشر
+        { surah: 'Al-Balad', surahNum: 90, localAyah: 2 },        // وأنت حل بهذا البلد
+        { surah: 'Ash-Shams', surahNum: 91, localAyah: 2 },       // والقمر إذا تلاها
+        { surah: 'Al-Layl', surahNum: 92, localAyah: 2 },         // والنهار إذا تجلى
+        { surah: 'Ad-Duha', surahNum: 93, localAyah: 2 },         // ما ودعك ربك وما قلى
+        { surah: 'Ash-Sharh', surahNum: 94, localAyah: 2 },       // ووضعنا عنك وزرك
+        { surah: 'At-Tin', surahNum: 95, localAyah: 2 },          // وطور سينين
+        { surah: "Al-'Alaq", surahNum: 96, localAyah: 2 },        // خلق الإنسان من علق
+        { surah: 'Al-Qadr', surahNum: 97, localAyah: 2 },         // وما أدراك ما ليلة القدر
+        { surah: 'Al-Bayyinah', surahNum: 98, localAyah: 2 },     // رسول من الله يتلو
+        { surah: 'Az-Zalzalah', surahNum: 99, localAyah: 2 },     // وأخرجت الأرض أثقالها
+        { surah: "Al-'Adiyat", surahNum: 100, localAyah: 2 },     // فالموريات قدحا
+        { surah: "Al-Qari'ah", surahNum: 101, localAyah: 2 },     // ما القارعة
+        { surah: 'At-Takathur', surahNum: 102, localAyah: 2 },    // حتى زرتم المقابر
+        { surah: "Al-'Asr", surahNum: 103, localAyah: 2 },        // إن الإنسان لفي خسر
+        { surah: 'Al-Humazah', surahNum: 104, localAyah: 2 },     // الذي جمع مالا وعدده
+        { surah: 'Al-Fil', surahNum: 105, localAyah: 2 },         // ألم يجعل كيدهم في تضليل
+        { surah: 'Quraysh', surahNum: 106, localAyah: 2 },        // إيلافهم رحلة الشتاء
+        { surah: "Al-Ma'un", surahNum: 107, localAyah: 2 },       // فذلك الذي يدع اليتيم
+        { surah: 'Al-Kawthar', surahNum: 108, localAyah: 2 },     // فصل لربك وانحر
+        { surah: 'Al-Kafirun', surahNum: 109, localAyah: 2 },     // لا أعبد ما تعبدون
+        { surah: 'An-Nasr', surahNum: 110, localAyah: 2 },        // ورأيت الناس يدخلون
+        { surah: 'Al-Masad', surahNum: 111, localAyah: 2 },       // ما أغنى عنه ماله
+        { surah: 'Al-Ikhlas', surahNum: 112, localAyah: 2 },      // الله الصمد
+        { surah: 'Al-Falaq', surahNum: 113, localAyah: 2 },       // من شر ما خلق
+        { surah: 'An-Nas', surahNum: 114, localAyah: 2 },         // ملك الناس
     ];
 
     const questions: QuizQuestion[] = [];
