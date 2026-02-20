@@ -27,18 +27,18 @@ export interface HisnMegaCategory {
 
 export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
     {
-        "id": "hisnul_full",
-        "name": "La Citadelle du Musulman",
-        "nameAr": "حصن المسلم",
-        "emoji": "🏰",
-        "color": "#2E7D32",
+        "id": "daily",
+        "name": "Quotidien",
+        "nameAr": "الأذكار اليومية",
+        "emoji": "🌅",
+        "color": "#FFD54F",
         "chapters": [
             {
                 "id": "chap_1",
                 "title": "Au réveil",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FFD54F",
                 "duas": [
                     {
                         "id": 14,
@@ -75,28 +75,11 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
-                "id": "chap_2",
-                "title": "Lorsqu’on s’habille",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 18,
-                        "audioId": 5,
-                        "arabic": "«الْحَمْدُ للهِ الَّذِي كَسَانِي هَذَا (الثَّوْبَ) وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ».",
-                        "translation": "Louange à Allah qui m'a revêtu de ce vêtement et me l'a accordé sans aucune force ni puissance de ma part.",
-                        "count": 1,
-                        "source": "أهل السنن"
-                    }
-                ]
-            },
-            {
                 "id": "chap_3",
                 "title": "Lorsqu’on met un vêtement neuf",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FFD54F",
                 "duas": [
                     {
                         "id": 19,
@@ -113,7 +96,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Pour la personne portant un vêtement neuf",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FFD54F",
                 "duas": [
                     {
                         "id": 20,
@@ -134,28 +117,11 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
-                "id": "chap_5",
-                "title": "En se déshabillant",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 22,
-                        "audioId": 12,
-                        "arabic": "«بِسْمِ اللهِ».",
-                        "translation": "Au nom d'Allah.",
-                        "count": 1,
-                        "source": "الترمذي 2/505، صحيح الجامع 3/203، إرواء الغليل 50"
-                    }
-                ]
-            },
-            {
                 "id": "chap_6",
                 "title": "En entrant aux toilettes",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FFD54F",
                 "duas": [
                     {
                         "id": 23,
@@ -172,7 +138,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "En sortant des toilettes",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FFD54F",
                 "duas": [
                     {
                         "id": 24,
@@ -184,6 +150,349 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     }
                 ]
             },
+            {
+                "id": "chap_10",
+                "title": "En sortant de la maison",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FFD54F",
+                "duas": [
+                    {
+                        "id": 29,
+                        "audioId": 16,
+                        "arabic": "«بِسْمِ اللهِ، تَوَكَّلْتُ عَلَى اللهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ».",
+                        "translation": "Au nom d'Allah, je m'en remets à Allah, il n'y a de force ni de puissance que par Allah.",
+                        "count": 1,
+                        "source": "أبو داود 4/ 325، والترمذي 5/ 490، صحيح الترمذي 3/ 151"
+                    },
+                    {
+                        "id": 30,
+                        "audioId": 17,
+                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أَضِلَّ أَوْ أُضَلَّ، أَوْ أَزِلَّ أَوْ أُزَلَّ، أَوْ أَظْلِمَ أَوْ أُظْلَمَ، أَوْ أَجْهَلَ أَوْ يُجْهَلَ عَلَيَّ».",
+                        "translation": "Ô Allah, je cherche protection auprès de Toi pour que je n'égare personne ou que je ne sois pas égaré, pour que je ne commette pas de faute ou que je n'y sois pas poussé, pour que je n'opprime personne ou que je ne sois pas opprimé, pour que je n'agisse pas avec ignorance ou que je ne sois pas victime d'ignorance.",
+                        "count": 1,
+                        "source": "أهل السنن، صحيح الترمذي 3/ 152، صحيح ابن ماجه 2/ 336"
+                    }
+                ]
+            },
+            {
+                "id": "chap_11",
+                "title": "En  entrant à la maison",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FFD54F",
+                "duas": [
+                    {
+                        "id": 31,
+                        "audioId": 18,
+                        "arabic": "«بِسْمِ اللهِ وَلَجْنَا، وَبِسْمِ اللهِ خَرَجْنَا، وَعَلَى رَبِّنَا تَوَكَّلْنَا، ثُمَّ لِيُسَلِّمْ عَلَى أَهْلِهِ».",
+                        "translation": "Au nom d'Allah nous sommes entrés, au nom d'Allah nous sommes sortis, et en notre Seigneur nous avons placé notre confiance, puis qu'il salue sa famille.",
+                        "count": 1,
+                        "source": "أبو داود 4/ 325، تحفة الأخيار ص28، مسلم برقم 2018"
+                    }
+                ]
+            },
+            {
+                "id": "chap_27",
+                "title": "Du matin et du soir ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FFD54F",
+                "duas": [
+                    {
+                        "id": 93,
+                        "audioId": 80,
+                        "arabic": "«الْحَمْدُ للهِ وَحْدَهُ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى مَنْ لَا نَبِيَّ بَعْدَهُ».",
+                        "translation": "Louange à Allah Seul, et que la prière et le salut soient sur celui après qui il n'y a plus de prophète.",
+                        "count": 1,
+                        "source": "أبو داود برقم 3667"
+                    },
+                    {
+                        "id": 94,
+                        "audioId": 258,
+                        "arabic": "﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...﴾ [آية الكرسي].",
+                        "translation": "Le Verset du Trône (Ayat al-Kursi).",
+                        "count": 1,
+                        "source": "سورة البقرة، آية 255"
+                    },
+                    {
+                        "id": 95,
+                        "audioId": 93,
+                        "arabic": "«قُلْ هُوَ اللهُ أَحَدٌ...»، «قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ...»، «قُلْ أَعُوذُ بِرَبِّ النَّاسِ...» (ثَلَاثَ مَرَّاتٍ).",
+                        "translation": "Sourates Al-Ikhlas, Al-Falaq et An-Nas (trois fois).",
+                        "count": 1,
+                        "source": "أبو داود 4/ 322، الترمذي 5/ 567"
+                    },
+                    {
+                        "id": 96,
+                        "audioId": 83,
+                        "arabic": "«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ، وَالْحَمْدُ للهِ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ».",
+                        "translation": "Nous voici au matin et la royauté appartient à Allah. Louange à Allah. Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, et Il est Capable de toute chose. Seigneur, je Te demande le bien de ce jour et le bien de ce qui suit, et je cherche protection auprès de Toi contre le mal de ce jour et le mal de ce qui suit. Seigneur, je cherche protection auprès de Toi contre la paresse et les maux de la vieillesse. Seigneur, je cherche protection auprès de Toi contre le châtiment du Feu et celui de la tombe.",
+                        "count": 1,
+                        "source": "مسلم 4/ 2088"
+                    },
+                    {
+                        "id": 97,
+                        "audioId": 84,
+                        "arabic": "«اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ».",
+                        "translation": "Ô Allah, c'est par Toi que nous sommes au matin et par Toi que nous sommes au soir. C'est par Toi que nous vivons et par Toi que nous mourons, et vers Toi est la résurrection.",
+                        "count": 1,
+                        "source": "الترمذي 5/ 466"
+                    },
+                    {
+                        "id": 98,
+                        "audioId": 85,
+                        "arabic": "«اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ».",
+                        "translation": "Ô Allah, Tu es mon Seigneur, nul n'est digne d'adoration si ce n'est Toi. Tu m'as créé et je suis Ton serviteur. Je suis fidèle à Ton pacte et à Ta promesse autant que je le puis. Je cherche protection auprès de Toi contre le mal que j'ai commis. Je reconnais Tes bienfaits envers moi et je reconnais mon péché. Pardonne-moi donc, car nul ne pardonne les péchés si ce n'est Toi.",
+                        "count": 1,
+                        "source": "البخاري 7/ 150"
+                    },
+                    {
+                        "id": 99,
+                        "audioId": 86,
+                        "arabic": "«اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ» (أَرْبَعَ مَرَّاتٍ).",
+                        "translation": "Ô Allah, me voici au matin, je Te prends à témoin, ainsi que les porteurs de Ton Trône, Tes anges et toute Ta création, pour témoigner que Tu es Allah, nulle divinité n'est digne d'adoration sauf Toi, Seul et sans associé, et que Muhammad est Ton serviteur et Ton messager (4 fois).",
+                        "count": 1,
+                        "source": "أبو داود 4/317، البخاري في الأدب المفرد رقم 1201"
+                    },
+                    {
+                        "id": 100,
+                        "audioId": 87,
+                        "arabic": "«اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ».",
+                        "translation": "Ô Allah, tout bienfait qui m'arrive en ce matin ou arrive à l'une de Tes créatures provient de Toi Seul, sans associé. À Toi la louange et à Toi la gratitude.",
+                        "count": 1,
+                        "source": "أبو داود 4/318، النسائي في عمل اليوم والليلة رقم 7"
+                    },
+                    {
+                        "id": 101,
+                        "audioId": 90,
+                        "arabic": "«اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي».",
+                        "translation": "Ô Allah, je Te demande le pardon et le salut dans ce monde et dans l'au-delà. Ô Allah, je Te demande le pardon et le salut pour ma religion, ma vie, ma famille et mes biens. Ô Allah, dissimule mes faiblesses et rassure-moi contre mes craintes. Ô Allah, protège-moi par devant, par derrière, sur ma droite, sur ma gauche et au-dessus de moi. Et je cherche protection auprès de Ta grandeur contre le fait d'être englouti par en dessous.",
+                        "count": 1,
+                        "source": "أبو داود وابن ماجه"
+                    },
+                    {
+                        "id": 102,
+                        "audioId": 91,
+                        "arabic": "«اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ».",
+                        "translation": "Ô Allah, Connaisseur de l'invisible et du visible, Créateur des cieux et de la terre, Seigneur et Maître de toute chose. J'atteste qu'il n'y a de divinité digne d'adoration que Toi. Je cherche protection auprès de Toi contre le mal de mon âme, contre le mal du Diable et de son polythéisme, et contre le fait de commettre un mal contre moi-même ou d'en causer un à un musulman.",
+                        "count": 1,
+                        "source": "الترمذي وأبو داود"
+                    },
+                    {
+                        "id": 103,
+                        "audioId": 92,
+                        "arabic": "«بِسْمِ اللهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ» (ثَلَاثَ مَرَّاتٍ).",
+                        "translation": "Au nom d'Allah, tel qu'en compagnie de Son Nom rien ne peut nuire sur terre ni dans le ciel, et Il est l'Audient, l'Omniscient (3 fois).",
+                        "count": 1,
+                        "source": "أبو داود والترمذي"
+                    },
+                    {
+                        "id": 104,
+                        "audioId": 93,
+                        "arabic": "«رَضِيتُ بِاللهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا» (ثَلَاثَ مَرَّاتٍ).",
+                        "translation": "J'agrée Allah comme Seigneur, l'Islam comme religion et Muhammad ﷺ comme Prophète (3 fois).",
+                        "count": 1,
+                        "source": "أحمد والترمذي"
+                    },
+                    {
+                        "id": 105,
+                        "audioId": 94,
+                        "arabic": "«يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ».",
+                        "translation": "Ô Vivant, ô Celui qui subsiste par Lui-même, par Ta miséricorde j'appelle au secours. Améliore ma situation dans sa totalité et ne me confie pas à moi-même, ne serait-ce que le temps d'un clin d'œil.",
+                        "count": 1,
+                        "source": "الحاكم وصححه الذهبي"
+                    },
+                    {
+                        "id": 106,
+                        "audioId": 95,
+                        "arabic": "«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ: فَتْحَهُ، وَنَصْرَهُ، وَنُورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ».",
+                        "translation": "Nous sommes au matin et la royauté appartient à Allah, Seigneur des mondes. Ô Allah, je Te demande le bien de ce jour : son succès, son secours, sa lumière, sa bénédiction et sa guidée. Et je cherche protection auprès de Toi contre le mal qu'il contient et le mal qui suit.",
+                        "count": 1,
+                        "source": "أبو داود"
+                    },
+                    {
+                        "id": 107,
+                        "audioId": 96,
+                        "arabic": "«أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ».",
+                        "translation": "Nous voici au matin sur la saine nature de l'Islam, sur la parole de la sincérité, sur la religion de notre Prophète Muhammad ﷺ et sur la religion de notre père Ibrahim, qui était un pur monothéiste musulman et n'était point du nombre des polythéistes.",
+                        "count": 1,
+                        "source": "أحمد"
+                    },
+                    {
+                        "id": 108,
+                        "audioId": 103,
+                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ» (ثَلَاثَ مَرَّاتٍ إِذَا أَمْسَى).",
+                        "translation": "Je cherche protection auprès des paroles parfaites d'Allah contre le mal de ce qu'Il a créé (3 fois le soir).",
+                        "count": 1,
+                        "source": "مسلم 4/ 2080"
+                    },
+                    {
+                        "id": 109,
+                        "audioId": 104,
+                        "arabic": "«اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ» (عَشْرَ مَرَّاتٍ).",
+                        "translation": "Ô Allah, prie sur notre Prophète Muhammad et accorde-lui Ton salut (10 fois).",
+                        "count": 1,
+                        "source": "الطبراني، صحيح الترغيب والترهيب 1/ 273"
+                    }
+                ]
+            },
+            {
+                "id": "chap_28",
+                "title": "Avant de dormir",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FFD54F",
+                "duas": [
+                    {
+                        "id": 110,
+                        "audioId": 105,
+                        "arabic": "«يَجْمَعُ كَفَّيْهِ ثُمَّ يَنْفُثُ فِيهِمَا فَيَقْرَأُ: {قُلْ هُوَ اللهُ أَحَدٌ}، {قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ}، {قُلْ أَعُوذُ بِرَبِّ النَّاسِ} ثُمَّ يَمْسَحُ بِهِمَا مَا اسْتَطَاعَ مِنْ جَسَدِهِ...» (ثَلَاثَ مَرَّاتٍ).",
+                        "translation": "Joindre les mains, souffler dedans et réciter les sourates Al-Ikhlas, Al-Falaq et An-Nas, puis essuyer ce qui est possible du corps en commençant par la tête et le visage (3 fois).",
+                        "count": 1,
+                        "source": "البخاري مع الفتح 9/62"
+                    },
+                    {
+                        "id": 111,
+                        "audioId": 258,
+                        "arabic": "آيَةُ الْكُرْسِيِّ: ﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...﴾.",
+                        "translation": "Réciter le Verset du Trône (Ayat al-Kursi) avant de dormir.",
+                        "count": 1,
+                        "source": "البخاري مع الفتح 4/487"
+                    },
+                    {
+                        "id": 112,
+                        "audioId": 265,
+                        "arabic": "﴿آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ...﴾ [سُورَةُ الْبَقَرَةِ: 285-286].",
+                        "translation": "Réciter les deux derniers versets de la sourate Al-Baqara.",
+                        "count": 1,
+                        "source": "البخاري ومسلم"
+                    },
+                    {
+                        "id": 113,
+                        "audioId": 108,
+                        "arabic": "«بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي وَبِكَ أَرْفَعُهُ، إِنْ أَمْسَكْتَ نَفْسِي فَارْحَمْهَا، وَإِنْ أَرْسَلْتَهَا فَاحْفَظْهَا بِمَا تَحْفَظُ بِهِ عِبَادَكَ الصَّالِحِينَ».",
+                        "translation": "En Ton Nom, mon Seigneur, je pose mon flanc et par Toi je le relève. Si Tu reprends mon âme, fais-lui miséricorde, et si Tu la renvoies, protège-la comme Tu protèges Tes serviteurs vertueux.",
+                        "count": 1,
+                        "source": "البخاري 11/126، مسلم 4/2084"
+                    },
+                    {
+                        "id": 114,
+                        "audioId": 109,
+                        "arabic": "«اللَّهُمَّ خَلَقْتَ نَفْسِي وَأَنْتَ تَوَفَّاهَا، لَكَ مَمَاتُهَا وَمَحْيَاهَا، إِنْ أَحْيَيْتَهَا فَاحْفَظْهَا وَإِنْ أَمَتَّهَا فَاغْفِرْ لَهَا، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ».",
+                        "translation": "Ô Allah, Tu as créé mon âme et c'est Toi qui la fais mourir. À Toi appartiennent sa mort et sa vie. Si Tu lui donnes la vie, protège-la, et si Tu lui donnes la mort, pardonne-lui. Ô Allah, je Te demande le salut.",
+                        "count": 1,
+                        "source": "مسلم 4/2083"
+                    },
+                    {
+                        "id": 115,
+                        "audioId": 110,
+                        "arabic": "«اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ» (ثَلَاثَ مَرَّاتٍ).",
+                        "translation": "Ô Allah, préserve-moi de Ton châtiment le jour où Tu ressusciteras Tes serviteurs (3 fois).",
+                        "count": 1,
+                        "source": "أبو داود 4/311"
+                    },
+                    {
+                        "id": 116,
+                        "audioId": 111,
+                        "arabic": "«بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا».",
+                        "translation": "En Ton Nom, ô Allah, je meurs et je vis.",
+                        "count": 1,
+                        "source": "البخاري مع الفتح 11/113"
+                    },
+                    {
+                        "id": 117,
+                        "audioId": 112,
+                        "arabic": "«سُبْحَانَ اللهِ (33)، وَالْحَمْدُ للهِ (33)، وَاللهُ أَكْبَرُ (34)».",
+                        "translation": "Gloire à Allah (33), Louange à Allah (33), Allah est le plus Grand (34).",
+                        "count": 1,
+                        "source": "البخاري ومسلم"
+                    },
+                    {
+                        "id": 118,
+                        "audioId": 159,
+                        "arabic": "«اللَّهُمَّ رَبَّ السَّمَاوَاتِ السَّبْعِ وَرَبَّ الْعَرْشِ الْعَظِيمِ... اقْضِ عَنَّا الدَّيْنَ وَأَغْنِنَا مِنَ الْفَقْرِ».",
+                        "translation": "Ô Allah, Seigneur des sept cieux et du Trône immense... règle nos dettes et préserve-nous de la pauvreté.",
+                        "count": 1,
+                        "source": "مسلم 4/2084"
+                    },
+                    {
+                        "id": 119,
+                        "audioId": 114,
+                        "arabic": "«الْحَمْدُ للهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَكَفَانَا وَآوَانَا، فَكَمْ مِمَّنْ لَا كَافِيَ لَهُ وَلَا مُؤْوِيَ».",
+                        "translation": "Louange à Allah qui nous a nourris, nous a abreuvés, nous a protégés et nous a donné refuge. Combien n'ont ni protecteur ni refuge.",
+                        "count": 1,
+                        "source": "مسلم 4/2085"
+                    },
+                    {
+                        "id": 120,
+                        "audioId": 91,
+                        "arabic": "«اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ... أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ...».",
+                        "translation": "Ô Allah, Connaisseur de l'invisible... je cherche protection contre le mal de mon âme et le mal du Diable...",
+                        "count": 1,
+                        "source": "أبو داود والترمذي"
+                    },
+                    {
+                        "id": 121,
+                        "audioId": 116,
+                        "arabic": "«يَقْرَأُ {ألم تَنْزِيلُ} السَّجْدَةِ، وَ {تَبَارَكَ الَّذِي بِيَدِهِ الْمُلْكُ}».",
+                        "translation": "Réciter la sourate As-Sajda et la sourate Al-Mulk.",
+                        "count": 1,
+                        "source": "الترمذي والنسائي"
+                    },
+                    {
+                        "id": 122,
+                        "audioId": 117,
+                        "arabic": "«اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ... آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ».",
+                        "translation": "Ô Allah, je Te soumets mon âme et je Te confie mon sort... J'ai cru en Ton Livre que Tu as descendu et en Ton Prophète que Tu as envoyé.",
+                        "count": 1,
+                        "source": "البخاري ومسلم"
+                    }
+                ]
+            },
+            {
+                "id": "chap_29",
+                "title": "quand ont se retourne pendant le sommeil ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FFD54F",
+                "duas": [
+                    {
+                        "id": 123,
+                        "audioId": 118,
+                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ الْوَاحِدُ الْقَهَّارُ، رَبُّ السَّمَاوَاتِ وَالْأَرْضِ وَمَا بَيْنَهُمَا الْعَزِيزُ الْغَفَّارُ».",
+                        "translation": "Il n'y a de divinité digne d'adoration qu'Allah, l'Unique, le Dominateur suprême, Seigneur des cieux et de la terre et de ce qui se trouve entre eux, le Puissant, le Grand Pardonneur.",
+                        "count": 1,
+                        "source": "أخرجه الحاكم 1/ 540 والنسائي في اليوم والليلة"
+                    }
+                ]
+            },
+            {
+                "id": "chap_110",
+                "title": "au chant du coq et au braiment de l'âne",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FFD54F",
+                "duas": [
+                    {
+                        "id": 244,
+                        "audioId": 241,
+                        "arabic": "«إِذَا سَمِعْتُمْ صِيَاحَ الدِّيَكَةِ فَاسْأَلُوا اللهَ مِنْ فَضْلِهِ؛ فَإِنَّهَا رَأَتْ مَلَكاً، وَإِذَا سَمِعْتُمْ نَهِيقَ الْحِمَارِ فَتَعَوَّذُوا بِاللهِ مِنَ الشَّيْطَانِ؛ فَإِنَّهُ رَأَى شَيْطَاناً».",
+                        "translation": "« Si vous entendez le chant du coq, demandez à Allah Ses faveurs car il a vu un ange. Si vous entendez le braiment de l'âne, cherchez protection auprès d'Allah contre le Diable car il a vu un diable. »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "prayer",
+        "name": "Prière",
+        "nameAr": "الصلاة",
+        "emoji": "🕌",
+        "color": "#4CAF50",
+        "chapters": [
             {
                 "id": "chap_8",
                 "title": "Avant les ablutions",
@@ -231,48 +540,6 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "translation": "Gloire et louange à Toi ô Allah. J'atteste qu'il n'y a de divinité que Toi. Je Te demande pardon et je me repens à Toi.",
                         "count": 1,
                         "source": "النسائي في عمل اليوم والليلة ص173، إرواء الغليل 1/ 135 و2/ 94"
-                    }
-                ]
-            },
-            {
-                "id": "chap_10",
-                "title": "En sortant de la maison",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 29,
-                        "audioId": 16,
-                        "arabic": "«بِسْمِ اللهِ، تَوَكَّلْتُ عَلَى اللهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ».",
-                        "translation": "Au nom d'Allah, je m'en remets à Allah, il n'y a de force ni de puissance que par Allah.",
-                        "count": 1,
-                        "source": "أبو داود 4/ 325، والترمذي 5/ 490، صحيح الترمذي 3/ 151"
-                    },
-                    {
-                        "id": 30,
-                        "audioId": 17,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أَضِلَّ أَوْ أُضَلَّ، أَوْ أَزِلَّ أَوْ أُزَلَّ، أَوْ أَظْلِمَ أَوْ أُظْلَمَ، أَوْ أَجْهَلَ أَوْ يُجْهَلَ عَلَيَّ».",
-                        "translation": "Ô Allah, je cherche protection auprès de Toi pour que je n'égare personne ou que je ne sois pas égaré, pour que je ne commette pas de faute ou que je n'y sois pas poussé, pour que je n'opprime personne ou que je ne sois pas opprimé, pour que je n'agisse pas avec ignorance ou que je ne sois pas victime d'ignorance.",
-                        "count": 1,
-                        "source": "أهل السنن، صحيح الترمذي 3/ 152، صحيح ابن ماجه 2/ 336"
-                    }
-                ]
-            },
-            {
-                "id": "chap_11",
-                "title": "En  entrant à la maison",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 31,
-                        "audioId": 18,
-                        "arabic": "«بِسْمِ اللهِ وَلَجْنَا، وَبِسْمِ اللهِ خَرَجْنَا، وَعَلَى رَبِّنَا تَوَكَّلْنَا، ثُمَّ لِيُسَلِّمْ عَلَى أَهْلِهِ».",
-                        "translation": "Au nom d'Allah nous sommes entrés, au nom d'Allah nous sommes sortis, et en notre Seigneur nous avons placé notre confiance, puis qu'il salue sa famille.",
-                        "count": 1,
-                        "source": "أبو داود 4/ 325، تحفة الأخيار ص28، مسلم برقم 2018"
                     }
                 ]
             },
@@ -458,88 +725,6 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
-                "id": "chap_17",
-                "title": "À l'inclinaison.",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 50,
-                        "audioId": 37,
-                        "arabic": "«سُبْحَانَ رَبِّيَ الْعَظِيمِ» (ثَلَاثَ مَرَّاتٍ).",
-                        "translation": "Gloire à mon Seigneur le Très-Grand (trois fois).",
-                        "count": 1,
-                        "source": "أهل السنن وأحمد، صحيح الترمذي 1/83"
-                    },
-                    {
-                        "id": 51,
-                        "audioId": 38,
-                        "arabic": "«سُبْحَانَكَ اللَّهُمَّ رَبَّنَا وَبِحَمْدِكَ، اللَّهُمَّ اغْفِرْ لِي».",
-                        "translation": "Gloire et louange à Toi, ô Allah, notre Seigneur. Ô Allah, pardonne-moi.",
-                        "count": 1,
-                        "source": "البخاري 1/199، مسلم 1/350"
-                    },
-                    {
-                        "id": 52,
-                        "audioId": 39,
-                        "arabic": "«سُبُّوحٌ، قُدُّوسٌ، رَبُّ الْمَلَائِكَةِ وَالرُّوحِ».",
-                        "translation": "Parfait et Très-Saint, Seigneur des Anges et de l'Esprit (Gabriel).",
-                        "count": 1,
-                        "source": "مسلم 1/353، أبو داود 1/230"
-                    },
-                    {
-                        "id": 53,
-                        "audioId": 40,
-                        "arabic": "«اللَّهُمَّ لَكَ رَكَعْتُ، وَبِكَ آمَنْتُ، وَلَكَ أَسْلَمْتُ، خَشَعَ لَكَ سَمْعِي، وَبَصَرِي، وَمُخِّي، وَعَظْمِي، وَعَصَبِي، وَمَا اسْتَقَلَّتْ بِهِ قَدَمِي».",
-                        "translation": "Ô Allah, c'est pour Toi que je me prosterne, en Toi que j'ai cru et à Toi que je me suis soumis. Mon ouïe, ma vue, mon cerveau, mes os, mes nerfs et tout ce que mes pieds transportent sont humiliés devant Toi.",
-                        "count": 1,
-                        "source": "مسلم 1/534، والأربعة إلا ابن ماجه"
-                    },
-                    {
-                        "id": 54,
-                        "audioId": 49,
-                        "arabic": "«سُبْحَانَ ذِي الْجَبَرُوتِ، وَالْمَلَكُوتِ، وَالْكِبْرِيَاءِ، وَالْعَظَمَةِ».",
-                        "translation": "Gloire au Possesseur de la Toute-Puissance, de la Royauté absolue, de la Grandeur et de la Majesté.",
-                        "count": 1,
-                        "source": "أبو داود 1/230، النسائي، أحمد"
-                    }
-                ]
-            },
-            {
-                "id": "chap_18",
-                "title": "En se relevant de l'inclinaison",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 55,
-                        "audioId": 42,
-                        "arabic": "«سَمِعَ اللهُ لِمَنْ حَمِدَهُ».",
-                        "translation": "Allah a entendu celui qui L'a loué.",
-                        "count": 1,
-                        "source": "البخاري مع الفتح 2/ 282"
-                    },
-                    {
-                        "id": 56,
-                        "audioId": 43,
-                        "arabic": "«رَبَّنَا وَلَكَ الْحَمْدُ، حَمْدًا كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ».",
-                        "translation": "Notre Seigneur, à Toi la louange, une louange abondante, pure et bénie.",
-                        "count": 1,
-                        "source": "البخاري مع الفتح 2/ 282"
-                    },
-                    {
-                        "id": 57,
-                        "audioId": 44,
-                        "arabic": "«...مِلْءَ السَّمَاوَاتِ وَمِلْءَ الْأَرْضِ وَمَا بَيْنَهُمَا، وَمِلْءَ مَا شِئْتَ مِنْ شَيْءٍ بَعْدُ. أَهْلَ الثَّنَاءِ وَالْمَجْدِ، أَحَقُّ مَا قَالَ الْعَبْدُ، وَكُلُّنَا لَكَ عَبْدٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ وَلَا مُعْطِيَ لِمَا مَنَعْتَ وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ».",
-                        "translation": "[J'implore Ta louange] autant que l'espace des cieux, de la terre et de ce qui les sépare, et autant que Tu voudras d'autre chose après cela. Ô Toi qui mérites éloges et gloire, c'est là la parole la plus véridique que puisse prononcer un serviteur, et nous sommes tous Tes serviteurs. Ô Allah, nul ne peut retenir ce que Tu as donné, et nul ne peut donner ce que Tu as retenu. Et la fortune du riche ne lui sert à rien contre Toi.",
-                        "count": 1,
-                        "source": "مسلم 1/ 346"
-                    }
-                ]
-            },
-            {
                 "id": "chap_19",
                 "title": "de la prosternation ",
                 "titleAr": "",
@@ -626,31 +811,6 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "translation": "Ô Allah, pardonne-moi, fais-moi miséricorde, guide-moi, panse mes blessures (ou secours-moi), préserve-moi, accorde-moi ma subsistance et élève-moi.",
                         "count": 1,
                         "source": "أصحاب السنن إلا النسائي، صحيح الترمذي 1/90، صحيح ابن ماجه 1/ 148"
-                    }
-                ]
-            },
-            {
-                "id": "chap_21",
-                "title": " Posternation de la lecture du Quran",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 67,
-                        "audioId": 54,
-                        "arabic": "«سَجَدَ وَجْهِي لِلَّذِي خَلَقَهُ، وَشَقَّ سَمْعَهُ وَبَصَرَهُ بِحَوْلِهِ وَقُوَّتِهِ، {فَتَبَارَكَ اللهُ أَحْسَنُ الْخَالِقِينَ}».",
-                        "translation": "Mon visage s'est prosterné devant Celui qui l'a créé et a ouvert son ouïe et sa vue par Sa force et Sa puissance. {Béni soit donc Allah, le Meilleur des créateurs}.",
-                        "count": 1,
-                        "source": "الترمذي 2/474، أحمد 6/30، الحاكم 1/220"
-                    },
-                    {
-                        "id": 68,
-                        "audioId": 55,
-                        "arabic": "«اللَّهُمَّ اكْتُبْ لِي بِهَا عِنْدَكَ أَجْرًا، وَضَعْ عَنِّي بِهَا وِزْرًا، وَاجْعَلْهَا لِي عِنْدَكَ ذُخْرًا، وَتَقَبَّلْهَا مِنِّي كَمَا تَقَبَّلْتَهَا مِنْ عَبْدِكَ دَاوُدَ».",
-                        "translation": "Ô Allah, inscris-moi grâce à elle (cette prosternation) une récompense auprès de Toi, décharge-moi d'un péché, fais-en pour moi un trésor auprès de Toi et accepte-la de ma part comme Tu l'as acceptée de Ton serviteur David.",
-                        "count": 1,
-                        "source": "الترمذي 2/473، الحاكم 1/219"
                     }
                 ]
             },
@@ -892,347 +1052,6 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
-                "id": "chap_27",
-                "title": "Du matin et du soir ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 93,
-                        "audioId": 80,
-                        "arabic": "«الْحَمْدُ للهِ وَحْدَهُ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى مَنْ لَا نَبِيَّ بَعْدَهُ».",
-                        "translation": "Louange à Allah Seul, et que la prière et le salut soient sur celui après qui il n'y a plus de prophète.",
-                        "count": 1,
-                        "source": "أبو داود برقم 3667"
-                    },
-                    {
-                        "id": 94,
-                        "audioId": 258,
-                        "arabic": "﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...﴾ [آية الكرسي].",
-                        "translation": "Le Verset du Trône (Ayat al-Kursi).",
-                        "count": 1,
-                        "source": "سورة البقرة، آية 255"
-                    },
-                    {
-                        "id": 95,
-                        "audioId": 93,
-                        "arabic": "«قُلْ هُوَ اللهُ أَحَدٌ...»، «قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ...»، «قُلْ أَعُوذُ بِرَبِّ النَّاسِ...» (ثَلَاثَ مَرَّاتٍ).",
-                        "translation": "Sourates Al-Ikhlas, Al-Falaq et An-Nas (trois fois).",
-                        "count": 1,
-                        "source": "أبو داود 4/ 322، الترمذي 5/ 567"
-                    },
-                    {
-                        "id": 96,
-                        "audioId": 83,
-                        "arabic": "«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ، وَالْحَمْدُ للهِ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ».",
-                        "translation": "Nous voici au matin et la royauté appartient à Allah. Louange à Allah. Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, et Il est Capable de toute chose. Seigneur, je Te demande le bien de ce jour et le bien de ce qui suit, et je cherche protection auprès de Toi contre le mal de ce jour et le mal de ce qui suit. Seigneur, je cherche protection auprès de Toi contre la paresse et les maux de la vieillesse. Seigneur, je cherche protection auprès de Toi contre le châtiment du Feu et celui de la tombe.",
-                        "count": 1,
-                        "source": "مسلم 4/ 2088"
-                    },
-                    {
-                        "id": 97,
-                        "audioId": 84,
-                        "arabic": "«اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ».",
-                        "translation": "Ô Allah, c'est par Toi que nous sommes au matin et par Toi que nous sommes au soir. C'est par Toi que nous vivons et par Toi que nous mourons, et vers Toi est la résurrection.",
-                        "count": 1,
-                        "source": "الترمذي 5/ 466"
-                    },
-                    {
-                        "id": 98,
-                        "audioId": 85,
-                        "arabic": "«اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ».",
-                        "translation": "Ô Allah, Tu es mon Seigneur, nul n'est digne d'adoration si ce n'est Toi. Tu m'as créé et je suis Ton serviteur. Je suis fidèle à Ton pacte et à Ta promesse autant que je le puis. Je cherche protection auprès de Toi contre le mal que j'ai commis. Je reconnais Tes bienfaits envers moi et je reconnais mon péché. Pardonne-moi donc, car nul ne pardonne les péchés si ce n'est Toi.",
-                        "count": 1,
-                        "source": "البخاري 7/ 150"
-                    },
-                    {
-                        "id": 99,
-                        "audioId": 86,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ» (أَرْبَعَ مَرَّاتٍ).",
-                        "translation": "Ô Allah, me voici au matin, je Te prends à témoin, ainsi que les porteurs de Ton Trône, Tes anges et toute Ta création, pour témoigner que Tu es Allah, nulle divinité n'est digne d'adoration sauf Toi, Seul et sans associé, et que Muhammad est Ton serviteur et Ton messager (4 fois).",
-                        "count": 1,
-                        "source": "أبو داود 4/317، البخاري في الأدب المفرد رقم 1201"
-                    },
-                    {
-                        "id": 100,
-                        "audioId": 87,
-                        "arabic": "«اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ».",
-                        "translation": "Ô Allah, tout bienfait qui m'arrive en ce matin ou arrive à l'une de Tes créatures provient de Toi Seul, sans associé. À Toi la louange et à Toi la gratitude.",
-                        "count": 1,
-                        "source": "أبو داود 4/318، النسائي في عمل اليوم والليلة رقم 7"
-                    },
-                    {
-                        "id": 101,
-                        "audioId": 90,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي».",
-                        "translation": "Ô Allah, je Te demande le pardon et le salut dans ce monde et dans l'au-delà. Ô Allah, je Te demande le pardon et le salut pour ma religion, ma vie, ma famille et mes biens. Ô Allah, dissimule mes faiblesses et rassure-moi contre mes craintes. Ô Allah, protège-moi par devant, par derrière, sur ma droite, sur ma gauche et au-dessus de moi. Et je cherche protection auprès de Ta grandeur contre le fait d'être englouti par en dessous.",
-                        "count": 1,
-                        "source": "أبو داود وابن ماجه"
-                    },
-                    {
-                        "id": 102,
-                        "audioId": 91,
-                        "arabic": "«اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ».",
-                        "translation": "Ô Allah, Connaisseur de l'invisible et du visible, Créateur des cieux et de la terre, Seigneur et Maître de toute chose. J'atteste qu'il n'y a de divinité digne d'adoration que Toi. Je cherche protection auprès de Toi contre le mal de mon âme, contre le mal du Diable et de son polythéisme, et contre le fait de commettre un mal contre moi-même ou d'en causer un à un musulman.",
-                        "count": 1,
-                        "source": "الترمذي وأبو داود"
-                    },
-                    {
-                        "id": 103,
-                        "audioId": 92,
-                        "arabic": "«بِسْمِ اللهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ» (ثَلَاثَ مَرَّاتٍ).",
-                        "translation": "Au nom d'Allah, tel qu'en compagnie de Son Nom rien ne peut nuire sur terre ni dans le ciel, et Il est l'Audient, l'Omniscient (3 fois).",
-                        "count": 1,
-                        "source": "أبو داود والترمذي"
-                    },
-                    {
-                        "id": 104,
-                        "audioId": 93,
-                        "arabic": "«رَضِيتُ بِاللهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا» (ثَلَاثَ مَرَّاتٍ).",
-                        "translation": "J'agrée Allah comme Seigneur, l'Islam comme religion et Muhammad ﷺ comme Prophète (3 fois).",
-                        "count": 1,
-                        "source": "أحمد والترمذي"
-                    },
-                    {
-                        "id": 105,
-                        "audioId": 94,
-                        "arabic": "«يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ».",
-                        "translation": "Ô Vivant, ô Celui qui subsiste par Lui-même, par Ta miséricorde j'appelle au secours. Améliore ma situation dans sa totalité et ne me confie pas à moi-même, ne serait-ce que le temps d'un clin d'œil.",
-                        "count": 1,
-                        "source": "الحاكم وصححه الذهبي"
-                    },
-                    {
-                        "id": 106,
-                        "audioId": 95,
-                        "arabic": "«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ: فَتْحَهُ، وَنَصْرَهُ، وَنُورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ».",
-                        "translation": "Nous sommes au matin et la royauté appartient à Allah, Seigneur des mondes. Ô Allah, je Te demande le bien de ce jour : son succès, son secours, sa lumière, sa bénédiction et sa guidée. Et je cherche protection auprès de Toi contre le mal qu'il contient et le mal qui suit.",
-                        "count": 1,
-                        "source": "أبو داود"
-                    },
-                    {
-                        "id": 107,
-                        "audioId": 96,
-                        "arabic": "«أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ».",
-                        "translation": "Nous voici au matin sur la saine nature de l'Islam, sur la parole de la sincérité, sur la religion de notre Prophète Muhammad ﷺ et sur la religion de notre père Ibrahim, qui était un pur monothéiste musulman et n'était point du nombre des polythéistes.",
-                        "count": 1,
-                        "source": "أحمد"
-                    },
-                    {
-                        "id": 108,
-                        "audioId": 103,
-                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ» (ثَلَاثَ مَرَّاتٍ إِذَا أَمْسَى).",
-                        "translation": "Je cherche protection auprès des paroles parfaites d'Allah contre le mal de ce qu'Il a créé (3 fois le soir).",
-                        "count": 1,
-                        "source": "مسلم 4/ 2080"
-                    },
-                    {
-                        "id": 109,
-                        "audioId": 104,
-                        "arabic": "«اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ» (عَشْرَ مَرَّاتٍ).",
-                        "translation": "Ô Allah, prie sur notre Prophète Muhammad et accorde-lui Ton salut (10 fois).",
-                        "count": 1,
-                        "source": "الطبراني، صحيح الترغيب والترهيب 1/ 273"
-                    }
-                ]
-            },
-            {
-                "id": "chap_28",
-                "title": "Avant de dormir",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 110,
-                        "audioId": 105,
-                        "arabic": "«يَجْمَعُ كَفَّيْهِ ثُمَّ يَنْفُثُ فِيهِمَا فَيَقْرَأُ: {قُلْ هُوَ اللهُ أَحَدٌ}، {قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ}، {قُلْ أَعُوذُ بِرَبِّ النَّاسِ} ثُمَّ يَمْسَحُ بِهِمَا مَا اسْتَطَاعَ مِنْ جَسَدِهِ...» (ثَلَاثَ مَرَّاتٍ).",
-                        "translation": "Joindre les mains, souffler dedans et réciter les sourates Al-Ikhlas, Al-Falaq et An-Nas, puis essuyer ce qui est possible du corps en commençant par la tête et le visage (3 fois).",
-                        "count": 1,
-                        "source": "البخاري مع الفتح 9/62"
-                    },
-                    {
-                        "id": 111,
-                        "audioId": 258,
-                        "arabic": "آيَةُ الْكُرْسِيِّ: ﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...﴾.",
-                        "translation": "Réciter le Verset du Trône (Ayat al-Kursi) avant de dormir.",
-                        "count": 1,
-                        "source": "البخاري مع الفتح 4/487"
-                    },
-                    {
-                        "id": 112,
-                        "audioId": 265,
-                        "arabic": "﴿آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ...﴾ [سُورَةُ الْبَقَرَةِ: 285-286].",
-                        "translation": "Réciter les deux derniers versets de la sourate Al-Baqara.",
-                        "count": 1,
-                        "source": "البخاري ومسلم"
-                    },
-                    {
-                        "id": 113,
-                        "audioId": 108,
-                        "arabic": "«بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي وَبِكَ أَرْفَعُهُ، إِنْ أَمْسَكْتَ نَفْسِي فَارْحَمْهَا، وَإِنْ أَرْسَلْتَهَا فَاحْفَظْهَا بِمَا تَحْفَظُ بِهِ عِبَادَكَ الصَّالِحِينَ».",
-                        "translation": "En Ton Nom, mon Seigneur, je pose mon flanc et par Toi je le relève. Si Tu reprends mon âme, fais-lui miséricorde, et si Tu la renvoies, protège-la comme Tu protèges Tes serviteurs vertueux.",
-                        "count": 1,
-                        "source": "البخاري 11/126، مسلم 4/2084"
-                    },
-                    {
-                        "id": 114,
-                        "audioId": 109,
-                        "arabic": "«اللَّهُمَّ خَلَقْتَ نَفْسِي وَأَنْتَ تَوَفَّاهَا، لَكَ مَمَاتُهَا وَمَحْيَاهَا، إِنْ أَحْيَيْتَهَا فَاحْفَظْهَا وَإِنْ أَمَتَّهَا فَاغْفِرْ لَهَا، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ».",
-                        "translation": "Ô Allah, Tu as créé mon âme et c'est Toi qui la fais mourir. À Toi appartiennent sa mort et sa vie. Si Tu lui donnes la vie, protège-la, et si Tu lui donnes la mort, pardonne-lui. Ô Allah, je Te demande le salut.",
-                        "count": 1,
-                        "source": "مسلم 4/2083"
-                    },
-                    {
-                        "id": 115,
-                        "audioId": 110,
-                        "arabic": "«اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ» (ثَلَاثَ مَرَّاتٍ).",
-                        "translation": "Ô Allah, préserve-moi de Ton châtiment le jour où Tu ressusciteras Tes serviteurs (3 fois).",
-                        "count": 1,
-                        "source": "أبو داود 4/311"
-                    },
-                    {
-                        "id": 116,
-                        "audioId": 111,
-                        "arabic": "«بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا».",
-                        "translation": "En Ton Nom, ô Allah, je meurs et je vis.",
-                        "count": 1,
-                        "source": "البخاري مع الفتح 11/113"
-                    },
-                    {
-                        "id": 117,
-                        "audioId": 112,
-                        "arabic": "«سُبْحَانَ اللهِ (33)، وَالْحَمْدُ للهِ (33)، وَاللهُ أَكْبَرُ (34)».",
-                        "translation": "Gloire à Allah (33), Louange à Allah (33), Allah est le plus Grand (34).",
-                        "count": 1,
-                        "source": "البخاري ومسلم"
-                    },
-                    {
-                        "id": 118,
-                        "audioId": 159,
-                        "arabic": "«اللَّهُمَّ رَبَّ السَّمَاوَاتِ السَّبْعِ وَرَبَّ الْعَرْشِ الْعَظِيمِ... اقْضِ عَنَّا الدَّيْنَ وَأَغْنِنَا مِنَ الْفَقْرِ».",
-                        "translation": "Ô Allah, Seigneur des sept cieux et du Trône immense... règle nos dettes et préserve-nous de la pauvreté.",
-                        "count": 1,
-                        "source": "مسلم 4/2084"
-                    },
-                    {
-                        "id": 119,
-                        "audioId": 114,
-                        "arabic": "«الْحَمْدُ للهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَكَفَانَا وَآوَانَا، فَكَمْ مِمَّنْ لَا كَافِيَ لَهُ وَلَا مُؤْوِيَ».",
-                        "translation": "Louange à Allah qui nous a nourris, nous a abreuvés, nous a protégés et nous a donné refuge. Combien n'ont ni protecteur ni refuge.",
-                        "count": 1,
-                        "source": "مسلم 4/2085"
-                    },
-                    {
-                        "id": 120,
-                        "audioId": 91,
-                        "arabic": "«اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ... أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ...».",
-                        "translation": "Ô Allah, Connaisseur de l'invisible... je cherche protection contre le mal de mon âme et le mal du Diable...",
-                        "count": 1,
-                        "source": "أبو داود والترمذي"
-                    },
-                    {
-                        "id": 121,
-                        "audioId": 116,
-                        "arabic": "«يَقْرَأُ {ألم تَنْزِيلُ} السَّجْدَةِ، وَ {تَبَارَكَ الَّذِي بِيَدِهِ الْمُلْكُ}».",
-                        "translation": "Réciter la sourate As-Sajda et la sourate Al-Mulk.",
-                        "count": 1,
-                        "source": "الترمذي والنسائي"
-                    },
-                    {
-                        "id": 122,
-                        "audioId": 117,
-                        "arabic": "«اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ... آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ».",
-                        "translation": "Ô Allah, je Te soumets mon âme et je Te confie mon sort... J'ai cru en Ton Livre que Tu as descendu et en Ton Prophète que Tu as envoyé.",
-                        "count": 1,
-                        "source": "البخاري ومسلم"
-                    }
-                ]
-            },
-            {
-                "id": "chap_29",
-                "title": "quand ont se retourne pendant le sommeil ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 123,
-                        "audioId": 118,
-                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ الْوَاحِدُ الْقَهَّارُ، رَبُّ السَّمَاوَاتِ وَالْأَرْضِ وَمَا بَيْنَهُمَا الْعَزِيزُ الْغَفَّارُ».",
-                        "translation": "Il n'y a de divinité digne d'adoration qu'Allah, l'Unique, le Dominateur suprême, Seigneur des cieux et de la terre et de ce qui se trouve entre eux, le Puissant, le Grand Pardonneur.",
-                        "count": 1,
-                        "source": "أخرجه الحاكم 1/ 540 والنسائي في اليوم والليلة"
-                    }
-                ]
-            },
-            {
-                "id": "chap_30",
-                "title": "la terreur nocturne et la solitude ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 124,
-                        "audioId": 119,
-                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّةِ مِنْ غَضَبِهِ وَعِقَابِهِ، وَشَرِّ عِبَادِهِ، وَمِنْ هَمَزَاتِ الشَّيَاطِينِ وَأَنْ يَحْضُرُونِ».",
-                        "translation": "Je cherche protection auprès des paroles parfaites d'Allah contre Sa colère, Son châtiment, le mal de Ses serviteurs, ainsi que contre les incitations des diables et leur présence auprès de moi.",
-                        "count": 1,
-                        "source": "أبو داود 4/12، صحيح الترمذي 3/ 171"
-                    }
-                ]
-            },
-            {
-                "id": "chap_31",
-                "title": "Après un songe ou un cauchemar",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 125,
-                        "audioId": 120,
-                        "arabic": "«يَنْفُثُ عَنْ يَسَارِهِ (ثَلَاثًا)».",
-                        "translation": "Postillonner (sans salive) vers sa gauche (3 fois).",
-                        "count": 1,
-                        "source": "مسلم 4/1772"
-                    },
-                    {
-                        "id": 126,
-                        "audioId": 121,
-                        "arabic": "«يَسْتَعِيذُ بِاللهِ مِنَ الشَّيْطَانِ وَمِنْ شَرِّ مَا رَأَى (ثَلَاثَ مَرَّاتٍ)».",
-                        "translation": "Chercher protection auprès d'Allah contre le Diable et contre le mal de ce qu'il a vu (3 fois).",
-                        "count": 1,
-                        "source": "مسلم 4/1773"
-                    },
-                    {
-                        "id": 127,
-                        "audioId": 122,
-                        "arabic": "«لَا يُحَدِّثُ بِهَا أَحَدًا».",
-                        "translation": "N'en parler à personne.",
-                        "count": 1,
-                        "source": "مسلم 4/1772"
-                    },
-                    {
-                        "id": 128,
-                        "audioId": 123,
-                        "arabic": "«يَتَحَوَّلُ عَنْ جَنْبِهِ الَّذِي كَانَ عَلَيْهِ».",
-                        "translation": "Changer de côté par rapport à celui sur lequel on dormait.",
-                        "count": 1,
-                        "source": "مسلم 4/1773"
-                    },
-                    {
-                        "id": 129,
-                        "audioId": 124,
-                        "arabic": "«يَقُومُ يُصَلِّي إِنْ أَرَادَ ذَلِكَ».",
-                        "translation": "Se lever pour prier si on le souhaite.",
-                        "count": 1,
-                        "source": "مسلم 4/1773"
-                    }
-                ]
-            },
-            {
                 "id": "chap_32",
                 "title": "Qonout lors de la prière du Witr",
                 "titleAr": "",
@@ -1283,230 +1102,6 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
-                "id": "chap_34",
-                "title": "contre l'angoisse et la tristesse",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 134,
-                        "audioId": 129,
-                        "arabic": "«اللَّهُمَّ إِنِّي عَبْدُكَ ابْنُ عَبْدِكَ ابْنُ أَمَتِكَ نَاصِيَتِي بِيَدِكَ، مَاضٍ فِيَّ حُكْمُكَ، عَدْلٌ فِيَّ قَضَاؤُكَ، أَسْأَلُكَ بِكُلِّ اسْمٍ هُوَ لَكَ سَمَّيْتَ بِهِ نَفْسَكَ أَوْ أَنْزَلْتَهُ فِي كِتَابِكَ، أَوْ عَلَّمْتَهُ أَحَدًا مِنْ خَلْقِكَ أَوِ اسْتَأْثَرْتَ بِهِ فِي عِلْمِ الْغَيْبِ عِنْدَكَ، أَنْ تَجْعَلَ الْقُرْآنَ رَبِيعَ قَلْبِي، وَنُورَ صَدْرِي، وَجَلَاءَ حُزْنِي وَذَهَابَ هَمِّي».",
-                        "translation": "Ô Allah, je suis Ton serviteur, fils de Ton serviteur et de Ta servante, mon sort est entre Tes mains. Ton jugement sur moi s'accomplit, Ton décret sur moi est juste. Je Te demande par chaque nom qui T'appartient, par lequel Tu T'es nommé, que Tu as révélé dans Ton Livre, que Tu as enseigné à l'une de Tes créatures ou que Tu as gardé caché dans la science de l'invisible, de faire du Coran le printemps de mon cœur, la lumière de ma poitrine, la fin de ma tristesse et la dissipation de mes soucis.",
-                        "count": 1,
-                        "source": "أحمد 1/391"
-                    },
-                    {
-                        "id": 135,
-                        "audioId": 130,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ».",
-                        "translation": "Ô Allah, je cherche protection auprès de Toi contre les soucis et la tristesse, l'impuissance et la paresse, l'avarice et la lâcheté, le poids de la dette et la domination des hommes.",
-                        "count": 1,
-                        "source": "البخاري 7/158"
-                    }
-                ]
-            },
-            {
-                "id": "chap_35",
-                "title": "Invocation en cas d'affliction (grande détresse)",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 136,
-                        "audioId": 131,
-                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ الْعَظِيمُ الْحَلِيمُ، لَا إِلَهَ إِلَّا اللهُ رَبُّ الْعَرْشِ الْعَظِيمِ، لَا إِلَهَ إِلَّا اللهُ رَبُّ السَّمَاوَاتِ وَرَبُّ الْأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ».",
-                        "translation": "Il n'y a de divinité digne d'adoration qu'Allah, l'Immense, le Longanime. Il n'y a de divinité digne d'adoration qu'Allah, le Seigneur du Trône immense. Il n'y a de divinité digne d'adoration qu'Allah, le Seigneur des cieux, de la terre et du noble Trône.",
-                        "count": 1,
-                        "source": "البخاري 7/154، مسلم 4/2092"
-                    },
-                    {
-                        "id": 137,
-                        "audioId": 132,
-                        "arabic": "«اللَّهُمَّ رَحْمَتَكَ أَرْجُو فَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ، وَأَصْلِحْ لِي شَأْنِي كُلَّهُ لَا إِلَهَ إِلَّا أَنْتَ».",
-                        "translation": "Ô Allah, c'est Ta miséricorde que j'espère. Ne me confie donc pas à moi-même, ne serait-ce que le temps d'un clin d'œil, et améliore ma situation dans sa totalité. Nulle divinité sauf Toi.",
-                        "count": 1,
-                        "source": "أبو داود 4/324، أحمد 5/42"
-                    },
-                    {
-                        "id": 138,
-                        "audioId": 133,
-                        "arabic": "«لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ».",
-                        "translation": "Nulle divinité sauf Toi ! Pureté à Toi ! J'ai été certes du nombre des injustes.",
-                        "count": 1,
-                        "source": "الترمذي 5/529، الحاكم 1/505"
-                    },
-                    {
-                        "id": 139,
-                        "audioId": 134,
-                        "arabic": "«اللهُ اللهُ رَبِّي لَا أُشْرِكُ بِهِ شَيْئًا».",
-                        "translation": "Allah, Allah est mon Seigneur, je ne Lui associe rien.",
-                        "count": 1,
-                        "source": "أبو داود 2/87، صحيح ابن ماجه 2/335"
-                    }
-                ]
-            },
-            {
-                "id": "chap_36",
-                "title": "Contre l'ennemi ou d'une autorité ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 140,
-                        "audioId": 135,
-                        "arabic": "«اللَّهُمَّ إِنَّا نَجْعَلُكَ فِي نُحُورِهِمْ، وَنَعُوذُ بِكَ مِنْ شُرُورِهِمْ».",
-                        "translation": "Ô Allah, nous Te mettons face à leurs gorges et nous cherchons protection auprès de Toi contre leur mal.",
-                        "count": 1,
-                        "source": "أبو داود 2/89"
-                    },
-                    {
-                        "id": 141,
-                        "audioId": 136,
-                        "arabic": "«اللَّهُمَّ أَنْتَ عَضُدِي وَأَنْتَ نَصِيرِي، بِكَ أَحُولُ، وَبِكَ أَصُولُ، وَبِكَ أُقَاتِلُ».",
-                        "translation": "Ô Allah, Tu es mon soutien et mon défenseur. C'est par Toi que je me déplace, par Toi que je bondis et par Toi que je combats.",
-                        "count": 1,
-                        "source": "الترمذي 5/572"
-                    },
-                    {
-                        "id": 142,
-                        "audioId": 137,
-                        "arabic": "«حَسْبُنَا اللهُ وَنِعْمَ الْوَكِيلُ».",
-                        "translation": "Allah nous suffit, et quel excellent Protecteur !",
-                        "count": 1,
-                        "source": "البخاري 5/172"
-                    }
-                ]
-            },
-            {
-                "id": "chap_37",
-                "title": "Pour celui qui craint l'oppression d'un dirigeant ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 143,
-                        "audioId": 138,
-                        "arabic": "«اللَّهُمَّ رَبَّ السَّمَاوَاتِ السَّبْعِ، وَرَبَّ الْعَرْشِ الْعَظِيمِ، كُنْ لِي جَاراً مِنْ فُلَانِ بْنِ فُلَانٍ، وَأَحْزَابِهِ مِنْ خَلَائِقِكَ؛ أَنْ يَفْرُطَ عَلَيَّ أَحَدٌ مِنْهُمْ أَوْ يَطْغَى، عَزَّ جَارُكَ، وَجَلَّ ثَنَاؤُكَ، وَلَا إِلَهَ إِلَّا أَنْتَ».",
-                        "translation": "Ô Allah, Seigneur des sept cieux et Seigneur du Trône immense. Sois pour moi un protecteur contre untel fils d'untel et ses alliés parmi Tes créatures, afin qu'aucun d'eux ne soit injuste envers moi ou ne me内 opprime. Ta protection est puissante, Ta louange est immense et il n'y a de divinité que Toi.",
-                        "count": 1,
-                        "source": "البخاري في الأدب المفرد رقم 707"
-                    },
-                    {
-                        "id": 144,
-                        "audioId": 139,
-                        "arabic": "«اللهُ أَكْبَرُ، اللهُ أَعَزُّ مِنْ خَلْقِهِ جَمِيعاً، اللهُ أَعَزُّ مِمَّا أَخَافُ وَأَحْذَرُ، أَعُوذُ بِاللهِ الَّذِي لَا إِلَهَ إِلَّا هُوَ، الْمُمْسِكِ السَّمَاوَاتِ السَّبْعِ أَنْ يَقَعْنَ عَلَى الْأَرْضِ إِلَّا بِإِذْنِهِ، مِنْ شَرِّ عَبْدِكَ فُلَانٍ، وَجُنُودِهِ وَأَتْبَاعِهِ وَأَشْيَاعِهِ، مِنَ الْجِنِّ وَالْإِنْسِ، اللَّهُمَّ كُنْ لِي جَاراً مِنْ شَرِّهِمْ، جَلَّ ثَنَاؤُكَ وَعَزَّ جَارُكَ، وَتَبَارَكَ اسْمُكَ، وَلَا إِلَهَ غَيْرُكَ» (ثَلَاثَ مَرَّاتٍ).",
-                        "translation": "Allah est le plus Grand, Allah est plus Puissant que toute Sa création, Allah est plus Puissant que ce que je crains et ce que je redoute. Je cherche protection auprès d'Allah... contre le mal de Ton serviteur untel, de ses soldats et ses partisans parmi les djinns et les hommes. Ô Allah, sois mon protecteur contre leur mal... (3 fois).",
-                        "count": 1,
-                        "source": "البخاري في الأدب المفرد رقم 708"
-                    }
-                ]
-            },
-            {
-                "id": "chap_38",
-                "title": "Invocation contre l'ennemi",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 145,
-                        "audioId": 140,
-                        "arabic": "«اللَّهُمَّ مُنْزِلَ الْكِتَابِ، سَرِيعَ الْحِسَابِ، اهْزِمِ الْأَحْزَابَ، اللَّهُمَّ اهْزِمْهُمْ وَزَلْزِلْهُمْ».",
-                        "translation": "Ô Allah, Toi qui as fait descendre le Livre et qui es prompt dans Tes comptes, vaincs les coalisés. Ô Allah, vaincs-les et fais-les trembler.",
-                        "count": 1,
-                        "source": "مسلم 3/1362"
-                    }
-                ]
-            },
-            {
-                "id": "chap_39",
-                "title": " quand ont craint un groupe de gens",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 146,
-                        "audioId": 141,
-                        "arabic": "«اللَّهُمَّ اكْفِنِيهِمْ بِمَا شِئْتَ».",
-                        "translation": "Ô Allah, protège-moi d'eux par ce que Tu voudras.",
-                        "count": 1,
-                        "source": "مسلم 4/2300"
-                    }
-                ]
-            },
-            {
-                "id": "chap_40",
-                "title": " contre les suggestions insufflées concernant la foi",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 147,
-                        "audioId": 142,
-                        "arabic": "«يَسْتَعِيذُ بِاللهِ».",
-                        "translation": "Chercher protection auprès d'Allah (contre le doute).",
-                        "count": 1,
-                        "source": "البخاري مع الفتح 6/336"
-                    },
-                    {
-                        "id": 148,
-                        "audioId": 143,
-                        "arabic": "«يَنْتَهِي عَمَّا شَكَّ فِيهِ».",
-                        "translation": "Cesser de ressasser ce qui cause le doute.",
-                        "count": 1,
-                        "source": "مسلم 1/120"
-                    },
-                    {
-                        "id": 149,
-                        "audioId": 144,
-                        "arabic": "«آمَنْتُ بِاللهِ وَرُسُلِهِ».",
-                        "translation": "Je crois en Allah et en Ses messagers.",
-                        "count": 1,
-                        "source": "مسلم 1/120"
-                    },
-                    {
-                        "id": 150,
-                        "audioId": 145,
-                        "arabic": "﴿هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ وَهُوَ بِكُلِّ شَيْءٍ عَلِيمٌ﴾.",
-                        "translation": "C'est Lui le Premier et le Dernier, l'Apparent et le Caché et Il est Omniscient sur toute chose.",
-                        "count": 1,
-                        "source": "سورة الحديد، آية 3"
-                    }
-                ]
-            },
-            {
-                "id": "chap_41",
-                "title": "pour l'acquittement des dettes",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 151,
-                        "audioId": 146,
-                        "arabic": "«اللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ، وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ».",
-                        "translation": "Ô Allah, accorde-moi de Tes biens licites pour m'épargner Tes interdits, et accorde-moi de Ta grâce pour me passer de tout autre que Toi.",
-                        "count": 1,
-                        "source": "الترمذي 5/560"
-                    },
-                    {
-                        "id": 152,
-                        "audioId": 130,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ».",
-                        "translation": "Ô Allah, je cherche protection auprès de Toi contre les soucis et la tristesse, l'impuissance et la paresse, l'avarice et la lâcheté, le poids de la dette et la domination des hommes.",
-                        "count": 1,
-                        "source": "البخاري 7/158"
-                    }
-                ]
-            },
-            {
                 "id": "chap_42",
                 "title": "contre les distractions durant la prière ou la lecture ",
                 "titleAr": "",
@@ -1520,233 +1115,6 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "translation": "Je cherche protection auprès d'Allah contre le Diable banni (puis postillonne sans salive trois fois à ta gauche).",
                         "count": 1,
                         "source": "مسلم 4/1729"
-                    }
-                ]
-            },
-            {
-                "id": "chap_43",
-                "title": "pour celui qui rencontre une difficulté",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 154,
-                        "audioId": 149,
-                        "arabic": "«اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلاً، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلاً».",
-                        "translation": "Ô Allah, rien n'est facile sauf ce que Tu as rendu facile, et Tu es capable de rendre facile une difficulté si Tu le veux.",
-                        "count": 1,
-                        "source": "ابن حبان في صحيحه برقم 2427"
-                    }
-                ]
-            },
-            {
-                "id": "chap_44",
-                "title": " que doit dire et faire celui qui a commis un péché",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 155,
-                        "audioId": 150,
-                        "arabic": "«مَا مِنْ عَبْدٍ يُذْنِبُ ذَنْباً فَيُحْسِنُ الطُّهُورَ، ثُمَّ يَقُومُ فَيُصَلِّي رَكْعَتَيْنِ، ثُمَّ يَسْتَغْفِرُ اللهَ إِلَّا غَفَرَ اللهُ لَهُ».",
-                        "translation": "Tout serviteur qui commet un péché, puis fait soigneusement ses ablutions, se lève pour accomplir deux rak'as et demande pardon à Allah, Allah lui pardonnera.",
-                        "count": 1,
-                        "source": "أبو داود 2/86، الترمذي 2/257"
-                    }
-                ]
-            },
-            {
-                "id": "chap_45",
-                "title": "Chasser le Diable et ses insufflations",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 156,
-                        "audioId": 151,
-                        "arabic": "«الِاسْتِعَاذَةُ بِاللهِ مِنْهُ».",
-                        "translation": "Chercher la protection d'Allah contre lui (le Diable).",
-                        "count": 1,
-                        "source": "أبو داود 1/206، الترمذي 1/77"
-                    },
-                    {
-                        "id": 157,
-                        "audioId": 152,
-                        "arabic": "«الأَذَانُ».",
-                        "translation": "L'appel à la prière (Adhân).",
-                        "count": 1,
-                        "source": "مسلم 1/291، البخاري 1/151"
-                    },
-                    {
-                        "id": 158,
-                        "audioId": 153,
-                        "arabic": "«الْأَذْكَارُ وَقِرَاءَةُ الْقُرْآنِ».",
-                        "translation": "Les évocations (Adhkâr) et la lecture du Coran (notamment la sourate Al-Baqara).",
-                        "count": 1,
-                        "source": "مسلم 1/539"
-                    }
-                ]
-            },
-            {
-                "id": "chap_46",
-                "title": "face à l'imprévu ou quand on est dépassé par les événements",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 159,
-                        "audioId": 154,
-                        "arabic": "«قَدَرُ اللهِ وَمَا شَاءَ فَعَلَ».",
-                        "translation": "C'est un décret d'Allah et Il fait ce qu'Il veut.",
-                        "count": 1,
-                        "source": "مسلم 4/2052"
-                    }
-                ]
-            },
-            {
-                "id": "chap_47",
-                "title": "Félicitations pour une naissance et leur réponse",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 160,
-                        "audioId": 156,
-                        "arabic": "«بَارَكَ اللهُ لَكَ فِي المَوْهُوبِ لَكَ، وَشَكَرْتَ الوَاهِبَ، وَبَلَغَ أَشُدَّهُ، وَرُزِقْتَ بِرَّهُ». وَيَرُدُّ المُهَنَّأُ: «بَارَكَ اللهُ لَكَ، وَبَارَكَ عَلَيْكَ، وَجَزَاكَ اللهُ خَيْرًا، وَرَزَقَكَ اللهُ مِثْلَهُ، وَأَجْزَلَ ثَوَابَكَ».",
-                        "translation": "Puisse Allah bénir ce qu'Il t'a donné, puisses-tu remercier le Donateur, qu'il (l'enfant) atteigne sa maturité et que tu sois comblé par sa piété filiale. Le félicité répond : Qu'Allah te bénisse, qu'Il déverse Sa bénédiction sur toi, qu'Il te récompense par un bien, qu'Il t'accorde la même chose et multiplie ta récompense.",
-                        "count": 1,
-                        "source": "الأذكار للنووي ص349"
-                    }
-                ]
-            },
-            {
-                "id": "chap_48",
-                "title": "Protection pour les enfants",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 161,
-                        "audioId": 157,
-                        "arabic": "«أُعِيذُكُمَا بِكَلِمَاتِ اللهِ التَّامَّةِ، مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ».",
-                        "translation": "Je cherche pour vous protection auprès des paroles parfaites d'Allah contre tout démon, tout animal venimeux et contre tout mauvais œil.",
-                        "count": 1,
-                        "source": "البخاري 4/119"
-                    }
-                ]
-            },
-            {
-                "id": "chap_49",
-                "title": "Visite du malade",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": []
-            },
-            {
-                "id": "chap_50",
-                "title": "Mérite de la visite d'un malade",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 164,
-                        "audioId": 160,
-                        "arabic": "قَالَ صلى الله عليه وسلم : «إِذَا عَادَ الرَّجُلُ أَخَاهُ الْمُسْلِمَ مَشَى فِي خِرَافَةِ الْجَنَّةِ حَتَّى يَجْلِسَ، فَإِذَا جَلَسَ غَمَرَتْهُ الرَّحْمَةُ، فَإِنْ كَانَ غُدْوَةً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُمْسِيَ، وَإِنْ كَانَ مَسَاءً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُصْبِحَ».",
-                        "translation": "Le Prophète ﷺ a dit : « Quand un homme rend visite à son frère musulman malade, il marche dans les vergers du Paradis jusqu'à ce qu'il s'assoie. Une fois assis, la miséricorde l'enveloppe. Si c'est le matin, soixante-dix mille anges prient pour lui jusqu'au soir, et si c'est le soir, soixante-dix mille anges prient pour lui jusqu'au matin. »",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_51",
-                "title": "du malade perdant espoir de guérir",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 165,
-                        "audioId": 161,
-                        "arabic": "«اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَأَلْحِقْنِي بِالرَّفِيقِ الأَعْلَى».",
-                        "translation": "Ô Allah, pardonne-moi, fais-moi miséricorde et fais-moi rejoindre le Compagnon Suprême.",
-                        "count": 1,
-                        "source": "البخاري 7/10، مسلم 4/1893"
-                    },
-                    {
-                        "id": 166,
-                        "audioId": 258,
-                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ، إِنَّ لِلْمَوْتِ لَسَكَرَاتٍ».",
-                        "translation": "Il n'y a de divinité qu'Allah. Certes, l'agonie de la mort comporte des tourments.",
-                        "count": 1,
-                        "source": "البخاري مع الفتح 8/144"
-                    },
-                    {
-                        "id": 167,
-                        "audioId": 163,
-                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَا إِلَهَ إِلَّا اللهُ لَهُ المُلْكُ وَلَهُ الحَمْدُ، لَا إِلَهَ إِلَّا اللهُ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ».",
-                        "translation": "Il n'y a de divinité qu'Allah et Allah est le plus Grand. Il n'y a de divinité qu'Allah l'Unique. Il n'y a de divinité qu'Allah l'Unique sans associé. Il n'y a de divinité qu'Allah, à Lui la royauté et la louange. Il n'y a de divinité qu'Allah, et il n'y a de force ni de puissance que par Allah.",
-                        "count": 1,
-                        "source": "الترمذي وابن ماجه"
-                    }
-                ]
-            },
-            {
-                "id": "chap_52",
-                "title": " L'exhortation de l'agonisant ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 168,
-                        "audioId": 164,
-                        "arabic": "«مَنْ كَانَ آخِرُ كَلَامِهِ لَا إِلَهَ إِلَّا اللهُ دَخَلَ الْجَنَّةَ».",
-                        "translation": "Celui dont la dernière parole est « Il n'y a de divinité qu'Allah » entrera au Paradis.",
-                        "count": 1,
-                        "source": "أبو داود 3/190"
-                    }
-                ]
-            },
-            {
-                "id": "chap_53",
-                "title": "celui qui est frappé par une épreuve",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 169,
-                        "audioId": 165,
-                        "arabic": "«إِنَّا للهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ، اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي، وَأَخْلِفْ لِي خَيْراً مِنْهَا».",
-                        "translation": "Nous appartenons à Allah et c'est vers Lui que nous retournerons. Ô Allah, récompense-moi dans mon malheur et remplace-le par quelque chose de meilleur.",
-                        "count": 1,
-                        "source": "مسلم 2/632"
-                    }
-                ]
-            },
-            {
-                "id": "chap_54",
-                "title": "au moment de fermer les yeux du défunt ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 170,
-                        "audioId": 166,
-                        "arabic": "اللَّهُمَّ اغْفِرْ لِفُلَانٍ (بِاسْمِهِ) وَارْفَعْ دَرَجَتَهُ فِي الْمَهْدِيِّينَ، وَاخْلُفْهُ فِي عَقِبِهِ فِي الْغَابِرِينَ، وَاغْفِرْ لَنَا وَلَهُ يَا رَبَّ الْعَالَمِينَ، وَافْسَحْ لَهُ فِي قَبْرِهِ وَنَوْرْ لَهُ فِيهِ",
-                        "translation": "Ô Allah, pardonne à [nommer la personne], élève son rang parmi les bien-guidés, accorde-lui un successeur parmi ceux qui restent, pardonne-nous ainsi qu'à lui, ô Seigneur des mondes, et élargis sa tombe et illumine-la pour lui.",
-                        "count": 1,
-                        "source": ""
                     }
                 ]
             },
@@ -1819,903 +1187,6 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "audioId": 173,
                         "arabic": "اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطاً، وَسَلَفاً وَأَجْراً",
                         "translation": "Ô Allah, fais de lui pour nous un prédécesseur, un devancier et une source de récompense.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_57",
-                "title": "Les condoléances",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 178,
-                        "audioId": 174,
-                        "arabic": "إِنَّ لِلَّهِ مَا أَخَذَ وَلَهُ مَا أَعْطَى، وَكُلُّ شَيْءٍ عِنْدَهُ بِأَجَلٍ مُسَمًّى فَلْتَصْبِرْ وَلْتَحْتَسِبْ",
-                        "translation": "Certes, à Allah appartient ce qu'Il a repris et à Lui appartient ce qu'Il a donné. Chaque chose auprès de Lui a un terme fixé. Sois donc patient et espère la récompense d'Allah.",
-                        "count": 1,
-                        "source": ""
-                    },
-                    {
-                        "id": 179,
-                        "audioId": 175,
-                        "arabic": "أَعْظَمَ اللهُ أَجْرَكَ، وَأَحْسَنَ عَزَاءَكَ وَغَفَرَ لِمَيِّتِكَ",
-                        "translation": "Qu'Allah augmente ta récompense, t'accorde les meilleures condoléances et pardonne à ton défunt.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_58",
-                "title": "À la descente du défunt",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 180,
-                        "audioId": 176,
-                        "arabic": "بِسْمِ اللهِ وَعَلَى سُنَّةِ رَسُولِ اللهِ",
-                        "translation": "Au nom d'Allah et selon la tradition du Messager d'Allah.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_59",
-                "title": "Après l'enterrement du défunt",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 181,
-                        "audioId": 177,
-                        "arabic": "اللَّهُمَّ اغْفِرْ لَهُ، اللَّهُمَّ ثَبِّتْهُ",
-                        "translation": "Ô Allah, pardonne-lui. Ô Allah, raffermis-le.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_60",
-                "title": "Lors de la visite du cimetière",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 182,
-                        "audioId": 178,
-                        "arabic": "السَّلَامُ عَلَيْكُمْ أَهْلَ الدِّيَارِ، مِنَ الْمُؤْمِنِينَ وَالْمُسْلِمِينَ، وَإِنَّا إِنْ شَاءَ اللهُ بِكُمْ لَاحِقُونَ [وَيَرْحَمُ اللهُ الْمُسْتَقْدِمِينَ مِنَّا وَالْمُسْتَأْخِرِينَ] أَسْأَلُ اللهَ لَنَا وَلَكُمُ الْعَافِيَةَ",
-                        "translation": "Que le salut soit sur vous, habitants de ces demeures, parmi les croyants et les musulmans. Nous allons, si Allah le veut, vous rejoindre. [Qu'Allah fasse miséricorde à ceux d'entre nous qui sont partis les premiers et à ceux qui suivront]. Je demande à Allah pour nous et pour vous le salut.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_61",
-                "title": "Du vent",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 183,
-                        "audioId": 179,
-                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا",
-                        "translation": "Ô Allah, je Te demande son bien et je cherche protection auprès de Toi contre son mal (en parlant du vent).",
-                        "count": 1,
-                        "source": ""
-                    },
-                    {
-                        "id": 184,
-                        "audioId": 180,
-                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَخَيْرَ مَا فِيهَا، وَخَيْرَ مَا أُرْسِلَتْ بِهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا فِيهَا وَشَرِّ مَا أُرْسِلَتْ بِهِ",
-                        "translation": "Ô Allah, je Te demande son bien, le bien de ce qu'il contient et le bien de ce qui lui a été envoyé ; et je cherche protection auprès de Toi contre son mal, le mal de ce qu'il contient et le mal de ce qui lui a été envoyé.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_62",
-                "title": "Du tonnerre",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 185,
-                        "audioId": 181,
-                        "arabic": "سُبْحَانَ الَّذِي يُسَبِّحُ الرَّعْدُ بِحَمْدِهِ وَالْمَلَائِكَةُ مِنْ خِيفَتِهِ",
-                        "translation": "Gloire à Celui dont le tonnerre célèbre la louange, ainsi que les Anges, par crainte de Lui.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_63",
-                "title": "Demande de pluie",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 186,
-                        "audioId": 182,
-                        "arabic": "اللَّهُمَّ اسْقِنَا غَيْثاً مُغِيثاً مَرِيئاً مَرِيعاً نَافِعاً غَيْرَ ضَارٍّ، عَاجِلاً غَيْرَ آجِلٍ",
-                        "translation": "Ô Allah, accorde-nous une pluie salvatrice, bienfaisante, fertile, utile et non nuisible, immédiate et non tardive.",
-                        "count": 1,
-                        "source": ""
-                    },
-                    {
-                        "id": 187,
-                        "audioId": 183,
-                        "arabic": "اللَّهُمَّ أَغِثْنَا، اللَّهُمَّ أَغِثْنَا، اللَّهُمَّ أَغِثْنَا",
-                        "translation": "Ô Allah, secours-nous ! Ô Allah, secours-nous ! Ô Allah, secours-nous !",
-                        "count": 1,
-                        "source": ""
-                    },
-                    {
-                        "id": 188,
-                        "audioId": 184,
-                        "arabic": "اللَّهُمَّ اسْقِ عِبَادَكَ وَبَهَائِمَكَ، وَانْشُرْ رَحْمَتَكَ وَأَحْيِي بَلَدَكَ الْمَيِّتَ",
-                        "translation": "Ô Allah, abreuve Tes serviteurs et Tes bestiaux, répands Ta miséricorde et redonne vie à Ta terre morte.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_64",
-                "title": "Quand la pluie tombe",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 189,
-                        "audioId": 185,
-                        "arabic": "اللَّهُمَّ صَيِّباً نَافِعاً",
-                        "translation": "Ô Allah, fais que ce soit une pluie bénéfique.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_65",
-                "title": "Après la pluie",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 190,
-                        "audioId": 186,
-                        "arabic": "مُطِرْنَا بِفَضْلِ اللهِ وَرَحْمَتِهِ",
-                        "translation": "Nous avons reçu la pluie par la grâce d'Allah et Sa miséricorde.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_66",
-                "title": "Contre les tempêtes de pluies",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 191,
-                        "audioId": 187,
-                        "arabic": "اللَّهُمَّ حَوَالَيْنَا وَلَا عَلَيْنَا، اللَّهُمَّ عَلَى الْآكَامِ وَالظِّرَابِ وَبُطُونِ الْأَوْدِيَةِ، وَمَنَابِتِ الشَّجَرِ",
-                        "translation": "Ô Allah, que la pluie tombe autour de nous et non sur nous. Ô Allah, sur les collines, les monticules, les fonds de vallées et les lieux où poussent les arbres.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_67",
-                "title": "Le nouveau croissant de lune",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 192,
-                        "audioId": 188,
-                        "arabic": "اللهُ أَكْبَرُ، اللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالْأَمْنِ وَالْإِيمَانِ، وَالسَّلَامَةِ وَالْإِسْلَامِ، وَالتَّوْفِيقِ لِمَا تُحِبُّ رَبَّنَا وَتَرْضَى، رَبُّنَا وَرَبُّكَ اللهُ",
-                        "translation": "Allah est le plus Grand. Ô Allah, fais que ce croissant se lève sur nous avec la sécurité et la foi, le salut et l'Islam, ainsi que la réussite dans ce que Tu aimes, ô notre Seigneur, et ce que Tu agrées. Notre Seigneur et ton Seigneur est Allah.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_68",
-                "title": "lors de la rupture du jeûne",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 193,
-                        "audioId": 189,
-                        "arabic": "ذَهَبَ الظَّمأُ، وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللهُ",
-                        "translation": "La soif est dissipée, les veines sont abreuvées et la récompense est confirmée, si Allah le veut.",
-                        "count": 1,
-                        "source": ""
-                    },
-                    {
-                        "id": 194,
-                        "audioId": 190,
-                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي",
-                        "translation": "Ô Allah, je Te demande, par Ta miséricorde qui embrasse toute chose, de me pardonner.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_69",
-                "title": "avant de manger",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 195,
-                        "audioId": 191,
-                        "arabic": "بِسْمِ اللهِ، [فَإِنْ نَسِيَ فِي أَوَّلِهِ فَلْيَقُلْ:] بِسْمِ اللهِ فِي أَوَّلِهِ وَآخِرِهِ",
-                        "translation": "Au nom d'Allah. [S'il oublie au début, qu'il dise :] Au nom d'Allah au début et à la fin.",
-                        "count": 1,
-                        "source": ""
-                    },
-                    {
-                        "id": 196,
-                        "audioId": 192,
-                        "arabic": "اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَأَطْعِمْنَا خَيْراً مِنْهُ. [وَلِلَّبَنِ:] اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَزِدْنَا مِنْهُ",
-                        "translation": "Ô Allah, bénis-le pour nous et nourris-nous d'un aliment meilleur encore. [Pour le lait :] Ô Allah, bénis-le pour nous et augmente-le-nous.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_70",
-                "title": "après avoir fini de manger",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 197,
-                        "audioId": 193,
-                        "arabic": "الْحَمْدُ للهِ الَّذِي أَطْعَمَنِي هَذَا، وَرَزَقَنِيهِ، مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
-                        "translation": "Louange à Allah qui m'a nourri de cela et me l'a accordé sans aucune force ni puissance de ma part.",
-                        "count": 1,
-                        "source": ""
-                    },
-                    {
-                        "id": 198,
-                        "audioId": 194,
-                        "arabic": "الْحَمْدُ للهِ حَمْداً كَثِيراً طَيِّباً مُبَارَكاً فِيهِ، غَيْرَ مَكْفِيٍّ وَلَا مُوَدَّعٍ، وَلَا مُسْتَغْنًى عَنْهُ رَبَّنَا",
-                        "translation": "Louange à Allah, une louange abondante, pure et bénie. On ne pourra jamais Le remercier assez, ni prendre congé de Lui, ni se passer de Lui, ô notre Seigneur.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_71",
-                "title": "de l'invité pour son hôte",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 199,
-                        "audioId": 195,
-                        "arabic": "اللَّهُمَّ بَارِكْ لَهُمْ فِيمَا رَزَقْتَهُمْ، وَاغْفِرْ لَهُمْ وَارْحَمْهُمْ",
-                        "translation": "Ô Allah, bénis-les dans ce que Tu leur as accordé, pardonne-leur et fais-leur miséricorde.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_72",
-                "title": "pour solliciter de la nourriture ou de la boisson",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 200,
-                        "audioId": 196,
-                        "arabic": "اللَّهُمَّ أَطْعِمْ مَنْ أَطْعَمَنِي وَأَسْقِ مَنْ سَقَانِي",
-                        "translation": "Ô Allah, nourris celui qui m'a nourri et abreuve celui qui m'a abreuvé.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_73",
-                "title": "En rompant le jeûne chez des hôtes",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 201,
-                        "audioId": 197,
-                        "arabic": "أَفْطَرَ عِنْدَكُمُ الصَّائِمُونَ، وَأَكَلَ طَعَامَكُمُ الْأَبْرَارُ، وَصَلَّتْ عَلَيْكُمُ الْمَلَائِكَةُ",
-                        "translation": "Que les jeûneurs rompent leur jeûne chez vous, que les pieux mangent votre nourriture et que les Anges prient pour vous.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_74",
-                "title": "Du jeûneur face au repas s'il ne rompt pas son jeûne",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 202,
-                        "audioId": 198,
-                        "arabic": "«إِذَا دُعِيَ أَحَدُكُمْ فَلْيُجِبْ، فَإِنْ كَانَ صَائِماً فَلْيُصَلِّ، وَإِنْ كَانَ مُفْطِراً فَلْيَطْعَمْ» وَمَعْنَى فَلْيُصَلِّ أَيْ فَلْيَدْعُ.",
-                        "translation": "« Si l'un de vous est invité, qu'il réponde à l'invitation. S'il jeûne, qu'il prie (invoque en faveur de l'hôte), et s'il ne jeûne pas, qu'il mange. » Le sens de « qu'il prie » signifie ici qu'il doit invoquer.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_75",
-                "title": "Reponse du jeuneur quand on l'insulte",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 203,
-                        "audioId": 199,
-                        "arabic": "إِنِّي صَائِمٌ، إِنِّي صَائِمٌ",
-                        "translation": "Je jeûne, je jeûne.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_76",
-                "title": "à la vue des premiers fruits de la saison",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 204,
-                        "audioId": 200,
-                        "arabic": "اللَّهُمَّ بَارِكْ لَنَا فِي ثَمَرِنَا، وَبَارِكْ لَنَا فِي مَدِينَتِنَا، وَبَارِكْ لَنَا فِي صَاعِنَا، وَبَارِكْ لَنَا فِي مُدِّنَا",
-                        "translation": "Ô Allah, bénis-nous dans nos fruits, bénis-nous dans notre ville, bénis-nous dans notre 'Sa' (mesure) et bénis-nous dans notre 'Mudd' (mesure).",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_77",
-                "title": "Quand on éternue",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 205,
-                        "audioId": 201,
-                        "arabic": "إِذَا عَطَسَ أَحَدُكُم فَلْيَقُلِ الْحَمْدُ لِلَّهِ، وَلْيَقُلْ لَهُ أَخُوهُ أَوْ صَاحِبُهُ: يَرْحَمُكَ اللَّهُ، فَإِذَا قَالَ لَهُ: يَرْحَمُكَ اللَّهُ، فَلْيَقُلْ: يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ",
-                        "translation": "Si l'un de vous éternue, qu'il dise : \"Louange à Allah\". Que son frère ou son compagnon lui réponde alors : \"Qu'Allah te fasse miséricorde\". Et s'il lui dit cela, qu'il réponde à son tour : \"Qu'Allah vous guide et améliore votre situation\".",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_78",
-                "title": "Ce que l'on dit au non-musulman s'il éternue et loue Allah",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 206,
-                        "audioId": 202,
-                        "arabic": "يَهْدِيكُمُ اللهُ وَيُصْلِحُ بَالَكُمْ",
-                        "translation": "Qu'Allah vous guide et améliore votre situation.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_79",
-                "title": "Pour le nouveau marié",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 207,
-                        "audioId": 203,
-                        "arabic": "بَارَكَ اللهُ لَكَ، وَبَارَكَ عَلَيْكَ، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ",
-                        "translation": "Qu'Allah te bénisse, qu'Il déverse Sa bénédiction sur toi et qu'Il vous unisse dans le bien.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_80",
-                "title": "du marié et lors de l'acquisition d'une monture",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 208,
-                        "audioId": 180,
-                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا وَخَيْرَ مَا جَبَلْتَهَا عَلَيْهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا جَبَلْتَهَا عَلَيْهِ",
-                        "translation": "Ô Allah, je Te demande son bien et le bien de la nature dont Tu l'as pourvue, et je cherche protection auprès de Toi contre son mal et le mal de la nature dont Tu l'as pourvue.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_81",
-                "title": "Avant les rapports conjugaux",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 209,
-                        "audioId": 205,
-                        "arabic": "بِسْمِ اللهِ، اللَّهُمَّ جَنِّبْنَا الشَّيْطَانَ، وَجَنِّبِ الشَّيْطَانَ مَا رَزَقْتَنَا",
-                        "translation": "Au nom d'Allah. Ô Allah, écarte de nous le Diable et écarte le Diable de ce que Tu nous accorderas.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_82",
-                "title": "Contre la colère",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 210,
-                        "audioId": 206,
-                        "arabic": "أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
-                        "translation": "Je cherche protection auprès d'Allah contre le Diable banni.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_83",
-                "title": "En voyant une personne éprouvée",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 211,
-                        "audioId": 207,
-                        "arabic": "الْحَمْدُ للهِ الَّذِي عَافَانِي مِمَّا ابْتَلَاكَ بِهِ، وَفَضَّلَنِي عَلَى كَثِيرٍ مِمَّنْ خَلَقَ تَفْضِيلاً",
-                        "translation": "Louange à Allah qui m'a préservé de ce dont Il t'a éprouvé et m'a grandement favorisé par rapport à beaucoup de Ses créatures.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_84",
-                "title": "Durant une assemblée",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 212,
-                        "audioId": 208,
-                        "arabic": "عَنِ ابْنِ عُمَرَ قَالَ: كَانَ يُعَدُّ لِرَسُولِ اللهِ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ فِي الْمَجْلِسِ الْوَاحِدِ مِائَةُ مَرَّةٍ مِنْ قَبْلِ أَنْ يَقُومَ: «رَبِّ اغْفِرْ لِي، وَتُبْ عَلَيَّ، إِنَّكَ أَنْتَ التَّوَّابُ الْغَفُورُ».",
-                        "translation": "Selon Ibn 'Umar : On comptait au Messager d'Allah ﷺ, au cours d'une même assise et avant qu'il ne se lève, cent répétitions de : « Seigneur, pardonne-moi et accepte mon repentir, car Tu es certes Celui qui accepte le repentir, le Pardonneur. »",
-                        "count": 1,
-                        "source": "الترمذي 3/153، ابن ماجه 2/321"
-                    }
-                ]
-            },
-            {
-                "id": "chap_85",
-                "title": "A la fin d'une assemblée",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 213,
-                        "audioId": 209,
-                        "arabic": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ",
-                        "translation": "Gloire et louange à Toi, ô Allah. J'atteste qu'il n'y a de divinité que Toi. Je Te demande pardon et je me repens à Toi.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_86",
-                "title": "pour celui qui vous dit : Qu'Allah te pardonne",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 214,
-                        "audioId": 210,
-                        "arabic": "«وَلَكَ».",
-                        "translation": "et à toi aussi.",
-                        "count": 1,
-                        "source": "أحمد 5/28، النسائي في عمل اليوم والليلة 421"
-                    }
-                ]
-            },
-            {
-                "id": "chap_87",
-                "title": "Pour celui qui vous a rendu service",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 215,
-                        "audioId": 211,
-                        "arabic": "جَزَاكَ اللهُ خَيْراً",
-                        "translation": "Qu'Allah te rétribue par un bien.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_88",
-                "title": "Ce par quoi Allah préserve de l'Antéchrist",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 216,
-                        "audioId": 212,
-                        "arabic": "«مَنْ حَفِظَ عَشْرَ آيَاتٍ مِنْ أَوَّلِ سُورَةِ الْكَهْفِ عُصِمَ مِنَ الدَّجَّالِ»، وَالِاسْتِعَاذَةُ بِاللَّهِ مِنْ فِتْنَتِهِ عَقِبَ التَّشَهُّدِ الْأَخِيرِ مِنْ كُلِّ صَلَاةٍ.",
-                        "translation": "« Celui qui retient par cœur les dix premiers versets de la sourate La Caverne (Al-Kahf) sera préservé de l'Antéchrist (Ad-Dajjal). » Il convient également de chercher protection auprès d'Allah contre sa tentation après le dernier témoignage (Tashahhud) de chaque prière.",
-                        "count": 1,
-                        "source": "مسلم 1/555"
-                    }
-                ]
-            },
-            {
-                "id": "chap_89",
-                "title": "pour celui qui vous dit : Je t'aime en Allah",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 217,
-                        "audioId": 213,
-                        "arabic": "أَحَبَّكَ الَّذِي أَحْبَبْتَنِي لَهُ",
-                        "translation": "Puisse Celui pour qui tu m'as aimé t'aimer en retour.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_90",
-                "title": "pour celui qui propose ses biens",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 218,
-                        "audioId": 215,
-                        "arabic": "بَارَكَ اللهُ لَكَ فِي أَهْلِكَ وَمَالِكَ إِنَّمَا جَزَاءُ السَّلَفِ الْحَمْدُ وَالْأَدَاءُ",
-                        "translation": "Qu'Allah bénisse ta famille et tes biens. Certes, la récompense du prêt est la louange et le remboursement.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_91",
-                "title": "pour le prêteur lors du remboursement",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 219,
-                        "audioId": 215,
-                        "arabic": "«بَارَكَ اللهُ لَكَ فِي أَهْلِكَ وَمَالِكَ، إِنَّمَا جَزَاءُ السَّلَفِ الْحَمْدُ وَالْأَدَاءُ».",
-                        "translation": "« Qu'Allah bénisse ta famille et tes biens. Certes, la récompense du prêt est la louange et le remboursement. »",
-                        "count": 1,
-                        "source": "النسائي في عمل اليوم والليلة 300، ابن ماجه 2/809"
-                    }
-                ]
-            },
-            {
-                "id": "chap_92",
-                "title": "",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 220,
-                        "audioId": 216,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أُشْرِكَ بِكَ وَأَنَا أَعْلَمُ، وَأَسْتَغْفِرُكَ لِمَا لَا أَعْلَمُ».",
-                        "translation": "« Ô Allah, je cherche protection auprès de Toi contre le fait de T'associer quoi que ce soit alors que je le sais, et je Te demande pardon pour ce que j'ignore. »",
-                        "count": 1,
-                        "source": "أحمد 4/403، صحيح الجامع 3/233"
-                    }
-                ]
-            },
-            {
-                "id": "chap_93",
-                "title": "pour celui qui vous dit : Qu'Allah te bénisse",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 221,
-                        "audioId": 217,
-                        "arabic": "وَفِيكَ بَارَكَ اللهُ",
-                        "translation": "Et que la bénédiction d'Allah soit sur toi.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_94",
-                "title": "Contre la superstition (mauvais augure)",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 222,
-                        "audioId": 218,
-                        "arabic": "اللَّهُمَّ لَا طَيْرَ إِلَّا طَيْرُكَ، وَلَا خَيْرَ إِلَّا خَيْرُكَ، وَلَا إِلَهَ غَيْرُكَ",
-                        "translation": "Ô Allah, il n'y a de présage que le Tien, il n'y a de bien que le Tien, et il n'y a de divinité que Toi.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_95",
-                "title": "Quand on monte dans une vehicule",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 223,
-                        "audioId": 219,
-                        "arabic": "بِسْمِ اللهِ، الْحَمْدُ للهِ، {سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ * وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ} الْحَمْدُ للهِ (3)، اللهُ أَكْبَرُ (3)، سُبْحَانَكَ اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
-                        "translation": "Au nom d'Allah. Louange à Allah. {Gloire à Celui qui a mis ceci à notre service alors que nous n'étions pas capables de le dominer. Et c'est vers notre Seigneur que nous retournerons}. Louange à Allah (3 fois). Allah est le plus Grand (3 fois). Gloire à Toi, ô Allah, je me suis fait du tort à moi-même, pardonne-moi donc, car nul ne pardonne les péchés à part Toi.",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_96",
-                "title": "du voyage",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 224,
-                        "audioId": 220,
-                        "arabic": "اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ. اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا البِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَلِيفَةُ فِي الْأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالْأَهْلِ. (وعند الرجوع): آيِبُونَ، تَائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ.",
-                        "translation": "Allah est le Plus Grand (x3). Gloire à Celui qui a mis ceci à notre service alors que nous n'y étions pas capables, et c'est vers notre Seigneur que nous retournerons. Ô Allah, nous Te demandons dans ce voyage la piété, la crainte et les œuvres qui Te satisfont. Ô Allah, facilite-nous ce voyage et raccourcis-en la distance. Ô Allah, Tu es le Compagnon de voyage et le Gardien de la famille. Ô Allah, je cherche protection auprès de Toi contre les fatigues du voyage, les paysages affligeants et une issue malheureuse pour mes biens et ma famille. (Au retour) : Nous revenons, repentants, adorateurs et louant notre Seigneur.",
-                        "count": 1,
-                        "source": "مسلم 2/978"
-                    }
-                ]
-            },
-            {
-                "id": "chap_97",
-                "title": "A l'entrée d'une ville ou un village",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 225,
-                        "audioId": 221,
-                        "arabic": "اللَّهُمَّ رَبَّ السَّمَوَاتِ السَّبْعِ وَما أَظْلَلْنَ، وَرَبَّ الأَرَاضِينَ السَّبْعِ وَمَا أَقْلَلْنَ، وَرَبَّ الشَّيَاطِينِ وَمَا أَضْلَلْنَ، وَرَبَّ الرِّيَاحِ وَمَا ذَرَيْنَ، أَسْأَلُكَ خَيْرَ هَذِهِ الْقَرْيَةِ وَخَيْرَ أَهْلِهَا، وَخَيْرَ مَا فِيهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ أَهْلِهَا، وَشَرِّ مَا فِيهَا",
-                        "translation": "« Ô Allah, Seigneur des sept cieux et de ce qu'ils couvrent, Seigneur des sept terres et de ce qu'elles portent, Seigneur des diables et de ceux qu'ils égarent, Seigneur des vents et de ce qu'ils éparpillent. Je Te demande le bien de cette cité, le bien de ses habitants et le bien qu'elle contient ; et je cherche protection auprès de Toi contre son mal, le mal de ses habitants et le mal qu'elle contient. »",
-                        "count": 1,
-                        "source": "الحاكم 2/100، ابن السني 524"
-                    }
-                ]
-            },
-            {
-                "id": "chap_98",
-                "title": "l'entrée au marché",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 226,
-                        "audioId": 222,
-                        "arabic": "لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ، وَهُوَ حَيٌّ لَا يَمُوتُ، بِيَدِهِ الْخَيْرُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
-                        "translation": "Il n'y a de divinité qu'Allah, l'Unique, sans associé. À Lui la royauté et à Lui la louange. Il donne la vie et donne la mort, alors qu'Il est le Vivant qui ne meurt jamais. Le bien est dans Sa main et Il est capable de toute chose.",
-                        "count": 1,
-                        "source": "الترمذي 5/491، الحاكم 1/538"
-                    }
-                ]
-            },
-            {
-                "id": "chap_99",
-                "title": "Quand la monture ou le véhicule défaille",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 227,
-                        "audioId": 12,
-                        "arabic": "بِسْمِ اللهِ",
-                        "translation": "Au nom d'Allah.",
-                        "count": 1,
-                        "source": "أبو داود 4/296"
-                    }
-                ]
-            },
-            {
-                "id": "chap_100",
-                "title": "du voyageur au résident ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 228,
-                        "audioId": 224,
-                        "arabic": "«أَسْتَوْدِعُكَ اللهَ الَّذِي لَا تَضِيعُ وَدَائِعُهُ».",
-                        "translation": "« Je te confie à Allah, Lui dont les dépôts ne se perdent jamais. »",
-                        "count": 1,
-                        "source": "أحمد 2/403، ابن ماجه 2/943"
-                    }
-                ]
-            },
-            {
-                "id": "chap_101",
-                "title": "du résident au voyageur ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": []
-            },
-            {
-                "id": "chap_102",
-                "title": "les glorifications durant le trajet ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 231,
-                        "audioId": 227,
-                        "arabic": "قَالَ جَابِرٌ رَضِيَ اللهُ عَنْهُ: «كُنَّا إِذَا صَعِدْنَا كَبَّرْنَا، وَإِذَا نَزَلْنَا سَبَّحْنَا».",
-                        "translation": "Jabir dit : « Quand nous montions (une pente), nous disions : \"Allah est le plus Grand\" (Allāhu Akbar), et quand nous descendions, nous disions : \"Gloire à Allah\" (Subḥāna Llāh). »",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_103",
-                "title": "à l'approche de l'aube pendant le voyage",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 232,
-                        "audioId": 228,
-                        "arabic": "«سَمِعَ سَامِعٌ بِحَمْدِ اللهِ وَحُسْنِ بَلَائِهِ عَلَيْنَا، رَبَّنَا صَاحِبْنَا، وَأَفْضِلْ عَلَيْنَا، عَائِذاً بِاللهِ مِنَ النَّارِ».",
-                        "translation": "« Puisse un témoin témoigner que nous louons Allah pour Ses bienfaits et Ses bonnes épreuves envers nous. Ô notre Seigneur, accompagne-nous, accorde-nous Tes faveurs. Je cherche protection auprès d'Allah contre le Feu. »",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_104",
-                "title": "Lors d'une halte (voyage ou autre)",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 233,
-                        "audioId": 229,
-                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ».",
-                        "translation": "« Je cherche protection auprès des paroles parfaites d'Allah contre le mal de ce qu'Il a créé. »",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_105",
-                "title": "Lors du retour de voyage",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 234,
-                        "audioId": 230,
-                        "arabic": "يُكَبِّرُ عَلَى كُلِّ شَرَفٍ ثَلَاثَ تَكْبِيرَاتٍ ثُمَّ يَقُولُ: «لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، آيِبُونَ، تَائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ، صَدَقَ اللهُ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَهَزَمَ الْأَحْزَابَ وَحْدَهُ».",
-                        "translation": "Il dit Allahu Akbar trois fois sur chaque hauteur, puis : « Il n'y a de divinité qu'Allah, l'Unique, sans associé. À Lui la royauté et la louange, et Il est capable de toute chose. Nous voici de retour, repentants, adorateurs et célébrant les louanges de notre Seigneur. Allah a tenu Sa promesse, secouru Son serviteur et a vaincu Seul les coalisés. »",
-                        "count": 1,
-                        "source": ""
-                    }
-                ]
-            },
-            {
-                "id": "chap_106",
-                "title": "Ce que dit celui à qui arrive une chose joyeuse ou détestable",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 234,
-                        "audioId": 231,
-                        "arabic": "كَانَ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ إِذَا أَتَاهُ الْأَمْرُ يَسُرُّهُ قَالَ: «الْحَمْدُ للهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ» وَإِذَا أَتَاهُ أَمْرٌ يَكْرَهُهُ قَالَ: «الْحَمْدُ للهِ عَلَى كُلِّ حَالٍ».",
-                        "translation": "Le Prophète ﷺ disait, face à une chose joyeuse : « Louange à Allah par la grâce de qui s'accomplissent les bonnes œuvres », et face à une chose contrariante : « Louange à Allah en toute circonstance. »",
                         "count": 1,
                         "source": ""
                     }
@@ -2802,36 +1273,78 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "source": ""
                     }
                 ]
-            },
+            }
+        ]
+    },
+    {
+        "id": "protection",
+        "name": "Protection",
+        "nameAr": "الحماية والرقية",
+        "emoji": "🛡️",
+        "color": "#FF7043",
+        "chapters": [
             {
-                "id": "chap_109",
-                "title": "rendre le salut au non-musulman s'il salue le salam",
+                "id": "chap_45",
+                "title": "Chasser le Diable et ses insufflations",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FF7043",
                 "duas": [
                     {
-                        "id": 243,
-                        "audioId": 240,
-                        "arabic": "«إِذَا سَلَّمَ عَلَيْكُمْ أَهْلُ الْكِتَابِ فَقُولُوا: وَعَلَيْكُمْ».",
-                        "translation": "« Si les gens du Livre vous saluent, dites : \"Et sur vous aussi\". »",
+                        "id": 156,
+                        "audioId": 151,
+                        "arabic": "«الِاسْتِعَاذَةُ بِاللهِ مِنْهُ».",
+                        "translation": "Chercher la protection d'Allah contre lui (le Diable).",
                         "count": 1,
-                        "source": ""
+                        "source": "أبو داود 1/206، الترمذي 1/77"
+                    },
+                    {
+                        "id": 157,
+                        "audioId": 152,
+                        "arabic": "«الأَذَانُ».",
+                        "translation": "L'appel à la prière (Adhân).",
+                        "count": 1,
+                        "source": "مسلم 1/291، البخاري 1/151"
+                    },
+                    {
+                        "id": 158,
+                        "audioId": 153,
+                        "arabic": "«الْأَذْكَارُ وَقِرَاءَةُ الْقُرْآنِ».",
+                        "translation": "Les évocations (Adhkâr) et la lecture du Coran (notamment la sourate Al-Baqara).",
+                        "count": 1,
+                        "source": "مسلم 1/539"
                     }
                 ]
             },
             {
-                "id": "chap_110",
-                "title": "au chant du coq et au braiment de l'âne",
+                "id": "chap_48",
+                "title": "Protection pour les enfants",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FF7043",
                 "duas": [
                     {
-                        "id": 244,
-                        "audioId": 241,
-                        "arabic": "«إِذَا سَمِعْتُمْ صِيَاحَ الدِّيَكَةِ فَاسْأَلُوا اللهَ مِنْ فَضْلِهِ؛ فَإِنَّهَا رَأَتْ مَلَكاً، وَإِذَا سَمِعْتُمْ نَهِيقَ الْحِمَارِ فَتَعَوَّذُوا بِاللهِ مِنَ الشَّيْطَانِ؛ فَإِنَّهُ رَأَى شَيْطَاناً».",
-                        "translation": "« Si vous entendez le chant du coq, demandez à Allah Ses faveurs car il a vu un ange. Si vous entendez le braiment de l'âne, cherchez protection auprès d'Allah contre le Diable car il a vu un diable. »",
+                        "id": 161,
+                        "audioId": 157,
+                        "arabic": "«أُعِيذُكُمَا بِكَلِمَاتِ اللهِ التَّامَّةِ، مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ».",
+                        "translation": "Je cherche pour vous protection auprès des paroles parfaites d'Allah contre tout démon, tout animal venimeux et contre tout mauvais œil.",
+                        "count": 1,
+                        "source": "البخاري 4/119"
+                    }
+                ]
+            },
+            {
+                "id": "chap_82",
+                "title": "Contre la colère",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FF7043",
+                "duas": [
+                    {
+                        "id": 210,
+                        "audioId": 206,
+                        "arabic": "أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+                        "translation": "Je cherche protection auprès d'Allah contre le Diable banni.",
                         "count": 1,
                         "source": ""
                     }
@@ -2842,7 +1355,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Lors des aboiements de chiens la nuit",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#FF7043",
                 "duas": [
                     {
                         "id": 245,
@@ -2855,11 +1368,1367 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
+                "id": "chap_125",
+                "title": " contre le risque de porter le mauvais œil",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FF7043",
+                "duas": [
+                    {
+                        "id": 258,
+                        "audioId": 257,
+                        "arabic": "«إِذَا رَأَى أَحَدُكُمْ مِنْ أَخِيهِ، أَوْ مِنْ نَفْسِهِ، أَوْ مِنْ مَالِهِ مَا يُعْجِبُهُ فَلْيَدْعُ لَهُ بِالْبَرَكَةِ فَإِنَّ الْعَيْنَ حَقٌّ».",
+                        "translation": "« Si l'un de vous voit chez son frère, chez lui-même ou dans ses biens ce qui lui plaît, qu'il invoque la bénédiction d'Allah pour lui, car le mauvais œil est une vérité. »",
+                        "count": 1,
+                        "source": "أحمد 4/447، صحيح الجامع 1/212"
+                    }
+                ]
+            },
+            {
+                "id": "chap_128",
+                "title": "pour repousser les ruses des démons rebelles ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#FF7043",
+                "duas": [
+                    {
+                        "id": 261,
+                        "audioId": 260,
+                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ الَّتِي لَا يُجَاوِزُهُنَّ بَرٌّ وَلَا فَاجِرٌ مِنْ شَرِّ مَا خَلَقَ، وَبَرَأَ وَذَرَأَ، وَمِنْ شَرِّ مَا يَنْزِلُ مِنَ السَّمَاءِ، وَمِنْ شَرِّ مَا يَعْرُجُ فِيهَا، وَمِنْ شَرِّ مَا ذَرَأَ فِي الْأَرْضِ، وَمِنْ شَرِّ مَا يَخْرُجُ مِنْهَا، وَمِنْ شَرِّ فِتنِ اللَّيْلِ وَالنَّهَارِ، وَمِنْ شَرِّ كُلِّ طَارِقٍ إِلَّا طَارِقاً يَطْرُقُ بِخَيْرٍ يَا رَحْمَنُ».",
+                        "translation": "« Je cherche protection auprès des paroles parfaites d'Allah, que nul vertueux ni pervers ne peut transgresser, contre le mal de ce qu'Il a créé, conçu et multiplié, contre le mal de ce qui descend du ciel et ce qui y monte, contre le mal de ce qu'Il a multiplié sur terre et ce qui en sort, contre le mal des tentations de la nuit et du jour, et contre le mal de tout visiteur nocturne, sauf celui qui apporte le bien, ô Tout-Miséricordieux. »",
+                        "count": 1,
+                        "source": "أحمد 3/419، ابن السني 637"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "meals",
+        "name": "Repas & Social",
+        "nameAr": "الطعام والمعاشرة",
+        "emoji": "🍽️",
+        "color": "#26C6DA",
+        "chapters": [
+            {
+                "id": "chap_49",
+                "title": "Visite du malade",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": []
+            },
+            {
+                "id": "chap_50",
+                "title": "Mérite de la visite d'un malade",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 164,
+                        "audioId": 160,
+                        "arabic": "قَالَ صلى الله عليه وسلم : «إِذَا عَادَ الرَّجُلُ أَخَاهُ الْمُسْلِمَ مَشَى فِي خِرَافَةِ الْجَنَّةِ حَتَّى يَجْلِسَ، فَإِذَا جَلَسَ غَمَرَتْهُ الرَّحْمَةُ، فَإِنْ كَانَ غُدْوَةً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُمْسِيَ، وَإِنْ كَانَ مَسَاءً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُصْبِحَ».",
+                        "translation": "Le Prophète ﷺ a dit : « Quand un homme rend visite à son frère musulman malade, il marche dans les vergers du Paradis jusqu'à ce qu'il s'assoie. Une fois assis, la miséricorde l'enveloppe. Si c'est le matin, soixante-dix mille anges prient pour lui jusqu'au soir, et si c'est le soir, soixante-dix mille anges prient pour lui jusqu'au matin. »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_51",
+                "title": "du malade perdant espoir de guérir",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 165,
+                        "audioId": 161,
+                        "arabic": "«اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَأَلْحِقْنِي بِالرَّفِيقِ الأَعْلَى».",
+                        "translation": "Ô Allah, pardonne-moi, fais-moi miséricorde et fais-moi rejoindre le Compagnon Suprême.",
+                        "count": 1,
+                        "source": "البخاري 7/10، مسلم 4/1893"
+                    },
+                    {
+                        "id": 166,
+                        "audioId": 258,
+                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ، إِنَّ لِلْمَوْتِ لَسَكَرَاتٍ».",
+                        "translation": "Il n'y a de divinité qu'Allah. Certes, l'agonie de la mort comporte des tourments.",
+                        "count": 1,
+                        "source": "البخاري مع الفتح 8/144"
+                    },
+                    {
+                        "id": 167,
+                        "audioId": 163,
+                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَا إِلَهَ إِلَّا اللهُ لَهُ المُلْكُ وَلَهُ الحَمْدُ، لَا إِلَهَ إِلَّا اللهُ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ».",
+                        "translation": "Il n'y a de divinité qu'Allah et Allah est le plus Grand. Il n'y a de divinité qu'Allah l'Unique. Il n'y a de divinité qu'Allah l'Unique sans associé. Il n'y a de divinité qu'Allah, à Lui la royauté et la louange. Il n'y a de divinité qu'Allah, et il n'y a de force ni de puissance que par Allah.",
+                        "count": 1,
+                        "source": "الترمذي وابن ماجه"
+                    }
+                ]
+            },
+            {
+                "id": "chap_68",
+                "title": "lors de la rupture du jeûne",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 193,
+                        "audioId": 189,
+                        "arabic": "ذَهَبَ الظَّمأُ، وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللهُ",
+                        "translation": "La soif est dissipée, les veines sont abreuvées et la récompense est confirmée, si Allah le veut.",
+                        "count": 1,
+                        "source": ""
+                    },
+                    {
+                        "id": 194,
+                        "audioId": 190,
+                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي",
+                        "translation": "Ô Allah, je Te demande, par Ta miséricorde qui embrasse toute chose, de me pardonner.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_69",
+                "title": "avant de manger",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 195,
+                        "audioId": 191,
+                        "arabic": "بِسْمِ اللهِ، [فَإِنْ نَسِيَ فِي أَوَّلِهِ فَلْيَقُلْ:] بِسْمِ اللهِ فِي أَوَّلِهِ وَآخِرِهِ",
+                        "translation": "Au nom d'Allah. [S'il oublie au début, qu'il dise :] Au nom d'Allah au début et à la fin.",
+                        "count": 1,
+                        "source": ""
+                    },
+                    {
+                        "id": 196,
+                        "audioId": 192,
+                        "arabic": "اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَأَطْعِمْنَا خَيْراً مِنْهُ. [وَلِلَّبَنِ:] اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَزِدْنَا مِنْهُ",
+                        "translation": "Ô Allah, bénis-le pour nous et nourris-nous d'un aliment meilleur encore. [Pour le lait :] Ô Allah, bénis-le pour nous et augmente-le-nous.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_70",
+                "title": "après avoir fini de manger",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 197,
+                        "audioId": 193,
+                        "arabic": "الْحَمْدُ للهِ الَّذِي أَطْعَمَنِي هَذَا، وَرَزَقَنِيهِ، مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
+                        "translation": "Louange à Allah qui m'a nourri de cela et me l'a accordé sans aucune force ni puissance de ma part.",
+                        "count": 1,
+                        "source": ""
+                    },
+                    {
+                        "id": 198,
+                        "audioId": 194,
+                        "arabic": "الْحَمْدُ للهِ حَمْداً كَثِيراً طَيِّباً مُبَارَكاً فِيهِ، غَيْرَ مَكْفِيٍّ وَلَا مُوَدَّعٍ، وَلَا مُسْتَغْنًى عَنْهُ رَبَّنَا",
+                        "translation": "Louange à Allah, une louange abondante, pure et bénie. On ne pourra jamais Le remercier assez, ni prendre congé de Lui, ni se passer de Lui, ô notre Seigneur.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_71",
+                "title": "de l'invité pour son hôte",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 199,
+                        "audioId": 195,
+                        "arabic": "اللَّهُمَّ بَارِكْ لَهُمْ فِيمَا رَزَقْتَهُمْ، وَاغْفِرْ لَهُمْ وَارْحَمْهُمْ",
+                        "translation": "Ô Allah, bénis-les dans ce que Tu leur as accordé, pardonne-leur et fais-leur miséricorde.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_73",
+                "title": "En rompant le jeûne chez des hôtes",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 201,
+                        "audioId": 197,
+                        "arabic": "أَفْطَرَ عِنْدَكُمُ الصَّائِمُونَ، وَأَكَلَ طَعَامَكُمُ الْأَبْرَارُ، وَصَلَّتْ عَلَيْكُمُ الْمَلَائِكَةُ",
+                        "translation": "Que les jeûneurs rompent leur jeûne chez vous, que les pieux mangent votre nourriture et que les Anges prient pour vous.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_74",
+                "title": "Du jeûneur face au repas s'il ne rompt pas son jeûne",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 202,
+                        "audioId": 198,
+                        "arabic": "«إِذَا دُعِيَ أَحَدُكُمْ فَلْيُجِبْ، فَإِنْ كَانَ صَائِماً فَلْيُصَلِّ، وَإِنْ كَانَ مُفْطِراً فَلْيَطْعَمْ» وَمَعْنَى فَلْيُصَلِّ أَيْ فَلْيَدْعُ.",
+                        "translation": "« Si l'un de vous est invité, qu'il réponde à l'invitation. S'il jeûne, qu'il prie (invoque en faveur de l'hôte), et s'il ne jeûne pas, qu'il mange. » Le sens de « qu'il prie » signifie ici qu'il doit invoquer.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_77",
+                "title": "Quand on éternue",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 205,
+                        "audioId": 201,
+                        "arabic": "إِذَا عَطَسَ أَحَدُكُم فَلْيَقُلِ الْحَمْدُ لِلَّهِ، وَلْيَقُلْ لَهُ أَخُوهُ أَوْ صَاحِبُهُ: يَرْحَمُكَ اللَّهُ، فَإِذَا قَالَ لَهُ: يَرْحَمُكَ اللَّهُ، فَلْيَقُلْ: يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ",
+                        "translation": "Si l'un de vous éternue, qu'il dise : \"Louange à Allah\". Que son frère ou son compagnon lui réponde alors : \"Qu'Allah te fasse miséricorde\". Et s'il lui dit cela, qu'il réponde à son tour : \"Qu'Allah vous guide et améliore votre situation\".",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_78",
+                "title": "Ce que l'on dit au non-musulman s'il éternue et loue Allah",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 206,
+                        "audioId": 202,
+                        "arabic": "يَهْدِيكُمُ اللهُ وَيُصْلِحُ بَالَكُمْ",
+                        "translation": "Qu'Allah vous guide et améliore votre situation.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_84",
+                "title": "Durant une assemblée",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 212,
+                        "audioId": 208,
+                        "arabic": "عَنِ ابْنِ عُمَرَ قَالَ: كَانَ يُعَدُّ لِرَسُولِ اللهِ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ فِي الْمَجْلِسِ الْوَاحِدِ مِائَةُ مَرَّةٍ مِنْ قَبْلِ أَنْ يَقُومَ: «رَبِّ اغْفِرْ لِي، وَتُبْ عَلَيَّ، إِنَّكَ أَنْتَ التَّوَّابُ الْغَفُورُ».",
+                        "translation": "Selon Ibn 'Umar : On comptait au Messager d'Allah ﷺ, au cours d'une même assise et avant qu'il ne se lève, cent répétitions de : « Seigneur, pardonne-moi et accepte mon repentir, car Tu es certes Celui qui accepte le repentir, le Pardonneur. »",
+                        "count": 1,
+                        "source": "الترمذي 3/153، ابن ماجه 2/321"
+                    }
+                ]
+            },
+            {
+                "id": "chap_85",
+                "title": "A la fin d'une assemblée",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#26C6DA",
+                "duas": [
+                    {
+                        "id": 213,
+                        "audioId": 209,
+                        "arabic": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ",
+                        "translation": "Gloire et louange à Toi, ô Allah. J'atteste qu'il n'y a de divinité que Toi. Je Te demande pardon et je me repens à Toi.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "travel",
+        "name": "Voyage",
+        "nameAr": "السفر",
+        "emoji": "✈️",
+        "color": "#42A5F5",
+        "chapters": [
+            {
+                "id": "chap_61",
+                "title": "Du vent",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 183,
+                        "audioId": 179,
+                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا",
+                        "translation": "Ô Allah, je Te demande son bien et je cherche protection auprès de Toi contre son mal (en parlant du vent).",
+                        "count": 1,
+                        "source": ""
+                    },
+                    {
+                        "id": 184,
+                        "audioId": 180,
+                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَخَيْرَ مَا فِيهَا، وَخَيْرَ مَا أُرْسِلَتْ بِهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا فِيهَا وَشَرِّ مَا أُرْسِلَتْ بِهِ",
+                        "translation": "Ô Allah, je Te demande son bien, le bien de ce qu'il contient et le bien de ce qui lui a été envoyé ; et je cherche protection auprès de Toi contre son mal, le mal de ce qu'il contient et le mal de ce qui lui a été envoyé.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_62",
+                "title": "Du tonnerre",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 185,
+                        "audioId": 181,
+                        "arabic": "سُبْحَانَ الَّذِي يُسَبِّحُ الرَّعْدُ بِحَمْدِهِ وَالْمَلَائِكَةُ مِنْ خِيفَتِهِ",
+                        "translation": "Gloire à Celui dont le tonnerre célèbre la louange, ainsi que les Anges, par crainte de Lui.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_63",
+                "title": "Demande de pluie",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 186,
+                        "audioId": 182,
+                        "arabic": "اللَّهُمَّ اسْقِنَا غَيْثاً مُغِيثاً مَرِيئاً مَرِيعاً نَافِعاً غَيْرَ ضَارٍّ، عَاجِلاً غَيْرَ آجِلٍ",
+                        "translation": "Ô Allah, accorde-nous une pluie salvatrice, bienfaisante, fertile, utile et non nuisible, immédiate et non tardive.",
+                        "count": 1,
+                        "source": ""
+                    },
+                    {
+                        "id": 187,
+                        "audioId": 183,
+                        "arabic": "اللَّهُمَّ أَغِثْنَا، اللَّهُمَّ أَغِثْنَا، اللَّهُمَّ أَغِثْنَا",
+                        "translation": "Ô Allah, secours-nous ! Ô Allah, secours-nous ! Ô Allah, secours-nous !",
+                        "count": 1,
+                        "source": ""
+                    },
+                    {
+                        "id": 188,
+                        "audioId": 184,
+                        "arabic": "اللَّهُمَّ اسْقِ عِبَادَكَ وَبَهَائِمَكَ، وَانْشُرْ رَحْمَتَكَ وَأَحْيِي بَلَدَكَ الْمَيِّتَ",
+                        "translation": "Ô Allah, abreuve Tes serviteurs et Tes bestiaux, répands Ta miséricorde et redonne vie à Ta terre morte.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_64",
+                "title": "Quand la pluie tombe",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 189,
+                        "audioId": 185,
+                        "arabic": "اللَّهُمَّ صَيِّباً نَافِعاً",
+                        "translation": "Ô Allah, fais que ce soit une pluie bénéfique.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_65",
+                "title": "Après la pluie",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 190,
+                        "audioId": 186,
+                        "arabic": "مُطِرْنَا بِفَضْلِ اللهِ وَرَحْمَتِهِ",
+                        "translation": "Nous avons reçu la pluie par la grâce d'Allah et Sa miséricorde.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_66",
+                "title": "Contre les tempêtes de pluies",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 191,
+                        "audioId": 187,
+                        "arabic": "اللَّهُمَّ حَوَالَيْنَا وَلَا عَلَيْنَا، اللَّهُمَّ عَلَى الْآكَامِ وَالظِّرَابِ وَبُطُونِ الْأَوْدِيَةِ، وَمَنَابِتِ الشَّجَرِ",
+                        "translation": "Ô Allah, que la pluie tombe autour de nous et non sur nous. Ô Allah, sur les collines, les monticules, les fonds de vallées et les lieux où poussent les arbres.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_67",
+                "title": "Le nouveau croissant de lune",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 192,
+                        "audioId": 188,
+                        "arabic": "اللهُ أَكْبَرُ، اللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالْأَمْنِ وَالْإِيمَانِ، وَالسَّلَامَةِ وَالْإِسْلَامِ، وَالتَّوْفِيقِ لِمَا تُحِبُّ رَبَّنَا وَتَرْضَى، رَبُّنَا وَرَبُّكَ اللهُ",
+                        "translation": "Allah est le plus Grand. Ô Allah, fais que ce croissant se lève sur nous avec la sécurité et la foi, le salut et l'Islam, ainsi que la réussite dans ce que Tu aimes, ô notre Seigneur, et ce que Tu agrées. Notre Seigneur et ton Seigneur est Allah.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_80",
+                "title": "du marié et lors de l'acquisition d'une monture",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 208,
+                        "audioId": 180,
+                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا وَخَيْرَ مَا جَبَلْتَهَا عَلَيْهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا جَبَلْتَهَا عَلَيْهِ",
+                        "translation": "Ô Allah, je Te demande son bien et le bien de la nature dont Tu l'as pourvue, et je cherche protection auprès de Toi contre son mal et le mal de la nature dont Tu l'as pourvue.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_96",
+                "title": "du voyage",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 224,
+                        "audioId": 220,
+                        "arabic": "اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ. اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا البِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَلِيفَةُ فِي الْأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالْأَهْلِ. (وعند الرجوع): آيِبُونَ، تَائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ.",
+                        "translation": "Allah est le Plus Grand (x3). Gloire à Celui qui a mis ceci à notre service alors que nous n'y étions pas capables, et c'est vers notre Seigneur que nous retournerons. Ô Allah, nous Te demandons dans ce voyage la piété, la crainte et les œuvres qui Te satisfont. Ô Allah, facilite-nous ce voyage et raccourcis-en la distance. Ô Allah, Tu es le Compagnon de voyage et le Gardien de la famille. Ô Allah, je cherche protection auprès de Toi contre les fatigues du voyage, les paysages affligeants et une issue malheureuse pour mes biens et ma famille. (Au retour) : Nous revenons, repentants, adorateurs et louant notre Seigneur.",
+                        "count": 1,
+                        "source": "مسلم 2/978"
+                    }
+                ]
+            },
+            {
+                "id": "chap_97",
+                "title": "A l'entrée d'une ville ou un village",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 225,
+                        "audioId": 221,
+                        "arabic": "اللَّهُمَّ رَبَّ السَّمَوَاتِ السَّبْعِ وَما أَظْلَلْنَ، وَرَبَّ الأَرَاضِينَ السَّبْعِ وَمَا أَقْلَلْنَ، وَرَبَّ الشَّيَاطِينِ وَمَا أَضْلَلْنَ، وَرَبَّ الرِّيَاحِ وَمَا ذَرَيْنَ، أَسْأَلُكَ خَيْرَ هَذِهِ الْقَرْيَةِ وَخَيْرَ أَهْلِهَا، وَخَيْرَ مَا فِيهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ أَهْلِهَا، وَشَرِّ مَا فِيهَا",
+                        "translation": "« Ô Allah, Seigneur des sept cieux et de ce qu'ils couvrent, Seigneur des sept terres et de ce qu'elles portent, Seigneur des diables et de ceux qu'ils égarent, Seigneur des vents et de ce qu'ils éparpillent. Je Te demande le bien de cette cité, le bien de ses habitants et le bien qu'elle contient ; et je cherche protection auprès de Toi contre son mal, le mal de ses habitants et le mal qu'elle contient. »",
+                        "count": 1,
+                        "source": "الحاكم 2/100، ابن السني 524"
+                    }
+                ]
+            },
+            {
+                "id": "chap_98",
+                "title": "l'entrée au marché",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 226,
+                        "audioId": 222,
+                        "arabic": "لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ، وَهُوَ حَيٌّ لَا يَمُوتُ، بِيَدِهِ الْخَيْرُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+                        "translation": "Il n'y a de divinité qu'Allah, l'Unique, sans associé. À Lui la royauté et à Lui la louange. Il donne la vie et donne la mort, alors qu'Il est le Vivant qui ne meurt jamais. Le bien est dans Sa main et Il est capable de toute chose.",
+                        "count": 1,
+                        "source": "الترمذي 5/491، الحاكم 1/538"
+                    }
+                ]
+            },
+            {
+                "id": "chap_99",
+                "title": "Quand la monture ou le véhicule défaille",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 227,
+                        "audioId": 12,
+                        "arabic": "بِسْمِ اللهِ",
+                        "translation": "Au nom d'Allah.",
+                        "count": 1,
+                        "source": "أبو داود 4/296"
+                    }
+                ]
+            },
+            {
+                "id": "chap_100",
+                "title": "du voyageur au résident ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 228,
+                        "audioId": 224,
+                        "arabic": "«أَسْتَوْدِعُكَ اللهَ الَّذِي لَا تَضِيعُ وَدَائِعُهُ».",
+                        "translation": "« Je te confie à Allah, Lui dont les dépôts ne se perdent jamais. »",
+                        "count": 1,
+                        "source": "أحمد 2/403، ابن ماجه 2/943"
+                    }
+                ]
+            },
+            {
+                "id": "chap_101",
+                "title": "du résident au voyageur ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": []
+            },
+            {
+                "id": "chap_103",
+                "title": "à l'approche de l'aube pendant le voyage",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 232,
+                        "audioId": 228,
+                        "arabic": "«سَمِعَ سَامِعٌ بِحَمْدِ اللهِ وَحُسْنِ بَلَائِهِ عَلَيْنَا، رَبَّنَا صَاحِبْنَا، وَأَفْضِلْ عَلَيْنَا، عَائِذاً بِاللهِ مِنَ النَّارِ».",
+                        "translation": "« Puisse un témoin témoigner que nous louons Allah pour Ses bienfaits et Ses bonnes épreuves envers nous. Ô notre Seigneur, accompagne-nous, accorde-nous Tes faveurs. Je cherche protection auprès d'Allah contre le Feu. »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_104",
+                "title": "Lors d'une halte (voyage ou autre)",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 233,
+                        "audioId": 229,
+                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ».",
+                        "translation": "« Je cherche protection auprès des paroles parfaites d'Allah contre le mal de ce qu'Il a créé. »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_105",
+                "title": "Lors du retour de voyage",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#42A5F5",
+                "duas": [
+                    {
+                        "id": 234,
+                        "audioId": 230,
+                        "arabic": "يُكَبِّرُ عَلَى كُلِّ شَرَفٍ ثَلَاثَ تَكْبِيرَاتٍ ثُمَّ يَقُولُ: «لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، آيِبُونَ، تَائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ، صَدَقَ اللهُ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَهَزَمَ الْأَحْزَابَ وَحْدَهُ».",
+                        "translation": "Il dit Allahu Akbar trois fois sur chaque hauteur, puis : « Il n'y a de divinité qu'Allah, l'Unique, sans associé. À Lui la royauté et la louange, et Il est capable de toute chose. Nous voici de retour, repentants, adorateurs et célébrant les louanges de notre Seigneur. Allah a tenu Sa promesse, secouru Son serviteur et a vaincu Seul les coalisés. »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "dhikr",
+        "name": "Dhikr & Doua",
+        "nameAr": "الذكر والدعاء",
+        "emoji": "📿",
+        "color": "#AB47BC",
+        "chapters": [
+            {
+                "id": "chap_2",
+                "title": "Lorsqu’on s’habille",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 18,
+                        "audioId": 5,
+                        "arabic": "«الْحَمْدُ للهِ الَّذِي كَسَانِي هَذَا (الثَّوْبَ) وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ».",
+                        "translation": "Louange à Allah qui m'a revêtu de ce vêtement et me l'a accordé sans aucune force ni puissance de ma part.",
+                        "count": 1,
+                        "source": "أهل السنن"
+                    }
+                ]
+            },
+            {
+                "id": "chap_5",
+                "title": "En se déshabillant",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 22,
+                        "audioId": 12,
+                        "arabic": "«بِسْمِ اللهِ».",
+                        "translation": "Au nom d'Allah.",
+                        "count": 1,
+                        "source": "الترمذي 2/505، صحيح الجامع 3/203، إرواء الغليل 50"
+                    }
+                ]
+            },
+            {
+                "id": "chap_17",
+                "title": "À l'inclinaison.",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 50,
+                        "audioId": 37,
+                        "arabic": "«سُبْحَانَ رَبِّيَ الْعَظِيمِ» (ثَلَاثَ مَرَّاتٍ).",
+                        "translation": "Gloire à mon Seigneur le Très-Grand (trois fois).",
+                        "count": 1,
+                        "source": "أهل السنن وأحمد، صحيح الترمذي 1/83"
+                    },
+                    {
+                        "id": 51,
+                        "audioId": 38,
+                        "arabic": "«سُبْحَانَكَ اللَّهُمَّ رَبَّنَا وَبِحَمْدِكَ، اللَّهُمَّ اغْفِرْ لِي».",
+                        "translation": "Gloire et louange à Toi, ô Allah, notre Seigneur. Ô Allah, pardonne-moi.",
+                        "count": 1,
+                        "source": "البخاري 1/199، مسلم 1/350"
+                    },
+                    {
+                        "id": 52,
+                        "audioId": 39,
+                        "arabic": "«سُبُّوحٌ، قُدُّوسٌ، رَبُّ الْمَلَائِكَةِ وَالرُّوحِ».",
+                        "translation": "Parfait et Très-Saint, Seigneur des Anges et de l'Esprit (Gabriel).",
+                        "count": 1,
+                        "source": "مسلم 1/353، أبو داود 1/230"
+                    },
+                    {
+                        "id": 53,
+                        "audioId": 40,
+                        "arabic": "«اللَّهُمَّ لَكَ رَكَعْتُ، وَبِكَ آمَنْتُ، وَلَكَ أَسْلَمْتُ، خَشَعَ لَكَ سَمْعِي، وَبَصَرِي، وَمُخِّي، وَعَظْمِي، وَعَصَبِي، وَمَا اسْتَقَلَّتْ بِهِ قَدَمِي».",
+                        "translation": "Ô Allah, c'est pour Toi que je me prosterne, en Toi que j'ai cru et à Toi que je me suis soumis. Mon ouïe, ma vue, mon cerveau, mes os, mes nerfs et tout ce que mes pieds transportent sont humiliés devant Toi.",
+                        "count": 1,
+                        "source": "مسلم 1/534، والأربعة إلا ابن ماجه"
+                    },
+                    {
+                        "id": 54,
+                        "audioId": 49,
+                        "arabic": "«سُبْحَانَ ذِي الْجَبَرُوتِ، وَالْمَلَكُوتِ، وَالْكِبْرِيَاءِ، وَالْعَظَمَةِ».",
+                        "translation": "Gloire au Possesseur de la Toute-Puissance, de la Royauté absolue, de la Grandeur et de la Majesté.",
+                        "count": 1,
+                        "source": "أبو داود 1/230، النسائي، أحمد"
+                    }
+                ]
+            },
+            {
+                "id": "chap_18",
+                "title": "En se relevant de l'inclinaison",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 55,
+                        "audioId": 42,
+                        "arabic": "«سَمِعَ اللهُ لِمَنْ حَمِدَهُ».",
+                        "translation": "Allah a entendu celui qui L'a loué.",
+                        "count": 1,
+                        "source": "البخاري مع الفتح 2/ 282"
+                    },
+                    {
+                        "id": 56,
+                        "audioId": 43,
+                        "arabic": "«رَبَّنَا وَلَكَ الْحَمْدُ، حَمْدًا كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ».",
+                        "translation": "Notre Seigneur, à Toi la louange, une louange abondante, pure et bénie.",
+                        "count": 1,
+                        "source": "البخاري مع الفتح 2/ 282"
+                    },
+                    {
+                        "id": 57,
+                        "audioId": 44,
+                        "arabic": "«...مِلْءَ السَّمَاوَاتِ وَمِلْءَ الْأَرْضِ وَمَا بَيْنَهُمَا، وَمِلْءَ مَا شِئْتَ مِنْ شَيْءٍ بَعْدُ. أَهْلَ الثَّنَاءِ وَالْمَجْدِ، أَحَقُّ مَا قَالَ الْعَبْدُ، وَكُلُّنَا لَكَ عَبْدٌ، اللَّهُمَّ لَا مَانِعَ لِمَا أَعْطَيْتَ وَلَا مُعْطِيَ لِمَا مَنَعْتَ وَلَا يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ».",
+                        "translation": "[J'implore Ta louange] autant que l'espace des cieux, de la terre et de ce qui les sépare, et autant que Tu voudras d'autre chose après cela. Ô Toi qui mérites éloges et gloire, c'est là la parole la plus véridique que puisse prononcer un serviteur, et nous sommes tous Tes serviteurs. Ô Allah, nul ne peut retenir ce que Tu as donné, et nul ne peut donner ce que Tu as retenu. Et la fortune du riche ne lui sert à rien contre Toi.",
+                        "count": 1,
+                        "source": "مسلم 1/ 346"
+                    }
+                ]
+            },
+            {
+                "id": "chap_21",
+                "title": " Posternation de la lecture du Quran",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 67,
+                        "audioId": 54,
+                        "arabic": "«سَجَدَ وَجْهِي لِلَّذِي خَلَقَهُ، وَشَقَّ سَمْعَهُ وَبَصَرَهُ بِحَوْلِهِ وَقُوَّتِهِ، {فَتَبَارَكَ اللهُ أَحْسَنُ الْخَالِقِينَ}».",
+                        "translation": "Mon visage s'est prosterné devant Celui qui l'a créé et a ouvert son ouïe et sa vue par Sa force et Sa puissance. {Béni soit donc Allah, le Meilleur des créateurs}.",
+                        "count": 1,
+                        "source": "الترمذي 2/474، أحمد 6/30، الحاكم 1/220"
+                    },
+                    {
+                        "id": 68,
+                        "audioId": 55,
+                        "arabic": "«اللَّهُمَّ اكْتُبْ لِي بِهَا عِنْدَكَ أَجْرًا، وَضَعْ عَنِّي بِهَا وِزْرًا، وَاجْعَلْهَا لِي عِنْدَكَ ذُخْرًا، وَتَقَبَّلْهَا مِنِّي كَمَا تَقَبَّلْتَهَا مِنْ عَبْدِكَ دَاوُدَ».",
+                        "translation": "Ô Allah, inscris-moi grâce à elle (cette prosternation) une récompense auprès de Toi, décharge-moi d'un péché, fais-en pour moi un trésor auprès de Toi et accepte-la de ma part comme Tu l'as acceptée de Ton serviteur David.",
+                        "count": 1,
+                        "source": "الترمذي 2/473، الحاكم 1/219"
+                    }
+                ]
+            },
+            {
+                "id": "chap_30",
+                "title": "la terreur nocturne et la solitude ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 124,
+                        "audioId": 119,
+                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّةِ مِنْ غَضَبِهِ وَعِقَابِهِ، وَشَرِّ عِبَادِهِ، وَمِنْ هَمَزَاتِ الشَّيَاطِينِ وَأَنْ يَحْضُرُونِ».",
+                        "translation": "Je cherche protection auprès des paroles parfaites d'Allah contre Sa colère, Son châtiment, le mal de Ses serviteurs, ainsi que contre les incitations des diables et leur présence auprès de moi.",
+                        "count": 1,
+                        "source": "أبو داود 4/12، صحيح الترمذي 3/ 171"
+                    }
+                ]
+            },
+            {
+                "id": "chap_31",
+                "title": "Après un songe ou un cauchemar",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 125,
+                        "audioId": 120,
+                        "arabic": "«يَنْفُثُ عَنْ يَسَارِهِ (ثَلَاثًا)».",
+                        "translation": "Postillonner (sans salive) vers sa gauche (3 fois).",
+                        "count": 1,
+                        "source": "مسلم 4/1772"
+                    },
+                    {
+                        "id": 126,
+                        "audioId": 121,
+                        "arabic": "«يَسْتَعِيذُ بِاللهِ مِنَ الشَّيْطَانِ وَمِنْ شَرِّ مَا رَأَى (ثَلَاثَ مَرَّاتٍ)».",
+                        "translation": "Chercher protection auprès d'Allah contre le Diable et contre le mal de ce qu'il a vu (3 fois).",
+                        "count": 1,
+                        "source": "مسلم 4/1773"
+                    },
+                    {
+                        "id": 127,
+                        "audioId": 122,
+                        "arabic": "«لَا يُحَدِّثُ بِهَا أَحَدًا».",
+                        "translation": "N'en parler à personne.",
+                        "count": 1,
+                        "source": "مسلم 4/1772"
+                    },
+                    {
+                        "id": 128,
+                        "audioId": 123,
+                        "arabic": "«يَتَحَوَّلُ عَنْ جَنْبِهِ الَّذِي كَانَ عَلَيْهِ».",
+                        "translation": "Changer de côté par rapport à celui sur lequel on dormait.",
+                        "count": 1,
+                        "source": "مسلم 4/1773"
+                    },
+                    {
+                        "id": 129,
+                        "audioId": 124,
+                        "arabic": "«يَقُومُ يُصَلِّي إِنْ أَرَادَ ذَلِكَ».",
+                        "translation": "Se lever pour prier si on le souhaite.",
+                        "count": 1,
+                        "source": "مسلم 4/1773"
+                    }
+                ]
+            },
+            {
+                "id": "chap_35",
+                "title": "Invocation en cas d'affliction (grande détresse)",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 136,
+                        "audioId": 131,
+                        "arabic": "«لَا إِلَهَ إِلَّا اللهُ الْعَظِيمُ الْحَلِيمُ، لَا إِلَهَ إِلَّا اللهُ رَبُّ الْعَرْشِ الْعَظِيمِ، لَا إِلَهَ إِلَّا اللهُ رَبُّ السَّمَاوَاتِ وَرَبُّ الْأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ».",
+                        "translation": "Il n'y a de divinité digne d'adoration qu'Allah, l'Immense, le Longanime. Il n'y a de divinité digne d'adoration qu'Allah, le Seigneur du Trône immense. Il n'y a de divinité digne d'adoration qu'Allah, le Seigneur des cieux, de la terre et du noble Trône.",
+                        "count": 1,
+                        "source": "البخاري 7/154، مسلم 4/2092"
+                    },
+                    {
+                        "id": 137,
+                        "audioId": 132,
+                        "arabic": "«اللَّهُمَّ رَحْمَتَكَ أَرْجُو فَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ، وَأَصْلِحْ لِي شَأْنِي كُلَّهُ لَا إِلَهَ إِلَّا أَنْتَ».",
+                        "translation": "Ô Allah, c'est Ta miséricorde que j'espère. Ne me confie donc pas à moi-même, ne serait-ce que le temps d'un clin d'œil, et améliore ma situation dans sa totalité. Nulle divinité sauf Toi.",
+                        "count": 1,
+                        "source": "أبو داود 4/324، أحمد 5/42"
+                    },
+                    {
+                        "id": 138,
+                        "audioId": 133,
+                        "arabic": "«لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ».",
+                        "translation": "Nulle divinité sauf Toi ! Pureté à Toi ! J'ai été certes du nombre des injustes.",
+                        "count": 1,
+                        "source": "الترمذي 5/529، الحاكم 1/505"
+                    },
+                    {
+                        "id": 139,
+                        "audioId": 134,
+                        "arabic": "«اللهُ اللهُ رَبِّي لَا أُشْرِكُ بِهِ شَيْئًا».",
+                        "translation": "Allah, Allah est mon Seigneur, je ne Lui associe rien.",
+                        "count": 1,
+                        "source": "أبو داود 2/87، صحيح ابن ماجه 2/335"
+                    }
+                ]
+            },
+            {
+                "id": "chap_37",
+                "title": "Pour celui qui craint l'oppression d'un dirigeant ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 143,
+                        "audioId": 138,
+                        "arabic": "«اللَّهُمَّ رَبَّ السَّمَاوَاتِ السَّبْعِ، وَرَبَّ الْعَرْشِ الْعَظِيمِ، كُنْ لِي جَاراً مِنْ فُلَانِ بْنِ فُلَانٍ، وَأَحْزَابِهِ مِنْ خَلَائِقِكَ؛ أَنْ يَفْرُطَ عَلَيَّ أَحَدٌ مِنْهُمْ أَوْ يَطْغَى، عَزَّ جَارُكَ، وَجَلَّ ثَنَاؤُكَ، وَلَا إِلَهَ إِلَّا أَنْتَ».",
+                        "translation": "Ô Allah, Seigneur des sept cieux et Seigneur du Trône immense. Sois pour moi un protecteur contre untel fils d'untel et ses alliés parmi Tes créatures, afin qu'aucun d'eux ne soit injuste envers moi ou ne me内 opprime. Ta protection est puissante, Ta louange est immense et il n'y a de divinité que Toi.",
+                        "count": 1,
+                        "source": "البخاري في الأدب المفرد رقم 707"
+                    },
+                    {
+                        "id": 144,
+                        "audioId": 139,
+                        "arabic": "«اللهُ أَكْبَرُ، اللهُ أَعَزُّ مِنْ خَلْقِهِ جَمِيعاً، اللهُ أَعَزُّ مِمَّا أَخَافُ وَأَحْذَرُ، أَعُوذُ بِاللهِ الَّذِي لَا إِلَهَ إِلَّا هُوَ، الْمُمْسِكِ السَّمَاوَاتِ السَّبْعِ أَنْ يَقَعْنَ عَلَى الْأَرْضِ إِلَّا بِإِذْنِهِ، مِنْ شَرِّ عَبْدِكَ فُلَانٍ، وَجُنُودِهِ وَأَتْبَاعِهِ وَأَشْيَاعِهِ، مِنَ الْجِنِّ وَالْإِنْسِ، اللَّهُمَّ كُنْ لِي جَاراً مِنْ شَرِّهِمْ، جَلَّ ثَنَاؤُكَ وَعَزَّ جَارُكَ، وَتَبَارَكَ اسْمُكَ، وَلَا إِلَهَ غَيْرُكَ» (ثَلَاثَ مَرَّاتٍ).",
+                        "translation": "Allah est le plus Grand, Allah est plus Puissant que toute Sa création, Allah est plus Puissant que ce que je crains et ce que je redoute. Je cherche protection auprès d'Allah... contre le mal de Ton serviteur untel, de ses soldats et ses partisans parmi les djinns et les hommes. Ô Allah, sois mon protecteur contre leur mal... (3 fois).",
+                        "count": 1,
+                        "source": "البخاري في الأدب المفرد رقم 708"
+                    }
+                ]
+            },
+            {
+                "id": "chap_39",
+                "title": " quand ont craint un groupe de gens",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 146,
+                        "audioId": 141,
+                        "arabic": "«اللَّهُمَّ اكْفِنِيهِمْ بِمَا شِئْتَ».",
+                        "translation": "Ô Allah, protège-moi d'eux par ce que Tu voudras.",
+                        "count": 1,
+                        "source": "مسلم 4/2300"
+                    }
+                ]
+            },
+            {
+                "id": "chap_40",
+                "title": " contre les suggestions insufflées concernant la foi",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 147,
+                        "audioId": 142,
+                        "arabic": "«يَسْتَعِيذُ بِاللهِ».",
+                        "translation": "Chercher protection auprès d'Allah (contre le doute).",
+                        "count": 1,
+                        "source": "البخاري مع الفتح 6/336"
+                    },
+                    {
+                        "id": 148,
+                        "audioId": 143,
+                        "arabic": "«يَنْتَهِي عَمَّا شَكَّ فِيهِ».",
+                        "translation": "Cesser de ressasser ce qui cause le doute.",
+                        "count": 1,
+                        "source": "مسلم 1/120"
+                    },
+                    {
+                        "id": 149,
+                        "audioId": 144,
+                        "arabic": "«آمَنْتُ بِاللهِ وَرُسُلِهِ».",
+                        "translation": "Je crois en Allah et en Ses messagers.",
+                        "count": 1,
+                        "source": "مسلم 1/120"
+                    },
+                    {
+                        "id": 150,
+                        "audioId": 145,
+                        "arabic": "﴿هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ وَهُوَ بِكُلِّ شَيْءٍ عَلِيمٌ﴾.",
+                        "translation": "C'est Lui le Premier et le Dernier, l'Apparent et le Caché et Il est Omniscient sur toute chose.",
+                        "count": 1,
+                        "source": "سورة الحديد، آية 3"
+                    }
+                ]
+            },
+            {
+                "id": "chap_44",
+                "title": " que doit dire et faire celui qui a commis un péché",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 155,
+                        "audioId": 150,
+                        "arabic": "«مَا مِنْ عَبْدٍ يُذْنِبُ ذَنْباً فَيُحْسِنُ الطُّهُورَ، ثُمَّ يَقُومُ فَيُصَلِّي رَكْعَتَيْنِ، ثُمَّ يَسْتَغْفِرُ اللهَ إِلَّا غَفَرَ اللهُ لَهُ».",
+                        "translation": "Tout serviteur qui commet un péché, puis fait soigneusement ses ablutions, se lève pour accomplir deux rak'as et demande pardon à Allah, Allah lui pardonnera.",
+                        "count": 1,
+                        "source": "أبو داود 2/86، الترمذي 2/257"
+                    }
+                ]
+            },
+            {
+                "id": "chap_46",
+                "title": "face à l'imprévu ou quand on est dépassé par les événements",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 159,
+                        "audioId": 154,
+                        "arabic": "«قَدَرُ اللهِ وَمَا شَاءَ فَعَلَ».",
+                        "translation": "C'est un décret d'Allah et Il fait ce qu'Il veut.",
+                        "count": 1,
+                        "source": "مسلم 4/2052"
+                    }
+                ]
+            },
+            {
+                "id": "chap_47",
+                "title": "Félicitations pour une naissance et leur réponse",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 160,
+                        "audioId": 156,
+                        "arabic": "«بَارَكَ اللهُ لَكَ فِي المَوْهُوبِ لَكَ، وَشَكَرْتَ الوَاهِبَ، وَبَلَغَ أَشُدَّهُ، وَرُزِقْتَ بِرَّهُ». وَيَرُدُّ المُهَنَّأُ: «بَارَكَ اللهُ لَكَ، وَبَارَكَ عَلَيْكَ، وَجَزَاكَ اللهُ خَيْرًا، وَرَزَقَكَ اللهُ مِثْلَهُ، وَأَجْزَلَ ثَوَابَكَ».",
+                        "translation": "Puisse Allah bénir ce qu'Il t'a donné, puisses-tu remercier le Donateur, qu'il (l'enfant) atteigne sa maturité et que tu sois comblé par sa piété filiale. Le félicité répond : Qu'Allah te bénisse, qu'Il déverse Sa bénédiction sur toi, qu'Il te récompense par un bien, qu'Il t'accorde la même chose et multiplie ta récompense.",
+                        "count": 1,
+                        "source": "الأذكار للنووي ص349"
+                    }
+                ]
+            },
+            {
+                "id": "chap_52",
+                "title": " L'exhortation de l'agonisant ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 168,
+                        "audioId": 164,
+                        "arabic": "«مَنْ كَانَ آخِرُ كَلَامِهِ لَا إِلَهَ إِلَّا اللهُ دَخَلَ الْجَنَّةَ».",
+                        "translation": "Celui dont la dernière parole est « Il n'y a de divinité qu'Allah » entrera au Paradis.",
+                        "count": 1,
+                        "source": "أبو داود 3/190"
+                    }
+                ]
+            },
+            {
+                "id": "chap_60",
+                "title": "Lors de la visite du cimetière",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 182,
+                        "audioId": 178,
+                        "arabic": "السَّلَامُ عَلَيْكُمْ أَهْلَ الدِّيَارِ، مِنَ الْمُؤْمِنِينَ وَالْمُسْلِمِينَ، وَإِنَّا إِنْ شَاءَ اللهُ بِكُمْ لَاحِقُونَ [وَيَرْحَمُ اللهُ الْمُسْتَقْدِمِينَ مِنَّا وَالْمُسْتَأْخِرِينَ] أَسْأَلُ اللهَ لَنَا وَلَكُمُ الْعَافِيَةَ",
+                        "translation": "Que le salut soit sur vous, habitants de ces demeures, parmi les croyants et les musulmans. Nous allons, si Allah le veut, vous rejoindre. [Qu'Allah fasse miséricorde à ceux d'entre nous qui sont partis les premiers et à ceux qui suivront]. Je demande à Allah pour nous et pour vous le salut.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_72",
+                "title": "pour solliciter de la nourriture ou de la boisson",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 200,
+                        "audioId": 196,
+                        "arabic": "اللَّهُمَّ أَطْعِمْ مَنْ أَطْعَمَنِي وَأَسْقِ مَنْ سَقَانِي",
+                        "translation": "Ô Allah, nourris celui qui m'a nourri et abreuve celui qui m'a abreuvé.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_75",
+                "title": "Reponse du jeuneur quand on l'insulte",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 203,
+                        "audioId": 199,
+                        "arabic": "إِنِّي صَائِمٌ، إِنِّي صَائِمٌ",
+                        "translation": "Je jeûne, je jeûne.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_76",
+                "title": "à la vue des premiers fruits de la saison",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 204,
+                        "audioId": 200,
+                        "arabic": "اللَّهُمَّ بَارِكْ لَنَا فِي ثَمَرِنَا، وَبَارِكْ لَنَا فِي مَدِينَتِنَا، وَبَارِكْ لَنَا فِي صَاعِنَا، وَبَارِكْ لَنَا فِي مُدِّنَا",
+                        "translation": "Ô Allah, bénis-nous dans nos fruits, bénis-nous dans notre ville, bénis-nous dans notre 'Sa' (mesure) et bénis-nous dans notre 'Mudd' (mesure).",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_79",
+                "title": "Pour le nouveau marié",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 207,
+                        "audioId": 203,
+                        "arabic": "بَارَكَ اللهُ لَكَ، وَبَارَكَ عَلَيْكَ، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ",
+                        "translation": "Qu'Allah te bénisse, qu'Il déverse Sa bénédiction sur toi et qu'Il vous unisse dans le bien.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_81",
+                "title": "Avant les rapports conjugaux",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 209,
+                        "audioId": 205,
+                        "arabic": "بِسْمِ اللهِ، اللَّهُمَّ جَنِّبْنَا الشَّيْطَانَ، وَجَنِّبِ الشَّيْطَانَ مَا رَزَقْتَنَا",
+                        "translation": "Au nom d'Allah. Ô Allah, écarte de nous le Diable et écarte le Diable de ce que Tu nous accorderas.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_83",
+                "title": "En voyant une personne éprouvée",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 211,
+                        "audioId": 207,
+                        "arabic": "الْحَمْدُ للهِ الَّذِي عَافَانِي مِمَّا ابْتَلَاكَ بِهِ، وَفَضَّلَنِي عَلَى كَثِيرٍ مِمَّنْ خَلَقَ تَفْضِيلاً",
+                        "translation": "Louange à Allah qui m'a préservé de ce dont Il t'a éprouvé et m'a grandement favorisé par rapport à beaucoup de Ses créatures.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_86",
+                "title": "pour celui qui vous dit : Qu'Allah te pardonne",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 214,
+                        "audioId": 210,
+                        "arabic": "«وَلَكَ».",
+                        "translation": "et à toi aussi.",
+                        "count": 1,
+                        "source": "أحمد 5/28، النسائي في عمل اليوم والليلة 421"
+                    }
+                ]
+            },
+            {
+                "id": "chap_87",
+                "title": "Pour celui qui vous a rendu service",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 215,
+                        "audioId": 211,
+                        "arabic": "جَزَاكَ اللهُ خَيْراً",
+                        "translation": "Qu'Allah te rétribue par un bien.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_88",
+                "title": "Ce par quoi Allah préserve de l'Antéchrist",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 216,
+                        "audioId": 212,
+                        "arabic": "«مَنْ حَفِظَ عَشْرَ آيَاتٍ مِنْ أَوَّلِ سُورَةِ الْكَهْفِ عُصِمَ مِنَ الدَّجَّالِ»، وَالِاسْتِعَاذَةُ بِاللَّهِ مِنْ فِتْنَتِهِ عَقِبَ التَّشَهُّدِ الْأَخِيرِ مِنْ كُلِّ صَلَاةٍ.",
+                        "translation": "« Celui qui retient par cœur les dix premiers versets de la sourate La Caverne (Al-Kahf) sera préservé de l'Antéchrist (Ad-Dajjal). » Il convient également de chercher protection auprès d'Allah contre sa tentation après le dernier témoignage (Tashahhud) de chaque prière.",
+                        "count": 1,
+                        "source": "مسلم 1/555"
+                    }
+                ]
+            },
+            {
+                "id": "chap_89",
+                "title": "pour celui qui vous dit : Je t'aime en Allah",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 217,
+                        "audioId": 213,
+                        "arabic": "أَحَبَّكَ الَّذِي أَحْبَبْتَنِي لَهُ",
+                        "translation": "Puisse Celui pour qui tu m'as aimé t'aimer en retour.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_90",
+                "title": "pour celui qui propose ses biens",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 218,
+                        "audioId": 215,
+                        "arabic": "بَارَكَ اللهُ لَكَ فِي أَهْلِكَ وَمَالِكَ إِنَّمَا جَزَاءُ السَّلَفِ الْحَمْدُ وَالْأَدَاءُ",
+                        "translation": "Qu'Allah bénisse ta famille et tes biens. Certes, la récompense du prêt est la louange et le remboursement.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_91",
+                "title": "pour le prêteur lors du remboursement",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 219,
+                        "audioId": 215,
+                        "arabic": "«بَارَكَ اللهُ لَكَ فِي أَهْلِكَ وَمَالِكَ، إِنَّمَا جَزَاءُ السَّلَفِ الْحَمْدُ وَالْأَدَاءُ».",
+                        "translation": "« Qu'Allah bénisse ta famille et tes biens. Certes, la récompense du prêt est la louange et le remboursement. »",
+                        "count": 1,
+                        "source": "النسائي في عمل اليوم والليلة 300، ابن ماجه 2/809"
+                    }
+                ]
+            },
+            {
+                "id": "chap_92",
+                "title": "",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 220,
+                        "audioId": 216,
+                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أُشْرِكَ بِكَ وَأَنَا أَعْلَمُ، وَأَسْتَغْفِرُكَ لِمَا لَا أَعْلَمُ».",
+                        "translation": "« Ô Allah, je cherche protection auprès de Toi contre le fait de T'associer quoi que ce soit alors que je le sais, et je Te demande pardon pour ce que j'ignore. »",
+                        "count": 1,
+                        "source": "أحمد 4/403، صحيح الجامع 3/233"
+                    }
+                ]
+            },
+            {
+                "id": "chap_93",
+                "title": "pour celui qui vous dit : Qu'Allah te bénisse",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 221,
+                        "audioId": 217,
+                        "arabic": "وَفِيكَ بَارَكَ اللهُ",
+                        "translation": "Et que la bénédiction d'Allah soit sur toi.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_94",
+                "title": "Contre la superstition (mauvais augure)",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 222,
+                        "audioId": 218,
+                        "arabic": "اللَّهُمَّ لَا طَيْرَ إِلَّا طَيْرُكَ، وَلَا خَيْرَ إِلَّا خَيْرُكَ، وَلَا إِلَهَ غَيْرُكَ",
+                        "translation": "Ô Allah, il n'y a de présage que le Tien, il n'y a de bien que le Tien, et il n'y a de divinité que Toi.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_95",
+                "title": "Quand on monte dans une vehicule",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 223,
+                        "audioId": 219,
+                        "arabic": "بِسْمِ اللهِ، الْحَمْدُ للهِ، {سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ * وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ} الْحَمْدُ للهِ (3)، اللهُ أَكْبَرُ (3)، سُبْحَانَكَ اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+                        "translation": "Au nom d'Allah. Louange à Allah. {Gloire à Celui qui a mis ceci à notre service alors que nous n'étions pas capables de le dominer. Et c'est vers notre Seigneur que nous retournerons}. Louange à Allah (3 fois). Allah est le plus Grand (3 fois). Gloire à Toi, ô Allah, je me suis fait du tort à moi-même, pardonne-moi donc, car nul ne pardonne les péchés à part Toi.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_102",
+                "title": "les glorifications durant le trajet ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 231,
+                        "audioId": 227,
+                        "arabic": "قَالَ جَابِرٌ رَضِيَ اللهُ عَنْهُ: «كُنَّا إِذَا صَعِدْنَا كَبَّرْنَا، وَإِذَا نَزَلْنَا سَبَّحْنَا».",
+                        "translation": "Jabir dit : « Quand nous montions (une pente), nous disions : \"Allah est le plus Grand\" (Allāhu Akbar), et quand nous descendions, nous disions : \"Gloire à Allah\" (Subḥāna Llāh). »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_106",
+                "title": "Ce que dit celui à qui arrive une chose joyeuse ou détestable",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 234,
+                        "audioId": 231,
+                        "arabic": "كَانَ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ إِذَا أَتَاهُ الْأَمْرُ يَسُرُّهُ قَالَ: «الْحَمْدُ للهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ» وَإِذَا أَتَاهُ أَمْرٌ يَكْرَهُهُ قَالَ: «الْحَمْدُ للهِ عَلَى كُلِّ حَالٍ».",
+                        "translation": "Le Prophète ﷺ disait, face à une chose joyeuse : « Louange à Allah par la grâce de qui s'accomplissent les bonnes œuvres », et face à une chose contrariante : « Louange à Allah en toute circonstance. »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_109",
+                "title": "rendre le salut au non-musulman s'il salue le salam",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#AB47BC",
+                "duas": [
+                    {
+                        "id": 243,
+                        "audioId": 240,
+                        "arabic": "«إِذَا سَلَّمَ عَلَيْكُمْ أَهْلُ الْكِتَابِ فَقُولُوا: وَعَلَيْكُمْ».",
+                        "translation": "« Si les gens du Livre vous saluent, dites : \"Et sur vous aussi\". »",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
                 "id": "chap_112",
                 "title": "En faveur de celui que vous avez insulté",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 246,
@@ -2876,7 +2745,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Ce que dit le musulman quand il fait l'éloge d'un autre",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 247,
@@ -2893,7 +2762,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "lorsque le musulman reçoit des éloges",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 248,
@@ -2910,7 +2779,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Comment le pèlerin prononce la Talbiya au Hajj & 'Omra",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 249,
@@ -2927,7 +2796,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Le Takbir en arrivant au niveau de la Pierre Noire",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 250,
@@ -2944,7 +2813,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Invocation entre le Coin Yéménite et la Pierre Noire",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 251,
@@ -2961,7 +2830,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "sur les monts As-Safa et Al-Marwa ",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 252,
@@ -2978,7 +2847,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Le jour de Arafat",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 253,
@@ -2995,7 +2864,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "A Muzdalifah (Al-Mash'ar Al-Haram)",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 254,
@@ -3012,7 +2881,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "lors du lancer des stèles à chaque caillou",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 255,
@@ -3029,7 +2898,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": " face à l'étonnement ou une joyeuse nouvelle",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 256,
@@ -3054,7 +2923,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "celui qui reçoit une nouvelle réjouissante ",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 258,
@@ -3067,45 +2936,11 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
-                "id": "chap_124",
-                "title": " celui qui ressent une douleur physique",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 259,
-                        "audioId": 256,
-                        "arabic": "ضَعْ يَدَكَ عَلَى الَّذِي تَأَلَّمَ مِنْ جَسَدِكَ وَقُلْ: «بِسْمِ اللهِ» (ثَلَاثاً)، وَقُلْ (سَبْعَ مَرَّاتٍ): «أَعُوذُ بِاللهِ وَقُدْرَتِهِ مِنْ شَرِّ مَا أَجِدُ وَأُحَاذِرُ».",
-                        "translation": "Place ta main sur l'endroit douloureux et dis : « Au nom d'Allah » (3 fois), puis dis (7 fois) : « Je cherche protection auprès d'Allah et par Sa puissance contre le mal que je ressens et que je redoute. »",
-                        "count": 1,
-                        "source": "مسلم 4/1728"
-                    }
-                ]
-            },
-            {
-                "id": "chap_125",
-                "title": " contre le risque de porter le mauvais œil",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 258,
-                        "audioId": 257,
-                        "arabic": "«إِذَا رَأَى أَحَدُكُمْ مِنْ أَخِيهِ، أَوْ مِنْ نَفْسِهِ، أَوْ مِنْ مَالِهِ مَا يُعْجِبُهُ فَلْيَدْعُ لَهُ بِالْبَرَكَةِ فَإِنَّ الْعَيْنَ حَقٌّ».",
-                        "translation": "« Si l'un de vous voit chez son frère, chez lui-même ou dans ses biens ce qui lui plaît, qu'il invoque la bénédiction d'Allah pour lui, car le mauvais œil est une vérité. »",
-                        "count": 1,
-                        "source": "أحمد 4/447، صحيح الجامع 1/212"
-                    }
-                ]
-            },
-            {
                 "id": "chap_126",
                 "title": " en cas de frayeur",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 259,
@@ -3122,7 +2957,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": " lors de l'abattage ou du sacrifice",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 260,
@@ -3135,28 +2970,11 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 ]
             },
             {
-                "id": "chap_128",
-                "title": "pour repousser les ruses des démons rebelles ",
-                "titleAr": "",
-                "icon": "BookOpen",
-                "color": "#4CAF50",
-                "duas": [
-                    {
-                        "id": 261,
-                        "audioId": 260,
-                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ الَّتِي لَا يُجَاوِزُهُنَّ بَرٌّ وَلَا فَاجِرٌ مِنْ شَرِّ مَا خَلَقَ، وَبَرَأَ وَذَرَأَ، وَمِنْ شَرِّ مَا يَنْزِلُ مِنَ السَّمَاءِ، وَمِنْ شَرِّ مَا يَعْرُجُ فِيهَا، وَمِنْ شَرِّ مَا ذَرَأَ فِي الْأَرْضِ، وَمِنْ شَرِّ مَا يَخْرُجُ مِنْهَا، وَمِنْ شَرِّ فِتنِ اللَّيْلِ وَالنَّهَارِ، وَمِنْ شَرِّ كُلِّ طَارِقٍ إِلَّا طَارِقاً يَطْرُقُ بِخَيْرٍ يَا رَحْمَنُ».",
-                        "translation": "« Je cherche protection auprès des paroles parfaites d'Allah, que nul vertueux ni pervers ne peut transgresser, contre le mal de ce qu'Il a créé, conçu et multiplié, contre le mal de ce qui descend du ciel et ce qui y monte, contre le mal de ce qu'Il a multiplié sur terre et ce qui en sort, contre le mal des tentations de la nuit et du jour, et contre le mal de tout visiteur nocturne, sauf celui qui apporte le bien, ô Tout-Miséricordieux. »",
-                        "count": 1,
-                        "source": "أحمد 3/419، ابن السني 637"
-                    }
-                ]
-            },
-            {
                 "id": "chap_129",
                 "title": "La demande de pardon et le repentir ",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 262,
@@ -3213,7 +3031,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": " Mérite du Tasbih, Tahmid, Tahlil et Takbir",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 268,
@@ -3318,7 +3136,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": "Comment le Prophète glorifiait-il Allah ?",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 279,
@@ -3335,7 +3153,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                 "title": " Des types de biens et de bienséances ",
                 "titleAr": "",
                 "icon": "BookOpen",
-                "color": "#4CAF50",
+                "color": "#AB47BC",
                 "duas": [
                     {
                         "id": 280,
@@ -3344,6 +3162,242 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "translation": "Le Prophète ﷺ a dit : « À la tombée de la nuit, retenez vos enfants, car les diables se déploient à ce moment-là. Une fois qu'une heure de la nuit est passée, laissez-les. Fermez vos portes en mentionnant le nom d'Allah, car le diable n'ouvre pas une porte fermée. Fermez vos outres en mentionnant le nom d'Allah, couvrez vos récipients en mentionnant le nom d'Allah — ne serait-ce qu'en posant quelque chose dessus — et éteignez vos lampes. »",
                         "count": 1,
                         "source": "البخاري 10/88، مسلم 3/1595"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "trials",
+        "name": "Épreuves",
+        "nameAr": "الابتلاءات",
+        "emoji": "🤲",
+        "color": "#78909C",
+        "chapters": [
+            {
+                "id": "chap_34",
+                "title": "contre l'angoisse et la tristesse",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 134,
+                        "audioId": 129,
+                        "arabic": "«اللَّهُمَّ إِنِّي عَبْدُكَ ابْنُ عَبْدِكَ ابْنُ أَمَتِكَ نَاصِيَتِي بِيَدِكَ، مَاضٍ فِيَّ حُكْمُكَ، عَدْلٌ فِيَّ قَضَاؤُكَ، أَسْأَلُكَ بِكُلِّ اسْمٍ هُوَ لَكَ سَمَّيْتَ بِهِ نَفْسَكَ أَوْ أَنْزَلْتَهُ فِي كِتَابِكَ، أَوْ عَلَّمْتَهُ أَحَدًا مِنْ خَلْقِكَ أَوِ اسْتَأْثَرْتَ بِهِ فِي عِلْمِ الْغَيْبِ عِنْدَكَ، أَنْ تَجْعَلَ الْقُرْآنَ رَبِيعَ قَلْبِي، وَنُورَ صَدْرِي، وَجَلَاءَ حُزْنِي وَذَهَابَ هَمِّي».",
+                        "translation": "Ô Allah, je suis Ton serviteur, fils de Ton serviteur et de Ta servante, mon sort est entre Tes mains. Ton jugement sur moi s'accomplit, Ton décret sur moi est juste. Je Te demande par chaque nom qui T'appartient, par lequel Tu T'es nommé, que Tu as révélé dans Ton Livre, que Tu as enseigné à l'une de Tes créatures ou que Tu as gardé caché dans la science de l'invisible, de faire du Coran le printemps de mon cœur, la lumière de ma poitrine, la fin de ma tristesse et la dissipation de mes soucis.",
+                        "count": 1,
+                        "source": "أحمد 1/391"
+                    },
+                    {
+                        "id": 135,
+                        "audioId": 130,
+                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ».",
+                        "translation": "Ô Allah, je cherche protection auprès de Toi contre les soucis et la tristesse, l'impuissance et la paresse, l'avarice et la lâcheté, le poids de la dette et la domination des hommes.",
+                        "count": 1,
+                        "source": "البخاري 7/158"
+                    }
+                ]
+            },
+            {
+                "id": "chap_36",
+                "title": "Contre l'ennemi ou d'une autorité ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 140,
+                        "audioId": 135,
+                        "arabic": "«اللَّهُمَّ إِنَّا نَجْعَلُكَ فِي نُحُورِهِمْ، وَنَعُوذُ بِكَ مِنْ شُرُورِهِمْ».",
+                        "translation": "Ô Allah, nous Te mettons face à leurs gorges et nous cherchons protection auprès de Toi contre leur mal.",
+                        "count": 1,
+                        "source": "أبو داود 2/89"
+                    },
+                    {
+                        "id": 141,
+                        "audioId": 136,
+                        "arabic": "«اللَّهُمَّ أَنْتَ عَضُدِي وَأَنْتَ نَصِيرِي، بِكَ أَحُولُ، وَبِكَ أَصُولُ، وَبِكَ أُقَاتِلُ».",
+                        "translation": "Ô Allah, Tu es mon soutien et mon défenseur. C'est par Toi que je me déplace, par Toi que je bondis et par Toi que je combats.",
+                        "count": 1,
+                        "source": "الترمذي 5/572"
+                    },
+                    {
+                        "id": 142,
+                        "audioId": 137,
+                        "arabic": "«حَسْبُنَا اللهُ وَنِعْمَ الْوَكِيلُ».",
+                        "translation": "Allah nous suffit, et quel excellent Protecteur !",
+                        "count": 1,
+                        "source": "البخاري 5/172"
+                    }
+                ]
+            },
+            {
+                "id": "chap_38",
+                "title": "Invocation contre l'ennemi",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 145,
+                        "audioId": 140,
+                        "arabic": "«اللَّهُمَّ مُنْزِلَ الْكِتَابِ، سَرِيعَ الْحِسَابِ، اهْزِمِ الْأَحْزَابَ، اللَّهُمَّ اهْزِمْهُمْ وَزَلْزِلْهُمْ».",
+                        "translation": "Ô Allah, Toi qui as fait descendre le Livre et qui es prompt dans Tes comptes, vaincs les coalisés. Ô Allah, vaincs-les et fais-les trembler.",
+                        "count": 1,
+                        "source": "مسلم 3/1362"
+                    }
+                ]
+            },
+            {
+                "id": "chap_41",
+                "title": "pour l'acquittement des dettes",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 151,
+                        "audioId": 146,
+                        "arabic": "«اللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ، وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ».",
+                        "translation": "Ô Allah, accorde-moi de Tes biens licites pour m'épargner Tes interdits, et accorde-moi de Ta grâce pour me passer de tout autre que Toi.",
+                        "count": 1,
+                        "source": "الترمذي 5/560"
+                    },
+                    {
+                        "id": 152,
+                        "audioId": 130,
+                        "arabic": "«اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ».",
+                        "translation": "Ô Allah, je cherche protection auprès de Toi contre les soucis et la tristesse, l'impuissance et la paresse, l'avarice et la lâcheté, le poids de la dette et la domination des hommes.",
+                        "count": 1,
+                        "source": "البخاري 7/158"
+                    }
+                ]
+            },
+            {
+                "id": "chap_43",
+                "title": "pour celui qui rencontre une difficulté",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 154,
+                        "audioId": 149,
+                        "arabic": "«اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلاً، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلاً».",
+                        "translation": "Ô Allah, rien n'est facile sauf ce que Tu as rendu facile, et Tu es capable de rendre facile une difficulté si Tu le veux.",
+                        "count": 1,
+                        "source": "ابن حبان في صحيحه برقم 2427"
+                    }
+                ]
+            },
+            {
+                "id": "chap_53",
+                "title": "celui qui est frappé par une épreuve",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 169,
+                        "audioId": 165,
+                        "arabic": "«إِنَّا للهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ، اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي، وَأَخْلِفْ لِي خَيْراً مِنْهَا».",
+                        "translation": "Nous appartenons à Allah et c'est vers Lui que nous retournerons. Ô Allah, récompense-moi dans mon malheur et remplace-le par quelque chose de meilleur.",
+                        "count": 1,
+                        "source": "مسلم 2/632"
+                    }
+                ]
+            },
+            {
+                "id": "chap_54",
+                "title": "au moment de fermer les yeux du défunt ",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 170,
+                        "audioId": 166,
+                        "arabic": "اللَّهُمَّ اغْفِرْ لِفُلَانٍ (بِاسْمِهِ) وَارْفَعْ دَرَجَتَهُ فِي الْمَهْدِيِّينَ، وَاخْلُفْهُ فِي عَقِبِهِ فِي الْغَابِرِينَ، وَاغْفِرْ لَنَا وَلَهُ يَا رَبَّ الْعَالَمِينَ، وَافْسَحْ لَهُ فِي قَبْرِهِ وَنَوْرْ لَهُ فِيهِ",
+                        "translation": "Ô Allah, pardonne à [nommer la personne], élève son rang parmi les bien-guidés, accorde-lui un successeur parmi ceux qui restent, pardonne-nous ainsi qu'à lui, ô Seigneur des mondes, et élargis sa tombe et illumine-la pour lui.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_57",
+                "title": "Les condoléances",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 178,
+                        "audioId": 174,
+                        "arabic": "إِنَّ لِلَّهِ مَا أَخَذَ وَلَهُ مَا أَعْطَى، وَكُلُّ شَيْءٍ عِنْدَهُ بِأَجَلٍ مُسَمًّى فَلْتَصْبِرْ وَلْتَحْتَسِبْ",
+                        "translation": "Certes, à Allah appartient ce qu'Il a repris et à Lui appartient ce qu'Il a donné. Chaque chose auprès de Lui a un terme fixé. Sois donc patient et espère la récompense d'Allah.",
+                        "count": 1,
+                        "source": ""
+                    },
+                    {
+                        "id": 179,
+                        "audioId": 175,
+                        "arabic": "أَعْظَمَ اللهُ أَجْرَكَ، وَأَحْسَنَ عَزَاءَكَ وَغَفَرَ لِمَيِّتِكَ",
+                        "translation": "Qu'Allah augmente ta récompense, t'accorde les meilleures condoléances et pardonne à ton défunt.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_58",
+                "title": "À la descente du défunt",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 180,
+                        "audioId": 176,
+                        "arabic": "بِسْمِ اللهِ وَعَلَى سُنَّةِ رَسُولِ اللهِ",
+                        "translation": "Au nom d'Allah et selon la tradition du Messager d'Allah.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_59",
+                "title": "Après l'enterrement du défunt",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 181,
+                        "audioId": 177,
+                        "arabic": "اللَّهُمَّ اغْفِرْ لَهُ، اللَّهُمَّ ثَبِّتْهُ",
+                        "translation": "Ô Allah, pardonne-lui. Ô Allah, raffermis-le.",
+                        "count": 1,
+                        "source": ""
+                    }
+                ]
+            },
+            {
+                "id": "chap_124",
+                "title": " celui qui ressent une douleur physique",
+                "titleAr": "",
+                "icon": "BookOpen",
+                "color": "#78909C",
+                "duas": [
+                    {
+                        "id": 259,
+                        "audioId": 256,
+                        "arabic": "ضَعْ يَدَكَ عَلَى الَّذِي تَأَلَّمَ مِنْ جَسَدِكَ وَقُلْ: «بِسْمِ اللهِ» (ثَلَاثاً)، وَقُلْ (سَبْعَ مَرَّاتٍ): «أَعُوذُ بِاللهِ وَقُدْرَتِهِ مِنْ شَرِّ مَا أَجِدُ وَأُحَاذِرُ».",
+                        "translation": "Place ta main sur l'endroit douloureux et dis : « Au nom d'Allah » (3 fois), puis dis (7 fois) : « Je cherche protection auprès d'Allah et par Sa puissance contre le mal que je ressens et que je redoute. »",
+                        "count": 1,
+                        "source": "مسلم 4/1728"
                     }
                 ]
             }

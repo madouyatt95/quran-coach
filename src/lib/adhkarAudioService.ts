@@ -78,8 +78,8 @@ async function tryPlayHisnulMuslimAudio(duaId: number, categoryId: string, optio
                 clearTimeupdate();
                 resolve(false);
             };
-            audio.play().catch(() => {
-                console.error('Play promise rejected for Hisnul Muslim MP3');
+            audio.play().catch((err) => {
+                console.error('Play promise rejected for Hisnul Muslim MP3', err);
                 clearTimeupdate();
                 resolve(false);
             });
