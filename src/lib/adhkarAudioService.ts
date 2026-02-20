@@ -8,7 +8,6 @@
 
 import { fetchAyahAudioUrl, fetchRabbanaTimings } from './quranApi';
 import { playTts, stopTts } from './ttsService';
-import { HISNUL_MUSLIM_DATA } from '../data/hisnulMuslim';
 
 let adhkarAudio: HTMLAudioElement | null = null;
 let currentLoopTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -39,62 +38,7 @@ function parseQuranicSource(source?: string): { surah: number; ayah: number; isR
     return null;
 }
 
-/**
- * Tries to play Hisnul Muslim MP3 if audioId exists
- */
-async function tryPlayHisnulMuslimAudio(duaId: number, categoryId: string, options?: { rate?: number }): Promise<boolean> {
-    try {
-        let audioId: number | undefined;
-
-        // AdhkarPage passes "hisn_chap_X" to prevent collisions. We strip "hisn_" to match HISNUL_MUSLIM_DATA.
-        const actualCategoryId = categoryId.startsWith('hisn_') ? categoryId.replace('hisn_', '') : categoryId;
-
-        // Find the audioId in the mapped dataset
-        for (const mega of HISNUL_MUSLIM_DATA) {
-            const chap = mega.chapters.find(c => c.id === actualCategoryId);
-            if (chap) {
-                const dua = chap.duas.find(d => d.id === duaId);
-                if (dua && dua.audioId) {
-                    audioId = dua.audioId;
-                }
-                break;
-            }
-        }
-
-        if (!audioId) return false;
-
-        const url = `https://www.hisnmuslim.com/audio/ar/${audioId}.mp3`;
-
-        const played = await new Promise<boolean>((resolve) => {
-            const audio = getAdhkarAudio();
-            audio.src = url;
-            audio.playbackRate = options?.rate || 1.0;
-
-            const clearTimeupdate = () => { audio.ontimeupdate = null; };
-
-            audio.onended = () => {
-                clearTimeupdate();
-                resolve(true);
-            };
-            audio.onerror = () => {
-                console.error(`Failed to load MP3 from ${url}`);
-                clearTimeupdate();
-                resolve(false);
-            };
-            audio.play().catch((err) => {
-                console.error('Play promise rejected for Hisnul Muslim MP3', err);
-                clearTimeupdate();
-                resolve(false);
-            });
-        });
-
-        return played;
-    } catch (e) {
-        console.error('Error playing Hisnul Muslim MP3', e);
-        return false;
-    }
-}
-
+// Hisnul Muslim MP3 logic has been removed as per user request (replaced by phonetics UI).
 
 /**
  * Plays a single Adhkar audio
@@ -216,14 +160,13 @@ export async function playAdhkarAudio(
         }
     }
 
-    // 2. Try Hisnul Muslim Pre-recorded MP3
-    const playedMp3 = await tryPlayHisnulMuslimAudio(_duaId, categoryId, { rate: options?.rate });
-    if (playedMp3) {
+    // 2. Ignore Hisnul Muslim entirely (Play button should be hidden anyway, but just in case)
+    if (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_')) {
         options?.onEnd?.();
         return;
     }
 
-    // 3. Fallback to TTS (We use the improved ttsService which uses Google TTS / Web Speech)
+    // 3. Fallback to TTS for other standard Adhkar (if any remain)
     await playTts(text, options);
 }
 

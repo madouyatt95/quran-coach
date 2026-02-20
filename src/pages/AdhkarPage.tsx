@@ -476,13 +476,15 @@ export function AdhkarPage() {
                         >
                             <div className="list-item-header">
                                 <span className="item-number">#{index + 1}</span>
-                                <button
-                                    className="list-item-tts-btn"
-                                    onClick={(e) => { e.stopPropagation(); playDhikrOnce(dhikr.arabic, dhikr.id, selectedCategory.id, dhikr.source); }}
-                                    title="Écouter"
-                                >
-                                    {isAudioLoading ? <Loader2 size={14} className="spin" /> : <Volume2 size={14} />}
-                                </button>
+                                {!selectedCategory.id.startsWith('hisn_') && (
+                                    <button
+                                        className="list-item-tts-btn"
+                                        onClick={(e) => { e.stopPropagation(); playDhikrOnce(dhikr.arabic, dhikr.id, selectedCategory.id, dhikr.source); }}
+                                        title="Écouter"
+                                    >
+                                        {isAudioLoading ? <Loader2 size={14} className="spin" /> : <Volume2 size={14} />}
+                                    </button>
+                                )}
                                 <button
                                     className={`list-item-fav-btn ${isFavoriteDua(selectedCategory.id, dhikr.id) ? 'active' : ''}`}
                                     onClick={(e) => {
@@ -503,6 +505,12 @@ export function AdhkarPage() {
                                 {dhikr.source && <span className="item-source">{dhikr.source}</span>}
                             </div>
                             <p className="item-arabic">{dhikr.arabic.substring(0, 80)}...</p>
+                            {/* Type assertion needed because Adhkar type is mixed with HisnDua in context */}
+                            {(dhikr as any).phonetic && (
+                                <p className="item-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginBottom: '6px' }}>
+                                    {(dhikr as any).phonetic.substring(0, 80)}...
+                                </p>
+                            )}
                             <p className="item-translation">{dhikr.translation.substring(0, 100)}...</p>
                         </div>
                     ))}
@@ -515,6 +523,11 @@ export function AdhkarPage() {
                             <div className="dhikr-arabic">
                                 {currentDhikr.arabic}
                             </div>
+                            {(currentDhikr as any).phonetic && (
+                                <div className="dhikr-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginTop: '1rem', textAlign: 'center' }}>
+                                    {(currentDhikr as any).phonetic}
+                                </div>
+                            )}
                             <div className="dhikr-translation">
                                 {currentDhikr.translation}
                             </div>
@@ -541,58 +554,60 @@ export function AdhkarPage() {
                             </button>
                         </div>
 
-                        {/* Audio Loop Player */}
-                        <div className="dhikr-audio-player">
-                            <div className="dhikr-audio-player__controls">
-                                <button
-                                    className="dhikr-audio-player__btn"
-                                    onClick={isAudioPlaying ? pauseAudioLoop : playAudioLoop}
-                                >
-                                    {isAudioPlaying ? <Pause size={20} /> : <Play size={20} />}
-                                </button>
-                                {isAudioPlaying && (
-                                    <button className="dhikr-audio-player__stop" onClick={stopAudioLoop}>
-                                        <Square size={16} />
+                        {/* Audio Loop Player - HIDDEN for Hisnul Muslim */}
+                        {!selectedCategory.id.startsWith('hisn_') && (
+                            <div className="dhikr-audio-player">
+                                <div className="dhikr-audio-player__controls">
+                                    <button
+                                        className="dhikr-audio-player__btn"
+                                        onClick={isAudioPlaying ? pauseAudioLoop : playAudioLoop}
+                                    >
+                                        {isAudioPlaying ? <Pause size={20} /> : <Play size={20} />}
+                                    </button>
+                                    {isAudioPlaying && (
+                                        <button className="dhikr-audio-player__stop" onClick={stopAudioLoop}>
+                                            <Square size={16} />
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="dhikr-audio-player__loop">
+                                    <Repeat size={14} />
+                                    <button
+                                        className="dhikr-audio-player__loop-btn"
+                                        onClick={() => setAudioLoopCount(Math.max(1, audioLoopCount - 1))}
+                                    >
+                                        <Minus size={14} />
+                                    </button>
+                                    <span className="dhikr-audio-player__loop-count">
+                                        {isAudioPlaying ? `${currentLoop + 1}/${audioLoopCount}` : `${audioLoopCount}×`}
+                                    </span>
+                                    <button
+                                        className="dhikr-audio-player__loop-btn"
+                                        onClick={() => setAudioLoopCount(Math.min(20, audioLoopCount + 1))}
+                                    >
+                                        <Plus size={14} />
+                                    </button>
+                                </div>
+
+                                {/* Hifdh Studio Link for Rabbana */}
+                                {selectedCategory.id === 'rabanna' && currentDhikr.source && (
+                                    <button
+                                        className="dhikr-hifdh-link"
+                                        title="Pratiquer dans le Hifdh Studio (Mot à mot)"
+                                        onClick={() => {
+                                            const [s, a] = currentDhikr.source!.split(':').map(Number);
+                                            if (s && a) {
+                                                navigate('/hifdh', { state: { surah: s, ayah: a } });
+                                            }
+                                        }}
+                                    >
+                                        <Mic size={18} />
+                                        <span>Mémoriser</span>
                                     </button>
                                 )}
                             </div>
-
-                            <div className="dhikr-audio-player__loop">
-                                <Repeat size={14} />
-                                <button
-                                    className="dhikr-audio-player__loop-btn"
-                                    onClick={() => setAudioLoopCount(Math.max(1, audioLoopCount - 1))}
-                                >
-                                    <Minus size={14} />
-                                </button>
-                                <span className="dhikr-audio-player__loop-count">
-                                    {isAudioPlaying ? `${currentLoop + 1}/${audioLoopCount}` : `${audioLoopCount}×`}
-                                </span>
-                                <button
-                                    className="dhikr-audio-player__loop-btn"
-                                    onClick={() => setAudioLoopCount(Math.min(20, audioLoopCount + 1))}
-                                >
-                                    <Plus size={14} />
-                                </button>
-                            </div>
-
-                            {/* Hifdh Studio Link for Rabbana */}
-                            {selectedCategory.id === 'rabanna' && currentDhikr.source && (
-                                <button
-                                    className="dhikr-hifdh-link"
-                                    title="Pratiquer dans le Hifdh Studio (Mot à mot)"
-                                    onClick={() => {
-                                        const [s, a] = currentDhikr.source!.split(':').map(Number);
-                                        if (s && a) {
-                                            navigate('/hifdh', { state: { surah: s, ayah: a } });
-                                        }
-                                    }}
-                                >
-                                    <Mic size={18} />
-                                    <span>Mémoriser</span>
-                                </button>
-                            )}
-                        </div>
+                        )}
 
                         {/* Counter */}
                         <button
