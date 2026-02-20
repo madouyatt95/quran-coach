@@ -44,7 +44,7 @@ for (let i = 1; i <= 132; i++) {
         duas.push({
             id: d.id,
             arabic: d.ar,
-            phonetic: d.fr_ar || "",
+            phonetic: d.tic || "",
             translation: d.fr || "",
             count: 1,
             source: d.ref || ""
