@@ -78,7 +78,7 @@ export function stopTts() {
 // We use Google TTS API directly via audio source to avoid CORS issues.
 // `client=tw-ob` is the unofficial endpoint parameter that allows direct media playback.
 function getGoogleTtsUrl(text: string): string {
-    return `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ar&q=${encodeURIComponent(text)}`;
+    return `https://translate.google.com/translate_tts?ie=UTF-8&client=dict-chrome-ex&tl=ar&q=${encodeURIComponent(text)}`;
 }
 
 /**
@@ -167,13 +167,26 @@ export async function playTts(
     const audioUrls: string[] = [];
 
     // Fetch URLs (serving from cache if available)
-    for (const chunk of textChunks) {
-        let url = audioCache.get(chunk);
-        if (!url) {
-            url = getGoogleTtsUrl(chunk);
-            if (url) audioCache.set(chunk, url);
-        }
-        if (url) audioUrls.push(url);
+    try {
+        const fetchPromises = textChunks.map(async (chunk) => {
+            let url = audioCache.get(chunk);
+            if (!url) {
+                const reqUrl = getGoogleTtsUrl(chunk);
+                // Fetch as blob with no-referrer to bypass Google preventing direct audio playback from non-Google origins
+                const res = await fetch(reqUrl, { referrerPolicy: 'no-referrer' });
+                if (!res.ok) throw new Error(`Google TTS request failed: ${res.status}`);
+                const blob = await res.blob();
+                url = URL.createObjectURL(blob);
+                audioCache.set(chunk, url);
+            }
+            return url;
+        });
+
+        const resolvedUrls = await Promise.all(fetchPromises);
+        audioUrls.push(...resolvedUrls);
+    } catch (e) {
+        console.warn('[TTS] Failed to pre-fetch TTS blobs', e);
+        // Do not add anything to audioUrls so it triggers the seamless Web Speech fallback
     }
 
     _isLoading = false;

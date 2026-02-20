@@ -196,65 +196,65 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
             // The API words index is 0-based. The QDC segment array uses a relative index (1-based) as the first element: [rel_idx, startMs, endMs].
             // We need to map our foundIndex (which is in the apiWords array) to the segment array.
 
-            let startMs = 0;
-            let endMs = 0;
+            let startIndex = 0;
+            let endMsRaw = 0;
 
-            if (foundIndex !== -1) {
-                const targetStartRelIdx = foundIndex + 1; // 1-based index in segments
-                const targetEndRelIdx = foundIndex + duaWords.length;
+            if ((surah === 59 && ayah === 10) || (surah === 66 && ayah === 8)) {
+                // Special mapping for repeated ayahs where the reciter restarts
+                if (foundIndex !== -1) {
+                    const targetStartRelIdx = foundIndex + 1;
+                    const targetEndRelIdx = foundIndex + duaWords.length;
 
-                // 1. Find the LAST occurrence of the end relative index in segments
-                let endSegIndex = -1;
-                for (let i = segments.length - 1; i >= 0; i--) {
-                    if (segments[i][0] === targetEndRelIdx) {
-                        endSegIndex = i;
-                        break;
-                    }
-                }
-
-                if (endSegIndex === -1) {
-                    endSegIndex = segments.length - 1; // Fallback
-                }
-
-                // 2. Search backwards from endSegIndex to find the start relative index
-                let startSegIndex = -1;
-                for (let i = endSegIndex; i >= 0; i--) {
-                    if (segments[i][0] === targetStartRelIdx) {
-                        startSegIndex = i;
-                        // Some words are split into multiple segments with the same relIdx.
-                        // Keep going backwards to find the earliest segment for this word.
-                        while (i > 0 && segments[i - 1][0] === targetStartRelIdx) {
-                            i--;
-                            startSegIndex = i;
+                    let endSegIndex = -1;
+                    for (let i = segments.length - 1; i >= 0; i--) {
+                        if (segments[i][0] === targetEndRelIdx) {
+                            endSegIndex = i;
+                            break;
                         }
-                        break;
                     }
+                    if (endSegIndex === -1) endSegIndex = segments.length - 1;
+
+                    let startSegIndex = -1;
+                    for (let i = endSegIndex; i >= 0; i--) {
+                        if (segments[i][0] === targetStartRelIdx) {
+                            startSegIndex = i;
+                            while (i > 0 && segments[i - 1][0] === targetStartRelIdx) {
+                                i--;
+                                startSegIndex = i;
+                            }
+                            break;
+                        }
+                    }
+                    if (startSegIndex === -1) startSegIndex = 0;
+
+                    startIndex = startSegIndex;
+                    endMsRaw = segments[endSegIndex][2] || ayahTimings.timestamp_to;
+                } else {
+                    startIndex = Math.max(0, segments.length - duaWords.length);
+                    endMsRaw = segments[segments.length - 1][2] || ayahTimings.timestamp_to;
                 }
-
-                if (startSegIndex === -1) {
-                    startSegIndex = 0; // Fallback
-                }
-
-                // Convert absolute chapter milliseconds to relative ayah milliseconds
-                startMs = Math.max(0, segments[startSegIndex][1] - ayahTimings.timestamp_from);
-                endMs = Math.max(0, segments[endSegIndex][2] - ayahTimings.timestamp_from);
-
             } else {
-                // Fallback: just take the last N segments
-                const startSegIndex = Math.max(0, segments.length - duaWords.length);
-                const endSegIndex = segments.length - 1;
-
-                startMs = Math.max(0, segments[startSegIndex][1] - ayahTimings.timestamp_from);
-                endMs = Math.max(0, segments[endSegIndex][2] - ayahTimings.timestamp_from);
+                // Original logic for all other 38 Rabbanas
+                if (foundIndex !== -1) {
+                    startIndex = foundIndex;
+                } else {
+                    startIndex = Math.max(0, segments.length - duaWords.length);
+                }
+                const endIndex = Math.min(segments.length - 1, startIndex + duaWords.length - 1);
+                endMsRaw = segments[endIndex][2] || ayahTimings.timestamp_to;
             }
+
+            const startMs = Math.max(0, segments[startIndex][1] - ayahTimings.timestamp_from);
+            const endMs = Math.max(0, endMsRaw - ayahTimings.timestamp_from);
 
             return [startMs, endMs];
         } else {
-            const startSegIndex = Math.max(0, segments.length - duaWords.length);
-            const endSegIndex = segments.length - 1;
+            const startIndex = Math.max(0, segments.length - duaWords.length);
+            const endIndex = segments.length - 1;
+            const endMsRaw = segments[endIndex][2] || ayahTimings.timestamp_to;
 
-            const startMs = Math.max(0, segments[startSegIndex][1] - ayahTimings.timestamp_from);
-            const endMs = Math.max(0, segments[endSegIndex][2] - ayahTimings.timestamp_from);
+            const startMs = Math.max(0, segments[startIndex][1] - ayahTimings.timestamp_from);
+            const endMs = Math.max(0, endMsRaw - ayahTimings.timestamp_from);
 
             return [startMs, endMs];
         }
