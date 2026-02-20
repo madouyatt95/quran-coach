@@ -888,41 +888,55 @@ function generateFiqhQuestions(): QuizQuestion[] {
 // ─── Audio Questions ────────────────────────────────────
 
 function generateAudioQuestions(): QuizQuestion[] {
+    // Use mp3quran.net CDN — same source as the app's listen feature, reliable and no CORS issues
+    // Format: https://server{N}.mp3quran.net/{reciterFolder}/{surahNum}.mp3
     const samples = [
-        { id: 'a1', theme: 'verses' as const, reciter: 'Mishary Rashid Alafasy', surah: 'Al-Fatihah', url: 'https://download.quranicaudio.com/quran/mishari_rashid_alafasy/001.mp3' },
-        { id: 'a2', theme: 'verses' as const, reciter: 'Abdur-Rahman as-Sudais', surah: 'An-Nas', url: 'https://download.quranicaudio.com/quran/abdurrahmaan_as-sudais/114.mp3' },
-        { id: 'a3', theme: 'verses' as const, reciter: 'Saad al-Ghamdi', surah: 'Al-Ikhlas', url: 'https://download.quranicaudio.com/quran/saad_al-ghamidi/112.mp3' },
+        { reciter: 'Mishary Rashid Alafasy', surah: 'Al-Fatihah', surahNum: '001', folder: 'minsh', server: 12 },
+        { reciter: 'Mishary Rashid Alafasy', surah: 'Al-Ikhlas', surahNum: '112', folder: 'minsh', server: 12 },
+        { reciter: 'Abdur-Rahman as-Sudais', surah: 'An-Nas', surahNum: '114', folder: 'sudais/quran-uthmani', server: 13 },
+        { reciter: 'Abdur-Rahman as-Sudais', surah: 'Al-Falaq', surahNum: '113', folder: 'sudais/quran-uthmani', server: 13 },
+        { reciter: 'Saad al-Ghamdi', surah: 'Al-Fatiha', surahNum: '001', folder: 'ghamdi', server: 12 },
+        { reciter: 'Saad al-Ghamdi', surah: 'Al-Kawthar', surahNum: '108', folder: 'ghamdi', server: 12 },
+        { reciter: 'Maher Al-Muaiqly', surah: 'An-Nasr', surahNum: '110', folder: 'maher', server: 12 },
+        { reciter: 'Maher Al-Muaiqly', surah: 'Al-Masad', surahNum: '111', folder: 'maher', server: 12 },
+        { reciter: 'Abdul Basit', surah: 'Al-Fatihah', surahNum: '001', folder: 'basit/Almusshaf-Al-Mojawwad', server: 13 },
+        { reciter: 'Abdul Basit', surah: 'Ad-Duha', surahNum: '093', folder: 'basit/Almusshaf-Al-Mojawwad', server: 13 },
+        { reciter: 'Hani Ar-Rifai', surah: 'Al-Qari\'ah', surahNum: '101', folder: 'rifai', server: 12 },
+        { reciter: 'Muhammad Al-Luhaidan', surah: 'Al-Fatihah', surahNum: '001', folder: 'lhdan', server: 12 },
     ];
 
     const questions: QuizQuestion[] = [];
-    const reciterNames = ['Mishary Rashid Alafasy', 'Abdur-Rahman as-Sudais', 'Saad al-Ghamdi', 'Maher Al-Muaiqly'];
+    const allReciters = [...new Set(samples.map(s => s.reciter))];
+    const allSurahs = [...new Set(samples.map(s => s.surah))];
 
     for (const s of samples) {
+        const audioUrl = `https://server${s.server}.mp3quran.net/${s.folder}/${s.surahNum}.mp3`;
+
         // Q: Who is the reciter?
         const q1 = buildMCQ(
-            s.theme,
-            `Qui est ce récitateur ?`,
+            'verses' as QuizThemeId,
+            '🎧 Qui est ce récitateur ?',
             s.reciter,
-            reciterNames,
+            allReciters,
             undefined,
             `Il s'agit de ${s.reciter}.`
         );
         if (q1) {
-            q1.audioUrl = s.url;
+            q1.audioUrl = audioUrl;
             questions.push(q1);
         }
 
         // Q: Which surah?
         const q2 = buildMCQ(
-            s.theme,
-            `De quelle sourate provient cet extrait ?`,
+            'verses' as QuizThemeId,
+            '🎧 De quelle sourate provient cet extrait ?',
             s.surah,
-            ['Al-Fatihah', 'An-Nas', 'Al-Ikhlas', 'Al-Falaq', 'Al-Baqarah'],
+            allSurahs,
             undefined,
             `C'est la sourate ${s.surah}.`
         );
         if (q2) {
-            q2.audioUrl = s.url;
+            q2.audioUrl = audioUrl;
             questions.push(q2);
         }
     }
