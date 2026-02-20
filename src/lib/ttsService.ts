@@ -78,7 +78,7 @@ export function stopTts() {
 // We use Google TTS API directly via audio source to avoid CORS issues.
 // `client=tw-ob` is the unofficial endpoint parameter that allows direct media playback.
 function getGoogleTtsUrl(text: string): string {
-    return `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q=${encodeURIComponent(text)}`;
+    return `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ar&q=${encodeURIComponent(text)}`;
 }
 
 /**

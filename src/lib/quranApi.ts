@@ -152,7 +152,6 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
         const quranResponse = await fetch(`https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?words=true&word_fields=text_uthmani`);
         const quranData = await quranResponse.json();
 
-        let startIndex = 0;
         const duaWords = duaText.split(/[\s،]+/).filter(w => w.trim().length > 0);
 
         if (quranData.verse && quranData.verse.words) {
@@ -194,23 +193,71 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
                 }
             }
 
+            // The API words index is 0-based. The QDC segment array uses a relative index (1-based) as the first element: [rel_idx, startMs, endMs].
+            // We need to map our foundIndex (which is in the apiWords array) to the segment array.
+
+            let startMs = 0;
+            let endMs = 0;
+
             if (foundIndex !== -1) {
-                startIndex = foundIndex;
+                const targetStartRelIdx = foundIndex + 1; // 1-based index in segments
+                const targetEndRelIdx = foundIndex + duaWords.length;
+
+                // 1. Find the LAST occurrence of the end relative index in segments
+                let endSegIndex = -1;
+                for (let i = segments.length - 1; i >= 0; i--) {
+                    if (segments[i][0] === targetEndRelIdx) {
+                        endSegIndex = i;
+                        break;
+                    }
+                }
+
+                if (endSegIndex === -1) {
+                    endSegIndex = segments.length - 1; // Fallback
+                }
+
+                // 2. Search backwards from endSegIndex to find the start relative index
+                let startSegIndex = -1;
+                for (let i = endSegIndex; i >= 0; i--) {
+                    if (segments[i][0] === targetStartRelIdx) {
+                        startSegIndex = i;
+                        // Some words are split into multiple segments with the same relIdx.
+                        // Keep going backwards to find the earliest segment for this word.
+                        while (i > 0 && segments[i - 1][0] === targetStartRelIdx) {
+                            i--;
+                            startSegIndex = i;
+                        }
+                        break;
+                    }
+                }
+
+                if (startSegIndex === -1) {
+                    startSegIndex = 0; // Fallback
+                }
+
+                // Convert absolute chapter milliseconds to relative ayah milliseconds
+                startMs = Math.max(0, segments[startSegIndex][1] - ayahTimings.timestamp_from);
+                endMs = Math.max(0, segments[endSegIndex][2] - ayahTimings.timestamp_from);
+
             } else {
-                startIndex = Math.max(0, segments.length - duaWords.length);
+                // Fallback: just take the last N segments
+                const startSegIndex = Math.max(0, segments.length - duaWords.length);
+                const endSegIndex = segments.length - 1;
+
+                startMs = Math.max(0, segments[startSegIndex][1] - ayahTimings.timestamp_from);
+                endMs = Math.max(0, segments[endSegIndex][2] - ayahTimings.timestamp_from);
             }
+
+            return [startMs, endMs];
         } else {
-            startIndex = Math.max(0, segments.length - duaWords.length);
+            const startSegIndex = Math.max(0, segments.length - duaWords.length);
+            const endSegIndex = segments.length - 1;
+
+            const startMs = Math.max(0, segments[startSegIndex][1] - ayahTimings.timestamp_from);
+            const endMs = Math.max(0, segments[endSegIndex][2] - ayahTimings.timestamp_from);
+
+            return [startMs, endMs];
         }
-
-        const endIndex = Math.min(segments.length - 1, startIndex + duaWords.length - 1);
-
-        // Convert absolute chapter milliseconds to relative ayah milliseconds
-        // Due to slight offsets, use max(0, val)
-        const startMs = Math.max(0, segments[startIndex][1] - ayahTimings.timestamp_from);
-        const endMs = Math.max(0, segments[endIndex][2] - ayahTimings.timestamp_from);
-
-        return [startMs, endMs];
     } catch (e) {
         console.error('Failed to fetch rabbana word timings', e);
         return null;
