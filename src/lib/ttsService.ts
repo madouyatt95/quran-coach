@@ -122,8 +122,30 @@ function speakWithWebSpeech(text: string, rate: number = 0.85): Promise<void> {
 }
 
 /**
+ * Split text into chunks to respect Google TTS limits (~200 chars).
+ */
+function chunkText(text: string, maxLength: number = 180): string[] {
+    const chunks: string[] = [];
+    const sentences = text.split(/([.،!?؛\n]+)/);
+    let current = '';
+
+    for (const part of sentences) {
+        if (current.length + part.length > maxLength && current.trim().length > 0) {
+            chunks.push(current.trim());
+            current = part;
+        } else {
+            current += part;
+        }
+    }
+    if (current.trim().length > 0) {
+        chunks.push(current.trim());
+    }
+    return chunks;
+}
+
+/**
  * Play Arabic text as speech.
- * Tries HuggingFace Space first, falls back to Web Speech API.
+ * Tries Google TTS first (chunked if needed), falls back to Web Speech API.
  * 
  * @param text Arabic text to speak
  * @param options.rate Playback speed (default 1.0)
@@ -135,74 +157,69 @@ export async function playTts(
 ): Promise<void> {
     const rate = options?.rate ?? 1.0;
 
-    // Stop any current playback (uses shared element — no ghost audio)
+    // Stop any current playback
     stopTts();
 
     _isLoading = true;
     notifyChange();
 
-    // Check cache first
-    let audioUrl = audioCache.get(text);
+    const textChunks = chunkText(text);
+    const audioUrls: string[] = [];
 
-    // Try Google TTS if not cached
-    if (!audioUrl) {
-        audioUrl = getGoogleTtsUrl(text);
-        if (audioUrl) {
-            audioCache.set(text, audioUrl);
+    // Fetch URLs (serving from cache if available)
+    for (const chunk of textChunks) {
+        let url = audioCache.get(chunk);
+        if (!url) {
+            url = getGoogleTtsUrl(chunk);
+            if (url) audioCache.set(chunk, url);
         }
+        if (url) audioUrls.push(url);
     }
 
     _isLoading = false;
     notifyChange();
 
-    // Play via shared Audio element if we have a URL
-    if (audioUrl) {
-        return new Promise<void>((resolve) => {
-            const audio = getTtsAudio();
-            audio.src = audioUrl!;
-            audio.playbackRate = rate;
-            _isPlaying = true;
-            notifyChange();
+    if (audioUrls.length > 0) {
+        _isPlaying = true;
+        notifyChange();
 
-            // Remove old listeners before adding new ones
-            audio.onended = null;
-            audio.onerror = null;
+        for (let i = 0; i < audioUrls.length; i++) {
+            if (!_isPlaying) break; // Interrupted
 
-            audio.onended = () => {
-                _isPlaying = false;
-                notifyChange();
-                options?.onEnd?.();
-                resolve();
-            };
+            const success = await new Promise<boolean>((resolve) => {
+                const audio = getTtsAudio();
+                audio.src = audioUrls[i];
+                audio.playbackRate = rate;
 
-            audio.onerror = () => {
-                _isPlaying = false;
-                notifyChange();
-                // Fallback to Web Speech on audio error
-                speakWithWebSpeech(text, rate).then(() => {
-                    options?.onEnd?.();
-                    resolve();
-                });
-            };
+                audio.onended = () => resolve(true);
+                audio.onerror = () => resolve(false);
 
-            audio.play().catch((e) => {
-                console.warn('Google TTS play failed, CORS or block. Fallback to Web Speech:', e);
-                // Fallback to Web Speech
-                _isPlaying = false;
-                speakWithWebSpeech(text, rate).then(() => {
-                    options?.onEnd?.();
-                    resolve();
+                audio.play().catch((e) => {
+                    console.warn('Google TTS play failed:', e);
+                    resolve(false);
                 });
             });
-        });
+
+            if (!success) {
+                // If Google TTS fails mid-chunk, fallback to Web Speech for the FULL REMAINING text
+                _isPlaying = false; // reset flag for web speech
+                const remainingText = textChunks.slice(i).join(' ');
+                await speakWithWebSpeech(remainingText, rate);
+                break; // Stop loop, fallback handles the rest
+            }
+        }
+
+        _isPlaying = false;
+        notifyChange();
+        options?.onEnd?.();
+        return;
     }
 
-    // Direct Web Speech fallback
+    // Direct Web Speech fallback if no URLs were generated
     try {
         await speakWithWebSpeech(text, rate);
         options?.onEnd?.();
     } catch {
-        // Silent fail — no TTS available
         options?.onEnd?.();
     }
 }

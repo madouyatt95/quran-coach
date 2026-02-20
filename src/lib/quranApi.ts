@@ -148,25 +148,27 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
         const segments = ayahTimings.segments; // Array of [word_index, absolute_start_ms, absolute_end_ms]
         if (segments.length === 0) return null;
 
-        // Fetch the target ayah text to align segments with words
-        const quranResponse = await fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/quran-uthmani`);
+        // Fetch exact word items from quran.com to perfectly map against segments since punctuation is stripped from segments
+        const quranResponse = await fetch(`https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?words=true&word_fields=text_uthmani`);
         const quranData = await quranResponse.json();
 
         let startIndex = 0;
         const duaWords = duaText.trim().split(/\s+/);
 
-        if (quranData.code === 200 && quranData.data.text) {
-            const ayahWords = quranData.data.text.split(/\s+/);
+        if (quranData.verse && quranData.verse.words) {
+            const apiWords = quranData.verse.words.filter((w: any) => w.char_type_name === 'word');
+            const removeDiacritics = (s: string) => s.replace(/[\u0617-\u061A\u064B-\u0652\u0670\u064E\u064F\u0650\u0651\u0653\u0654\u0655\u06df\u06e2\u06e3\u06e5\u06e6\u06e8\u06ed\u06ea\u06eb\u06ec]/g, '').replace('ٱ', 'ا').replace('إ', 'ا').replace('أ', 'ا').replace('آ', 'ا').replace('ى', 'ي');
 
-            const removeDiacritics = (s: string) => s.replace(/[\u0617-\u061A\u064B-\u0652\u0670]/g, '');
             const cleanDuaWords = duaWords.map(removeDiacritics);
-            const cleanAyahWords = ayahWords.map(removeDiacritics);
+            const cleanAyahWords = apiWords.map((w: any) => removeDiacritics(w.text_uthmani || ''));
 
             let found = false;
             for (let i = 0; i <= cleanAyahWords.length - cleanDuaWords.length; i++) {
                 let match = true;
                 for (let j = 0; j < cleanDuaWords.length; j++) {
-                    if (!cleanAyahWords[i + j].includes(cleanDuaWords[j]) && !cleanDuaWords[j].includes(cleanAyahWords[i + j])) {
+                    const aW = cleanAyahWords[i + j].replace(/[^\u0600-\u06FF]/g, ''); // Ensure only Arabic chars
+                    const dW = cleanDuaWords[j].replace(/[^\u0600-\u06FF]/g, '');
+                    if (!aW.includes(dW) && !dW.includes(aW)) {
                         match = false;
                         break;
                     }
