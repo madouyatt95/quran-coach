@@ -153,7 +153,7 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
         const quranData = await quranResponse.json();
 
         let startIndex = 0;
-        const duaWords = duaText.trim().split(/\s+/);
+        const duaWords = duaText.split(/[\s،]+/).filter(w => w.trim().length > 0);
 
         if (quranData.verse && quranData.verse.words) {
             const apiWords = quranData.verse.words.filter((w: any) => w.char_type_name === 'word');
@@ -180,7 +180,7 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
             const cleanDuaWords = duaWords.map(normalizeArabic);
             const cleanAyahWords = apiWords.map((w: any) => normalizeArabic(w.text_uthmani || ''));
 
-            let found = false;
+            let foundIndex = -1;
             for (let i = 0; i <= cleanAyahWords.length - cleanDuaWords.length; i++) {
                 let match = true;
                 for (let j = 0; j < cleanDuaWords.length; j++) {
@@ -190,12 +190,13 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
                     }
                 }
                 if (match) {
-                    startIndex = i;
-                    found = true;
-                    break;
+                    foundIndex = i; // Store it but keep going to find the last one (e.g. Rabbana 37 in 59:10)
                 }
             }
-            if (!found) {
+
+            if (foundIndex !== -1) {
+                startIndex = foundIndex;
+            } else {
                 startIndex = Math.max(0, segments.length - duaWords.length);
             }
         } else {

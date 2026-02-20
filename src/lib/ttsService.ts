@@ -188,27 +188,41 @@ export async function playTts(
 
             const success = await new Promise<boolean>((resolve) => {
                 const audio = getTtsAudio();
+
+                audio.onended = () => resolve(true);
+                audio.onerror = (e) => {
+                    console.warn(`[TTS] Error loading chunk ${i}:`, e);
+                    resolve(false);
+                };
+
+                // Add an external abort timeout in case 'play()' gets stuck indefinitely 
+                // without firing onended or onerror
+                const safeTimeout = setTimeout(() => {
+                    console.warn(`[TTS] Timeout waiting for playback chunk ${i}`);
+                    resolve(false);
+                }, 15000);
+
                 audio.src = audioUrls[i];
                 audio.playbackRate = rate;
 
-                audio.onended = () => resolve(true);
-                audio.onerror = () => resolve(false);
-
-                audio.play().catch((e) => {
-                    console.warn('Google TTS play failed:', e);
+                audio.play().then(() => {
+                    clearTimeout(safeTimeout);
+                }).catch((e) => {
+                    clearTimeout(safeTimeout);
+                    console.warn(`[TTS] Play failed for chunk ${i}:`, e);
                     resolve(false);
                 });
             });
 
             if (!success) {
                 // If Google TTS fails mid-chunk, fallback to Web Speech for the FULL REMAINING text
-                _isPlaying = false; // reset flag for web speech
+                _isPlaying = false; // reset flag before fallback
                 const remainingText = textChunks.slice(i).join(' ');
+                console.log(`[TTS] Falling back to Web Speech for remaining ${textChunks.length - i} chunks.`);
                 await speakWithWebSpeech(remainingText, rate);
                 break; // Stop loop, fallback handles the rest
             }
         }
-
         _isPlaying = false;
         notifyChange();
         options?.onEnd?.();
