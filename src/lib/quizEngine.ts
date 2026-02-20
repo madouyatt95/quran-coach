@@ -1068,15 +1068,11 @@ export function getQuestions(
     return selected;
 }
 
-/** Get random questions from ALL themes (for Sprint mode) */
+/** Get random questions from ALL themes (for Sprint mode — no audio, too fast-paced) */
 export function getSprintQuestions(count: number = 30): QuizQuestion[] {
     const bank = getQuestionBank();
-    const allQuestions = Object.values(bank).flat();
-    // Inject 3 audio questions into Sprint
-    const audioPool = generateAudioQuestions();
-    const audioSelected = pick(audioPool, Math.min(3, audioPool.length));
-    const themeSelected = pick(allQuestions, Math.min(count - 3, allQuestions.length));
-    return shuffle([...themeSelected, ...audioSelected]);
+    const allQuestions = Object.values(bank).flat().filter(q => !q.audioUrl);
+    return pick(allQuestions, Math.min(count, allQuestions.length));
 }
 
 /** Get audio-based quiz questions */

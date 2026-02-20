@@ -6,23 +6,16 @@ export function AudioPlayer({ url }: { url: string }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
-    // Auto-play when URL changes (new question)
+    // Preload audio when URL changes (no auto-play — mobile blocks it)
     useEffect(() => {
         setIsPlaying(false);
         setLoaded(false);
         const audio = audioRef.current;
         if (!audio) return;
-
         audio.load();
 
-        const onCanPlay = () => {
-            setLoaded(true);
-            audio.play().then(() => setIsPlaying(true)).catch(() => {
-                // Autoplay blocked by browser, user needs to tap
-                setIsPlaying(false);
-            });
-        };
-        const onError = () => setLoaded(true); // Still show button even on error
+        const onCanPlay = () => setLoaded(true);
+        const onError = () => setLoaded(true);
 
         audio.addEventListener('canplaythrough', onCanPlay, { once: true });
         audio.addEventListener('error', onError, { once: true });
@@ -48,7 +41,7 @@ export function AudioPlayer({ url }: { url: string }) {
     return (
         <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
-            gap: 10, margin: '12px 0 20px',
+            gap: 8, margin: '8px 0 16px',
         }}>
             <audio
                 ref={audioRef}
@@ -57,7 +50,7 @@ export function AudioPlayer({ url }: { url: string }) {
                 onEnded={() => setIsPlaying(false)}
             />
 
-            {/* Big play button */}
+            {/* Big pulsing play button */}
             <button
                 onClick={togglePlay}
                 style={{
@@ -70,6 +63,7 @@ export function AudioPlayer({ url }: { url: string }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
                     transition: 'all 0.2s ease',
+                    animation: !isPlaying && loaded ? 'quiz-audio-pulse 1.5s ease-in-out infinite' : 'none',
                 }}
             >
                 {isPlaying ? <Pause size={32} /> : <Play size={32} style={{ marginLeft: 4 }} />}
@@ -77,11 +71,21 @@ export function AudioPlayer({ url }: { url: string }) {
 
             <div style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                fontSize: 13, opacity: 0.6, color: 'var(--text-primary, #fff)',
+                fontSize: 13, color: 'var(--text-primary, #fff)',
+                fontWeight: 600,
+                opacity: isPlaying ? 1 : 0.8,
             }}>
                 <Volume2 size={14} />
-                <span>{isPlaying ? 'En écoute...' : !loaded ? 'Chargement...' : '🎧 Écouter l\'extrait'}</span>
+                <span>{isPlaying ? '🔊 En écoute...' : !loaded ? '⏳ Chargement...' : '👆 Appuie pour écouter'}</span>
             </div>
+
+            {/* Pulse animation */}
+            <style>{`
+                @keyframes quiz-audio-pulse {
+                    0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(33,150,243,0.3); }
+                    50% { transform: scale(1.08); box-shadow: 0 4px 30px rgba(33,150,243,0.6); }
+                }
+            `}</style>
         </div>
     );
 }
