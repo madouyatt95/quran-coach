@@ -157,18 +157,34 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
 
         if (quranData.verse && quranData.verse.words) {
             const apiWords = quranData.verse.words.filter((w: any) => w.char_type_name === 'word');
-            const removeDiacritics = (s: string) => s.replace(/[\u0617-\u061A\u064B-\u0652\u0670\u064E\u064F\u0650\u0651\u0653\u0654\u0655\u06df\u06e2\u06e3\u06e5\u06e6\u06e8\u06ed\u06ea\u06eb\u06ec]/g, '').replace('ٱ', 'ا').replace('إ', 'ا').replace('أ', 'ا').replace('آ', 'ا').replace('ى', 'ي');
+            const normalizeArabic = (text: string) => {
+                if (!text) return '';
+                return text
+                    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '') // Arabic diacritics
+                    .replace(/[\u0640]/g, '') // Tatweel
+                    .replace(/[ٱإأآء]/g, 'ا') // Normalize Alif variants and Hamza
+                    .replace(/[ىئ]/g, 'ي') // Normalize Ya variants
+                    .replace(/ؤ/g, 'و') // Normalize Waw variants
+                    .replace(/ة/g, 'ه') // Normalize Ta Marbuta to Ha
+                    .replace(/[^\u0600-\u06FF]/g, ''); // Keep only Arabic letters
+            };
 
-            const cleanDuaWords = duaWords.map(removeDiacritics);
-            const cleanAyahWords = apiWords.map((w: any) => removeDiacritics(w.text_uthmani || ''));
+            const wordsMatch = (w1: string, w2: string) => {
+                // Remove all Alifs from both to compare skeleton loosely
+                // This helps match Uthmani spellings (e.g. للايمن vs للايمان)
+                const skeleton1 = w1.replace(/ا/g, '');
+                const skeleton2 = w2.replace(/ا/g, '');
+                return skeleton1 === skeleton2 || skeleton1.includes(skeleton2) || skeleton2.includes(skeleton1);
+            };
+
+            const cleanDuaWords = duaWords.map(normalizeArabic);
+            const cleanAyahWords = apiWords.map((w: any) => normalizeArabic(w.text_uthmani || ''));
 
             let found = false;
             for (let i = 0; i <= cleanAyahWords.length - cleanDuaWords.length; i++) {
                 let match = true;
                 for (let j = 0; j < cleanDuaWords.length; j++) {
-                    const aW = cleanAyahWords[i + j].replace(/[^\u0600-\u06FF]/g, ''); // Ensure only Arabic chars
-                    const dW = cleanDuaWords[j].replace(/[^\u0600-\u06FF]/g, '');
-                    if (!aW.includes(dW) && !dW.includes(aW)) {
+                    if (!wordsMatch(cleanAyahWords[i + j], cleanDuaWords[j])) {
                         match = false;
                         break;
                     }

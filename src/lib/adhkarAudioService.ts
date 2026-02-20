@@ -55,28 +55,46 @@ export async function playAdhkarAudio(
     if (quranicSource && categoryId === 'rabanna') {
         try {
             if (quranicSource.isRange) {
-                // Play range sequentially without slicing
-                // e.g., 10:85-86
+                // Play range sequentially with slicing on the first ayah
                 const endAyah = Number(source!.split('-')[1]);
+
+                // Fetch timings for the first ayah using the text to find the start point
+                const startTimings = await fetchRabbanaTimings(quranicSource.surah, quranicSource.ayah, text);
+
                 for (let a = quranicSource.ayah; a <= endAyah; a++) {
                     const url = await fetchAyahAudioUrl(quranicSource.surah, a);
                     if (!url) break;
 
                     if (!isPlayingLoop && a > quranicSource.ayah) {
-                        // If looping stopped manually during transition
-                        return; // Actually, we don't have isPlayingLoop check for single plays easily here, 
-                        // but getAdhkarAudio().paused is a hint.
+                        return; // Stopped manually
                     }
 
                     const played = await new Promise<boolean>((resolve) => {
                         const audio = getAdhkarAudio();
                         audio.src = url;
                         audio.playbackRate = options?.rate || 1.0;
+
+                        const clearTimeupdate = () => { audio.ontimeupdate = null; };
+
+                        // If it's the first ayah, slice it to start exactly at the Rabbana
+                        if (a === quranicSource.ayah && startTimings) {
+                            audio.currentTime = startTimings[0] / 1000;
+                        }
+
+                        // For the last ayah we usually play to the end, but could slice if needed.
+                        // Currently Rabbanas end at the end of the ayah.
+
                         audio.onended = () => resolve(true);
-                        audio.onerror = () => resolve(false);
-                        audio.play().catch(() => resolve(false));
+                        audio.onerror = () => {
+                            clearTimeupdate();
+                            resolve(false);
+                        };
+                        audio.play().catch(() => {
+                            clearTimeupdate();
+                            resolve(false);
+                        });
                     });
-                    if (!played) break; // Error playing, fallback or abort
+                    if (!played) break;
                 }
                 options?.onEnd?.();
                 return;
