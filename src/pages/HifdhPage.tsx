@@ -176,18 +176,29 @@ export function HifdhPage() {
                     audio.currentTime = seekOnLoad;
                     setSeekOnLoad(null);
                 }
+                // Only auto-play if we were already playing or if it's a specific seekOnLoad
                 if (isPlaying) {
-                    audio.play().catch(() => setIsPlaying(false));
+                    audio.play().catch(err => {
+                        console.warn('Playback failed:', err);
+                        // setIsPlaying(false); // Don't flip state or it might loop
+                    });
                 }
             };
 
-            if (audio.src !== audioUrl) {
+            // Only update src if it's actually different (ignoring domain/relative mapping)
+            // audio.src returns absolute URL, so we compare directly
+            const currentSrc = audio.src;
+            if (!currentSrc || !currentSrc.includes(audioUrl.split('/').pop()!)) {
                 audio.src = audioUrl;
                 audio.load();
                 audio.addEventListener('loadedmetadata', handleMetadata, { once: true });
-            } else {
-                // If src is same, just handle seek/play immediately
-                handleMetadata();
+            } else if (seekOnLoad !== null) {
+                // If src is same but we have a seek request
+                if (audio.readyState >= 1) { // metadata loaded
+                    handleMetadata();
+                } else {
+                    audio.addEventListener('loadedmetadata', handleMetadata, { once: true });
+                }
             }
 
             audio.playbackRate = playbackSpeed;
@@ -201,7 +212,7 @@ export function HifdhPage() {
                 audio.removeEventListener('loadedmetadata', handleMetadata);
             };
         }
-    }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah, isPlaying, seekOnLoad]);
+    }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah, seekOnLoad]);
 
     // Pre-fetch all timings in the selected range for cross-verse loops
     useEffect(() => {
@@ -694,7 +705,6 @@ export function HifdhPage() {
             <div className="hifdh-main-card">
                 <audio
                     ref={audioRef}
-                    src={currentAyah ? getAudioUrl(HIFDH_RECITER, currentAyah.number) : undefined}
                     onEnded={handleAudioEnded}
                 />
 
