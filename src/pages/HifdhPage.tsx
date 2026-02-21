@@ -239,7 +239,6 @@ export function HifdhPage() {
         setPokeEndTime(null);
         if (coach.isCoachMode) {
             coach.coachJumpToWord(aIdx, wIdx);
-            return;
         }
 
         const clickPos = aIdx * 1000 + wIdx;
@@ -269,6 +268,11 @@ export function HifdhPage() {
             setCurrentAyahIndex(aIdx);
             setSeekOnLoad(startTime);
             setIsPlaying(true);
+
+            // Auto-listen if hands-free is on
+            if (coach.isHandsFree && !coach.isListening) {
+                setTimeout(() => coach.startCoachListening(wIdx), 500);
+            }
         } else {
             // Completing a selection range
             const startPos = selectionStart.ayahIndex * 1000 + selectionStart.wordIndex;
