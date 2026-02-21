@@ -64,28 +64,6 @@ export function CoachOverlay({
 
             {/* ===== Coach Floating Mic ===== */}
             <div className="mih-coach-controls">
-                <button
-                    className="mih-coach-listen-btn"
-                    onClick={() => {
-                        if (pageAyahsLength === 0) return;
-                        if (audioPlaying) {
-                            stopAudio();
-                        } else {
-                            playAyahAtIndex(0);
-                        }
-                    }}
-                    title={audioPlaying ? "Arrêter l'écoute" : "Écouter le verset (Récitateur)"}
-                >
-                    {audioPlaying ? <Square size={18} /> : <Volume2 size={18} />}
-                </button>
-
-                <button
-                    className={`mih-coach-mic ${isListening ? 'mih-coach-mic--active' : ''}`}
-                    onClick={isListening ? stopCoachListening : () => startCoachListening()}
-                >
-                    {isListening ? <Square size={28} /> : <Mic size={28} />}
-                </button>
-
                 <div className="mih-coach-extra-modes">
                     <button
                         className={`mih-coach-mode-btn ${isHandsFree ? 'active' : ''}`}
@@ -114,6 +92,30 @@ export function CoachOverlay({
                         title="Mode Mushaf Blanc"
                     >
                         <EyeOff size={18} />
+                    </button>
+                </div>
+
+                <div className="mih-coach-main-row">
+                    <button
+                        className="mih-coach-listen-btn"
+                        onClick={() => {
+                            if (pageAyahsLength === 0) return;
+                            if (audioPlaying) {
+                                stopAudio();
+                            } else {
+                                playAyahAtIndex(0);
+                            }
+                        }}
+                        title={audioPlaying ? "Arrêter l'écoute" : "Écouter le verset (Récitateur)"}
+                    >
+                        {audioPlaying ? <Square size={18} /> : <Volume2 size={18} />}
+                    </button>
+
+                    <button
+                        className={`mih-coach-mic ${isListening ? 'mih-coach-mic--active' : ''}`}
+                        onClick={isListening ? stopCoachListening : () => startCoachListening()}
+                    >
+                        {isListening ? <Square size={28} /> : <Mic size={28} />}
                     </button>
                 </div>
             </div>
