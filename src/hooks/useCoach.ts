@@ -205,6 +205,7 @@ export function useCoach({
 
                 // Allow vocal toggle even if handsFree is off (but mic must be on)
                 if (COMMANDS.handsfree.some(c => lower.includes(c))) {
+                    speechRecognitionService.abortCurrentSegment();
                     toggleHandsFreeMode();
                     if ('vibrate' in navigator) navigator.vibrate([50, 50, 50]);
                     return;
@@ -212,23 +213,30 @@ export function useCoach({
 
                 if (isHandsFree) {
                     if (COMMANDS.next.some(c => lower.includes(c))) {
+                        speechRecognitionService.abortCurrentSegment();
                         // Dispatch custom event for HifdhPage to handle
                         window.dispatchEvent(new CustomEvent('coach-command', { detail: 'next' }));
                         stopCoachListening();
                     } else if (COMMANDS.prev.some(c => lower.includes(c))) {
+                        speechRecognitionService.abortCurrentSegment();
                         window.dispatchEvent(new CustomEvent('coach-command', { detail: 'prev' }));
                         stopCoachListening();
                     } else if (COMMANDS.repeat.some(c => lower.includes(c))) {
+                        speechRecognitionService.abortCurrentSegment();
                         window.dispatchEvent(new CustomEvent('coach-command', { detail: 'repeat' }));
                         stopCoachListening();
                     } else if (COMMANDS.hint.some(c => lower.includes(c))) {
+                        speechRecognitionService.abortCurrentSegment();
                         window.dispatchEvent(new CustomEvent('coach-command', { detail: 'hint' }));
                         // hint doesn't stop listening as it's a momentary help
                     } else if (COMMANDS.stop.some(c => lower.includes(c))) {
+                        speechRecognitionService.abortCurrentSegment();
                         window.dispatchEvent(new CustomEvent('coach-command', { detail: 'stop' }));
-                        // stop listening for a moment to avoid hearing itself? No, usually fine.
+                        stopCoachListening();
                     } else if (COMMANDS.listen.some(c => lower.includes(c))) {
+                        speechRecognitionService.abortCurrentSegment();
                         window.dispatchEvent(new CustomEvent('coach-command', { detail: 'listen' }));
+                        stopCoachListening();
                     }
                 }
             },

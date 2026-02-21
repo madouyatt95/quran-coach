@@ -93,6 +93,7 @@ class SpeechRecognitionService {
     private currentWordIndex = 0;
     private callbacks: RecognitionCallbacks | null = null;
     private processedWords: Set<number> = new Set(); // Track already processed words
+    private ignoreNextFinal = false; // Flag to skip validation for current segment
 
     // Check if Web Speech API is supported
     isSupported(): boolean {
@@ -137,6 +138,12 @@ class SpeechRecognitionService {
             // Android fix: On mobile, isFinal can be very delayed. 
             // We allow processing interim results if we are on Android to improve responsiveness.
             const isAndroid = /Android/i.test(navigator.userAgent);
+
+            if (this.ignoreNextFinal && (lastResult.isFinal || isAndroid)) {
+                this.ignoreNextFinal = false;
+                return;
+            }
+
             this.processTranscriptRealtime(transcript, lastResult.isFinal || isAndroid);
         };
 
@@ -173,6 +180,11 @@ class SpeechRecognitionService {
             this.recognition.stop();
             this.isListening = false;
         }
+    }
+
+    // NEW: Abort current segment (used when a command is detected)
+    abortCurrentSegment(): void {
+        this.ignoreNextFinal = true;
     }
 
     // Process transcript in real-time
