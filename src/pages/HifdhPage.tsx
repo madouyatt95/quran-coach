@@ -789,7 +789,7 @@ export function HifdhPage() {
                                         const isBlind = coach.isCoachMode && coach.blindMode;
                                         const isMushafBlanc = coach.isCoachMode && coach.isMushafBlanc;
                                         const isRevealed = wordState === 'correct';
-                                        const showText = !isMushafBlanc && (!isBlind || isRevealed);
+                                        const showText = isRevealed || (!isMushafBlanc && !isBlind);
 
                                         return (
                                             <span
@@ -829,7 +829,7 @@ export function HifdhPage() {
                                         const isBlind = coach.isCoachMode && coach.blindMode;
                                         const isMushafBlanc = coach.isCoachMode && coach.isMushafBlanc;
                                         const isRevealed = wordState === 'correct';
-                                        const showText = !isMushafBlanc && (!isBlind || isRevealed);
+                                        const showText = isRevealed || (!isMushafBlanc && !isBlind);
 
                                         return (
                                             <span
