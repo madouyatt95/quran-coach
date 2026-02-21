@@ -234,6 +234,10 @@ export function HifdhPage() {
         }
     }, [ayahs, selectedSurah]);
 
+    const getFlatIndex = useCallback((aIdx: number, wIdx: number) => {
+        return coach.allCoachWords.findIndex(w => w.ayahIndex === aIdx && w.wordIndex === wIdx);
+    }, [coach.allCoachWords]);
+
     // Handle Word Selection for Loop (disabled in Coach mode)
     const handleWordClick = async (aIdx: number, wIdx: number) => {
         setPokeEndTime(null);
@@ -271,7 +275,8 @@ export function HifdhPage() {
 
             // Auto-listen if hands-free is on
             if (coach.isHandsFree && !coach.isListening) {
-                setTimeout(() => coach.startCoachListening(wIdx), 500);
+                const flatIdx = getFlatIndex(aIdx, wIdx);
+                setTimeout(() => coach.startCoachListening(flatIdx >= 0 ? flatIdx : undefined), 500);
             }
         } else {
             // Completing a selection range
@@ -325,7 +330,10 @@ export function HifdhPage() {
         if (isPlaying && coach.isFlashcardMode && activeWordIndex >= 2) {
             audioRef.current.pause();
             setIsPlaying(false);
-            if (!coach.isListening) coach.startCoachListening(3); // Continue with coach
+            if (!coach.isListening) {
+                const flatIdx = getFlatIndex(currentAyahIndex, 3);
+                coach.startCoachListening(flatIdx >= 0 ? flatIdx : undefined);
+            }
             return;
         }
 
@@ -617,7 +625,37 @@ export function HifdhPage() {
             audio.removeEventListener('pause', stopRAF);
             audio.removeEventListener('loadedmetadata', updateDuration);
         };
-    }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats]);
+    }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats, coach, handleNext, handlePrev, handlePoke]);
+
+    // Flashcard Mode: Stop after 3 words
+    useEffect(() => {
+        if (coach.isFlashcardMode && isPlaying && activeWordIndex === 2) {
+            audioRef.current?.pause();
+            setIsPlaying(false);
+            // Switch to listening from the 4th word of THIS ayah
+            const flatIdx = getFlatIndex(currentAyahIndex, 3);
+            setTimeout(() => coach.startCoachListening(flatIdx >= 0 ? flatIdx : undefined), 300);
+        }
+    }, [coach.isFlashcardMode, isPlaying, activeWordIndex, currentAyahIndex, getFlatIndex]);
+
+    // Duo Mode: Trigger audio when student finishes a verse
+    useEffect(() => {
+        if (coach.isCoachMode && coach.isDuoMode && !isPlaying && coach.isAyahComplete(currentAyahIndex)) {
+            // Student finished their turn for this ayah
+            if (currentAyahIndex < ayahs.length - 1) {
+                setTimeout(() => {
+                    const nextAyahIdx = currentAyahIndex + 1;
+                    handleNext();
+                    setIsPlaying(true);
+                    // Passive listening during audio
+                    if (coach.isHandsFree) {
+                        const nextFlatIdx = getFlatIndex(nextAyahIdx, 0);
+                        coach.startCoachListening(nextFlatIdx >= 0 ? nextFlatIdx : 0, true);
+                    }
+                }, 1000);
+            }
+        }
+    }, [coach.wordStates, coach.isCoachMode, coach.isDuoMode, currentAyahIndex, ayahs.length, isPlaying, handleNext, coach.isAyahComplete, coach.isHandsFree, getFlatIndex]);
 
     const formatTime = (time: number) => {
         const mins = Math.floor(time / 60);

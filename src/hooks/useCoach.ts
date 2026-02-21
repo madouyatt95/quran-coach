@@ -33,6 +33,7 @@ export interface CoachState {
     allCoachWords: Array<{ text: string; ayahIndex: number; wordIndex: number }>;
     coachAccuracy: number;
     coachProgress: number;
+    isAyahComplete: (ayahIndex: number) => boolean;
     resetCoach: () => void;
     coachJumpToWord: (ayahIndex: number, wordIndex: number) => void;
     startCoachListening: (startIndex?: number, isPassive?: boolean) => void;
@@ -285,6 +286,13 @@ export function useCoach({
         return coachTotalProcessed / allCoachWords.length;
     }, [coachTotalProcessed, allCoachWords.length]);
 
+    // Check if a specific ayah is fully correct
+    const isAyahComplete = useCallback((ayahIndex: number) => {
+        const words = allCoachWords.filter(w => w.ayahIndex === ayahIndex);
+        if (words.length === 0) return false;
+        return words.every(w => wordStates.get(`${w.ayahIndex}-${w.wordIndex}`) === 'correct');
+    }, [allCoachWords, wordStates]);
+
     // Save score when coach finishes
     useEffect(() => {
         if (isCoachMode && coachTotalProcessed > 0 && coachTotalProcessed >= allCoachWords.length) {
@@ -317,6 +325,7 @@ export function useCoach({
         allCoachWords,
         coachAccuracy,
         coachProgress,
+        isAyahComplete,
         resetCoach,
         coachJumpToWord,
         startCoachListening,
