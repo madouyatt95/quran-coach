@@ -15,6 +15,10 @@ interface UseCoachOptions {
 export interface CoachState {
     isCoachMode: boolean;
     blindMode: boolean;
+    isMushafBlanc: boolean;
+    isDuoMode: boolean;
+    isFlashcardMode: boolean;
+    isHandsFree: boolean;
     wordStates: Map<string, WordState>;
     isListening: boolean;
     coachMistakes: Record<string, { expected: string; spoken: string }>;
@@ -30,10 +34,14 @@ export interface CoachState {
     coachProgress: number;
     resetCoach: () => void;
     coachJumpToWord: (ayahIndex: number, wordIndex: number) => void;
-    startCoachListening: () => void;
+    startCoachListening: (startIndex?: number) => void;
     stopCoachListening: () => void;
     toggleCoachMode: () => void;
     toggleBlindMode: () => void;
+    toggleMushafBlancMode: () => void;
+    toggleDuoMode: () => void;
+    toggleFlashcardMode: () => void;
+    toggleHandsFreeMode: () => void;
 }
 
 export function useCoach({
@@ -43,6 +51,11 @@ export function useCoach({
 }: UseCoachOptions): CoachState {
     const [isCoachMode, setIsCoachMode] = useState(false);
     const [blindMode, setBlindMode] = useState(false);
+    const [isMushafBlanc, setIsMushafBlanc] = useState(false);
+    const [isDuoMode, setIsDuoMode] = useState(false);
+    const [isFlashcardMode, setIsFlashcardMode] = useState(false);
+    const [isHandsFree, setIsHandsFree] = useState(false);
+
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [isListening, setIsListening] = useState(false);
     const [coachMistakes, setCoachMistakes] = useState<Record<string, { expected: string; spoken: string }>>({});
@@ -53,6 +66,17 @@ export function useCoach({
     const [coachInterimText, setCoachInterimText] = useState('');
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+
+    // Voice command keywords (French/Arabic loosely)
+    const COMMANDS = useMemo(() => ({
+        next: ['suivant', 'après', 'tali', 'taali'],
+        prev: ['précédent', 'avant', 'qabl'],
+        repeat: ['répète', 'encore', 'iida', 'id'],
+        hint: ['indice', 'aide-moi', 'mousaada', 'hint'],
+        handsfree: ['mains libres', 'activer mains libres', 'vocal'],
+        stop: ['stop', 'arrête', 'pause', 'qif'],
+        listen: ['coach', 'écoute-moi', 'ecoute', 'ijaba']
+    }), []);
 
     // Build a flat word list for ASR matching
     const allCoachWords = useMemo(() => {
@@ -117,15 +141,24 @@ export function useCoach({
     }, []);
 
     // Start listening (ASR)
-    const startCoachListening = useCallback(() => {
+    const startCoachListening = useCallback((startIndex?: number) => {
         if (ayahs.length === 0) return;
-        resetCoach();
+        // Only reset if we are starting from the very beginning of the range
+        if (startIndex === undefined && playingIndex === 0) {
+            resetCoach();
+        }
 
         const expectedText = ayahs.map(a => a.text).join(' ');
 
-        const currentAyahIdx = playingIndex >= 0 ? playingIndex : 0;
-        const startWordIndex = allCoachWords.findIndex(w => w.ayahIndex === currentAyahIdx);
-        const safeStartIndex = startWordIndex >= 0 ? startWordIndex : 0;
+        // Determine actual start index
+        let safeStartIndex = 0;
+        if (startIndex !== undefined) {
+            safeStartIndex = startIndex;
+        } else {
+            const currentAyahIdx = playingIndex >= 0 ? playingIndex : 0;
+            const wordIdx = allCoachWords.findIndex(w => w.ayahIndex === currentAyahIdx);
+            safeStartIndex = wordIdx >= 0 ? wordIdx : 0;
+        }
 
         const success = speechRecognitionService.start(expectedText, {
             onWordMatch: (wordIndex, isCorrect, spokenWord) => {
@@ -159,7 +192,41 @@ export function useCoach({
                     return n;
                 });
             },
-            onInterimResult: (text) => setCoachInterimText(text),
+            onInterimResult: (text) => {
+                setCoachInterimText(text);
+
+                // Hands-free command detection
+                const lower = text.toLowerCase();
+
+                // Allow vocal toggle even if handsFree is off (but mic must be on)
+                if (COMMANDS.handsfree.some(c => lower.includes(c))) {
+                    toggleHandsFreeMode();
+                    if ('vibrate' in navigator) navigator.vibrate([50, 50, 50]);
+                    return;
+                }
+
+                if (isHandsFree) {
+                    if (COMMANDS.next.some(c => lower.includes(c))) {
+                        // Dispatch custom event for HifdhPage to handle
+                        window.dispatchEvent(new CustomEvent('coach-command', { detail: 'next' }));
+                        stopCoachListening();
+                    } else if (COMMANDS.prev.some(c => lower.includes(c))) {
+                        window.dispatchEvent(new CustomEvent('coach-command', { detail: 'prev' }));
+                        stopCoachListening();
+                    } else if (COMMANDS.repeat.some(c => lower.includes(c))) {
+                        window.dispatchEvent(new CustomEvent('coach-command', { detail: 'repeat' }));
+                        stopCoachListening();
+                    } else if (COMMANDS.hint.some(c => lower.includes(c))) {
+                        window.dispatchEvent(new CustomEvent('coach-command', { detail: 'hint' }));
+                        // hint doesn't stop listening as it's a momentary help
+                    } else if (COMMANDS.stop.some(c => lower.includes(c))) {
+                        window.dispatchEvent(new CustomEvent('coach-command', { detail: 'stop' }));
+                        // stop listening for a moment to avoid hearing itself? No, usually fine.
+                    } else if (COMMANDS.listen.some(c => lower.includes(c))) {
+                        window.dispatchEvent(new CustomEvent('coach-command', { detail: 'listen' }));
+                    }
+                }
+            },
             onError: (error) => {
                 console.warn('Speech recognition error:', error);
                 if (error !== 'no-speech') startWhisperBackup();
@@ -173,7 +240,7 @@ export function useCoach({
         } else {
             startWhisperBackup();
         }
-    }, [ayahs, allCoachWords, resetCoach, playingIndex, startWhisperBackup]);
+    }, [ayahs, allCoachWords, resetCoach, playingIndex, startWhisperBackup, isHandsFree, COMMANDS]);
 
     // Stop listening
     const stopCoachListening = useCallback(() => {
@@ -185,7 +252,7 @@ export function useCoach({
         setIsListening(false);
     }, []);
 
-    // Toggle coach mode on/off
+    // Toggle states
     const toggleCoachMode = useCallback(() => {
         if (isCoachMode) {
             stopCoachListening();
@@ -196,10 +263,11 @@ export function useCoach({
         }
     }, [isCoachMode, stopCoachListening, resetCoach]);
 
-    // Toggle blind mode
-    const toggleBlindMode = useCallback(() => {
-        setBlindMode(prev => !prev);
-    }, []);
+    const toggleBlindMode = useCallback(() => setBlindMode(p => !p), []);
+    const toggleMushafBlancMode = useCallback(() => setIsMushafBlanc(p => !p), []);
+    const toggleDuoMode = useCallback(() => setIsDuoMode(p => !p), []);
+    const toggleFlashcardMode = useCallback(() => setIsFlashcardMode(p => !p), []);
+    const toggleHandsFreeMode = useCallback(() => setIsHandsFree(p => !p), []);
 
     // Coach accuracy
     const coachAccuracy = useMemo(() => {
@@ -227,6 +295,10 @@ export function useCoach({
     return {
         isCoachMode,
         blindMode,
+        isMushafBlanc,
+        isDuoMode,
+        isFlashcardMode,
+        isHandsFree,
         wordStates,
         isListening,
         coachMistakes,
@@ -246,5 +318,9 @@ export function useCoach({
         stopCoachListening,
         toggleCoachMode,
         toggleBlindMode,
+        toggleMushafBlancMode,
+        toggleDuoMode,
+        toggleFlashcardMode,
+        toggleHandsFreeMode,
     };
 }

@@ -6,6 +6,8 @@ import type { Settings, Theme, ArabicFontSize, ArabicFontFamily, ViewMode } from
 // quranComId is used for word timing API (chapter_recitations endpoint)
 export const RECITERS = [
     { id: 'ar.alafasy', name: 'Mishary Al-Afasy', nameArabic: 'مشاري العفاسي', country: '🇰🇼', quranComId: 7 },
+    { id: 'ar.husary', name: 'K. Al-Hussary', nameArabic: 'الحصري (مرتل)', country: '🇪🇬', quranComId: 1 },
+    { id: 'ar.husarymuallim', name: 'Al-Hussary (Muallim)', nameArabic: 'الحصري (معلم)', country: '🇪🇬', quranComId: 12 },
 ];
 
 // Playback speed options

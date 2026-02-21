@@ -318,6 +318,13 @@ export function HifdhPage() {
             }
         }
 
+        if (isPlaying && coach.isFlashcardMode && activeWordIndex >= 2) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+            if (!coach.isListening) coach.startCoachListening(3); // Continue with coach
+            return;
+        }
+
         const targetTimings = allTimings.get(targetAyahIdx);
         if (!targetTimings) return;
 
@@ -408,6 +415,9 @@ export function HifdhPage() {
                         audioRef.current.currentTime = selectedTimeRange.start;
                     }
                 }
+                if (coach.isHandsFree && !coach.isListening) {
+                    setTimeout(() => coach.startCoachListening(), 500);
+                }
                 audioRef.current.play();
             }
             setIsPlaying(!isPlaying);
@@ -445,9 +455,15 @@ export function HifdhPage() {
                 audioRef.current.play();
             }
         } else {
-            handleNext();
-            if (audioRef.current && isPlaying) {
-                setTimeout(() => audioRef.current?.play(), 100);
+            if (coach.isDuoMode) {
+                // If in Duo mode, next verse is for the student
+                handleNext();
+                setTimeout(() => coach.startCoachListening(), 300);
+            } else {
+                handleNext();
+                if (audioRef.current && isPlaying) {
+                    setTimeout(() => audioRef.current?.play(), 100);
+                }
             }
         }
     }, [currentRepeat, maxRepeats, handleNext, isPlaying, selectedTimeRange]);
@@ -514,10 +530,47 @@ export function HifdhPage() {
             if (wordTimings) {
                 const index = getCurrentWordIndex(audio.currentTime * 1000, wordTimings.words);
                 setActiveWordIndex(index);
+
+                // Flashcard mode stop
+                if (coach.isFlashcardMode && index >= 2) {
+                    audio.pause();
+                    setIsPlaying(false);
+                    coach.startCoachListening(3);
+                }
             }
 
             rafId = requestAnimationFrame(checkLoopPoint);
         };
+
+        // Hands-free listener
+        const handleHandsFree = (e: any) => {
+            const cmd = e.detail;
+            if (cmd === 'next') handleNext();
+            if (cmd === 'prev') handlePrev();
+            if (cmd === 'repeat') {
+                if (audioRef.current) {
+                    audioRef.current.currentTime = 0;
+                    audioRef.current.play();
+                    setIsPlaying(true);
+                }
+            }
+            if (cmd === 'hint') handlePoke();
+            if (cmd === 'stop') {
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    setIsPlaying(false);
+                }
+            }
+            if (cmd === 'listen') {
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    setIsPlaying(false);
+                }
+                coach.startCoachListening();
+            }
+        };
+
+        window.addEventListener('coach-command', handleHandsFree);
 
         const startRAF = () => {
             if (!rafId) {
@@ -545,6 +598,7 @@ export function HifdhPage() {
 
         return () => {
             stopRAF();
+            window.removeEventListener('coach-command', handleHandsFree);
             audio.removeEventListener('play', startRAF);
             audio.removeEventListener('pause', stopRAF);
             audio.removeEventListener('loadedmetadata', updateDuration);
@@ -733,23 +787,25 @@ export function HifdhPage() {
                                         }
 
                                         const isBlind = coach.isCoachMode && coach.blindMode;
+                                        const isMushafBlanc = coach.isCoachMode && coach.isMushafBlanc;
                                         const isRevealed = wordState === 'correct';
-                                        const showText = !isBlind || isRevealed;
+                                        const showText = !isMushafBlanc && (!isBlind || isRevealed);
 
                                         return (
                                             <span
                                                 key={`${aIdx}-${wIdx}`}
                                                 className={`hifdh-word hifdh-word--active-ayah
-                                                    ${activeWordIndex === wIdx ? 'highlight' : ''}
-                                                    ${isSelected ? 'range-selected' : ''}
-                                                    ${isPartiallySelected ? 'single-selected' : ''}
-                                                    ${coachClass}
-                                                    ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
-                                                    ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
-                                                `}
+                                                        ${activeWordIndex === wIdx ? 'highlight' : ''}
+                                                        ${isSelected ? 'range-selected' : ''}
+                                                        ${isPartiallySelected ? 'single-selected' : ''}
+                                                        ${coachClass}
+                                                        ${isBlind && !isRevealed && !isMushafBlanc ? 'hifdh-word--blind' : ''}
+                                                        ${isMushafBlanc && !isRevealed ? 'hifdh-word--blanc' : ''}
+                                                        ${(isBlind || isMushafBlanc) && isRevealed ? 'hifdh-word--revealed' : ''}
+                                                    `}
                                                 onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
-                                                {showText ? word.text : '●●●'}{' '}
+                                                {showText ? word.text : isMushafBlanc && !isRevealed ? '' : '●●●'}{' '}
                                             </span>
                                         );
                                     })
@@ -771,8 +827,9 @@ export function HifdhPage() {
                                         }
 
                                         const isBlind = coach.isCoachMode && coach.blindMode;
+                                        const isMushafBlanc = coach.isCoachMode && coach.isMushafBlanc;
                                         const isRevealed = wordState === 'correct';
-                                        const showText = !isBlind || isRevealed;
+                                        const showText = !isMushafBlanc && (!isBlind || isRevealed);
 
                                         return (
                                             <span
@@ -781,12 +838,13 @@ export function HifdhPage() {
                                                     ${isSelected ? 'range-selected' : ''}
                                                     ${isPartiallySelected ? 'single-selected' : ''}
                                                     ${coachClass}
-                                                    ${isBlind && !isRevealed ? 'hifdh-word--blind' : ''}
-                                                    ${isBlind && isRevealed ? 'hifdh-word--revealed' : ''}
+                                                    ${isBlind && !isRevealed && !isMushafBlanc ? 'hifdh-word--blind' : ''}
+                                                    ${isMushafBlanc && !isRevealed ? 'hifdh-word--blanc' : ''}
+                                                    ${(isBlind || isMushafBlanc) && isRevealed ? 'hifdh-word--revealed' : ''}
                                                 `}
                                                 onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
-                                                {showText ? wordText : '●●●'}{' '}
+                                                {showText ? wordText : isMushafBlanc && !isRevealed ? '' : '●●●'}{' '}
                                             </span>
                                         );
                                     });

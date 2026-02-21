@@ -1,4 +1,4 @@
-import { Mic, Square, Volume2, X } from 'lucide-react';
+import { Mic, Square, Volume2, X, Users, Zap, EyeOff, Radio } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
 import type { CoachState } from '../../hooks/useCoach';
 
@@ -33,6 +33,14 @@ export function CoachOverlay({
         setShowMistakesSummary,
         startCoachListening,
         stopCoachListening,
+        toggleMushafBlancMode,
+        toggleDuoMode,
+        toggleFlashcardMode,
+        toggleHandsFreeMode,
+        isMushafBlanc,
+        isDuoMode,
+        isFlashcardMode,
+        isHandsFree,
     } = coach;
 
     if (!isCoachMode) return null;
@@ -73,15 +81,57 @@ export function CoachOverlay({
 
                 <button
                     className={`mih-coach-mic ${isListening ? 'mih-coach-mic--active' : ''}`}
-                    onClick={isListening ? stopCoachListening : startCoachListening}
+                    onClick={isListening ? stopCoachListening : () => startCoachListening()}
                 >
                     {isListening ? <Square size={28} /> : <Mic size={28} />}
                 </button>
+
+                <div className="mih-coach-extra-modes">
+                    <button
+                        className={`mih-coach-mode-btn ${isHandsFree ? 'active' : ''}`}
+                        onClick={toggleHandsFreeMode}
+                        title="Mode Mains Libres (Logiciel)"
+                    >
+                        <Radio size={18} />
+                    </button>
+                    <button
+                        className={`mih-coach-mode-btn ${isDuoMode ? 'active' : ''}`}
+                        onClick={toggleDuoMode}
+                        title="Mode Duo (Alternance)"
+                    >
+                        <Users size={18} />
+                    </button>
+                    <button
+                        className={`mih-coach-mode-btn ${isFlashcardMode ? 'active' : ''}`}
+                        onClick={toggleFlashcardMode}
+                        title="Mode Flashcards (3 mots)"
+                    >
+                        <Zap size={18} />
+                    </button>
+                    <button
+                        className={`mih-coach-mode-btn ${isMushafBlanc ? 'active' : ''}`}
+                        onClick={toggleMushafBlancMode}
+                        title="Mode Mushaf Blanc"
+                    >
+                        <EyeOff size={18} />
+                    </button>
+                </div>
             </div>
 
-            {/* ===== Coach Interim Text ===== */}
-            {coachInterimText && (
-                <div className="mih-coach-interim" dir="rtl">{coachInterimText}</div>
+            {/* ===== Coach Interim Text & Waveform ===== */}
+            {isListening && (
+                <div className="mih-coach-listening-area">
+                    <div className="mih-waveform">
+                        <div className="mih-waveform__bar" />
+                        <div className="mih-waveform__bar" />
+                        <div className="mih-waveform__bar" />
+                        <div className="mih-waveform__bar" />
+                        <div className="mih-waveform__bar" />
+                    </div>
+                    {coachInterimText && (
+                        <div className="mih-coach-interim" dir="rtl">{coachInterimText}</div>
+                    )}
+                </div>
             )}
 
             {/* ===== Coach Error Modal ===== */}
