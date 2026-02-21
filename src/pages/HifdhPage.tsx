@@ -373,8 +373,16 @@ export function HifdhPage() {
                 setAutoAdvanceCountdown(false);
                 setCurrentAyahIndex(prev => prev + 1);
                 coach.resetCoach();
-                // Auto-restart listening on next verse
-                setTimeout(() => coach.startCoachListening(), 300);
+
+                if (coach.isDuoMode) {
+                    // After student's turn -> Start Audio
+                    setIsPlaying(true);
+                    // Passive listening during audio for hands-free
+                    if (coach.isHandsFree) coach.startCoachListening(0, true);
+                } else {
+                    // Auto-restart listening on next verse
+                    setTimeout(() => coach.startCoachListening(), 300);
+                }
             }, 2000);
         }
 
@@ -461,6 +469,8 @@ export function HifdhPage() {
         } else {
             if (coach.isDuoMode) {
                 // If in Duo mode, next verse is for the student
+                // Ensure audio is stopped
+                setIsPlaying(false);
                 handleNext();
                 setTimeout(() => coach.startCoachListening(), 300);
             } else {

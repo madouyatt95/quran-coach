@@ -62,6 +62,12 @@ export function CoachOverlay({
                 </div>
             )}
 
+            {isDuoMode && (
+                <div className={`mih-coach-duo-turn ${audioPlaying ? 'reciter' : 'student'}`}>
+                    {audioPlaying ? 'Tour du Récitateur' : 'À vous de réciter'}
+                </div>
+            )}
+
             {/* ===== Coach Floating Mic ===== */}
             <div className="mih-coach-controls">
                 <div className="mih-coach-extra-modes">

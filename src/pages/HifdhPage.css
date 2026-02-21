@@ -847,6 +847,46 @@
     color: var(--color-accent);
 }
 
+.mih-coach-duo-turn {
+    position: fixed;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 106;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.mih-coach-duo-turn.reciter {
+    background: rgba(76, 175, 80, 0.8);
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.mih-coach-duo-turn.student {
+    background: rgba(201, 168, 76, 0.8);
+    border-color: rgba(201, 168, 76, 0.3);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
 /* Auto-advance toast */
 .hifdh-auto-advance-toast {
     position: fixed;

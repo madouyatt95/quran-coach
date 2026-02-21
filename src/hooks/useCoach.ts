@@ -19,6 +19,7 @@ export interface CoachState {
     isDuoMode: boolean;
     isFlashcardMode: boolean;
     isHandsFree: boolean;
+    isPassiveMode: boolean;
     wordStates: Map<string, WordState>;
     isListening: boolean;
     coachMistakes: Record<string, { expected: string; spoken: string }>;
@@ -34,7 +35,7 @@ export interface CoachState {
     coachProgress: number;
     resetCoach: () => void;
     coachJumpToWord: (ayahIndex: number, wordIndex: number) => void;
-    startCoachListening: (startIndex?: number) => void;
+    startCoachListening: (startIndex?: number, isPassive?: boolean) => void;
     stopCoachListening: () => void;
     toggleCoachMode: () => void;
     toggleBlindMode: () => void;
@@ -55,6 +56,7 @@ export function useCoach({
     const [isDuoMode, setIsDuoMode] = useState(false);
     const [isFlashcardMode, setIsFlashcardMode] = useState(false);
     const [isHandsFree, setIsHandsFree] = useState(false);
+    const [isPassiveMode, setIsPassiveMode] = useState(false);
 
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [isListening, setIsListening] = useState(false);
@@ -141,8 +143,9 @@ export function useCoach({
     }, []);
 
     // Start listening (ASR)
-    const startCoachListening = useCallback((startIndex?: number) => {
+    const startCoachListening = useCallback((startIndex?: number, isPassive: boolean = false) => {
         if (ayahs.length === 0) return;
+        setIsPassiveMode(isPassive);
         // Only reset if we are starting from the very beginning of the range
         if (startIndex === undefined && playingIndex === 0) {
             resetCoach();
@@ -162,6 +165,7 @@ export function useCoach({
 
         const success = speechRecognitionService.start(expectedText, {
             onWordMatch: (wordIndex, isCorrect, spokenWord) => {
+                if (isPassive) return; // Ignore validation in passive mode
                 const word = allCoachWords[wordIndex];
                 if (!word) return;
                 const key = `${word.ayahIndex}-${word.wordIndex}`;
@@ -299,6 +303,7 @@ export function useCoach({
         isDuoMode,
         isFlashcardMode,
         isHandsFree,
+        isPassiveMode,
         wordStates,
         isListening,
         coachMistakes,
