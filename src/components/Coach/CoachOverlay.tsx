@@ -1,6 +1,7 @@
-import { Mic, Square, Volume2, X } from 'lucide-react';
+import { useState } from 'react';
+import { Volume2, X, GraduationCap, Users, Link2, Zap, Sparkles } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
-import type { CoachState } from '../../hooks/useCoach';
+import type { CoachState, CoachMode } from '../../hooks/useCoach';
 
 interface CoachOverlayProps {
     coach: CoachState;
@@ -10,19 +11,35 @@ interface CoachOverlayProps {
     pageAyahsLength: number;
 }
 
+const COACH_MODES = [
+    {
+        category: 'Apprentissage',
+        modes: [
+            { id: 'solo' as CoachMode, icon: GraduationCap, label: 'Solo', desc: 'Validation mot à mot' },
+            { id: 'duo_echo' as CoachMode, icon: Users, label: 'Duo Écho', desc: 'Répétez après le Cheikh' }
+        ]
+    },
+    {
+        category: 'Examens',
+        modes: [
+            { id: 'link' as CoachMode, icon: Link2, label: "L'Enchaînement", desc: 'Récitez le verset suivant' },
+            { id: 'flash_start' as CoachMode, icon: Zap, label: 'Flash-Débuts', desc: 'Finir le verset lancé' },
+            { id: 'magic_reveal' as CoachMode, icon: Sparkles, label: 'Révélation', desc: 'Dévoiler le Mus\'haf' }
+        ]
+    }
+];
+
 export function CoachOverlay({
     coach,
     audioPlaying,
-    stopAudio,
-    playAyahAtIndex,
-    pageAyahsLength,
 }: CoachOverlayProps) {
     const {
         isCoachMode,
+        coachMode,
+        duoPhase,
         coachTotalProcessed,
         coachProgress,
         coachAccuracy,
-        allCoachWords,
         coachMistakesCount,
         coachMistakes,
         coachInterimText,
@@ -31,52 +48,120 @@ export function CoachOverlay({
         setSelectedError,
         showMistakesSummary,
         setShowMistakesSummary,
-        startCoachListening,
-        stopCoachListening,
+        selectCoachMode,
     } = coach;
 
-    if (!isCoachMode) return null;
+    const [isCenterOpen, setIsCenterOpen] = useState(false);
+
+    // If no mode is selected, show the floating FAB
+    if (!isCoachMode) {
+        return (
+            <>
+                <button
+                    className="mih-coach-aura"
+                    onClick={() => setIsCenterOpen(true)}
+                    title="Ouvrir le Centre de Coaching"
+                >
+                    <GraduationCap size={24} />
+                    <span className="mih-coach-aura-glow"></span>
+                </button>
+
+                {isCenterOpen && (
+                    <>
+                        <div className="mih-sheet-overlay" onClick={() => setIsCenterOpen(false)} />
+                        <div className="mih-coach-center">
+                            <div className="mih-coach-center__handle" />
+                            <div className="mih-coach-center__header">
+                                <span className="mih-coach-center__title">
+                                    <GraduationCap size={20} />
+                                    Mode Coach
+                                </span>
+                                <button className="mih-sheet__close" onClick={() => setIsCenterOpen(false)}>
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="mih-coach-center__content">
+                                {COACH_MODES.map(group => (
+                                    <div key={group.category} className="mih-coach-group">
+                                        <h4 className="mih-coach-group-title">{group.category}</h4>
+                                        <div className="mih-coach-grid">
+                                            {group.modes.map(mode => {
+                                                const Icon = mode.icon;
+                                                return (
+                                                    <button
+                                                        key={mode.id}
+                                                        className="mih-coach-card"
+                                                        onClick={() => {
+                                                            selectCoachMode(mode.id);
+                                                            setIsCenterOpen(false);
+                                                        }}
+                                                    >
+                                                        <div className="mih-coach-card-icon">
+                                                            <Icon size={24} />
+                                                        </div>
+                                                        <span className="mih-coach-card-label">{mode.label}</span>
+                                                        <span className="mih-coach-card-desc">{mode.desc}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
+            </>
+        );
+    }
+
+    // Active session UI (Coach is running)
+    const activeIcon = COACH_MODES.flatMap(g => g.modes).find(m => m.id === coachMode)?.icon || GraduationCap;
+    const ActiveIcon = activeIcon;
 
     return (
         <>
-            {/* ===== Coach Progress Bar ===== */}
-            {coachTotalProcessed > 0 && (
-                <div className="mih-coach-bar">
-                    <div className="mih-coach-bar__fill" style={{ width: `${coachProgress * 100}%` }} />
-                    <span className="mih-coach-bar__text">
-                        {coachAccuracy}% • {coachTotalProcessed}/{allCoachWords.length} mots
-                        {coachMistakesCount > 0 && (
-                            <button className="mih-coach-bar__errors" onClick={() => setShowMistakesSummary(true)}>
-                                {coachMistakesCount} erreur{coachMistakesCount > 1 ? 's' : ''}
-                            </button>
-                        )}
-                    </span>
+            {/* Active Session Floating Pill */}
+            <div className={`mih-coach-session ${audioPlaying ? 'mih-coach-session--reciter' : ''}`}>
+                <div className="mih-coach-session__header">
+                    <button className="mih-coach-session__close" onClick={() => selectCoachMode(null)}>
+                        <X size={16} />
+                    </button>
+                    <div className="mih-coach-session__status">
+                        <ActiveIcon size={16} />
+                        <span className="mih-coach-session__text">
+                            {duoPhase === 'reciter' ? 'Le Cheikh récite...' : (isListening ? 'À vous...' : 'Coach actif')}
+                        </span>
+                    </div>
                 </div>
-            )}
 
-            {/* ===== Coach Floating Mic ===== */}
-            <div className="mih-coach-controls">
-                <button
-                    className="mih-coach-listen-btn"
-                    onClick={() => {
-                        if (pageAyahsLength === 0) return;
-                        if (audioPlaying) {
-                            stopAudio();
-                        } else {
-                            playAyahAtIndex(0);
-                        }
-                    }}
-                    title={audioPlaying ? "Arrêter l'écoute" : "Écouter le verset (Récitateur)"}
-                >
-                    {audioPlaying ? <Square size={18} /> : <Volume2 size={18} />}
-                </button>
+                <div className="mih-coach-progress">
+                    <div className="mih-coach-progress__bar">
+                        <div className="mih-coach-progress__fill" style={{ width: `${coachProgress * 100}%` }} />
+                    </div>
+                    {coachTotalProcessed > 0 && (
+                        <div className="mih-coach-stats">
+                            <span>{coachAccuracy}%</span>
+                            <button
+                                className={`mih-coach-errors-btn ${coachMistakesCount > 0 ? 'has-errors' : ''}`}
+                                onClick={() => coachMistakesCount > 0 && setShowMistakesSummary(true)}
+                                disabled={coachMistakesCount === 0}
+                            >
+                                {coachMistakesCount} {-coachMistakesCount > 1 ? 'erreurs' : 'erreur'}
+                            </button>
+                        </div>
+                    )}
+                </div>
 
-                <button
-                    className={`mih-coach-mic ${isListening ? 'mih-coach-mic--active' : ''}`}
-                    onClick={isListening ? stopCoachListening : startCoachListening}
-                >
-                    {isListening ? <Square size={28} /> : <Mic size={28} />}
-                </button>
+                {isListening && (
+                    <div className="mih-coach-waveform">
+                        <div className="bar"></div>
+                        <div className="bar"></div>
+                        <div className="bar"></div>
+                        <div className="bar"></div>
+                    </div>
+                )}
             </div>
 
             {/* ===== Coach Interim Text ===== */}

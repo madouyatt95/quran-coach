@@ -11,11 +11,6 @@ import {
     RotateCcw,
     Square,
     BookmarkCheck,
-    Mic,
-    MicOff,
-    Eye,
-    EyeOff,
-    Lightbulb,
     Languages,
     AlignJustify,
     BookOpen,
@@ -341,59 +336,44 @@ export function HifdhPage() {
         setSelectionEnd(null);
     };
 
-    // Poke hint — play 2 words starting from the first masked/current word (Cross-Verse)
-    const handlePoke = useCallback(async () => {
-        if (!audioRef.current) return;
+    // Coach: Auto-play reciter audio when entering 'reciter' phase
+    useEffect(() => {
+        if (!coach.isCoachMode || coach.duoPhase !== 'reciter') return;
 
-        let targetAyahIdx = currentAyahIndex;
-        let targetWordIdx = 0;
-        let found = false;
+        // Give a slight delay before the reciter starts to ensure states are completely updated
+        const timer = setTimeout(() => {
+            if (!audioRef.current || ayahs.length === 0) return;
 
-        if (coach.isCoachMode && coach.blindMode) {
-            // Search starting from current ayah to subsequent ones
-            for (let a = currentAyahIndex; a < ayahs.length; a++) {
-                const timings = allTimings.get(a);
-                if (!timings) continue;
-
-                for (let w = 0; w < timings.words.length; w++) {
-                    if (coach.wordStates.get(`${a}-${w}`) !== 'correct') {
-                        targetAyahIdx = a;
-                        targetWordIdx = w;
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) break;
-            }
-        }
-
-        const targetTimings = allTimings.get(targetAyahIdx);
-        if (!targetTimings) return;
-
-        const wordsToPlay = targetTimings.words.slice(targetWordIdx, targetWordIdx + 2);
-        if (wordsToPlay.length === 0) return;
-
-        const startTime = wordsToPlay[0].timestampFrom / 1000;
-        const endTime = wordsToPlay[wordsToPlay.length - 1].timestampTo / 1000;
-
-        if (targetAyahIdx !== currentAyahIndex) {
-            // Jump to next verse if needed
-            setCurrentAyahIndex(targetAyahIdx);
-            setSeekOnLoad(startTime);
-            setPokeEndTime(endTime);
+            resetSelection(); // Ensure no loop selection interferes
             setIsPlaying(true);
-        } else {
-            // Same verse, just play and stop
-            audioRef.current.currentTime = startTime;
-            setPokeEndTime(endTime);
-            if (!isPlaying) {
-                audioRef.current.play();
-                setIsPlaying(true);
-            }
-        }
-    }, [wordTimings, coach.isCoachMode, coach.blindMode, coach.wordStates, currentAyahIndex, ayahs, allTimings, isPlaying]);
 
-    // Auto-advance: when coach reaches 100%, advance after 2s
+            if (coach.coachMode === 'flash_start') {
+                // Play only the first 2 words of the current verse
+                const timings = allTimings.get(currentAyahIndex);
+                if (timings && timings.words.length > 0) {
+                    const wordsToPlay = Math.min(2, timings.words.length);
+                    const startTime = timings.words[0].timestampFrom / 1000;
+                    const endTime = timings.words[wordsToPlay - 1].timestampTo / 1000;
+                    audioRef.current.currentTime = startTime;
+                    setPokeEndTime(endTime);
+                } else {
+                    audioRef.current.currentTime = 0;
+                    // Fallback to playing 1.5 seconds if no timings
+                    setPokeEndTime(audioRef.current.currentTime + 1.5);
+                }
+            } else {
+                // Play full current verse
+                audioRef.current.currentTime = 0;
+                setPokeEndTime(null);
+            }
+
+            audioRef.current.play().catch(console.warn);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [coach.isCoachMode, coach.duoPhase, currentAyahIndex, coach.coachMode, ayahs.length, allTimings]);
+
+    // Auto-advance: when coach reaches 100% (student finishes)
     useEffect(() => {
         if (!coach.isCoachMode || coach.coachProgress < 1.0 || coach.allCoachWords.length === 0) {
             setAutoAdvanceCountdown(false);
@@ -405,16 +385,33 @@ export function HifdhPage() {
         }
 
         // 100% reached
-        if (currentAyahIndex < ayahs.length - 1) {
-            setAutoAdvanceCountdown(true);
-            autoAdvanceTimerRef.current = setTimeout(() => {
-                setAutoAdvanceCountdown(false);
-                setCurrentAyahIndex(prev => prev + 1);
-                coach.resetCoach();
-                // Auto-restart listening on next verse
-                setTimeout(() => coach.startCoachListening(), 300);
-            }, 2000);
-        }
+        setAutoAdvanceCountdown(true);
+        autoAdvanceTimerRef.current = setTimeout(() => {
+            setAutoAdvanceCountdown(false);
+
+            if (coach.coachMode === 'solo' || coach.coachMode === 'magic_reveal') {
+                if (currentAyahIndex < ayahs.length - 1) {
+                    setCurrentAyahIndex(prev => prev + 1);
+                    coach.resetCoach();
+                    setTimeout(() => coach.startCoachListening(), 300);
+                }
+            } else if (coach.coachMode === 'duo_echo' || coach.coachMode === 'flash_start') {
+                if (currentAyahIndex < ayahs.length - 1) {
+                    setCurrentAyahIndex(prev => prev + 1);
+                    coach.resetCoach();
+                    coach.setDuoPhase('reciter'); // Next turn starts with reciter
+                }
+            } else if (coach.coachMode === 'link') {
+                // In 'link', reciter played N, student recited N+1.
+                // Next turn: reciter plays N+2, student recites N+3.
+                if (currentAyahIndex + 2 < ayahs.length) {
+                    setCurrentAyahIndex(prev => prev + 2);
+                    coach.resetCoach();
+                    coach.setDuoPhase('reciter');
+                }
+            }
+
+        }, 1500); // 1.5s delay before advancing
 
         return () => {
             if (autoAdvanceTimerRef.current) {
@@ -422,7 +419,7 @@ export function HifdhPage() {
                 autoAdvanceTimerRef.current = null;
             }
         };
-    }, [coach.coachProgress, coach.isCoachMode, coach.allCoachWords.length, currentAyahIndex, ayahs.length]);
+    }, [coach.coachProgress, coach.isCoachMode, coach.coachMode, coach.allCoachWords.length, currentAyahIndex, ayahs.length]);
 
     const selectedTimeRange = useMemo(() => {
         if (selectionStart === null || selectionEnd === null) return null;
@@ -918,31 +915,6 @@ export function HifdhPage() {
                         >
                             <MousePointerClick size={18} />
                         </button>
-                        <button
-                            className={`hifdh-coach-toggle ${coach.isCoachMode ? 'active' : ''}`}
-                            onClick={coach.toggleCoachMode}
-                            title={coach.isCoachMode ? 'Désactiver le Coach' : 'Activer le Coach'}
-                        >
-                            {coach.isCoachMode ? <MicOff size={18} /> : <Mic size={18} />}
-                        </button>
-                        {coach.isCoachMode && (
-                            <>
-                                <button
-                                    className={`hifdh-coach-toggle ${coach.blindMode ? 'active' : ''}`}
-                                    onClick={coach.toggleBlindMode}
-                                    title={coach.blindMode ? 'Afficher les mots' : 'Récitation aveugle'}
-                                >
-                                    {coach.blindMode ? <Eye size={18} /> : <EyeOff size={18} />}
-                                </button>
-                                <button
-                                    className="hifdh-coach-toggle"
-                                    onClick={handlePoke}
-                                    title="Indice : écouter les 2 premiers mots"
-                                >
-                                    <Lightbulb size={18} />
-                                </button>
-                            </>
-                        )}
                     </div>
                 </div>
             </div>
@@ -956,11 +928,13 @@ export function HifdhPage() {
             )}
 
             {/* Auto-advance toast */}
-            {autoAdvanceCountdown && (
-                <div className="hifdh-auto-advance-toast">
-                    ✓ Verset suivant dans 2s…
-                </div>
-            )}
+            {
+                autoAdvanceCountdown && (
+                    <div className="hifdh-auto-advance-toast">
+                        ✓ Verset suivant dans 2s…
+                    </div>
+                )
+            }
 
             {/* Coach Overlay (progress bar, mic, modals) */}
             <CoachOverlay
@@ -972,13 +946,15 @@ export function HifdhPage() {
             />
 
             {/* SRS Memorization Controls */}
-            {currentAyah && (
-                <SRSControls
-                    surah={selectedSurah}
-                    ayah={currentAyah.numberInSurah}
-                    onReviewComplete={handleNext}
-                />
-            )}
+            {
+                currentAyah && (
+                    <SRSControls
+                        surah={selectedSurah}
+                        ayah={currentAyah.numberInSurah}
+                        onReviewComplete={handleNext}
+                    />
+                )
+            }
 
             {/* Secondary Controls (Speed, Repeat) */}
             <div className="hifdh-footer-controls">
@@ -1009,6 +985,6 @@ export function HifdhPage() {
                 </div>
             </div>
 
-        </div>
+        </div >
     );
 }

@@ -4,6 +4,8 @@ import { getSupportedMimeType } from '../lib/audioUnlock';
 import type { Ayah } from '../types';
 
 export type WordState = 'correct' | 'error' | 'current' | 'unread';
+export type CoachMode = 'solo' | 'duo_echo' | 'link' | 'flash_start' | 'magic_reveal';
+export type DuoPhase = 'reciter' | 'student';
 
 interface UseCoachOptions {
     ayahs: Ayah[];
@@ -14,6 +16,8 @@ interface UseCoachOptions {
 
 export interface CoachState {
     isCoachMode: boolean;
+    coachMode: CoachMode | null;
+    duoPhase: DuoPhase | null;
     blindMode: boolean;
     wordStates: Map<string, WordState>;
     isListening: boolean;
@@ -30,10 +34,12 @@ export interface CoachState {
     coachProgress: number;
     resetCoach: () => void;
     coachJumpToWord: (ayahIndex: number, wordIndex: number) => void;
-    startCoachListening: () => void;
+    startCoachListening: (overrideAyahIndex?: number) => void;
     stopCoachListening: () => void;
     toggleCoachMode: () => void;
     toggleBlindMode: () => void;
+    selectCoachMode: (mode: CoachMode | null) => void;
+    setDuoPhase: (phase: DuoPhase | null) => void;
 }
 
 export function useCoach({
@@ -42,6 +48,8 @@ export function useCoach({
     playingIndex,
 }: UseCoachOptions): CoachState {
     const [isCoachMode, setIsCoachMode] = useState(false);
+    const [coachMode, setCoachMode] = useState<CoachMode | null>(null);
+    const [duoPhase, setDuoPhase] = useState<DuoPhase | null>(null);
     const [blindMode, setBlindMode] = useState(false);
     const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
     const [isListening, setIsListening] = useState(false);
@@ -117,13 +125,13 @@ export function useCoach({
     }, []);
 
     // Start listening (ASR)
-    const startCoachListening = useCallback(() => {
+    const startCoachListening = useCallback((overrideAyahIndex?: number) => {
         if (ayahs.length === 0) return;
         resetCoach();
 
         const expectedText = ayahs.map(a => a.text).join(' ');
 
-        const currentAyahIdx = playingIndex >= 0 ? playingIndex : 0;
+        const currentAyahIdx = overrideAyahIndex !== undefined ? overrideAyahIndex : (playingIndex >= 0 ? playingIndex : 0);
         const startWordIndex = allCoachWords.findIndex(w => w.ayahIndex === currentAyahIdx);
         const safeStartIndex = startWordIndex >= 0 ? startWordIndex : 0;
 
@@ -191,10 +199,41 @@ export function useCoach({
             stopCoachListening();
             resetCoach();
             setIsCoachMode(false);
+            setCoachMode(null);
+            setDuoPhase(null);
         } else {
             setIsCoachMode(true);
+            setCoachMode('solo');
         }
     }, [isCoachMode, stopCoachListening, resetCoach]);
+
+    // Select a specific coach mode from the menu
+    const selectCoachMode = useCallback((mode: CoachMode | null) => {
+        stopCoachListening();
+        resetCoach();
+        if (!mode) {
+            setIsCoachMode(false);
+            setCoachMode(null);
+            setDuoPhase(null);
+            setBlindMode(false);
+            return;
+        }
+
+        setIsCoachMode(true);
+        setCoachMode(mode);
+        if (mode === 'magic_reveal') {
+            setBlindMode(true);
+            setDuoPhase(null);
+            startCoachListening();
+        } else if (mode === 'solo') {
+            setBlindMode(false);
+            setDuoPhase(null);
+            startCoachListening();
+        } else if (mode === 'duo_echo' || mode === 'link' || mode === 'flash_start') {
+            setBlindMode(false);
+            setDuoPhase('reciter'); // Always start with the reciter
+        }
+    }, [stopCoachListening, resetCoach, startCoachListening]);
 
     // Toggle blind mode
     const toggleBlindMode = useCallback(() => {
@@ -226,6 +265,8 @@ export function useCoach({
 
     return {
         isCoachMode,
+        coachMode,
+        duoPhase,
         blindMode,
         wordStates,
         isListening,
@@ -246,5 +287,7 @@ export function useCoach({
         stopCoachListening,
         toggleCoachMode,
         toggleBlindMode,
+        selectCoachMode,
+        setDuoPhase,
     };
 }
