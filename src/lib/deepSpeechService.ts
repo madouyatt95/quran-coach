@@ -2,26 +2,19 @@
  * DeepSpeechService — Asynchronous Whisper-based transcription via HuggingFace.
  * 
  * This service is completely independent of speechRecognition.ts (the real-time Web Speech API).
- * It calls the HuggingFace Space directly via @gradio/client from the browser.
+ * It calls the HuggingFace Space's Gradio REST API directly with raw fetch (no @gradio/client).
  * Receives Arabic transcriptions and produces word-level diffs with Makharij analysis.
  */
 
-import { Client } from '@gradio/client';
-
 // --- Configuration ---
-// The user's HuggingFace Space (direct browser → HF, no Vercel proxy)
-const HF_SPACE = 'yatta95/quran-whisper-test';
+const HF_SPACE_URL = 'https://yatta95-quran-whisper-test.hf.space';
 
 // --- Types ---
 
 export interface MakharijAlert {
-    /** The letter the user said */
     spoken: string;
-    /** The letter that was expected */
     expected: string;
-    /** Number of times this confusion occurred */
     count: number;
-    /** Correction tip */
     tip: string;
 }
 
@@ -34,17 +27,11 @@ export interface WordDiff {
 }
 
 export interface ExamResult {
-    /** Overall accuracy 0-100 */
     accuracy: number;
-    /** Per-word diff */
     words: WordDiff[];
-    /** Letter confusion alerts */
     makharijAlerts: MakharijAlert[];
-    /** Raw transcription from Whisper */
     rawTranscription: string;
-    /** Total expected words */
     totalExpected: number;
-    /** Total correct words */
     totalCorrect: number;
 }
 
@@ -103,74 +90,90 @@ function similarity(a: string, b: string): number {
 }
 
 // --- WAV Conversion (browser-side) ---
-// MediaRecorder produces webm/opus or mp4/aac, but the HF space expects WAV.
-
 async function blobToWav(blob: Blob): Promise<Blob> {
     const audioContext = new AudioContext({ sampleRate: 16000 });
     const arrayBuffer = await blob.arrayBuffer();
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-    // Get mono channel
     const channelData = audioBuffer.getChannelData(0);
     const numSamples = channelData.length;
-
-    // Create WAV file
     const wavBuffer = new ArrayBuffer(44 + numSamples * 2);
     const view = new DataView(wavBuffer);
-
-    // WAV header
     const writeString = (offset: number, str: string) => {
         for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
     };
-
     writeString(0, 'RIFF');
     view.setUint32(4, 36 + numSamples * 2, true);
     writeString(8, 'WAVE');
     writeString(12, 'fmt ');
-    view.setUint32(16, 16, true);           // chunk size
-    view.setUint16(20, 1, true);            // PCM format
-    view.setUint16(22, 1, true);            // mono
-    view.setUint32(24, 16000, true);        // sample rate
-    view.setUint32(28, 16000 * 2, true);    // byte rate
-    view.setUint16(32, 2, true);            // block align
-    view.setUint16(34, 16, true);           // bits per sample
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, 16000, true);
+    view.setUint32(28, 16000 * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
     writeString(36, 'data');
     view.setUint32(40, numSamples * 2, true);
-
-    // Write PCM samples
     for (let i = 0; i < numSamples; i++) {
         const sample = Math.max(-1, Math.min(1, channelData[i]));
         view.setInt16(44 + i * 2, sample * 0x7FFF, true);
     }
-
     await audioContext.close();
     return new Blob([wavBuffer], { type: 'audio/wav' });
 }
 
-// --- Core API ---
+// --- Core API (raw fetch to Gradio REST API) ---
 
 /**
- * Send audio directly to HuggingFace Space via @gradio/client.
- * Converts audio to WAV format first (the HF space expects WAV, not webm).
- * The blob is released from memory after the call.
+ * Upload a file to the HuggingFace Gradio space and call predict.
+ * Uses raw fetch instead of @gradio/client (which has browser compatibility issues).
  */
 export async function transcribeAudio(audioBlob: Blob): Promise<string> {
     try {
-        // Convert browser audio (webm/mp4) to WAV for the HF space
+        // 1. Convert to WAV
         console.log('[DeepSpeech] Converting audio to WAV...');
         const wavBlob = await blobToWav(audioBlob);
-        console.log('[DeepSpeech] WAV conversion done, size:', wavBlob.size);
+        console.log('[DeepSpeech] WAV ready, size:', wavBlob.size);
 
-        const client = await Client.connect(HF_SPACE);
+        // 2. Upload file to Gradio
+        console.log('[DeepSpeech] Uploading to HuggingFace...');
+        const formData = new FormData();
+        formData.append('files', new File([wavBlob], 'recording.wav', { type: 'audio/wav' }));
 
-        // Pass WAV as a File object directly to Gradio's predict
-        console.log('[DeepSpeech] Sending to HuggingFace...');
-        const audioFile = new File([wavBlob], 'recording.wav', { type: 'audio/wav' });
-        const result = await client.predict(0, [audioFile]);
+        const uploadRes = await fetch(`${HF_SPACE_URL}/gradio_api/upload`, {
+            method: 'POST',
+            body: formData,
+        });
 
-        // The result.data is an array with the transcription string
-        const transcription = (result.data as string[])[0] || '';
-        console.log('[DeepSpeech] Transcription received:', transcription);
+        if (!uploadRes.ok) {
+            const errText = await uploadRes.text().catch(() => '');
+            throw new Error(`Upload échoué (${uploadRes.status}): ${errText.slice(0, 200)}`);
+        }
+
+        const uploadedFiles = await uploadRes.json();
+        const filePath = uploadedFiles[0]; // server-side path to the uploaded file
+        console.log('[DeepSpeech] File uploaded:', filePath);
+
+        // 3. Call predict with the uploaded file reference
+        console.log('[DeepSpeech] Calling predict...');
+        const predictRes = await fetch(`${HF_SPACE_URL}/gradio_api/run/predict`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                data: [filePath],
+                fn_index: 0,
+                session_hash: Math.random().toString(36).slice(2),
+            }),
+        });
+
+        if (!predictRes.ok) {
+            const errText = await predictRes.text().catch(() => '');
+            throw new Error(`Predict échoué (${predictRes.status}): ${errText.slice(0, 300)}`);
+        }
+
+        const predictResult = await predictRes.json();
+        const transcription = predictResult?.data?.[0] || '';
+        console.log('[DeepSpeech] Transcription:', transcription);
         return transcription;
     } catch (error) {
         console.error('[DeepSpeech] Transcription failed:', error);
