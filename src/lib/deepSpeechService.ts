@@ -112,14 +112,14 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
     try {
         const client = await Client.connect(HF_SPACE);
 
-        // Convert Blob to File for Gradio
-        const audioFile = new File([audioBlob], 'recording.webm', { type: audioBlob.type });
+        // Upload the audio blob first, then call predict
+        const audioFile = new File([audioBlob], 'recording.webm', { type: audioBlob.type || 'audio/webm' });
 
-        const result = await client.predict('/predict', {
-            audio_file: audioFile,
-        });
+        // Gradio 4+: gr.Interface doesn't create a named /predict endpoint.
+        // Use the first function (fn_index 0) with positional arguments.
+        const result = await client.predict(0, [audioFile]);
 
-        // The result.data is the transcription string
+        // The result.data is an array with the transcription string
         const transcription = (result.data as string[])[0] || '';
         return transcription;
     } catch (error) {
