@@ -97,9 +97,51 @@ export function HifdhPage() {
         coachRef.current = coach;
     }, [coach]);
 
+    const currentAyahIndexRef = useRef(currentAyahIndex);
+    useEffect(() => {
+        currentAyahIndexRef.current = currentAyahIndex;
+    }, [currentAyahIndex]);
+
     // Auto-advance state
     const [autoAdvanceCountdown, setAutoAdvanceCountdown] = useState(false);
     const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const handleCoachReciterFinished = useCallback((currentCoach: typeof coach) => {
+        const audio = audioRef.current;
+        if (audio) {
+            audio.pause();
+        }
+        setIsPlaying(false);
+        setPokeEndTime(null);
+
+        const currentIndex = currentAyahIndexRef.current;
+
+        if (currentCoach.coachMode === 'link') {
+            // L'Enchaînement: Reciter played N -> Student plays N+1
+            if (currentIndex < ayahs.length - 1) {
+                setCurrentAyahIndex(currentIndex + 1);
+                currentCoach.setDuoPhase('student');
+                setTimeout(() => currentCoach.startCoachListening(currentIndex + 1), 300);
+            } else {
+                currentCoach.setDuoPhase(null);
+            }
+        } else if (currentCoach.coachMode === 'flash_start') {
+            // Flash-Débuts: Reciter played start of N -> Student recites rest of N
+            currentCoach.setDuoPhase('student');
+            setTimeout(() => {
+                currentCoach.startCoachListening(currentIndex);
+                const timings = allTimings.get(currentIndex);
+                if (timings && timings.words.length > 0) {
+                    const wordsPlayed = Math.min(2, timings.words.length);
+                    setTimeout(() => currentCoach.coachJumpToWord(currentIndex, wordsPlayed), 50);
+                }
+            }, 300);
+        } else {
+            // Duo Echo: Reciter played N -> Student repeats N
+            currentCoach.setDuoPhase('student');
+            setTimeout(() => currentCoach.startCoachListening(currentIndex), 300);
+        }
+    }, [ayahs.length, allTimings]);
 
     // Handle incoming verse from navigation state (Deep link)
     useEffect(() => {
@@ -434,21 +476,13 @@ export function HifdhPage() {
                 if (currentAyahIndex < ayahs.length - 1) {
                     setCurrentAyahIndex(prev => prev + 1);
                     coach.resetCoach();
-                    setTimeout(() => coach.startCoachListening(), 300);
+                    setTimeout(() => coach.startCoachListening(currentAyahIndex + 1), 300);
                 }
-            } else if (coach.coachMode === 'duo_echo' || coach.coachMode === 'flash_start') {
+            } else if (coach.coachMode === 'duo_echo' || coach.coachMode === 'flash_start' || coach.coachMode === 'link') {
                 if (currentAyahIndex < ayahs.length - 1) {
                     setCurrentAyahIndex(prev => prev + 1);
                     coach.resetCoach();
-                    coach.setDuoPhase('reciter'); // Next turn starts with reciter
-                }
-            } else if (coach.coachMode === 'link') {
-                // In 'link', reciter played N, student recited N+1.
-                // Next turn: reciter plays N+2, student recites N+3.
-                if (currentAyahIndex + 2 < ayahs.length) {
-                    setCurrentAyahIndex(prev => prev + 2);
-                    coach.resetCoach();
-                    coach.setDuoPhase('reciter');
+                    coach.setDuoPhase('reciter'); // Next turn starts with reciter for the new verse
                 }
             }
 
@@ -527,8 +561,7 @@ export function HifdhPage() {
     const handleAudioEnded = useCallback(() => {
         const currentCoach = coachRef.current;
         if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
-            currentCoach.setDuoPhase('student');
-            setTimeout(() => currentCoach.startCoachListening(), 300);
+            handleCoachReciterFinished(currentCoach);
             return;
         }
 
@@ -572,8 +605,7 @@ export function HifdhPage() {
 
                 const currentCoach = coachRef.current;
                 if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
-                    currentCoach.setDuoPhase('student');
-                    setTimeout(() => currentCoach.startCoachListening(), 300);
+                    handleCoachReciterFinished(currentCoach);
                 }
                 return;
             }
@@ -590,8 +622,7 @@ export function HifdhPage() {
                     if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
                         audio.pause();
                         setIsPlaying(false);
-                        currentCoach.setDuoPhase('student');
-                        setTimeout(() => currentCoach.startCoachListening(), 300);
+                        handleCoachReciterFinished(currentCoach);
                         return;
                     }
 
@@ -624,8 +655,7 @@ export function HifdhPage() {
                 if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
                     audio.pause();
                     setIsPlaying(false);
-                    currentCoach.setDuoPhase('student');
-                    setTimeout(() => currentCoach.startCoachListening(), 300);
+                    handleCoachReciterFinished(currentCoach);
                     return;
                 }
             }
