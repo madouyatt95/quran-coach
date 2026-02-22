@@ -18,7 +18,8 @@ import {
     Lightbulb,
     Languages,
     AlignJustify,
-    BookOpen
+    BookOpen,
+    MousePointerClick
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -67,6 +68,9 @@ export function HifdhPage() {
     const [singleVerseMode, setSingleVerseMode] = useState(() => {
         try { return localStorage.getItem('hifdh-single-verse') === 'true'; } catch { return false; }
     });
+
+    // Word selection mode
+    const [isWordSelectionMode, setIsWordSelectionMode] = useState(false);
 
     // Player state
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -267,15 +271,20 @@ export function HifdhPage() {
         const word = timings.words[wIdx];
         const startTime = word.timestampFrom / 1000;
 
+        if (!isWordSelectionMode) {
+            // Lecture au clic (just play from this word immediately)
+            resetSelection();
+            setCurrentAyahIndex(aIdx);
+            setSeekOnLoad(startTime);
+            setIsPlaying(true);
+            return;
+        }
+
+        // Mode sélection de boucle (prevent playback on click, just select)
         if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
             // Start of a new selection OR single word playback
             setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
             setSelectionEnd(null);
-
-            // Immediate Playback like Mushaf page
-            setCurrentAyahIndex(aIdx);
-            setSeekOnLoad(startTime);
-            setIsPlaying(true);
         } else {
             // Completing a selection range
             const startPos = selectionStart.ayahIndex * 1000 + selectionStart.wordIndex;
@@ -283,13 +292,8 @@ export function HifdhPage() {
             if (clickPos < startPos) {
                 setSelectionEnd(selectionStart);
                 setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
-
-                // Play from the new start
-                setCurrentAyahIndex(aIdx);
-                setSeekOnLoad(startTime);
             } else {
                 setSelectionEnd({ ayahIndex: aIdx, wordIndex: wIdx });
-                // Keep playing from current position
             }
         }
     };
@@ -865,6 +869,16 @@ export function HifdhPage() {
                         <button className="hifdh-player__btn" onClick={handleNext}><SkipForward size={20} /></button>
                         <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
                             <Repeat size={20} />
+                        </button>
+                        <button
+                            className={`hifdh-coach-toggle ${isWordSelectionMode ? 'active' : ''}`}
+                            onClick={() => {
+                                setIsWordSelectionMode(!isWordSelectionMode);
+                                if (isWordSelectionMode) resetSelection();
+                            }}
+                            title={isWordSelectionMode ? 'Désactiver la sélection de mots' : 'Activer la sélection de mots en boucle'}
+                        >
+                            <MousePointerClick size={18} />
                         </button>
                         <button
                             className={`hifdh-coach-toggle ${coach.isCoachMode ? 'active' : ''}`}
