@@ -2,14 +2,15 @@
  * DeepSpeechService — Asynchronous Whisper-based transcription via HuggingFace.
  * 
  * This service is completely independent of speechRecognition.ts (the real-time Web Speech API).
- * It sends recorded audio to the Vercel API endpoint (/api/transcribe), which forwards it
- * to the user's HuggingFace Space running Tarteel Whisper.
+ * It calls the HuggingFace Space directly via @gradio/client from the browser.
  * Receives Arabic transcriptions and produces word-level diffs with Makharij analysis.
  */
 
+import { Client } from '@gradio/client';
+
 // --- Configuration ---
-// The Vercel API endpoint that proxies to HuggingFace
-const API_ENDPOINT = '/api/transcribe';
+// The user's HuggingFace Space (direct browser → HF, no Vercel proxy)
+const HF_SPACE = 'yatta95/quran-whisper-test';
 
 // --- Types ---
 
@@ -101,48 +102,26 @@ function similarity(a: string, b: string): number {
     return 1 - levenshtein(a, b) / maxLen;
 }
 
-// --- Helper: Convert Blob to base64 ---
-function blobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const dataUrl = reader.result as string;
-            // Strip the "data:...;base64," prefix
-            const base64 = dataUrl.split(',')[1];
-            resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-}
-
 // --- Core API ---
 
 /**
- * Send audio to the Vercel API endpoint (/api/transcribe) which forwards
- * to the HuggingFace Space. Returns Arabic transcription.
+ * Send audio directly to HuggingFace Space via @gradio/client.
  * The blob is released from memory after the call.
  */
 export async function transcribeAudio(audioBlob: Blob): Promise<string> {
     try {
-        const base64Audio = await blobToBase64(audioBlob);
+        const client = await Client.connect(HF_SPACE);
 
-        const response = await fetch(API_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                audio: base64Audio,
-                mimeType: audioBlob.type,
-            }),
+        // Convert Blob to File for Gradio
+        const audioFile = new File([audioBlob], 'recording.webm', { type: audioBlob.type });
+
+        const result = await client.predict('/predict', {
+            audio_file: audioFile,
         });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
-            throw new Error(errorData.error || `Erreur serveur ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.transcribed || '';
+        // The result.data is the transcription string
+        const transcription = (result.data as string[])[0] || '';
+        return transcription;
     } catch (error) {
         console.error('[DeepSpeech] Transcription failed:', error);
         throw new Error(`Échec de la transcription IA: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
