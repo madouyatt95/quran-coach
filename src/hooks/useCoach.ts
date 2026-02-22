@@ -94,15 +94,24 @@ export function useCoach({
 
             setWordStates(prev => {
                 const next = new Map(prev);
-                allCoachWords.forEach((_, i) => {
-                    if (i > wordKeyIndex) {
-                        const word = allCoachWords[i];
+
+                // Mark skipped words as 'correct' for progress tracking if we are jumping forward
+                allCoachWords.forEach((word, i) => {
+                    if (i < wordKeyIndex) {
+                        const state = next.get(`${word.ayahIndex}-${word.wordIndex}`);
+                        if (state !== 'correct' && state !== 'error') {
+                            next.set(`${word.ayahIndex}-${word.wordIndex}`, 'correct');
+                        }
+                    } else if (i > wordKeyIndex) {
                         next.delete(`${word.ayahIndex}-${word.wordIndex}`);
                     }
                 });
                 next.set(`${ayahIndex}-${wordIndex}`, 'current');
                 return next;
             });
+
+            // Sync the processed count to reflect the jumped words
+            setCoachTotalProcessed(prev => Math.max(prev, wordKeyIndex));
         }
     }, [isCoachMode, allCoachWords]);
 

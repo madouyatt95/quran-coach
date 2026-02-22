@@ -478,11 +478,17 @@ export function HifdhPage() {
                     coach.resetCoach();
                     setTimeout(() => coach.startCoachListening(currentAyahIndex + 1), 300);
                 }
-            } else if (coach.coachMode === 'duo_echo' || coach.coachMode === 'flash_start' || coach.coachMode === 'link') {
+            } else if (coach.coachMode === 'link') {
                 if (currentAyahIndex < ayahs.length - 1) {
-                    setCurrentAyahIndex(prev => prev + 1);
+                    setCurrentAyahIndex(prev => prev + 1); // Student finished N+1 -> Reciter starts N+2
                     coach.resetCoach();
-                    coach.setDuoPhase('reciter'); // Next turn starts with reciter for the new verse
+                    coach.setDuoPhase('reciter');
+                }
+            } else if (coach.coachMode === 'duo_echo' || coach.coachMode === 'flash_start') {
+                if (currentAyahIndex < ayahs.length - 1) {
+                    setCurrentAyahIndex(prev => prev + 1); // Student finished N -> Reciter starts N+1
+                    coach.resetCoach();
+                    coach.setDuoPhase('reciter');
                 }
             }
 
