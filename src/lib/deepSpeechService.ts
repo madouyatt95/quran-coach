@@ -6,7 +6,7 @@
  * Receives Arabic transcriptions and produces word-level diffs with Makharij analysis.
  */
 
-import { Client, handle_file } from '@gradio/client';
+import { Client } from '@gradio/client';
 
 // --- Configuration ---
 // The user's HuggingFace Space (direct browser → HF, no Vercel proxy)
@@ -163,9 +163,10 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
 
         const client = await Client.connect(HF_SPACE);
 
-        // @gradio/client v2: pass the Blob directly to handle_file()
+        // Pass WAV as a File object directly to Gradio's predict
         console.log('[DeepSpeech] Sending to HuggingFace...');
-        const result = await client.predict(0, [handle_file(wavBlob)]);
+        const audioFile = new File([wavBlob], 'recording.wav', { type: 'audio/wav' });
+        const result = await client.predict(0, [audioFile]);
 
         // The result.data is an array with the transcription string
         const transcription = (result.data as string[])[0] || '';
