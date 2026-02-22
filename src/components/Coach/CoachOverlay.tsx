@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Volume2, X, GraduationCap, Users, Link2, Sparkles, Brain, Square, Loader2 } from 'lucide-react';
+import { Volume2, X, GraduationCap, Users, Link2, Sparkles, BookOpenCheck, Square, Loader2 } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
 import type { CoachState, CoachMode } from '../../hooks/useCoach';
 import { useDeepCoach } from '../../hooks/useDeepCoach';
@@ -166,7 +166,7 @@ export function CoachOverlay({
 
                     {/* AI-Powered Exam Mode */}
                     <div className="mih-coach-group">
-                        <h4 className="mih-coach-group-title">🧠 Intelligence Artificielle</h4>
+                        <h4 className="mih-coach-group-title">🎯 Coach Expert</h4>
                         <div className="mih-coach-grid">
                             <button
                                 className="mih-coach-card mih-coach-card--ai"
@@ -176,7 +176,7 @@ export function CoachOverlay({
                                 }}
                             >
                                 <div className="mih-coach-card-icon mih-coach-card-icon--ai">
-                                    <Brain size={24} />
+                                    <BookOpenCheck size={24} />
                                 </div>
                                 <span className="mih-coach-card-label">Mode Examen</span>
                                 <span className="mih-coach-card-desc">Récitez, l'IA analyse</span>
