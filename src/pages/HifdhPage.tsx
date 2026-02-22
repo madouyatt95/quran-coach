@@ -348,31 +348,48 @@ export function HifdhPage() {
         resetSelection(); // Ensure no loop selection interferes
         setIsPlaying(true);
 
-        if (coach.coachMode === 'flash_start') {
-            // Play only the first 2 words of the current verse
-            const timings = allTimings.get(currentAyahIndex);
-            if (timings && timings.words.length > 0) {
-                const wordsToPlay = Math.min(2, timings.words.length);
-                const startTime = timings.words[0].timestampFrom / 1000;
-                const endTime = timings.words[wordsToPlay - 1].timestampTo / 1000;
-                audioRef.current.currentTime = startTime;
-                setPokeEndTime(endTime);
-            } else {
-                audioRef.current.currentTime = 0;
-                // Fallback to playing 1.5 seconds if no timings
-                setPokeEndTime(audioRef.current.currentTime + 1.5);
-            }
-        } else {
-            // Play full current verse
-            audioRef.current.currentTime = 0;
-            setPokeEndTime(null);
-        }
+        const triggerPlayback = async () => {
+            const audio = audioRef.current;
+            if (!audio) return;
 
-        // Catch the autoplay restriction if any
-        audioRef.current.play().catch((err) => {
-            console.warn('Autoplay prevented:', err);
-            setIsPlaying(false);
-        });
+            try {
+                if (coach.coachMode === 'flash_start') {
+                    // Play only the first 2 words of the current verse
+                    const timings = allTimings.get(currentAyahIndex);
+                    let targetTime = 0;
+                    if (timings && timings.words.length > 0) {
+                        const wordsToPlay = Math.min(2, timings.words.length);
+                        targetTime = timings.words[0].timestampFrom / 1000;
+                        setPokeEndTime(timings.words[wordsToPlay - 1].timestampTo / 1000);
+                    } else {
+                        setPokeEndTime(1.5);
+                    }
+
+                    if (audio.readyState >= 1) {
+                        audio.currentTime = targetTime;
+                        await audio.play();
+                    } else {
+                        setSeekOnLoad(targetTime);
+                    }
+                } else {
+                    // Play full current verse
+                    setPokeEndTime(null);
+                    if (audio.readyState >= 1) {
+                        audio.currentTime = 0;
+                        await audio.play();
+                    } else {
+                        setSeekOnLoad(0);
+                    }
+                }
+            } catch (err) {
+                console.warn('Autoplay prevented or interrupted:', err);
+                setIsPlaying(false);
+            }
+        };
+
+        // Brief timeout allows React to update DOM elements and sync the new src if needed
+        const timer = setTimeout(triggerPlayback, 100);
+        return () => clearTimeout(timer);
     }, [coach.isCoachMode, coach.duoPhase, currentAyahIndex, coach.coachMode, ayahs.length, allTimings]);
 
     // Auto-advance: when coach reaches 100% (student finishes)
