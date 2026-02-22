@@ -5,7 +5,7 @@ import type { Ayah } from '../types';
 
 export type WordState = 'correct' | 'error' | 'current' | 'unread';
 export type CoachMode = 'solo' | 'duo_echo' | 'link' | 'flash_start' | 'magic_reveal';
-export type DuoPhase = 'reciter' | 'student';
+export type DuoPhase = 'reciter' | 'student' | 'waiting';
 
 interface UseCoachOptions {
     ayahs: Ayah[];
@@ -221,17 +221,16 @@ export function useCoach({
 
         setIsCoachMode(true);
         setCoachMode(mode);
+
         if (mode === 'magic_reveal') {
             setBlindMode(true);
-            setDuoPhase(null);
-            startCoachListening();
+            setDuoPhase('waiting');
         } else if (mode === 'solo') {
             setBlindMode(false);
-            setDuoPhase(null);
-            startCoachListening();
+            setDuoPhase('waiting');
         } else if (mode === 'duo_echo' || mode === 'link' || mode === 'flash_start') {
             setBlindMode(false);
-            setDuoPhase('reciter'); // Always start with the reciter
+            setDuoPhase('waiting');
         }
     }, [stopCoachListening, resetCoach, startCoachListening]);
 

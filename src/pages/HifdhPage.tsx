@@ -245,12 +245,28 @@ export function HifdhPage() {
         }
     }, [ayahs, selectedSurah]);
 
-    // Handle Word Selection for Loop (disabled in Coach mode)
+    // Handle Word Selection for Loop or Coach Initiation
     const handleWordClick = (aIdx: number, wIdx: number) => {
         setPokeEndTime(null);
+
+        // Coach Initiation Logic
         if (coach.isCoachMode) {
-            coach.coachJumpToWord(aIdx, wIdx);
-            return;
+            if (coach.duoPhase === 'waiting') {
+                // Start the session explicitly from the clicked verse
+                setCurrentAyahIndex(aIdx);
+
+                if (coach.coachMode === 'solo' || coach.coachMode === 'magic_reveal') {
+                    coach.setDuoPhase('student');
+                    setTimeout(() => coach.startCoachListening(), 300);
+                } else {
+                    coach.setDuoPhase('reciter');
+                }
+                return;
+            } else {
+                // During active session, clicking a word provides a hint/jump
+                coach.coachJumpToWord(aIdx, wIdx);
+                return;
+            }
         }
 
         const clickPos = aIdx * 1000 + wIdx;
@@ -264,17 +280,23 @@ export function HifdhPage() {
                 // Lecture au clic (just play from this word immediately)
                 resetSelection();
                 setIsPlaying(true);
+                setCurrentAyahIndex(aIdx);
 
-                if (aIdx === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
-                    // Same ayah: play immediately without reloading source
-                    audioRef.current.currentTime = startTime;
-                    const playPromise = audioRef.current.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(console.warn);
+                if (audioRef.current) {
+                    if (audioRef.current.readyState >= 1) {
+                        try {
+                            audioRef.current.currentTime = startTime;
+                            const playPromise = audioRef.current.play();
+                            if (playPromise !== undefined) {
+                                playPromise.catch(err => console.warn('Play prevented:', err));
+                            }
+                        } catch (err) {
+                            console.warn("Could not seek before load completed.", err);
+                        }
+                    } else {
+                        setSeekOnLoad(startTime);
                     }
                 } else {
-                    // Different ayah: state change will trigger the useEffect to load new src and seek
-                    setCurrentAyahIndex(aIdx);
                     setSeekOnLoad(startTime);
                 }
                 return;

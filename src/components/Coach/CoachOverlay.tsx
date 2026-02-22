@@ -131,7 +131,9 @@ export function CoachOverlay({
                     <div className="mih-coach-session__status">
                         <ActiveIcon size={16} />
                         <span className="mih-coach-session__text">
-                            {duoPhase === 'reciter' ? 'Le Cheikh récite...' : (isListening ? 'À vous...' : 'Coach actif')}
+                            {duoPhase === 'waiting' ? 'Sélectionnez un verset...' :
+                                duoPhase === 'reciter' ? 'Le Cheikh récite...' :
+                                    isListening ? 'À vous...' : 'Coach actif'}
                         </span>
                     </div>
                 </div>
