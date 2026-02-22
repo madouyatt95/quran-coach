@@ -254,11 +254,25 @@ export function useCoach({
         return Math.round(((coachTotalProcessed - coachMistakesCount) / coachTotalProcessed) * 100);
     }, [coachTotalProcessed, coachMistakesCount]);
 
-    // Coach progress fraction
+    // Coach progress fraction for the CURRENT verse
     const coachProgress = useMemo(() => {
-        if (allCoachWords.length === 0) return 0;
-        return coachTotalProcessed / allCoachWords.length;
-    }, [coachTotalProcessed, allCoachWords.length]);
+        if (allCoachWords.length === 0 || playingIndex < 0) return 0;
+
+        // Filter words belonging to the actively playing/recited verse
+        const activeAyahWords = allCoachWords.filter(w => w.ayahIndex === playingIndex);
+        if (activeAyahWords.length === 0) return 0;
+
+        // Count how many words in this verse have been processed (correct or error)
+        let processedInAyah = 0;
+        activeAyahWords.forEach(w => {
+            const state = wordStates.get(`${w.ayahIndex}-${w.wordIndex}`);
+            if (state === 'correct' || state === 'error') {
+                processedInAyah++;
+            }
+        });
+
+        return Math.min(1, processedInAyah / activeAyahWords.length);
+    }, [wordStates, allCoachWords, playingIndex]);
 
     // Save score when coach finishes
     useEffect(() => {
