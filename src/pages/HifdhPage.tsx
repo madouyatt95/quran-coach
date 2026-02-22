@@ -92,6 +92,11 @@ export function HifdhPage() {
         playingIndex: currentAyahIndex,
     });
 
+    const coachRef = useRef(coach);
+    useEffect(() => {
+        coachRef.current = coach;
+    }, [coach]);
+
     // Auto-advance state
     const [autoAdvanceCountdown, setAutoAdvanceCountdown] = useState(false);
     const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -338,39 +343,36 @@ export function HifdhPage() {
 
     // Coach: Auto-play reciter audio when entering 'reciter' phase
     useEffect(() => {
-        if (!coach.isCoachMode || coach.duoPhase !== 'reciter') return;
+        if (!coach.isCoachMode || coach.duoPhase !== 'reciter' || !audioRef.current || ayahs.length === 0) return;
 
-        // Give a slight delay before the reciter starts to ensure states are completely updated
-        const timer = setTimeout(() => {
-            if (!audioRef.current || ayahs.length === 0) return;
+        resetSelection(); // Ensure no loop selection interferes
+        setIsPlaying(true);
 
-            resetSelection(); // Ensure no loop selection interferes
-            setIsPlaying(true);
-
-            if (coach.coachMode === 'flash_start') {
-                // Play only the first 2 words of the current verse
-                const timings = allTimings.get(currentAyahIndex);
-                if (timings && timings.words.length > 0) {
-                    const wordsToPlay = Math.min(2, timings.words.length);
-                    const startTime = timings.words[0].timestampFrom / 1000;
-                    const endTime = timings.words[wordsToPlay - 1].timestampTo / 1000;
-                    audioRef.current.currentTime = startTime;
-                    setPokeEndTime(endTime);
-                } else {
-                    audioRef.current.currentTime = 0;
-                    // Fallback to playing 1.5 seconds if no timings
-                    setPokeEndTime(audioRef.current.currentTime + 1.5);
-                }
+        if (coach.coachMode === 'flash_start') {
+            // Play only the first 2 words of the current verse
+            const timings = allTimings.get(currentAyahIndex);
+            if (timings && timings.words.length > 0) {
+                const wordsToPlay = Math.min(2, timings.words.length);
+                const startTime = timings.words[0].timestampFrom / 1000;
+                const endTime = timings.words[wordsToPlay - 1].timestampTo / 1000;
+                audioRef.current.currentTime = startTime;
+                setPokeEndTime(endTime);
             } else {
-                // Play full current verse
                 audioRef.current.currentTime = 0;
-                setPokeEndTime(null);
+                // Fallback to playing 1.5 seconds if no timings
+                setPokeEndTime(audioRef.current.currentTime + 1.5);
             }
+        } else {
+            // Play full current verse
+            audioRef.current.currentTime = 0;
+            setPokeEndTime(null);
+        }
 
-            audioRef.current.play().catch(console.warn);
-        }, 500);
-
-        return () => clearTimeout(timer);
+        // Catch the autoplay restriction if any
+        audioRef.current.play().catch((err) => {
+            console.warn('Autoplay prevented:', err);
+            setIsPlaying(false);
+        });
     }, [coach.isCoachMode, coach.duoPhase, currentAyahIndex, coach.coachMode, ayahs.length, allTimings]);
 
     // Auto-advance: when coach reaches 100% (student finishes)
@@ -484,6 +486,13 @@ export function HifdhPage() {
     };
 
     const handleAudioEnded = useCallback(() => {
+        const currentCoach = coachRef.current;
+        if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
+            currentCoach.setDuoPhase('student');
+            setTimeout(() => currentCoach.startCoachListening(), 300);
+            return;
+        }
+
         if (currentRepeat < maxRepeats) {
             setCurrentRepeat(prev => prev + 1);
             if (audioRef.current) {
@@ -521,6 +530,12 @@ export function HifdhPage() {
                 audio.pause();
                 setIsPlaying(false);
                 setPokeEndTime(null);
+
+                const currentCoach = coachRef.current;
+                if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
+                    currentCoach.setDuoPhase('student');
+                    setTimeout(() => currentCoach.startCoachListening(), 300);
+                }
                 return;
             }
 
@@ -532,6 +547,15 @@ export function HifdhPage() {
 
                 // Handle end of range
                 if (isFinalVerseInRange && audio.currentTime >= (selectedTimeRange.end - margin)) {
+                    const currentCoach = coachRef.current;
+                    if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
+                        audio.pause();
+                        setIsPlaying(false);
+                        currentCoach.setDuoPhase('student');
+                        setTimeout(() => currentCoach.startCoachListening(), 300);
+                        return;
+                    }
+
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
 
@@ -553,6 +577,17 @@ export function HifdhPage() {
                 // Force seek on start verse if needed (extra safety)
                 if (isStartVerseInRange && seekOnLoad === null && audio.currentTime < selectedTimeRange.start - 0.2) {
                     audio.currentTime = selectedTimeRange.start;
+                }
+            } else if (isPlaying && audio.currentTime >= (audio.duration - (isIOS ? 0.3 : 0.05))) {
+                // Fallback for when no time range is selected (playing entire surah/page without selection)
+                // Or in Duo Mode when playing a single un-selected verse
+                const currentCoach = coachRef.current;
+                if (currentCoach.isCoachMode && currentCoach.duoPhase === 'reciter') {
+                    audio.pause();
+                    setIsPlaying(false);
+                    currentCoach.setDuoPhase('student');
+                    setTimeout(() => currentCoach.startCoachListening(), 300);
+                    return;
                 }
             }
 
@@ -582,6 +617,7 @@ export function HifdhPage() {
 
         audio.addEventListener('play', startRAF);
         audio.addEventListener('pause', stopRAF);
+        audio.addEventListener('ended', handleAudioEnded);
         audio.addEventListener('loadedmetadata', updateDuration);
 
         // Start RAF if already playing
