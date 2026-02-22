@@ -102,25 +102,77 @@ function similarity(a: string, b: string): number {
     return 1 - levenshtein(a, b) / maxLen;
 }
 
+// --- WAV Conversion (browser-side) ---
+// MediaRecorder produces webm/opus or mp4/aac, but the HF space expects WAV.
+
+async function blobToWav(blob: Blob): Promise<Blob> {
+    const audioContext = new AudioContext({ sampleRate: 16000 });
+    const arrayBuffer = await blob.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    // Get mono channel
+    const channelData = audioBuffer.getChannelData(0);
+    const numSamples = channelData.length;
+
+    // Create WAV file
+    const wavBuffer = new ArrayBuffer(44 + numSamples * 2);
+    const view = new DataView(wavBuffer);
+
+    // WAV header
+    const writeString = (offset: number, str: string) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + numSamples * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);           // chunk size
+    view.setUint16(20, 1, true);            // PCM format
+    view.setUint16(22, 1, true);            // mono
+    view.setUint32(24, 16000, true);        // sample rate
+    view.setUint32(28, 16000 * 2, true);    // byte rate
+    view.setUint16(32, 2, true);            // block align
+    view.setUint16(34, 16, true);           // bits per sample
+    writeString(36, 'data');
+    view.setUint32(40, numSamples * 2, true);
+
+    // Write PCM samples
+    for (let i = 0; i < numSamples; i++) {
+        const sample = Math.max(-1, Math.min(1, channelData[i]));
+        view.setInt16(44 + i * 2, sample * 0x7FFF, true);
+    }
+
+    await audioContext.close();
+    return new Blob([wavBuffer], { type: 'audio/wav' });
+}
+
 // --- Core API ---
 
 /**
  * Send audio directly to HuggingFace Space via @gradio/client.
+ * Converts audio to WAV format first (the HF space expects WAV, not webm).
  * The blob is released from memory after the call.
  */
 export async function transcribeAudio(audioBlob: Blob): Promise<string> {
     try {
+        // Convert browser audio (webm/mp4) to WAV for the HF space
+        console.log('[DeepSpeech] Converting audio to WAV...');
+        const wavBlob = await blobToWav(audioBlob);
+        console.log('[DeepSpeech] WAV conversion done, size:', wavBlob.size);
+
         const client = await Client.connect(HF_SPACE);
 
-        // Upload the audio blob first, then call predict
-        const audioFile = new File([audioBlob], 'recording.webm', { type: audioBlob.type || 'audio/webm' });
+        const audioFile = new File([wavBlob], 'recording.wav', { type: 'audio/wav' });
 
         // Gradio 4+: gr.Interface doesn't create a named /predict endpoint.
         // Use the first function (fn_index 0) with positional arguments.
+        console.log('[DeepSpeech] Sending to HuggingFace...');
         const result = await client.predict(0, [audioFile]);
 
         // The result.data is an array with the transcription string
         const transcription = (result.data as string[])[0] || '';
+        console.log('[DeepSpeech] Transcription received:', transcription);
         return transcription;
     } catch (error) {
         console.error('[DeepSpeech] Transcription failed:', error);
