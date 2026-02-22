@@ -1598,6 +1598,428 @@
     }
 }
 
+/* ========================================
+   AI Exam Mode Styles
+   ======================================== */
+
+/* AI Coach Card in Coach Center */
+.mih-coach-card--ai {
+    border: 1px solid rgba(147, 51, 234, 0.3) !important;
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.08), rgba(79, 70, 229, 0.08)) !important;
+}
+
+.mih-coach-card-icon--ai {
+    background: linear-gradient(135deg, #9333ea, #4f46e5) !important;
+    color: #fff !important;
+}
+
+/* Exam Recording Indicator */
+.exam-recording-indicator {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 100px;
+    padding: 8px 16px;
+    z-index: 1000;
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.2);
+}
+
+.exam-recording-indicator__dot {
+    width: 10px;
+    height: 10px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: exam-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes exam-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(0.8);
+    }
+}
+
+.exam-recording-indicator__timer {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: var(--text-ui-sm);
+    font-weight: 600;
+    color: #ef4444;
+    min-width: 40px;
+}
+
+.exam-recording-indicator__label {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+.exam-recording-indicator__stop {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #ef4444;
+    padding: 4px 10px;
+    font-size: var(--text-ui-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.exam-recording-indicator__stop:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+/* Analyzing Overlay */
+.exam-analyzing-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+}
+
+.exam-analyzing-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    background: var(--color-bg-card);
+    border-radius: 20px;
+    padding: 40px 48px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+}
+
+.exam-analyzing-card span {
+    font-size: var(--text-ui-md);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.exam-analyzing-spinner {
+    color: #9333ea;
+    animation: exam-spin 1s linear infinite;
+}
+
+@keyframes exam-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error Toast */
+.exam-error-toast {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(220, 38, 38, 0.9);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+    padding: 10px 16px;
+    z-index: 1200;
+    color: #fff;
+    font-size: var(--text-ui-sm);
+    box-shadow: 0 4px 24px rgba(220, 38, 38, 0.3);
+}
+
+.exam-error-toast button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Exam Result Overlay */
+.exam-overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    z-index: 1100;
+}
+
+.exam-overlay {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--color-bg-card);
+    border-radius: 24px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+    padding: 24px;
+    z-index: 1150;
+}
+
+.exam-overlay__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.exam-overlay__title {
+    font-size: var(--text-heading-sm);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.exam-overlay__close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: var(--color-text-secondary);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Score Card */
+.exam-score-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    padding: 20px;
+    border-left: 4px solid;
+    margin-bottom: 24px;
+}
+
+.exam-score-card__circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.exam-score-card__value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.exam-score-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.exam-score-card__label {
+    font-size: var(--text-ui-lg);
+    font-weight: 700;
+}
+
+.exam-score-card__detail {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Word Diff Section */
+.exam-section-title {
+    font-size: var(--text-ui-md);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.exam-diff-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    line-height: 2;
+    margin-bottom: 24px;
+    font-family: 'Amiri', 'KFGQPC Uthmanic Script HAFS', serif;
+    font-size: 20px;
+}
+
+.exam-diff-word {
+    padding: 2px 6px;
+    border-radius: 6px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    transition: all 0.2s;
+}
+
+.exam-diff-word--correct {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+}
+
+.exam-diff-word--missing {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.exam-diff-word--wrong {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+    border-bottom: 2px dashed #fb923c;
+}
+
+.exam-diff-icon--correct {
+    color: #4ade80;
+    flex-shrink: 0;
+}
+
+.exam-diff-spoken {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    font-family: var(--font-ui);
+}
+
+/* Makharij Section */
+.exam-makharij-section {
+    margin-bottom: 24px;
+}
+
+.exam-makharij-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exam-makharij-card {
+    background: rgba(251, 146, 60, 0.08);
+    border: 1px solid rgba(251, 146, 60, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.exam-makharij-card__letters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 24px;
+    font-family: 'Amiri', serif;
+}
+
+.exam-makharij-card__wrong {
+    color: #f87171;
+    font-weight: 700;
+}
+
+.exam-makharij-card__arrow {
+    color: var(--color-text-tertiary);
+    font-size: 14px;
+}
+
+.exam-makharij-card__correct {
+    color: #4ade80;
+    font-weight: 700;
+}
+
+.exam-makharij-card__count {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-ui);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.exam-makharij-card__tip {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Exam Actions */
+.exam-overlay__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.exam-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: var(--text-ui-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.exam-action-btn--retry {
+    background: linear-gradient(135deg, #9333ea, #7c3aed);
+    color: #fff;
+}
+
+.exam-action-btn--retry:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(147, 51, 234, 0.3);
+}
+
+.exam-action-btn--close {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.exam-action-btn--close:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+
 /* Mobile Adjustments for Player UI & Coach FAB */
 @media (max-width: 768px) {
     .hifdh-player-ui {

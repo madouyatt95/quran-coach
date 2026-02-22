@@ -1010,6 +1010,7 @@ export function HifdhPage() {
                 stopAudio={() => { if (audioRef.current) { audioRef.current.pause(); setIsPlaying(false); } }}
                 playAyahAtIndex={async () => { if (audioRef.current) { audioRef.current.currentTime = 0; audioRef.current.play(); setIsPlaying(true); } }}
                 pageAyahsLength={ayahs.length}
+                expectedText={ayahs.map(a => a.text).join(' ')}
             />
 
             {/* SRS Memorization Controls */}

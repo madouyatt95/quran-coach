@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Volume2, X, GraduationCap, Users, Link2, Sparkles } from 'lucide-react';
+import { Volume2, X, GraduationCap, Users, Link2, Sparkles, Brain, Square, Loader2 } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
 import type { CoachState, CoachMode } from '../../hooks/useCoach';
+import { useDeepCoach } from '../../hooks/useDeepCoach';
+import { ExamResultOverlay } from './ExamResultOverlay';
 
 interface CoachOverlayProps {
     coach: CoachState;
@@ -9,6 +11,8 @@ interface CoachOverlayProps {
     stopAudio: () => void;
     playAyahAtIndex: (idx: number) => Promise<void> | void;
     pageAyahsLength: number;
+    /** The full expected text of all currently loaded ayahs, for AI Exam comparison */
+    expectedText: string;
 }
 
 const COACH_MODES = [
@@ -31,6 +35,7 @@ const COACH_MODES = [
 export function CoachOverlay({
     coach,
     audioPlaying,
+    expectedText,
 }: CoachOverlayProps) {
     const {
         isCoachMode,
@@ -52,6 +57,137 @@ export function CoachOverlay({
 
     const [isCenterOpen, setIsCenterOpen] = useState(false);
 
+    // AI Exam Mode (completely independent of the real-time coach)
+    const deepCoach = useDeepCoach();
+
+    const formatDuration = (seconds: number) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
+
+    // Build the exam overlay UI (always renders regardless of coach mode state)
+    const examOverlayUI = (
+        <>
+            {/* Exam Recording Indicator */}
+            {deepCoach.examState === 'recording' && (
+                <div className="exam-recording-indicator">
+                    <div className="exam-recording-indicator__dot" />
+                    <span className="exam-recording-indicator__timer">
+                        {formatDuration(deepCoach.recordingDuration)}
+                    </span>
+                    <span className="exam-recording-indicator__label">Récitez...</span>
+                    <button
+                        className="exam-recording-indicator__stop"
+                        onClick={() => deepCoach.stopExamRecording(expectedText)}
+                    >
+                        <Square size={16} /> Arrêter
+                    </button>
+                </div>
+            )}
+
+            {/* Analyzing Spinner */}
+            {deepCoach.examState === 'analyzing' && (
+                <div className="exam-analyzing-overlay">
+                    <div className="exam-analyzing-card">
+                        <Loader2 size={32} className="exam-analyzing-spinner" />
+                        <span>Analyse IA en cours...</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Exam Error */}
+            {deepCoach.examError && (
+                <div className="exam-error-toast">
+                    <span>{deepCoach.examError}</span>
+                    <button onClick={() => deepCoach.clearExam()}>
+                        <X size={14} />
+                    </button>
+                </div>
+            )}
+
+            {/* Exam Results */}
+            {deepCoach.examState === 'results' && deepCoach.examResult && (
+                <ExamResultOverlay
+                    result={deepCoach.examResult}
+                    onRetry={() => {
+                        deepCoach.clearExam();
+                        deepCoach.startExamRecording();
+                    }}
+                    onClose={() => deepCoach.clearExam()}
+                />
+            )}
+        </>
+    );
+
+    // Coach Center modal content (shared)
+    const coachCenterModal = isCenterOpen ? (
+        <>
+            <div className="mih-sheet-overlay" onClick={() => setIsCenterOpen(false)} />
+            <div className="mih-coach-center">
+                <div className="mih-coach-center__handle" />
+                <div className="mih-coach-center__header">
+                    <span className="mih-coach-center__title">
+                        <GraduationCap size={20} />
+                        Mode Coach
+                    </span>
+                    <button className="mih-sheet__close" onClick={() => setIsCenterOpen(false)}>
+                        <X size={20} />
+                    </button>
+                </div>
+
+                <div className="mih-coach-center__content">
+                    {COACH_MODES.map(group => (
+                        <div key={group.category} className="mih-coach-group">
+                            <h4 className="mih-coach-group-title">{group.category}</h4>
+                            <div className="mih-coach-grid">
+                                {group.modes.map(mode => {
+                                    const Icon = mode.icon;
+                                    return (
+                                        <button
+                                            key={mode.id}
+                                            className="mih-coach-card"
+                                            onClick={() => {
+                                                selectCoachMode(mode.id);
+                                                setIsCenterOpen(false);
+                                            }}
+                                        >
+                                            <div className="mih-coach-card-icon">
+                                                <Icon size={24} />
+                                            </div>
+                                            <span className="mih-coach-card-label">{mode.label}</span>
+                                            <span className="mih-coach-card-desc">{mode.desc}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* AI-Powered Exam Mode */}
+                    <div className="mih-coach-group">
+                        <h4 className="mih-coach-group-title">🧠 Intelligence Artificielle</h4>
+                        <div className="mih-coach-grid">
+                            <button
+                                className="mih-coach-card mih-coach-card--ai"
+                                onClick={() => {
+                                    setIsCenterOpen(false);
+                                    deepCoach.startExamRecording();
+                                }}
+                            >
+                                <div className="mih-coach-card-icon mih-coach-card-icon--ai">
+                                    <Brain size={24} />
+                                </div>
+                                <span className="mih-coach-card-label">Mode Examen</span>
+                                <span className="mih-coach-card-desc">Récitez, l'IA analyse</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    ) : null;
+
     // If no mode is selected, show the floating FAB
     if (!isCoachMode) {
         return (
@@ -65,52 +201,8 @@ export function CoachOverlay({
                     <span className="mih-coach-aura-glow"></span>
                 </button>
 
-                {isCenterOpen && (
-                    <>
-                        <div className="mih-sheet-overlay" onClick={() => setIsCenterOpen(false)} />
-                        <div className="mih-coach-center">
-                            <div className="mih-coach-center__handle" />
-                            <div className="mih-coach-center__header">
-                                <span className="mih-coach-center__title">
-                                    <GraduationCap size={20} />
-                                    Mode Coach
-                                </span>
-                                <button className="mih-sheet__close" onClick={() => setIsCenterOpen(false)}>
-                                    <X size={20} />
-                                </button>
-                            </div>
-
-                            <div className="mih-coach-center__content">
-                                {COACH_MODES.map(group => (
-                                    <div key={group.category} className="mih-coach-group">
-                                        <h4 className="mih-coach-group-title">{group.category}</h4>
-                                        <div className="mih-coach-grid">
-                                            {group.modes.map(mode => {
-                                                const Icon = mode.icon;
-                                                return (
-                                                    <button
-                                                        key={mode.id}
-                                                        className="mih-coach-card"
-                                                        onClick={() => {
-                                                            selectCoachMode(mode.id);
-                                                            setIsCenterOpen(false);
-                                                        }}
-                                                    >
-                                                        <div className="mih-coach-card-icon">
-                                                            <Icon size={24} />
-                                                        </div>
-                                                        <span className="mih-coach-card-label">{mode.label}</span>
-                                                        <span className="mih-coach-card-desc">{mode.desc}</span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </>
-                )}
+                {coachCenterModal}
+                {examOverlayUI}
             </>
         );
     }
@@ -149,7 +241,7 @@ export function CoachOverlay({
                                 onClick={() => coachMistakesCount > 0 && setShowMistakesSummary(true)}
                                 disabled={coachMistakesCount === 0}
                             >
-                                {coachMistakesCount} {-coachMistakesCount > 1 ? 'erreurs' : 'erreur'}
+                                {coachMistakesCount} {coachMistakesCount > 1 ? 'erreurs' : 'erreur'}
                             </button>
                         </div>
                     )}
@@ -250,6 +342,8 @@ export function CoachOverlay({
                     </div>
                 </>
             )}
+
+            {examOverlayUI}
         </>
     );
 }
