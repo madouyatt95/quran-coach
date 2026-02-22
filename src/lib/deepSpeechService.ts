@@ -6,7 +6,7 @@
  * Receives Arabic transcriptions and produces word-level diffs with Makharij analysis.
  */
 
-import { Client } from '@gradio/client';
+import { Client, handle_file } from '@gradio/client';
 
 // --- Configuration ---
 // The user's HuggingFace Space (direct browser → HF, no Vercel proxy)
@@ -163,17 +163,21 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
 
         const client = await Client.connect(HF_SPACE);
 
-        const audioFile = new File([wavBlob], 'recording.wav', { type: 'audio/wav' });
+        // @gradio/client v2: use handle_file() to properly wrap blobs for upload
+        // Create a temporary URL for the blob so handle_file can process it
+        const blobUrl = URL.createObjectURL(wavBlob);
+        console.log('[DeepSpeech] Sending to HuggingFace via handle_file...');
 
-        // Gradio 4+: gr.Interface doesn't create a named /predict endpoint.
-        // Use the first function (fn_index 0) with positional arguments.
-        console.log('[DeepSpeech] Sending to HuggingFace...');
-        const result = await client.predict(0, [audioFile]);
+        try {
+            const result = await client.predict(0, [handle_file(blobUrl)]);
 
-        // The result.data is an array with the transcription string
-        const transcription = (result.data as string[])[0] || '';
-        console.log('[DeepSpeech] Transcription received:', transcription);
-        return transcription;
+            // The result.data is an array with the transcription string
+            const transcription = (result.data as string[])[0] || '';
+            console.log('[DeepSpeech] Transcription received:', transcription);
+            return transcription;
+        } finally {
+            URL.revokeObjectURL(blobUrl);
+        }
     } catch (error) {
         console.error('[DeepSpeech] Transcription failed:', error);
         throw new Error(`Échec de la transcription IA: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
