@@ -3,8 +3,6 @@ import { useLocation } from 'react-router-dom';
 import {
     Play,
     Pause,
-    SkipBack,
-    SkipForward,
     Repeat,
     Minus,
     Plus,
@@ -125,17 +123,6 @@ export function HifdhPage() {
             } else {
                 currentCoach.setDuoPhase(null);
             }
-        } else if (currentCoach.coachMode === 'flash_start') {
-            // Flash-Débuts: Reciter played start of N -> Student recites rest of N
-            currentCoach.setDuoPhase('student');
-            setTimeout(() => {
-                currentCoach.startCoachListening(currentIndex);
-                const timings = allTimings.get(currentIndex);
-                if (timings && timings.words.length > 0) {
-                    const wordsPlayed = Math.min(2, timings.words.length);
-                    setTimeout(() => currentCoach.coachJumpToWord(currentIndex, wordsPlayed), 50);
-                }
-            }, 300);
         } else {
             // Duo Echo: Reciter played N -> Student repeats N
             currentCoach.setDuoPhase('student');
@@ -417,33 +404,13 @@ export function HifdhPage() {
             if (!audio) return;
 
             try {
-                if (coach.coachMode === 'flash_start') {
-                    // Play only the first 2 words of the current verse
-                    const timings = allTimings.get(currentAyahIndex);
-                    let targetTime = 0;
-                    if (timings && timings.words.length > 0) {
-                        const wordsToPlay = Math.min(2, timings.words.length);
-                        targetTime = timings.words[0].timestampFrom / 1000;
-                        setPokeEndTime(timings.words[wordsToPlay - 1].timestampTo / 1000);
-                    } else {
-                        setPokeEndTime(1.5);
-                    }
-
-                    if (audio.readyState >= 1) {
-                        audio.currentTime = targetTime;
-                        await audio.play();
-                    } else {
-                        setSeekOnLoad(targetTime);
-                    }
+                // Play full current verse
+                setPokeEndTime(null);
+                if (audio.readyState >= 1) {
+                    audio.currentTime = 0;
+                    await audio.play();
                 } else {
-                    // Play full current verse
-                    setPokeEndTime(null);
-                    if (audio.readyState >= 1) {
-                        audio.currentTime = 0;
-                        await audio.play();
-                    } else {
-                        setSeekOnLoad(0);
-                    }
+                    setSeekOnLoad(0);
                 }
             } catch (err) {
                 console.warn('Autoplay prevented or interrupted:', err);
@@ -484,7 +451,7 @@ export function HifdhPage() {
                     coach.resetCoach();
                     coach.setDuoPhase('reciter');
                 }
-            } else if (coach.coachMode === 'duo_echo' || coach.coachMode === 'flash_start') {
+            } else if (coach.coachMode === 'duo_echo') {
                 if (currentAyahIndex < ayahs.length - 1) {
                     setCurrentAyahIndex(prev => prev + 1); // Student finished N -> Reciter starts N+1
                     coach.resetCoach();
@@ -554,15 +521,6 @@ export function HifdhPage() {
             recordPageRead();
         }
     }, [currentAyahIndex, ayahs.length, isLooping, recordPageRead]);
-
-    const handlePrev = () => {
-        setPokeEndTime(null);
-        if (currentAyahIndex > 0) {
-            setCurrentAyahIndex(prev => prev - 1);
-            setCurrentRepeat(1);
-            resetSelection();
-        }
-    };
 
     const handleAudioEnded = useCallback(() => {
         const currentCoach = coachRef.current;
@@ -1001,7 +959,6 @@ export function HifdhPage() {
                     </div>
 
                     <div className="hifdh-player__controls">
-                        <button className="hifdh-player__btn" onClick={handlePrev}><SkipBack size={20} /></button>
                         <button className="hifdh-player__btn" onClick={handlePlayPause}>
                             {isPlaying ? <Pause size={28} /> : <Play size={28} />}
                         </button>
@@ -1012,7 +969,6 @@ export function HifdhPage() {
                                 setIsPlaying(false);
                             }
                         }}><Square size={18} /></button>
-                        <button className="hifdh-player__btn" onClick={handleNext}><SkipForward size={20} /></button>
                         <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
                             <Repeat size={20} />
                         </button>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Volume2, X, GraduationCap, Users, Link2, Zap, Sparkles } from 'lucide-react';
+import { Volume2, X, GraduationCap, Users, Link2, Sparkles } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
 import type { CoachState, CoachMode } from '../../hooks/useCoach';
 
@@ -23,7 +23,6 @@ const COACH_MODES = [
         category: 'Examens',
         modes: [
             { id: 'link' as CoachMode, icon: Link2, label: "L'Enchaînement", desc: 'Récitez le verset suivant' },
-            { id: 'flash_start' as CoachMode, icon: Zap, label: 'Flash-Débuts', desc: 'Finir le verset lancé' },
             { id: 'magic_reveal' as CoachMode, icon: Sparkles, label: 'Révélation', desc: 'Dévoiler le Mus\'haf' }
         ]
     }

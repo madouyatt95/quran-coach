@@ -4,7 +4,7 @@ import { getSupportedMimeType } from '../lib/audioUnlock';
 import type { Ayah } from '../types';
 
 export type WordState = 'correct' | 'error' | 'current' | 'unread';
-export type CoachMode = 'solo' | 'duo_echo' | 'link' | 'flash_start' | 'magic_reveal';
+export type CoachMode = 'solo' | 'duo_echo' | 'link' | 'magic_reveal';
 export type DuoPhase = 'reciter' | 'student' | 'waiting';
 
 interface UseCoachOptions {
@@ -237,7 +237,7 @@ export function useCoach({
         } else if (mode === 'solo') {
             setBlindMode(false);
             setDuoPhase('waiting');
-        } else if (mode === 'duo_echo' || mode === 'link' || mode === 'flash_start') {
+        } else if (mode === 'duo_echo' || mode === 'link') {
             setBlindMode(false);
             setDuoPhase('waiting');
         }
