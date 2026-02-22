@@ -246,7 +246,7 @@ export function HifdhPage() {
     }, [ayahs, selectedSurah]);
 
     // Handle Word Selection for Loop (disabled in Coach mode)
-    const handleWordClick = async (aIdx: number, wIdx: number) => {
+    const handleWordClick = (aIdx: number, wIdx: number) => {
         setPokeEndTime(null);
         if (coach.isCoachMode) {
             coach.coachJumpToWord(aIdx, wIdx);
@@ -256,74 +256,83 @@ export function HifdhPage() {
         const clickPos = aIdx * 1000 + wIdx;
         const clickedAyah = ayahs[aIdx];
 
-        // Fetch timings for the clicked ayah if not already cached
-        let timings: VerseWords | null | undefined = allTimings.get(aIdx);
-        if (!timings) {
-            const fetched = await fetchWordTimings(selectedSurah, clickedAyah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID);
-            if (fetched) {
-                setAllTimings(prev => new Map(prev).set(aIdx, fetched));
-                timings = fetched;
+        const processClick = (timings: VerseWords) => {
+            const word = timings.words[wIdx];
+            const startTime = word.timestampFrom / 1000;
+
+            if (!isWordSelectionMode) {
+                // Lecture au clic (just play from this word immediately)
+                resetSelection();
+                setIsPlaying(true);
+
+                if (aIdx === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
+                    // Same ayah: play immediately without reloading source
+                    audioRef.current.currentTime = startTime;
+                    const playPromise = audioRef.current.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(console.warn);
+                    }
+                } else {
+                    // Different ayah: state change will trigger the useEffect to load new src and seek
+                    setCurrentAyahIndex(aIdx);
+                    setSeekOnLoad(startTime);
+                }
+                return;
             }
-        }
 
-        if (!timings) return;
-
-        const word = timings.words[wIdx];
-        const startTime = word.timestampFrom / 1000;
-
-        if (!isWordSelectionMode) {
-            // Lecture au clic (just play from this word immediately)
-            resetSelection();
-            setIsPlaying(true);
-
-            if (aIdx === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
-                // Same ayah: play immediately without reloading source
-                audioRef.current.currentTime = startTime;
-                audioRef.current.play().catch(console.warn);
-            } else {
-                // Different ayah: state change will trigger the useEffect to load new src and seek
-                setCurrentAyahIndex(aIdx);
-                setSeekOnLoad(startTime);
-            }
-            return;
-        }
-
-        // Mode sélection de boucle (prevent playback on click, just select)
-        if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
-            // Start of a new selection
-            setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
-            setSelectionEnd(null);
-            setCurrentAyahIndex(aIdx);
-            setSeekOnLoad(startTime);
-        } else {
-            // Completing a selection range
-            const startPos = selectionStart.ayahIndex * 1000 + selectionStart.wordIndex;
-
-            if (clickPos < startPos) {
-                setSelectionEnd(selectionStart);
+            // Mode sélection de boucle (prevent playback on click, just select)
+            if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
+                // Start of a new selection
                 setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
+                setSelectionEnd(null);
                 setCurrentAyahIndex(aIdx);
                 setSeekOnLoad(startTime);
             } else {
-                setSelectionEnd({ ayahIndex: aIdx, wordIndex: wIdx });
+                // Completing a selection range
+                const startPos = selectionStart.ayahIndex * 1000 + selectionStart.wordIndex;
 
-                // Auto-play the loop once selection is complete
-                const startT = allTimings.get(selectionStart.ayahIndex);
-                if (startT) {
-                    const startW = startT.words[selectionStart.wordIndex];
-                    if (startW) {
-                        const loopStartTime = startW.timestampFrom / 1000;
-                        if (selectionStart.ayahIndex === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
-                            audioRef.current.currentTime = loopStartTime;
-                            audioRef.current.play().catch(console.warn);
-                        } else {
-                            setCurrentAyahIndex(selectionStart.ayahIndex);
-                            setSeekOnLoad(loopStartTime);
+                if (clickPos < startPos) {
+                    setSelectionEnd(selectionStart);
+                    setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
+                    setCurrentAyahIndex(aIdx);
+                    setSeekOnLoad(startTime);
+                } else {
+                    setSelectionEnd({ ayahIndex: aIdx, wordIndex: wIdx });
+
+                    // Auto-play the loop once selection is complete
+                    const startT = allTimings.get(selectionStart.ayahIndex);
+                    if (startT) {
+                        const startW = startT.words[selectionStart.wordIndex];
+                        if (startW) {
+                            const loopStartTime = startW.timestampFrom / 1000;
+                            if (selectionStart.ayahIndex === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
+                                audioRef.current.currentTime = loopStartTime;
+                                const playPromise = audioRef.current.play();
+                                if (playPromise !== undefined) {
+                                    playPromise.catch(console.warn);
+                                }
+                            } else {
+                                setCurrentAyahIndex(selectionStart.ayahIndex);
+                                setSeekOnLoad(loopStartTime);
+                            }
+                            setIsPlaying(true);
                         }
-                        setIsPlaying(true);
                     }
                 }
             }
+        };
+
+        // If timings are already cached, process synchronously so mobile browsers don't block `play()`
+        const cachedTimings = allTimings.get(aIdx);
+        if (cachedTimings) {
+            processClick(cachedTimings);
+        } else {
+            fetchWordTimings(selectedSurah, clickedAyah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).then(fetched => {
+                if (fetched) {
+                    setAllTimings(prev => new Map(prev).set(aIdx, fetched));
+                    processClick(fetched);
+                }
+            });
         }
     };
 
