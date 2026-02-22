@@ -163,21 +163,14 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
 
         const client = await Client.connect(HF_SPACE);
 
-        // @gradio/client v2: use handle_file() to properly wrap blobs for upload
-        // Create a temporary URL for the blob so handle_file can process it
-        const blobUrl = URL.createObjectURL(wavBlob);
-        console.log('[DeepSpeech] Sending to HuggingFace via handle_file...');
+        // @gradio/client v2: pass the Blob directly to handle_file()
+        console.log('[DeepSpeech] Sending to HuggingFace...');
+        const result = await client.predict(0, [handle_file(wavBlob)]);
 
-        try {
-            const result = await client.predict(0, [handle_file(blobUrl)]);
-
-            // The result.data is an array with the transcription string
-            const transcription = (result.data as string[])[0] || '';
-            console.log('[DeepSpeech] Transcription received:', transcription);
-            return transcription;
-        } finally {
-            URL.revokeObjectURL(blobUrl);
-        }
+        // The result.data is an array with the transcription string
+        const transcription = (result.data as string[])[0] || '';
+        console.log('[DeepSpeech] Transcription received:', transcription);
+        return transcription;
     } catch (error) {
         console.error('[DeepSpeech] Transcription failed:', error);
         throw new Error(`Échec de la transcription IA: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
