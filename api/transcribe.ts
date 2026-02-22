@@ -46,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         } catch (hfError) {
             console.error('HuggingFace Space error:', hfError);
             return res.status(503).json({
-                error: 'Le service de transcription est temporairement indisponible. Réessayez dans quelques instants.',
+                error: `Erreur HuggingFace: ${String(hfError)}`,
                 details: String(hfError)
             });
         }
