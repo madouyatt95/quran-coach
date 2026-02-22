@@ -261,6 +261,8 @@
 
 .hifdh-ayah-container {
     margin-bottom: var(--space-xl);
+    padding-bottom: 120px;
+    /* Leave space for floating player */
 }
 
 .hifdh-words-grid {
@@ -526,11 +528,25 @@
     gap: var(--space-md);
 }
 
-/* Player UI */
+/* Player UI - Floating Panel */
 .hifdh-player-ui {
+    position: fixed;
+    bottom: max(var(--space-md), env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - var(--space-xl));
+    max-width: 480px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-sm) var(--space-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-xs);
+    z-index: 100;
 }
 
 .hifdh-player__progress {
