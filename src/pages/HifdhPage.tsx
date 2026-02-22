@@ -274,9 +274,17 @@ export function HifdhPage() {
         if (!isWordSelectionMode) {
             // Lecture au clic (just play from this word immediately)
             resetSelection();
-            setCurrentAyahIndex(aIdx);
-            setSeekOnLoad(startTime);
             setIsPlaying(true);
+
+            if (aIdx === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
+                // Same ayah: play immediately without reloading source
+                audioRef.current.currentTime = startTime;
+                audioRef.current.play().catch(console.warn);
+            } else {
+                // Different ayah: state change will trigger the useEffect to load new src and seek
+                setCurrentAyahIndex(aIdx);
+                setSeekOnLoad(startTime);
+            }
             return;
         }
 
