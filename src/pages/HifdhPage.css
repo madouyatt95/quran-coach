@@ -1597,3 +1597,22 @@
         height: 16px;
     }
 }
+
+/* Mobile Adjustments for Player UI & Coach FAB */
+@media (max-width: 768px) {
+    .hifdh-player-ui {
+        width: max-content;
+        max-width: calc(100% - 90px);
+        /* Leave space for the floating coach button on the right */
+        left: 16px;
+        /* Align near the left edge */
+        transform: none;
+        /* Remove centering transform */
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .hifdh-player__controls {
+        gap: var(--space-sm);
+        /* Reduce gap between buttons to save space */
+    }
+}
