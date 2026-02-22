@@ -234,6 +234,16 @@
     color: var(--color-accent);
 }
 
+.hifdh-verse-range__preset--active {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.hifdh-verse-range__preset--active:hover {
+    background: var(--color-accent-hover, var(--color-accent));
+    color: #fff;
+}
+
 /* Main Card */
 .hifdh-main-card {
     background: rgba(255, 255, 255, 0.05);

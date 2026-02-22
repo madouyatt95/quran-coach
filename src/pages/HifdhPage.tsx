@@ -16,7 +16,9 @@ import {
     Eye,
     EyeOff,
     Lightbulb,
-    Languages
+    Languages,
+    AlignJustify,
+    BookOpen
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -60,6 +62,11 @@ export function HifdhPage() {
     // Phonetics state
     const [showPhonetics, setShowPhonetics] = useState(false);
     const [transliterations, setTransliterations] = useState<Map<number, string>>(new Map());
+
+    // Single verse display mode (localStorage persisted)
+    const [singleVerseMode, setSingleVerseMode] = useState(() => {
+        try { return localStorage.getItem('hifdh-single-verse') === 'true'; } catch { return false; }
+    });
 
     // Player state
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -697,6 +704,18 @@ export function HifdhPage() {
                         >
                             5 versets
                         </button>
+                        <button
+                            className={`hifdh-verse-range__preset ${singleVerseMode ? 'hifdh-verse-range__preset--active' : ''}`}
+                            onClick={() => {
+                                const next = !singleVerseMode;
+                                setSingleVerseMode(next);
+                                try { localStorage.setItem('hifdh-single-verse', String(next)); } catch { }
+                            }}
+                            title={singleVerseMode ? 'Afficher tous les versets' : 'Afficher 1 seul verset'}
+                        >
+                            {singleVerseMode ? <AlignJustify size={14} /> : <BookOpen size={14} />}
+                            {singleVerseMode ? ' Tous' : ' Focus'}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -712,7 +731,7 @@ export function HifdhPage() {
                 <div className="hifdh-ayah-container" dir="rtl">
                     {ayahs.length > 0 ? (
                         <div className="hifdh-words-grid hifdh-mushaf-block">
-                            {ayahs.map((ayah, aIdx) => {
+                            {(singleVerseMode ? [{ ayah: ayahs[currentAyahIndex], aIdx: currentAyahIndex }] : ayahs.map((ayah, aIdx) => ({ ayah, aIdx }))).map(({ ayah, aIdx }) => {
                                 const isActive = aIdx === currentAyahIndex;
                                 const wordsContent = isActive && wordTimings
                                     ? wordTimings.words.map((word, wIdx) => {
