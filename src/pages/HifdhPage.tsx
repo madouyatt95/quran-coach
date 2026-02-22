@@ -290,9 +290,11 @@ export function HifdhPage() {
 
         // Mode sélection de boucle (prevent playback on click, just select)
         if (selectionStart === null || (selectionStart !== null && selectionEnd !== null)) {
-            // Start of a new selection OR single word playback
+            // Start of a new selection
             setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
             setSelectionEnd(null);
+            setCurrentAyahIndex(aIdx);
+            setSeekOnLoad(startTime);
         } else {
             // Completing a selection range
             const startPos = selectionStart.ayahIndex * 1000 + selectionStart.wordIndex;
@@ -300,8 +302,27 @@ export function HifdhPage() {
             if (clickPos < startPos) {
                 setSelectionEnd(selectionStart);
                 setSelectionStart({ ayahIndex: aIdx, wordIndex: wIdx });
+                setCurrentAyahIndex(aIdx);
+                setSeekOnLoad(startTime);
             } else {
                 setSelectionEnd({ ayahIndex: aIdx, wordIndex: wIdx });
+
+                // Auto-play the loop once selection is complete
+                const startT = allTimings.get(selectionStart.ayahIndex);
+                if (startT) {
+                    const startW = startT.words[selectionStart.wordIndex];
+                    if (startW) {
+                        const loopStartTime = startW.timestampFrom / 1000;
+                        if (selectionStart.ayahIndex === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
+                            audioRef.current.currentTime = loopStartTime;
+                            audioRef.current.play().catch(console.warn);
+                        } else {
+                            setCurrentAyahIndex(selectionStart.ayahIndex);
+                            setSeekOnLoad(loopStartTime);
+                        }
+                        setIsPlaying(true);
+                    }
+                }
             }
         }
     };
