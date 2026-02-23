@@ -154,20 +154,19 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
         const filePath = uploadedFiles[0]; // server-side path to the uploaded file
         console.log('[DeepSpeech] File uploaded:', filePath);
 
-        // 3. Call predict with the uploaded file reference
-        console.log('[DeepSpeech] Calling predict...');
-        const predictRes = await fetch(`${HF_SPACE_URL}/gradio_api/run/predict`, {
+        // 3. Call transcribe with the uploaded file reference
+        // Gradio 6.3.0: fn_index 2 = transcribe function, api_name = "transcribe"
+        console.log('[DeepSpeech] Calling transcribe...');
+        const predictRes = await fetch(`${HF_SPACE_URL}/gradio_api/run/transcribe`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 data: [{
                     path: filePath,
                     orig_name: 'recording.wav',
-                    size: wavBlob.size,
-                    mime_type: 'audio/wav',
                     meta: { _type: 'gradio.FileData' },
                 }],
-                fn_index: 0,
+                fn_index: 2,
                 session_hash: Math.random().toString(36).slice(2),
             }),
         });
