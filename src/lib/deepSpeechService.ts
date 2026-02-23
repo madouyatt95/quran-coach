@@ -154,10 +154,12 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
         const filePath = uploadedFiles[0]; // server-side path to the uploaded file
         console.log('[DeepSpeech] File uploaded:', filePath);
 
-        // 3. Call transcribe with the uploaded file reference
-        // Gradio 6.3.0: fn_index 2 = transcribe function, api_name = "transcribe"
-        console.log('[DeepSpeech] Calling transcribe...');
-        const predictRes = await fetch(`${HF_SPACE_URL}/gradio_api/run/transcribe`, {
+        // 3. Call transcribe via Gradio's Queue protocol (SSE)
+        // HuggingFace spaces enforce a queue, so direct /run POSTs return 404.
+        console.log('[DeepSpeech] Joining queue...');
+        const sessionHash = Math.random().toString(36).slice(2);
+
+        const joinRes = await fetch(`${HF_SPACE_URL}/gradio_api/queue/join`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -167,19 +169,58 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
                     meta: { _type: 'gradio.FileData' },
                 }],
                 fn_index: 2,
-                session_hash: Math.random().toString(36).slice(2),
+                session_hash: sessionHash,
             }),
         });
 
-        if (!predictRes.ok) {
-            const errText = await predictRes.text().catch(() => '');
-            throw new Error(`Predict échoué (${predictRes.status}): ${errText.slice(0, 300)}`);
+        if (!joinRes.ok) {
+            const errText = await joinRes.text().catch(() => '');
+            throw new Error(`Queue join échoué (${joinRes.status}): ${errText.slice(0, 300)}`);
         }
 
-        const predictResult = await predictRes.json();
-        const transcription = predictResult?.data?.[0] || '';
-        console.log('[DeepSpeech] Transcription:', transcription);
-        return transcription;
+        console.log('[DeepSpeech] Queue joined, waiting for result...');
+
+        // 4. Listen to SSE for the result
+        return new Promise<string>((resolve, reject) => {
+            const es = new EventSource(`${HF_SPACE_URL}/gradio_api/queue/data?session_hash=${sessionHash}`);
+
+            // Timeout after 60s
+            const timeout = setTimeout(() => {
+                es.close();
+                reject(new Error('Transcription timeout (60s)'));
+            }, 60000);
+
+            es.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    console.log('[DeepSpeech] Queue message:', msg.msg);
+
+                    if (msg.msg === 'process_completed') {
+                        clearTimeout(timeout);
+                        es.close();
+                        if (msg.success) {
+                            const transcription = msg.output?.data?.[0] || '';
+                            console.log('[DeepSpeech] Transcription:', transcription);
+                            resolve(transcription);
+                        } else {
+                            reject(new Error(msg.output?.error || 'Unknown Gradio error'));
+                        }
+                    } else if (msg.msg === 'estimation') {
+                        console.log(`[DeepSpeech] ETA: ${msg.rank_eta}s (Queue rank: ${msg.rank})`);
+                    } else if (msg.msg === 'process_starts') {
+                        console.log('[DeepSpeech] Processing started...');
+                    }
+                } catch (e) {
+                    // Ignore parse errors on ping messages
+                }
+            };
+
+            es.onerror = () => {
+                clearTimeout(timeout);
+                es.close();
+                reject(new Error('Connection to HuggingFace queue lost'));
+            };
+        });
     } catch (error) {
         console.error('[DeepSpeech] Transcription failed:', error);
         throw new Error(`Échec de la transcription IA: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
