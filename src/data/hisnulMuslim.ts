@@ -2102,7 +2102,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_21",
-                "title": " Posternation de la lecture du Quran",
+                "title": "Prosternation de la lecture du Coran",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2259,7 +2259,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_39",
-                "title": " quand ont craint un groupe de gens",
+                "title": "Quand on craint un groupe de gens",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
