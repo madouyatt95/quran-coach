@@ -6,7 +6,7 @@ import {
     Check,
     Trash2,
     Calendar,
-    ChevronRight
+    Zap
 } from 'lucide-react';
 import {
     useChallengesStore,
@@ -63,14 +63,6 @@ export function ChallengesPage() {
         setShowTemplates(false);
     };
 
-    // Navigate to reading page for a khatm challenge
-    const goToReading = (challengeId: string) => {
-        const reading = getTodayReading(challengeId);
-        if (reading) {
-            // Could navigate to specific page, for now just go to read
-            navigate('/read');
-        }
-    };
 
     return (
         <div className="challenges-page">
@@ -158,23 +150,23 @@ export function ChallengesPage() {
                                             </button>
                                         ) : isToday ? (
                                             <>
-                                                {challenge.type === 'khatm' && (
-                                                    <button
-                                                        className="challenge-btn challenge-btn--read"
-                                                        onClick={() => goToReading(challenge.id)}
-                                                    >
-                                                        Lire
-                                                        <ChevronRight size={16} />
-                                                    </button>
+                                                {challenge.type === 'khatm' ? (
+                                                    <div className="challenge-auto-tracking">
+                                                        <Zap size={14} />
+                                                        <span>Suivi automatique actif</span>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            className="challenge-btn challenge-btn--complete"
+                                                            style={{ backgroundColor: challenge.color }}
+                                                            onClick={() => markReadingChallengeComplete(challenge.id)}
+                                                        >
+                                                            <Check size={16} />
+                                                            Marquer fait
+                                                        </button>
+                                                    </>
                                                 )}
-                                                <button
-                                                    className="challenge-btn challenge-btn--complete"
-                                                    style={{ backgroundColor: challenge.color }}
-                                                    onClick={() => markReadingChallengeComplete(challenge.id)}
-                                                >
-                                                    <Check size={16} />
-                                                    Marquer fait
-                                                </button>
                                             </>
                                         ) : (
                                             <span className="challenge-next-day">

@@ -201,6 +201,17 @@
     color: var(--color-text-muted);
 }
 
+.challenge-auto-tracking {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-ui-xs);
+    color: #4facfe;
+    background: rgba(74, 172, 254, 0.1);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+}
+
 /* Templates Grid */
 .templates-grid {
     display: grid;

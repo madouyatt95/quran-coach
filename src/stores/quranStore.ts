@@ -83,6 +83,8 @@ export const useQuranStore = create<QuranState>()(
                         isExploring: false,
                         progress: { lastSurah: currentSurah, lastAyah: currentAyah, lastPage: currentPage, updatedAt: Date.now() }
                     });
+                    // Force also marks page as read in challenges
+                    import('./challengesStore').then(m => m.useChallengesStore.getState().markPageRead(currentPage));
                     return;
                 }
 
@@ -122,6 +124,10 @@ export const useQuranStore = create<QuranState>()(
                         updatedAt: Date.now()
                     }
                 });
+
+                // AUTOMATIC KHATM TRACKER:
+                // Only if NOT exploring (silent search) and NOT in a specifically frozen mode
+                import('./challengesStore').then(m => m.useChallengesStore.getState().markPageRead(currentPage));
             },
 
             stopExploring: () => set({ isExploring: false }),

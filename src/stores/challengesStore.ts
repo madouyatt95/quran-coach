@@ -324,7 +324,29 @@ export const useChallengesStore = create<ChallengesState>()(
             markPageRead: (pageNumber) => {
                 const state = get();
                 if (!state.khatmaPages.includes(pageNumber)) {
-                    set({ khatmaPages: [...state.khatmaPages, pageNumber] });
+                    const newKhatmaPages = [...state.khatmaPages, pageNumber];
+                    const today = getTodayDate();
+
+                    set({
+                        khatmaPages: newKhatmaPages,
+                        activeReadingChallenges: state.activeReadingChallenges.map(c => {
+                            if (c.type !== 'khatm') return c;
+
+                            // Automatically track progress based on unique pages read
+                            const newProgress = newKhatmaPages.length;
+                            const isNewDay = !c.completedDates.includes(today);
+
+                            // If user reads at least one new page today, we could count it as a "day of reading"
+                            // but markReadingChallengeComplete was manual. Here we make it natural.
+                            const newCompletedDates = isNewDay ? [...c.completedDates, today] : c.completedDates;
+
+                            return {
+                                ...c,
+                                progress: Math.min(newProgress, 604),
+                                completedDates: newCompletedDates
+                            };
+                        })
+                    });
                 }
             },
 
