@@ -79,7 +79,6 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     ];
 
     const TOOLS = [
-        { path: '/shazam', emoji: '🔍', label: 'Recherche Vocale', color: '#9C27B0' },
         { path: '/settings', emoji: '⚙️', label: 'Réglages', color: '#607D8B' },
     ];
     return (
