@@ -839,7 +839,7 @@ export const useQuizStore = create<QuizState>()(
                     // Victory Condition
                     const isWin = isDuelMatch
                         ? (score > latestOppScore)
-                        : (mode === 'sira' ? (correctCount > 0) : (correctRate >= 0.8));
+                        : (mode === 'sira' ? (correctCount === totalQ) : (correctRate >= 0.8));
 
                     const newHighScores = { ...soloHighScores };
                     if (mode === 'solo' && theme) {
@@ -871,7 +871,8 @@ export const useQuizStore = create<QuizState>()(
                         else if (percentage >= 70) stars = 2;
                         else if (percentage > 0) stars = 1;
 
-                        if (correctCount > 0) {
+                        // Only unlock next level if 100% (3 stars)
+                        if (stars === 3) {
                             get().completeSiraLevel(siraCurrentLevel.id, stars);
                         }
                     }
