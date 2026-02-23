@@ -50,6 +50,7 @@ export function SettingsPage() {
 
     const notif = useNotificationStore();
     const prayerStore = usePrayerStore();
+    const smart = useSmartStore();
     const [testSent, setTestSent] = useState(false);
     const [subscribing, setSubscribing] = useState(false);
     const [permDenied, setPermDenied] = useState(false);
@@ -421,15 +422,15 @@ export function SettingsPage() {
                         <ShieldCheck size={20} color="#c9a84c" /> Sentinelle Spirituelle
                     </h2>
                     <button
-                        className={`toggle ${useSmartStore.getState().globalEnabled ? 'active' : ''}`}
-                        onClick={() => useSmartStore.getState().setGlobalEnabled(!useSmartStore.getState().globalEnabled)}
+                        className={`toggle ${smart.globalEnabled ? 'active' : ''}`}
+                        onClick={() => smart.setGlobalEnabled(!smart.globalEnabled)}
                     >
                         <span className="toggle__knob" />
                     </button>
                 </div>
                 <p className="settings-section__intro">L'application veille pour vous sur les moments et contextes propices aux invocations.</p>
 
-                {useSmartStore.getState().globalEnabled && (
+                {smart.globalEnabled && (
                     <div className="settings-grid">
                         {/* Météo */}
                         <div className="settings-item-compact">
@@ -441,8 +442,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Pluie, orage et vents violents.</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().weatherEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setWeatherEnabled(!useSmartStore.getState().weatherEnabled)}
+                                className={`toggle sm ${smart.weatherEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setWeatherEnabled(!smart.weatherEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -458,8 +459,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Rappel les 13, 14, 15 du mois.</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().whiteDaysEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setWhiteDaysEnabled(!useSmartStore.getState().whiteDaysEnabled)}
+                                className={`toggle sm ${smart.whiteDaysEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setWhiteDaysEnabled(!smart.whiteDaysEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -475,8 +476,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Motivation et bénédiction matinale.</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().fajrBoosterEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setFajrBoosterEnabled(!useSmartStore.getState().fajrBoosterEnabled)}
+                                className={`toggle sm ${smart.fajrBoosterEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setFajrBoosterEnabled(!smart.fajrBoosterEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -492,8 +493,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Progression spécifique le vendredi.</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().alKahfEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setAlKahfEnabled(!useSmartStore.getState().alKahfEnabled)}
+                                className={`toggle sm ${smart.alKahfEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setAlKahfEnabled(!smart.alKahfEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -509,8 +510,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Rappel Jumu'ah (Fraternité).</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().kinshipEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setKinshipEnabled(!useSmartStore.getState().kinshipEnabled)}
+                                className={`toggle sm ${smart.kinshipEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setKinshipEnabled(!smart.kinshipEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -526,8 +527,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Éphémérides hégiriennes marquantes.</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().historyEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setHistoryEnabled(!useSmartStore.getState().historyEnabled)}
+                                className={`toggle sm ${smart.historyEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setHistoryEnabled(!smart.historyEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -543,8 +544,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Détection automatique de trajet.</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().travelEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setTravelEnabled(!useSmartStore.getState().travelEnabled)}
+                                className={`toggle sm ${smart.travelEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setTravelEnabled(!smart.travelEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
@@ -560,8 +561,8 @@ export function SettingsPage() {
                                 <span className="settings-item__description">Dernier tiers de la nuit.</span>
                             </div>
                             <button
-                                className={`toggle sm ${useSmartStore.getState().saharEnabled ? 'active' : ''}`}
-                                onClick={() => useSmartStore.getState().setSaharEnabled(!useSmartStore.getState().saharEnabled)}
+                                className={`toggle sm ${smart.saharEnabled ? 'active' : ''}`}
+                                onClick={() => smart.setSaharEnabled(!smart.saharEnabled)}
                             >
                                 <span className="toggle__knob" />
                             </button>
