@@ -640,3 +640,201 @@ a {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(0.9);
 }
+
+/* --- Quiz Enhancements - Offensive effects --- */
+.sandstorm-blur {
+  filter: blur(12px) saturate(0.4) sepia(0.4);
+  pointer-events: none;
+  transition: filter 0.8s ease;
+  user-select: none;
+  position: relative;
+}
+
+.sandstorm-blur::after {
+  content: '🌪️ TEMPÊTE DE SABLE !';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #f3e5ab;
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 5px rgba(218, 171, 0, 0.5);
+  z-index: 100;
+  white-space: nowrap;
+  letter-spacing: 2px;
+  animation: sand-shake 0.5s infinite;
+}
+
+@keyframes sand-shake {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(-52%, -48%) rotate(1deg);
+  }
+
+  50% {
+    transform: translate(-48%, -52%) rotate(-1deg);
+  }
+
+  75% {
+    transform: translate(-51%, -49%) rotate(0.5deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
+
+/* --- Sira Map Styles --- */
+.sira-map-container {
+  padding: 40px 20px;
+  background: radial-gradient(circle at top, #1a1a1a, #0a0a0a);
+  min-height: 100vh;
+  color: white;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+.sira-map-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.sira-map-header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #FFD700, #DAAB00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.sira-map-header p {
+  color: #aaa;
+  font-size: 1.1rem;
+}
+
+.sira-path {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  padding-bottom: 100px;
+}
+
+.sira-node-wrapper {
+  display: flex;
+  width: 100%;
+  position: relative;
+}
+
+.sira-node-wrapper.left {
+  justify-content: flex-start;
+}
+
+.sira-node-wrapper.right {
+  justify-content: flex-end;
+}
+
+.sira-node {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 320px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sira-node.unlocked:hover {
+  transform: scale(1.05) translateY(-5px);
+  border-color: #FFD700;
+  box-shadow: 0 15px 30px rgba(255, 215, 0, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sira-node.locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.sira-node-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFD700;
+  flex-shrink: 0;
+}
+
+.sira-node.completed .sira-node-icon {
+  background: #2e7d32;
+  border-color: #4caf50;
+  color: white;
+}
+
+.sira-node-content h3 {
+  font-size: 1.2rem;
+  margin: 4px 0;
+  color: #fff;
+  font-weight: 700;
+}
+
+.sira-node-order {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #FFD700;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.sira-node-year {
+  font-size: 0.9rem;
+  color: #888;
+  display: block;
+}
+
+/* Connectors */
+.sira-connector {
+  position: absolute;
+  width: 3px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+  height: 100px;
+  z-index: 1;
+}
+
+.sira-node-wrapper.left .sira-connector {
+  left: 48px;
+  top: 80px;
+}
+
+.sira-node-wrapper.right .sira-connector {
+  right: 48px;
+  top: 80px;
+}
+
+.sira-connector.active {
+  background: linear-gradient(to bottom, #FFD700, #DAAB00);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.star-filled {
+  fill: currentColor;
+}
