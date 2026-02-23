@@ -67,12 +67,19 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         }
     };
 
-    const menuItems = [
-        { path: '/quiz', emoji: '⚔️', label: 'Quiz', color: '#c9a84c' },
-        { path: '/listen', emoji: '🎧', label: 'Écoute', color: '#4CAF50' },
-        { path: '/hadiths', emoji: '📜', label: 'Hadiths', color: '#c9a84c' },
-        { path: '/tafsir', emoji: '📚', label: 'Tafsir', color: '#2196F3' },
-        { path: '/shazam', emoji: '🔍', label: 'Shazam', color: '#9C27B0' },
+    const SHORTCUTS = [
+        { path: '/quiz', emoji: '⚔️', label: 'Quiz', color: 'rgba(201,168,76,0.2)' },
+        { path: '/qibla', emoji: '🧭', label: 'Qibla', color: 'rgba(201,168,76,0.2)' },
+        { path: '/prayers', emoji: '🕌', label: 'Prières', color: 'rgba(255,152,0,0.2)' },
+        { path: '/themes', emoji: '📚', label: 'Thèmes', color: 'rgba(88,166,255,0.2)' },
+        { path: '/adhkar', emoji: '🤲', label: 'Adhkar', color: 'rgba(231,76,60,0.2)' },
+        { path: '/listen', emoji: '🎧', label: 'Écoute', color: 'rgba(76,175,80,0.2)' },
+        { path: '/hadiths', emoji: '📜', label: 'Hadiths', color: 'rgba(156,39,176,0.2)' },
+        { path: '/tafsir', emoji: '📖', label: 'Tafsir', color: 'rgba(121,85,72,0.2)' },
+    ];
+
+    const TOOLS = [
+        { path: '/shazam', emoji: '🔍', label: 'Recherche Vocale', color: '#9C27B0' },
         { path: '/settings', emoji: '⚙️', label: 'Réglages', color: '#607D8B' },
     ];
     return (
@@ -113,23 +120,35 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
                     <div className="side-menu-separator" />
 
-                    {menuItems.map((item) => (
-                        'disabled' in item && item.disabled ? (
-                            <div key={item.path} className="side-menu-item disabled">
-                                <span className="side-menu-emoji">{item.emoji}</span>
-                                <span>{item.label}</span>
-                            </div>
-                        ) : (
+                    <div className="side-menu-section-title">Accès Rapide</div>
+                    <div className="side-menu-shortcuts">
+                        {SHORTCUTS.map(s => (
                             <NavLink
-                                key={item.path}
-                                to={item.path}
-                                className={({ isActive }) => `side-menu-item ${isActive ? 'active' : ''}`}
+                                key={s.path}
+                                to={s.path}
+                                className={({ isActive }) => `side-menu-shortcut ${isActive ? 'active' : ''}`}
                                 onClick={onClose}
+                                style={{ background: `linear-gradient(135deg, ${s.color}, rgba(255,255,255,0.02))` }}
                             >
-                                <span className="side-menu-emoji">{item.emoji}</span>
-                                <span>{item.label}</span>
+                                <span className="side-menu-shortcut-emoji">{s.emoji}</span>
+                                <span className="side-menu-shortcut-label">{s.label}</span>
                             </NavLink>
-                        )
+                        ))}
+                    </div>
+
+                    <div className="side-menu-separator" />
+
+                    <div className="side-menu-section-title">Outils</div>
+                    {TOOLS.map((item) => (
+                        <NavLink
+                            key={item.path}
+                            to={item.path}
+                            className={({ isActive }) => `side-menu-item ${isActive ? 'active' : ''}`}
+                            onClick={onClose}
+                        >
+                            <span className="side-menu-emoji">{item.emoji}</span>
+                            <span>{item.label}</span>
+                        </NavLink>
                     ))}
                 </nav>
 
