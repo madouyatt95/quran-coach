@@ -124,13 +124,11 @@ export function KhatmTracker() {
     const [showSetup, setShowSetup] = useState(false);
 
     const progress = store.getOverallProgress();
-    const todayRange = store.getTodayRange();
     const todayRead = store.getTodayRead();
-    const dailyGoal = todayRange.end - todayRange.start + 1;
     const adaptiveGoal = store.getDailyGoal();
     const streak = store.getStreak();
     const daysLeft = store.getDaysRemaining();
-    const motivation = getMotivation(progress.pct, todayRead, dailyGoal);
+    const motivation = getMotivation(progress.pct, todayRead, adaptiveGoal);
 
     const handleResumeKhatm = () => {
         // Resume at the exact last khatm reading position (stored separately from general reading)
@@ -185,7 +183,7 @@ export function KhatmTracker() {
                                 <span className="khatm-stat-label">Total</span>
                             </div>
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">{todayRead}/{dailyGoal}</span>
+                                <span className="khatm-stat-value">{todayRead}/{adaptiveGoal}</span>
                                 <span className="khatm-stat-label">Aujourd'hui</span>
                             </div>
                             <div className="khatm-stat">

@@ -16,6 +16,10 @@ interface KhatmState {
     lastKhatmAyah: number;
     lastKhatmPage: number;
 
+    // Daily tracking
+    dailyReadCount?: number;
+    lastActiveDate?: string;
+
     // Actions
     activate: (start: string, end: string) => void;
     deactivate: () => void;
@@ -65,6 +69,8 @@ export const useKhatmStore = create<KhatmState>()(
                 lastKhatmSurah: 1,
                 lastKhatmAyah: 1,
                 lastKhatmPage: 1,
+                dailyReadCount: 0,
+                lastActiveDate: todayStr(),
             }),
 
             updateLastRead: (surah, ayah, page) => {
@@ -98,15 +104,27 @@ export const useKhatmStore = create<KhatmState>()(
             deactivate: () => set({ isActive: false }),
 
             togglePage: (page) => set((state) => {
+                const today = todayStr();
+                let dailyReadCount = state.dailyReadCount || 0;
+                let lastActiveDate = state.lastActiveDate || today;
+
+                // Reset counter if it's a new day
+                if (lastActiveDate !== today) {
+                    dailyReadCount = 0;
+                    lastActiveDate = today;
+                }
+
                 const pages = [...state.validatedPages];
                 const idx = pages.indexOf(page);
                 if (idx >= 0) {
                     pages.splice(idx, 1);
+                    dailyReadCount = Math.max(0, dailyReadCount - 1);
                 } else {
                     pages.push(page);
                     pages.sort((a, b) => a - b);
+                    dailyReadCount += 1;
                 }
-                return { validatedPages: pages };
+                return { validatedPages: pages, dailyReadCount, lastActiveDate };
             }),
 
             reset: () => set({ validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1 }),
@@ -163,9 +181,12 @@ export const useKhatmStore = create<KhatmState>()(
             },
 
             getTodayRead: () => {
-                const { start, end } = get().getTodayRange();
-                const validated = get().validatedPages;
-                return validated.filter(p => p >= start && p <= end).length;
+                const state = get();
+                const today = todayStr();
+                if (state.lastActiveDate !== today) {
+                    return 0;
+                }
+                return state.dailyReadCount || 0;
             },
 
             getStreak: () => {
