@@ -72,26 +72,36 @@ export function PlayingView() {
     };
 
     const [sandstormActive, setSandstormActive] = useState(false);
+    const processedEffectsRef = useRef<Set<string>>(new Set());
 
     // Watch for offensive effects
     useEffect(() => {
-        if (!player || !activeEffects) return;
+        if (!player || !activeEffects || activeEffects.length === 0) return;
+
         const myEffects = activeEffects.filter((e: PowerUpEffect) => e.targetId === player.id);
-        const hasSandstorm = myEffects.some((e: PowerUpEffect) => e.type === 'sandstorm' && (Date.now() - e.startTime < e.durationMs));
-        setSandstormActive(hasSandstorm);
+        const now = Date.now();
 
-        // Timer bomb effect
-        const bombs = myEffects.filter((e: PowerUpEffect) => e.type === 'timer-bomb');
-        if (bombs.length > 0) {
-            // Check if we already processed this bomb (simple version: compare count)
-            // For now, let's just reduce time if bomb exists (needs more robust tracking for production)
-            setTimeLeft(prev => Math.max(1, prev - 5));
-        }
+        myEffects.forEach((e: PowerUpEffect) => {
+            if (processedEffectsRef.current.has(e.id)) return;
 
-        if (hasSandstorm) {
-            const timer = setTimeout(() => setSandstormActive(false), 8000);
-            return () => clearTimeout(timer);
-        }
+            // Mark as processed immediately
+            processedEffectsRef.current.add(e.id);
+
+            if (e.type === 'sandstorm' && (now - e.startTime < e.durationMs)) {
+                setSandstormActive(true);
+                setTimeout(() => setSandstormActive(false), e.durationMs);
+            }
+
+            if (e.type === 'timer-bomb') {
+                // Apply bomb only once per receipt
+                setTimeLeft(prev => Math.max(1, prev - 5));
+            }
+
+            if (e.type === 'shield') {
+                // Shield can clear current offensive effects
+                setSandstormActive(false);
+            }
+        });
     }, [activeEffects, player]);
 
     if (!question) return null;

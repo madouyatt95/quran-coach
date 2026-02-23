@@ -650,8 +650,8 @@ export const useQuizStore = create<QuizState>()(
                         correctIndex: shuffled.indexOf(correctChoice)
                     };
                     set({ questions: newQuestions, powerUps: newPowerUps });
-                } else if (id === 'sandstorm' || id === 'timer-bomb') {
-                    // OFFENSIVE POWER-UPS (Duel only)
+                } else if (id === 'sandstorm' || id === 'timer-bomb' || id === 'shield') {
+                    // OFFENSIVE / DEFENSIVE POWER-UPS (Duel only)
                     if (mode !== 'duel') return;
                     const { matchId, player, opponent } = get();
                     if (!matchId || !player || !opponent) return;
@@ -659,12 +659,13 @@ export const useQuizStore = create<QuizState>()(
                     const effect: PowerUpEffect = {
                         id: uid(),
                         type: id,
-                        targetId: opponent.id,
+                        targetId: id === 'shield' ? player.id : opponent.id,
                         startTime: Date.now(),
-                        durationMs: id === 'sandstorm' ? 8000 : 0, // 8s for sandstorm, instant for bomb
+                        durationMs: id === 'sandstorm' ? 8000 : 0,
                     };
 
-                    // Update match in Supabase
+                    // Update match in Supabase - use atomic update via RPC if possible, 
+                    // or just a cleaner update for now.
                     supabase
                         .from('quiz_matches')
                         .select('activeEffects')
@@ -672,9 +673,13 @@ export const useQuizStore = create<QuizState>()(
                         .single()
                         .then(({ data }) => {
                             const currentEffects = (data?.activeEffects || []) as PowerUpEffect[];
+                            // Filter out expired effects while we are at it to keep DB clean
+                            const now = Date.now();
+                            const cleanEffects = currentEffects.filter(e => !e.durationMs || (now - e.startTime < e.durationMs + 2000));
+
                             supabase
                                 .from('quiz_matches')
-                                .update({ activeEffects: [...currentEffects, effect] })
+                                .update({ activeEffects: [...cleanEffects, effect] })
                                 .eq('id', matchId)
                                 .then();
                         });
@@ -889,11 +894,17 @@ export const useQuizStore = create<QuizState>()(
 
                     if (isWin) {
                         const { powerUps: currentPUs } = get();
-                        const rechargeOptions: PowerUpId[] = (['50-50', 'time-freeze', 'second-chance'] as PowerUpId[]).filter(id => currentPUs[id] < 5);
+                        // Recharge both solo and duel power-ups
+                        const allOptions: PowerUpId[] = isDuelMatch
+                            ? ['sandstorm', 'timer-bomb', 'shield']
+                            : ['50-50', 'time-freeze', 'second-chance'];
+
+                        const rechargeOptions = allOptions.filter(id => (currentPUs[id] || 0) < 5);
+
                         if (rechargeOptions.length > 0) {
                             const chosen = rechargeOptions[Math.floor(Math.random() * rechargeOptions.length)];
                             set({
-                                powerUps: { ...currentPUs, [chosen]: currentPUs[chosen] + 1 },
+                                powerUps: { ...currentPUs, [chosen]: (currentPUs[chosen] || 0) + 1 },
                                 lastPowerUpGained: chosen,
                             });
                         }
