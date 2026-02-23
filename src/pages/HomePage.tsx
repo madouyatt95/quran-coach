@@ -5,7 +5,7 @@ import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGr
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
-import { WeatherAdhkarCard } from '../components/Home/WeatherAdhkarCard';
+import { SmartSentinel } from '../components/Home/SmartSentinel';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -401,8 +401,8 @@ export function HomePage() {
                 ))}
             </div>
 
-            {/* Weather Context Adhkar (Dynamic) */}
-            <WeatherAdhkarCard />
+            {/* Sentinelle Spirituelle (Météo, Voyage, Sahar, etc.) */}
+            <SmartSentinel />
 
             {/* Hadith Card */}
             <div className="hadith-card">
