@@ -1264,6 +1264,28 @@ export function generateSiraLevels(): SiraLevel[] {
                 buildMCQ('stories', 'A-t-il fallu une grande bataille pour prendre la ville ?', 'Non, très peu de résistance', ['Oui, une bataille sanglante', 'Oui, un long siège', 'Non, la ville était déserte'])!,
             ],
             unlocked: false, completed: false, stars: 0,
+        },
+        {
+            id: 'sira_9',
+            order: 9,
+            title: 'Portrait du Messager',
+            titleAr: 'الشمائل المحمدية',
+            description: 'Sa description physique, ses goûts et ses nobles habitudes.',
+            location: 'Médine',
+            year: 'Sources Authentiques',
+            questions: [
+                buildMCQ('stories', 'Quelle était la taille du Prophète ﷺ selon les descriptions ?', 'De taille moyenne, ni trop grand ni petit', ['Très grand', 'De petite taille', 'Svelte et s\'élançant'])!,
+                buildMCQ('stories', 'Quelle était la couleur dominante des cheveux et de la barbe du Prophète ﷺ à sa mort ?', 'Noirs avec très peu de poils blancs', ['Entièrement blancs', 'Grisâtres', 'Bruns'])!,
+                buildMCQ('stories', 'Comment était la démarche du Prophète ﷺ ?', 'Énergique, comme s\'il descendait une pente', ['Lente et hésitante', 'Très rapide et saccadée', 'Fière et hautaine'])!,
+                buildMCQ('stories', 'Quel aliment le Prophète ﷺ appréciait-il particulièrement ?', 'Le miel et les mets sucrés', ['Les épices fortes', 'Les légumes amers', 'Le pain sec uniquement'])!,
+                buildMCQ('stories', 'Quelle était la couleur de peau du Prophète ﷺ ?', 'Blanche teintée de rougeur', ['Très mate', 'Pâle et jaunie', 'Noire intense'])!,
+                buildMCQ('stories', 'Comment étaient les yeux du Prophète ﷺ ?', 'Grands, noirs avec des cils longs', ['Petits et clairs', 'Bleus perçants', 'Enfoncés et sévères'])!,
+                buildMCQ('stories', 'Quelle partie de la viande le Prophète ﷺ préférait-il ?', 'L\'épaule', ['Le gigot', 'Le filet', 'La poitrine'])!,
+                buildMCQ('stories', 'De quoi se composait souvent le repas du Prophète ﷺ pendant des mois ?', 'L\'eau et les dattes (Al-Aswadayn)', ['De viande grillée', 'De soupe de légumes', 'De pain complet'])!,
+                buildMCQ('stories', 'Comment était le visage du Prophète ﷺ lorsqu\'il était joyeux ?', 'Il brillait comme la pleine lune', ['Il devenait rouge', 'Il restait sérieux', 'Il se couvrait de sueur'])!,
+                buildMCQ('stories', 'Quel attribut physique distinctif se trouvait entre ses deux épaules ?', 'Le Sceau de la Prophétie', ['Une cicatrice de guerre', 'Une tache de naissance', 'Un tatouage'])!,
+            ],
+            unlocked: false, completed: false, stars: 0,
         }
     ];
     return levels;
