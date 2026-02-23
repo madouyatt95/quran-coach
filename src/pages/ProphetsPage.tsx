@@ -8,6 +8,7 @@ import { companions } from '../data/companions';
 import type { Companion } from '../data/companions';
 import { useQuranStore } from '../stores/quranStore';
 import { ProphetsGraph } from '../components/Prophets/ProphetsGraph';
+import { SanadGraph } from '../components/Companions/SanadGraph';
 import './ProphetsPage.css';
 
 type TabMode = 'prophets' | 'companions';
@@ -337,6 +338,7 @@ export function ProphetsPage() {
     const [selectedCompanion, setSelectedCompanion] = useState<Companion | null>(null);
     const [tab, setTab] = useState<TabMode>('prophets');
     const [viewMode, setViewMode] = useState<'grid' | 'graph'>('grid');
+    const [viewModeCompanions, setViewModeCompanions] = useState<'grid' | 'graph'>('grid');
 
     const filteredProphets = useMemo(() => {
         if (!search.trim()) return prophets;
@@ -416,7 +418,7 @@ export function ProphetsPage() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-                {tab === 'prophets' && (
+                {tab === 'prophets' ? (
                     <div style={{ display: 'flex', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '4px' }}>
                         <button
                             onClick={() => setViewMode('grid')}
@@ -429,6 +431,21 @@ export function ProphetsPage() {
                             style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewMode === 'graph' ? 'var(--color-primary)' : 'transparent', color: viewMode === 'graph' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewMode === 'graph' ? 'bold' : 'normal' }}
                         >
                             Arbre
+                        </button>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '4px' }}>
+                        <button
+                            onClick={() => setViewModeCompanions('grid')}
+                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewModeCompanions === 'grid' ? 'var(--color-primary)' : 'transparent', color: viewModeCompanions === 'grid' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewModeCompanions === 'grid' ? 'bold' : 'normal' }}
+                        >
+                            Liste
+                        </button>
+                        <button
+                            onClick={() => setViewModeCompanions('graph')}
+                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewModeCompanions === 'graph' ? 'var(--color-primary)' : 'transparent', color: viewModeCompanions === 'graph' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewModeCompanions === 'graph' ? 'bold' : 'normal' }}
+                        >
+                            Sanad (Le Lien)
                         </button>
                     </div>
                 )}
@@ -479,46 +496,50 @@ export function ProphetsPage() {
                         )
                     )
                 ) : (
-                    filteredCompanions.length === 0 ? (
-                        <div className="prophets-empty">
-                            <div className="prophets-empty__icon">🔍</div>
-                            <p className="prophets-empty__text">Aucun compagnon trouvé</p>
-                        </div>
+                    viewModeCompanions === 'graph' ? (
+                        <SanadGraph />
                     ) : (
-                        filteredCompanions.map((companion, index) => (
-                            <motion.div
-                                key={companion.id}
-                                className="prophet-card"
-                                onClick={() => setSelectedCompanion(companion)}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.03, duration: 0.3 }}
-                            >
-                                <div
-                                    className="prophet-card__dot"
-                                    style={{ borderColor: companion.color, color: companion.color }}
-                                />
-                                <div className="prophet-card__body">
-                                    <div className="prophet-card__header">
-                                        <span className="prophet-card__emoji">{companion.icon}</span>
-                                        <div className="prophet-card__names">
-                                            <div className="prophet-card__name-islamic">{companion.nameFr}</div>
-                                            <div className="prophet-card__name-ar">{companion.nameAr}</div>
+                        filteredCompanions.length === 0 ? (
+                            <div className="prophets-empty">
+                                <div className="prophets-empty__icon">🔍</div>
+                                <p className="prophets-empty__text">Aucun compagnon trouvé</p>
+                            </div>
+                        ) : (
+                            filteredCompanions.map((companion, index) => (
+                                <motion.div
+                                    key={companion.id}
+                                    className="prophet-card"
+                                    onClick={() => setSelectedCompanion(companion)}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.03, duration: 0.3 }}
+                                >
+                                    <div
+                                        className="prophet-card__dot"
+                                        style={{ borderColor: companion.color, color: companion.color }}
+                                    />
+                                    <div className="prophet-card__body">
+                                        <div className="prophet-card__header">
+                                            <span className="prophet-card__emoji">{companion.icon}</span>
+                                            <div className="prophet-card__names">
+                                                <div className="prophet-card__name-islamic">{companion.nameFr}</div>
+                                                <div className="prophet-card__name-ar">{companion.nameAr}</div>
+                                            </div>
+                                            <div className="prophet-card__meta">
+                                                {companion.category === 'ashara' && (
+                                                    <span className="prophet-card__mentions">⭐ Paradis</span>
+                                                )}
+                                                {companion.category === 'sahabiyyah' && (
+                                                    <span className="prophet-card__mentions">🌹</span>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="prophet-card__meta">
-                                            {companion.category === 'ashara' && (
-                                                <span className="prophet-card__mentions">⭐ Paradis</span>
-                                            )}
-                                            {companion.category === 'sahabiyyah' && (
-                                                <span className="prophet-card__mentions">🌹</span>
-                                            )}
-                                        </div>
+                                        <div className="prophet-card__title">{companion.titleAr} — {companion.title}</div>
+                                        <p className="prophet-card__summary">{companion.summary}</p>
                                     </div>
-                                    <div className="prophet-card__title">{companion.titleAr} — {companion.title}</div>
-                                    <p className="prophet-card__summary">{companion.summary}</p>
-                                </div>
-                            </motion.div>
-                        ))
+                                </motion.div>
+                            ))
+                        )
                     )
                 )}
             </div>

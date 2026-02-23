@@ -1,0 +1,57 @@
+.sanad-graph-container {
+    width: 100%;
+    height: 600px;
+    background: var(--color-background);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.sanad-node {
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid var(--node-color, #ccc);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    white-space: pre-wrap;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sanad-node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* React Flow overrrides */
+.react-flow__controls {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.react-flow__controls-button {
+    background: transparent;
+    border-bottom: 1px solid var(--color-border);
+    fill: var(--color-text);
+}
+
+.react-flow__controls-button:hover {
+    background: var(--color-hover);
+}
+
+.react-flow__controls-button:last-child {
+    border-bottom: none;
+}
