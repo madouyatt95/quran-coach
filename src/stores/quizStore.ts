@@ -2,8 +2,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
-import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore, getAudioQuestions } from '../lib/quizEngine';
-import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId, QuizView, QuizMode, PowerUpId } from '../data/quizTypes';
+import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore, getAudioQuestions, generateSiraLevels } from '../lib/quizEngine';
+import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId, QuizView, QuizMode, PowerUpId, PowerUpEffect, SiraLevel } from '../data/quizTypes';
 import { DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
@@ -38,6 +38,7 @@ interface QuizState {
     opponent: QuizPlayer | null;
     opponentScore: number;
     opponentAnswers: QuizAnswer[];
+    activeEffects: PowerUpEffect[];
     channel: RealtimeChannel | null;
 
     // Multi-round duel state
@@ -92,6 +93,14 @@ interface QuizState {
     usePowerUp: (id: PowerUpId) => void;
     unlockBadge: (id: BadgeId) => void;
     startAudio: () => void;
+
+    // Sira
+    siraLevels: SiraLevel[];
+    siraCurrentLevel: SiraLevel | null;
+    siraProgression: Record<string, { completed: boolean; stars: number }>;
+    unlockSiraLevel: (id: string) => void;
+    completeSiraLevel: (id: string, stars: number) => void;
+    startSiraLevel: (level: SiraLevel) => void;
 }
 
 function generateCode(): string {
@@ -99,6 +108,10 @@ function generateCode(): string {
     let code = '';
     for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
     return code;
+}
+
+function uid(): string {
+    return Math.random().toString(36).slice(2, 10);
 }
 
 // ─── Badge Checking ──────────────────────────────────────
@@ -187,6 +200,7 @@ export const useQuizStore = create<QuizState>()(
             opponent: null,
             opponentScore: 0,
             opponentAnswers: [],
+            activeEffects: [],
             channel: null,
 
             // Multi-round duel
@@ -204,7 +218,7 @@ export const useQuizStore = create<QuizState>()(
             level: 1,
             title: 'Mubtadi',
             card_theme: null,
-            powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3 },
+            powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3, 'sandstorm': 2, 'shield': 2, 'timer-bomb': 1 },
             dailyChallengeLastDate: null,
             soloHighScores: {},
             themeStats: {},
@@ -214,6 +228,32 @@ export const useQuizStore = create<QuizState>()(
             duelWins: 0,
             gameHistory: [],
             lastPowerUpGained: null,
+
+            // Sira
+            siraLevels: generateSiraLevels(),
+            siraCurrentLevel: null,
+            siraProgression: {},
+
+            unlockSiraLevel: (_id) => {
+                // Future Implementation for unlocking a level on the map
+            },
+            completeSiraLevel: (id, stars) => {
+                const { siraProgression } = get();
+                set({ siraProgression: { ...siraProgression, [id]: { completed: true, stars: Math.max(stars, siraProgression[id]?.stars || 0) } } });
+            },
+            startSiraLevel: (level) => {
+                set({
+                    mode: 'sira',
+                    siraCurrentLevel: level,
+                    questions: level.questions,
+                    currentIndex: 0,
+                    answers: [],
+                    score: 0,
+                    currentStreak: 0,
+                    timerStart: Date.now(),
+                    view: 'playing',
+                });
+            },
 
             addXP: (amount) => {
                 const { totalXP, player } = get();
@@ -558,17 +598,19 @@ export const useQuizStore = create<QuizState>()(
 
                         // Update opponent scores in real-time
                         if (isP1) {
-                            if (m.player2_score !== undefined) {
+                            if (m.player2_score !== undefined || m.activeEffects !== undefined) {
                                 set({
-                                    opponentScore: m.player2_score,
+                                    opponentScore: m.player2_score ?? state.opponentScore,
                                     opponentAnswers: m.player2_answers || [],
+                                    activeEffects: m.activeEffects || [],
                                 });
                             }
                         } else {
-                            if (m.player1_score !== undefined) {
+                            if (m.player1_score !== undefined || m.activeEffects !== undefined) {
                                 set({
-                                    opponentScore: m.player1_score,
+                                    opponentScore: m.player1_score ?? state.opponentScore,
                                     opponentAnswers: m.player1_answers || [],
+                                    activeEffects: m.activeEffects || [],
                                 });
                             }
                         }
@@ -580,7 +622,7 @@ export const useQuizStore = create<QuizState>()(
 
             applyPowerUp: (id) => {
                 const { powerUps, mode } = get();
-                if (mode !== 'solo') return; // For now
+                if (mode === 'sprint' || mode === 'revision') return;
                 if (powerUps[id] <= 0) return;
 
                 const newPowerUps = { ...powerUps, [id]: powerUps[id] - 1 };
@@ -608,6 +650,36 @@ export const useQuizStore = create<QuizState>()(
                         correctIndex: shuffled.indexOf(correctChoice)
                     };
                     set({ questions: newQuestions, powerUps: newPowerUps });
+                } else if (id === 'sandstorm' || id === 'timer-bomb') {
+                    // OFFENSIVE POWER-UPS (Duel only)
+                    if (mode !== 'duel') return;
+                    const { matchId, player, opponent } = get();
+                    if (!matchId || !player || !opponent) return;
+
+                    const effect: PowerUpEffect = {
+                        id: uid(),
+                        type: id,
+                        targetId: opponent.id,
+                        startTime: Date.now(),
+                        durationMs: id === 'sandstorm' ? 8000 : 0, // 8s for sandstorm, instant for bomb
+                    };
+
+                    // Update match in Supabase
+                    supabase
+                        .from('quiz_matches')
+                        .select('activeEffects')
+                        .eq('id', matchId)
+                        .single()
+                        .then(({ data }) => {
+                            const currentEffects = (data?.activeEffects || []) as PowerUpEffect[];
+                            supabase
+                                .from('quiz_matches')
+                                .update({ activeEffects: [...currentEffects, effect] })
+                                .eq('id', matchId)
+                                .then();
+                        });
+
+                    set({ powerUps: newPowerUps });
                 } else {
                     set({ powerUps: newPowerUps });
                 }
@@ -910,6 +982,7 @@ export const useQuizStore = create<QuizState>()(
                     opponent: null,
                     opponentScore: 0,
                     opponentAnswers: [],
+                    activeEffects: [],
                     channel: null,
                     mode: 'solo',
                     currentStreak: 0,
@@ -945,6 +1018,7 @@ export const useQuizStore = create<QuizState>()(
                 duelWins: state.duelWins,
                 difficulty: state.difficulty,
                 gameHistory: state.gameHistory,
+                siraProgression: state.siraProgression,
             }),
             migrate: (persistedState: any, version: number) => {
                 // If stored version < current version, reset stats but keep player identity
@@ -965,7 +1039,8 @@ export const useQuizStore = create<QuizState>()(
                         wrongQuestions: [],
                         sprintBest: 0,
                         duelWins: 0,
-                        powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3 },
+                        powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3, 'sandstorm': 2, 'shield': 2, 'timer-bomb': 1 },
+                        siraProgression: {},
                     };
                 }
                 return persistedState;

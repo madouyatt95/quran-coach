@@ -66,6 +66,8 @@ export function QuizPage() {
             return <ResultView />;
         case 'custom-duel':
             return <CustomDuel />;
+        case 'sira-map':
+            return <SiraMapView />;
         default:
             return <HomeView />;
     }

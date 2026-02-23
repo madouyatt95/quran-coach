@@ -1127,3 +1127,57 @@ export function calculateScore(
     const base = Math.round(100 + timeBonus * 100); // 100-200 points
     return Math.round(base * DIFFICULTY_CONFIG[difficulty].scoreMultiplier);
 }
+
+// ─── Sira Mode ───────────────────────────────────────────
+import type { SiraLevel } from '../data/quizTypes';
+
+export function generateSiraLevels(): SiraLevel[] {
+    const levels: SiraLevel[] = [
+        {
+            id: 'sira_1',
+            order: 1,
+            title: 'La Source de Lumière',
+            titleAr: 'مولد النور',
+            description: 'La naissance et l\'enfance du Prophète ﷺ à la Mecque.',
+            location: 'Makkah',
+            year: '570 ap. J-C',
+            questions: [
+                buildMCQ('stories', 'En quelle année est né le Prophète ﷺ ?', 'L\'année de l\'Éléphant', ['L\'année de la Douleur', 'L\'année de la conquête', 'L\'année de l\'Hégire'])!,
+                buildMCQ('stories', 'Comment s\'appelait la mère du Prophète ﷺ ?', 'Amina bint Wahb', ['Khadija', 'Halima', 'Fatima'])!,
+                buildMCQ('stories', 'Qui a pris soin du Prophète ﷺ après la mort de son grand-père ?', 'Abu Talib', ['Abu Lahab', 'Abbas', 'Hamza'])!,
+            ],
+            unlocked: true, completed: false, stars: 0,
+        },
+        {
+            id: 'sira_2',
+            order: 2,
+            title: 'La Grotte du Destin',
+            titleAr: 'غار حراء',
+            description: 'La première révélation dans la grotte de Hira.',
+            location: 'Mont Hira',
+            year: '610 ap. J-C',
+            questions: [
+                buildMCQ('stories', 'Quel ange est apparu au Prophète ﷺ dans la grotte ?', 'Jibril', ['Mikail', 'Israfil', 'Malik'])!,
+                buildMCQ('stories', 'Quel était le premier mot révélé du Coran ?', 'Iqra (Lis)', ['Bismillah', 'Allahu Akbar', 'SubhanAllah'])!,
+                buildMCQ('stories', 'Quelle sourate contient les cinq premiers versets révélés ?', 'Al-Alaq', ['Al-Fatiha', 'Al-Baqara', 'Al-Muddathir'])!,
+            ],
+            unlocked: false, completed: false, stars: 0,
+        },
+        {
+            id: 'sira_3',
+            order: 3,
+            title: 'L\'Exode vers la Paix',
+            titleAr: 'الهجرة',
+            description: 'La migration (Hégire) de la Mecque vers Médine.',
+            location: 'Route de Médine',
+            year: '622 ap. J-C',
+            questions: [
+                buildMCQ('stories', 'Avec quel compagnon le Prophète ﷺ a-t-il voyagé pendant l\'Hégire ?', 'Abu Bakr', ['Omar', 'Uthman', 'Ali'])!,
+                buildMCQ('stories', 'Dans quelle grotte se sont-ils cachés de leurs poursuivants ?', 'Thawr', ['Hira', 'Kahf', 'Uhud'])!,
+                buildMCQ('stories', 'Quel était l\'ancien nom de Médine avant l\'arrivée du Prophète ﷺ ?', 'Yathrib', ['Taybah', 'Bakkah', 'Quds'])!,
+            ],
+            unlocked: false, completed: false, stars: 0,
+        }
+    ];
+    return levels;
+}

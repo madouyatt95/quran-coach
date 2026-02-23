@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES, DIFFICULTY_CONFIG } from '../../data/quizTypes';
+import type { PowerUpEffect } from '../../data/quizTypes';
 import { AudioPlayer } from './AudioPlayer';
 
 export function PlayingView() {
-    const { questions, currentIndex, submitAnswer, mode, opponent, score, opponentScore, opponentAnswers, difficulty, sprintCorrect, currentStreak, duelRound, duelRounds, powerUps, applyPowerUp, resetQuiz } = useQuizStore();
+    const { questions, currentIndex, submitAnswer, mode, player, opponent, score, opponentScore, opponentAnswers, difficulty, sprintCorrect, currentStreak, duelRound, duelRounds, powerUps, applyPowerUp, resetQuiz, activeEffects } = useQuizStore();
     const isDuel = mode === 'duel';
     const roundTheme = isDuel && duelRounds.length > 0 ? QUIZ_THEMES.find(t => t.id === duelRounds[duelRound]) : null;
     const question = questions[currentIndex];
@@ -69,6 +70,29 @@ export function PlayingView() {
             submitAnswer(index);
         }
     };
+
+    const [sandstormActive, setSandstormActive] = useState(false);
+
+    // Watch for offensive effects
+    useEffect(() => {
+        if (!player || !activeEffects) return;
+        const myEffects = activeEffects.filter((e: PowerUpEffect) => e.targetId === player.id);
+        const hasSandstorm = myEffects.some((e: PowerUpEffect) => e.type === 'sandstorm' && (Date.now() - e.startTime < e.durationMs));
+        setSandstormActive(hasSandstorm);
+
+        // Timer bomb effect
+        const bombs = myEffects.filter((e: PowerUpEffect) => e.type === 'timer-bomb');
+        if (bombs.length > 0) {
+            // Check if we already processed this bomb (simple version: compare count)
+            // For now, let's just reduce time if bomb exists (needs more robust tracking for production)
+            setTimeLeft(prev => Math.max(1, prev - 5));
+        }
+
+        if (hasSandstorm) {
+            const timer = setTimeout(() => setSandstormActive(false), 8000);
+            return () => clearTimeout(timer);
+        }
+    }, [activeEffects, player]);
 
     if (!question) return null;
 
@@ -147,11 +171,22 @@ export function PlayingView() {
                 <p className="quiz-question-fr">{question.questionFr}</p>
             </div>
 
-            {/* Power-Ups (Solo Only) */}
-            {!isSprint && mode === 'solo' && (
-                <div className="quiz-powerups" style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '20px' }}>
-                    {(['50-50', 'time-freeze', 'second-chance'] as const).map(id => {
-                        const count = powerUps[id];
+            {/* Power-Ups */}
+            {!isSprint && (mode === 'solo' || mode === 'duel') && (
+                <div className="quiz-powerups" style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+                    {(mode === 'solo'
+                        ? (['50-50', 'time-freeze', 'second-chance'] as const)
+                        : (['sandstorm', 'timer-bomb', 'shield'] as const)
+                    ).map(id => {
+                        const count = powerUps[id] || 0;
+                        const icons: Record<string, string> = {
+                            '50-50': '🌗',
+                            'time-freeze': '❄️',
+                            'second-chance': '🛡️',
+                            'sandstorm': '🌪️',
+                            'timer-bomb': '💣',
+                            'shield': '🔰'
+                        };
                         return (
                             <button
                                 key={id}
@@ -160,7 +195,7 @@ export function PlayingView() {
                                 disabled={count === 0}
                                 title={id}
                             >
-                                <span className="quiz-pu-icon">{id === '50-50' ? '🌗' : id === 'time-freeze' ? '❄️' : '🛡️'}</span>
+                                <span className="quiz-pu-icon">{icons[id]}</span>
                                 <span className="quiz-pu-count">{count}</span>
                             </button>
                         );
@@ -169,7 +204,7 @@ export function PlayingView() {
             )}
 
             {/* Choices */}
-            <div className="quiz-choices">
+            <div className={`quiz-choices ${sandstormActive ? 'sandstorm-blur' : ''}`}>
                 {question.choices.map((choice, i) => (
                     <button
                         key={i}

@@ -1,4 +1,4 @@
-import { ArrowLeft, Swords, BarChart3, Award, Globe, User, BookOpen, Timer, GraduationCap, Headphones, Clock } from 'lucide-react';
+import { ArrowLeft, Swords, BarChart3, Award, Globe, User, BookOpen, Timer, GraduationCap, Headphones, Clock, Map } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuizStore } from '../../stores/quizStore';
 import { DIFFICULTY_CONFIG, BADGES } from '../../data/quizTypes';
@@ -95,6 +95,12 @@ export function HomeView() {
                         <h3>Duel</h3>
                     </button>
                 </div>
+                <button className="quiz-mode-card sira" onClick={() => setView('sira-map')} style={{ marginTop: '12px', background: 'linear-gradient(135deg, #FFD700, #DAAB00)', color: '#000' }}>
+                    <Map size={32} />
+                    <h3>Parcours de la Sira</h3>
+                    <p>Découvre l'histoire du Prophète ﷺ</p>
+                    <span className="quiz-mode-tag" style={{ background: '#000', color: '#FFD700' }}>MODE HISTOIRE</span>
+                </button>
             </div>
 
             <button className="quiz-join-btn" onClick={() => setView('join')} style={{ marginTop: '12px' }}>

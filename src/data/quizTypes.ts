@@ -15,9 +15,10 @@ export type QuizView =
     | 'playing'     // Active quiz
     | 'feedback'    // Answer feedback (correct/wrong)
     | 'roundEnd'    // End of round summary
+    | 'sira-map'    // Sira story map
     | 'result';     // Final match result
 
-export type QuizMode = 'solo' | 'duel' | 'sprint' | 'revision' | 'daily';
+export type QuizMode = 'solo' | 'duel' | 'sprint' | 'revision' | 'daily' | 'sira';
 
 export interface QuizQuestion {
     id: string;
@@ -70,7 +71,13 @@ export interface QuizPlayer {
     card_theme?: string; // CSS gradient string
 }
 
-export type PowerUpId = '50-50' | 'time-freeze' | 'second-chance';
+export type PowerUpId =
+    | '50-50'
+    | 'time-freeze'
+    | 'second-chance'
+    | 'sandstorm'    // Offensive: blur opponent's view
+    | 'shield'       // Defensive: protect from sandstorm
+    | 'timer-bomb';  // Offensive: reduce opponent's time
 
 export interface QuizPowerUp {
     id: PowerUpId;
@@ -108,7 +115,33 @@ export interface QuizMatch {
     player1_score: number;
     player2_score: number;
     winner_id: string | null;
+    activeEffects?: PowerUpEffect[]; // For real-time offensive power-ups
     created_at: string;
+}
+
+export interface PowerUpEffect {
+    id: string;
+    type: PowerUpId;
+    targetId: string;
+    startTime: number;
+    durationMs: number;
+}
+
+// ─── Sira Mode ───────────────────────────────────────────
+export interface SiraLevel {
+    id: string;
+    order: number;
+    title: string;
+    titleAr: string;
+    description: string;
+    location: string;
+    year: string; // e.g. "An 1 de l'Hégire"
+    questions: QuizQuestion[];
+    unlocked: boolean;
+    completed: boolean;
+    stars: number; // 0-3
+    backgroundUrl?: string;
+    audioUrl?: string; // Narrative intro
 }
 
 // ─── Theme Stats ─────────────────────────────────────────

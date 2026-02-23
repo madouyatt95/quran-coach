@@ -434,7 +434,7 @@ export function PrayerTimesPage() {
                                 </div>
                                 <div className="prayer-row__time-box">
                                     <span className="prayer-row__time">{dayResult.formattedTimes[key]}</span>
-                                    {isNext && <span className="prayer-row__active-badge">EN COURS</span>}
+                                    {isNext && <span className="prayer-row__active-badge">PROCHAINE PRIÈRE</span>}
                                 </div>
                             </div>
                         );
