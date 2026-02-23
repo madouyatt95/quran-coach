@@ -7,6 +7,8 @@ import type { Prophet } from '../data/prophets';
 import { companions } from '../data/companions';
 import type { Companion } from '../data/companions';
 import { useQuranStore } from '../stores/quranStore';
+import { ProphetsTimelineBar } from '../components/Prophets/ProphetsTimelineBar';
+import { ProphetsGraph } from '../components/Prophets/ProphetsGraph';
 import './ProphetsPage.css';
 
 type TabMode = 'prophets' | 'companions';
@@ -70,6 +72,18 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                         <BookOpen size={16} />
                         Son histoire
                     </h3>
+
+                    <div style={{ marginBottom: '1rem', background: 'var(--color-surface)', padding: '0.5rem', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                        <audio
+                            controls
+                            src={`/audio/prophets/${prophet.id}.mp3`}
+                            style={{ width: '100%', height: '36px', outline: 'none' }}
+                            preload="metadata"
+                        >
+                            Votre navigateur ne supporte pas l'élément audio.
+                        </audio>
+                    </div>
+
                     <p className="prophet-modal__text">{prophet.summary}</p>
                 </div>
 
@@ -334,6 +348,7 @@ export function ProphetsPage() {
     const [selectedProphet, setSelectedProphet] = useState<Prophet | null>(null);
     const [selectedCompanion, setSelectedCompanion] = useState<Companion | null>(null);
     const [tab, setTab] = useState<TabMode>('prophets');
+    const [viewMode, setViewMode] = useState<'grid' | 'graph'>('grid');
 
     const filteredProphets = useMemo(() => {
         if (!search.trim()) return prophets;
@@ -401,9 +416,9 @@ export function ProphetsPage() {
                 </button>
             </div>
 
-            {/* Search */}
-            <div className="prophets-search">
-                <div className="prophets-search__wrapper">
+            {/* Search and View Toggle */}
+            <div className="prophets-search" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div className="prophets-search__wrapper" style={{ flex: 1 }}>
                     <Search size={18} className="prophets-search__icon" />
                     <input
                         className="prophets-search__input"
@@ -413,47 +428,75 @@ export function ProphetsPage() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
+                {tab === 'prophets' && (
+                    <div style={{ display: 'flex', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '4px' }}>
+                        <button
+                            onClick={() => setViewMode('grid')}
+                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewMode === 'grid' ? 'var(--color-primary)' : 'transparent', color: viewMode === 'grid' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewMode === 'grid' ? 'bold' : 'normal' }}
+                        >
+                            Liste
+                        </button>
+                        <button
+                            onClick={() => setViewMode('graph')}
+                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewMode === 'graph' ? 'var(--color-primary)' : 'transparent', color: viewMode === 'graph' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewMode === 'graph' ? 'bold' : 'normal' }}
+                        >
+                            Arbre
+                        </button>
+                    </div>
+                )}
             </div>
+
+            {/* Timeline Bar (only in grid mode) */}
+            {tab === 'prophets' && search === '' && viewMode === 'grid' && (
+                <ProphetsTimelineBar
+                    prophets={prophets}
+                    onSelectProphet={(p) => setSelectedProphet(p)}
+                />
+            )}
 
             {/* Content */}
             <div className="prophets-timeline">
                 {tab === 'prophets' ? (
-                    filteredProphets.length === 0 ? (
-                        <div className="prophets-empty">
-                            <div className="prophets-empty__icon">🔍</div>
-                            <p className="prophets-empty__text">Aucun prophète trouvé</p>
-                        </div>
+                    viewMode === 'graph' ? (
+                        <ProphetsGraph onSelectProphet={setSelectedProphet} />
                     ) : (
-                        filteredProphets.map((prophet, index) => (
-                            <motion.div
-                                key={prophet.id}
-                                className="prophet-card"
-                                onClick={() => setSelectedProphet(prophet)}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.03, duration: 0.3 }}
-                            >
-                                <div
-                                    className="prophet-card__dot"
-                                    style={{ borderColor: prophet.color, color: prophet.color }}
-                                />
-                                <div className="prophet-card__body">
-                                    <div className="prophet-card__header">
-                                        <span className="prophet-card__emoji">{prophet.icon}</span>
-                                        <div className="prophet-card__names">
-                                            <div className="prophet-card__name-islamic">{prophet.nameIslamic}</div>
-                                            <div className="prophet-card__name-ar">{prophet.nameAr}</div>
+                        filteredProphets.length === 0 ? (
+                            <div className="prophets-empty">
+                                <div className="prophets-empty__icon">🔍</div>
+                                <p className="prophets-empty__text">Aucun prophète trouvé</p>
+                            </div>
+                        ) : (
+                            filteredProphets.map((prophet, index) => (
+                                <motion.div
+                                    key={prophet.id}
+                                    className="prophet-card"
+                                    onClick={() => setSelectedProphet(prophet)}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.03, duration: 0.3 }}
+                                >
+                                    <div
+                                        className="prophet-card__dot"
+                                        style={{ borderColor: prophet.color, color: prophet.color }}
+                                    />
+                                    <div className="prophet-card__body">
+                                        <div className="prophet-card__header">
+                                            <span className="prophet-card__emoji">{prophet.icon}</span>
+                                            <div className="prophet-card__names">
+                                                <div className="prophet-card__name-islamic">{prophet.nameIslamic}</div>
+                                                <div className="prophet-card__name-ar">{prophet.nameAr}</div>
+                                            </div>
+                                            <div className="prophet-card__meta">
+                                                <span className="prophet-card__mentions">📖 {prophet.mentionCount}×</span>
+                                                <span className="prophet-card__period">{prophet.period}</span>
+                                            </div>
                                         </div>
-                                        <div className="prophet-card__meta">
-                                            <span className="prophet-card__mentions">📖 {prophet.mentionCount}×</span>
-                                            <span className="prophet-card__period">{prophet.period}</span>
-                                        </div>
+                                        <div className="prophet-card__title">{prophet.titleAr} — {prophet.title}</div>
+                                        <p className="prophet-card__summary">{prophet.summary}</p>
                                     </div>
-                                    <div className="prophet-card__title">{prophet.titleAr} — {prophet.title}</div>
-                                    <p className="prophet-card__summary">{prophet.summary}</p>
-                                </div>
-                            </motion.div>
-                        ))
+                                </motion.div>
+                            ))
+                        )
                     )
                 ) : (
                     filteredCompanions.length === 0 ? (
