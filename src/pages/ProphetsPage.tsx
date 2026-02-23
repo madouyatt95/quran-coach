@@ -7,7 +7,6 @@ import type { Prophet } from '../data/prophets';
 import { companions } from '../data/companions';
 import type { Companion } from '../data/companions';
 import { useQuranStore } from '../stores/quranStore';
-import { ProphetsTimelineBar } from '../components/Prophets/ProphetsTimelineBar';
 import { ProphetsGraph } from '../components/Prophets/ProphetsGraph';
 import './ProphetsPage.css';
 
@@ -72,17 +71,6 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                         <BookOpen size={16} />
                         Son histoire
                     </h3>
-
-                    <div style={{ marginBottom: '1rem', background: 'var(--color-surface)', padding: '0.5rem', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                        <audio
-                            controls
-                            src={`/audio/prophets/${prophet.id}.mp3`}
-                            style={{ width: '100%', height: '36px', outline: 'none' }}
-                            preload="metadata"
-                        >
-                            Votre navigateur ne supporte pas l'élément audio.
-                        </audio>
-                    </div>
 
                     <p className="prophet-modal__text">{prophet.summary}</p>
                 </div>
@@ -445,14 +433,6 @@ export function ProphetsPage() {
                     </div>
                 )}
             </div>
-
-            {/* Timeline Bar (only in grid mode) */}
-            {tab === 'prophets' && search === '' && viewMode === 'grid' && (
-                <ProphetsTimelineBar
-                    prophets={prophets}
-                    onSelectProphet={(p) => setSelectedProphet(p)}
-                />
-            )}
 
             {/* Content */}
             <div className="prophets-timeline">

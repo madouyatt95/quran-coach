@@ -29,9 +29,6 @@ export interface Prophet {
   keyVerses: KeyVerse[];
   lineage?: string;
   duas?: Dua[];
-  fullStory?: string;
-  audioUrl?: string;
-  eraIndex?: number;
 }
 
 // Source : Coran & Tafsir Ibn Kathir — Qisas al-Anbiya (قصص الأنبياء)
