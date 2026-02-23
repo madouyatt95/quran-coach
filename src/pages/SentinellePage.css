@@ -1,0 +1,184 @@
+.sentinel-page {
+    padding: var(--space-md);
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
+    padding-bottom: 100px;
+    min-height: 100vh;
+    background: var(--color-bg-primary);
+}
+
+.sentinel-page__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.sentinel-page__header h1 {
+    font-size: var(--text-ui-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.sentinel-back-btn {
+    background: var(--color-bg-secondary);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    cursor: pointer;
+}
+
+.sentinel-hero {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    background: linear-gradient(180deg, var(--color-bg-secondary), transparent);
+    border-radius: var(--radius-2xl);
+    margin-bottom: var(--space-xl);
+}
+
+.sentinel-hero__icon {
+    margin-bottom: var(--space-md);
+}
+
+.sentinel-hero h2 {
+    font-size: var(--text-ui-lg);
+    margin-bottom: var(--space-sm);
+    color: var(--color-text-primary);
+}
+
+.sentinel-hero p {
+    color: var(--color-text-secondary);
+    font-size: var(--text-ui-sm);
+    line-height: 1.5;
+    margin-bottom: var(--space-lg);
+}
+
+.sentinel-master-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-bg-elevated);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+}
+
+/* Options Grid */
+.sentinel-options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+@media (min-width: 600px) {
+    .sentinel-options-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.sentinel-card {
+    background: var(--color-bg-secondary);
+    padding: var(--space-md);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.sentinel-card:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.sentinel-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+}
+
+.sentinel-card__title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.sentinel-card__title svg {
+    color: var(--color-accent);
+}
+
+.sentinel-card p {
+    font-size: var(--text-ui-sm);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    padding-left: 32px;
+}
+
+.sentinel-footer {
+    margin-top: var(--space-2xl);
+    text-align: center;
+}
+
+.sentinel-info-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    background: var(--color-bg-secondary);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+/* Reusing generic toggles from SettingsPage.css or defining here for safety */
+.toggle {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    transition: background var(--transition-fast);
+    cursor: pointer;
+    border: none;
+}
+
+.toggle.active {
+    background: var(--color-accent);
+}
+
+.toggle__knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: var(--radius-full);
+    transition: transform var(--transition-fast);
+}
+
+.toggle.active .toggle__knob {
+    transform: translateX(20px);
+}
+
+.toggle.sm {
+    width: 40px;
+    height: 22px;
+}
+
+.toggle.sm .toggle__knob {
+    width: 16px;
+    height: 16px;
+}
+
+.toggle.sm.active .toggle__knob {
+    transform: translateX(18px);
+}

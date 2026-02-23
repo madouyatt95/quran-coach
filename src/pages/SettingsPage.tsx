@@ -9,10 +9,9 @@ import {
     updatePushPreferences,
 } from '../lib/notificationService';
 import { usePrayerStore } from '../stores/prayerStore';
-import { useSmartStore } from '../stores/smartStore';
 import { resolveCoords } from '../lib/locationService';
 import type { Theme, ArabicFontSize } from '../types';
-import { Stars, Bell, BellOff, ShieldCheck, CloudRain, Sun, Map, History, Heart, Moon, Zap, BookOpen } from 'lucide-react';
+import { Stars, Bell, BellOff } from 'lucide-react';
 import './SettingsPage.css';
 
 const RECITERS = [
@@ -50,7 +49,6 @@ export function SettingsPage() {
 
     const notif = useNotificationStore();
     const prayerStore = usePrayerStore();
-    const smart = useSmartStore();
     const [testSent, setTestSent] = useState(false);
     const [subscribing, setSubscribing] = useState(false);
     const [permDenied, setPermDenied] = useState(false);
@@ -415,161 +413,6 @@ export function SettingsPage() {
                 )}
             </section>
 
-            {/* Sentinelle Spirituelle */}
-            <section className="settings-section">
-                <div className="settings-section__header-row">
-                    <h2 className="settings-section__title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <ShieldCheck size={20} color="#c9a84c" /> Sentinelle Spirituelle
-                    </h2>
-                    <button
-                        className={`toggle ${smart.globalEnabled ? 'active' : ''}`}
-                        onClick={() => smart.setGlobalEnabled(!smart.globalEnabled)}
-                    >
-                        <span className="toggle__knob" />
-                    </button>
-                </div>
-                <p className="settings-section__intro">L'application veille pour vous sur les moments et contextes propices aux invocations.</p>
-
-                {smart.globalEnabled && (
-                    <div className="settings-grid">
-                        {/* Météo */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <CloudRain size={16} />
-                                    <span className="settings-item__title">Météo & Invocations</span>
-                                </div>
-                                <span className="settings-item__description">Pluie, orage et vents violents.</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.weatherEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setWeatherEnabled(!smart.weatherEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-
-                        {/* Jours Blancs */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <Moon size={16} />
-                                    <span className="settings-item__title">Jours Blancs (Lunaire)</span>
-                                </div>
-                                <span className="settings-item__description">Rappel les 13, 14, 15 du mois.</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.whiteDaysEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setWhiteDaysEnabled(!smart.whiteDaysEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-
-                        {/* Booster Fajr */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <Zap size={16} />
-                                    <span className="settings-item__title">Booster du Fajr</span>
-                                </div>
-                                <span className="settings-item__description">Motivation et bénédiction matinale.</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.fajrBoosterEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setFajrBoosterEnabled(!smart.fajrBoosterEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-
-                        {/* Al Kahf */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <BookOpen size={16} />
-                                    <span className="settings-item__title">Compteur Al-Kahf</span>
-                                </div>
-                                <span className="settings-item__description">Progression spécifique le vendredi.</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.alKahfEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setAlKahfEnabled(!smart.alKahfEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-
-                        {/* Parenté */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <Heart size={16} />
-                                    <span className="settings-item__title">Lien de Parenté</span>
-                                </div>
-                                <span className="settings-item__description">Rappel Jumu'ah (Fraternité).</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.kinshipEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setKinshipEnabled(!smart.kinshipEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-
-                        {/* Histoire */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <History size={16} />
-                                    <span className="settings-item__title">Mode Histoire</span>
-                                </div>
-                                <span className="settings-item__description">Éphémérides hégiriennes marquantes.</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.historyEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setHistoryEnabled(!smart.historyEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-
-                        {/* Voyage */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <Map size={16} />
-                                    <span className="settings-item__title">Mode Voyage (Safar)</span>
-                                </div>
-                                <span className="settings-item__description">Détection automatique de trajet.</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.travelEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setTravelEnabled(!smart.travelEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-
-                        {/* Sahar */}
-                        <div className="settings-item-compact">
-                            <div className="settings-item__label">
-                                <div className="settings-item__title-row">
-                                    <Sun size={16} />
-                                    <span className="settings-item__title">Moment Sahar</span>
-                                </div>
-                                <span className="settings-item__description">Dernier tiers de la nuit.</span>
-                            </div>
-                            <button
-                                className={`toggle sm ${smart.saharEnabled ? 'active' : ''}`}
-                                onClick={() => smart.setSaharEnabled(!smart.saharEnabled)}
-                            >
-                                <span className="toggle__knob" />
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </section>
             {/* Footer / Build */}
             <div className="settings-footer">
                 <p>Quran Coach App — Version 0.0.0 (Build b6819da)</p>

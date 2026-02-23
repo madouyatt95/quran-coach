@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { X, Stars, Bell, BellOff } from 'lucide-react';
+import { X, Stars, Bell, BellOff, ShieldCheck } from 'lucide-react';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { usePrayerStore } from '../../stores/prayerStore';
 import {
@@ -79,6 +79,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     ];
 
     const TOOLS = [
+        { path: '/sentinel', emoji: <ShieldCheck size={20} color="#c9a84c" />, label: 'Sentinelle Spirituelle', color: 'rgba(201,168,76,0.1)' },
         { path: '/settings', emoji: '⚙️', label: 'Réglages', color: '#607D8B' },
     ];
     return (

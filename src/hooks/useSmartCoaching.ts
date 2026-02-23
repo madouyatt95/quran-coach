@@ -175,6 +175,46 @@ export function useSmartCoaching() {
                 }
             }
 
+            // 8. Daily Tips (Integrated from old Today area)
+            if (dayOfWeek === 1 || dayOfWeek === 4) {
+                activeCards.push({
+                    id: 'fasting-reminder',
+                    type: 'calendar',
+                    emoji: '🌙',
+                    title: 'Lundi/Jeudi — Sunnah',
+                    textAr: 'كَانَ النَّبِيُّ ﷺ يَتَحَرَّى صَوْمَ الِاثْنَيْنِ وَالْخَمِيسِ',
+                    textFr: 'Jours recommandés pour le jeûne surérogatoire selon la Sunnah.',
+                    gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)'
+                });
+            }
+
+            if (dayOfWeek === 5) {
+                activeCards.push({
+                    id: 'salawat',
+                    type: 'spirituality',
+                    emoji: '🤲',
+                    title: 'Salutations Prophétiques',
+                    textAr: 'اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّد',
+                    textFr: 'Multipliez les salutations sur le Prophète ﷺ en ce jour béni du Vendredi.',
+                    gradient: 'linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)'
+                });
+            }
+
+            // Default fallback tips if few cards active
+            if (activeCards.length < 2) {
+                const defaults = [
+                    { id: 'def-1', emoji: '📖', title: 'Assiduité Coranique', textFr: 'Lis au moins une page du Coran aujourd\'hui pour maintenir ton lien spirituel.', gradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
+                    { id: 'def-2', emoji: '💪', title: 'Régularité', textFr: 'La régularité est meilleure que la quantité — même un verset par jour.', gradient: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' },
+                    { id: 'def-3', emoji: '🤲', title: 'Adhkar du Jour', textFr: 'N\'oublie pas tes adhkar du matin et du soir pour ta protection.', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }
+                ];
+                const def = defaults[now.getDate() % defaults.length];
+                activeCards.push({
+                    ...def,
+                    type: 'tip',
+                    textAr: 'خَيْرُ الأَعْمَالِ أَدْوَمُهَا وَإِنْ قَلَّ'
+                });
+            }
+
             if (mounted) {
                 setCards(activeCards);
                 setLoading(false);

@@ -88,43 +88,7 @@ const DHIKR_SEQUENCE = [
 ];
 
 
-// ─── "Aujourd'hui" contextual tips ───────────────────────
-function getTodayTips(dayOfWeek: number, hijriMonth: number, hijriDay: number): { emoji: string; text: string }[] {
-    const tips: { emoji: string; text: string }[] = [];
 
-    if (dayOfWeek === 5) {
-        tips.push({ emoji: '📖', text: 'C\'est vendredi ! Lis Sourate Al-Kahf pour une lumière entre deux vendredis.' });
-        tips.push({ emoji: '🤲', text: 'Multiplie les salutations sur le Prophète ﷺ en ce jour béni.' });
-    }
-    if (dayOfWeek === 1 || dayOfWeek === 4) {
-        tips.push({ emoji: '🌙', text: 'Lundi et jeudi — jours recommandés pour le jeûne surérogatoire.' });
-    }
-    if (hijriMonth === 9) {
-        tips.push({ emoji: '🕌', text: 'Ramadan — Objectif : 1 juz par jour pour terminer le Coran ce mois.' });
-        tips.push({ emoji: '🌃', text: 'N\'oublie pas les prières de Tarawih et la recherche de Laylat al-Qadr.' });
-    }
-    if (hijriMonth === 12 && hijriDay <= 10) {
-        tips.push({ emoji: '🕋', text: 'Les 10 premiers jours de Dhul Hijjah — multiplie les bonnes actions !' });
-    }
-    if (hijriMonth === 12 && hijriDay === 9) {
-        tips.push({ emoji: '⛰️', text: 'Jour d\'Arafat — le jeûne expie les péchés de deux années.' });
-    }
-    if (hijriMonth === 1 && hijriDay >= 9 && hijriDay <= 10) {
-        tips.push({ emoji: '🌙', text: 'Achoura — jeûner ce jour expie les péchés de l\'année passée.' });
-    }
-
-    // Default tips if none seasonal
-    if (tips.length === 0) {
-        const defaults = [
-            { emoji: '📖', text: 'Lis au moins une page du Coran aujourd\'hui pour maintenir ton streak.' },
-            { emoji: '💪', text: 'La régularité est meilleure que la quantité — même un verset par jour.' },
-            { emoji: '🤲', text: 'N\'oublie pas tes adhkar du matin et du soir.' },
-        ];
-        tips.push(defaults[hijriDay % defaults.length]);
-    }
-
-    return tips;
-}
 
 // ─── Next Prayer Hook (uses local engine) ────────────────
 function useNextPrayer() {
@@ -290,7 +254,6 @@ export function HomePage() {
     const nextPrayer = useNextPrayer();
     const dhikr = useDhikr();
 
-    const todayTips = useMemo(() => getTodayTips(now.getDay(), hijri.month, hijri.day), [now, hijri]);
 
     const handleSurahClick = useCallback((surahNumber: number) => {
         sessionStorage.setItem('isSilentJump', 'true');
@@ -390,16 +353,6 @@ export function HomePage() {
                 </div>
             )}
 
-            {/* Today Tips */}
-            <div className="home-today">
-                <div className="home-today__title">📌 Aujourd'hui</div>
-                {todayTips.map((tip, i) => (
-                    <div key={i} className="home-today__tip">
-                        <span className="home-today__tip-emoji">{tip.emoji}</span>
-                        <span className="home-today__tip-text">{tip.text}</span>
-                    </div>
-                ))}
-            </div>
 
             {/* Sentinelle Spirituelle (Météo, Voyage, Sahar, etc.) */}
             <SmartSentinel />
