@@ -2,18 +2,24 @@
  * Utility to get current Hijri date using Intl API (Umm al-Qura)
  */
 export function getHijriDate(date: Date = new Date()) {
-    const formatter = new Intl.DateTimeFormat('fr-FR-u-ca-islamic-uma-nu-latn', {
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric'
-    });
+    try {
+        const formatter = new Intl.DateTimeFormat('fr-FR-u-ca-islamic-uma-nu-latn', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        });
 
-    const parts = formatter.formatToParts(date);
-    const day = parseInt(parts.find(p => p.type === 'day')?.value || '1');
-    const month = parseInt(parts.find(p => p.type === 'month')?.value || '1');
-    const year = parseInt(parts.find(p => p.type === 'year')?.value || '1445');
+        const parts = formatter.formatToParts(date);
+        const day = parseInt(parts.find(p => p.type === 'day')?.value || '1');
+        const month = parseInt(parts.find(p => p.type === 'month')?.value || '1');
+        const year = parseInt(parts.find(p => p.type === 'year')?.value || '1445');
 
-    return { day, month, year };
+        return { day, month, year };
+    } catch (e) {
+        console.error('Hijri date formatting failed', e);
+        // Basic fallback: 1st of current month (approximate)
+        return { day: date.getDate(), month: 1, year: 1447 };
+    }
 }
 
 /**

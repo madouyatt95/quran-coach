@@ -36,9 +36,14 @@ function determineWeatherEvent(code: number, windSpeed: number): WeatherEvent {
  * Fetch current weather from Open-Meteo using lat/lng
  */
 export async function getCurrentWeather(lat: number, lng: number): Promise<WeatherCondition> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+
     try {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=weather_code,wind_speed_10m,is_day&timezone=auto`;
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (!res.ok) throw new Error('Weather API error');
 
         const data = await res.json();
