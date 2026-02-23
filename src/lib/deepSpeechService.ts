@@ -160,7 +160,13 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                data: [filePath],
+                data: [{
+                    path: filePath,
+                    orig_name: 'recording.wav',
+                    size: wavBlob.size,
+                    mime_type: 'audio/wav',
+                    meta: { _type: 'gradio.FileData' },
+                }],
                 fn_index: 0,
                 session_hash: Math.random().toString(36).slice(2),
             }),
