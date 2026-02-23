@@ -5,6 +5,7 @@ import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGr
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
+import { WeatherAdhkarCard } from '../components/Home/WeatherAdhkarCard';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -399,6 +400,9 @@ export function HomePage() {
                     </div>
                 ))}
             </div>
+
+            {/* Weather Context Adhkar (Dynamic) */}
+            <WeatherAdhkarCard />
 
             {/* Hadith Card */}
             <div className="hadith-card">
