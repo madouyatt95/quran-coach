@@ -16,6 +16,7 @@ import { ProfileView } from '../components/Quiz/ProfileView';
 import { DailyChallengeView } from '../components/Quiz/DailyChallengeView';
 import { RoundEndView } from '../components/Quiz/RoundEndView';
 import { HistoryView } from '../components/Quiz/HistoryView';
+import { SiraMapView } from '../components/Quiz/SiraMapView';
 import './QuizPage.css';
 
 // ─── Main Quiz Page ──────────────────────────────────────

@@ -1,6 +1,5 @@
 import { Star, Lock, Play } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
-import type { SiraLevel } from '../../data/quizTypes';
 
 export function SiraMapView() {
     const { siraLevels, siraProgression, setView, startSiraLevel } = useQuizStore();
