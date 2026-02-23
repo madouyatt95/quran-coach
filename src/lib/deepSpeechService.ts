@@ -264,13 +264,11 @@ export function compareWithExpected(transcribed: string, expectedText: string): 
             }
         }
 
-        const threshold = eNorm.length <= 3 ? 0.5 : eNorm.length <= 6 ? 0.65 : 0.75;
+        const minSimilarityThreshold = eNorm.length <= 3 ? 0.5 : eNorm.length <= 6 ? 0.65 : 0.70;
 
-        if (bestSim >= threshold && bestMatch >= 0) {
-            // Mark skipped spoken words (extras the user added)
-            // We just skip them, they don't count against the expected
-
-            const isExactMatch = bestSim >= 0.9;
+        if (bestSim >= minSimilarityThreshold && bestMatch >= 0) {
+            // Word found in transcription
+            const isExactMatch = bestSim >= 0.85; // Lowered from 0.9 to be more forgiving of AI text variations
             wordDiffs.push({
                 expected: expectedWords[ei],
                 spoken: spokenWords[bestMatch] || null,
@@ -286,7 +284,7 @@ export function compareWithExpected(transcribed: string, expectedText: string): 
 
             si = bestMatch + 1;
         } else {
-            // Word was missed entirely
+            // Word was missed entirely (e.g., user stopped reading, or completely mumbled it)
             wordDiffs.push({
                 expected: expectedWords[ei],
                 spoken: null,
