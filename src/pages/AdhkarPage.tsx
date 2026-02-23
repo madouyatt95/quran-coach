@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X, Gauge } from 'lucide-react';
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import { useFavoritesStore } from '../stores/favoritesStore';
@@ -79,12 +79,20 @@ export function AdhkarPage() {
     const navigate = useNavigate();
     const { toggleFavoriteDua, isFavoriteDua } = useFavoritesStore();
 
+    const [searchParams] = useSearchParams();
+
     // ═══ Mega-category navigation layer ═══
     const [viewLevel, setViewLevel] = useState<'mega' | 'chapters' | 'category'>(() => {
+        if (searchParams.has('cat')) return 'category';
+        if (searchParams.has('mega')) return 'chapters';
         const saved = localStorage.getItem('adhkar_view_level');
         return (saved as 'mega' | 'chapters' | 'category') || 'mega';
     });
     const [selectedMega, setSelectedMega] = useState<HisnMegaCategory | null>(() => {
+        const megaParam = searchParams.get('mega');
+        if (megaParam) {
+            return HISNUL_MUSLIM_DATA.find(m => m.id === megaParam) || null;
+        }
         const id = localStorage.getItem('adhkar_mega_id');
         return id ? HISNUL_MUSLIM_DATA.find(m => m.id === id) || null : null;
     });
@@ -128,6 +136,21 @@ export function AdhkarPage() {
 
     // Load persisted state
     const [selectedCategory, setSelectedCategory] = useState<AdhkarCategory | null>(() => {
+        const catParam = searchParams.get('cat');
+        if (catParam) {
+            // Check original data first
+            const found = ADHKAR_DATA.find(c => c.id === catParam);
+            if (found) return found;
+            // Check Hisnul Muslim chapters
+            if (catParam.startsWith('hisn_')) {
+                const chId = catParam.replace('hisn_', '');
+                for (const mega of HISNUL_MUSLIM_DATA) {
+                    const ch = mega.chapters.find(c => c.id === chId);
+                    if (ch) return hisnChapterToCategory(ch);
+                }
+            }
+        }
+
         const savedCatId = localStorage.getItem('adhkar_category_id');
         if (savedCatId) {
             // Check original data first

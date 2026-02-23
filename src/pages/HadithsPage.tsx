@@ -1,12 +1,19 @@
 import { useState, useMemo, useCallback } from 'react';
 import { ArrowLeft, Heart, Share2, Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { HADITH_CATEGORIES, EXPANDED_HADITHS, type HadithCategory, type HadithEntry } from '../data/hadithsExpanded';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import './HadithsPage.css';
 
 export function HadithsPage() {
-    const [selectedCat, setSelectedCat] = useState<HadithCategory | null>(null);
+    const [searchParams] = useSearchParams();
+    const [selectedCat, setSelectedCat] = useState<HadithCategory | null>(() => {
+        const catParam = searchParams.get('cat') as HadithCategory | null;
+        if (catParam && HADITH_CATEGORIES.some(c => c.id === catParam)) {
+            return catParam;
+        }
+        return null;
+    });
     const [search, setSearch] = useState('');
     const navigate = useNavigate();
     const { toggleFavoriteHadith, isFavoriteHadith } = useFavoritesStore();

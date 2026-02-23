@@ -31,11 +31,11 @@ const HIJRI_HISTORY_EVENTS: Record<string, { title: string, text: string }> = {
 };
 
 const QURAN_VOCABULARY = [
-    { word: 'Tawakkul', ar: 'تَوَكُّل', meaning: 'Confiance absolue en Allah.', ref: 'Al-Imran, 159' },
-    { word: 'Rahmah', ar: 'رَحْمَة', meaning: 'Miséricorde qui embrasse toute chose.', ref: 'Al-Araf, 156' },
-    { word: 'Sabr', ar: 'صَبْر', meaning: 'Patience belle et persévérance.', ref: 'Al-Baqarah, 153' },
-    { word: 'Ikhlas', ar: 'إِخْلَاص', meaning: 'Sincérité pure pour Allah seul.', ref: 'Al-Ikhlas, 1' },
-    { word: 'Shukr', ar: 'شُكْر', meaning: 'Gratitude qui augmente les bienfaits.', ref: 'Ibrahim, 7' }
+    { word: 'Tawakkul', ar: 'تَوَكُّل', meaning: 'Confiance absolue en Allah.', ref: 'Al-Imran, 159', surah: 3, ayah: 159 },
+    { word: 'Rahmah', ar: 'رَحْمَة', meaning: 'Miséricorde qui embrasse toute chose.', ref: 'Al-Araf, 156', surah: 7, ayah: 156 },
+    { word: 'Sabr', ar: 'صَبْر', meaning: 'Patience belle et persévérance.', ref: 'Al-Baqarah, 153', surah: 2, ayah: 153 },
+    { word: 'Ikhlas', ar: 'إِخْلَاص', meaning: 'Sincérité pure pour Allah seul.', ref: 'Al-Ikhlas, 1', surah: 112, ayah: 1 },
+    { word: 'Shukr', ar: 'شُكْر', meaning: 'Gratitude qui augmente les bienfaits.', ref: 'Ibrahim, 7', surah: 14, ayah: 7 }
 ];
 
 export function useSmartCoaching() {
@@ -80,7 +80,7 @@ export function useSmartCoaching() {
                             textFr: '« Ô Allah ! Fais que ce soit une pluie utile. »',
                             phonetic: "Allâhumma sayyiban nâfi'an.",
                             gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                            link: '/adhkar'
+                            link: '/adhkar?cat=hisn_chap_64'
                         });
                     } else if (weather.event === 'thunderstorm') {
                         activeCards.push({
@@ -92,7 +92,7 @@ export function useSmartCoaching() {
                             textFr: '« Gloire à Celui dont le tonnerre Le glorifie par Ses louanges... »',
                             phonetic: "Subhâna l-ladhî yusabbihu r-ra'du...",
                             gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            link: '/adhkar'
+                            link: '/adhkar?cat=hisn_chap_62'
                         });
                     }
                 } catch (e) {
@@ -122,7 +122,7 @@ export function useSmartCoaching() {
                             textAr: 'قَدْ أَفْلَحَ الْمُؤْمِنُونَ الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ',
                             textFr: `Plus que ${diff} min avant le début de la prière. Préparez votre cœur au Khushu.`,
                             gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            link: '/adhkar'
+                            link: '/adhkar?cat=hisn_chap_12'
                         });
                         break;
                     }
@@ -139,7 +139,7 @@ export function useSmartCoaching() {
                     textAr: 'السنة صيام الأيام البيض',
                     textFr: 'C\'est l\'un des 3 jours blancs. Le jeûne y est fortement recommandé.',
                     gradient: 'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)',
-                    link: '/hadiths'
+                    link: '/hadiths?cat=jeune'
                 });
             }
 
@@ -154,7 +154,7 @@ export function useSmartCoaching() {
                         textAr: 'وَاتَّقُوا اللَّهَ الَّذِي تَسَاءَلُونَ بِهِ وَالْأَرْحَامَ',
                         textFr: 'Rappel pour prendre des nouvelles de vos proches et renforcer les liens.',
                         gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                        link: '/hadiths'
+                        link: '/hadiths?cat=fraternite'
                     });
                 }
             }
@@ -184,7 +184,7 @@ export function useSmartCoaching() {
                     textAr: 'اللهم بارك لأمتي في بكورها',
                     textFr: '« Ô Allah, bénis ma communauté dans sa prime matinée. »',
                     gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                    link: '/adhkar'
+                    link: '/adhkar?mega=daily'
                 });
             }
 
@@ -199,7 +199,7 @@ export function useSmartCoaching() {
                         textAr: 'أَمَّنْ هُوَ قَانِتٌ آنَاءَ اللَّيْلِ سَاجِداً وَقَائِماً',
                         textFr: 'Le monde dort, mais vous êtes avec Allah. Moment idéal pour le Qiyam.',
                         gradient: 'linear-gradient(135deg, #090909 0%, #1a1a1a 100%)',
-                        link: '/adhkar'
+                        link: '/adhkar?cat=hisn_chap_108'
                     });
                 } else if (hour === 4) { // Pre-Fajr Sahar
                     activeCards.push({
@@ -210,7 +210,7 @@ export function useSmartCoaching() {
                         textAr: 'وَبِالْأَسْحَارِ هُمْ يَسْتَغْفِرُونَ',
                         textFr: '« ...et aux dernières heures de la nuit, ils demandaient pardon. »',
                         gradient: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-                        link: '/adhkar'
+                        link: '/adhkar?cat=hisn_chap_108'
                     });
                 }
             }
@@ -240,7 +240,7 @@ export function useSmartCoaching() {
                 textAr: word.ar,
                 textFr: `${word.word} : ${word.meaning} (${word.ref})`,
                 gradient: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                link: '/read'
+                link: `/read?surah=${word.surah}&ayah=${word.ayah}`
             });
 
             // 10. History Mode
@@ -255,7 +255,7 @@ export function useSmartCoaching() {
                         textAr: 'تاريخنا العظيم',
                         textFr: event.text,
                         gradient: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)',
-                        link: '/hadiths'
+                        link: '/hadiths?cat=vendredi'
                     });
                 }
             }
@@ -270,7 +270,7 @@ export function useSmartCoaching() {
                     textAr: 'كَانَ النَّبِيُّ ﷺ يَتَحَرَّى صَوْمَ الِاثْنَيْنِ وَالْخَمِيسِ',
                     textFr: 'Jours recommandés pour le jeûne surérogatoire selon la Sunnah.',
                     gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                    link: '/hadiths'
+                    link: '/hadiths?cat=jeune'
                 });
             }
 
@@ -284,7 +284,7 @@ export function useSmartCoaching() {
                     textAr: 'اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّد',
                     textFr: 'Multipliez les salutations sur le Prophète ﷺ en ce jour béni.',
                     gradient: 'linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)',
-                    link: '/adhkar'
+                    link: '/adhkar?cat=hisn_chap_107'
                 });
             }
 
