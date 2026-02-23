@@ -1369,7 +1369,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_125",
-                "title": " contre le risque de porter le mauvais œil",
+                "title": "Contre le risque de porter le mauvais œil",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#FF7043",
@@ -1386,7 +1386,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_128",
-                "title": "pour repousser les ruses des démons rebelles ",
+                "title": "Pour repousser les ruses des démons rebelles",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#FF7043",
@@ -1437,7 +1437,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_51",
-                "title": "du malade perdant espoir de guérir",
+                "title": "Du malade perdant espoir de guérir",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#26C6DA",
@@ -1470,7 +1470,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_68",
-                "title": "lors de la rupture du jeûne",
+                "title": "Lors de la rupture du jeûne",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#26C6DA",
@@ -1495,7 +1495,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_69",
-                "title": "avant de manger",
+                "title": "Avant de manger",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#26C6DA",
@@ -1520,7 +1520,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_70",
-                "title": "après avoir fini de manger",
+                "title": "Après avoir fini de manger",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#26C6DA",
@@ -1545,7 +1545,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_71",
-                "title": "de l'invité pour son hôte",
+                "title": "De l'invité pour son hôte",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#26C6DA",
@@ -1647,7 +1647,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_85",
-                "title": "A la fin d'une assemblée",
+                "title": "À la fin d'une assemblée",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#26C6DA",
@@ -1816,7 +1816,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_80",
-                "title": "du marié et lors de l'acquisition d'une monture",
+                "title": "Du marié et lors de l'acquisition d'une monture",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#42A5F5",
@@ -1833,7 +1833,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_96",
-                "title": "du voyage",
+                "title": "Du voyage",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#42A5F5",
@@ -1850,7 +1850,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_97",
-                "title": "A l'entrée d'une ville ou un village",
+                "title": "À l'entrée d'une ville ou d'un village",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#42A5F5",
@@ -1867,7 +1867,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_98",
-                "title": "l'entrée au marché",
+                "title": "À l'entrée au marché",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#42A5F5",
@@ -1901,7 +1901,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_100",
-                "title": "du voyageur au résident ",
+                "title": "Du voyageur au résident",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#42A5F5",
@@ -1918,7 +1918,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_101",
-                "title": "du résident au voyageur ",
+                "title": "Du résident au voyageur",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#42A5F5",
@@ -1926,7 +1926,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_103",
-                "title": "à l'approche de l'aube pendant le voyage",
+                "title": "À l'approche de l'aube pendant le voyage",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#42A5F5",
@@ -2127,7 +2127,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_30",
-                "title": "la terreur nocturne et la solitude ",
+                "title": "Contre la terreur nocturne et la solitude",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2276,7 +2276,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_40",
-                "title": " contre les suggestions insufflées concernant la foi",
+                "title": "Contre les suggestions insufflées concernant la foi",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2317,7 +2317,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_44",
-                "title": " que doit dire et faire celui qui a commis un péché",
+                "title": "Que doit dire et faire celui qui a commis un péché",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2368,7 +2368,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_52",
-                "title": " L'exhortation de l'agonisant ",
+                "title": "L'exhortation de l'agonisant",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2402,7 +2402,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_72",
-                "title": "pour solliciter de la nourriture ou de la boisson",
+                "title": "Pour solliciter de la nourriture ou de la boisson",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2419,7 +2419,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_75",
-                "title": "Reponse du jeuneur quand on l'insulte",
+                "title": "Réponse du jeûneur quand on l'insulte",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2436,7 +2436,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_76",
-                "title": "à la vue des premiers fruits de la saison",
+                "title": "À la vue des premiers fruits de la saison",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2504,7 +2504,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_86",
-                "title": "pour celui qui vous dit : Qu'Allah te pardonne",
+                "title": "Pour celui qui vous dit : Qu'Allah te pardonne",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2555,7 +2555,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_89",
-                "title": "pour celui qui vous dit : Je t'aime en Allah",
+                "title": "Pour celui qui vous dit : Je t'aime en Allah",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2572,7 +2572,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_90",
-                "title": "pour celui qui propose ses biens",
+                "title": "Pour celui qui propose ses biens",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2589,7 +2589,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_91",
-                "title": "pour le prêteur lors du remboursement",
+                "title": "Pour le prêteur lors du remboursement",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2623,7 +2623,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_93",
-                "title": "pour celui qui vous dit : Qu'Allah te bénisse",
+                "title": "Pour celui qui vous dit : Qu'Allah te bénisse",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2657,7 +2657,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_95",
-                "title": "Quand on monte dans une vehicule",
+                "title": "Quand on monte dans un véhicule",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2674,7 +2674,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_102",
-                "title": "les glorifications durant le trajet ",
+                "title": "Les glorifications durant le trajet",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2708,7 +2708,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_109",
-                "title": "rendre le salut au non-musulman s'il salue le salam",
+                "title": "Rendre le salut au non-musulman s'il passe le salam",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2759,7 +2759,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_114",
-                "title": "lorsque le musulman reçoit des éloges",
+                "title": "Lorsque le musulman reçoit des éloges",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2827,7 +2827,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_118",
-                "title": "sur les monts As-Safa et Al-Marwa ",
+                "title": "Sur les monts As-Safa et Al-Marwa",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2878,7 +2878,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_121",
-                "title": "lors du lancer des stèles à chaque caillou",
+                "title": "Lors du lancer des stèles à chaque caillou",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2895,7 +2895,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_122",
-                "title": " face à l'étonnement ou une joyeuse nouvelle",
+                "title": "Face à l'étonnement ou à une joyeuse nouvelle",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2920,7 +2920,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_123",
-                "title": "celui qui reçoit une nouvelle réjouissante ",
+                "title": "Celui qui reçoit une nouvelle réjouissante",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2937,7 +2937,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_126",
-                "title": " en cas de frayeur",
+                "title": "En cas de frayeur",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2954,7 +2954,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_127",
-                "title": " lors de l'abattage ou du sacrifice",
+                "title": "Lors de l'abattage ou du sacrifice",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -2971,7 +2971,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_129",
-                "title": "La demande de pardon et le repentir ",
+                "title": "La demande de pardon et le repentir",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -3028,7 +3028,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_130",
-                "title": " Mérite du Tasbih, Tahmid, Tahlil et Takbir",
+                "title": "Mérite du Tasbih, Tahmid, Tahlil et Takbir",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -3150,7 +3150,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_132",
-                "title": " Des types de biens et de bienséances ",
+                "title": "Des types de biens et de bienséances",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#AB47BC",
@@ -3176,7 +3176,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
         "chapters": [
             {
                 "id": "chap_34",
-                "title": "contre l'angoisse et la tristesse",
+                "title": "Contre l'angoisse et la tristesse",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#78909C",
@@ -3201,7 +3201,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_36",
-                "title": "Contre l'ennemi ou d'une autorité ",
+                "title": "Contre l'ennemi ou une autorité injuste",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#78909C",
@@ -3251,7 +3251,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_41",
-                "title": "pour l'acquittement des dettes",
+                "title": "Pour l'acquittement des dettes",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#78909C",
@@ -3276,7 +3276,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_43",
-                "title": "pour celui qui rencontre une difficulté",
+                "title": "Pour celui qui rencontre une difficulté",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#78909C",
@@ -3293,7 +3293,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_53",
-                "title": "celui qui est frappé par une épreuve",
+                "title": "Celui qui est frappé par une épreuve",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#78909C",
@@ -3310,7 +3310,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_54",
-                "title": "au moment de fermer les yeux du défunt ",
+                "title": "Au moment de fermer les yeux du défunt",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#78909C",
@@ -3386,7 +3386,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_124",
-                "title": " celui qui ressent une douleur physique",
+                "title": "Celui qui ressent une douleur physique",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#78909C",
