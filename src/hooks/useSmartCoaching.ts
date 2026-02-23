@@ -14,6 +14,7 @@ export interface SmartCardData {
     phonetic?: string;
     gradient: string;
     progress?: number; // For Kahf for example
+    link?: string; // App route to navigate to
 }
 
 const HIJRI_HISTORY_EVENTS: Record<string, { title: string, text: string }> = {
@@ -63,7 +64,8 @@ export function useSmartCoaching() {
                             textAr: 'اللَّهُمَّ صَيِّداً نَافِعاً',
                             textFr: 'Ô Allah ! Fais que ce soit une pluie utile.',
                             phonetic: "Allâhumma sayyiban nâfi'an.",
-                            gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+                            gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                            link: '/adhkar'
                         });
                     } else if (weather.event === 'thunderstorm') {
                         activeCards.push({
@@ -74,7 +76,8 @@ export function useSmartCoaching() {
                             textAr: 'سُبْحَانَ الَّذِي يُسَبِّحُ الرَّعْدُ بِحَمْدِهِ وَالْمَلَائِكَةُ مِنْ خِيفَتِهِ',
                             textFr: 'Gloire à Celui dont le tonnerre Le glorifie par Ses louanges...',
                             phonetic: "Subhâna l-ladhî yusabbihu r-ra'du...",
-                            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            link: '/adhkar'
                         });
                     }
                 } catch (e) {
@@ -91,7 +94,8 @@ export function useSmartCoaching() {
                     title: `Jour Blanc (${day} ${month})`,
                     textAr: 'السنة صيام الأيام البيض',
                     textFr: 'C\'est l\'un des 3 jours blancs. Le jeûne y est fortement recommandé.',
-                    gradient: 'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)'
+                    gradient: 'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)',
+                    link: '/hadiths'
                 });
             }
 
@@ -106,7 +110,8 @@ export function useSmartCoaching() {
                         title: 'Sentinelle du Vendredi',
                         textAr: 'وَاتَّقُوا اللَّهَ الَّذِي تَسَاءَلُونَ بِهِ وَالْأَرْحَامَ',
                         textFr: 'Et craignez Allah au nom de qui vous vous implorez les uns les autres, et craignez de rompre les liens du sang.',
-                        gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+                        gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                        link: '/hadiths'
                     });
                 }
             }
@@ -121,7 +126,8 @@ export function useSmartCoaching() {
                     textAr: 'مَنْ قَرَأَ سُورَةَ الْكَهْفِ يَوْمَ الْجُمُعَةِ أَضَاءَ لَهُ مِنَ النُّورِ',
                     textFr: 'Objectif : Lire Sourate Al-Kahf avant le Maghrib.',
                     gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                    progress: 0 // Mock progress, could be real if integrated with reader
+                    progress: 0,
+                    link: '/read?surah=18'
                 });
             }
 
@@ -211,7 +217,23 @@ export function useSmartCoaching() {
                 activeCards.push({
                     ...def,
                     type: 'tip',
-                    textAr: 'خَيْرُ الأَعْمَالِ أَدْوَمُهَا وَإِنْ قَلَّ'
+                    textAr: 'خَيْرُ الأَعْمَالِ أَدْوَمُهَا وَإِنْ قَلَّ',
+                    link: '/read'
+                });
+            }
+
+            // 9. Night Mode (Sunnah of sleep)
+            const hour = now.getHours();
+            if (hour >= 22 || hour < 4) {
+                activeCards.push({
+                    id: 'night-mode',
+                    type: 'spirituality',
+                    emoji: '🌙',
+                    title: 'Repos Spirituel',
+                    textAr: 'سُورَةُ الْمُلْكِ هِيَ الْمَانِعَةُ مِنَ الْعَذَابِ',
+                    textFr: 'C\'est le moment de lire Sourate Al-Mulk et de faire vos invocations du soir.',
+                    gradient: 'linear-gradient(135deg, #141e30 0%, #243b55 100%)',
+                    link: '/read?surah=67'
                 });
             }
 

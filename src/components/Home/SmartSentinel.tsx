@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useSmartCoaching, type SmartCardData } from '../../hooks/useSmartCoaching';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import { Heart, ShieldCheck, ChevronRight } from 'lucide-react';
@@ -32,11 +33,17 @@ export function SmartSentinel() {
 }
 
 function SmartCard({ data }: { data: SmartCardData }) {
+    const navigate = useNavigate();
     const { toggleFavoriteHadith, isFavoriteHadith } = useFavoritesStore();
-    const isFav = isFavoriteHadith(data.id as any); // Type hack for simplicity in this version
+    const isFav = isFavoriteHadith(data.id as any);
+
+    const handleAction = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (data.link) navigate(data.link);
+    };
 
     return (
-        <div className="smart-card" style={{ background: data.gradient }}>
+        <div className="smart-card" style={{ background: data.gradient }} onClick={() => data.link && navigate(data.link)}>
             <div className="smart-card__badge">
                 <span className="smart-card__emoji">{data.emoji}</span>
                 <span>{data.title}</span>
@@ -51,18 +58,21 @@ function SmartCard({ data }: { data: SmartCardData }) {
             <div className="smart-card__footer">
                 <button
                     className={`smart-card__fav ${isFav ? 'active' : ''}`}
-                    onClick={() => toggleFavoriteHadith({
-                        id: 9000 + (data.id.length), // Dummy unique int ID
-                        ar: data.textAr,
-                        fr: data.textFr,
-                        src: "Sentinelle",
-                        nar: data.title,
-                        cat: 'sentinel'
-                    })}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavoriteHadith({
+                            id: 9000 + (data.id.length),
+                            ar: data.textAr,
+                            fr: data.textFr,
+                            src: "Sentinelle",
+                            nar: data.title,
+                            cat: 'sentinel'
+                        });
+                    }}
                 >
                     <Heart size={16} fill={isFav ? 'currentColor' : 'none'} />
                 </button>
-                <div className="smart-card__action">
+                <div className="smart-card__action" onClick={handleAction}>
                     <span>Voir plus</span>
                     <ChevronRight size={14} />
                 </div>
