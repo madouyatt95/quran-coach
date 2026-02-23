@@ -228,6 +228,18 @@ export function KhatmTracker() {
                                     Arrêter
                                 </button>
                             </div>
+                            <button
+                                className="khatm-btn khatm-btn-danger"
+                                style={{ marginTop: 12, width: '100%', background: '#d32f2f', color: '#fff' }}
+                                onClick={() => {
+                                    if (confirm('Voulez-vous vraiment TOUT effacer et recommencer à zéro ? Cette action est irréversible.')) {
+                                        store.reset();
+                                        setShowDetails(false);
+                                    }
+                                }}
+                            >
+                                Réinitialiser à zéro
+                            </button>
                         </div>
                     </div>
                 </>

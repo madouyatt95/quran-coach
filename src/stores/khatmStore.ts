@@ -127,7 +127,7 @@ export const useKhatmStore = create<KhatmState>()(
                 return { validatedPages: pages, dailyReadCount, lastActiveDate };
             }),
 
-            reset: () => set({ validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1 }),
+            reset: () => set({ validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1, dailyReadCount: 0, lastActiveDate: '' }),
 
             isPageValidated: (page) => get().validatedPages.includes(page),
 
