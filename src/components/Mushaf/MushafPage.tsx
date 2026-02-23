@@ -175,7 +175,7 @@ export function MushafPage() {
                     }
                 });
             },
-            { root: container, threshold: 0.5 }
+            { root: container, threshold: 0.1 }
         );
 
         const updateObservedElements = () => {
@@ -336,12 +336,12 @@ export function MushafPage() {
                 else window.scrollTo({ top: 0, behavior: 'auto' });
             }
 
-            // Clear only the observer-blocking flag after a longer delay
-            // to ensure automatic scrolling has fully stabilized.
+            // Clear only the observer-blocking flag after a shorter delay
+            // to ensure automatic scrolling has fully stabilized without blocking progress.
             setTimeout(() => {
                 isSilentJumpRef.current = false;
                 sessionStorage.removeItem('isSilentJump');
-            }, 5000);
+            }, 800);
         }
     }, [jumpSignal, scrollToVerse, scrollToPageStart, currentSurahAyahs]);
 

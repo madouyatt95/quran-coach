@@ -88,6 +88,13 @@ export const useQuranStore = create<QuranState>()(
                     return;
                 }
 
+                // AUTOMATIC KHATM TRACKER:
+                // We track pages read for challenges (Khatm, etc.) regardless of whether the general bookmark is frozen.
+                // If it's a Khatm Mode session, we allow tracking even if 'isExploring' is true (Reprendre Khatm).
+                if (!isExploring || isKhatmMode) {
+                    import('./challengesStore').then(m => m.useChallengesStore.getState().markPageRead(currentPage));
+                }
+
                 if (isKhatmMode) {
                     // KHATM MODE: Strictly frozen. Never update general bookmark.
                     return;
@@ -124,10 +131,6 @@ export const useQuranStore = create<QuranState>()(
                         updatedAt: Date.now()
                     }
                 });
-
-                // AUTOMATIC KHATM TRACKER:
-                // Only if NOT exploring (silent search) and NOT in a specifically frozen mode
-                import('./challengesStore').then(m => m.useChallengesStore.getState().markPageRead(currentPage));
             },
 
             stopExploring: () => set({ isExploring: false }),
@@ -154,6 +157,8 @@ export const useQuranStore = create<QuranState>()(
                     }));
                     if (!options.silent) {
                         get().updateProgress();
+                    } else if ((options as any).khatm) {
+                        import('./challengesStore').then(m => m.useChallengesStore.getState().markPageRead(page));
                     }
                 }
             },
@@ -171,6 +176,8 @@ export const useQuranStore = create<QuranState>()(
                     }));
                     if (!options.silent) {
                         get().updateProgress();
+                    } else if ((options as any).khatm) {
+                        import('./challengesStore').then(m => m.useChallengesStore.getState().markPageRead(page));
                     }
                 }
             },
@@ -191,6 +198,8 @@ export const useQuranStore = create<QuranState>()(
                 });
                 if (!options.silent) {
                     get().updateProgress();
+                } else if ((options as any).khatm) {
+                    import('./challengesStore').then(m => m.useChallengesStore.getState().markPageRead(updateState.currentPage));
                 }
             },
 
