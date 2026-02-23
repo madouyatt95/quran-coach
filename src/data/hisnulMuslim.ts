@@ -669,7 +669,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_16",
-                "title": "À l’ouverture de la prière.",
+                "title": "À l'ouverture de la prière",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -816,7 +816,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_22",
-                "title": "Tachahoud",
+                "title": "Le Tachahoud",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -833,7 +833,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_23",
-                "title": "Salutations prophétique apres le tachaoud ",
+                "title": "Salutations prophétiques après le Tachahoud",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -858,7 +858,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_24",
-                "title": "Dernier tachahoud avant les salutations finales",
+                "title": "Dernier Tachahoud avant les salutations finales",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -1028,7 +1028,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_26",
-                "title": "La prière de consultation",
+                "title": "La prière de consultation (Al-Istikhâra)",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -1053,7 +1053,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_32",
-                "title": "Qonout lors de la prière du Witr",
+                "title": "Qunut lors de la prière du Witr",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -1086,7 +1086,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_33",
-                "title": "après la prière du Witr",
+                "title": "Après la prière du Witr",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -1103,7 +1103,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_42",
-                "title": "contre les distractions durant la prière ou la lecture ",
+                "title": "Contre les distractions durant la prière ou la lecture",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
@@ -1161,7 +1161,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             },
             {
                 "id": "chap_56",
-                "title": "Prière funéraire pour le mort-né/prématuré  ",
+                "title": "Prière funéraire pour le mort-né ou prématuré",
                 "titleAr": "",
                 "icon": "BookOpen",
                 "color": "#4CAF50",
