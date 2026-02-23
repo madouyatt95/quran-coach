@@ -795,13 +795,11 @@ export const useQuizStore = create<QuizState>()(
 
             nextQuestion: async () => {
                 const state = get();
-                const { currentIndex, questions, mode, score, totalPlayed, totalWins, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest, duelRound, duelRounds, duelRoundScores } = state;
+                const { currentIndex, questions, mode, score, totalPlayed, totalWins, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest, duelRound, duelRounds, duelRoundScores, siraCurrentLevel } = state;
 
                 // In duel mode: check if current round is done (3 questions per round)
                 if (mode === 'duel' && currentIndex + 1 >= questions.length && duelRound < duelRounds.length - 1) {
-                    // End of current round, but more rounds to go
                     const newRoundScores = [...duelRoundScores];
-                    // Calculate this round's score contribution
                     const prevRoundsScore = newRoundScores.slice(0, duelRound).reduce((a, b) => a + b, 0);
                     newRoundScores[duelRound] = score - prevRoundsScore;
 
@@ -814,10 +812,10 @@ export const useQuizStore = create<QuizState>()(
 
                 if (currentIndex + 1 >= questions.length || mode === 'sprint') {
                     // End of match
-                    const isDuel = mode === 'duel';
+                    const isDuelMatch = mode === 'duel';
 
-                    // For duel: fetch final opponent score before determining winner
-                    if (isDuel && matchId) {
+                    // For duel: fetch final opponent score
+                    if (isDuelMatch && matchId) {
                         const isP1 = get().isDuelCreator;
                         const { data: finalMatch } = await supabase
                             .from('quiz_matches')
@@ -831,40 +829,51 @@ export const useQuizStore = create<QuizState>()(
                         }
                     }
 
-                    // Re-read opponentScore after potential update
-                    const latestOpponentScore = get().opponentScore;
-                    // For non-duel modes, win requires ≥80% correct answers
-                    const latestAnswers = get().answers;
+                    const latestState = get();
+                    const latestOppScore = latestState.opponentScore;
+                    const latestAnswers = latestState.answers;
                     const correctCount = latestAnswers.filter(a => a.correct).length;
                     const totalQ = latestAnswers.length;
                     const correctRate = totalQ > 0 ? correctCount / totalQ : 0;
-                    const isWin = isDuel
-                        ? score > latestOpponentScore
-                        : correctRate >= 0.8; // 80% threshold for solo/sprint/revision/daily
+
+                    // Victory Condition
+                    const isWin = isDuelMatch
+                        ? (score > latestOppScore)
+                        : (mode === 'sira' ? (correctCount > 0) : (correctRate >= 0.8));
+
                     const newHighScores = { ...soloHighScores };
                     if (mode === 'solo' && theme) {
                         const prev = newHighScores[theme] || 0;
                         if (score > prev) newHighScores[theme] = score;
                     }
 
-                    const newDuelWins = isDuel && score > latestOpponentScore ? duelWins + 1 : duelWins;
+                    const newDuelWins = isDuelMatch && score > latestOppScore ? duelWins + 1 : duelWins;
                     const newSprintBest = mode === 'sprint' ? Math.max(sprintBest, sprintCorrect) : sprintBest;
 
-                    // Mark match finished in duel mode
-                    if (isDuel && matchId) {
-                        supabase
-                            .from('quiz_matches')
-                            .update({ status: 'finished' })
-                            .eq('id', matchId)
-                            .then();
+                    // Mark match finished
+                    if (isDuelMatch && matchId) {
+                        supabase.from('quiz_matches').update({ status: 'finished' }).eq('id', matchId).then();
                     }
 
-                    // For duel: finalize last round score
-                    if (isDuel) {
+                    // For duel: finalize score
+                    if (isDuelMatch) {
                         const newRoundScores = [...duelRoundScores];
                         const prevRoundsScore = newRoundScores.slice(0, duelRound).reduce((a, b) => a + b, 0);
                         newRoundScores[duelRound] = score - prevRoundsScore;
                         set({ duelRoundScores: newRoundScores });
+                    }
+
+                    // Sira Progression
+                    if (mode === 'sira' && siraCurrentLevel) {
+                        const percentage = (correctCount / totalQ) * 100;
+                        let stars = 0;
+                        if (percentage === 100) stars = 3;
+                        else if (percentage >= 70) stars = 2;
+                        else if (percentage > 0) stars = 1;
+
+                        if (correctCount > 0) {
+                            get().completeSiraLevel(siraCurrentLevel.id, stars);
+                        }
                     }
 
                     set({
@@ -877,7 +886,6 @@ export const useQuizStore = create<QuizState>()(
                         lastPowerUpGained: null,
                     });
 
-                    // Power-up recharge: +1 random power-up on win (cap at 5)
                     if (isWin) {
                         const { powerUps: currentPUs } = get();
                         const rechargeOptions: PowerUpId[] = (['50-50', 'time-freeze', 'second-chance'] as PowerUpId[]).filter(id => currentPUs[id] < 5);
@@ -890,9 +898,8 @@ export const useQuizStore = create<QuizState>()(
                         }
                     }
 
-                    // Save to game history (keep last 50)
-                    const { gameHistory: prevHistory } = get();
-                    const latestAnswers2 = get().answers;
+                    // Save to game history
+                    const { gameHistory: prevHistory, answers: latestAnswers2 } = get();
                     const historyEntry = {
                         date: new Date().toISOString(),
                         mode,
@@ -904,19 +911,14 @@ export const useQuizStore = create<QuizState>()(
                     };
                     set({ gameHistory: [historyEntry, ...prevHistory].slice(0, 50) });
 
-                    // Auto-submit to leaderboard after every game
                     get().submitToLeaderboard();
 
-                    // Check for new badges
                     const updatedState = get();
                     const newBadges = checkBadges(updatedState);
                     if (newBadges.length > 0) {
-                        set({
-                            unlockedBadges: [...updatedState.unlockedBadges, ...newBadges],
-                        });
+                        set({ unlockedBadges: [...updatedState.unlockedBadges, ...newBadges] });
                     }
 
-                    // Cleanup channel
                     if (channel) {
                         supabase.removeChannel(channel);
                         set({ channel: null });
