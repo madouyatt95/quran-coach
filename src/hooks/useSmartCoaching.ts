@@ -161,7 +161,7 @@ export function useSmartCoaching() {
                             textAr: 'أَمَّنْ هُوَ قَانِتٌ آنَاءَ اللَّيْلِ سَاجِداً وَقَائِماً',
                             textFr: 'Le monde dort, mais vous êtes avec Allah. Moment idéal pour le Qiyam.',
                             gradient: 'linear-gradient(135deg, #090909 0%, #1a1a1a 100%)',
-                            link: '/adhkar?cat=hisn_chap_108'
+                            link: '/adhkar?cat=hisn_chap_1'
                         });
                     } else if (hour === 4) {
                         activeCards.push({
@@ -170,7 +170,7 @@ export function useSmartCoaching() {
                             textAr: 'وَبِالْأَسْحَارِ هُمْ يَسْتَغْفِرُونَ',
                             textFr: '« ...et aux dernières heures de la nuit, ils demandaient pardon. »',
                             gradient: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-                            link: '/adhkar?cat=hisn_chap_108'
+                            link: '/adhkar?cat=hisn_chap_1'
                         });
                     }
                 }
@@ -234,7 +234,7 @@ export function useSmartCoaching() {
                         textAr: 'اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّد',
                         textFr: 'Multipliez les salutations sur le Prophète ﷺ en ce jour béni.',
                         gradient: 'linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)',
-                        link: '/adhkar?cat=hisn_chap_107'
+                        link: '/adhkar?cat=hisn_chap_108'
                     });
                 }
 
