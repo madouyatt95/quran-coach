@@ -77,8 +77,13 @@ export function useSmartCoaching() {
                     const pNames: Record<string, string> = { fajr: 'Sobh', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 
                     for (const pKey of pKeys) {
-                        const pDate = todayResult.times[pKey];
-                        if (!pDate) continue;
+                        const pDateRaw = todayResult.times[pKey];
+                        if (!pDateRaw) continue;
+
+                        // Parse date as it comes back as string from Zustand's localStorage persist
+                        const pDate = new Date(pDateRaw);
+                        if (isNaN(pDate.getTime())) continue;
+
                         const pTotalMin = pDate.getHours() * 60 + pDate.getMinutes();
                         const diff = pTotalMin - nowTotalMin;
 
