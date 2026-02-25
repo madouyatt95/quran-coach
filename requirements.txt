@@ -1,0 +1,5 @@
+torchaudio
+transformers
+gradio
+peft
+accelerate
