@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Volume2, X, GraduationCap, Users, Link2, Sparkles, BookOpenCheck, Square, Loader2 } from 'lucide-react';
+import { Volume2, X, GraduationCap, Users, Link2, Sparkles, Square, Loader2 } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
 import type { CoachState, CoachMode } from '../../hooks/useCoach';
 import { useDeepCoach } from '../../hooks/useDeepCoach';
