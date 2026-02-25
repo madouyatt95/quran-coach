@@ -17,6 +17,7 @@ import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
 import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '../lib/prayerNotificationScheduler';
 import { updatePushPreferences } from '../lib/notificationService';
 import { PrayerCalendarModal } from '../components/Prayer/PrayerCalendarModal';
+import { LocationSearchModal } from '../components/Prayer/LocationSearchModal';
 import { SideMenu } from '../components/Navigation/SideMenu';
 import { resolveCoords } from '../lib/locationService';
 import './PrayerTimesPage.css';
@@ -132,6 +133,7 @@ export function PrayerTimesPage() {
     const [showTransparency, setShowTransparency] = useState(false);
     const [showCalendar, setShowCalendar] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
+    const [showLocationModal, setShowLocationModal] = useState(false);
     const [dayResult, setDayResult] = useState<DayResult | null>(null);
     const [windows, setWindows] = useState<FiqhWindows | null>(null);
     const [deltas, setDeltas] = useState<Record<string, number> | null>(null);
@@ -362,10 +364,10 @@ export function PrayerTimesPage() {
                     <button className="prayer-hero__back" onClick={() => navigate('/')}>
                         <ChevronLeft size={24} />
                     </button>
-                    <div className="prayer-hero__location">
+                    <button className="prayer-hero__location" onClick={() => setShowLocationModal(true)}>
                         <MapPin size={14} />
                         <span>{cityName || 'Localisation...'}</span>
-                    </div>
+                    </button>
                     <button className="prayer-hero__settings-btn" onClick={() => navigate('/prayer-settings')}>
                         <Settings size={22} />
                     </button>
@@ -699,6 +701,11 @@ export function PrayerTimesPage() {
                     lat={lat || 0}
                     lng={usePrayerStore.getState().lng || 0}
                     settings={settings}
+                />
+
+                <LocationSearchModal
+                    isOpen={showLocationModal}
+                    onClose={() => setShowLocationModal(false)}
                 />
 
                 <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />

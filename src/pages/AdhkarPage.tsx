@@ -539,14 +539,14 @@ export function AdhkarPage() {
                                 </button>
                                 {dhikr.source && <span className="item-source">{dhikr.source}</span>}
                             </div>
-                            <p className="item-arabic">{dhikr.arabic.substring(0, 80)}...</p>
+                            <p className="item-arabic">{dhikr.arabic}</p>
                             {/* Type assertion needed because Adhkar type is mixed with HisnDua in context */}
                             {(dhikr as any).phonetic && (
                                 <p className="item-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginBottom: '6px' }}>
-                                    {(dhikr as any).phonetic.substring(0, 80)}...
+                                    {(dhikr as any).phonetic}
                                 </p>
                             )}
-                            <p className="item-translation">{dhikr.translation.substring(0, 100)}...</p>
+                            <p className="item-translation">{dhikr.translation}</p>
                         </div>
                     ))}
                 </div>

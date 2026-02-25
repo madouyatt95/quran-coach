@@ -170,26 +170,16 @@ export function CoachOverlay({
                         <div className="mih-coach-grid">
                             <button
                                 className="mih-coach-card mih-coach-card--ai"
-                                style={{ opacity: 0.5, cursor: 'not-allowed', position: 'relative' }}
-                                disabled
+                                onClick={() => {
+                                    setIsCenterOpen(false);
+                                    deepCoach.startExamRecording();
+                                }}
                             >
                                 <div className="mih-coach-card-icon mih-coach-card-icon--ai">
                                     <BookOpenCheck size={24} />
                                 </div>
                                 <span className="mih-coach-card-label">Examen Oral</span>
                                 <span className="mih-coach-card-desc">L'IA écoute et corrige votre récitation</span>
-                                <span style={{
-                                    position: 'absolute',
-                                    top: '-8px',
-                                    right: '-8px',
-                                    background: '#FF9800',
-                                    color: '#fff',
-                                    fontSize: '0.65rem',
-                                    padding: '2px 6px',
-                                    borderRadius: '10px',
-                                    fontWeight: 'bold',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                }}>Bientôt</span>
                             </button>
                         </div>
                     </div>
