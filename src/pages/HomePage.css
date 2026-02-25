@@ -613,7 +613,7 @@
 .hadith-card::after {
     content: '﷽';
     position: absolute;
-    top: 16px;
+    top: 42px;
     right: 18px;
     font-size: 1.1rem;
     color: rgba(201, 168, 76, 0.2);
