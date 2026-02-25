@@ -15,7 +15,7 @@ import {
 import { computeWindows, formatWindow, formatIshaWindow, type FiqhWindows } from '../lib/windowsEngine';
 import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
 import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '../lib/prayerNotificationScheduler';
-import { updatePushPreferences } from '../lib/notificationService';
+import { updatePushPreferences, updatePushLocation } from '../lib/notificationService';
 import { PrayerCalendarModal } from '../components/Prayer/PrayerCalendarModal';
 import { LocationSearchModal } from '../components/Prayer/LocationSearchModal';
 import { SideMenu } from '../components/Navigation/SideMenu';
@@ -191,6 +191,9 @@ export function PrayerTimesPage() {
                     daruriAsrEnabled: notifState.daruriAsrEnabled,
                     akhirIshaEnabled: notifState.akhirIshaEnabled,
                 });
+
+                // Also sync coordinates with Supabase Push Notification service
+                updatePushLocation(cLat, cLng);
             }
 
             // Cache range (fire-and-forget)
