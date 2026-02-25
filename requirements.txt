@@ -1,7 +1,0 @@
-torchaudio
-transformers
-gradio
-peft
-accelerate
-librosa
-soundfile
