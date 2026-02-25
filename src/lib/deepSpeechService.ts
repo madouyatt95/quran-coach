@@ -1,13 +1,6 @@
-/**
- * DeepSpeechService — Asynchronous Whisper-based transcription via HuggingFace.
- * 
- * This service is completely independent of speechRecognition.ts (the real-time Web Speech API).
- * It calls the HuggingFace Space's Gradio REST API directly with raw fetch (no @gradio/client).
- * Receives Arabic transcriptions and produces word-level diffs with Makharij analysis.
- */
-
 // --- Configuration ---
-const HF_SPACE_URL = 'https://yatta95-quran-whisper-test.hf.space';
+// Pointing to the newly created Space for the V3 Turbo Quran model
+const HF_SPACE_URL = 'https://yatta95-quran-coach-api.hf.space';
 
 // --- Types ---
 
@@ -151,11 +144,10 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
         }
 
         const uploadedFiles = await uploadRes.json();
-        const filePath = uploadedFiles[0]; // server-side path to the uploaded file
+        const filePath = uploadedFiles[0];
         console.log('[DeepSpeech] File uploaded:', filePath);
 
         // 3. Call transcribe via Gradio's Queue protocol (SSE)
-        // HuggingFace spaces enforce a queue, so direct /run POSTs return 404.
         console.log('[DeepSpeech] Joining queue...');
         const sessionHash = Math.random().toString(36).slice(2);
 
@@ -168,7 +160,7 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
                     orig_name: 'recording.wav',
                     meta: { _type: 'gradio.FileData' },
                 }],
-                fn_index: 2,
+                fn_index: 0,
                 session_hash: sessionHash,
             }),
         });
@@ -184,7 +176,6 @@ export async function transcribeAudio(audioBlob: Blob): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             const es = new EventSource(`${HF_SPACE_URL}/gradio_api/queue/data?session_hash=${sessionHash}`);
 
-            // Timeout after 60s
             const timeout = setTimeout(() => {
                 es.close();
                 reject(new Error('Transcription timeout (60s)'));

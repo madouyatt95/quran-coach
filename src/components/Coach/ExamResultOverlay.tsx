@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { X, RotateCcw, AlertTriangle, CheckCircle } from 'lucide-react';
+import { X, RotateCcw, AlertTriangle } from 'lucide-react';
 import type { ExamResult } from '../../lib/deepSpeechService';
 
 interface ExamResultOverlayProps {
@@ -44,29 +44,50 @@ export const ExamResultOverlay: React.FC<ExamResultOverlayProps> = ({ result, on
                     </div>
                 </div>
 
-                {/* Word-level Diff */}
+                {/* Word-level Diff (Visual text flow only) */}
                 <div className="exam-diff-section">
-                    <h3 className="exam-section-title">Détail mot par mot</h3>
+                    <h3 className="exam-section-title">Votre récitation</h3>
                     <div className="exam-diff-grid" dir="rtl">
                         {words.map((w, i) => (
                             <span
                                 key={i}
                                 className={`exam-diff-word exam-diff-word--${w.state}`}
-                                title={
-                                    w.state === 'correct' ? 'Correct ✓' :
-                                        w.state === 'missing' ? 'Mot oublié' :
-                                            `Prononcé : ${w.spoken || '?'}`
-                                }
                             >
                                 {w.expected}
-                                {w.state === 'correct' && <CheckCircle size={10} className="exam-diff-icon--correct" />}
-                                {w.state === 'wrong' && w.spoken && (
-                                    <span className="exam-diff-spoken">({w.spoken})</span>
-                                )}
                             </span>
                         ))}
                     </div>
                 </div>
+
+                {/* Explicit Errors List */}
+                {words.filter(w => w.state !== 'correct').length > 0 && (
+                    <div className="exam-errors-section">
+                        <h3 className="exam-section-title">Correction détaillée</h3>
+                        <div className="exam-errors-list">
+                            {words.filter(w => w.state !== 'correct').map((w, i) => (
+                                <div key={i} className={`exam-error-card exam-error-card--${w.state}`}>
+                                    {w.state === 'missing' ? (
+                                        <div className="exam-error-content">
+                                            <span className="exam-error-type">Mot oublié</span>
+                                            <span className="exam-error-expected" dir="rtl">{w.expected}</span>
+                                        </div>
+                                    ) : (
+                                        <div className="exam-error-content">
+                                            <div className="exam-error-row">
+                                                <span className="exam-error-label">Attendu :</span>
+                                                <span className="exam-error-expected" dir="rtl">{w.expected}</span>
+                                            </div>
+                                            <div className="exam-error-row">
+                                                <span className="exam-error-label">Prononcé :</span>
+                                                <span className="exam-error-spoken" dir="rtl">{w.spoken || '?'}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Makharij Alerts */}
                 {makharijAlerts.length > 0 && (

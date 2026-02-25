@@ -1883,10 +1883,7 @@
 .exam-diff-word {
     padding: 2px 6px;
     border-radius: 6px;
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
+    display: inline-block;
     transition: all 0.2s;
 }
 
@@ -1902,20 +1899,71 @@
 }
 
 .exam-diff-word--wrong {
-    background: rgba(251, 146, 60, 0.15);
-    color: #fb923c;
-    border-bottom: 2px dashed #fb923c;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border-bottom: 2px dashed #ef4444;
 }
 
-.exam-diff-icon--correct {
+/* Explicit Errors Section */
+.exam-errors-section {
+    margin-bottom: 24px;
+}
+
+.exam-errors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exam-error-card {
+    background: var(--color-bg-tertiary);
+    border-radius: 12px;
+    padding: 12px 16px;
+    border-left: 4px solid;
+}
+
+.exam-error-card--missing {
+    border-left-color: var(--color-text-muted);
+}
+
+.exam-error-card--wrong {
+    border-left-color: #ef4444;
+}
+
+.exam-error-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.exam-error-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.exam-error-label {
+    color: var(--color-text-secondary);
+    font-size: var(--text-ui-sm);
+}
+
+.exam-error-expected {
     color: #4ade80;
-    flex-shrink: 0;
+    font-family: 'Amiri', 'KFGQPC Uthmanic Script HAFS', serif;
+    font-size: 22px;
+    font-weight: bold;
 }
 
-.exam-diff-spoken {
-    font-size: 12px;
-    color: var(--color-text-tertiary);
-    font-family: var(--font-ui);
+.exam-error-spoken {
+    color: #ef4444;
+    font-family: 'Amiri', 'KFGQPC Uthmanic Script HAFS', serif;
+    font-size: 20px;
+}
+
+.exam-error-type {
+    color: var(--color-text-secondary);
+    font-size: var(--text-ui-sm);
+    font-weight: 600;
 }
 
 /* Makharij Section */
