@@ -209,16 +209,16 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     },
                     {
                         "id": 94,
-                        "arabic": "﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...﴾ [آية الكرسي].",
-                        "phonetic": "Allāhu lā ilāha illā Huwa al-Ḥayyu al-Qayyūm...",
+                        "arabic": "﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ﴾ [آية الكرسي].",
+                        "phonetic": "Allāhu lā ilāha illā Huwa al-Ḥayyu al-Qayyūm",
                         "translation": "Le Verset du Trône (Ayat al-Kursi).",
                         "count": 1,
                         "source": "سورة البقرة، آية 255"
                     },
                     {
                         "id": 95,
-                        "arabic": "«قُلْ هُوَ اللهُ أَحَدٌ...»، «قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ...»، «قُلْ أَعُوذُ بِرَبِّ النَّاسِ...» (ثَلَاثَ مَرَّاتٍ).",
-                        "phonetic": "Qul Huwa Allāhu Aḥad... Qul a'ūdhu bi-Rabbi al-Falaq... Qul a'ūdhu bi-Rabbi an-Nās.",
+                        "arabic": "«قُلْ هُوَ اللهُ أَحَدٌ»، «قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ»، «قُلْ أَعُوذُ بِرَبِّ النَّاسِ» (ثَلَاثَ مَرَّاتٍ).",
+                        "phonetic": "Qul Huwa Allāhu Aḥad, Qul a'ūdhu bi-Rabbi al-Falaq, Qul a'ūdhu bi-Rabbi an-Nās.",
                         "translation": "Sourates Al-Ikhlas, Al-Falaq et An-Nas (trois fois).",
                         "count": 1,
                         "source": "أبو داود 4/ 322، الترمذي 5/ 567"
@@ -226,7 +226,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     {
                         "id": 96,
                         "arabic": "«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ، وَالْحَمْدُ للهِ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ».",
-                        "phonetic": "Aṣbaḥnā wa aṣbaḥa al-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illā Allāhu waḥdahu lā sharīka lahu... Rabbi as'aluka khayra mā fī hādhā al-yawmi wa khayra mā ba'dahu...",
+                        "phonetic": "Aṣbaḥnā wa aṣbaḥa al-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illā Allāhu waḥdahu lā sharīka lahu, lahu al-mulku wa lahu al-ḥamdu wa huwa 'alā kulli shay'in qadīr. Rabbi as'aluka khayra mā fī hādhā al-yawmi wa khayra mā ba'dahu, wa a'ūdhu bika min sharri mā fī hādhā al-yawmi wa sharri mā ba'dahu, Rabbi a'ūdhu bika mina al-kasali wa sū'i al-kibari, Rabbi a'ūdhu bika min 'adhābin fī an-nāri wa 'adhābin fī al-qabri.",
                         "translation": "Nous voici au matin et la royauté appartient à Allah. Louange à Allah. Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, et Il est Capable de toute chose. Seigneur, je Te demande le bien de ce jour et le bien de ce qui suit, et je cherche protection auprès de Toi contre le mal de ce jour et le mal de ce qui suit. Seigneur, je cherche protection auprès de Toi contre la paresse et les maux de la vieillesse. Seigneur, je cherche protection auprès de Toi contre le châtiment du Feu et celui de la tombe.",
                         "count": 1,
                         "source": "مسلم 4/ 2088"
@@ -242,7 +242,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     {
                         "id": 98,
                         "arabic": "«اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ».",
-                        "phonetic": "Allāhumma Anta Rabbī lā ilāha illā Anta, khalaqtanī wa ana 'abduka, wa ana 'alā 'ahdika wa wa'dika mā staṭa'tu...",
+                        "phonetic": "Allāhumma Anta Rabbī lā ilāha illā Anta, khalaqtanī wa ana 'abduka, wa ana 'alā 'ahdika wa wa'dika mā staṭa'tu, a'ūdhu bika min sharri mā ṣana'tu, abū'u laka bi-ni'matika 'alayya, wa abū'u bi-dhanbī fa-ghfir lī fa-innahu lā yaghfiru adh-dhunūba illā Anta.",
                         "translation": "Ô Allah, Tu es mon Seigneur, nul n'est digne d'adoration si ce n'est Toi. Tu m'as créé et je suis Ton serviteur. Je suis fidèle à Ton pacte et à Ta promesse autant que je le puis. Je cherche protection auprès de Toi contre le mal que j'ai commis. Je reconnais Tes bienfaits envers moi et je reconnais mon péché. Pardonne-moi donc, car nul ne pardonne les péchés si ce n'est Toi.",
                         "count": 1,
                         "source": "البخاري 7/ 150"
