@@ -164,7 +164,8 @@ export function CoachOverlay({
                         </div>
                     ))}
 
-                    {/* AI-Powered Exam Mode */}
+                    {/* AI-Powered Exam Mode (Temporarily Deactivated) */}
+                    {/* 
                     <div className="mih-coach-group">
                         <h4 className="mih-coach-group-title">🎯 Coach Expert</h4>
                         <div className="mih-coach-grid">
@@ -182,7 +183,8 @@ export function CoachOverlay({
                                 <span className="mih-coach-card-desc">L'IA écoute et corrige votre récitation</span>
                             </button>
                         </div>
-                    </div>
+                    </div> 
+                    */}
                 </div>
             </div>
         </>
