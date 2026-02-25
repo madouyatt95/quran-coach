@@ -118,6 +118,7 @@ export function PrayerTimesPage() {
     // Subscribe only to the specific slices we display in JSX
     const cityName = usePrayerStore((s) => s.cityName);
     const lat = usePrayerStore((s) => s.lat);
+    const lng = usePrayerStore((s) => s.lng);
     const settings = usePrayerStore((s) => s.settings);
     const daruriSobhEnabled = useNotificationStore((s) => s.daruriSobhEnabled);
     const daruriAsrEnabled = useNotificationStore((s) => s.daruriAsrEnabled);
@@ -205,12 +206,12 @@ export function PrayerTimesPage() {
         }
     };
 
-    // Re-run when selectedDate or settings change
+    // Re-run when selectedDate, settings or location change
     useEffect(() => {
         computeTimes();
         return () => cancelAllScheduled();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDate, settings]);
+    }, [selectedDate, settings, lat, lng]);
 
     // ─── Countdown timer ──────────────────────────────────
 

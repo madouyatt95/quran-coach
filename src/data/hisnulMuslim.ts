@@ -813,7 +813,16 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "source": "أصحاب السنن إلا النسائي، صحيح الترمذي 1/90، صحيح ابن ماجه 1/ 148"
                     }
                 ]
-            },
+            }
+        ]
+    },
+    {
+        "id": "prayer",
+        "name": "Prière",
+        "nameAr": "الصلاة",
+        "emoji": "🧎",
+        "color": "#4CAF50",
+        "chapters": [
             {
                 "id": "chap_22",
                 "title": "Le Tachahoud",
@@ -921,9 +930,9 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     },
                     {
                         "id": 79,
-                        "arabic": "«اللَّهُمَّ بِعِلْمِكَ الْغَيْبَ وَقُدْرَتِكَ عَلَى الْخَلْقِ أَحْيِنِي مَا عَلِمْتَ الْحَيَاةَ خَيْرًا لِي وَتوفَّنِي إِذَا عَلِمْتَ الْوَفَاةَ خَيْرًا لِي...» (الدعاء بطوله).",
-                        "phonetic": "Allāhumma bi-'ilmika al-ghayba wa qudratika 'alā al-khalqi aḥyinī mā 'alimta al-ḥayāta khayran lī...",
-                        "translation": "Ô Allah, par Ta connaissance de l'invisible et Ton pouvoir sur la création, fais-moi vivre tant que la vie est un bien pour moi et fais-moi mourir si la mort est un bien pour moi...",
+                        "arabic": "«اللَّهُمَّ بِعِلْمِكَ الْغَيْبَ وَقُدْرَتِكَ عَلَى الْخَلْقِ أَحْيِنِي مَا عَلِمْتَ الْحَيَاةَ خَيْرًا لِي وَتوفَّنِي إِذَا عَلِمْتَ الْوَفَاةَ خَيْرًا لِي، اللَّهُمَّ وَأَسْأَلُكَ خَشْيَتَكَ فِي الْغَيْبِ وَالشَّهَادَةِ، وَأَسْأَلُكَ كَلِمَةَ الْحَقِّ فِي الرِّضَا وَالْغَضَبِ، وَأَسْأَلُكَ الْقَصْدَ فِي الْفَقْرِ وَالْغِنَى، وَأَسْأَلُكَ نَعِيمًا لَا يَنْفَدُ، وَأَسْأَلُكَ قُرَّةَ عَيْنٍ لَا تَنْقَطِعُ، وَأَسْأَلُكَ الرِّضَا بَعْدَ الْقَضَاءِ، وَأَسْأَلُكَ بَرْدَ الْعَيْشِ بَعْدَ الْمَوْتِ، وَأَسْأَلُكَ لَذَّةَ النَّظَرِ إِلَى وَجْهِكَ وَالشَّوْقَ إِلَى لِقَائِكَ فِي غَيْرِ ضَرَّاءَ مُضِرَّةٍ وَلَا فِتْنَةٍ مُضِلَّةٍ، اللَّهُمَّ زَيِّنَّا بِزِينَةِ الْإِيمَانِ وَاجْعَلْنَا هُدَاةً مُهْتَدِينَ».",
+                        "phonetic": "Allāhumma bi-'ilmika al-ghayba wa qudratika 'alā al-khalqi aḥyinī mā 'alimta al-ḥayāta khayran lī wa tawaffanī idhā 'alimta al-wafāta khayran lī. Allāhumma wa as'aluka khashyataka fīl-ghaybi wash-shahādah, wa as'aluka kalimat al-ḥaqqi fīr-riḍā wal-ghaḍab, wa as'aluka al-qaṣda fīl-faqri wal-ghinā, wa as'aluka na'īman lā yanfad, wa as'aluka qurrata 'aynin lā tanqaṭi', wa as'aluka ar-riḍā ba'da al-qaḍā', wa as'aluka barda al-'ayshi ba'da al-mawt, wa as'aluka ladhdhata an-naẓari ilā wajhika wash-shawqa ilā liqā'ika fī ghayri ḍarrā'a muḍirratin wa lā fitnatin muḍillah. Allāhumma zay-yinnā bi-zīnat il-īmāni waj'alnā hudātan muhtadīn.",
+                        "translation": "Ô Allah, par Ta connaissance de l'invisible et Ton pouvoir sur la création, fais-moi vivre tant que la vie est un bien pour moi et fais-moi mourir si la mort est un bien pour moi. Ô Allah, je Te demande de m'accorder Ta crainte en secret comme en public, je Te demande la parole de vérité dans la satisfaction comme dans la colère, je Te demande la modération dans la pauvreté comme dans la richesse, je Te demande un bienfait inépuisable et une joie constante. Je Te demande l'acceptation de Ton décret, la douceur de vivre après la mort, le plaisir de contempler Ton visage et le désir de Te rencontrer, sans qu'un mal ne me nuise ni qu'une tentation ne m'égare. Ô Allah, embellis-nous par la parure de la foi et fais de nous des guides bien guidés.",
                         "count": 1,
                         "source": "النسائي 4/54، أحمد 4/364"
                     },
@@ -979,39 +988,39 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     {
                         "id": 85,
                         "arabic": "«لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ. لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ، لَا إِلَهَ إِلَّا اللهُ، وَلَا نَعْبُدُ إِلَّا إِيَّاهُ، لَهُ النِّعْمَةُ وَلَهُ الْفَضْلُ وَلَهُ الثَّنَاءُ الْحَسَنُ، لَا إِلَهَ إِلَّا اللهُ مُخْلِصِينَ لَهُ الدِّينَ وَلَوْ كَرِهَ الْكَافِرُونَ».",
-                        "phonetic": "Lā ilāha illā Allāhu waḥdahu lā sharīka lahu... Lā ḥawla wa lā quwwata illā bi-Llāhi... mukhliṣīna lahu ad-dīna wa law kariha al-kāfirūn.",
-                        "translation": "Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, et Il est Capable de toute chose. Il n'y a de force ni de puissance que par Allah. Nulle divinité sauf Allah, et nous n'adorons que Lui. À Lui les bienfaits, la grâce et les plus beaux éloges. Nulle divinité sauf Allah, Lui vouant un culte exclusif malgré l'aversion des mécréants.",
+                        "phonetic": "Lā ilāha illā Allāhu waḥdahu lā sharīka lahu, lahu-l-mulku wa lahu-l-ḥamdu wa Huwa 'alā kulli shay'in qadīr. Lā ḥawla wa lā quwwata illā bi-Llāh, lā ilāha illā Allāhu, wa lā na'budu illā iyyāh, lahu-n-ni'matu wa lahu-l-faḍlu wa lahu-th-thanā'u-l-ḥasan, lā ilāha illā Allāhu mukhliṣīna lahu-d-dīna wa law kariha-l-kāfirūn.",
+                        "translation": "Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, et Il est Capable de toute thing. Il n'y a de force ni de puissance que par Allah. Nulle divinité sauf Allah, et nous n'adorons que Lui. À Lui les bienfaits, la grâce et les plus beaux éloges. Nulle divinité sauf Allah, Lui vouant un culte exclusif malgré l'aversion des mécréants.",
                         "count": 1,
                         "source": "مسلم 1/ 415"
                     },
                     {
                         "id": 86,
                         "arabic": "«سُبْحَانَ اللهِ (33)، وَالْحَمْدُ للهِ (33)، وَاللهُ أَكْبَرُ (33)، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ».",
-                        "phonetic": "Subḥāna Allāh, wal-ḥamdu lillāh, wa Allāhu akbar (33x). Lā ilāha illā Allāhu waḥdahu lā sharīka lahu...",
+                        "phonetic": "Subḥāna Allāh (33x), wal-ḥamdu lillāh (33x), wa Allāhu akbar (33x). Lā ilāha illā Allāhu waḥdahu lā sharīka lahu, lahu-l-mulku wa lahu-l-ḥamdu wa Huwa 'alā kulli shay'in qadīr.",
                         "translation": "Gloire à Allah (33 fois), Louange à Allah (33 fois), Allah est le plus Grand (33 fois). Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, et Il est Capable de toute chose.",
                         "count": 1,
                         "source": "مسلم 1/ 418"
                     },
                     {
                         "id": 87,
-                        "arabic": "«قُلْ هُوَ اللهُ أَحَدٌ...»، «قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ...»، «قُلْ أَعُوذُ بِرَبِّ النَّاسِ...» (مرة بعد كل صلاة، و3 بعد الفجر والمغرب).",
-                        "phonetic": "Qul Huwa Allāhu Aḥad... Qul a'ūdhu bi-Rabbi al-Falaq... Qul a'ūdhu bi-Rabbi an-Nās.",
+                        "arabic": "«قُلْ هُوَ اللهُ أَحَدٌ، اللهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ»، «قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، مِنْ شَرِّ مَا خَلَقَ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ»، «قُلْ أَعُوذُ بِرَبِّ النَّاسِ، مَلِكِ النَّاسِ، إِلَهِ النَّاسِ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ، الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ، مِنَ الْجِنَّةِ وَالنَّاسِ»",
+                        "phonetic": "Qul Huwa Allāhu Aḥad, Allāhu-ṣ-Ṣamad, lam yalid wa lam yūlad, wa lam yakun lahū kufuwan aḥad. Qul a'ūdhu bi-Rabbi-l-Falaq, min sharri mā khalaq, wa min sharri ghāsiqin idhā waqab, wa min sharri-n-naffāthāti fī-l-'uqad, wa min sharri ḥāsidin idhā ḥasad. Qul a'ūdhu bi-Rabbi-n-Nās, Maliki-n-Nās, Ilāhi-n-Nās, min sharri-l-waswāsi-l-khannās, alladhī yuwaswisu fī ṣudūri-n-Nās, mina-l-jinnati wa-n-Nās.",
                         "translation": "Sourates Al-Ikhlas, Al-Falaq et An-Nas (1 fois après chaque prière, 3 fois après le Fajr et le Maghrib).",
                         "count": 1,
                         "source": "أبو داود 2/ 86، النسائي 3/ 68"
                     },
                     {
                         "id": 88,
-                        "arabic": "آيَةُ الْكُرْسِيِّ: «اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...» (عَقِبَ كُلِّ صَلَاةٍ).",
-                        "phonetic": "Allāhu lā ilāha illā Huwa al-Ḥayyu al-Qayyūm...",
-                        "translation": "Le Verset du Trône (Ayat al-Kursi) après chaque prière.",
+                        "arabic": "«اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ».",
+                        "phonetic": "Allāhu lā ilāha illā Huwa al-Ḥayyu al-Qayyūm, lā ta'khudhuhu sinatun wa lā nawm, lahu mā fī as-samāwāti wa mā fī al-arḍ, man dhā alladhī yashfa'u 'indahu illā bi-idhnih, ya'lamu mā bayna aydīhim wa mā khalfahum, wa lā yuḥīṭūna bi-shay'in min 'ilmihi illā bi-mā shā', wasi'a kursiyyuhu as-samāwāti wal-arḍ, wa lā ya'ūduhu ḥifẓuhumā wa Huwa al-'Aliyyu al-'Aẓīm.",
+                        "translation": "« Allah ! Point de divinité à part Lui, le Vivant, Celui qui subsiste par Lui-même. Ni somnolence ni sommeil ne Le saisissent. À Lui appartient tout ce qui est dans les cieux et sur la terre. Qui peut intercéder auprès de Lui sans Sa permission ? Il sait leur futur et leur passé. Et, de Sa science, ils n'embrassent que ce qu'Il veut. Son Trône (Kursiy) déborde les cieux et la terre, dont la garde ne Lui coûte aucune peine. Et Il est le Très Haut, l'Immense. »",
                         "count": 1,
                         "source": "النسائي في عمل اليوم والليلة رقم 100"
                     },
                     {
                         "id": 89,
                         "arabic": "«لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ» (10 مَرَّاتٍ بَعْدَ الْمَغْرِبِ وَالصُّبْحِ).",
-                        "phonetic": "Lā ilāha illā Allāhu waḥdahu lā sharīka lahu... yuḥyī wa yumītu wa Huwa 'alā kulli shay'in qadīr.",
+                        "phonetic": "Lā ilāha illā Allāhu waḥdahu lā sharīka lahu, lahu-l-mulku wa lahu-l-ḥamdu, yuḥyī wa yumītu wa Huwa 'alā kulli shay'in qadīr.",
                         "translation": "Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, Il donne la vie et la mort, et Il est Capable de toute chose (10 fois après le Maghrib et le Subh).",
                         "count": 1,
                         "source": "الترمذي 5/515، أحمد 4/227"
@@ -1036,7 +1045,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     {
                         "id": 91,
                         "arabic": "«اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ، فَإِنَّكَ تَقْدِرُ وَلَا أَقْدِرُ، وَتَعْلَمُ وَلَا أَعْلَمُ، وَأَنْتَ عَلَّامُ الْغُيُوبِ، اللَّهُمَّ إِنْ كُنْتَ تَعْلَمُ أَنَّ هَذَا الْأَمْرَ -وَيُسَمِّي حَاجَتَهُ- خَيْرٌ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي، فَاقْدُرْهُ لِي وَيَسِّرْهُ لِي ثُمَّ بَارِكْ لِي فِيهِ، وَإِنْ كُنْتَ تَعْلَمُ أَنَّ هَذَا الْأَمْرَ شَرٌّ لِي فِي دِينِي وَمَعَاشِي وَعَاقِبَةِ أَمْرِي، فَاصْرِفْهُ عَنِّي وَاصْرِفْنِي عَنْهُ وَاقْدُرْ لِيَ الْخَيْرَ حَيْثُ كَانَ ثُمَّ أَرْضِنِي بِهِ».",
-                        "phonetic": "Allāhumma innī astakhīruka bi-'ilmika, wa astaqdiruka bi-qudratika, wa as'aluka min faḍlika al-'aẓīm... Allāhumma in kunta ta'lamu anna hādhā al-amra khayrun lī... faqdurhu lī wa yassirhu lī... wa in kunta ta'lamu anna hādhā al-amra sharrun lī... fa-ṣrifhu 'annī wa-ṣrifnī 'anhu.",
+                        "phonetic": "Allāhumma innī astakhīruka bi-'ilmika, wa astaqdiruka bi-qudratika, wa as'aluka min faḍlika al-'aẓīm. Fa-innaka taqdiru wa lā aqdiru, wa ta'lamu wa lā a'lamu, wa Anta 'Allāmu-l-ghuyūb. Allāhumma in kunta ta'lamu anna hādhā al-amra [nommez l'affaire] khayrun lī fī dīnī wa ma'āshī wa 'āqibati amrī, faqdurhu lī wa yassirhu lī thumma bārik lī fīh. Wa in kunta ta'lamu anna hādhā al-amra sharrun lī fī dīnī wa ma'āshī wa 'āqibati amrī, fa-ṣrifhu 'annī wa-ṣrifnī 'anhu waqdur liya al-khayra ḥaythu kāna thumma arḍinī bih.",
                         "translation": "Ô Allah, je Te demande de me guider dans mon choix par Ta science, je Te demande de m'en donner la capacité par Ta puissance et je Te demande de Ta grâce immense. Car Tu es Capable et je ne le suis pas, Tu sais et je ne sais pas, et Tu es le Connaisseur de l'invisible. Ô Allah, si Tu sais que cette affaire [citer l'affaire] est un bien pour moi dans ma religion, ma vie et mon avenir, alors décrète-la moi, facilite-la moi et bénis-la moi. Mais si Tu sais que cette affaire est un mal pour moi dans ma religion, ma vie et mon avenir, alors écarte-la de moi, écarte-moi d'elle, et décrète-moi le bien là où il se trouve, puis rends-m'en satisfait.",
                         "count": 1,
                         "source": "البخاري 7/ 162"
@@ -1077,7 +1086,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                     {
                         "id": 132,
                         "arabic": "«اللَّهُمَّ إِيَّاكَ نَعْبُدُ، وَلَكَ نُصَلِّي وَنَسْجُدُ، وَإِلَيْكَ نَسْعَى وَنَحْفِدُ، نَرْجُو رَحْمَتَكَ، وَنَخْشَى عَذَابَكَ، إِنَّ عَذَابَكَ بِالْكَافِرِينَ مُلْحَقٌ. اللَّهُمَّ إِنَّا نَسْتَعِينُكَ، وَنَسْتَغْفِرُكَ، وَنُثْنِي عَلَيْكَ الْخَيْرَ، وَلَا نَكْفُرُكَ، وَنُؤْمِنُ بِكَ وَنَخْضَعُ لَكَ، وَنَخْلَعُ مَنْ يَكْفُرُكَ».",
-                        "phonetic": "Allāhumma iyyāka na'budu, wa laka nuṣallī wa nasjudu, wa ilayka nas'ā wa naḥfidu, narjū raḥmataka wa nakhshā 'adhābaka...",
+                        "phonetic": "Allāhumma iyyāka na'budu, wa laka nuṣallī wa nasjudu, wa ilayka nas'ā wa naḥfidu, narjū raḥmataka wa nakhshā 'adhābaka, inna 'adhābaka bi-l-kāfirīna mulḥaq. Allāhumma innā nasta'īnuka wa nastaghfiruka, wa nuthnī 'alayka al-khayra, wa lā nakfuruka, wa nu'minu bika wa nakhḍa'u laka, wa nakhla'u man yakfuruka.",
                         "translation": "Ô Allah, c'est Toi que nous adorons, pour Toi que nous prions et nous nous prosternons, vers Toi que nous accourons et que nous nous empressons de servir. Nous espérons Ta miséricorde et nous craignons Ton châtiment, car Ton châtiment atteindra sûrement les mécréants. Ô Allah, nous implorons Ton aide et Ton pardon, nous T'adressons les meilleurs éloges, nous ne sommes pas ingrats envers Toi, nous croyons en Toi, nous nous soumettons à Toi et nous nous désavouons de quiconque Te méconnaît.",
                         "count": 1,
                         "source": "البيهقي في السنن الكبرى 2/211"

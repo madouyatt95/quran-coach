@@ -3,6 +3,13 @@ from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import torch
 import os
 
+# --- Dependency Check ---
+try:
+    import peft
+    print("✓ PEFT library found.")
+except ImportError:
+    print("✗ PEFT library NOT found. Loading might fail for LoRA models.")
+
 # --- Configuration ---
 MODEL_ID = "MaddoggProduction/whisper-l-v3-turbo-quran-lora-dataset-mix"
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -15,6 +22,7 @@ pipe = None
 
 try:
     # Explicit loading to control memory usage on CPU Spaces
+    # We use AutoModelForSpeechSeq2Seq which should handle LoRA if adapter_config is present
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
         MODEL_ID, 
         torch_dtype=TORCH_DTYPE, 
@@ -42,10 +50,10 @@ except Exception as e:
 
 def transcribe(audio_path):
     if audio_path is None:
-        return "Aucun fichier audio reçu."
+        raise gr.Error("Aucun fichier audio reçu.")
     
     if pipe is None:
-        return "Erreur : Le modèle de reconnaissance vocale n'est pas prêt. L'Espace est peut-être en train de redémarrer ou manque de mémoire RAM."
+        raise gr.Error("Le modèle n'est pas prêt. L'Espace est peut-être en train de redémarrer (modèle de 3Go+).")
     
     try:
         print(f"Processing audio: {audio_path}")
@@ -58,8 +66,9 @@ def transcribe(audio_path):
         )
         return result["text"]
     except Exception as e:
-        print(f"Transcription error: {str(e)}")
-        return f"Erreur lors de la transcription : {str(e)}"
+        error_msg = str(e)
+        print(f"Transcription error: {error_msg}")
+        raise gr.Error(f"Erreur lors de la transcription : {error_msg}")
 
 # Gradio Interface
 demo = gr.Interface(
@@ -67,8 +76,8 @@ demo = gr.Interface(
     inputs=gr.Audio(type="filepath", label="Enregistrement Coran"),
     outputs=gr.Textbox(label="Transcription (Texte Coranique)"),
     title="Verset Coach ASR - Whisper V3 Turbo",
-    description="Reconnaissance vocale optimisée pour le Coran. Note : Le premier chargement peut être lent sur les serveurs gratuits.",
-    examples=[]
+    description="Reconnaissance vocale optimisée pour le Coran. Note : Le chargement initial (3Go+) peut prendre plusieurs minutes sur les serveurs gratuits.",
+    allow_flagging="never"
 )
 
 if __name__ == "__main__":
