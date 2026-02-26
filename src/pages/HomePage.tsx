@@ -85,7 +85,7 @@ const DHIKR_LIST = [
     { id: 'subhanallah', text: 'سُبْحَانَ اللَّه', textFr: 'SubhanAllah', descFr: 'Gloire à Allah', target: 33, daily: '33×/jour', color: '#4facfe', emoji: '📿' },
     { id: 'alhamdulillah', text: 'الحَمْدُ لِلَّه', textFr: 'Alhamdulillah', descFr: 'Louange à Allah', target: 33, daily: '33×/jour', color: '#c9a84c', emoji: '🤲' },
     { id: 'allahu_akbar', text: 'اللَّهُ أَكْبَر', textFr: 'Allahu Akbar', descFr: 'Allah est le plus Grand', target: 34, daily: '34×/jour', color: '#38ef7d', emoji: '✨' },
-    { id: 'tahlil', text: 'لَا إِلَٰهَ إِلَّا اللَّه', textFr: 'Lâ ilâha illa-Llâh', descFr: 'Pas de divinité sauf Allah', target: 100, daily: '100×/jour', color: '#FF6B6B', emoji: '❤️' },
+    { id: 'tahlil', text: 'لَا إِلَٰهَ إِلَّا اللَّه', textFr: 'Lâ ilâha illa-Llâh', descFr: "Pas de divinité digne d'être adorée sauf Allah", target: 100, daily: '100×/jour', color: '#FF6B6B', emoji: '❤️' },
     { id: 'istighfar', text: 'أَسْتَغْفِرُ اللَّه', textFr: 'Astaghfirullâh', descFr: 'Je demande pardon à Allah', target: 100, daily: '100×/jour', color: '#AB47BC', emoji: '💜' },
     { id: 'istighfar_sunnah', text: 'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ', textFr: 'Astaghfirullâh wa atoûbu ilayh', descFr: 'Je demande pardon et me repens', target: 70, daily: '+70×/jour', color: '#FF9800', emoji: '🧡' },
     { id: 'subhan_bihamdi', text: 'سُبْحَانَ اللَّهِ وَبِحَمْدِه', textFr: 'SubhânAllâh wa bihamdihi', descFr: 'Gloire et louange à Allah', target: 0, daily: '∞ illimité', color: '#E91E63', emoji: '🌸' },
