@@ -219,7 +219,7 @@ export function useSmartCoaching() {
                     activeCards.push({
                         id: 'fasting-reminder', type: 'calendar', emoji: '🌙',
                         title: 'Sunnah Lundi/Jeudi',
-                        textAr: 'كَANَ النَّبِيُّ ﷺ يَتَحَرَّى صَوْمَ الِاثْنَيْنِ وَالْخَمِيسِ',
+                        textAr: 'كَانَ النَّبِيُّ ﷺ يَتَحَرَّى صَوْمَ الِاثْنَيْنِ وَالْخَمِيسِ',
                         textFr: 'Jours recommandés pour le jeûne surérogatoire selon la Sunnah.',
                         gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                         link: '/hadiths?cat=jeune'
