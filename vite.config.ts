@@ -40,7 +40,8 @@ export default defineConfig({
         ]
       },
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json,mp3,wav}'],
+        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Augmenter la limite à 15 Mo pour permettre le cache des gros JSON (comme le Tafsir ou le Coran complet)
       },
       devOptions: {
         enabled: false,

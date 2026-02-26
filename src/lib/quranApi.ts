@@ -1,4 +1,5 @@
 import type { Surah, Ayah } from '../types';
+import { fetchWithCache } from './apiCache';
 
 const API_BASE = 'https://api.alquran.cloud/v1';
 
@@ -9,14 +10,12 @@ export interface QuranApiResponse<T> {
 }
 
 export async function fetchSurahs(): Promise<Surah[]> {
-    const response = await fetch(`${API_BASE}/surah`);
-    const data: QuranApiResponse<Surah[]> = await response.json();
+    const data: QuranApiResponse<Surah[]> = await fetchWithCache(`${API_BASE}/surah`);
     return data.data;
 }
 
 export async function fetchSurah(surahNumber: number): Promise<{ surah: Surah; ayahs: Ayah[] }> {
-    const response = await fetch(`${API_BASE}/surah/${surahNumber}/quran-uthmani`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/surah/${surahNumber}/quran-uthmani`);
 
     return {
         surah: {
@@ -40,8 +39,7 @@ export async function fetchSurah(surahNumber: number): Promise<{ surah: Surah; a
 }
 
 export async function fetchPage(pageNumber: number): Promise<Ayah[]> {
-    const response = await fetch(`${API_BASE}/page/${pageNumber}/quran-uthmani`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/page/${pageNumber}/quran-uthmani`);
 
     return data.data.ayahs.map((ayah: any) => ({
         number: ayah.number,
@@ -55,8 +53,7 @@ export async function fetchPage(pageNumber: number): Promise<Ayah[]> {
 }
 
 export async function fetchAyah(surahNumber: number, ayahNumber: number): Promise<Ayah> {
-    const response = await fetch(`${API_BASE}/ayah/${surahNumber}:${ayahNumber}/quran-uthmani`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/ayah/${surahNumber}:${ayahNumber}/quran-uthmani`);
 
     return {
         number: data.data.number,
@@ -70,8 +67,7 @@ export async function fetchAyah(surahNumber: number, ayahNumber: number): Promis
 }
 
 export async function searchQuran(query: string): Promise<Ayah[]> {
-    const response = await fetch(`${API_BASE}/search/${encodeURIComponent(query)}/all/ar.quran-uthmani`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/search/${encodeURIComponent(query)}/all/ar.quran-uthmani`);
 
     if (data.code !== 200 || !data.data.matches) {
         return [];
@@ -90,8 +86,7 @@ export async function searchQuran(query: string): Promise<Ayah[]> {
 
 export async function fetchAyahTiming(surah: number, ayah: number): Promise<any[]> {
     // Recitation 7 is Mishary Al-Afasy on Quran.com
-    const response = await fetch(`https://api.quran.com/api/v4/recitations/7/by_ayah/${surah}:${ayah}`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`https://api.quran.com/api/v4/recitations/7/by_ayah/${surah}:${ayah}`);
 
     if (data.audio_files && data.audio_files.length > 0) {
         return data.audio_files[0].segments || [];
@@ -104,8 +99,7 @@ export async function fetchAyahTiming(surah: number, ayah: number): Promise<any[
  */
 export async function fetchAyahAudioUrl(surah: number, ayah: number, reciterId: number = 7): Promise<string | null> {
     try {
-        const response = await fetch(`https://api.quran.com/api/v4/recitations/${reciterId}/by_ayah/${surah}:${ayah}`);
-        const data = await response.json();
+        const data = await fetchWithCache<any>(`https://api.quran.com/api/v4/recitations/${reciterId}/by_ayah/${surah}:${ayah}`);
 
         if (data.audio_files && data.audio_files.length > 0 && data.audio_files[0].url) {
             let url = data.audio_files[0].url;
@@ -133,8 +127,7 @@ export async function fetchAyahAudioUrl(surah: number, ayah: number, reciterId: 
 export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: string, reciterId: number = 7): Promise<[number, number] | null> {
     try {
         const url = `https://api.quran.com/api/qdc/audio/reciters/${reciterId}/audio_files?chapter=${surah}&segments=true`;
-        const response = await fetch(url);
-        const data = await response.json();
+        const data = await fetchWithCache<any>(url);
 
         if (!data.audio_files || !data.audio_files[0] || !data.audio_files[0].verse_timings) {
             return null;
@@ -149,8 +142,7 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
         if (segments.length === 0) return null;
 
         // Fetch exact word items from quran.com to perfectly map against segments since punctuation is stripped from segments
-        const quranResponse = await fetch(`https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?words=true&word_fields=text_uthmani`);
-        const quranData = await quranResponse.json();
+        const quranData = await fetchWithCache<any>(`https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?words=true&word_fields=text_uthmani`);
 
         const duaWords = duaText.split(/[\s،]+/).filter(w => w.trim().length > 0);
 
@@ -283,8 +275,7 @@ export async function fetchSurahTranslation(
     language: string = 'fr'
 ): Promise<Map<number, string>> {
     const edition = TRANSLATION_EDITIONS[language] || TRANSLATION_EDITIONS.fr;
-    const response = await fetch(`${API_BASE}/surah/${surahNumber}/${edition}`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/surah/${surahNumber}/${edition}`);
 
     const map = new Map<number, string>();
     if (data.code === 200 && data.data?.ayahs) {
@@ -298,8 +289,7 @@ export async function fetchSurahTranslation(
 export async function fetchSurahTransliteration(
     surahNumber: number
 ): Promise<Map<number, string>> {
-    const response = await fetch(`${API_BASE}/surah/${surahNumber}/en.transliteration`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/surah/${surahNumber}/en.transliteration`);
 
     const map = new Map<number, string>();
     if (data.code === 200 && data.data?.ayahs) {
@@ -315,8 +305,7 @@ export async function fetchPageTranslation(
     language: string = 'fr'
 ): Promise<Map<number, string>> {
     const edition = TRANSLATION_EDITIONS[language] || TRANSLATION_EDITIONS.fr;
-    const response = await fetch(`${API_BASE}/page/${pageNumber}/${edition}`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/page/${pageNumber}/${edition}`);
 
     const map = new Map<number, string>();
     if (data.code === 200 && data.data?.ayahs) {
@@ -330,8 +319,7 @@ export async function fetchPageTranslation(
 export async function fetchPageTransliteration(
     pageNumber: number
 ): Promise<Map<number, string>> {
-    const response = await fetch(`${API_BASE}/page/${pageNumber}/en.transliteration`);
-    const data = await response.json();
+    const data = await fetchWithCache<any>(`${API_BASE}/page/${pageNumber}/en.transliteration`);
 
     const map = new Map<number, string>();
     if (data.code === 200 && data.data?.ayahs) {
