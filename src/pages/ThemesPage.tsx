@@ -3,9 +3,12 @@ import { Search, BookOpen, ChevronRight, ArrowLeft } from 'lucide-react';
 import { QURAN_THEMES, type QuranTheme } from '../data/themesData';
 import { useQuranStore } from '../stores/quranStore';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { formatDivineNames } from '../lib/divineNames';
 import './ThemesPage.css';
 
 export function ThemesPage() {
+    const { t } = useTranslation();
     const [selectedTheme, setSelectedTheme] = useState<QuranTheme | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const { goToPage } = useQuranStore();
@@ -55,10 +58,10 @@ export function ThemesPage() {
                         >
                             <div className="themes-verse-card__ref">
                                 <BookOpen size={12} />
-                                Sourate {v.surah}, Verset {v.ayah}
+                                {t('mushaf.surah', 'Sourate')} {v.surah}, {t('mushaf.verse', 'Verset')} {v.ayah}
                             </div>
                             <div className="themes-verse-card__ar" dir="rtl">{v.textAr}</div>
-                            <div className="themes-verse-card__fr">{v.textFr}</div>
+                            <div className="themes-verse-card__fr">{formatDivineNames(v.textFr)}</div>
                         </div>
                     ))}
                 </div>
@@ -73,7 +76,7 @@ export function ThemesPage() {
                     <ArrowLeft size={20} />
                 </button>
                 <h1 className="themes-title">
-                    📚 Thèmes Coraniques
+                    📚 {t('themes.title', 'Thèmes Coraniques')}
                 </h1>
             </div>
 
@@ -81,7 +84,7 @@ export function ThemesPage() {
                 <Search size={16} />
                 <input
                     type="text"
-                    placeholder="Rechercher un thème..."
+                    placeholder={t('themes.search', 'Rechercher un thème...')}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -98,7 +101,7 @@ export function ThemesPage() {
                         <div className="themes-card__icon">{theme.icon}</div>
                         <div className="themes-card__name">{theme.nameFr}</div>
                         <div className="themes-card__name-ar">{theme.name}</div>
-                        <div className="themes-card__count">{theme.verses.length} versets</div>
+                        <div className="themes-card__count">{theme.verses.length} {t('themes.verses', 'versets')}</div>
                         <ChevronRight size={16} className="themes-card__arrow" style={{ color: theme.color }} />
                     </div>
                 ))}

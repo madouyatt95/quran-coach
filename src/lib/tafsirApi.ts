@@ -5,9 +5,9 @@ const API_BASE = 'https://api.qurancdn.com/api/v4';
 
 // Available French tafsirs and high-quality translations
 export const AVAILABLE_TAFSIRS = [
+    { id: 'french_mokhtasar', name: 'Mokhtasar (Exégèse Simplifiée)', nameAr: 'المختصر في التفسير', language: 'fr', type: 'quranenc' },
     { id: 'french_rashid', name: 'Rashid Maash (Exégèse)', nameAr: 'راشد معاش', language: 'fr', type: 'quranenc' },
     { id: 'french_montada', name: 'Montada Islamic (Exégèse)', nameAr: 'المنتدى الإسلامي', language: 'fr', type: 'quranenc' },
-    { id: 'french_mokhtasar', name: 'Mokhtasar (Exégèse Simplifiée)', nameAr: 'المختصر في التفسير', language: 'fr', type: 'quranenc' },
     { id: 'french_ibnkathir_local', name: 'Ibn Kathir (Français - LOCAL)', nameAr: 'ابن كثير (محلي)', language: 'fr', type: 'local' },
     { id: 169, name: 'Ibn Kathir (English)', nameAr: 'ابن كثير', language: 'en', type: 'quran' },
 ];

@@ -3,11 +3,13 @@ import { Heart, Trash2, BookOpen, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { useQuranStore } from '../stores/quranStore';
+import { useTranslation } from 'react-i18next';
 import './FavoritesPage.css';
 
 type Tab = 'verses' | 'hadiths' | 'duas';
 
 export function FavoritesPage() {
+    const { t } = useTranslation();
     const [tab, setTab] = useState<Tab>('verses');
     const { favorites, removeFavorite, favoriteHadiths, removeFavoriteHadith, favoriteDuas, removeFavoriteDua } = useFavoritesStore();
     const { goToPage, surahs } = useQuranStore();
@@ -31,9 +33,9 @@ export function FavoritesPage() {
     };
 
     const tabs: { id: Tab; emoji: string; label: string; count: number }[] = [
-        { id: 'verses', emoji: '📖', label: 'Versets', count: favorites.length },
-        { id: 'hadiths', emoji: '📜', label: 'Hadiths', count: favoriteHadiths.length },
-        { id: 'duas', emoji: '🤲', label: 'Duas', count: favoriteDuas.length },
+        { id: 'verses', emoji: '📖', label: t('common.verses', 'Versets'), count: favorites.length },
+        { id: 'hadiths', emoji: '📜', label: t('sideMenu.hadiths', 'Hadiths'), count: favoriteHadiths.length },
+        { id: 'duas', emoji: '🤲', label: t('sideMenu.adhkar', 'Duas'), count: favoriteDuas.length },
     ];
 
     return (
@@ -44,7 +46,7 @@ export function FavoritesPage() {
                 </button>
                 <h1 className="favorites-title">
                     <Heart size={24} fill="currentColor" />
-                    Favoris
+                    {t('favorites.title', 'Favoris')}
                 </h1>
                 <span className="favorites-count">{totalCount}</span>
             </div>
@@ -69,9 +71,9 @@ export function FavoritesPage() {
                 sortedVerses.length === 0 ? (
                     <div className="favorites-empty">
                         <Heart size={48} strokeWidth={1} />
-                        <p>Aucun verset en favoris</p>
+                        <p>{t('favorites.empty', 'Aucun favori')}</p>
                         <p className="favorites-empty__hint">
-                            Appuyez sur le <Heart size={14} fill="currentColor" style={{ verticalAlign: 'middle' }} /> dans la page de lecture
+                            {t('favorites.addHint', 'Appuyez sur le ❤️')}
                         </p>
                     </div>
                 ) : (
@@ -82,7 +84,7 @@ export function FavoritesPage() {
                                 <div key={fav.number} className="favorites-card" onClick={() => handleGoToVerse(fav)}>
                                     <div className="favorites-card__ref">
                                         <BookOpen size={14} />
-                                        {surah?.name} ({surah?.englishName}) — Verset {fav.numberInSurah}
+                                        {surah?.name} ({surah?.englishName}) — {t('mushaf.verse', 'Verset')} {fav.numberInSurah}
                                     </div>
                                     <div className="favorites-card__text" dir="rtl">
                                         {fav.text.length > 120 ? fav.text.slice(0, 120) + '…' : fav.text}
@@ -107,9 +109,9 @@ export function FavoritesPage() {
                 sortedHadiths.length === 0 ? (
                     <div className="favorites-empty">
                         <Heart size={48} strokeWidth={1} />
-                        <p>Aucun hadith en favoris</p>
+                        <p>{t('favorites.empty', 'Aucun favori')}</p>
                         <p className="favorites-empty__hint">
-                            Appuyez sur le ❤️ dans la page Hadiths
+                            {t('favorites.addHint', 'Appuyez sur le ❤️')}
                         </p>
                     </div>
                 ) : (
@@ -141,9 +143,9 @@ export function FavoritesPage() {
                 sortedDuas.length === 0 ? (
                     <div className="favorites-empty">
                         <Heart size={48} strokeWidth={1} />
-                        <p>Aucune invocation en favoris</p>
+                        <p>{t('favorites.empty', 'Aucun favori')}</p>
                         <p className="favorites-empty__hint">
-                            Appuyez sur le ❤️ dans la page Invocations
+                            {t('favorites.addHint', 'Appuyez sur le ❤️')}
                         </p>
                     </div>
                 ) : (

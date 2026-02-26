@@ -18,6 +18,7 @@ import { useKhatmStore } from '../../stores/khatmStore';
 import { useTranslation } from 'react-i18next';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
+import { formatDivineNames } from '../../lib/divineNames';
 // import { fetchTajweedPage } from '../../lib/tajweedService'; // Optional, might need surah version later
 import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
@@ -632,7 +633,7 @@ export function MushafPage() {
                                                     <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
                                                 )}
                                                 {showTranslation && translationMap.get(ayah.number) && (
-                                                    <div className="mih-translation">{translationMap.get(ayah.number)}</div>
+                                                    <div className="mih-translation">{formatDivineNames(translationMap.get(ayah.number))}</div>
                                                 )}
                                                 {' '}
                                             </span>

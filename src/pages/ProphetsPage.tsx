@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote } from 'lucide-react';
 import { prophets } from '../data/prophets';
 import type { Prophet } from '../data/prophets';
@@ -14,6 +15,7 @@ import './ProphetsPage.css';
 type TabMode = 'prophets' | 'companions';
 
 function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => void }) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { goToSurah } = useQuranStore();
 
@@ -60,7 +62,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                     <div className="prophet-modal__section">
                         <h3 className="prophet-modal__section-title">
                             <GitBranch size={16} />
-                            Lignée
+                            {t('prophets.lineage', 'Lignée')}
                         </h3>
                         <div className="prophet-modal__lineage">{prophet.lineage}</div>
                     </div>
@@ -70,7 +72,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 <div className="prophet-modal__section">
                     <h3 className="prophet-modal__section-title">
                         <BookOpen size={16} />
-                        Son histoire
+                        {t('prophets.details', 'Son histoire')}
                     </h3>
 
                     <p className="prophet-modal__text">{prophet.summary}</p>
@@ -100,7 +102,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                     <div className="prophet-modal__section">
                         <h3 className="prophet-modal__section-title">
                             <Zap size={16} />
-                            Miracles
+                            {t('prophets.miracles', 'Miracles')}
                         </h3>
                         <div className="prophet-modal__miracles">
                             {prophet.miracles.map((m, i) => (
@@ -136,7 +138,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 <div className="prophet-modal__section">
                     <h3 className="prophet-modal__section-title">
                         <BookOpen size={16} />
-                        Sourates associées
+                        {t('prophets.associatedSurahs', 'Sourates associées')}
                     </h3>
                     <div className="prophet-modal__surahs">
                         {prophet.surahs.map((s) => (
@@ -157,7 +159,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 <div className="prophet-modal__section">
                     <h3 className="prophet-modal__section-title">
                         <Lightbulb size={16} />
-                        Leçons à retenir
+                        {t('prophets.lessons', 'Leçons à retenir')}
                     </h3>
                     <div className="prophet-modal__lessons">
                         {prophet.lessons.map((lesson, i) => (
@@ -172,7 +174,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 {/* Close */}
                 <div className="prophet-modal__close">
                     <button className="prophet-modal__close-btn" onClick={onClose}>
-                        Fermer
+                        {t('common.close', 'Fermer')}
                     </button>
                 </div>
             </motion.div>
@@ -181,6 +183,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
 }
 
 function CompanionDetail({ companion, onClose }: { companion: Companion; onClose: () => void }) {
+    const { t } = useTranslation();
     return (
         <motion.div
             className="prophet-modal__overlay"
@@ -223,7 +226,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
                 <div className="prophet-modal__section">
                     <h3 className="prophet-modal__section-title">
                         <BookOpen size={16} />
-                        Son histoire
+                        {t('prophets.details', 'Son histoire')}
                     </h3>
                     <p className="prophet-modal__text">{companion.summary}</p>
                 </div>
@@ -232,7 +235,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
                 <div className="prophet-modal__section">
                     <h3 className="prophet-modal__section-title">
                         <Clock size={16} />
-                        Chronologie
+                        {t('prophets.timeline', 'Chronologie')}
                     </h3>
                     <div className="companion-timeline">
                         <div className="companion-timeline__item">
@@ -324,7 +327,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
                 {/* Close */}
                 <div className="prophet-modal__close">
                     <button className="prophet-modal__close-btn" onClick={onClose}>
-                        Fermer
+                        {t('common.close', 'Fermer')}
                     </button>
                 </div>
             </motion.div>
@@ -333,6 +336,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
 }
 
 export function ProphetsPage() {
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [selectedProphet, setSelectedProphet] = useState<Prophet | null>(null);
     const [selectedCompanion, setSelectedCompanion] = useState<Companion | null>(null);
@@ -378,15 +382,15 @@ export function ProphetsPage() {
                 </h1>
                 <p className="prophets-hero__subtitle">
                     {tab === 'prophets'
-                        ? 'Histoires des Prophètes dans le Coran'
-                        : `${asharaCount} promis au Paradis · ${otherCount} autres compagnons`
+                        ? t('prophets.prophetsSubtitle', 'Histoires des Prophètes dans le Coran')
+                        : `${asharaCount} ${t('prophets.promisedParadise', 'promis au Paradis')} · ${otherCount} ${t('prophets.otherCompanions', 'autres compagnons')}`
                     }
                 </p>
                 <span className="prophets-hero__count">
-                    {tab === 'prophets' ? `${prophets.length} prophètes` : `${companions.length} compagnons`}
+                    {tab === 'prophets' ? `${prophets.length} ${t('prophets.title', 'prophètes')}` : `${companions.length} ${t('prophets.companions', 'compagnons')}`}
                 </span>
                 {tab === 'prophets' && (
-                    <span className="prophets-hero__source">Source : Coran & Tafsir Ibn Kathir — قصص الأنبياء</span>
+                    <span className="prophets-hero__source">{t('prophets.sourceTafsir', 'Source : Coran & Tafsir Ibn Kathir — قصص الأنبياء')}</span>
                 )}
             </div>
 
@@ -413,7 +417,7 @@ export function ProphetsPage() {
                     <input
                         className="prophets-search__input"
                         type="text"
-                        placeholder={tab === 'prophets' ? 'Rechercher un prophète…' : 'Rechercher un compagnon…'}
+                        placeholder={tab === 'prophets' ? t('prophets.searchProphet', 'Rechercher un prophète…') : t('prophets.searchCompanion', 'Rechercher un compagnon…')}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />

@@ -3,9 +3,12 @@ import { ArrowLeft, Heart, Share2, Search } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { HADITH_CATEGORIES, EXPANDED_HADITHS, type HadithCategory, type HadithEntry } from '../data/hadithsExpanded';
 import { useFavoritesStore } from '../stores/favoritesStore';
+import { useTranslation } from 'react-i18next';
+import { formatDivineNames } from '../lib/divineNames';
 import './HadithsPage.css';
 
 export function HadithsPage() {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const [selectedCat, setSelectedCat] = useState<HadithCategory | null>(() => {
         const catParam = searchParams.get('cat') as HadithCategory | null;
@@ -60,7 +63,7 @@ export function HadithsPage() {
                     <button className="hadiths-back" onClick={() => navigate(-1)}>
                         <ArrowLeft size={22} />
                     </button>
-                    <h1 className="hadiths-title">📜 Hadiths</h1>
+                    <h1 className="hadiths-title">📜 {t('sideMenu.hadiths', 'Hadiths')}</h1>
                     <span className="hadiths-badge">{EXPANDED_HADITHS.length}</span>
                 </div>
 
@@ -68,7 +71,7 @@ export function HadithsPage() {
                     <Search size={16} />
                     <input
                         type="text"
-                        placeholder="Rechercher un hadith..."
+                        placeholder={t('hadiths.searchPlaceholder', 'Rechercher un hadith...')}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -77,7 +80,7 @@ export function HadithsPage() {
                 {search.trim() ? (
                     <div className="hadiths-list">
                         {filteredHadiths.length === 0 ? (
-                            <div className="hadiths-empty">Aucun résultat pour « {search} »</div>
+                            <div className="hadiths-empty">{t('common.noResultsFor', 'Aucun résultat pour "{{query}}"', { query: search })}</div>
                         ) : (
                             filteredHadiths.map(h => (
                                 <HadithCard
@@ -104,7 +107,7 @@ export function HadithsPage() {
                                     <span className="hadiths-cat-emoji">{cat.emoji}</span>
                                     <span className="hadiths-cat-name">{cat.name}</span>
                                     <span className="hadiths-cat-nameAr">{cat.nameAr}</span>
-                                    <span className="hadiths-cat-count">{count} hadiths</span>
+                                    <span className="hadiths-cat-count">{count} {t('hadiths.count', 'hadiths')}</span>
                                 </button>
                             );
                         })}
@@ -131,7 +134,7 @@ export function HadithsPage() {
                 <Search size={16} />
                 <input
                     type="text"
-                    placeholder="Rechercher..."
+                    placeholder={t('common.search', 'Rechercher...')}
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
@@ -139,7 +142,7 @@ export function HadithsPage() {
 
             <div className="hadiths-list">
                 {filteredHadiths.length === 0 ? (
-                    <div className="hadiths-empty">Aucun résultat</div>
+                    <div className="hadiths-empty">{t('common.noResults', 'Aucun résultat')}</div>
                 ) : (
                     filteredHadiths.map(h => (
                         <HadithCard
@@ -162,10 +165,12 @@ function HadithCard({ hadith, isFav, onFav, onShare }: {
     onFav: () => void;
     onShare: () => void;
 }) {
+    const { t } = useTranslation();
+
     return (
         <div className="hadith-card">
             <div className="hadith-card__arabic" dir="rtl">{hadith.ar}</div>
-            <div className="hadith-card__french">{hadith.fr}</div>
+            <div className="hadith-card__french">{formatDivineNames(hadith.fr)}</div>
             <div className="hadith-card__meta">
                 <span className="hadith-card__source">📕 {hadith.src}</span>
                 <span className="hadith-card__narrator">🗣️ {hadith.nar}</span>
@@ -174,14 +179,14 @@ function HadithCard({ hadith, isFav, onFav, onShare }: {
                 <button
                     className={`hadith-card__fav ${isFav ? 'active' : ''}`}
                     onClick={e => { e.stopPropagation(); onFav(); }}
-                    title={isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                    title={isFav ? t('common.removeFromFavs', 'Retirer des favoris') : t('common.addToFavs', 'Ajouter aux favoris')}
                 >
                     <Heart size={18} fill={isFav ? 'currentColor' : 'none'} />
                 </button>
                 <button
                     className="hadith-card__share"
                     onClick={e => { e.stopPropagation(); onShare(); }}
-                    title="Partager"
+                    title={t('common.share', 'Partager')}
                 >
                     <Share2 size={18} />
                 </button>

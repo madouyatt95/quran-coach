@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
+import { formatDivineNames } from '../lib/divineNames';
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
@@ -305,9 +306,9 @@ export function HomePage() {
                         <BookMarked size={20} />
                     </div>
                     <div className="home-continue__text">
-                        <span className="home-continue__title">Reprendre ma lecture</span>
+                        <span className="home-continue__title">{t('home.continueReading', 'Reprendre ma lecture')}</span>
                         <span className="home-continue__page">
-                            {SURAH_NAMES[displaySurah] || `Sourate ${displaySurah}`} — Page {displayPage}
+                            {SURAH_NAMES[displaySurah] || `${t('mushaf.surah', 'Sourate')} ${displaySurah}`} — {t('mushaf.page', 'Page')} {displayPage}
                         </span>
                     </div>
                     <span className="home-continue__arrow">→</span>
@@ -316,7 +317,7 @@ export function HomePage() {
                     <div className="home-streak">
                         <Flame size={18} className="home-streak__flame" />
                         <span className="home-streak__count">{readingStreak}</span>
-                        <span className="home-streak__label">jours</span>
+                        <span className="home-streak__label">{t('home.days', 'jours')}</span>
                     </div>
                 )}
             </div>
@@ -360,7 +361,7 @@ export function HomePage() {
             <div className="hadith-card">
                 <div className="hadith-card__label">
                     <span className="hadith-card__label-dot" />
-                    <span>Hadith du Jour</span>
+                    <span>{t('home.hadithOfDay', 'Hadith du Jour')}</span>
                     {seasonalTags.length > 0 && (
                         <span style={{ opacity: 0.5, fontSize: '0.65rem' }}>
                             • {seasonalTags[0]}
@@ -368,14 +369,14 @@ export function HomePage() {
                     )}
                 </div>
                 <div className="hadith-card__arabic">{hadith.textAr}</div>
-                <div className="hadith-card__french">{hadith.textFr}</div>
+                <div className="hadith-card__french">{formatDivineNames(hadith.textFr)}</div>
                 <div className="hadith-card__meta">
                     <div>
                         <div className="hadith-card__source">
                             <BookOpen size={12} />
                             <strong>{hadith.source}</strong>
                         </div>
-                        <div className="hadith-card__narrator">Rapporté par {hadith.narrator}</div>
+                        <div className="hadith-card__narrator">{t('home.narratedBy', 'Rapporté par')} {hadith.narrator}</div>
                     </div>
                     <div className="hadith-card__actions">
                         <button
@@ -391,10 +392,10 @@ export function HomePage() {
                                 });
                             }}
                         >
-                            <Heart size={14} fill={useFavoritesStore.getState().isFavoriteHadith(hadith.id) ? 'currentColor' : 'none'} /> Favoris
+                            <Heart size={14} fill={useFavoritesStore.getState().isFavoriteHadith(hadith.id) ? 'currentColor' : 'none'} /> {t('common.inFavs', 'Favoris')}
                         </button>
                         <button className="hadith-card__action-btn" onClick={handleShare}>
-                            <Share2 size={14} /> Partager
+                            <Share2 size={14} /> {t('common.share', 'Partager')}
                         </button>
                     </div>
                 </div>
@@ -455,8 +456,8 @@ export function HomePage() {
                                 <span className="dhikr-card__daily">{d.daily}</span>
                                 <span className="dhikr-card__emoji">{d.emoji}</span>
                                 <span className="dhikr-card__ar">{d.text}</span>
-                                <span className="dhikr-card__fr">{d.textFr}</span>
-                                <span className="dhikr-card__desc">{d.descFr}</span>
+                                <span className="dhikr-card__fr">{formatDivineNames(d.textFr)}</span>
+                                <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
                                 <span className="dhikr-card__count">
                                     {isUnlimited ? count : `${countInSeries}/${d.target}`}
                                 </span>

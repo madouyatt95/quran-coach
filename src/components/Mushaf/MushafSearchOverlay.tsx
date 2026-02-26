@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { searchQuran } from '../../lib/quranApi';
 import { SURAH_NAMES_FR, JUZ_START_PAGES } from './mushafConstants';
 import type { Ayah } from '../../types';
+import { formatDivineNames } from '../../lib/divineNames';
 
 interface SearchResult extends Ayah {
     translation?: string;
@@ -272,7 +273,7 @@ export function MushafSearchOverlay({
                                         )}
                                         {v.translation && (
                                             <div className="mih-search-item__detail" style={{ fontStyle: 'italic' }}>
-                                                {v.translation.length > 100 ? v.translation.slice(0, 100) + '…' : v.translation}
+                                                {formatDivineNames(v.translation.length > 100 ? v.translation.slice(0, 100) + '…' : v.translation)}
                                             </div>
                                         )}
                                         <div className="mih-search-item__detail" style={{ marginTop: 2 }}>

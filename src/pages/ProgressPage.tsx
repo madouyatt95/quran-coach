@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useStatsStore } from '../stores/statsStore';
 import { useSRSStore } from '../stores/srsStore';
+import { useTranslation } from 'react-i18next';
 import './ProgressPage.css';
 
 // Generate last 365 days for calendar
@@ -46,6 +47,7 @@ function getMonthLabels(days: { date: string }[]): { month: string; index: numbe
 }
 
 export function ProgressPage() {
+    const { t } = useTranslation();
     const {
         readingStreak,
         totalPagesRead,
@@ -91,7 +93,7 @@ export function ProgressPage() {
 
     return (
         <div className="progress-page">
-            <h1 className="progress-page__title">Ma Progression</h1>
+            <h1 className="progress-page__title">{t('progress.title', 'Ma Progression')}</h1>
 
             {/* Streak Card */}
             <div className={`progress-card progress-card--streak ${readingStreak > 0 ? 'active' : ''}`}>
@@ -101,13 +103,13 @@ export function ProgressPage() {
                 <div className="progress-card__content">
                     <span className="progress-card__value">{readingStreak}</span>
                     <span className="progress-card__label">
-                        jour{readingStreak !== 1 ? 's' : ''} de suite
+                        {t('progress.daysInRow', 'jours de suite')}
                     </span>
                 </div>
                 {readingStreak >= 7 && (
                     <div className="progress-card__badge">
                         <Award size={16} />
-                        <span>{readingStreak >= 30 ? 'Maître!' : 'Assidu!'}</span>
+                        <span>{readingStreak >= 30 ? t('progress.master', 'Maître!') : t('progress.diligent', 'Assidu!')}</span>
                     </div>
                 )}
             </div>
@@ -121,11 +123,11 @@ export function ProgressPage() {
                     <div className="progress-card__content">
                         <span className="progress-card__value">{dueCards.length}</span>
                         <span className="progress-card__label">
-                            verset{dueCards.length !== 1 ? 's' : ''} à réviser
+                            {t('progress.versesToReview', 'versets à réviser')}
                         </span>
                     </div>
                     <div className="progress-card__extra">
-                        <span>{totalCards} en mémorisation</span>
+                        <span>{totalCards} {t('progress.inMemorization', 'en mémorisation')}</span>
                         <ChevronRight size={16} />
                     </div>
                 </div>
@@ -135,7 +137,7 @@ export function ProgressPage() {
             <div className="progress-calendar">
                 <h3 className="progress-calendar__title">
                     <Calendar size={18} />
-                    Activité
+                    {t('progress.activity', 'Activité')}
                 </h3>
 
                 <div className="progress-calendar__months">
@@ -161,11 +163,11 @@ export function ProgressPage() {
                 </div>
 
                 <div className="progress-calendar__legend">
-                    <span>Moins</span>
+                    <span>{t('progress.less', 'Moins')}</span>
                     {[0, 1, 2, 3, 4].map(level => (
                         <div key={level} className={`progress-calendar__day level-${level}`} />
                     ))}
-                    <span>Plus</span>
+                    <span>{t('progress.more', 'Plus')}</span>
                 </div>
             </div>
 
@@ -173,8 +175,8 @@ export function ProgressPage() {
             <div className="progress-card progress-card--goal">
                 <div className="progress-card__header">
                     <Target size={20} />
-                    <span>Objectif du jour</span>
-                    {goalMet && <span className="goal-met">✓ Atteint!</span>}
+                    <span>{t('progress.dailyGoal', 'Objectif du jour')}</span>
+                    {goalMet && <span className="goal-met">✓ {t('progress.goalMet', 'Atteint!')}</span>}
                 </div>
                 <div className="goal-progress">
                     <div className="goal-progress__bar">
@@ -184,11 +186,11 @@ export function ProgressPage() {
                         />
                     </div>
                     <span className="goal-progress__text">
-                        {todayPagesRead} / {dailyGoalPages} page{dailyGoalPages > 1 ? 's' : ''}
+                        {todayPagesRead} / {dailyGoalPages} {t('common.pages', 'pages')}
                     </span>
                 </div>
                 <div className="goal-selector">
-                    <span>Objectif :</span>
+                    <span>{t('progress.goalLabel', 'Objectif :')}</span>
                     {[1, 2, 3, 5, 10].map((pages) => (
                         <button
                             key={pages}
@@ -206,35 +208,35 @@ export function ProgressPage() {
                 <div className="progress-item">
                     <BookOpen size={24} />
                     <span className="progress-item__value">{totalPagesRead}</span>
-                    <span className="progress-item__label">Pages lues</span>
+                    <span className="progress-item__label">{t('progress.pagesRead', 'Pages lues')}</span>
                 </div>
                 <div className="progress-item">
                     <Clock size={24} />
                     <span className="progress-item__value">{formatTime(totalMinutesSpent)}</span>
-                    <span className="progress-item__label">Temps total</span>
+                    <span className="progress-item__label">{t('progress.totalTime', 'Temps total')}</span>
                 </div>
                 <div className="progress-item">
                     <TrendingUp size={24} />
                     <span className="progress-item__value">
                         {totalPagesRead > 0 ? Math.round((totalPagesRead / 604) * 100) : 0}%
                     </span>
-                    <span className="progress-item__label">du Coran</span>
+                    <span className="progress-item__label">{t('progress.ofQuran', 'du Coran')}</span>
                 </div>
             </div>
 
             {/* Motivation */}
             <div className="progress-motivation">
                 {readingStreak === 0 && (
-                    <p>📖 Commencez à lire pour démarrer votre streak!</p>
+                    <p>📖 {t('progress.startReading', 'Commencez à lire pour démarrer votre streak!')}</p>
                 )}
                 {readingStreak >= 1 && readingStreak < 7 && (
-                    <p>🔥 Encore {7 - readingStreak} jour{7 - readingStreak > 1 ? 's' : ''} pour une semaine complète!</p>
+                    <p>🔥 Encore {7 - readingStreak} {t('common.days', 'jours')} {t('progress.toFullWeek', 'pour une semaine complète!')}</p>
                 )}
                 {readingStreak >= 7 && readingStreak < 30 && (
-                    <p>⭐ Excellent! {readingStreak} jours de lecture régulière!</p>
+                    <p>⭐ {t('progress.excellent', 'Excellent!')} {readingStreak} {t('progress.daysOfReading', 'jours de lecture régulière!')}</p>
                 )}
                 {readingStreak >= 30 && (
-                    <p>🏆 Mashallah! {readingStreak} jours consécutifs!</p>
+                    <p>🏆 {t('progress.mashallah', 'Mashallah!')} {readingStreak} {t('progress.consecutiveDays', 'jours consécutifs!')}</p>
                 )}
             </div>
         </div>

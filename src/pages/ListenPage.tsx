@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useListenStore } from '../stores/listenStore';
 import { useAssetsStore } from '../stores/assetsStore';
 import { searchWikimediaForReciter, getReciterColor } from '../lib/assetPipeline';
@@ -15,6 +16,7 @@ const getReciterRoute = (reciterId: number) =>
     reciterId === -1 ? `/listen/${OMAR_HISHAM_COLLECTION.id}` : `/listen/${reciterId}`;
 
 export function ListenPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const {
         reciters, featuredReciters, isLoading, searchQuery,
@@ -113,8 +115,8 @@ export function ListenPage() {
                 <button className="listen-back-btn" onClick={() => navigate(-1)}>
                     <ChevronLeft size={24} />
                 </button>
-                <h1>Écoute</h1>
-                <p>Découvrez les plus belles récitations du Noble Coran</p>
+                <h1>{t('listen.title', 'Écoute')}</h1>
+                <p>{t('listen.subtitle', 'Découvrez les plus belles récitations du Noble Coran')}</p>
             </header>
 
             {/* Resume Banner */}
@@ -134,7 +136,7 @@ export function ListenPage() {
                     </div>
                     <button className="listen-resume-btn" onClick={handleResume}>
                         <Play size={16} />
-                        Reprendre
+                        {t('listen.resume', 'Reprendre')}
                     </button>
                 </div>
             )}
@@ -144,7 +146,7 @@ export function ListenPage() {
                     <span className="search-icon">🔍</span>
                     <input
                         type="text"
-                        placeholder="Chercher un récitant..."
+                        placeholder={t('listen.searchReciter', 'Chercher un récitant...')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -156,7 +158,7 @@ export function ListenPage() {
                 {!searchQuery && playlists.length > 0 && (
                     <section className="listen-section playlist-section">
                         <div className="section-header">
-                            <h2 className="section-title">📂 Mes Playlists</h2>
+                            <h2 className="section-title">📂 {t('listen.myPlaylists', 'Mes Playlists')}</h2>
                         </div>
                         <div className="popular-reciters-scroll">
                             {playlists.map(playlist => (
@@ -183,7 +185,7 @@ export function ListenPage() {
                 {!searchQuery && popularReciters.length > 0 && (
                     <section className="listen-section">
                         <div className="section-header">
-                            <h2 className="section-title">⭐ Récitants Populaires</h2>
+                            <h2 className="section-title">⭐ {t('listen.popularReciters', 'Récitants Populaires')}</h2>
                         </div>
                         <div className="popular-reciters-scroll">
                             {popularReciters.map(reciter => {
@@ -220,14 +222,14 @@ export function ListenPage() {
                 {/* Featured Section (Arabe + Français) */}
                 {!searchQuery && (
                     <section className="listen-section">
-                        <h2 className="section-title">✨ Arabe + Français</h2>
+                        <h2 className="section-title">✨ {t('listen.arabicAndFrench', 'Arabe + Français')}</h2>
                         {featuredReciters.map(reciter => (
                             <div key={reciter.id} className="featured-reciter-card" onClick={() => navigate(`/listen/${reciter.id}`)}>
                                 <div className="reciter-photo-placeholder" style={{ background: '#c9a84c' }}>📖</div>
                                 <div className="reciter-info">
                                     <h3>{reciter.name}</h3>
-                                    <p>Coran Complet • Arabe & Français</p>
-                                    <span className="badge-featured">Épinglé</span>
+                                    <p>{t('listen.completeQuranArFr', 'Coran Complet • Arabe & Français')}</p>
+                                    <span className="badge-featured">{t('listen.pinned', 'Épinglé')}</span>
                                 </div>
                             </div>
                         ))}
@@ -236,10 +238,10 @@ export function ListenPage() {
 
                 {/* Reciters List */}
                 <section className="listen-section">
-                    <h2 className="section-title">🎙️ Récitants</h2>
+                    <h2 className="section-title">🎙️ {t('listen.reciters', 'Récitants')}</h2>
                     <div className="reciter-grid">
                         {isLoading ? (
-                            <div className="listen-loading">Chargement des récitants...</div>
+                            <div className="listen-loading">{t('common.loading', 'Chargement...')}</div>
                         ) : (
                             filteredReciters.map(reciter => {
                                 const asset = assets.get(reciter.id.toString());

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Compass, Navigation, AlertTriangle, Loader2, MapPin, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './QiblaPage.css';
 
 const KAABA_LAT = 21.4225;
@@ -24,6 +25,7 @@ function calculateQiblaDirection(lat: number, lng: number): number {
 }
 
 export function QiblaPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [qiblaAngle, setQiblaAngle] = useState<number | null>(null);
     const [compassHeading, setCompassHeading] = useState<number>(0);
@@ -35,7 +37,7 @@ export function QiblaPage() {
     // Get user location
     useEffect(() => {
         if (!navigator.geolocation) {
-            setLocationError('La géolocalisation n\'est pas supportée par votre navigateur.');
+            setLocationError(t('qibla.geoNotSupported', "La géolocalisation n'est pas supportée par votre navigateur."));
             setIsLoading(false);
             return;
         }
@@ -59,16 +61,16 @@ export function QiblaPage() {
             (error) => {
                 switch (error.code) {
                     case error.PERMISSION_DENIED:
-                        setLocationError('Veuillez autoriser l\'accès à votre position pour trouver la Qibla.');
+                        setLocationError(t('qibla.permissionDenied', "Veuillez autoriser l'accès à votre position pour trouver la Qibla."));
                         break;
                     case error.POSITION_UNAVAILABLE:
-                        setLocationError('Position non disponible. Vérifiez votre GPS.');
+                        setLocationError(t('qibla.positionUnavailable', "Position non disponible. Vérifiez votre GPS."));
                         break;
                     case error.TIMEOUT:
-                        setLocationError('Délai d\'attente dépassé. Réessayez.');
+                        setLocationError(t('qibla.timeout', "Délai d'attente dépassé. Réessayez."));
                         break;
                     default:
-                        setLocationError('Erreur de géolocalisation.');
+                        setLocationError(t('qibla.geoError', "Erreur de géolocalisation."));
                 }
                 setIsLoading(false);
             },
@@ -137,8 +139,8 @@ export function QiblaPage() {
             {/* Hero */}
             <div className="qibla-hero">
                 <span className="qibla-hero__icon">🕋</span>
-                <h1 className="qibla-hero__title">اتِّجَاهُ القِبْلَة</h1>
-                <p className="qibla-hero__subtitle">Direction de la Qibla</p>
+                <h1 className="qibla-hero__title">{t('qibla.titleAr', "اتِّجَاهُ القِبْلَة")}</h1>
+                <p className="qibla-hero__subtitle">{t('qibla.subtitle', "Direction de la Qibla")}</p>
                 {userCity && (
                     <span className="qibla-hero__city">
                         <MapPin size={14} /> {userCity}
@@ -150,14 +152,14 @@ export function QiblaPage() {
                 {isLoading ? (
                     <div className="qibla-loading">
                         <Loader2 size={40} className="qibla-loading__spinner" />
-                        <p>Localisation en cours…</p>
+                        <p>{t('qibla.locating', "Localisation en cours…")}</p>
                     </div>
                 ) : locationError ? (
                     <div className="qibla-error">
                         <AlertTriangle size={40} />
                         <p>{locationError}</p>
                         <button className="qibla-retry-btn" onClick={() => window.location.reload()}>
-                            Réessayer
+                            {t('common.retry', "Réessayer")}
                         </button>
                     </div>
                 ) : (
@@ -169,10 +171,10 @@ export function QiblaPage() {
                                 style={{ transform: `rotate(${-compassHeading}deg)` }}
                             >
                                 {/* Cardinal directions */}
-                                <span className="qibla-compass__cardinal qibla-compass__n">N</span>
-                                <span className="qibla-compass__cardinal qibla-compass__e">E</span>
-                                <span className="qibla-compass__cardinal qibla-compass__s">S</span>
-                                <span className="qibla-compass__cardinal qibla-compass__w">O</span>
+                                <span className="qibla-compass__cardinal qibla-compass__n">{t('qibla.north', 'N')}</span>
+                                <span className="qibla-compass__cardinal qibla-compass__e">{t('qibla.east', 'E')}</span>
+                                <span className="qibla-compass__cardinal qibla-compass__s">{t('qibla.south', 'S')}</span>
+                                <span className="qibla-compass__cardinal qibla-compass__w">{t('qibla.west', 'O')}</span>
 
                                 {/* Degree marks */}
                                 {Array.from({ length: 72 }).map((_, i) => (
@@ -202,7 +204,7 @@ export function QiblaPage() {
                             <div className="qibla-info__angle">
                                 <Compass size={18} />
                                 <span>{qiblaAngle !== null ? `${Math.round(qiblaAngle)}°` : '—'}</span>
-                                <span className="qibla-info__label">depuis le Nord</span>
+                                <span className="qibla-info__label">{t('qibla.fromNorth', "depuis le Nord")}</span>
                             </div>
 
                             {!hasCompass && (
@@ -210,10 +212,10 @@ export function QiblaPage() {
                                     <Navigation size={16} />
                                     {needsPermission ? (
                                         <button className="qibla-compass-btn" onClick={requestCompassPermission}>
-                                            Activer la boussole
+                                            {t('qibla.enableCompass', "Activer la boussole")}
                                         </button>
                                     ) : (
-                                        <span>Orientez l'angle {qiblaAngle !== null ? `${Math.round(qiblaAngle)}°` : '—'} depuis le Nord</span>
+                                        <span>{t('qibla.orientAngle', "Orientez l'angle")} {qiblaAngle !== null ? `${Math.round(qiblaAngle)}°` : '—'} {t('qibla.fromNorth', "depuis le Nord")}</span>
                                     )}
                                 </div>
                             )}
@@ -221,7 +223,7 @@ export function QiblaPage() {
                             {hasCompass && (
                                 <div className="qibla-info__hint qibla-info__hint--active">
                                     <Navigation size={16} />
-                                    <span>Tournez votre appareil jusqu'à ce que 🕋 soit en haut</span>
+                                    <span>{t('qibla.turnDevice', "Tournez votre appareil jusqu'à ce que 🕋 soit en haut")}</span>
                                 </div>
                             )}
                         </div>

@@ -10,6 +10,7 @@ import { useNotificationStore } from '../stores/notificationStore';
 import { ANGLE_PRESETS, DEFAULT_PRAYER_SETTINGS, type AnglePreset, type HighLatMode, SALAT_KEYS, PRAYER_NAMES_FR } from '../lib/prayerEngine';
 import { updatePushPreferences } from '../lib/notificationService';
 import { resolveCoords } from '../lib/locationService';
+import { useTranslation } from 'react-i18next';
 import './PrayerSettingsPage.css';
 
 const HIGH_LAT_OPTIONS: { value: HighLatMode; label: string }[] = [
@@ -30,6 +31,7 @@ const PRAYER_ADJ_KEYS = [
 ] as const;
 
 export function PrayerSettingsPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const store = usePrayerStore();
     const notifStore = useNotificationStore();
@@ -68,7 +70,7 @@ export function PrayerSettingsPage() {
                 <button className="ps-header__back" onClick={() => navigate(-1)}>
                     <ChevronLeft size={20} />
                 </button>
-                <span className="ps-header__title">Réglages Prières</span>
+                <span className="ps-header__title">{t('prayerSettings.title', 'Réglages Prières')}</span>
                 <button
                     className="ps-header__reset"
                     onClick={() => {
@@ -82,7 +84,7 @@ export function PrayerSettingsPage() {
                         store.updateSobhIkhtiyariRule(DEFAULT_PRAYER_SETTINGS.sobhIkhtiyariRule);
                         store.updateAsrIkhtiyariRule(DEFAULT_PRAYER_SETTINGS.asrIkhtiyariRule);
                     }}
-                    title="Réinitialiser"
+                    title={t('common.reset', 'Réinitialiser')}
                 >
                     <RotateCcw size={16} />
                 </button>
@@ -90,8 +92,8 @@ export function PrayerSettingsPage() {
 
             {/* Angle Presets */}
             <div className="ps-section">
-                <div className="ps-section__title">📐 Méthode de calcul</div>
-                <div className="ps-section__desc">Choisissez le preset d'angles pour le Fajr et l'Isha</div>
+                <div className="ps-section__title">📐 {t('prayerSettings.calcMethod', 'Méthode de calcul')}</div>
+                <div className="ps-section__desc">{t('prayerSettings.calcMethodDesc', "Choisissez le preset d'angles pour le Fajr et l'Isha")}</div>
                 <div className="ps-presets">
                     {(Object.entries(ANGLE_PRESETS) as [AnglePreset, typeof ANGLE_PRESETS[AnglePreset]][]).map(([key, preset]) => (
                         <button
@@ -110,9 +112,9 @@ export function PrayerSettingsPage() {
             {/* Custom Angles */}
             {s.anglePreset === 'CUSTOM' && (
                 <div className="ps-section">
-                    <div className="ps-section__title">🎛️ Angles personnalisés</div>
+                    <div className="ps-section__title">🎛️ {t('prayerSettings.customAngles', 'Angles personnalisés')}</div>
                     <div className="ps-row">
-                        <label>Fajr (°)</label>
+                        <label>{t('prayer.fajr', 'Fajr')} (°)</label>
                         <input
                             type="number"
                             min="10"
@@ -123,7 +125,7 @@ export function PrayerSettingsPage() {
                         />
                     </div>
                     <div className="ps-row">
-                        <label>Isha (°)</label>
+                        <label>{t('prayer.isha', 'Isha')} (°)</label>
                         <input
                             type="number"
                             min="10"
@@ -138,8 +140,8 @@ export function PrayerSettingsPage() {
 
             {/* Asr Shadow */}
             <div className="ps-section">
-                <div className="ps-section__title">🌤️ Ombre Asr</div>
-                <div className="ps-section__desc">Facteur d'ombre pour le calcul de l'Asr</div>
+                <div className="ps-section__title">🌤️ {t('prayerSettings.asrShadow', 'Ombre Asr')}</div>
+                <div className="ps-section__desc">{t('prayerSettings.asrShadowDesc', "Facteur d'ombre pour le calcul de l'Asr")}</div>
                 <div className="ps-toggle-group">
                     <button
                         className={`ps-toggle ${s.asrShadow === 1 ? 'ps-toggle--active' : ''}`}
@@ -158,8 +160,8 @@ export function PrayerSettingsPage() {
 
             {/* Akhir Isha */}
             <div className="ps-section">
-                <div className="ps-section__title">🌙 Akhir Isha (fin ikhtiyârî)</div>
-                <div className="ps-section__desc">Proportion de la nuit légale pour la fin du temps de préférence</div>
+                <div className="ps-section__title">🌙 {t('prayerSettings.akhirIsha', 'Akhir Isha (fin ikhtiyârî)')}</div>
+                <div className="ps-section__desc">{t('prayerSettings.akhirIshaDesc', 'Proportion de la nuit légale pour la fin du temps de préférence')}</div>
                 <div className="ps-toggle-group">
                     <button
                         className={`ps-toggle ${s.ishaIkhtiyari === 'THIRD_NIGHT' ? 'ps-toggle--active' : ''}`}
@@ -178,24 +180,24 @@ export function PrayerSettingsPage() {
 
             {/* Sobh Ikhtiyari Rule */}
             <div className="ps-section">
-                <div className="ps-section__title">🌅 Règle ikhtiyârî Sobh</div>
+                <div className="ps-section__title">🌅 {t('prayerSettings.sobhIkhtiyari', 'Règle ikhtiyârî Sobh')}</div>
                 <div className="ps-toggle-group">
                     <button
                         className={`ps-toggle ${s.sobhIkhtiyariRule.type === 'DEFAULT' ? 'ps-toggle--active' : ''}`}
                         onClick={() => store.updateSobhIkhtiyariRule({ type: 'DEFAULT' })}
                     >
-                        Défaut (2/3)
+                        {t('prayerSettings.defaultRule', 'Défaut (2/3)')}
                     </button>
                     <button
                         className={`ps-toggle ${s.sobhIkhtiyariRule.type === 'CUSTOM_OFFSET_MIN' ? 'ps-toggle--active' : ''}`}
                         onClick={() => store.updateSobhIkhtiyariRule({ type: 'CUSTOM_OFFSET_MIN', minutes: 30 })}
                     >
-                        Offset (min)
+                        {t('prayerSettings.offsetMin', 'Offset (min)')}
                     </button>
                 </div>
                 {s.sobhIkhtiyariRule.type === 'CUSTOM_OFFSET_MIN' && (
                     <div className="ps-row" style={{ marginTop: 8 }}>
-                        <label>Minutes avant le lever</label>
+                        <label>{t('prayerSettings.minsBeforeSunrise', 'Minutes avant le lever')}</label>
                         <input
                             type="number"
                             min="5"
@@ -209,24 +211,24 @@ export function PrayerSettingsPage() {
 
             {/* Asr Ikhtiyari Rule */}
             <div className="ps-section">
-                <div className="ps-section__title">🌇 Règle ikhtiyârî Asr</div>
+                <div className="ps-section__title">🌇 {t('prayerSettings.asrIkhtiyari', 'Règle ikhtiyârî Asr')}</div>
                 <div className="ps-toggle-group">
                     <button
                         className={`ps-toggle ${s.asrIkhtiyariRule.type === 'DEFAULT' ? 'ps-toggle--active' : ''}`}
                         onClick={() => store.updateAsrIkhtiyariRule({ type: 'DEFAULT' })}
                     >
-                        Défaut (2/3)
+                        {t('prayerSettings.defaultRule', 'Défaut (2/3)')}
                     </button>
                     <button
                         className={`ps-toggle ${s.asrIkhtiyariRule.type === 'CUSTOM_OFFSET_MIN' ? 'ps-toggle--active' : ''}`}
                         onClick={() => store.updateAsrIkhtiyariRule({ type: 'CUSTOM_OFFSET_MIN', minutes: 30 })}
                     >
-                        Offset (min)
+                        {t('prayerSettings.offsetMin', 'Offset (min)')}
                     </button>
                 </div>
                 {s.asrIkhtiyariRule.type === 'CUSTOM_OFFSET_MIN' && (
                     <div className="ps-row" style={{ marginTop: 8 }}>
-                        <label>Minutes avant le Maghrib</label>
+                        <label>{t('prayerSettings.minsBeforeMaghrib', 'Minutes avant le Maghrib')}</label>
                         <input
                             type="number"
                             min="5"
@@ -240,23 +242,23 @@ export function PrayerSettingsPage() {
 
             {/* High Latitude */}
             <div className="ps-section">
-                <div className="ps-section__title">🌍 Haute latitude</div>
-                <div className="ps-section__desc">Méthode de fallback pour les latitudes extrêmes ({'>'}48°)</div>
+                <div className="ps-section__title">🌍 {t('prayerSettings.highLat', 'Haute latitude')}</div>
+                <div className="ps-section__desc">{t('prayerSettings.highLatDesc', "Méthode de fallback pour les latitudes extrêmes (>48°)")}</div>
                 <select
                     className="ps-select"
                     value={s.highLatFajrIsha}
                     onChange={(e) => store.updateHighLatMode(e.target.value as HighLatMode)}
                 >
                     {HIGH_LAT_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        <option key={opt.value} value={opt.value}>{opt.value === 'NONE' ? t('prayerSettings.none', 'Aucun') : opt.label}</option>
                     ))}
                 </select>
             </div>
 
             {/* Adjustments */}
             <div className="ps-section">
-                <div className="ps-section__title">⏱️ Ajustements (minutes)</div>
-                <div className="ps-section__desc">Ajout/retrait de minutes à chaque horaire</div>
+                <div className="ps-section__title">⏱️ {t('prayerSettings.adjustments', 'Ajustements (minutes)')}</div>
+                <div className="ps-section__desc">{t('prayerSettings.adjustmentsDesc', "Ajout/retrait de minutes à chaque horaire")}</div>
                 {PRAYER_ADJ_KEYS.map(({ key, label }) => (
                     <div className="ps-row" key={key}>
                         <label>{label}</label>
@@ -279,35 +281,35 @@ export function PrayerSettingsPage() {
 
             {/* Rounding */}
             <div className="ps-section">
-                <div className="ps-section__title">🔢 Arrondi</div>
+                <div className="ps-section__title">🔢 {t('prayerSettings.rounding', 'Arrondi')}</div>
                 <div className="ps-toggle-group">
                     <button
                         className={`ps-toggle ${s.rounding === 'NONE' ? 'ps-toggle--active' : ''}`}
                         onClick={() => store.updateRounding('NONE')}
                     >
-                        Aucun
+                        {t('prayerSettings.none', 'Aucun')}
                     </button>
                     <button
                         className={`ps-toggle ${s.rounding === 'NEAREST_MIN' ? 'ps-toggle--active' : ''}`}
                         onClick={() => store.updateRounding('NEAREST_MIN')}
                     >
-                        ≈ minute
+                        {t('prayerSettings.nearestMin', '≈ minute')}
                     </button>
                     <button
                         className={`ps-toggle ${s.rounding === 'CEIL_MIN' ? 'ps-toggle--active' : ''}`}
                         onClick={() => store.updateRounding('CEIL_MIN')}
                     >
-                        ↑ minute
+                        {t('prayerSettings.ceilMin', '↑ minute')}
                     </button>
                 </div>
             </div>
 
             {/* Fajr Safety */}
             <div className="ps-section">
-                <div className="ps-section__title">🛡️ Marge de sécurité Fajr</div>
-                <div className="ps-section__desc">Minutes retranchées du Fajr par précaution</div>
+                <div className="ps-section__title">🛡️ {t('prayerSettings.fajrSafety', 'Marge de sécurité Fajr')}</div>
+                <div className="ps-section__desc">{t('prayerSettings.fajrSafetyDesc', 'Minutes retranchées du Fajr par précaution')}</div>
                 <div className="ps-row">
-                    <label>Minutes</label>
+                    <label>{t('prayerSettings.minutes', 'Minutes')}</label>
                     <input
                         type="number"
                         min="0"
@@ -320,11 +322,11 @@ export function PrayerSettingsPage() {
 
             {/* Notification Delays */}
             <div className="ps-section">
-                <div className="ps-section__title">🔔 Délais de notification (minutes avant)</div>
-                <div className="ps-section__desc">Réglez le délai d'alerte individuellement pour chaque prière</div>
+                <div className="ps-section__title">🔔 {t('prayerSettings.notifDelays', 'Délais de notification (minutes avant)')}</div>
+                <div className="ps-section__desc">{t('prayerSettings.notifDelaysDesc', "Réglez le délai d'alerte individuellement pour chaque prière")}</div>
                 {SALAT_KEYS.map((key) => (
                     <div className="ps-row" key={key}>
-                        <label>{PRAYER_NAMES_FR[key]}</label>
+                        <label>{t(`prayer.${key}`, PRAYER_NAMES_FR[key])}</label>
                         <input
                             type="number"
                             min="0"
@@ -336,8 +338,8 @@ export function PrayerSettingsPage() {
                 ))}
                 {/* Affichage */}
                 <div className="ps-section">
-                    <div className="ps-section__title">👁️ Options d'affichage</div>
-                    <div className="ps-section__desc">Afficher les temps de prières facultatifs</div>
+                    <div className="ps-section__title">👁️ {t('prayerSettings.displayOptions', "Options d'affichage")}</div>
+                    <div className="ps-section__desc">{t('prayerSettings.displayOptionsDesc', "Afficher les temps de prières facultatifs")}</div>
                     <div className="ps-toggle-row">
                         <label className="ps-checkbox-label">
                             <input
@@ -345,7 +347,7 @@ export function PrayerSettingsPage() {
                                 checked={s.showTahajjud}
                                 onChange={(e) => store.updateDisplaySettings({ showTahajjud: e.target.checked })}
                             />
-                            <span>Afficher Tahajjud</span>
+                            <span>{t('prayerSettings.showTahajjud', 'Afficher Tahajjud')}</span>
                         </label>
                     </div>
                     <div className="ps-toggle-row">
@@ -355,15 +357,15 @@ export function PrayerSettingsPage() {
                                 checked={s.showIshraq}
                                 onChange={(e) => store.updateDisplaySettings({ showIshraq: e.target.checked })}
                             />
-                            <span>Afficher Ishraq</span>
+                            <span>{t('prayerSettings.showIshraq', 'Afficher Ishraq')}</span>
                         </label>
                     </div>
                 </div>
 
                 {/* Adhan Sound */}
                 <div className="ps-section">
-                    <div className="ps-section__title">🔊 Son de l'Adhan</div>
-                    <div className="ps-section__desc">Choisir le muezzin pour les notifications</div>
+                    <div className="ps-section__title">🔊 {t('prayerSettings.adhanSound', "Son de l'Adhan")}</div>
+                    <div className="ps-section__desc">{t('prayerSettings.adhanSoundDesc', "Choisir le muezzin pour les notifications")}</div>
                     <div className="ps-presets ps-presets--small">
                         {['Mecque', 'Médine', 'Al-Aqsa', 'Égypte', 'Turquie', 'Maroc'].map((sound) => (
                             <button
@@ -371,7 +373,7 @@ export function PrayerSettingsPage() {
                                 className={`ps-toggle ${notifStore.adhanSound === sound ? 'ps-toggle--active' : ''}`}
                                 onClick={() => notifStore.setAdhanSound(sound)}
                             >
-                                {sound}
+                                {t(`prayerSettings.sounds.${sound.toLowerCase().replace('-', '')}`, sound)}
                             </button>
                         ))}
                     </div>

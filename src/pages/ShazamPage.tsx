@@ -1,18 +1,20 @@
 import { Radio, Mic } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './ShazamPage.css';
 
 
 export function ShazamPage() {
+    const { t } = useTranslation();
     return (
         <div className="shazam-page">
             {/* Maintenance Overlay */}
             <div className="shazam-maintenance-overlay">
                 <Radio size={48} className="shazam-maintenance-icon" />
-                <h2>Shazam Coran</h2>
-                <div className="shazam-maintenance-badge">BIENTÔT DISPO</div>
-                <p>Nous améliorons le service de reconnaissance pour vous offrir une précision optimale.</p>
+                <h2>{t('shazam.title', 'Shazam Coran')}</h2>
+                <div className="shazam-maintenance-badge">{t('shazam.comingSoon', 'BIENTÔT DISPO')}</div>
+                <p>{t('shazam.maintenanceDesc', 'Nous améliorons le service de reconnaissance pour vous offrir une précision optimale.')}</p>
                 <button className="shazam-maintenance-btn" onClick={() => window.history.back()}>
-                    Retour
+                    {t('common.back', 'Retour')}
                 </button>
             </div>
 
@@ -20,9 +22,9 @@ export function ShazamPage() {
             <div className="shazam-header" style={{ opacity: 0.2, pointerEvents: 'none' }}>
                 <h1 className="shazam-title">
                     <Radio size={28} />
-                    Shazam Coran
+                    {t('shazam.title', 'Shazam Coran')}
                 </h1>
-                <p className="shazam-subtitle">Identifiez n'importe quel passage coranique</p>
+                <p className="shazam-subtitle">{t('shazam.subtitle', "Identifiez n'importe quel passage coranique")}</p>
             </div>
 
             {/* Main Content (Blurred/Disabled) */}

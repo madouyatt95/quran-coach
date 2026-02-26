@@ -14,6 +14,7 @@ import {
     type ReadingChallengeTemplate,
     type ActiveReadingChallenge
 } from '../stores/challengesStore';
+import { useTranslation } from 'react-i18next';
 import './ChallengesPage.css';
 
 // Helper to check if today is the challenge day
@@ -38,6 +39,7 @@ function getProgressPercent(challenge: ActiveReadingChallenge): number {
 }
 
 export function ChallengesPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const {
         activeReadingChallenges,
@@ -71,19 +73,19 @@ export function ChallengesPage() {
                 <button className="challenges-back" onClick={() => navigate(-1)}>
                     <ArrowRight size={24} />
                 </button>
-                <h1>🏆 Mes Défis</h1>
+                <h1>🏆 {t('challenges.title', 'Mes Défis')}</h1>
             </div>
 
             {/* Active Challenges */}
             <section className="challenges-section">
-                <h2>Défis en cours</h2>
+                <h2>{t('challenges.activeChallenges', 'Défis en cours')}</h2>
 
                 {activeReadingChallenges.length === 0 ? (
                     <div className="challenges-empty">
-                        <p>Aucun défi actif</p>
+                        <p>{t('challenges.noActiveChallenge', 'Aucun défi actif')}</p>
                         <button onClick={() => setShowTemplates(true)}>
                             <Plus size={16} />
-                            Commencer un défi
+                            {t('challenges.startChallengeBtn', 'Commencer un défi')}
                         </button>
                     </div>
                 ) : (
@@ -127,8 +129,8 @@ export function ChallengesPage() {
                                         </div>
                                         <span className="challenge-progress-text">
                                             {challenge.type === 'khatm'
-                                                ? `${challenge.progress}/604 pages`
-                                                : `Jour ${challenge.completedDates.length}${challenge.duration ? `/${challenge.duration}` : ''}`
+                                                ? `${challenge.progress}/604 ${t('common.pages', 'pages')}`
+                                                : `${t('common.day', 'Jour')} ${challenge.completedDates.length}${challenge.duration ? `/${challenge.duration}` : ''}`
                                             }
                                         </span>
                                     </div>
@@ -137,7 +139,7 @@ export function ChallengesPage() {
                                     {todayReading && isToday && (
                                         <div className="challenge-today">
                                             <Calendar size={14} />
-                                            <span>Aujourd'hui: Pages {todayReading.start}-{todayReading.end}</span>
+                                            <span>{t('challenges.todayPages', "Aujourd'hui: Pages")} {todayReading.start}-{todayReading.end}</span>
                                         </div>
                                     )}
 
@@ -146,14 +148,14 @@ export function ChallengesPage() {
                                         {done ? (
                                             <button className="challenge-btn challenge-btn--done" disabled>
                                                 <Check size={16} />
-                                                Terminé aujourd'hui
+                                                {t('challenges.doneToday', "Terminé aujourd'hui")}
                                             </button>
                                         ) : isToday ? (
                                             <>
                                                 {challenge.type === 'khatm' ? (
                                                     <div className="challenge-auto-tracking">
                                                         <Zap size={14} />
-                                                        <span>Suivi automatique actif</span>
+                                                        <span>{t('challenges.autoTrackingActive', 'Suivi automatique actif')}</span>
                                                     </div>
                                                 ) : (
                                                     <>
@@ -163,14 +165,14 @@ export function ChallengesPage() {
                                                             onClick={() => markReadingChallengeComplete(challenge.id)}
                                                         >
                                                             <Check size={16} />
-                                                            Marquer fait
+                                                            {t('challenges.markDone', 'Marquer fait')}
                                                         </button>
                                                     </>
                                                 )}
                                             </>
                                         ) : (
                                             <span className="challenge-next-day">
-                                                {challenge.frequency === 'weekly' && 'Prochain: Vendredi'}
+                                                {challenge.frequency === 'weekly' && t('challenges.nextFriday', 'Prochain: Vendredi')}
                                             </span>
                                         )}
                                     </div>
@@ -184,12 +186,12 @@ export function ChallengesPage() {
             {/* Templates Catalog */}
             <section className="challenges-section">
                 <div className="challenges-section-header">
-                    <h2>📚 Défis disponibles</h2>
+                    <h2>📚 {t('challenges.availableChallenges', 'Défis disponibles')}</h2>
                     <button
                         className="challenges-toggle"
                         onClick={() => setShowTemplates(!showTemplates)}
                     >
-                        {showTemplates ? 'Masquer' : 'Voir tout'}
+                        {showTemplates ? t('common.hide', 'Masquer') : t('common.seeAll', 'Voir tout')}
                     </button>
                 </div>
 
@@ -211,7 +213,7 @@ export function ChallengesPage() {
                                     <span className="template-icon">{template.icon}</span>
                                     <span className="template-name">{template.name}</span>
                                     <span className="template-arabic">{template.nameArabic}</span>
-                                    {isActive && <span className="template-badge">Actif</span>}
+                                    {isActive && <span className="template-badge">{t('challenges.active', 'Actif')}</span>}
                                 </button>
                             );
                         })}
@@ -231,13 +233,13 @@ export function ChallengesPage() {
                         <div className="template-modal-details">
                             <span>
                                 📅 {selectedTemplate.frequency === 'daily'
-                                    ? 'Chaque jour'
+                                    ? t('challenges.everyDay', 'Chaque jour')
                                     : selectedTemplate.frequency === 'weekly'
-                                        ? 'Chaque vendredi'
-                                        : 'Après chaque prière'}
+                                        ? t('challenges.everyFriday', 'Chaque vendredi')
+                                        : t('challenges.afterEveryPrayer', 'Après chaque prière')}
                             </span>
                             {selectedTemplate.duration > 0 && (
-                                <span>⏱️ {selectedTemplate.duration} jours</span>
+                                <span>⏱️ {selectedTemplate.duration} {t('common.days', 'jours')}</span>
                             )}
                         </div>
 
@@ -246,7 +248,7 @@ export function ChallengesPage() {
                                 className="template-modal-cancel"
                                 onClick={() => setSelectedTemplate(null)}
                             >
-                                Annuler
+                                {t('common.cancel', 'Annuler')}
                             </button>
                             <button
                                 className="template-modal-start"
@@ -254,7 +256,7 @@ export function ChallengesPage() {
                                 onClick={() => handleStartChallenge(selectedTemplate)}
                             >
                                 <Plus size={16} />
-                                Commencer
+                                {t('common.start', 'Commencer')}
                             </button>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useSmartStore } from '../stores/smartStore';
+import { useTranslation } from 'react-i18next';
 import {
     ShieldCheck, CloudRain, Sun, Map, History, Heart, Moon, Zap, BookOpen,
     ArrowLeft, Info
@@ -7,6 +8,7 @@ import {
 import './SentinellePage.css';
 
 export function SentinellePage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const smart = useSmartStore();
 
@@ -17,18 +19,18 @@ export function SentinellePage() {
                 <button className="sentinel-back-btn" onClick={() => navigate(-1)}>
                     <ArrowLeft size={24} />
                 </button>
-                <h1>Sentinelle Spirituelle</h1>
+                <h1>{t('sentinel.title', 'Sentinelle Spirituelle')}</h1>
             </header>
 
             <section className="sentinel-hero">
                 <div className="sentinel-hero__icon">
                     <ShieldCheck size={48} color="#c9a84c" />
                 </div>
-                <h2>Votre Compagnon de Route</h2>
-                <p>La Sentinelle veille sur les moments propices aux invocations et s'adapte à votre environnement en temps réel.</p>
+                <h2>{t('sentinel.subtitle', 'Votre Compagnon de Route')}</h2>
+                <p>{t('sentinel.description', "La Sentinelle veille sur les moments propices aux invocations et s'adapte à votre environnement en temps réel.")}</p>
 
                 <div className="sentinel-master-toggle">
-                    <span>Activer la Sentinelle</span>
+                    <span>{t('sentinel.enable', 'Activer la Sentinelle')}</span>
                     <button
                         className={`toggle ${smart.globalEnabled ? 'active' : ''}`}
                         onClick={() => smart.setGlobalEnabled(!smart.globalEnabled)}
@@ -45,7 +47,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <CloudRain size={20} />
-                                <span>Météo & Invocations</span>
+                                <span>{t('sentinel.weather', 'Météo & Invocations')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.weatherEnabled ? 'active' : ''}`}
@@ -54,7 +56,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Déclenche les invocations spécifiques lors de pluie, orages ou vents violents.</p>
+                        <p>{t('sentinel.weatherDesc', 'Déclenche les invocations spécifiques lors de pluie, orages ou vents violents.')}</p>
                     </div>
 
                     {/* Jours Blancs */}
@@ -62,7 +64,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <Moon size={20} />
-                                <span>Jours Blancs</span>
+                                <span>{t('sentinel.whiteDays', 'Jours Blancs')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.whiteDaysEnabled ? 'active' : ''}`}
@@ -71,7 +73,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Rappels les 13, 14 et 15 de chaque mois lunaire pour le jeûne surérogatoire.</p>
+                        <p>{t('sentinel.whiteDaysDesc', 'Rappels les 13, 14 et 15 de chaque mois lunaire pour le jeûne surérogatoire.')}</p>
                     </div>
 
                     {/* Booster Fajr */}
@@ -79,7 +81,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <Zap size={20} />
-                                <span>Booster du Fajr</span>
+                                <span>{t('sentinel.fajrBooster', 'Booster du Fajr')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.fajrBoosterEnabled ? 'active' : ''}`}
@@ -88,7 +90,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Invocations et motivations après la prière de l'aube pour une journée bénie.</p>
+                        <p>{t('sentinel.fajrBoosterDesc', "Invocations et motivations après la prière de l'aube pour une journée bénie.")}</p>
                     </div>
 
                     {/* Al Kahf */}
@@ -96,7 +98,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <BookOpen size={20} />
-                                <span>Compteur Al-Kahf</span>
+                                <span>{t('sentinel.alKahf', 'Compteur Al-Kahf')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.alKahfEnabled ? 'active' : ''}`}
@@ -105,7 +107,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Suivi spécifique et rappels le vendredi pour la lecture de la sourate de la Caverne.</p>
+                        <p>{t('sentinel.alKahfDesc', 'Suivi spécifique et rappels le vendredi pour la lecture de la sourate de la Caverne.')}</p>
                     </div>
 
                     {/* Parenté */}
@@ -113,7 +115,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <Heart size={20} />
-                                <span>Lien de Parenté</span>
+                                <span>{t('sentinel.kinship', 'Lien de Parenté')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.kinshipEnabled ? 'active' : ''}`}
@@ -122,7 +124,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Rappel le vendredi après-midi pour prendre des nouvelles de vos proches.</p>
+                        <p>{t('sentinel.kinshipDesc', 'Rappel le vendredi après-midi pour prendre des nouvelles de vos proches.')}</p>
                     </div>
 
                     {/* Histoire */}
@@ -130,7 +132,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <History size={20} />
-                                <span>Mode Histoire</span>
+                                <span>{t('sentinel.history', 'Mode Histoire')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.historyEnabled ? 'active' : ''}`}
@@ -139,7 +141,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Éphémérides et événements historiques marquants liés au calendrier hégirien.</p>
+                        <p>{t('sentinel.historyDesc', 'Éphémérides et événements historiques marquants liés au calendrier hégirien.')}</p>
                     </div>
 
                     {/* Voyage */}
@@ -147,7 +149,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <Map size={20} />
-                                <span>Mode Voyage</span>
+                                <span>{t('sentinel.travel', 'Mode Voyage')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.travelEnabled ? 'active' : ''}`}
@@ -156,7 +158,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Détecte vos trajets significatifs et suggère les invocations du voyageur.</p>
+                        <p>{t('sentinel.travelDesc', 'Détecte vos trajets significatifs et suggère les invocations du voyageur.')}</p>
                     </div>
 
                     {/* Sahar */}
@@ -164,7 +166,7 @@ export function SentinellePage() {
                         <div className="sentinel-card__header">
                             <div className="sentinel-card__title">
                                 <Sun size={20} />
-                                <span>Moment Sahar</span>
+                                <span>{t('sentinel.sahar', 'Moment Sahar')}</span>
                             </div>
                             <button
                                 className={`toggle sm ${smart.saharEnabled ? 'active' : ''}`}
@@ -173,7 +175,7 @@ export function SentinellePage() {
                                 <span className="toggle__knob" />
                             </button>
                         </div>
-                        <p>Rappels précieux dans le dernier tiers de la nuit pour l'Istighfar et le Qiyam.</p>
+                        <p>{t('sentinel.saharDesc', "Rappels précieux dans le dernier tiers de la nuit pour l'Istighfar et le Qiyam.")}</p>
                     </div>
                 </div>
             )}
@@ -181,7 +183,7 @@ export function SentinellePage() {
             <footer className="sentinel-footer">
                 <div className="sentinel-info-block">
                     <Info size={16} />
-                    <span>Certains modes utilisent votre position GPS de manière respectueuse pour s'activer.</span>
+                    <span>{t('sentinel.gpsInfo', "Certains modes utilisent votre position GPS de manière respectueuse pour s'activer.")}</span>
                 </div>
             </footer>
         </div>

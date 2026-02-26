@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X, Gauge } from 'lucide-react';
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import { useFavoritesStore } from '../stores/favoritesStore';
+import { formatDivineNames } from '../lib/divineNames';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -581,7 +582,7 @@ export function AdhkarPage() {
                                     <span className="category-name">{chapter.title}</span>
                                     <span className="category-name-ar">{chapter.titleAr}</span>
                                 </div>
-                                <div className="category-count">{chapter.duas.length} dua</div>
+                                <div className="category-count">{chapter.duas.length} {t('adhkar.dua', 'dua')}</div>
                                 <ChevronRight size={20} className="category-arrow" />
                             </button>
                         ))}
@@ -592,7 +593,7 @@ export function AdhkarPage() {
                                     <span className="category-name">{t(`adhkar.categories.${cat.id}`, cat.name)}</span>
                                     <span className="category-name-ar">{cat.nameAr}</span>
                                 </div>
-                                <div className="category-count">{cat.adhkar.length} dhikr</div>
+                                <div className="category-count">{cat.adhkar.length} {t('adhkar.dhikrCount', 'dhikr')}</div>
                                 <ChevronRight size={20} className="category-arrow" />
                             </button>
                         ))}
@@ -630,7 +631,7 @@ export function AdhkarPage() {
                                         <span className="category-name-ar">{category.nameAr}</span>
                                     </div>
                                     <div className="category-count">
-                                        {category.adhkar.length} dhikr
+                                        {category.adhkar.length} {t('adhkar.dhikrCount', 'dhikr')}
                                     </div>
                                     <ChevronRight size={20} className="category-arrow" />
                                 </button>
@@ -667,7 +668,7 @@ export function AdhkarPage() {
                                 <span className="category-name">{chapter.title}</span>
                                 <span className="category-name-ar">{chapter.titleAr}</span>
                             </div>
-                            <div className="category-count">{chapter.duas.length} dua</div>
+                            <div className="category-count">{chapter.duas.length} {t('adhkar.dua', 'dua')}</div>
                             <ChevronRight size={20} className="category-arrow" />
                         </button>
                     ))}
@@ -711,7 +712,7 @@ export function AdhkarPage() {
                                 <button
                                     className="list-item-tts-btn"
                                     onClick={(e) => { e.stopPropagation(); playDhikrOnce(dhikr.arabic, dhikr.id, selectedCategory.id, dhikr.source); }}
-                                    title="Écouter"
+                                    title={t('common.listen', 'Écouter')}
                                 >
                                     {isAudioLoading ? <Loader2 size={14} className="spin" /> : <Volume2 size={14} />}
                                 </button>
@@ -737,10 +738,10 @@ export function AdhkarPage() {
                             <p className="item-arabic">{dhikr.arabic}</p>
                             {dhikr.transliteration && (
                                 <p className="item-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginBottom: '6px' }}>
-                                    {dhikr.transliteration}
+                                    {formatDivineNames(dhikr.transliteration)}
                                 </p>
                             )}
-                            <p className="item-translation">{dhikr.translation}</p>
+                            <p className="item-translation">{formatDivineNames(dhikr.translation)}</p>
                         </div>
                     ))}
                 </div>
@@ -754,11 +755,11 @@ export function AdhkarPage() {
                             </div>
                             {currentDhikr.transliteration && (
                                 <div className="dhikr-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginTop: '1rem', textAlign: 'center' }}>
-                                    {currentDhikr.transliteration}
+                                    {formatDivineNames(currentDhikr.transliteration)}
                                 </div>
                             )}
                             <div className="dhikr-translation">
-                                {currentDhikr.translation}
+                                {formatDivineNames(currentDhikr.translation)}
                             </div>
                             {currentDhikr.source && (
                                 <div className="dhikr-source">

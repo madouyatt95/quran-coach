@@ -3,6 +3,8 @@ import { BookOpen, ChevronDown, ChevronLeft, Loader2, Users, MessageCircle, Volu
 import { useQuranStore } from '../stores/quranStore';
 import { useNavigate } from 'react-router-dom';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
+import { useTranslation } from 'react-i18next';
+import { formatDivineNames } from '../lib/divineNames';
 import './TafsirPage.css';
 
 declare global {
@@ -42,6 +44,7 @@ const SURAH_NAMES_FR: Record<number, string> = {
 const NARRATIVE_SURAHS = [12, 18, 19, 20, 26, 27, 28]; // Yusuf, Kahf, Maryam, Ta-Ha, Shu'ara, Naml, Qasas
 
 export function TafsirPage() {
+    const { t } = useTranslation();
     const { surahs } = useQuranStore();
     const navigate = useNavigate();
 
@@ -135,10 +138,10 @@ export function TafsirPage() {
                     setTafsirSource(tafsir.resource_name || 'Ibn Kathir');
                 } else {
                     setTafsirContent(null);
-                    setError('Tafsir non disponible pour ce verset');
+                    setError(t('tafsir.unavailable', 'Tafsir non disponible pour ce verset'));
                 }
             } catch (err) {
-                setError('Erreur lors du chargement du tafsir');
+                setError(t('tafsir.loadError', 'Erreur lors du chargement du tafsir'));
                 console.error(err);
             } finally {
                 setIsLoading(false);
@@ -159,7 +162,7 @@ export function TafsirPage() {
                 </button>
                 <h1 className="tafsir-title">
                     <BookOpen size={24} />
-                    Tafsir
+                    {t('tafsir.title', 'Tafsir')}
                 </h1>
                 <span className="tafsir-subtitle">التفسير</span>
 
@@ -168,10 +171,10 @@ export function TafsirPage() {
                     <button
                         className={`tafsir-narrative-toggle ${narrativeMode ? 'active' : ''}`}
                         onClick={() => setNarrativeMode(!narrativeMode)}
-                        title="Mode Dialogue Narratif"
+                        title={t('tafsir.narrativeMode', 'Mode Dialogue Narratif')}
                     >
                         <Users size={18} />
-                        Dialogues
+                        {t('tafsir.dialogues', 'Dialogues')}
                     </button>
                 )}
             </div>
@@ -180,7 +183,7 @@ export function TafsirPage() {
             <div className="tafsir-selectors">
                 {/* Surah Selector */}
                 <div className="tafsir-selector">
-                    <label>Sourate</label>
+                    <label>{t('common.surah', 'Sourate')}</label>
                     <div className="tafsir-select-wrapper">
                         <select
                             value={selectedSurah}
@@ -198,7 +201,7 @@ export function TafsirPage() {
 
                 {/* Ayah Selector */}
                 <div className="tafsir-selector">
-                    <label>Verset</label>
+                    <label>{t('common.verse', 'Verset')}</label>
                     <div className="tafsir-select-wrapper">
                         <select
                             value={selectedAyah}
@@ -214,7 +217,7 @@ export function TafsirPage() {
 
                 {/* Tafsir Source Selector */}
                 <div className="tafsir-selector tafsir-selector--wide">
-                    <label>Source d'Exégèse</label>
+                    <label>{t('tafsir.source', "Source d'Exégèse")}</label>
                     <div className="tafsir-select-wrapper">
                         <select
                             value={selectedTafsir}
@@ -239,7 +242,7 @@ export function TafsirPage() {
                 <div className="tafsir-verse-card">
                     <div className="tafsir-verse-header">
                         <span className="tafsir-verse-ref">
-                            {currentSurah?.name} ({SURAH_NAMES_FR[selectedSurah] || currentSurah?.englishNameTranslation}) - Verset {selectedAyah}
+                            {currentSurah?.name} ({SURAH_NAMES_FR[selectedSurah] || currentSurah?.englishNameTranslation}) - {t('common.verse', 'Verset')} {selectedAyah}
                         </span>
                     </div>
                     <div className="tafsir-verse-arabic" dir="rtl">
@@ -295,13 +298,13 @@ export function TafsirPage() {
                                 }
                             }
                         }}
-                        title={isSpeaking ? 'Arrêter' : 'Écouter le verset'}
+                        title={isSpeaking ? t('common.stop', 'Arrêter') : t('tafsir.listenVerse', 'Écouter le verset')}
                     >
                         {isTtsLoadingState ? <Loader2 size={16} className="spin" /> : <Volume2 size={16} />}
-                        <span>{isSpeaking ? 'Arrêter' : 'Écouter'}</span>
+                        <span>{isSpeaking ? t('common.stop', 'Arrêter') : t('common.listen', 'Écouter')}</span>
                     </button>
                     <div className="tafsir-verse-translation">
-                        {verseText.translation.replace(/<[^>]*>/g, '')}
+                        {formatDivineNames(verseText.translation.replace(/<[^>]*>/g, ''))}
                     </div>
                 </div>
             )}
@@ -309,14 +312,14 @@ export function TafsirPage() {
             {/* Tafsir Content */}
             <div className="tafsir-content-card">
                 <div className="tafsir-content-header">
-                    <span className="tafsir-content-label">Exégèse</span>
+                    <span className="tafsir-content-label">{t('tafsir.exegesis', 'Exégèse')}</span>
                     <span className="tafsir-content-source">{tafsirSource}</span>
                 </div>
 
                 {isLoading ? (
                     <div className="tafsir-loading">
                         <Loader2 size={32} className="spin" />
-                        <span>Chargement du tafsir...</span>
+                        <span>{t('tafsir.loading', 'Chargement du tafsir...')}</span>
                     </div>
                 ) : error ? (
                     <div className="tafsir-error">
@@ -338,16 +341,16 @@ export function TafsirPage() {
                                     return (
                                         <div key={idx} className="dialogue-bubble">
                                             <MessageCircle size={14} className="dialogue-icon" />
-                                            <p>{trimmed}</p>
+                                            <p>{formatDivineNames(trimmed)}</p>
                                         </div>
                                     );
                                 }
-                                return <p key={idx} className="narrator-text">{trimmed}</p>;
+                                return <p key={idx} className="narrator-text">{formatDivineNames(trimmed)}</p>;
                             })
                         ) : (
                             // Standard rendering
                             tafsirContent.split('\n').map((paragraph, idx) => (
-                                paragraph.trim() && <p key={idx}>{paragraph}</p>
+                                paragraph.trim() && <p key={idx}>{formatDivineNames(paragraph)}</p>
                             ))
                         )}
                     </div>
@@ -360,14 +363,14 @@ export function TafsirPage() {
                     onClick={() => setSelectedAyah(Math.max(1, selectedAyah - 1))}
                     disabled={selectedAyah <= 1}
                 >
-                    ← Précédent
+                    ← {t('common.previous', 'Précédent')}
                 </button>
                 <span>{selectedAyah} / {maxAyahs}</span>
                 <button
                     onClick={() => setSelectedAyah(Math.min(maxAyahs, selectedAyah + 1))}
                     disabled={selectedAyah >= maxAyahs}
                 >
-                    Suivant →
+                    {t('common.next', 'Suivant')} →
                 </button>
             </div>
         </div>

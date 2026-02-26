@@ -11,10 +11,12 @@ import { getReciterColor } from '../lib/assetPipeline';
 import { trackAudioPlay } from '../lib/analyticsService';
 import { ChevronLeft, Play, Download, CheckCircle2, Clock, Plus } from 'lucide-react';
 import { AddToPlaylistModal } from '../components/Playlist/AddToPlaylistModal';
+import { useTranslation } from 'react-i18next';
 import type { PlaylistItem } from '../types';
 import './ReciterDetailPage.css';
 
 export function ReciterDetailPage() {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { reciters } = useListenStore();
@@ -48,7 +50,7 @@ export function ReciterDetailPage() {
     }, []);
 
     if (!reciter) {
-        return <div className="detail-error">Récitant non trouvé</div>;
+        return <div className="detail-error">{t('reciters.notFound', 'Récitant non trouvé')}</div>;
     }
 
     const asset = assets.get(reciter.id.toString());
@@ -129,19 +131,19 @@ export function ReciterDetailPage() {
                 <div className="profile-text">
                     <h1>{reciter.name}</h1>
                     <p className="profile-moshaf">
-                        {mp3QuranApi.getBestMoshaf((reciter as any).moshaf || [])?.name || 'Coran Complet'}
+                        {mp3QuranApi.getBestMoshaf((reciter as any).moshaf || [])?.name || t('reciters.fullQuran', 'Coran Complet')}
                     </p>
                 </div>
             </div>
 
             <div className="surah-list-container">
                 <div className="list-header">
-                    <h2>Sourates {isCustom ? `(${customCollection!.surahs.length} / ${surahs.length})` : `(${surahs.length})`}</h2>
-                    <button className="download-all-btn">Tout télécharger</button>
+                    <h2>{t('reciters.surahs', 'Sourates')} {isCustom ? `(${customCollection!.surahs.length} / ${surahs.length})` : `(${surahs.length})`}</h2>
+                    <button className="download-all-btn">{t('common.downloadAll', 'Tout télécharger')}</button>
                 </div>
 
                 {loadingSurahs ? (
-                    <div className="loading-spinner">Chargement...</div>
+                    <div className="loading-spinner">{t('common.loading', 'Chargement...')}</div>
                 ) : (
                     <div className="surah-rows">
                         {surahs.map(surah => {
@@ -168,7 +170,7 @@ export function ReciterDetailPage() {
                                             <span className="surah-name-ar">{qSurah?.name}</span>
                                         </div>
                                         <span className="surah-meta">
-                                            {surah.makkia === 1 ? 'Mecquoise' : 'Médinoise'} • {qSurah?.numberOfAyahs} versets
+                                            {surah.makkia === 1 ? t('surah.meccan', 'Mecquoise') : t('surah.medinan', 'Médinoise')} • {qSurah?.numberOfAyahs} {t('surah.verses', 'versets')}
                                         </span>
                                     </div>
                                     {isAvailable ? (
@@ -222,7 +224,7 @@ export function ReciterDetailPage() {
                                             </button>
                                         </div>
                                     ) : (
-                                        <span className="unavailable-badge">Indisponible</span>
+                                        <span className="unavailable-badge">{t('common.unavailable', 'Indisponible')}</span>
                                     )}
                                 </div>
                             );

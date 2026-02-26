@@ -4,9 +4,11 @@ import { Flame, Target, Award, BookOpen, ChevronRight, Lock, CheckCircle } from 
 import { useStatsStore } from '../stores/statsStore';
 import { useChallengesStore, BADGES } from '../stores/challengesStore';
 import { useQuranStore } from '../stores/quranStore';
+import { useTranslation } from 'react-i18next';
 import './StatsPage.css';
 
 export function StatsPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const {
         readingStreak,
@@ -78,12 +80,12 @@ export function StatsPage() {
                 </div>
                 <div className="streak-hero__count">{readingStreak}</div>
                 <div className="streak-hero__label">
-                    jour{readingStreak !== 1 ? 's' : ''} consécutif{readingStreak !== 1 ? 's' : ''}
+                    {t('stats.consecutiveDays', 'jours consécutifs')}
                 </div>
                 {readingStreak >= 7 && (
                     <div className="streak-hero__badge">
                         <Award size={14} />
-                        <span>En feu !</span>
+                        <span>{t('stats.onFire', 'En feu !')}</span>
                     </div>
                 )}
             </div>
@@ -115,7 +117,7 @@ export function StatsPage() {
                 </div>
                 <div className="khatma-info">
                     <BookOpen size={16} />
-                    <span>{khatmaPages.length}/604 pages</span>
+                    <span>{khatmaPages.length}/604 {t('common.pages', 'pages')}</span>
                 </div>
             </div>
 
@@ -123,7 +125,7 @@ export function StatsPage() {
             <div className="challenges-section">
                 <div className="section-header">
                     <Target size={20} />
-                    <h2>Défis du jour</h2>
+                    <h2>{t('stats.dailyChallenges', 'Défis du jour')}</h2>
                     <span className="challenge-count">{completedChallenges}/{dailyChallenges.length}</span>
                 </div>
 
@@ -184,7 +186,7 @@ export function StatsPage() {
                     }}
                 >
                     <div className="ayah-of-day__header">
-                        <span>✨ Verset du jour</span>
+                        <span>✨ {t('stats.ayahOfDay', 'Verset du jour')}</span>
                         <span className="ayah-of-day__ref">{ayahOfTheDay.surah}:{ayahOfTheDay.ayah}</span>
                     </div>
                     <ChevronRight size={20} />
@@ -195,7 +197,7 @@ export function StatsPage() {
             <div className="goal-card">
                 <div className="goal-card__header">
                     <Target size={18} />
-                    <span>Objectif quotidien</span>
+                    <span>{t('stats.dailyGoal', 'Objectif quotidien')}</span>
                 </div>
                 <div className="goal-progress">
                     <div className="goal-progress__bar">
@@ -205,7 +207,7 @@ export function StatsPage() {
                         />
                     </div>
                     <span className="goal-progress__text">
-                        {todayPagesRead}/{dailyGoalPages} page{dailyGoalPages > 1 ? 's' : ''}
+                        {todayPagesRead}/{dailyGoalPages} {t('common.pages', 'pages')}
                     </span>
                 </div>
                 <div className="goal-selector">
@@ -225,7 +227,7 @@ export function StatsPage() {
             <div className="badges-section">
                 <div className="section-header">
                     <Award size={20} />
-                    <h2>Badges</h2>
+                    <h2>{t('stats.badges', 'Badges')}</h2>
                     <span className="badge-count">{unlockedBadges.length}/{BADGES.length}</span>
                 </div>
 

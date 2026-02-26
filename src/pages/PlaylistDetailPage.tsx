@@ -4,9 +4,11 @@ import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { useListenStore } from '../stores/listenStore';
 import { trackAudioPlay } from '../lib/analyticsService';
 import { ChevronLeft, Play, Trash2, ListMusic, Music, ChevronUp, ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './PlaylistDetailPage.css';
 
 export function PlaylistDetailPage() {
+    const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
     const { playlists, deletePlaylist, removeItemFromPlaylist, reorderItem } = usePlaylistsStore();
@@ -21,8 +23,8 @@ export function PlaylistDetailPage() {
             <div className="playlist-detail-page">
                 <div className="playlist-empty">
                     <ListMusic size={64} />
-                    <h2>Playlist introuvable</h2>
-                    <button className="btn-primary" onClick={() => navigate('/listen')}>Retour à l'écoute</button>
+                    <h2>{t('playlists.notFound', 'Playlist introuvable')}</h2>
+                    <button className="btn-primary" onClick={() => navigate('/listen')}>{t('playlists.backToListen', "Retour à l'écoute")}</button>
                 </div>
             </div>
         );
@@ -56,7 +58,7 @@ export function PlaylistDetailPage() {
     };
 
     const handleDeletePlaylist = () => {
-        if (window.confirm('Voulez-vous vraiment supprimer cette playlist ?')) {
+        if (window.confirm(t('playlists.confirmDelete', 'Voulez-vous vraiment supprimer cette playlist ?'))) {
             deletePlaylist(playlist.id);
             navigate('/listen');
         }
@@ -84,7 +86,7 @@ export function PlaylistDetailPage() {
                 </div>
                 <h1>{playlist.name}</h1>
                 <p className="playlist-stats">
-                    {playlist.items.length} surahs · Créée le {new Date(playlist.createdAt).toLocaleDateString()}
+                    {playlist.items.length} {t('surah.surahs', 'sourates')} · {t('common.createdOn', 'Créée le')} {new Date(playlist.createdAt).toLocaleDateString()}
                 </p>
                 <div className="playlist-actions">
                     <button
@@ -93,7 +95,7 @@ export function PlaylistDetailPage() {
                         disabled={playlist.items.length === 0}
                     >
                         <Play fill="currentColor" size={20} />
-                        Ecouter tout
+                        {t('common.listenAll', 'Ecouter tout')}
                     </button>
                 </div>
             </div>
@@ -102,8 +104,8 @@ export function PlaylistDetailPage() {
                 {playlist.items.length === 0 ? (
                     <div className="items-empty">
                         <Music size={48} />
-                        <p>Cette playlist est vide</p>
-                        <button className="btn-secondary" onClick={() => navigate('/listen')}>Ajouter des surahs</button>
+                        <p>{t('playlists.empty', 'Cette playlist est vide')}</p>
+                        <button className="btn-secondary" onClick={() => navigate('/listen')}>{t('playlists.addSurahs', 'Ajouter des sourates')}</button>
                     </div>
                 ) : (
                     playlist.items.map((item, index) => {
