@@ -147,6 +147,46 @@
     transform: translateX(16px);
 }
 
+/* Language selector */
+.side-menu-lang-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-top: 4px;
+}
+
+.side-menu-lang-pills {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+}
+
+.side-menu-lang-pill {
+    flex: 1;
+    padding: 5px 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--color-text-muted);
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.side-menu-lang-pill:active {
+    transform: scale(0.95);
+}
+
+.side-menu-lang-pill.active {
+    background: rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.4);
+    color: #c9a84c;
+}
+
+
 .side-menu-item {
     display: flex;
     align-items: center;
