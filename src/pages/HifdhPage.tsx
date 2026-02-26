@@ -23,6 +23,7 @@ import { SRSControls } from '../components/SRS/SRSControls';
 import { useSRSStore } from '../stores/srsStore';
 import { useCoach } from '../hooks/useCoach';
 import { CoachOverlay } from '../components/Coach/CoachOverlay';
+import { useTranslation } from 'react-i18next';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
 import './HifdhPage.css';
@@ -32,6 +33,7 @@ const HIFDH_RECITER = 'ar.alafasy';
 const HIFDH_RECITER_QURAN_COM_ID = 7;
 
 export function HifdhPage() {
+    const { t } = useTranslation();
     const location = useLocation();
     const { surahs } = useQuranStore();
     const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
@@ -675,7 +677,7 @@ export function HifdhPage() {
     return (
         <div className="hifdh-page">
             <div className="hifdh-page__header-row">
-                <h1 className="hifdh-page__header">Studio Hifdh</h1>
+                <h1 className="hifdh-page__header">{t('hifdh.title', 'Studio Hifdh')}</h1>
             </div>
 
             {/* Due Cards Section */}
@@ -685,7 +687,7 @@ export function HifdhPage() {
                         <div className="hifdh-srs-due">
                             <div className="hifdh-srs-due__header">
                                 <BookmarkCheck size={16} />
-                                <span>{dueCards.length} verset{dueCards.length > 1 ? 's' : ''} à réviser</span>
+                                <span>{t('hifdh.versesToReview', '{{count}} verset(s) à réviser', { count: dueCards.length })}</span>
                             </div>
                             <div className="hifdh-srs-due__list">
                                 {dueCards.slice(0, 5).map(card => {
@@ -702,14 +704,14 @@ export function HifdhPage() {
                                     );
                                 })}
                                 {dueCards.length > 5 && (
-                                    <span className="hifdh-srs-more">+{dueCards.length - 5} autres</span>
+                                    <span className="hifdh-srs-more">{t('hifdh.moreCards', '+{{count}} autres', { count: dueCards.length - 5 })}</span>
                                 )}
                             </div>
                         </div>
                     )}
                     {dueCards.length === 0 && allCards.length > 0 && (
                         <div className="hifdh-srs-all">
-                            <span className="hifdh-srs-all__label">Mes versets mémorisés :</span>
+                            <span className="hifdh-srs-all__label">{t('hifdh.memorizedVerses', 'Mes versets mémorisés :')}</span>
                             <div className="hifdh-srs-due__list">
                                 {allCards.slice(0, 5).map(card => {
                                     const surahName = surahs.find(s => s.number === card.surah)?.name || '';
@@ -746,7 +748,7 @@ export function HifdhPage() {
                     </select>
                 </div>
                 <div className="hifdh-verse-range">
-                    <label className="hifdh-verse-range__label">Versets :</label>
+                    <label className="hifdh-verse-range__label">{t('hifdh.versesRange', 'Versets :')}</label>
                     <div className="hifdh-verse-range__controls">
                         <div className="hifdh-verse-range__group">
                             <button
@@ -798,19 +800,19 @@ export function HifdhPage() {
                             className="hifdh-verse-range__preset"
                             onClick={() => { setStartAyah(1); setEndAyah(maxAyahs); }}
                         >
-                            Tout
+                            {t('common.all', 'Tout')}
                         </button>
                         <button
                             className="hifdh-verse-range__preset"
                             onClick={() => { setEndAyah(startAyah); }}
                         >
-                            1 verset
+                            {t('hifdh.oneVerse', '1 verset')}
                         </button>
                         <button
                             className="hifdh-verse-range__preset"
                             onClick={() => { setEndAyah(Math.min(startAyah + 4, maxAyahs)); }}
                         >
-                            5 versets
+                            {t('hifdh.fiveVerses', '5 versets')}
                         </button>
                         <button
                             className={`hifdh-verse-range__preset ${singleVerseMode ? 'hifdh-verse-range__preset--active' : ''}`}
@@ -819,10 +821,10 @@ export function HifdhPage() {
                                 setSingleVerseMode(next);
                                 try { localStorage.setItem('hifdh-single-verse', String(next)); } catch { }
                             }}
-                            title={singleVerseMode ? 'Afficher tous les versets' : 'Afficher 1 seul verset'}
+                            title={singleVerseMode ? t('hifdh.showAllVerses', 'Afficher tous les versets') : t('hifdh.showOneVerse', 'Afficher 1 seul verset')}
                         >
                             {singleVerseMode ? <AlignJustify size={14} /> : <BookOpen size={14} />}
-                            {singleVerseMode ? ' Tous' : ' Focus'}
+                            {singleVerseMode ? ` ${t('common.all', 'Tous')}` : ` ${t('hifdh.focus', 'Focus')}`}
                         </button>
                     </div>
                 </div>
@@ -931,7 +933,7 @@ export function HifdhPage() {
                         </div>
                     ) : (
                         <div className="hifdh-loading-ayah">
-                            {currentAyah?.text || "Chargement..."}
+                            {currentAyah?.text || t('common.loading', 'Chargement...')}
                         </div>
                     )}
 
@@ -978,7 +980,7 @@ export function HifdhPage() {
                                 setIsWordSelectionMode(!isWordSelectionMode);
                                 if (isWordSelectionMode) resetSelection();
                             }}
-                            title={isWordSelectionMode ? 'Désactiver la sélection de mots' : 'Activer la sélection de mots en boucle'}
+                            title={isWordSelectionMode ? t('hifdh.disableWordSelection', 'Désactiver la sélection de mots') : t('hifdh.enableWordSelection', 'Activer la sélection de mots en boucle')}
                         >
                             <MousePointerClick size={18} />
                         </button>
@@ -989,8 +991,8 @@ export function HifdhPage() {
             {/* Bottom Actions — Selection info */}
             {selectionStart !== null && !coach.isCoachMode && (
                 <div className="hifdh-selection-bar">
-                    <span>Boucle active de mots</span>
-                    <button onClick={resetSelection}><RotateCcw size={14} /> Réinitialiser</button>
+                    <span>{t('hifdh.activeWordLoop', 'Boucle active de mots')}</span>
+                    <button onClick={resetSelection}><RotateCcw size={14} /> {t('common.reset', 'Réinitialiser')}</button>
                 </div>
             )}
 
@@ -998,7 +1000,7 @@ export function HifdhPage() {
             {
                 autoAdvanceCountdown && (
                     <div className="hifdh-auto-advance-toast">
-                        ✓ Verset suivant dans 2s…
+                        {t('hifdh.nextVerseDelay', '✓ Verset suivant dans 2s…')}
                     </div>
                 )
             }
@@ -1030,10 +1032,10 @@ export function HifdhPage() {
                     <button
                         className={`hifdh-footer-btn hifdh-phonetics-toggle ${showPhonetics ? 'active' : ''}`}
                         onClick={() => setShowPhonetics(!showPhonetics)}
-                        title="Afficher la phonétique"
+                        title={t('hifdh.showPhonetics', 'Afficher la phonétique')}
                     >
                         <Languages size={18} />
-                        <span>Phonétique</span>
+                        <span>{t('hifdh.phonetics', 'Phonétique')}</span>
                     </button>
                     <div className="hifdh-speed-row">
                         {PLAYBACK_SPEEDS.filter(s => s >= 0.75).map(speed => (
@@ -1048,7 +1050,7 @@ export function HifdhPage() {
 
                 <div className="hifdh-repeat-control">
                     <button onClick={() => setMaxRepeats(prev => Math.max(1, prev - 1))}><Minus size={16} /></button>
-                    <span className="hifdh-repeat-stat">{currentRepeat}/{maxRepeats} reps</span>
+                    <span className="hifdh-repeat-stat">{t('hifdh.reps', '{{current}}/{{max}} reps', { current: currentRepeat, max: maxRepeats })}</span>
                     <button onClick={() => setMaxRepeats(prev => Math.min(20, prev + 1))}><Plus size={16} /></button>
                 </div>
             </div>
