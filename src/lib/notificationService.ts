@@ -136,7 +136,10 @@ export async function updatePushPreferences(prefs: {
         if (!subscription) return false;
 
         // Map camelCase to snake_case for Supabase columns
-        const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() };
+        const updateData: Record<string, unknown> = {
+            updated_at: new Date().toISOString(),
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        };
         if (prefs.prayerEnabled !== undefined) updateData.prayer_enabled = prefs.prayerEnabled;
         if (prefs.prayerMinutesBefore !== undefined) updateData.prayer_minutes_before = prefs.prayerMinutesBefore;
         if (prefs.prayerMinutesConfig !== undefined) updateData.prayer_minutes_config = prefs.prayerMinutesConfig;
@@ -179,7 +182,12 @@ export async function updatePushLocation(latitude: number, longitude: number): P
 
         await supabase
             .from('push_subscriptions')
-            .update({ latitude, longitude, updated_at: new Date().toISOString() })
+            .update({
+                latitude,
+                longitude,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                updated_at: new Date().toISOString(),
+            })
             .eq('endpoint', subscription.endpoint);
     } catch {
         // Silent fail
