@@ -60,7 +60,7 @@ export function ThemesPage() {
                                 <BookOpen size={12} />
                                 {t('mushaf.surah', 'Sourate')} {v.surah}, {t('mushaf.verse', 'Verset')} {v.ayah}
                             </div>
-                            <div className="themes-verse-card__ar" dir="rtl">{v.textAr}</div>
+                            <div className="themes-verse-card__ar" dir="rtl">{formatDivineNames(v.textAr)}</div>
                             <div className="themes-verse-card__fr">{formatDivineNames(v.textFr)}</div>
                         </div>
                     ))}

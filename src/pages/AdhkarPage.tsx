@@ -735,7 +735,7 @@ export function AdhkarPage() {
                                 </button>
                                 {dhikr.source && <span className="item-source">{dhikr.source}</span>}
                             </div>
-                            <p className="item-arabic">{dhikr.arabic}</p>
+                            <p className="item-arabic">{formatDivineNames(dhikr.arabic)}</p>
                             {dhikr.transliteration && (
                                 <p className="item-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginBottom: '6px' }}>
                                     {formatDivineNames(dhikr.transliteration)}
@@ -751,7 +751,7 @@ export function AdhkarPage() {
                     <div className="dhikr-container">
                         <div className="dhikr-card">
                             <div className="dhikr-arabic">
-                                {currentDhikr.arabic}
+                                {formatDivineNames(currentDhikr.arabic)}
                             </div>
                             {currentDhikr.transliteration && (
                                 <div className="dhikr-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginTop: '1rem', textAlign: 'center' }}>

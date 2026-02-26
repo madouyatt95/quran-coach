@@ -26,6 +26,7 @@ import { CoachOverlay } from '../components/Coach/CoachOverlay';
 import { useTranslation } from 'react-i18next';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
+import { formatDivineNames } from '../lib/divineNames';
 import './HifdhPage.css';
 
 // Hifdh always uses Mishari Al-Afasy — only reciter with reliable word-by-word timings
@@ -878,7 +879,7 @@ export function HifdhPage() {
                                                 `}
                                                 onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
-                                                {showText ? word.text : '●●●'}{' '}
+                                                {showText ? formatDivineNames(word.text) : '●●●'}{' '}
                                             </span>
                                         );
                                     })
@@ -915,7 +916,7 @@ export function HifdhPage() {
                                                 `}
                                                 onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
-                                                {showText ? wordText : '●●●'}{' '}
+                                                {showText ? formatDivineNames(wordText) : '●●●'}{' '}
                                             </span>
                                         );
                                     });
@@ -941,7 +942,7 @@ export function HifdhPage() {
                     {showPhonetics && currentAyah && transliterations.has(currentAyah.number) && (
                         <div className="hifdh-phonetics-container" dir="ltr">
                             <p className="hifdh-phonetics-text">
-                                {transliterations.get(currentAyah.number)}
+                                {formatDivineNames(transliterations.get(currentAyah.number))}
                             </p>
                         </div>
                     )}

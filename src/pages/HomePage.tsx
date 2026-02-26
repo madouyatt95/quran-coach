@@ -368,7 +368,7 @@ export function HomePage() {
                         </span>
                     )}
                 </div>
-                <div className="hadith-card__arabic">{hadith.textAr}</div>
+                <div className="hadith-card__arabic">{formatDivineNames(hadith.textAr)}</div>
                 <div className="hadith-card__french">{formatDivineNames(hadith.textFr)}</div>
                 <div className="hadith-card__meta">
                     <div>
@@ -455,7 +455,7 @@ export function HomePage() {
                                 {series > 0 && <span className="dhikr-card__series">{series}×</span>}
                                 <span className="dhikr-card__daily">{d.daily}</span>
                                 <span className="dhikr-card__emoji">{d.emoji}</span>
-                                <span className="dhikr-card__ar">{d.text}</span>
+                                <span className="dhikr-card__ar">{formatDivineNames(d.text)}</span>
                                 <span className="dhikr-card__fr">{formatDivineNames(d.textFr)}</span>
                                 <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
                                 <span className="dhikr-card__count">

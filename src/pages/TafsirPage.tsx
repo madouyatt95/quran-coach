@@ -246,7 +246,7 @@ export function TafsirPage() {
                         </span>
                     </div>
                     <div className="tafsir-verse-arabic" dir="rtl">
-                        {verseText.arabic}
+                        {formatDivineNames(verseText.arabic)}
                     </div>
                     <button
                         className={`tafsir-tts-btn ${isSpeaking ? 'active' : ''}`}

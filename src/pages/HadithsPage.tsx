@@ -169,7 +169,7 @@ function HadithCard({ hadith, isFav, onFav, onShare }: {
 
     return (
         <div className="hadith-card">
-            <div className="hadith-card__arabic" dir="rtl">{hadith.ar}</div>
+            <div className="hadith-card__arabic" dir="rtl">{formatDivineNames(hadith.ar)}</div>
             <div className="hadith-card__french">{formatDivineNames(hadith.fr)}</div>
             <div className="hadith-card__meta">
                 <span className="hadith-card__source">📕 {hadith.src}</span>
