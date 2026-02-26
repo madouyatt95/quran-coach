@@ -3,9 +3,9 @@
  * Replaces the old AlAdhan API-based page with local computation + fiqh windows.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw, Compass, Trophy, Navigation } from 'lucide-react';
+import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw, Compass, Trophy, Navigation, Check } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import {
@@ -16,7 +16,7 @@ import { computeWindows, formatWindow, formatIshaWindow, type FiqhWindows } from
 import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
 import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '../lib/prayerNotificationScheduler';
 import { updatePushPreferences, updatePushLocation } from '../lib/notificationService';
-import { PrayerCalendarModal } from '../components/Prayer/PrayerCalendarModal';
+// PrayerCalendarModal removed — replaced by Sunnan Rawatib tracker
 import { LocationSearchModal } from '../components/Prayer/LocationSearchModal';
 import { SideMenu } from '../components/Navigation/SideMenu';
 import { resolveCoords } from '../lib/locationService';
@@ -35,6 +35,64 @@ const PRAYER_EMOJIS: Record<string, string> = {
 };
 
 const PRAYER_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+
+// ─── Sunnan Rawatib Data ─────────────────────────────────
+
+interface SunnahEntry {
+    prayer: string;
+    label: string;
+    labelAr: string;
+    emoji: string;
+    before: number; // rak'at avant
+    after: number;  // rak'at après
+    muakkadah: boolean; // confirmée (prioritaire)
+    note?: string;
+}
+
+const SUNNAN_RAWATIB: SunnahEntry[] = [
+    { prayer: 'fajr', label: 'Fajr', labelAr: 'الصبح', emoji: '🌅', before: 2, after: 0, muakkadah: true, note: 'Les plus confirmées de toutes les Sunnan' },
+    { prayer: 'dhuhr', label: 'Dhouhr', labelAr: 'الظهر', emoji: '🌤️', before: 4, after: 2, muakkadah: true },
+    { prayer: 'asr', label: 'Asr', labelAr: 'العصر', emoji: '🌇', before: 0, after: 0, muakkadah: false, note: 'Pas de Sunna Mu\'akkadah' },
+    { prayer: 'maghrib', label: 'Maghrib', labelAr: 'المغرب', emoji: '🌆', before: 0, after: 2, muakkadah: true },
+    { prayer: 'isha', label: 'Ishaa', labelAr: 'العشاء', emoji: '🌙', before: 0, after: 2, muakkadah: true, note: '+ Witr (1 à 11 rak\'at)' },
+];
+
+const TOTAL_MUAKKADAH_RAKAAT = SUNNAN_RAWATIB
+    .filter(s => s.muakkadah)
+    .reduce((sum, s) => sum + s.before + s.after, 0); // = 12
+
+// ─── Sunnan Tracker Hook ─────────────────────────────────
+
+function useSunnanTracker() {
+    const todayKey = `sunnan-${new Date().toISOString().split('T')[0]}`;
+    const [checked, setChecked] = useState<Record<string, boolean>>({});
+
+    useEffect(() => {
+        const saved = localStorage.getItem(todayKey);
+        if (saved) {
+            try { setChecked(JSON.parse(saved)); } catch { /* ignore */ }
+        }
+    }, [todayKey]);
+
+    const toggle = useCallback((key: string) => {
+        setChecked(prev => {
+            const next = { ...prev, [key]: !prev[key] };
+            localStorage.setItem(todayKey, JSON.stringify(next));
+            return next;
+        });
+    }, [todayKey]);
+
+    const isChecked = useCallback((key: string) => !!checked[key], [checked]);
+
+    const doneRakaat = SUNNAN_RAWATIB.reduce((sum, s) => {
+        let r = 0;
+        if (s.before > 0 && checked[`${s.prayer}-before`]) r += s.before;
+        if (s.after > 0 && checked[`${s.prayer}-after`]) r += s.after;
+        return sum + r;
+    }, 0);
+
+    return { toggle, isChecked, doneRakaat };
+}
 
 // ─── Theme Helper ────────────────────────────────────────
 
@@ -132,7 +190,7 @@ export function PrayerTimesPage() {
     const [error, setError] = useState<string | null>(null);
     const [showComparator, setShowComparator] = useState(false);
     const [showTransparency, setShowTransparency] = useState(false);
-    const [showCalendar, setShowCalendar] = useState(false);
+    const sunnan = useSunnanTracker();
     const [showSideMenu, setShowSideMenu] = useState(false);
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [dayResult, setDayResult] = useState<DayResult | null>(null);
@@ -402,10 +460,72 @@ export function PrayerTimesPage() {
                         <Trophy size={18} />
                         <span>Adhkars après Salat</span>
                     </button>
-                    <button className="prayer-action-card" onClick={() => setShowCalendar(true)}>
-                        <Clock size={18} />
-                        <span>Calendrier mensuel</span>
-                    </button>
+                    <div className="prayer-action-card prayer-action-card--badge">
+                        <Sun size={18} />
+                        <span>Sunnan du jour</span>
+                        <span className="prayer-action-badge">{sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT}</span>
+                    </div>
+                </div>
+
+                {/* Sunnan Rawatib Tracker */}
+                <div className="sunnan-section">
+                    <div className="sunnan-section__title">
+                        <Sun size={14} />
+                        <span>Sunnan Rawâtib</span>
+                        <span className="sunnan-section__badge">
+                            {sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT} rak'at
+                        </span>
+                    </div>
+                    <div className="sunnan-section__subtitle">
+                        12 rak'at confirmées = une maison au Paradis
+                    </div>
+                    <div className="sunnan-grid">
+                        {SUNNAN_RAWATIB.map(s => {
+                            const beforeKey = `${s.prayer}-before`;
+                            const afterKey = `${s.prayer}-after`;
+                            const hasBefore = s.before > 0;
+                            const hasAfter = s.after > 0;
+                            const beforeDone = sunnan.isChecked(beforeKey);
+                            const afterDone = sunnan.isChecked(afterKey);
+                            const allDone = (!hasBefore || beforeDone) && (!hasAfter || afterDone);
+                            const noSunna = !hasBefore && !hasAfter;
+
+                            return (
+                                <div key={s.prayer} className={`sunnan-card ${allDone && !noSunna ? 'sunnan-card--done' : ''} ${noSunna ? 'sunnan-card--empty' : ''}`}>
+                                    <div className="sunnan-card__header">
+                                        <span className="sunnan-card__emoji">{s.emoji}</span>
+                                        <span className="sunnan-card__name">{s.label}</span>
+                                        {s.muakkadah && <span className="sunnan-card__star">⭐</span>}
+                                    </div>
+                                    {noSunna ? (
+                                        <div className="sunnan-card__empty">—</div>
+                                    ) : (
+                                        <div className="sunnan-card__checks">
+                                            {hasBefore && (
+                                                <button
+                                                    className={`sunnan-check ${beforeDone ? 'sunnan-check--done' : ''}`}
+                                                    onClick={() => sunnan.toggle(beforeKey)}
+                                                >
+                                                    {beforeDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
+                                                    <span>{s.before} avant</span>
+                                                </button>
+                                            )}
+                                            {hasAfter && (
+                                                <button
+                                                    className={`sunnan-check ${afterDone ? 'sunnan-check--done' : ''}`}
+                                                    onClick={() => sunnan.toggle(afterKey)}
+                                                >
+                                                    {afterDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
+                                                    <span>{s.after} après</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                    {s.note && <div className="sunnan-card__note">{s.note}</div>}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 {/* High latitude warning */}
@@ -698,14 +818,7 @@ export function PrayerTimesPage() {
                     </label>
                 </div>
 
-                {/* Month View Modal */}
-                <PrayerCalendarModal
-                    isOpen={showCalendar}
-                    onClose={() => setShowCalendar(false)}
-                    lat={lat || 0}
-                    lng={usePrayerStore.getState().lng || 0}
-                    settings={settings}
-                />
+                {/* PrayerCalendarModal removed — replaced by Sunnan Rawatib */}
 
                 <LocationSearchModal
                     isOpen={showLocationModal}

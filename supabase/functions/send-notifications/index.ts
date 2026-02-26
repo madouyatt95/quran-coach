@@ -417,6 +417,15 @@ serve(async (req) => {
 
                 // ── Classic prayer reminders (X minutes before) ──
                 if (sub.prayer_enabled) {
+                    // Sunnan Rawatib hints for notification body
+                    const SUNNAN_HINTS: Record<string, string> = {
+                        fajr: " — 2 rak'at Sunna avant ⭐",
+                        dhuhr: " — 4 Sunna avant + 2 après",
+                        asr: "",
+                        maghrib: " — 2 rak'at Sunna après",
+                        isha: " — 2 Sunna après + Witr",
+                    };
+
                     const prayers = [
                         { key: "Fajr", name: "Fajr", nameAr: "الفجر", emoji: "🌅", dedupKey: "last_notified_fajr" },
                         { key: "Dhuhr", name: "Dhouhr", nameAr: "الظهر", emoji: "☀️", dedupKey: "last_notified_dhuhr" },
@@ -455,11 +464,12 @@ serve(async (req) => {
 
                             console.log(`[Push] Triggering ${prayer.name} for ${sub.endpoint.slice(0, 30)}...`);
                             const actualMinLeft = Math.max(0, prayerMin - currentMin);
+                            const sunnaHint = SUNNAN_HINTS[prayer.key.toLowerCase()] || "";
                             const ok = await sendPush(sub, {
                                 title: `${prayer.emoji} ${prayer.name} — ${prayer.nameAr}`,
                                 body: actualMinLeft > 0
-                                    ? `${prayer.name} dans ~${actualMinLeft} minutes (${timeStr})`
-                                    : `C'est l'heure de ${prayer.name} (${timeStr})`,
+                                    ? `${prayer.name} dans ~${actualMinLeft} minutes (${timeStr})${sunnaHint}`
+                                    : `C'est l'heure de ${prayer.name} (${timeStr})${sunnaHint}`,
                                 url: "/prieres",
                                 tag: `prayer-${prayer.key}`,
                             });

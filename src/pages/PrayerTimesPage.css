@@ -282,6 +282,159 @@
     text-align: center;
 }
 
+.prayer-action-card--badge {
+    position: relative;
+    cursor: default;
+}
+
+.prayer-action-badge {
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    color: var(--gold);
+    background: rgba(var(--gold-rgb, 201, 168, 76), 0.12);
+    padding: 2px 8px;
+    border-radius: 8px;
+}
+
+/* ─── Sunnan Rawatib Tracker ─── */
+.sunnan-section {
+    margin-bottom: 24px;
+}
+
+.sunnan-section__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    padding: 0 4px;
+}
+
+.sunnan-section__badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--gold);
+    background: rgba(var(--gold-rgb, 201, 168, 76), 0.1);
+    padding: 2px 8px;
+    border-radius: 8px;
+}
+
+.sunnan-section__subtitle {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    margin-bottom: 12px;
+    padding: 0 4px;
+    font-style: italic;
+}
+
+.sunnan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.sunnan-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+.sunnan-card--done {
+    border-color: rgba(var(--gold-rgb, 201, 168, 76), 0.3);
+    background: rgba(var(--gold-rgb, 201, 168, 76), 0.06);
+}
+
+.sunnan-card--empty {
+    opacity: 0.4;
+}
+
+.sunnan-card__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.sunnan-card__emoji {
+    font-size: 1rem;
+}
+
+.sunnan-card__name {
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.sunnan-card__star {
+    font-size: 0.6rem;
+    margin-left: auto;
+}
+
+.sunnan-card__empty {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    padding: 4px 0;
+}
+
+.sunnan-card__checks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sunnan-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sunnan-check:active {
+    transform: scale(0.95);
+}
+
+.sunnan-check--done {
+    color: var(--gold);
+    background: rgba(var(--gold-rgb, 201, 168, 76), 0.1);
+    border-color: rgba(var(--gold-rgb, 201, 168, 76), 0.25);
+}
+
+.sunnan-check__circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+}
+
+.sunnan-check--done .sunnan-check__circle {
+    display: none;
+}
+
+.sunnan-card__note {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    opacity: 0.65;
+    margin-top: 6px;
+    line-height: 1.3;
+    font-style: italic;
+}
+
+
 /* ─── Prayer List Redux ─── */
 .prayer-list {
     background: var(--surface-1);
