@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw, Compass, Trophy, Navigation, Check } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
@@ -49,12 +50,12 @@ interface SunnahEntry {
     note?: string;
 }
 
-const SUNNAN_RAWATIB: SunnahEntry[] = [
-    { prayer: 'fajr', label: 'Fajr', labelAr: 'الصبح', emoji: '🌅', before: 2, after: 0, muakkadah: true, note: 'Les plus confirmées de toutes les Sunnan' },
+const SUNNAN_RAWATIB: SunnahEntry[] & { noteKey?: string }[] = [
+    { prayer: 'fajr', label: 'Fajr', labelAr: 'الصبح', emoji: '🌅', before: 2, after: 0, muakkadah: true, note: 'Les plus confirmées de toutes les Sunnan', noteKey: 'mostConfirmed' },
     { prayer: 'dhuhr', label: 'Dhouhr', labelAr: 'الظهر', emoji: '🌤️', before: 4, after: 2, muakkadah: true },
-    { prayer: 'asr', label: 'Asr', labelAr: 'العصر', emoji: '🌇', before: 0, after: 0, muakkadah: false, note: 'Pas de Sunna Mu\'akkadah' },
+    { prayer: 'asr', label: 'Asr', labelAr: 'العصر', emoji: '🌇', before: 0, after: 0, muakkadah: false, note: 'Pas de Sunna Mu\'akkadah', noteKey: 'noMuakkadah' },
     { prayer: 'maghrib', label: 'Maghrib', labelAr: 'المغرب', emoji: '🌆', before: 0, after: 2, muakkadah: true },
-    { prayer: 'isha', label: 'Ishaa', labelAr: 'العشاء', emoji: '🌙', before: 0, after: 2, muakkadah: true, note: '+ Witr (1 à 11 rak\'at)' },
+    { prayer: 'isha', label: 'Ishaa', labelAr: 'العشاء', emoji: '🌙', before: 0, after: 2, muakkadah: true, note: '+ Witr (1 à 11 rak\'at)', noteKey: 'witrNote' },
 ];
 
 const TOTAL_MUAKKADAH_RAKAAT = SUNNAN_RAWATIB
@@ -205,6 +206,7 @@ function ExpressQibla({ lat, lng }: { lat: number, lng: number }) {
 
 export function PrayerTimesPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     // Subscribe only to the specific slices we display in JSX
     const cityName = usePrayerStore((s) => s.cityName);
@@ -432,7 +434,7 @@ export function PrayerTimesPage() {
             <div className="prayer-page">
                 <div className="prayer-loading">
                     <div className="prayer-loading__spinner" />
-                    <span>Calcul des horaires…</span>
+                    <span>{t('prayer.calculating')}</span>
                 </div>
             </div>
         );
@@ -443,9 +445,9 @@ export function PrayerTimesPage() {
             <div className="prayer-page">
                 <div className="prayer-error">
                     <AlertTriangle size={32} />
-                    <p>{error || 'Impossible de calculer les horaires.'}</p>
+                    <p>{error || t('prayer.impossible')}</p>
                     <button onClick={() => { setError(null); computeTimes(); }}>
-                        <RefreshCw size={16} /> Réessayer
+                        <RefreshCw size={16} /> {t('prayer.retry')}
                     </button>
                 </div>
             </div>
@@ -492,11 +494,11 @@ export function PrayerTimesPage() {
                 <div className="prayer-actions-row">
                     <button className="prayer-action-card" onClick={() => navigate('/adhkar')}>
                         <Trophy size={18} />
-                        <span>Adhkars après Salat</span>
+                        <span>{t('prayer.adhkarAfter')}</span>
                     </button>
                     <button className={`prayer-action-card prayer-action-card--badge ${showNawafil ? 'prayer-action-card--active' : ''}`} onClick={() => setShowNawafil(!showNawafil)}>
                         <Sun size={18} />
-                        <span>Nawâfil</span>
+                        <span>{t('prayer.nawafil')}</span>
                         <span className="prayer-action-badge">{sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT}</span>
                     </button>
                 </div>
@@ -509,13 +511,13 @@ export function PrayerTimesPage() {
                         <div className="sunnan-section">
                             <div className="sunnan-section__title">
                                 <Sun size={14} />
-                                <span>Sunnan Rawâtib</span>
+                                <span>{t('nawafil.sunnanRawatib')}</span>
                                 <span className="sunnan-section__badge">
-                                    {sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT} rak'at
+                                    {sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT} {t('nawafil.rakaatCount')}
                                 </span>
                             </div>
                             <div className="sunnan-section__subtitle">
-                                12 rak'at confirmées = une maison au Paradis
+                                {t('nawafil.confirmed12')}
                             </div>
                             <div className="sunnan-grid">
                                 {SUNNAN_RAWATIB.map(s => {
@@ -532,7 +534,7 @@ export function PrayerTimesPage() {
                                         <div key={s.prayer} className={`sunnan-card ${allDone && !noSunna ? 'sunnan-card--done' : ''} ${noSunna ? 'sunnan-card--empty' : ''}`}>
                                             <div className="sunnan-card__header">
                                                 <span className="sunnan-card__emoji">{s.emoji}</span>
-                                                <span className="sunnan-card__name">{s.label}</span>
+                                                <span className="sunnan-card__name">{t(`prayer.${s.prayer}`, s.label)}</span>
                                                 {s.muakkadah && <span className="sunnan-card__star">⭐</span>}
                                             </div>
                                             {noSunna ? (
@@ -545,7 +547,7 @@ export function PrayerTimesPage() {
                                                             onClick={() => sunnan.toggle(beforeKey)}
                                                         >
                                                             {beforeDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
-                                                            <span>{s.before} avant</span>
+                                                            <span>{s.before} {t('nawafil.beforePrayer')}</span>
                                                         </button>
                                                     )}
                                                     {hasAfter && (
@@ -554,12 +556,12 @@ export function PrayerTimesPage() {
                                                             onClick={() => sunnan.toggle(afterKey)}
                                                         >
                                                             {afterDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
-                                                            <span>{s.after} après</span>
+                                                            <span>{s.after} {t('nawafil.afterPrayer')}</span>
                                                         </button>
                                                     )}
                                                 </div>
                                             )}
-                                            {s.note && <div className="sunnan-card__note">{s.note}</div>}
+                                            {s.note && <div className="sunnan-card__note">{t(`nawafil.${(s as any).noteKey}`, s.note)}</div>}
                                         </div>
                                     );
                                 })}
@@ -570,7 +572,7 @@ export function PrayerTimesPage() {
                         <div className="nawafil-category">
                             <div className="nawafil-category__title">
                                 <Moon size={14} />
-                                <span>Prières nocturnes</span>
+                                <span>{t('nawafil.nocturnal')}</span>
                             </div>
                             <div className="nawafil-list">
                                 {PRIERES_NOCTURNES.map(p => (
@@ -578,11 +580,11 @@ export function PrayerTimesPage() {
                                         <span className="nawafil-item__emoji">{p.emoji}</span>
                                         <div className="nawafil-item__content">
                                             <div className="nawafil-item__header">
-                                                <span className="nawafil-item__name">{p.name}</span>
+                                                <span className="nawafil-item__name">{t(`nawafil.${p.id}`, p.name)}</span>
                                                 <span className="nawafil-item__ar">{p.nameAr}</span>
                                             </div>
-                                            <div className="nawafil-item__rakaat">{p.rakaat} rak'at</div>
-                                            <div className="nawafil-item__desc">{p.desc}</div>
+                                            <div className="nawafil-item__rakaat">{p.rakaat} {t('nawafil.rakaatCount')}</div>
+                                            <div className="nawafil-item__desc">{t(`nawafil.${p.id}Desc`, p.desc)}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -593,7 +595,7 @@ export function PrayerTimesPage() {
                         <div className="nawafil-category">
                             <div className="nawafil-category__title">
                                 <Clock size={14} />
-                                <span>Prières liées à un moment</span>
+                                <span>{t('nawafil.momentLinked')}</span>
                             </div>
                             <div className="nawafil-list">
                                 {PRIERES_MOMENT.map(p => (
@@ -601,11 +603,11 @@ export function PrayerTimesPage() {
                                         <span className="nawafil-item__emoji">{p.emoji}</span>
                                         <div className="nawafil-item__content">
                                             <div className="nawafil-item__header">
-                                                <span className="nawafil-item__name">{p.name}</span>
+                                                <span className="nawafil-item__name">{t(`nawafil.${p.id}`, p.name)}</span>
                                                 <span className="nawafil-item__ar">{p.nameAr}</span>
                                             </div>
-                                            <div className="nawafil-item__rakaat">{p.rakaat} rak'at</div>
-                                            <div className="nawafil-item__desc">{p.desc}</div>
+                                            <div className="nawafil-item__rakaat">{p.rakaat} {t('nawafil.rakaatCount')}</div>
+                                            <div className="nawafil-item__desc">{t(`nawafil.${p.id}Desc`, p.desc)}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -616,7 +618,7 @@ export function PrayerTimesPage() {
                         <div className="nawafil-category">
                             <div className="nawafil-category__title">
                                 <Info size={14} />
-                                <span>Prières liées à une cause</span>
+                                <span>{t('nawafil.causeLinked')}</span>
                             </div>
                             <div className="nawafil-list">
                                 {PRIERES_CAUSE.map(p => (
@@ -624,11 +626,11 @@ export function PrayerTimesPage() {
                                         <span className="nawafil-item__emoji">{p.emoji}</span>
                                         <div className="nawafil-item__content">
                                             <div className="nawafil-item__header">
-                                                <span className="nawafil-item__name">{p.name}</span>
+                                                <span className="nawafil-item__name">{t(`nawafil.${p.id}`, p.name)}</span>
                                                 <span className="nawafil-item__ar">{p.nameAr}</span>
                                             </div>
-                                            <div className="nawafil-item__rakaat">{p.rakaat} rak'at</div>
-                                            <div className="nawafil-item__desc">{p.desc}</div>
+                                            <div className="nawafil-item__rakaat">{p.rakaat} {t('nawafil.rakaatCount')}</div>
+                                            <div className="nawafil-item__desc">{t(`nawafil.${p.id}Desc`, p.desc)}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -648,7 +650,7 @@ export function PrayerTimesPage() {
                 <div className="prayer-list">
                     <div className="prayer-list__title">
                         <Clock size={14} />
-                        <span>Horaires du jour</span>
+                        <span>{t('prayer.todayTimes')}</span>
                     </div>
                     {PRAYER_KEYS.map((key) => {
                         const isNext = nextPrayerName === key && isToday;
@@ -663,13 +665,13 @@ export function PrayerTimesPage() {
                                 <div className="prayer-row__left">
                                     <span className="prayer-row__emoji">{PRAYER_EMOJIS[key]}</span>
                                     <div className="prayer-row__names">
-                                        <span className="prayer-row__name">{PRAYER_NAMES_FR[key]}</span>
+                                        <span className="prayer-row__name">{t(`prayer.${key}`, PRAYER_NAMES_FR[key])}</span>
                                         <span className="prayer-row__name-ar">{PRAYER_NAMES_AR[key]}</span>
                                     </div>
                                 </div>
                                 <div className="prayer-row__time-box">
                                     <span className="prayer-row__time">{dayResult.formattedTimes[key]}</span>
-                                    {isNext && <span className="prayer-row__active-badge">PROCHAINE PRIÈRE</span>}
+                                    {isNext && <span className="prayer-row__active-badge">{t('prayer.nextPrayer', 'PROCHAINE PRIÈRE')}</span>}
                                 </div>
                             </div>
                         );
