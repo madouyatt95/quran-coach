@@ -172,7 +172,7 @@ export function SettingsPage() {
                         <span className="settings-item__title">{t('settings.language', 'Langue')}</span>
                     </div>
                     <div className="segment-control">
-                        {(['fr', 'en', 'ar']).map((langUrl) => (
+                        {(['fr', 'en', 'wo']).map((langUrl) => (
                             <button
                                 key={langUrl}
                                 className={`segment-control__btn ${localStorage.getItem('i18nextLng')?.startsWith(langUrl) || (langUrl === 'fr' && !localStorage.getItem('i18nextLng')) ? 'active' : ''}`}
@@ -181,7 +181,7 @@ export function SettingsPage() {
                                     window.location.reload();
                                 }}
                             >
-                                {langUrl === 'fr' ? 'Français' : langUrl === 'en' ? 'English' : 'العربية'}
+                                {langUrl === 'fr' ? 'Français' : langUrl === 'en' ? 'English' : 'Wolof'}
                             </button>
                         ))}
                     </div>

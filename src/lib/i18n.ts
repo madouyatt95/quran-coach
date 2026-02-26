@@ -18,7 +18,7 @@ i18n
         fallbackLng: 'fr',
         detection: {
             order: ['localStorage', 'navigator'],
-            lookupLocalStorage: 'appLanguage',
+            lookupLocalStorage: 'i18nextLng',
             caches: ['localStorage'],
         },
         interpolation: {
