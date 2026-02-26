@@ -654,8 +654,8 @@ export function PrayerTimesPage() {
                     </div>
                     {PRAYER_KEYS.map((key) => {
                         const isNext = nextPrayerName === key && isToday;
-                        const t = dayResult.times[key];
-                        const isPassed = isToday && new Date() > t && !isNext;
+                        const prayerTime = dayResult.times[key];
+                        const isPassed = isToday && new Date() > prayerTime && !isNext;
 
                         return (
                             <div
