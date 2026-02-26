@@ -472,11 +472,17 @@
     opacity: 0.7;
 }
 
-.dhikr-card__check {
+.dhikr-card__series {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    font-size: 0.7rem;
+    top: 5px;
+    right: 5px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--dhikr-color);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 2px 5px;
+    line-height: 1;
 }
 
 .dhikr-card__daily {

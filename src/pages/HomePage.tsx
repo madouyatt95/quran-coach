@@ -109,8 +109,7 @@ function useDhikr() {
             const dhikr = DHIKR_LIST.find(d => d.id === id);
             if (!dhikr) return prev;
             const current = prev[id] || 0;
-            // If target > 0, cap at target. If target = 0 (unlimited), no cap.
-            if (dhikr.target > 0 && current >= dhikr.target) return prev;
+            // No cap — counter always increments, series are tracked
             const next = { ...prev, [id]: current + 1 };
             localStorage.setItem(todayKey, JSON.stringify(next));
             return next;
@@ -437,9 +436,11 @@ export function HomePage() {
                 <div className="home-dhikr__grid">
                     {DHIKR_LIST.map(d => {
                         const count = dhikr.getCount(d.id);
-                        const isDone = d.target > 0 && count >= d.target;
                         const isUnlimited = d.target === 0;
-                        const progress = d.target > 0 ? Math.min((count / d.target) * 100, 100) : 0;
+                        const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
+                        const countInSeries = !isUnlimited && d.target > 0 ? count % d.target : count;
+                        const isDone = series >= 1;
+                        const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
                         return (
                             <button
                                 key={d.id}
@@ -447,14 +448,14 @@ export function HomePage() {
                                 onClick={() => dhikr.tap(d.id)}
                                 style={{ '--dhikr-color': d.color } as React.CSSProperties}
                             >
-                                {isDone && <span className="dhikr-card__check">✅</span>}
+                                {series > 0 && <span className="dhikr-card__series">{series}×</span>}
                                 <span className="dhikr-card__daily">{d.daily}</span>
                                 <span className="dhikr-card__emoji">{d.emoji}</span>
                                 <span className="dhikr-card__ar">{d.text}</span>
                                 <span className="dhikr-card__fr">{d.textFr}</span>
                                 <span className="dhikr-card__desc">{d.descFr}</span>
                                 <span className="dhikr-card__count">
-                                    {count}{!isUnlimited && `/${d.target}`}
+                                    {isUnlimited ? count : `${countInSeries}/${d.target}`}
                                 </span>
                                 {!isUnlimited && (
                                     <div className="dhikr-card__bar">
