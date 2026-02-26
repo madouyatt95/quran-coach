@@ -81,15 +81,63 @@ const ESSENTIAL_SURAHS: EssentialSurah[] = [
 ];
 
 // ─── Dhikr data ──────────────────────────────────────────
-const DHIKR_SEQUENCE = [
-    { text: 'سُبْحَانَ اللَّه', textFr: 'SubhanAllah', target: 33, color: '#4facfe' },
-    { text: 'الحَمْدُ لِلَّه', textFr: 'Alhamdulillah', target: 33, color: '#c9a84c' },
-    { text: 'اللَّهُ أَكْبَر', textFr: 'Allahu Akbar', target: 34, color: '#38ef7d' },
+const DHIKR_LIST = [
+    { id: 'subhanallah', text: 'سُبْحَانَ اللَّه', textFr: 'SubhanAllah', target: 33, color: '#4facfe', emoji: '📿' },
+    { id: 'alhamdulillah', text: 'الحَمْدُ لِلَّه', textFr: 'Alhamdulillah', target: 33, color: '#c9a84c', emoji: '🤲' },
+    { id: 'allahu_akbar', text: 'اللَّهُ أَكْبَر', textFr: 'Allahu Akbar', target: 34, color: '#38ef7d', emoji: '✨' },
+    { id: 'tahlil', text: 'لَا إِلَٰهَ إِلَّا اللَّه', textFr: 'Lâ ilâha illa-Llâh', target: 100, color: '#FF6B6B', emoji: '❤️' },
+    { id: 'istighfar', text: 'أَسْتَغْفِرُ اللَّه', textFr: 'Astaghfirullâh', target: 100, color: '#AB47BC', emoji: '💜' },
+    { id: 'istighfar_sunnah', text: 'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ', textFr: 'Astaghfirullâh wa atoûbu ilayh', target: 70, color: '#FF9800', emoji: '🧡' },
+    { id: 'subhan_bihamdi', text: 'سُبْحَانَ اللَّهِ وَبِحَمْدِه', textFr: 'SubhânAllâh wa bihamdihi', target: 0, color: '#E91E63', emoji: '🌸' },
+    { id: 'subhan_azim', text: 'سُبْحَانَ اللَّهِ الْعَظِيم', textFr: "SubhânAllâh al-'Azîm", target: 0, color: '#00BCD4', emoji: '💎' },
 ];
 
+// ─── Dhikr Hook (localStorage persisted, independent counters) ─
+function useDhikr() {
+    const todayKey = `dhikr-v2-${new Date().toISOString().split('T')[0]}`;
+    const [counts, setCounts] = useState<Record<string, number>>({});
 
+    useEffect(() => {
+        const saved = localStorage.getItem(todayKey);
+        if (saved) {
+            try { setCounts(JSON.parse(saved)); } catch { /* ignore */ }
+        }
+    }, [todayKey]);
 
+    const tap = useCallback((id: string) => {
+        setCounts(prev => {
+            const dhikr = DHIKR_LIST.find(d => d.id === id);
+            if (!dhikr) return prev;
+            const current = prev[id] || 0;
+            // If target > 0, cap at target. If target = 0 (unlimited), no cap.
+            if (dhikr.target > 0 && current >= dhikr.target) return prev;
+            const next = { ...prev, [id]: current + 1 };
+            localStorage.setItem(todayKey, JSON.stringify(next));
+            return next;
+        });
+    }, [todayKey]);
 
+    const reset = useCallback((id: string) => {
+        setCounts(prev => {
+            const next = { ...prev, [id]: 0 };
+            localStorage.setItem(todayKey, JSON.stringify(next));
+            return next;
+        });
+    }, [todayKey]);
+
+    const resetAll = useCallback(() => {
+        setCounts({});
+        localStorage.setItem(todayKey, JSON.stringify({}));
+    }, [todayKey]);
+
+    const getCount = useCallback((id: string) => counts[id] || 0, [counts]);
+
+    const completedCount = DHIKR_LIST.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
+    const targetedCount = DHIKR_LIST.filter(d => d.target > 0).length;
+    const allTargetedDone = completedCount >= targetedCount;
+
+    return { counts, tap, reset, resetAll, getCount, completedCount, targetedCount, allTargetedDone };
+}
 // ─── Next Prayer Hook (uses local engine) ────────────────
 function useNextPrayer() {
     const [data, setData] = useState<{ name: string; nameAr: string; time: string; countdown: string } | null>(null);
@@ -185,57 +233,7 @@ function useNextPrayer() {
     return data;
 }
 
-// ─── Dhikr Hook (localStorage persisted) ─────────────────
-function useDhikr() {
-    const todayKey = `dhikr-${new Date().toISOString().split('T')[0]}`;
-    const [step, setStep] = useState(0);
-    const [count, setCount] = useState(0);
 
-    useEffect(() => {
-        const saved = localStorage.getItem(todayKey);
-        if (saved) {
-            const { step: s, count: c } = JSON.parse(saved);
-            setStep(s);
-            setCount(c);
-        }
-    }, [todayKey]);
-
-    const tap = useCallback(() => {
-        const current = DHIKR_SEQUENCE[step];
-        const newCount = count + 1;
-
-        if (newCount >= current.target) {
-            // Move to next step
-            const nextStep = step + 1;
-            if (nextStep < DHIKR_SEQUENCE.length) {
-                setStep(nextStep);
-                setCount(0);
-                localStorage.setItem(todayKey, JSON.stringify({ step: nextStep, count: 0 }));
-            } else {
-                // All done!
-                setStep(DHIKR_SEQUENCE.length);
-                setCount(0);
-                localStorage.setItem(todayKey, JSON.stringify({ step: DHIKR_SEQUENCE.length, count: 0 }));
-            }
-        } else {
-            setCount(newCount);
-            localStorage.setItem(todayKey, JSON.stringify({ step, count: newCount }));
-        }
-    }, [step, count, todayKey]);
-
-    const reset = useCallback(() => {
-        setStep(0);
-        setCount(0);
-        localStorage.setItem(todayKey, JSON.stringify({ step: 0, count: 0 }));
-    }, [todayKey]);
-
-    const isComplete = step >= DHIKR_SEQUENCE.length;
-    const current = isComplete ? null : DHIKR_SEQUENCE[step];
-    const totalDone = DHIKR_SEQUENCE.slice(0, step).reduce((a, d) => a + d.target, 0) + count;
-    const totalTarget = DHIKR_SEQUENCE.reduce((a, d) => a + d.target, 0);
-
-    return { step, count, current, isComplete, totalDone, totalTarget, tap, reset };
-}
 
 // ═══════════════════════════════════════════════════════════
 // HomePage Component
@@ -425,51 +423,55 @@ export function HomePage() {
                 </div>
             </div>
 
-            {/* Dhikr Counter */}
+            {/* Dhikr Counters Grid */}
             <div className="home-dhikr">
-                <div className="home-dhikr__title">📿 Dhikr du jour</div>
-                {dhikr.isComplete ? (
-                    <div className="home-dhikr__complete">
-                        <span className="home-dhikr__check">✅</span>
-                        <span>Masha'Allah ! Dhikr terminé (100/100)</span>
-                        <button className="home-dhikr__reset" onClick={dhikr.reset}>
-                            <RotateCcw size={14} /> Recommencer
-                        </button>
-                    </div>
-                ) : dhikr.current && (
-                    <div className="home-dhikr__active">
-                        <button
-                            className="home-dhikr__tap"
-                            onClick={dhikr.tap}
-                            style={{ borderColor: dhikr.current.color }}
-                        >
-                            <span className="home-dhikr__tap-ar">{dhikr.current.text}</span>
-                            <span className="home-dhikr__tap-fr">{dhikr.current.textFr}</span>
-                            <span className="home-dhikr__tap-count" style={{ color: dhikr.current.color }}>
-                                {dhikr.count}/{dhikr.current.target}
-                            </span>
-                        </button>
-                        <div className="home-dhikr__progress">
-                            <div
-                                className="home-dhikr__progress-bar"
-                                style={{
-                                    width: `${(dhikr.totalDone / dhikr.totalTarget) * 100}%`,
-                                    background: dhikr.current.color,
-                                }}
-                            />
-                        </div>
-                        <div className="home-dhikr__steps">
-                            {DHIKR_SEQUENCE.map((d, i) => (
-                                <span
-                                    key={i}
-                                    className={`home-dhikr__step ${i < dhikr.step ? 'done' : i === dhikr.step ? 'active' : ''}`}
-                                >
-                                    {d.textFr}
+                <div className="home-dhikr__header">
+                    <div className="home-dhikr__title">📿 Dhikr du jour</div>
+                    {dhikr.allTargetedDone && (
+                        <span className="home-dhikr__badge">✅ {dhikr.completedCount}/{dhikr.targetedCount}</span>
+                    )}
+                    <button className="home-dhikr__reset-all" onClick={dhikr.resetAll}>
+                        <RotateCcw size={12} /> Tout réinitialiser
+                    </button>
+                </div>
+                <div className="home-dhikr__grid">
+                    {DHIKR_LIST.map(d => {
+                        const count = dhikr.getCount(d.id);
+                        const isDone = d.target > 0 && count >= d.target;
+                        const isUnlimited = d.target === 0;
+                        const progress = d.target > 0 ? Math.min((count / d.target) * 100, 100) : 0;
+                        return (
+                            <button
+                                key={d.id}
+                                className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''}`}
+                                onClick={() => dhikr.tap(d.id)}
+                                style={{ '--dhikr-color': d.color } as React.CSSProperties}
+                            >
+                                {isDone && <span className="dhikr-card__check">✅</span>}
+                                <span className="dhikr-card__emoji">{d.emoji}</span>
+                                <span className="dhikr-card__ar">{d.text}</span>
+                                <span className="dhikr-card__fr">{d.textFr}</span>
+                                <span className="dhikr-card__count">
+                                    {count}{!isUnlimited && `/${d.target}`}
                                 </span>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                                {!isUnlimited && (
+                                    <div className="dhikr-card__bar">
+                                        <div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} />
+                                    </div>
+                                )}
+                                {(count > 0) && (
+                                    <button
+                                        className="dhikr-card__reset"
+                                        onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }}
+                                        title="Réinitialiser"
+                                    >
+                                        <RotateCcw size={10} />
+                                    </button>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* Quick Shortcuts */}
