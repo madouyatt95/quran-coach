@@ -82,14 +82,14 @@ const ESSENTIAL_SURAHS: EssentialSurah[] = [
 
 // ─── Dhikr data ──────────────────────────────────────────
 const DHIKR_LIST = [
-    { id: 'subhanallah', text: 'سُبْحَانَ اللَّه', textFr: 'SubhanAllah', target: 33, color: '#4facfe', emoji: '📿' },
-    { id: 'alhamdulillah', text: 'الحَمْدُ لِلَّه', textFr: 'Alhamdulillah', target: 33, color: '#c9a84c', emoji: '🤲' },
-    { id: 'allahu_akbar', text: 'اللَّهُ أَكْبَر', textFr: 'Allahu Akbar', target: 34, color: '#38ef7d', emoji: '✨' },
-    { id: 'tahlil', text: 'لَا إِلَٰهَ إِلَّا اللَّه', textFr: 'Lâ ilâha illa-Llâh', target: 100, color: '#FF6B6B', emoji: '❤️' },
-    { id: 'istighfar', text: 'أَسْتَغْفِرُ اللَّه', textFr: 'Astaghfirullâh', target: 100, color: '#AB47BC', emoji: '💜' },
-    { id: 'istighfar_sunnah', text: 'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ', textFr: 'Astaghfirullâh wa atoûbu ilayh', target: 70, color: '#FF9800', emoji: '🧡' },
-    { id: 'subhan_bihamdi', text: 'سُبْحَانَ اللَّهِ وَبِحَمْدِه', textFr: 'SubhânAllâh wa bihamdihi', target: 0, color: '#E91E63', emoji: '🌸' },
-    { id: 'subhan_azim', text: 'سُبْحَانَ اللَّهِ الْعَظِيم', textFr: "SubhânAllâh al-'Azîm", target: 0, color: '#00BCD4', emoji: '💎' },
+    { id: 'subhanallah', text: 'سُبْحَانَ اللَّه', textFr: 'SubhanAllah', descFr: 'Gloire à Allah', target: 33, daily: '33×/jour', color: '#4facfe', emoji: '📿' },
+    { id: 'alhamdulillah', text: 'الحَمْدُ لِلَّه', textFr: 'Alhamdulillah', descFr: 'Louange à Allah', target: 33, daily: '33×/jour', color: '#c9a84c', emoji: '🤲' },
+    { id: 'allahu_akbar', text: 'اللَّهُ أَكْبَر', textFr: 'Allahu Akbar', descFr: 'Allah est le plus Grand', target: 34, daily: '34×/jour', color: '#38ef7d', emoji: '✨' },
+    { id: 'tahlil', text: 'لَا إِلَٰهَ إِلَّا اللَّه', textFr: 'Lâ ilâha illa-Llâh', descFr: 'Pas de divinité sauf Allah', target: 100, daily: '100×/jour', color: '#FF6B6B', emoji: '❤️' },
+    { id: 'istighfar', text: 'أَسْتَغْفِرُ اللَّه', textFr: 'Astaghfirullâh', descFr: 'Je demande pardon à Allah', target: 100, daily: '100×/jour', color: '#AB47BC', emoji: '💜' },
+    { id: 'istighfar_sunnah', text: 'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ', textFr: 'Astaghfirullâh wa atoûbu ilayh', descFr: 'Je demande pardon et me repens', target: 70, daily: '+70×/jour', color: '#FF9800', emoji: '🧡' },
+    { id: 'subhan_bihamdi', text: 'سُبْحَانَ اللَّهِ وَبِحَمْدِه', textFr: 'SubhânAllâh wa bihamdihi', descFr: 'Gloire et louange à Allah', target: 0, daily: '∞ illimité', color: '#E91E63', emoji: '🌸' },
+    { id: 'subhan_azim', text: 'سُبْحَانَ اللَّهِ الْعَظِيم', textFr: "SubhânAllâh al-'Azîm", descFr: 'Gloire à Allah le Magnifique', target: 0, daily: '∞ illimité', color: '#00BCD4', emoji: '💎' },
 ];
 
 // ─── Dhikr Hook (localStorage persisted, independent counters) ─
@@ -448,9 +448,11 @@ export function HomePage() {
                                 style={{ '--dhikr-color': d.color } as React.CSSProperties}
                             >
                                 {isDone && <span className="dhikr-card__check">✅</span>}
+                                <span className="dhikr-card__daily">{d.daily}</span>
                                 <span className="dhikr-card__emoji">{d.emoji}</span>
                                 <span className="dhikr-card__ar">{d.text}</span>
                                 <span className="dhikr-card__fr">{d.textFr}</span>
+                                <span className="dhikr-card__desc">{d.descFr}</span>
                                 <span className="dhikr-card__count">
                                     {count}{!isUnlimited && `/${d.target}`}
                                 </span>
