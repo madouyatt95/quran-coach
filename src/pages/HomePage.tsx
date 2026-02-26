@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
 import { useStatsStore } from '../stores/statsStore';
@@ -49,14 +50,14 @@ const HIJRI_MONTH_EVENTS: Record<number, { emoji: string; title: string; descrip
 };
 
 const SHORTCUTS = [
-    { path: '/quiz', emoji: '⚔️', label: 'Quiz', desc: 'Défis', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
-    { path: '/qibla', emoji: '🧭', label: 'Qibla', desc: 'Direction', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
-    { path: '/prayers', emoji: '🕌', label: 'Prières', desc: 'Horaires', gradient: 'linear-gradient(135deg, rgba(255,152,0,0.2), rgba(255,152,0,0.05))' },
-    { path: '/themes', emoji: '📚', label: 'Thèmes', desc: 'Coraniques', gradient: 'linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.05))' },
-    { path: '/adhkar', emoji: '🤲', label: 'Invocations', desc: 'Adhkar', gradient: 'linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.05))' },
-    { path: '/listen', emoji: '🎧', label: 'Écoute', desc: 'Récitations', gradient: 'linear-gradient(135deg, rgba(76,175,80,0.2), rgba(76,175,80,0.05))' },
-    { path: '/hadiths', emoji: '📜', label: 'Hadiths', desc: 'Prophétiques', gradient: 'linear-gradient(135deg, rgba(156,39,176,0.2), rgba(156,39,176,0.05))' },
-    { path: '/tafsir', emoji: '📖', label: 'Tafsir', desc: 'Exégèse', gradient: 'linear-gradient(135deg, rgba(121,85,72,0.2), rgba(121,85,72,0.05))' },
+    { path: '/quiz', emoji: '⚔️', labelKey: 'sideMenu.quiz', desc: 'Défis', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
+    { path: '/qibla', emoji: '🧭', labelKey: 'sideMenu.qibla', desc: 'Direction', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
+    { path: '/prayers', emoji: '🕌', labelKey: 'sideMenu.prayers', desc: 'Horaires', gradient: 'linear-gradient(135deg, rgba(255,152,0,0.2), rgba(255,152,0,0.05))' },
+    { path: '/themes', emoji: '📚', labelKey: 'sideMenu.themes', desc: 'Coraniques', gradient: 'linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.05))' },
+    { path: '/adhkar', emoji: '🤲', labelKey: 'sideMenu.adhkar', desc: 'Adhkar', gradient: 'linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.05))' },
+    { path: '/listen', emoji: '🎧', labelKey: 'sideMenu.listen', desc: 'Récitations', gradient: 'linear-gradient(135deg, rgba(76,175,80,0.2), rgba(76,175,80,0.05))' },
+    { path: '/hadiths', emoji: '📜', labelKey: 'sideMenu.hadiths', desc: 'Prophétiques', gradient: 'linear-gradient(135deg, rgba(156,39,176,0.2), rgba(156,39,176,0.05))' },
+    { path: '/tafsir', emoji: '📖', labelKey: 'sideMenu.tafsir', desc: 'Exégèse', gradient: 'linear-gradient(135deg, rgba(121,85,72,0.2), rgba(121,85,72,0.05))' },
 ];
 
 interface EssentialSurah {
@@ -238,6 +239,7 @@ function useNextPrayer() {
 // HomePage Component
 // ═══════════════════════════════════════════════════════════
 export function HomePage() {
+    const { t } = useTranslation();
     const now = useMemo(() => new Date(), []);
     const hadith = useMemo(() => getHadithOfDay(now), [now]);
     const hijri = useMemo(() => getHijriDate(now), [now]);
@@ -327,13 +329,13 @@ export function HomePage() {
                         <div className="home-prayer__left">
                             <span className="home-prayer__emoji">🕌</span>
                             <div>
-                                <span className="home-prayer__name">{nextPrayer.name}</span>
+                                <span className="home-prayer__name">{t(`prayer.${nextPrayer.name.toLowerCase()}`, nextPrayer.name)}</span>
                                 <span className="home-prayer__name-ar">{nextPrayer.nameAr}</span>
                             </div>
                         </div>
                         <div className="home-prayer__right">
                             <span className="home-prayer__time">{nextPrayer.time}</span>
-                            <span className="home-prayer__countdown">dans {nextPrayer.countdown}</span>
+                            <span className="home-prayer__countdown">{t('home.in')} {nextPrayer.countdown}</span>
                         </div>
                     </div>
                 </Link>
@@ -401,7 +403,7 @@ export function HomePage() {
             {/* Essential Surahs */}
             <div className="home-surahs">
                 <div className="home-surahs__header">
-                    <div className="home-surahs__title"><Star size={14} /> Sourates essentielles</div>
+                    <div className="home-surahs__title"><Star size={14} /> {t('home.essentialSurahs')}</div>
                 </div>
                 <div className="home-surahs__scroll">
                     {ESSENTIAL_SURAHS.map((surah, i) => (
@@ -416,7 +418,7 @@ export function HomePage() {
                             <div className="surah-card__name-ar">{surah.nameAr}</div>
                             <div className="surah-card__name-fr">{surah.nameFr}</div>
                             <div className="surah-card__benefit">{surah.benefit}</div>
-                            <div className="surah-card__verses">{surah.verseCount} versets</div>
+                            <div className="surah-card__verses">{surah.verseCount} {t('common.verses')}</div>
                         </button>
                     ))}
                 </div>
@@ -425,14 +427,15 @@ export function HomePage() {
             {/* Dhikr Counters Grid */}
             <div className="home-dhikr">
                 <div className="home-dhikr__header">
-                    <div className="home-dhikr__title">📿 Dhikr du jour</div>
+                    <div className="home-dhikr__title">📿 {t('home.dhikr')}</div>
                     {dhikr.allTargetedDone && (
                         <span className="home-dhikr__badge">✅ {dhikr.completedCount}/{dhikr.targetedCount}</span>
                     )}
                     <button className="home-dhikr__reset-all" onClick={dhikr.resetAll}>
-                        <RotateCcw size={12} /> Tout réinitialiser
+                        <RotateCcw size={12} /> {t('common.resetAll', 'Tout réinitialiser')}
                     </button>
                 </div>
+
                 <div className="home-dhikr__grid">
                     {DHIKR_LIST.map(d => {
                         const count = dhikr.getCount(d.id);
@@ -479,12 +482,12 @@ export function HomePage() {
 
             {/* Quick Shortcuts */}
             <div className="home-shortcuts">
-                <div className="home-shortcuts__title">Accès rapide</div>
+                <div className="home-shortcuts__title">{t('sideMenu.quickAccess')}</div>
                 <div className="home-shortcuts__grid">
                     {SHORTCUTS.map(s => (
                         <Link key={s.path} to={s.path} className="home-shortcut" style={{ background: s.gradient }}>
                             <span className="home-shortcut__emoji">{s.emoji}</span>
-                            <span className="home-shortcut__label">{s.label}</span>
+                            <span className="home-shortcut__label">{t(s.labelKey)}</span>
                             <span className="home-shortcut__desc">{s.desc}</span>
                         </Link>
                     ))}
