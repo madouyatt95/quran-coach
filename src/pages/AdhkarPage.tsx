@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X, Gauge } from 'lucide-react';
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import { useFavoritesStore } from '../stores/favoritesStore';
@@ -270,6 +271,7 @@ const ADHKAR_DATA: AdhkarCategory[] = [
 
 export function AdhkarPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { toggleFavoriteDua, isFavoriteDua } = useFavoritesStore();
 
     const [searchParams] = useSearchParams();
@@ -545,13 +547,13 @@ export function AdhkarPage() {
                     <button className="adhkar-back-btn" onClick={() => navigate(-1)}>
                         <ArrowLeft size={24} />
                     </button>
-                    <h1 className="adhkar-title">Invocations</h1>
+                    <h1 className="adhkar-title">{t('sideMenu.adhkar')}</h1>
                     <div style={{ width: 44 }} />
                 </div>
 
                 <div className="adhkar-subtitle">
                     <span className="adhkar-subtitle-ar">حصن المسلم</span>
-                    <span>La Citadelle du Musulman</span>
+                    <span>{t('adhkar.hisnSubtitle', 'La Citadelle du Musulman')}</span>
                 </div>
 
                 {/* Search */}
@@ -559,7 +561,7 @@ export function AdhkarPage() {
                     <Search size={18} />
                     <input
                         type="text"
-                        placeholder="Rechercher une invocation..."
+                        placeholder={t('adhkar.searchPlaceholder', 'Rechercher une invocation...')}
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                     />
@@ -587,7 +589,7 @@ export function AdhkarPage() {
                             <button key={cat.id} className="adhkar-category-card" onClick={() => handleCategoryClick(cat)}>
                                 <div className="category-icon" style={{ color: cat.color }}>{cat.icon}</div>
                                 <div className="category-info">
-                                    <span className="category-name">{cat.name}</span>
+                                    <span className="category-name">{t(`adhkar.categories.${cat.id}`, cat.name)}</span>
                                     <span className="category-name-ar">{cat.nameAr}</span>
                                 </div>
                                 <div className="category-count">{cat.adhkar.length} dhikr</div>
@@ -595,7 +597,7 @@ export function AdhkarPage() {
                             </button>
                         ))}
                         {searchResults.hisnChapters.length === 0 && searchResults.legacyCats.length === 0 && (
-                            <div className="adhkar-empty">Aucun résultat pour "{searchQuery}"</div>
+                            <div className="adhkar-empty">{t('adhkar.noResults', `Aucun résultat pour "${searchQuery}"`, { query: searchQuery })}</div>
                         )}
                     </div>
                 ) : (
@@ -612,7 +614,7 @@ export function AdhkarPage() {
                         </div>
 
                         {/* Original categories (including Rabbanā — untouched) */}
-                        <div className="adhkar-section-label">Collections</div>
+                        <div className="adhkar-section-label">{t('adhkar.collections', 'Collections')}</div>
                         <div className="adhkar-categories">
                             {ADHKAR_DATA.map((category) => (
                                 <button
@@ -624,7 +626,7 @@ export function AdhkarPage() {
                                         {category.icon}
                                     </div>
                                     <div className="category-info">
-                                        <span className="category-name">{category.name}</span>
+                                        <span className="category-name">{t(`adhkar.categories.${category.id}`, category.name)}</span>
                                         <span className="category-name-ar">{category.nameAr}</span>
                                     </div>
                                     <div className="category-count">
@@ -655,7 +657,7 @@ export function AdhkarPage() {
                 </div>
                 <div className="adhkar-subtitle">
                     <span className="adhkar-subtitle-ar">{selectedMega.nameAr}</span>
-                    <span>{selectedMega.chapters.length} chapitres</span>
+                    <span>{selectedMega.chapters.length} {t('adhkar.chapters', 'chapitres')}</span>
                 </div>
                 <div className="adhkar-categories">
                     {selectedMega.chapters.map(chapter => (
@@ -685,7 +687,7 @@ export function AdhkarPage() {
                     <ArrowLeft size={24} />
                 </button>
                 <div className="header-titles">
-                    <h1>{selectedCategory.name}</h1>
+                    <h1>{t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name)}</h1>
                     <span className="arabic-text">{selectedCategory.nameAr}</span>
                 </div>
                 <div className="progress-pill">
@@ -723,10 +725,10 @@ export function AdhkarPage() {
                                             arabic: dhikr.arabic,
                                             translation: dhikr.translation,
                                             source: dhikr.source || '',
-                                            chapterTitle: selectedCategory.name,
+                                            chapterTitle: t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name),
                                         });
                                     }}
-                                    title={isFavoriteDua(selectedCategory.id, dhikr.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                                    title={isFavoriteDua(selectedCategory.id, dhikr.id) ? t('common.removeFromFavs', 'Retirer des favoris') : t('common.addToFavs', 'Ajouter aux favoris')}
                                 >
                                     <Heart size={14} fill={isFavoriteDua(selectedCategory.id, dhikr.id) ? 'currentColor' : 'none'} />
                                 </button>
@@ -772,12 +774,12 @@ export function AdhkarPage() {
                                         arabic: currentDhikr.arabic,
                                         translation: currentDhikr.translation,
                                         source: currentDhikr.source || '',
-                                        chapterTitle: selectedCategory.name,
+                                        chapterTitle: t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name),
                                     });
                                 }}
                             >
                                 <Heart size={18} fill={isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'currentColor' : 'none'} />
-                                {isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'En favoris' : 'Ajouter aux favoris'}
+                                {isFavoriteDua(selectedCategory.id, currentDhikr.id) ? t('common.inFavs', 'En favoris') : t('common.addToFavs', 'Ajouter aux favoris')}
                             </button>
                         </div>
 
@@ -819,7 +821,7 @@ export function AdhkarPage() {
                             <button
                                 className="dhikr-hifdh-link dhikr-speed-btn"
                                 onClick={togglePlaybackSpeed}
-                                title="Vitesse de lecture"
+                                title={t('common.playbackSpeed', 'Vitesse de lecture')}
                                 style={{ marginLeft: 'auto', padding: '6px 12px', minWidth: '70px', justifyContent: 'center' }}
                             >
                                 <Gauge size={16} />
@@ -830,7 +832,7 @@ export function AdhkarPage() {
                             {selectedCategory.id === 'rabanna' && currentDhikr.source && (
                                 <button
                                     className="dhikr-hifdh-link"
-                                    title="Pratiquer dans le Hifdh Studio (Mot à mot)"
+                                    title={t('adhkar.memorizeTooltip', 'Pratiquer dans le Hifdh Studio')}
                                     onClick={() => {
                                         const [s, a] = currentDhikr.source!.split(':').map(Number);
                                         if (s && a) {
@@ -839,7 +841,7 @@ export function AdhkarPage() {
                                     }}
                                 >
                                     <Mic size={18} />
-                                    <span>Mémoriser</span>
+                                    <span>{t('adhkar.memorize', 'Mémoriser')}</span>
                                 </button>
                             )}
                         </div>
@@ -874,14 +876,14 @@ export function AdhkarPage() {
                                 onClick={() => setCurrentDhikrIndex(Math.max(0, currentDhikrIndex - 1))}
                                 disabled={currentDhikrIndex === 0}
                             >
-                                Précédent
+                                {t('common.previous', 'Précédent')}
                             </button>
                             <button
                                 className="dhikr-nav-btn"
                                 onClick={() => setCurrentDhikrIndex(Math.min(selectedCategory.adhkar.length - 1, currentDhikrIndex + 1))}
                                 disabled={currentDhikrIndex === selectedCategory.adhkar.length - 1}
                             >
-                                Suivant
+                                {t('common.next', 'Suivant')}
                             </button>
                         </div>
                     </div>
