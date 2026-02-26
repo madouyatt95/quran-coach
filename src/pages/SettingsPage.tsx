@@ -12,6 +12,7 @@ import { usePrayerStore } from '../stores/prayerStore';
 import { resolveCoords } from '../lib/locationService';
 import type { Theme, ArabicFontSize } from '../types';
 import { Stars, Bell, BellOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './SettingsPage.css';
 
 const RECITERS = [
@@ -26,6 +27,7 @@ const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i
 const MINUTES_OPTIONS = [5, 10, 15, 30];
 
 export function SettingsPage() {
+    const { t } = useTranslation();
     const {
         theme,
         setTheme,
@@ -133,7 +135,7 @@ export function SettingsPage() {
                 setTestSent(true);
                 setTimeout(() => setTestSent(false), 3000);
             } else {
-                alert("Vérifiez que les notifications sont autorisées dans votre navigateur.");
+                alert(t('settings.testNotificationFailed', "Vérifiez que les notifications sont autorisées dans votre navigateur."));
             }
         } catch (err) {
             console.error('[Settings] Test notification failed:', err);
@@ -142,24 +144,24 @@ export function SettingsPage() {
 
     return (
         <div className="settings-page">
-            <h1 className="settings-page__header">Réglages</h1>
+            <h1 className="settings-page__header">{t('settings.title', 'Réglages')}</h1>
 
             {/* Appearance */}
             <section className="settings-section">
-                <h2 className="settings-section__title">Apparence</h2>
+                <h2 className="settings-section__title">{t('settings.appearance', 'Apparence')}</h2>
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">Thème</span>
+                        <span className="settings-item__title">{t('settings.theme', 'Thème')}</span>
                     </div>
                     <div className="segment-control">
-                        {(['dark', 'light', 'sepia'] as Theme[]).map((t) => (
+                        {(['dark', 'light', 'sepia'] as Theme[]).map((tOption) => (
                             <button
-                                key={t}
-                                className={`segment-control__btn ${theme === t ? 'active' : ''}`}
-                                onClick={() => setTheme(t)}
+                                key={tOption}
+                                className={`segment-control__btn ${theme === tOption ? 'active' : ''}`}
+                                onClick={() => setTheme(tOption)}
                             >
-                                {t === 'dark' ? 'Sombre' : t === 'light' ? 'Clair' : 'Sépia'}
+                                {tOption === 'dark' ? t('settings.themeDark', 'Sombre') : tOption === 'light' ? t('settings.themeLight', 'Clair') : t('settings.themeSepia', 'Sépia')}
                             </button>
                         ))}
                     </div>
@@ -168,8 +170,8 @@ export function SettingsPage() {
                 <div className="settings-item">
                     <div className="settings-item__label">
                         <Stars size={18} style={{ marginRight: 8, color: '#c9a84c' }} />
-                        <span className="settings-item__title">Mode Nuit Étoilée</span>
-                        <span className="settings-item__description">Fond animé avec étoiles scintillantes</span>
+                        <span className="settings-item__title">{t('settings.starryMode', 'Mode Nuit Étoilée')}</span>
+                        <span className="settings-item__description">{t('settings.starryModeDesc', 'Fond animé avec étoiles scintillantes')}</span>
                     </div>
                     <button
                         className={`toggle ${starryMode ? 'active' : ''}`}
@@ -182,11 +184,11 @@ export function SettingsPage() {
 
             {/* Reading */}
             <section className="settings-section">
-                <h2 className="settings-section__title">Lecture</h2>
+                <h2 className="settings-section__title">{t('settings.reading', 'Lecture')}</h2>
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">Taille du texte arabe</span>
+                        <span className="settings-item__title">{t('settings.arabicFontSize', 'Taille du texte arabe')}</span>
                     </div>
                     <div className="segment-control">
                         {(['sm', 'md', 'lg', 'xl'] as ArabicFontSize[]).map((size) => (
@@ -203,7 +205,7 @@ export function SettingsPage() {
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">Espacement</span>
+                        <span className="settings-item__title">{t('settings.lineSpacing', 'Espacement')}</span>
                     </div>
                     <div className="slider-container">
                         <input
@@ -222,8 +224,8 @@ export function SettingsPage() {
                 {!isMobile && (
                     <div className="settings-item">
                         <div className="settings-item__label">
-                            <span className="settings-item__title">Afficher les règles de Tajwîd</span>
-                            <span className="settings-item__description">Coloriser le texte selon les règles</span>
+                            <span className="settings-item__title">{t('settings.showTajweed', 'Afficher les règles de Tajwîd')}</span>
+                            <span className="settings-item__description">{t('settings.tajweedDesc', 'Coloriser le texte selon les règles')}</span>
                         </div>
                         <button
                             className={`toggle ${tajwidEnabled ? 'active' : ''}`}
@@ -236,7 +238,7 @@ export function SettingsPage() {
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">Afficher la traduction</span>
+                        <span className="settings-item__title">{t('settings.showTranslation', 'Afficher la traduction')}</span>
                     </div>
                     <button
                         className={`toggle ${showTranslation ? 'active' : ''}`}
@@ -248,8 +250,8 @@ export function SettingsPage() {
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">Phonétique</span>
-                        <span className="settings-item__description">Prononciation en lettres latines</span>
+                        <span className="settings-item__title">{t('settings.phonetics', 'Phonétique')}</span>
+                        <span className="settings-item__description">{t('settings.phoneticsDesc', 'Prononciation en lettres latines')}</span>
                     </div>
                     <button
                         className={`toggle ${showTransliteration ? 'active' : ''}`}
@@ -262,11 +264,11 @@ export function SettingsPage() {
 
             {/* Audio */}
             <section className="settings-section">
-                <h2 className="settings-section__title">Audio</h2>
+                <h2 className="settings-section__title">{t('settings.audio', 'Audio')}</h2>
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">Récitateur</span>
+                        <span className="settings-item__title">{t('settings.reciter', 'Récitateur')}</span>
                     </div>
                     <select
                         className="reciter-select"
@@ -283,8 +285,8 @@ export function SettingsPage() {
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">Répétitions (Hifdh)</span>
-                        <span className="settings-item__description">Nombre de répétitions par défaut</span>
+                        <span className="settings-item__title">{t('settings.repeatCountHifdh', 'Répétitions (Hifdh)')}</span>
+                        <span className="settings-item__description">{t('settings.repeatCountDesc', 'Nombre de répétitions par défaut')}</span>
                     </div>
                     <div className="slider-container">
                         <input
@@ -303,7 +305,7 @@ export function SettingsPage() {
 
             {/* Notifications */}
             <section className="settings-section">
-                <h2 className="settings-section__title">🔔 Notifications</h2>
+                <h2 className="settings-section__title">🔔 {t('settings.notifications', 'Notifications')}</h2>
 
                 <div className="settings-item">
                     <div className="settings-item__label">
@@ -311,11 +313,11 @@ export function SettingsPage() {
                             ? <Bell size={18} style={{ marginRight: 8, color: '#4CAF50' }} />
                             : <BellOff size={18} style={{ marginRight: 8, color: '#999' }} />
                         }
-                        <span className="settings-item__title">Activer les notifications</span>
+                        <span className="settings-item__title">{t('settings.enableNotifications', 'Activer les notifications')}</span>
                         <span className="settings-item__description">
                             {permDenied
-                                ? 'Bloqué par le navigateur — active dans les paramètres'
-                                : 'Rappels de prière, hadith du jour, défis'}
+                                ? t('settings.notifBlocked', 'Bloqué par le navigateur — active dans les paramètres')
+                                : t('settings.notifDesc', 'Rappels de prière, hadith du jour, défis')}
                         </span>
                     </div>
                     <button
@@ -331,9 +333,9 @@ export function SettingsPage() {
                     <>
                         <div className="settings-item">
                             <div className="settings-item__label">
-                                <span className="settings-item__title">🕌 Rappels de prière</span>
+                                <span className="settings-item__title">🕌 {t('settings.prayerReminders', 'Rappels de prière')}</span>
                                 <span className="settings-item__description">
-                                    Notification avant chaque salat
+                                    {t('settings.prayerRemindersDesc', 'Notification avant chaque salat')}
                                 </span>
                             </div>
                             <button
@@ -347,7 +349,7 @@ export function SettingsPage() {
                         {notif.prayerEnabled && (
                             <div className="settings-item">
                                 <div className="settings-item__label">
-                                    <span className="settings-item__title">Minutes avant</span>
+                                    <span className="settings-item__title">{t('settings.minutesBefore', 'Minutes avant')}</span>
                                 </div>
                                 <div className="segment-control">
                                     {MINUTES_OPTIONS.map((m) => (
@@ -365,8 +367,8 @@ export function SettingsPage() {
 
                         <div className="settings-item">
                             <div className="settings-item__label">
-                                <span className="settings-item__title">📖 Hadith du jour</span>
-                                <span className="settings-item__description">Chaque matin à 8h</span>
+                                <span className="settings-item__title">📖 {t('settings.hadithOfDay', 'Hadith du jour')}</span>
+                                <span className="settings-item__description">{t('settings.hadithDesc', 'Chaque matin à 8h')}</span>
                             </div>
                             <button
                                 className={`toggle ${notif.hadithEnabled ? 'active' : ''}`}
@@ -378,8 +380,8 @@ export function SettingsPage() {
 
                         <div className="settings-item">
                             <div className="settings-item__label">
-                                <span className="settings-item__title">🏆 Défi quotidien</span>
-                                <span className="settings-item__description">Rappel à midi chaque jour</span>
+                                <span className="settings-item__title">🏆 {t('settings.dailyChallenge', 'Défi quotidien')}</span>
+                                <span className="settings-item__description">{t('settings.challengeDesc', 'Rappel à midi chaque jour')}</span>
                             </div>
                             <button
                                 className={`toggle ${notif.challengeEnabled ? 'active' : ''}`}
@@ -391,7 +393,7 @@ export function SettingsPage() {
 
                         <div className="settings-item">
                             <div className="settings-item__label">
-                                <span className="settings-item__title">🧪 Tester</span>
+                                <span className="settings-item__title">🧪 {t('settings.test', 'Tester')}</span>
                             </div>
                             <button
                                 onClick={handleTest}
@@ -406,7 +408,7 @@ export function SettingsPage() {
                                     transition: 'all 0.3s',
                                 }}
                             >
-                                {testSent ? '✅ Envoyée !' : '🔔 Envoyer un test'}
+                                {testSent ? `✅ ${t('settings.testSent', 'Envoyée !')}` : `🔔 ${t('settings.sendTest', 'Envoyer un test')}`}
                             </button>
                         </div>
                     </>
@@ -418,6 +420,6 @@ export function SettingsPage() {
                 <p>Quran Coach App — Version 0.0.0 (Build b6819da)</p>
                 <p>© 2026</p>
             </div>
-        </div>
+        </div >
     );
 }
