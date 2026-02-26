@@ -5,48 +5,48 @@
         "madeWith": "Made with ❤️"
     },
     "nav": {
-        "home": "Accueil",
-        "read": "Lecture",
-        "listen": "Écoute",
-        "memorize": "Mémorisation",
-        "prophets": "Prophètes"
+        "home": "Home",
+        "read": "Read",
+        "listen": "Listen",
+        "memorize": "Memorize",
+        "prophets": "Prophets"
     },
     "sideMenu": {
         "notifications": "Notifications",
-        "enabled": "Activées",
-        "disabled": "Désactivées",
-        "quickAccess": "Accès Rapide",
-        "tools": "Outils",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "quickAccess": "Quick Access",
+        "tools": "Tools",
         "quiz": "Quiz",
         "qibla": "Qibla",
-        "prayers": "Prières",
-        "themes": "Thèmes",
+        "prayers": "Prayers",
+        "themes": "Themes",
         "adhkar": "Adhkar",
-        "listen": "Écoute",
+        "listen": "Listen",
         "hadiths": "Hadiths",
         "tafsir": "Tafsir",
         "sentinel": "Sentinelle Spirituelle",
-        "settings": "Réglages",
-        "language": "Langue"
+        "settings": "Settings",
+        "language": "Language"
     },
     "home": {
-        "nextPrayer": "Prochaine prière",
-        "in": "dans",
-        "essentialSurahs": "Sourates essentielles",
-        "hadithOfDay": "Hadith du Jour",
+        "nextPrayer": "Next prayer",
+        "in": "in",
+        "essentialSurahs": "Essential Surahs",
+        "hadithOfDay": "Hadith of the Day",
         "dhikr": "Dhikr",
         "shortcuts": "Raccourcis",
-        "more": "Voir plus",
+        "more": "See more",
         "khatm": "Khatm",
-        "progress": "Progression",
+        "progress": "Progress",
         "series": "séries",
         "before": "avant",
         "after": "après",
-        "seeMore": "Voir plus"
+        "seeMore": "See more"
     },
     "prayer": {
         "nextPrayer": "PROCHAINE PRIÈRE",
-        "title": "Prières",
+        "title": "Prayers",
         "calculating": "Calcul des horaires…",
         "error": "Erreur de calcul. Vérifiez votre connexion et réessayez.",
         "impossible": "Impossible de calculer les horaires.",
@@ -100,9 +100,9 @@
         "witrNote": "+ Witr (1 à 11 rak'at)",
         "beforePrayer": "avant",
         "afterPrayer": "après",
-        "nocturnal": "Prières nocturnes",
-        "momentLinked": "Prières liées à un moment",
-        "causeLinked": "Prières liées à une cause",
+        "nocturnal": "Prayers nocturnes",
+        "momentLinked": "Prayers liées à un moment",
+        "causeLinked": "Prayers liées à une cause",
         "witr": "Witr",
         "witrDesc": "Après Isha — très recommandée, quasi-obligatoire",
         "tahajjud": "Tahajjud",
@@ -135,7 +135,7 @@
         "searchPlaceholder": "Rechercher une invocation...",
         "collections": "Collections",
         "chapters": "chapitres",
-        "memorizeTooltip": "Pratiquer dans le Hifdh Studio",
+        "memorizeTooltip": "Pratiquer in le Hifdh Studio",
         "memorize": "Mémoriser",
         "title": "Adhkar",
         "morning": "Adhkar du Matin",
@@ -146,7 +146,7 @@
         "rabbana": "Rabbana",
         "search": "Rechercher...",
         "repeat": "répétitions",
-        "listen": "Écouter",
+        "listen": "Listenr",
         "copied": "Copié !",
         "count": "compteur"
     },
@@ -167,7 +167,7 @@
         "finish": "Terminer",
         "results": "Résultats",
         "playAgain": "Rejouer",
-        "themes": "Thèmes",
+        "themes": "Themes",
         "start": "Commencer"
     },
     "hifdh": {
@@ -184,7 +184,7 @@
         "disableWordSelection": "Désactiver la sélection de mots",
         "enableWordSelection": "Activer la sélection de mots en boucle",
         "activeWordLoop": "Boucle active de mots",
-        "nextVerseDelay": "✓ Verset suivant dans 2s…",
+        "nextVerseDelay": "✓ Verset suivant in 2s…",
         "showPhonetics": "Afficher la phonétique",
         "phonetics": "Phonétique",
         "reps": "{{current}}/{{max}} reps",
@@ -204,10 +204,10 @@
         "pause": "Pause",
         "repeat": "Répéter",
         "speed": "Vitesse",
-        "settings": "Réglages"
+        "settings": "Settings"
     },
     "listen": {
-        "title": "Écoute",
+        "title": "Listen",
         "reciters": "Récitateurs",
         "playlists": "Playlists",
         "resume": "Reprendre",
@@ -217,7 +217,7 @@
         "noPlaylists": "Aucune playlist"
     },
     "prophets": {
-        "title": "Prophètes",
+        "title": "Prophets",
         "companions": "Compagnons",
         "lineage": "Lignée",
         "sanad": "Chaîne de transmission",
@@ -225,7 +225,7 @@
         "verses": "Versets"
     },
     "themes": {
-        "title": "Thèmes Coraniques",
+        "title": "Themes Coraniques",
         "search": "Rechercher un thème...",
         "verses": "versets"
     },
@@ -263,8 +263,8 @@
         "maintenance": "Cette fonctionnalité est en cours de développement."
     },
     "settings": {
-        "testNotificationFailed": "Vérifiez que les notifications sont autorisées dans votre navigateur.",
-        "title": "Réglages",
+        "testNotificationFailed": "Vérifiez que les notifications sont autorisées in votre navigateur.",
+        "title": "Settings",
         "appearance": "Apparence",
         "theme": "Thème",
         "themeDark": "Sombre",
@@ -272,7 +272,7 @@
         "themeSepia": "Sépia",
         "starryMode": "Mode Nuit Étoilée",
         "starryModeDesc": "Fond animé avec étoiles scintillantes",
-        "reading": "Lecture",
+        "reading": "Read",
         "arabicFontSize": "Taille du texte arabe",
         "lineSpacing": "Espacement",
         "showTajweed": "Afficher les règles de Tajwîd",
@@ -286,7 +286,7 @@
         "repeatCountDesc": "Nombre de répétitions par défaut",
         "notifications": "Notifications",
         "enableNotifications": "Activer les notifications",
-        "notifBlocked": "Bloqué par le navigateur — active dans les paramètres",
+        "notifBlocked": "Bloqué par le navigateur — active in les paramètres",
         "notifDesc": "Rappels de prière, hadith du jour, défis",
         "prayerReminders": "Rappels de prière",
         "prayerRemindersDesc": "Notification avant chaque salat",
@@ -298,8 +298,8 @@
         "test": "Tester",
         "testSent": "Envoyée !",
         "sendTest": "Envoyer un test",
-        "prayerSettings": "Réglages de prière",
-        "language": "Langue",
+        "prayerSettings": "Settings de prière",
+        "language": "Language",
         "about": "À propos"
     },
     "common": {
@@ -355,7 +355,7 @@
         "verses": "versets",
         "meccan": "Mecquoise",
         "medinan": "Médinoise",
-        "searchingVerses": "Recherche dans les versets...",
+        "searchingVerses": "Recherche in les versets...",
         "versesFound": "{{count}} verset(s) trouvé(s)",
         "verse": "Verset",
         "shareVerse": "Partager le verset",
