@@ -61,6 +61,39 @@ const TOTAL_MUAKKADAH_RAKAAT = SUNNAN_RAWATIB
     .filter(s => s.muakkadah)
     .reduce((sum, s) => sum + s.before + s.after, 0); // = 12
 
+// ─── Nawafil Data (other categories) ───────────────────
+
+interface NafilEntry {
+    id: string;
+    name: string;
+    nameAr: string;
+    emoji: string;
+    rakaat: string;
+    desc: string;
+}
+
+const PRIERES_NOCTURNES: NafilEntry[] = [
+    { id: 'witr', name: 'Witr', nameAr: 'الوتر', emoji: '🌙', rakaat: '1, 3, 5, 7 ou 11', desc: 'Après Isha — très recommandée, quasi-obligatoire' },
+    { id: 'tahajjud', name: 'Tahajjud', nameAr: 'التهجد', emoji: '🌃', rakaat: '2 par 2 + Witr', desc: 'Dernier tiers de la nuit — la meilleure après les obligatoires' },
+    { id: 'tarawih', name: 'Tarawih', nameAr: 'التراويح', emoji: '✨', rakaat: '8 ou 20', desc: 'Après Isha, spécifique au Ramadan' },
+];
+
+const PRIERES_MOMENT: NafilEntry[] = [
+    { id: 'ishraq', name: 'Ishraq', nameAr: 'الإشراق', emoji: '☀️', rakaat: '2', desc: '~15-20 min après le lever du soleil' },
+    { id: 'doha', name: 'Doha', nameAr: 'الضحى', emoji: '🌞', rakaat: '2 à 12', desc: 'Matinée (entre lever du soleil et Dhouhr)' },
+];
+
+const PRIERES_CAUSE: NafilEntry[] = [
+    { id: 'istikharah', name: 'Istikhârah', nameAr: 'الاستخارة', emoji: '🧩', rakaat: '2', desc: 'Avant une décision importante' },
+    { id: 'tawbah', name: 'Tawbah', nameAr: 'التوبة', emoji: '🙏', rakaat: '2', desc: 'Repentir sincère' },
+    { id: 'hajah', name: 'Hâjah', nameAr: 'الحاجة', emoji: '🤲', rakaat: '2', desc: 'Besoin ou demande' },
+    { id: 'shukr', name: 'Shukr', nameAr: 'الشكر', emoji: '💚', rakaat: '2', desc: 'Gratitude envers Allah' },
+    { id: 'tahiyyat', name: 'Tahiyyat al-Masjid', nameAr: 'تحية المسجد', emoji: '🕌', rakaat: '2', desc: 'En entrant à la mosquée' },
+    { id: 'wudu', name: 'Sunnat al-Woudou', nameAr: 'سنة الوضوء', emoji: '💧', rakaat: '2', desc: 'Après les ablutions' },
+    { id: 'kusuf', name: 'Kusuf / Khusuf', nameAr: 'الكسوف', emoji: '🌑', rakaat: '2 (spéciales)', desc: 'Éclipse solaire ou lunaire' },
+    { id: 'istisqaa', name: 'Istisqâ', nameAr: 'الاستسقاء', emoji: '🌧️', rakaat: '2', desc: 'Demande de pluie' },
+];
+
 // ─── Sunnan Tracker Hook ─────────────────────────────────
 
 function useSunnanTracker() {
@@ -191,6 +224,7 @@ export function PrayerTimesPage() {
     const [showComparator, setShowComparator] = useState(false);
     const [showTransparency, setShowTransparency] = useState(false);
     const sunnan = useSunnanTracker();
+    const [showNawafil, setShowNawafil] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [dayResult, setDayResult] = useState<DayResult | null>(null);
@@ -460,73 +494,148 @@ export function PrayerTimesPage() {
                         <Trophy size={18} />
                         <span>Adhkars après Salat</span>
                     </button>
-                    <div className="prayer-action-card prayer-action-card--badge">
+                    <button className={`prayer-action-card prayer-action-card--badge ${showNawafil ? 'prayer-action-card--active' : ''}`} onClick={() => setShowNawafil(!showNawafil)}>
                         <Sun size={18} />
-                        <span>Sunnan du jour</span>
+                        <span>Nawâfil</span>
                         <span className="prayer-action-badge">{sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT}</span>
-                    </div>
+                    </button>
                 </div>
 
-                {/* Sunnan Rawatib Tracker */}
-                <div className="sunnan-section">
-                    <div className="sunnan-section__title">
-                        <Sun size={14} />
-                        <span>Sunnan Rawâtib</span>
-                        <span className="sunnan-section__badge">
-                            {sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT} rak'at
-                        </span>
-                    </div>
-                    <div className="sunnan-section__subtitle">
-                        12 rak'at confirmées = une maison au Paradis
-                    </div>
-                    <div className="sunnan-grid">
-                        {SUNNAN_RAWATIB.map(s => {
-                            const beforeKey = `${s.prayer}-before`;
-                            const afterKey = `${s.prayer}-after`;
-                            const hasBefore = s.before > 0;
-                            const hasAfter = s.after > 0;
-                            const beforeDone = sunnan.isChecked(beforeKey);
-                            const afterDone = sunnan.isChecked(afterKey);
-                            const allDone = (!hasBefore || beforeDone) && (!hasAfter || afterDone);
-                            const noSunna = !hasBefore && !hasAfter;
+                {/* Nawafil Section (collapsible) */}
+                {showNawafil && (
+                    <div className="nawafil-panel">
 
-                            return (
-                                <div key={s.prayer} className={`sunnan-card ${allDone && !noSunna ? 'sunnan-card--done' : ''} ${noSunna ? 'sunnan-card--empty' : ''}`}>
-                                    <div className="sunnan-card__header">
-                                        <span className="sunnan-card__emoji">{s.emoji}</span>
-                                        <span className="sunnan-card__name">{s.label}</span>
-                                        {s.muakkadah && <span className="sunnan-card__star">⭐</span>}
-                                    </div>
-                                    {noSunna ? (
-                                        <div className="sunnan-card__empty">—</div>
-                                    ) : (
-                                        <div className="sunnan-card__checks">
-                                            {hasBefore && (
-                                                <button
-                                                    className={`sunnan-check ${beforeDone ? 'sunnan-check--done' : ''}`}
-                                                    onClick={() => sunnan.toggle(beforeKey)}
-                                                >
-                                                    {beforeDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
-                                                    <span>{s.before} avant</span>
-                                                </button>
+                        {/* 1. Sunnan Rawatib */}
+                        <div className="sunnan-section">
+                            <div className="sunnan-section__title">
+                                <Sun size={14} />
+                                <span>Sunnan Rawâtib</span>
+                                <span className="sunnan-section__badge">
+                                    {sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT} rak'at
+                                </span>
+                            </div>
+                            <div className="sunnan-section__subtitle">
+                                12 rak'at confirmées = une maison au Paradis
+                            </div>
+                            <div className="sunnan-grid">
+                                {SUNNAN_RAWATIB.map(s => {
+                                    const beforeKey = `${s.prayer}-before`;
+                                    const afterKey = `${s.prayer}-after`;
+                                    const hasBefore = s.before > 0;
+                                    const hasAfter = s.after > 0;
+                                    const beforeDone = sunnan.isChecked(beforeKey);
+                                    const afterDone = sunnan.isChecked(afterKey);
+                                    const allDone = (!hasBefore || beforeDone) && (!hasAfter || afterDone);
+                                    const noSunna = !hasBefore && !hasAfter;
+
+                                    return (
+                                        <div key={s.prayer} className={`sunnan-card ${allDone && !noSunna ? 'sunnan-card--done' : ''} ${noSunna ? 'sunnan-card--empty' : ''}`}>
+                                            <div className="sunnan-card__header">
+                                                <span className="sunnan-card__emoji">{s.emoji}</span>
+                                                <span className="sunnan-card__name">{s.label}</span>
+                                                {s.muakkadah && <span className="sunnan-card__star">⭐</span>}
+                                            </div>
+                                            {noSunna ? (
+                                                <div className="sunnan-card__empty">—</div>
+                                            ) : (
+                                                <div className="sunnan-card__checks">
+                                                    {hasBefore && (
+                                                        <button
+                                                            className={`sunnan-check ${beforeDone ? 'sunnan-check--done' : ''}`}
+                                                            onClick={() => sunnan.toggle(beforeKey)}
+                                                        >
+                                                            {beforeDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
+                                                            <span>{s.before} avant</span>
+                                                        </button>
+                                                    )}
+                                                    {hasAfter && (
+                                                        <button
+                                                            className={`sunnan-check ${afterDone ? 'sunnan-check--done' : ''}`}
+                                                            onClick={() => sunnan.toggle(afterKey)}
+                                                        >
+                                                            {afterDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
+                                                            <span>{s.after} après</span>
+                                                        </button>
+                                                    )}
+                                                </div>
                                             )}
-                                            {hasAfter && (
-                                                <button
-                                                    className={`sunnan-check ${afterDone ? 'sunnan-check--done' : ''}`}
-                                                    onClick={() => sunnan.toggle(afterKey)}
-                                                >
-                                                    {afterDone ? <Check size={12} /> : <span className="sunnan-check__circle" />}
-                                                    <span>{s.after} après</span>
-                                                </button>
-                                            )}
+                                            {s.note && <div className="sunnan-card__note">{s.note}</div>}
                                         </div>
-                                    )}
-                                    {s.note && <div className="sunnan-card__note">{s.note}</div>}
-                                </div>
-                            );
-                        })}
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* 2. Prières Nocturnes */}
+                        <div className="nawafil-category">
+                            <div className="nawafil-category__title">
+                                <Moon size={14} />
+                                <span>Prières nocturnes</span>
+                            </div>
+                            <div className="nawafil-list">
+                                {PRIERES_NOCTURNES.map(p => (
+                                    <div key={p.id} className="nawafil-item">
+                                        <span className="nawafil-item__emoji">{p.emoji}</span>
+                                        <div className="nawafil-item__content">
+                                            <div className="nawafil-item__header">
+                                                <span className="nawafil-item__name">{p.name}</span>
+                                                <span className="nawafil-item__ar">{p.nameAr}</span>
+                                            </div>
+                                            <div className="nawafil-item__rakaat">{p.rakaat} rak'at</div>
+                                            <div className="nawafil-item__desc">{p.desc}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 3. Prières liées à un moment */}
+                        <div className="nawafil-category">
+                            <div className="nawafil-category__title">
+                                <Clock size={14} />
+                                <span>Prières liées à un moment</span>
+                            </div>
+                            <div className="nawafil-list">
+                                {PRIERES_MOMENT.map(p => (
+                                    <div key={p.id} className="nawafil-item">
+                                        <span className="nawafil-item__emoji">{p.emoji}</span>
+                                        <div className="nawafil-item__content">
+                                            <div className="nawafil-item__header">
+                                                <span className="nawafil-item__name">{p.name}</span>
+                                                <span className="nawafil-item__ar">{p.nameAr}</span>
+                                            </div>
+                                            <div className="nawafil-item__rakaat">{p.rakaat} rak'at</div>
+                                            <div className="nawafil-item__desc">{p.desc}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 4. Prières liées à une cause */}
+                        <div className="nawafil-category">
+                            <div className="nawafil-category__title">
+                                <Info size={14} />
+                                <span>Prières liées à une cause</span>
+                            </div>
+                            <div className="nawafil-list">
+                                {PRIERES_CAUSE.map(p => (
+                                    <div key={p.id} className="nawafil-item">
+                                        <span className="nawafil-item__emoji">{p.emoji}</span>
+                                        <div className="nawafil-item__content">
+                                            <div className="nawafil-item__header">
+                                                <span className="nawafil-item__name">{p.name}</span>
+                                                <span className="nawafil-item__ar">{p.nameAr}</span>
+                                            </div>
+                                            <div className="nawafil-item__rakaat">{p.rakaat} rak'at</div>
+                                            <div className="nawafil-item__desc">{p.desc}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* High latitude warning */}
                 {highLatWarning && (

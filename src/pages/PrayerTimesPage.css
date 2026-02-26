@@ -434,6 +434,91 @@
     font-style: italic;
 }
 
+/* ─── Nawafil Panel & Categories ─── */
+.prayer-action-card--active {
+    border-color: rgba(var(--gold-rgb, 201, 168, 76), 0.4) !important;
+    background: rgba(var(--gold-rgb, 201, 168, 76), 0.08) !important;
+}
+
+.nawafil-panel {
+    animation: fadeIn 0.3s ease;
+    margin-bottom: 24px;
+}
+
+.nawafil-category {
+    margin-top: 20px;
+}
+
+.nawafil-category__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    padding: 0 4px;
+}
+
+.nawafil-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nawafil-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+}
+
+.nawafil-item__emoji {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.nawafil-item__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.nawafil-item__header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.nawafil-item__name {
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.nawafil-item__ar {
+    font-family: var(--font-arabic, 'Amiri', serif);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.nawafil-item__rakaat {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 2px;
+}
+
+.nawafil-item__desc {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    opacity: 0.75;
+    line-height: 1.3;
+}
+
 
 /* ─── Prayer List Redux ─── */
 .prayer-list {
