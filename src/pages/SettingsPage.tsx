@@ -169,6 +169,26 @@ export function SettingsPage() {
 
                 <div className="settings-item">
                     <div className="settings-item__label">
+                        <span className="settings-item__title">{t('settings.language', 'Langue')}</span>
+                    </div>
+                    <div className="segment-control">
+                        {(['fr', 'en', 'ar']).map((langUrl) => (
+                            <button
+                                key={langUrl}
+                                className={`segment-control__btn ${localStorage.getItem('i18nextLng')?.startsWith(langUrl) || (langUrl === 'fr' && !localStorage.getItem('i18nextLng')) ? 'active' : ''}`}
+                                onClick={() => {
+                                    localStorage.setItem('i18nextLng', langUrl);
+                                    window.location.reload();
+                                }}
+                            >
+                                {langUrl === 'fr' ? 'Français' : langUrl === 'en' ? 'English' : 'العربية'}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="settings-item">
+                    <div className="settings-item__label">
                         <Stars size={18} style={{ marginRight: 8, color: '#c9a84c' }} />
                         <span className="settings-item__title">{t('settings.starryMode', 'Mode Nuit Étoilée')}</span>
                         <span className="settings-item__description">{t('settings.starryModeDesc', 'Fond animé avec étoiles scintillantes')}</span>
