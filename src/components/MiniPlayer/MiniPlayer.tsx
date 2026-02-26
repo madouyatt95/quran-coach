@@ -6,6 +6,7 @@ import {
 import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
 import { useListenStore } from '../../stores/listenStore';
 import { useState } from 'react';
+import { DownloadButton } from '../DownloadButton';
 import './MiniPlayer.css';
 
 export function MiniPlayer() {
@@ -197,7 +198,17 @@ export function MiniPlayer() {
                     </div>
 
                     <div className="mini-player__tabs-header">
-                        <ListMusic size={14} /> File d'attente ({playlist.length})
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <ListMusic size={14} /> File d'attente ({playlist.length})
+                        </div>
+                        {playlist.length > 0 && playbackType === 'surah' && (
+                            <DownloadButton
+                                id={`playlist-${playlist[0].surahNumber}-${useAudioPlayerStore.getState().reciterId}`}
+                                title={`Playlist : ${playlist[0].surahName}`}
+                                urls={playlist.reduce<string[]>((acc, item) => { if (item.audioUrl) acc.push(item.audioUrl); return acc; }, [])}
+                                sampleUrlForCheck={playlist[0].audioUrl}
+                            />
+                        )}
                     </div>
 
                     <div className="mini-player__scroll">

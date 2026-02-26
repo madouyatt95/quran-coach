@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useListenStore } from '../stores/listenStore';
 import { useAssetsStore } from '../stores/assetsStore';
-import { useDownloadStore } from '../stores/downloadStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { useQuranStore } from '../stores/quranStore';
 import { mp3QuranApi, ARABIC_FRENCH_COLLECTION, OMAR_HISHAM_COLLECTION } from '../lib/mp3QuranApi';
 import { SURAH_NAMES_FR } from '../components/Mushaf/mushafConstants';
 import { getReciterColor } from '../lib/assetPipeline';
 import { trackAudioPlay } from '../lib/analyticsService';
-import { ChevronLeft, Play, Download, CheckCircle2, Clock, Plus } from 'lucide-react';
+import { ChevronLeft, Play, Plus } from 'lucide-react';
 import { AddToPlaylistModal } from '../components/Playlist/AddToPlaylistModal';
 import { useTranslation } from 'react-i18next';
+import { DownloadButton } from '../components/DownloadButton';
 import type { PlaylistItem } from '../types';
 import './ReciterDetailPage.css';
 
@@ -22,7 +22,6 @@ export function ReciterDetailPage() {
     const { reciters } = useListenStore();
     const { assets } = useAssetsStore();
     const { surahs: quranSurahs } = useQuranStore();
-    const { isDownloaded, downloadSurah, removeDownload, isDownloading } = useDownloadStore();
     const { setPlaylist, isPlaying, currentSurahNumber } = useAudioPlayerStore();
 
     const [surahs, setSurahs] = useState<any[]>([]);
@@ -148,8 +147,6 @@ export function ReciterDetailPage() {
                     <div className="surah-rows">
                         {surahs.map(surah => {
                             const isCurrent = currentSurahNumber === surah.id && isPlaying;
-                            const downloaded = isDownloaded(reciter.id.toString(), surah.id);
-                            const downloading = isDownloading.has(`${reciter.id}-${surah.id}`);
                             const qSurah = quranSurahs.find(qs => qs.number === surah.id);
                             const transliteration = qSurah?.englishName.toUpperCase().replace('-', ' ');
                             const isAvailable = !isCustom || customCollection!.surahs.includes(surah.id);
@@ -199,26 +196,12 @@ export function ReciterDetailPage() {
                                             >
                                                 <Plus size={20} />
                                             </button>
-                                            {downloading ? (
-                                                <Clock size={20} className="icon-downloading" />
-                                            ) : downloaded ? (
-                                                <div className="downloaded-badge" onClick={() => removeDownload(reciter.id.toString(), surah.id)}>
-                                                    <CheckCircle2 size={20} color="#4CAF50" />
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    className="action-btn"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        const url = isCustom
-                                                            ? customCollection!.getAudioUrl(surah.id)
-                                                            : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
-                                                        downloadSurah(reciter.id.toString(), surah.id, url);
-                                                    }}
-                                                >
-                                                    <Download size={20} />
-                                                </button>
-                                            )}
+                                            <DownloadButton
+                                                id={`surah-${surah.id}-${reciter.id}`}
+                                                title={`${SURAH_NAMES_FR[surah.id] || surah.name} - ${reciter.name}`}
+                                                urls={[isCustom ? customCollection!.getAudioUrl(surah.id) : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id)]}
+                                                sampleUrlForCheck={isCustom ? customCollection!.getAudioUrl(surah.id) : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id)}
+                                            />
                                             <button className="action-btn play-btn" onClick={(e) => { e.stopPropagation(); handlePlaySurah(surah); }}>
                                                 {isCurrent ? <div className="playing-bars"><span></span><span></span><span></span></div> : <Play size={20} />}
                                             </button>

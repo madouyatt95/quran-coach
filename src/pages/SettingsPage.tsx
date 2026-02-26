@@ -11,8 +11,9 @@ import {
 import { usePrayerStore } from '../stores/prayerStore';
 import { resolveCoords } from '../lib/locationService';
 import type { Theme, ArabicFontSize } from '../types';
-import { Stars, Bell, BellOff } from 'lucide-react';
+import { Stars, Bell, BellOff, HardDrive, Server, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import './SettingsPage.css';
 
 const RECITERS = [
@@ -28,6 +29,7 @@ const MINUTES_OPTIONS = [5, 10, 15, 30];
 
 export function SettingsPage() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const {
         theme,
         setTheme,
@@ -145,6 +147,23 @@ export function SettingsPage() {
     return (
         <div className="settings-page">
             <h1 className="settings-page__header">{t('settings.title', 'Réglages')}</h1>
+
+            {/* General */}
+            <section className="settings-section">
+                <h2 className="settings-section__title">{t('settings.general', 'Général')}</h2>
+
+                <button className="settings-section__card settings-link" onClick={() => navigate('/admin/assets')}>
+                    <span className="settings-link__icon"><Server size={20} /></span>
+                    <span className="settings-link__text">Gestion des Assets (Admin)</span>
+                    <ChevronRight size={20} className="settings-link__chevron" />
+                </button>
+
+                <button className="settings-section__card settings-link" onClick={() => navigate('/storage')}>
+                    <span className="settings-link__icon"><HardDrive size={20} color="#c9a84c" /></span>
+                    <span className="settings-link__text">Stockage Hors-Ligne</span>
+                    <ChevronRight size={20} className="settings-link__chevron" />
+                </button>
+            </section>
 
             {/* Appearance */}
             <section className="settings-section">

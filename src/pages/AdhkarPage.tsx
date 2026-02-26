@@ -5,6 +5,8 @@ import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, 
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { formatDivineNames } from '../lib/divineNames';
+import { DownloadButton } from '../components/DownloadButton';
+import { getAdhkarAudioUrl } from '../lib/adhkarAudioService';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -691,8 +693,21 @@ export function AdhkarPage() {
                     <h1>{t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name)}</h1>
                     <span className="arabic-text">{selectedCategory.nameAr}</span>
                 </div>
-                <div className="progress-pill">
-                    {currentDhikrIndex + 1} / {selectedCategory.adhkar.length}
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {/* On extrait les URL Hisnul Muslim valides (hors Rabanna qui nécessite un traitement asynchrone pour extraire l'audio de Mishary) */}
+                    {selectedCategory.adhkar.map(d => getAdhkarAudioUrl(selectedCategory.id, d.id)).filter(Boolean).length > 0 && (
+                        <DownloadButton
+                            id={`adhkar-${selectedCategory.id}`}
+                            title={t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name)}
+                            urls={selectedCategory.adhkar.map(d => getAdhkarAudioUrl(selectedCategory.id, d.id)).filter(Boolean) as string[]}
+                            sampleUrlForCheck={getAdhkarAudioUrl(selectedCategory.id, selectedCategory.adhkar[0].id) || undefined}
+                        />
+                    )}
+
+                    <div className="progress-pill">
+                        {currentDhikrIndex + 1} / {selectedCategory.adhkar.length}
+                    </div>
                 </div>
             </div>
 

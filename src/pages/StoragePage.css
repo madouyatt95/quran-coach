@@ -1,0 +1,202 @@
+.storage-page {
+    min-height: 100vh;
+    background: #0d1117;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.storage-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    position: sticky;
+    top: 0;
+    background: rgba(13, 17, 23, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.storage-header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px;
+    margin: -8px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.storage-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.storage-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.master-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    background: linear-gradient(145deg, rgba(201, 168, 76, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-color: rgba(201, 168, 76, 0.2);
+}
+
+.storage-card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.storage-card-title h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.storage-card-title p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.storage-size {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #c9a84c;
+    text-shadow: 0 2px 10px rgba(201, 168, 76, 0.3);
+}
+
+.storage-btn-clear {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+    border: 1px solid rgba(244, 67, 54, 0.2);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.storage-btn-clear:hover {
+    background: rgba(244, 67, 54, 0.2);
+}
+
+.info-card {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem;
+    background: rgba(79, 172, 254, 0.05);
+    border-color: rgba(79, 172, 254, 0.15);
+}
+
+.info-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.storage-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1rem 0 0 0;
+    padding-left: 0.5rem;
+}
+
+.storage-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.storage-empty p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.95rem;
+}
+
+.storage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.storage-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.storage-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.storage-item-title {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.storage-item-sub {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.storage-item-delete {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.storage-item-delete:hover {
+    color: #F44336;
+}

@@ -45,7 +45,12 @@ function parseQuranicSource(source?: string): { surah: number; ayah: number; isR
 function playHisnMP3(duaId: number, options?: { rate?: number; onEnd?: () => void }): Promise<boolean> {
     return new Promise((resolve) => {
         const audio = getAdhkarAudio();
-        const mp3Url = `${import.meta.env.BASE_URL}audio/hisn/dua_${duaId}.mp3`;
+        const mp3Url = getAdhkarAudioUrl('hisn_', duaId);
+        if (!mp3Url) {
+            resolve(false);
+            return;
+        }
+
         audio.src = mp3Url;
         audio.playbackRate = options?.rate || 1.0;
 
@@ -62,6 +67,17 @@ function playHisnMP3(duaId: number, options?: { rate?: number; onEnd?: () => voi
             resolve(false);
         });
     });
+}
+
+/**
+ * Retourne l'URL du fichier MP3 si la catégorie correspond à Hisnul Muslim.
+ * Utilisé pour le système de téléchargement Offline-First.
+ */
+export function getAdhkarAudioUrl(categoryId: string, duaId: number): string | null {
+    if (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_')) {
+        return `${import.meta.env.BASE_URL}audio/hisn/dua_${duaId}.mp3`;
+    }
+    return null; // Les autres (comme Rabanna) nécessitent un appel asynchrone à l'API Quran.com
 }
 
 /**
