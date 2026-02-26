@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { X, Stars, Bell, BellOff, ShieldCheck, Globe } from 'lucide-react';
+import { X, Stars, Bell, BellOff, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { usePrayerStore } from '../../stores/prayerStore';
@@ -16,14 +16,8 @@ interface SideMenuProps {
     onClose: () => void;
 }
 
-const LANGUAGES = [
-    { code: 'fr', label: '🇫🇷 FR', full: 'Français' },
-    { code: 'en', label: '🇬🇧 EN', full: 'English' },
-    { code: 'wo', label: '🇸🇳 WO', full: 'Wolof' },
-];
-
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const notif = useNotificationStore();
     const prayer = usePrayerStore();
     const [isLoading, setIsLoading] = useState(false);
@@ -75,10 +69,6 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         }
     };
 
-    const changeLanguage = (code: string) => {
-        i18n.changeLanguage(code);
-    };
-
     const SHORTCUTS = [
         { path: '/quiz', emoji: '⚔️', label: t('sideMenu.quiz'), color: 'rgba(201,168,76,0.2)' },
         { path: '/qibla', emoji: '🧭', label: t('sideMenu.qibla'), color: 'rgba(201,168,76,0.2)' },
@@ -128,21 +118,6 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                             </div>
                             <div className={`side-menu-switch ${notif.enabled ? 'active' : ''}`}>
                                 <div className="side-menu-switch-knob" />
-                            </div>
-                        </div>
-
-                        <div className="side-menu-lang-row">
-                            <Globe size={14} color="var(--text-secondary)" />
-                            <div className="side-menu-lang-pills">
-                                {LANGUAGES.map(lang => (
-                                    <button
-                                        key={lang.code}
-                                        className={`side-menu-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
-                                        onClick={() => changeLanguage(lang.code)}
-                                    >
-                                        {lang.label}
-                                    </button>
-                                ))}
                             </div>
                         </div>
                     </div>
