@@ -15,6 +15,7 @@ import {
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useKhatmStore } from '../../stores/khatmStore';
+import { useTranslation } from 'react-i18next';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
 // import { fetchTajweedPage } from '../../lib/tajweedService'; // Optional, might need surah version later
@@ -36,6 +37,7 @@ import type { MaskMode } from './mushafConstants';
 import './MushafPage.css';
 
 export function MushafPage() {
+    const { t } = useTranslation();
     const {
         currentPage, surahs, setSurahs,
         setCurrentPage, setCurrentAyah,
@@ -301,7 +303,7 @@ export function MushafPage() {
             }
 
         }).catch(() => {
-            setError('Impossible de charger la sourate. Vérifiez votre connexion.');
+            setError(t('error.fetchSurah', 'Impossible de charger la sourate. Vérifiez votre connexion.'));
             setIsLoading(false);
         });
     }, [currentSurah, showTranslation, showTransliteration]);
@@ -397,7 +399,7 @@ export function MushafPage() {
             <div className="mushaf-page">
                 <div className="mih-loading">
                     <Loader2 size={32} className="animate-spin" />
-                    <p>تحميل...</p>
+                    <p>{t('common.loading', 'تحميل...')}</p>
                 </div>
             </div>
         );
@@ -409,7 +411,7 @@ export function MushafPage() {
                 <div className="mih-error">
                     <p>{error}</p>
                     <button className="mih-error__btn" onClick={() => window.location.reload()}>
-                        Réessayer
+                        {t('common.retry', 'Réessayer')}
                     </button>
                 </div>
             </div>
@@ -429,7 +431,7 @@ export function MushafPage() {
                             {SURAH_NAMES_FR[currentSurah]}
                         </div>
                         <div className="mih-header__page-num">
-                            Page {toArabicNumbers(currentPage)} • Juz {juzNumber}
+                            {t('mushaf.page', 'Page')} {toArabicNumbers(currentPage)} • {t('mushaf.juz', 'Juz')} {juzNumber}
                         </div>
                     </div>
                 </div>
@@ -528,8 +530,8 @@ export function MushafPage() {
                         />
                         <span className="mih-pull-indicator__text">
                             {navigation.pullIndicator.progress >= 1
-                                ? (navigation.pullIndicator.direction === 'up' ? '← Page précédente' : 'Page suivante →')
-                                : 'Tirez pour changer de page'
+                                ? (navigation.pullIndicator.direction === 'up' ? `← ${t('mushaf.prevPage', 'Page précédente')}` : `${t('mushaf.nextPage', 'Page suivante')} →`)
+                                : t('mushaf.pullToChange', 'Tirez pour changer de page')
                             }
                         </span>
                     </div>

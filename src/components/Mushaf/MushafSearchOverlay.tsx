@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { searchQuran } from '../../lib/quranApi';
 import { SURAH_NAMES_FR, JUZ_START_PAGES } from './mushafConstants';
 import type { Ayah } from '../../types';
@@ -26,6 +27,7 @@ export function MushafSearchOverlay({
     goToAyah,
     onClose,
 }: MushafSearchOverlayProps) {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [verseResults, setVerseResults] = useState<SearchResult[]>([]);
     const [isSearchingVerses, setIsSearchingVerses] = useState(false);
@@ -117,13 +119,13 @@ export function MushafSearchOverlay({
             <div className="mih-search-header">
                 <input
                     className="mih-search-input"
-                    placeholder="Nom arabe, français, anglais ou n° de page..."
+                    placeholder={t('mushaf.searchPlaceholder', 'Nom arabe, français, anglais ou n° de page...')}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     autoFocus
                 />
                 <button className="mih-search-cancel" onClick={handleClose}>
-                    Annuler
+                    {t('common.cancel', 'Annuler')}
                 </button>
             </div>
 
@@ -141,7 +143,7 @@ export function MushafSearchOverlay({
                 >
                     <div className="mih-search-item__icon"><Search size={18} /></div>
                     <div className="mih-search-item__info">
-                        <div className="mih-search-item__name">Aller à la page {searchQuery}</div>
+                        <div className="mih-search-item__name">{t('mushaf.goToPage', 'Aller à la page {{page}}', { page: searchQuery })}</div>
                     </div>
                 </div>
             )}
@@ -176,7 +178,7 @@ export function MushafSearchOverlay({
                             >
                                 <div className="mih-search-item__icon"><Search size={18} /></div>
                                 <div className="mih-search-item__info">
-                                    <div className="mih-search-item__name">Aller au verset {surahNum}:{ayahNum}</div>
+                                    <div className="mih-search-item__name">{t('mushaf.goToVerse', 'Aller au verset {{surah}}:{{ayah}}', { surah: surahNum, ayah: ayahNum })}</div>
                                     <div className="mih-search-item__detail">{surah.englishName} • {SURAH_NAMES_FR[surahNum]}</div>
                                 </div>
                             </div>
@@ -189,7 +191,7 @@ export function MushafSearchOverlay({
             {/* Juz Quick Navigation */}
             {!searchQuery && (
                 <>
-                    <div className="mih-search-label">Naviguer par Juz</div>
+                    <div className="mih-search-label">{t('mushaf.navigateByJuz', 'Naviguer par Juz')}</div>
                     <div className="mih-juz-scroll">
                         {JUZ_START_PAGES.map((page, idx) => (
                             <div
@@ -210,7 +212,7 @@ export function MushafSearchOverlay({
             )}
 
             <div className="mih-search-label">
-                {searchQuery ? `${filteredSurahs.length} sourate(s)` : '114 sourates'}
+                {searchQuery ? t('mushaf.surahsFound', '{{count}} sourate(s)', { count: filteredSurahs.length }) : t('mushaf.totalSurahs', '114 sourates')}
             </div>
 
             <div className="mih-search-list">
@@ -229,7 +231,7 @@ export function MushafSearchOverlay({
                         <div className="mih-search-item__info">
                             <div className="mih-search-item__name">{s.englishName} — {SURAH_NAMES_FR[s.number] || s.englishNameTranslation}</div>
                             <div className="mih-search-item__detail">
-                                {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} versets • {s.revelationType === 'Meccan' ? 'Mecquoise' : 'Médinoise'}
+                                {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} {t('mushaf.verses', 'versets')} • {s.revelationType === 'Meccan' ? t('mushaf.meccan', 'Mecquoise') : t('mushaf.medinan', 'Médinoise')}
                             </div>
                         </div>
                     </div>
@@ -241,8 +243,8 @@ export function MushafSearchOverlay({
                 <>
                     <div className="mih-search-label" style={{ marginTop: 12 }}>
                         {isSearchingVerses
-                            ? 'Recherche dans les versets...'
-                            : `${verseResults.length} verset(s) trouvé(s)`
+                            ? t('mushaf.searchingVerses', 'Recherche dans les versets...')
+                            : t('mushaf.versesFound', '{{count}} verset(s) trouvé(s)', { count: verseResults.length })
                         }
                     </div>
                     <div className="mih-search-list">
@@ -274,7 +276,7 @@ export function MushafSearchOverlay({
                                             </div>
                                         )}
                                         <div className="mih-search-item__detail" style={{ marginTop: 2 }}>
-                                            {surah?.englishName} • Page {v.page}
+                                            {surah?.englishName} • {t('mushaf.page', 'Page')} {v.page}
                                         </div>
                                     </div>
                                 </div>

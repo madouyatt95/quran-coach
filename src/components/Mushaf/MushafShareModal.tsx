@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Share2, Copy, Check, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Ayah } from '../../types';
 
 interface MushafShareModalProps {
@@ -21,11 +22,12 @@ export function MushafShareModal({
     showTransliteration,
     onClose,
 }: MushafShareModalProps) {
+    const { t } = useTranslation();
     const [copied, setCopied] = useState(false);
     const surahName = surahs.find(s => s.number === ayah.surah)?.englishName || String(ayah.surah);
 
     const handleCopy = () => {
-        const text = `${ayah.text}\n\n— ${surahName}, Verset ${ayah.numberInSurah}\n\nQuran Coach`;
+        const text = `${ayah.text}\n\n— ${surahName}, ${t('mushaf.verse', 'Verset')} ${ayah.numberInSurah}\n\nQuran Coach`;
         navigator.clipboard.writeText(text).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
@@ -34,8 +36,8 @@ export function MushafShareModal({
 
     const handleShare = () => {
         const translation = showTranslation ? translationMap.get(ayah.number) : '';
-        const text = `${ayah.text}\n${translation ? `\n${translation}\n` : ''}\n— ${surahName}, Verset ${ayah.numberInSurah}`;
-        navigator.share({ title: `${surahName} — Verset ${ayah.numberInSurah}`, text }).catch(() => { });
+        const text = `${ayah.text}\n${translation ? `\n${translation}\n` : ''}\n— ${surahName}, ${t('mushaf.verse', 'Verset')} ${ayah.numberInSurah}`;
+        navigator.share({ title: `${surahName} — ${t('mushaf.verse', 'Verset')} ${ayah.numberInSurah}`, text }).catch(() => { });
         onClose();
     };
 
@@ -45,11 +47,11 @@ export function MushafShareModal({
             <div className="mih-share-modal">
                 <div className="mih-share-modal__header">
                     <Share2 size={18} />
-                    <span>Partager le verset</span>
+                    <span>{t('mushaf.shareVerse', 'Partager le verset')}</span>
                     <button onClick={onClose}><X size={18} /></button>
                 </div>
                 <div className="mih-share-modal__ref">
-                    Sourate {surahName}, Verset {ayah.numberInSurah}
+                    {t('mushaf.surah', 'Sourate')} {surahName}, {t('mushaf.verse', 'Verset')} {ayah.numberInSurah}
                 </div>
                 <div className="mih-share-modal__text" dir="rtl">{ayah.text}</div>
                 {showTransliteration && transliterationMap.get(ayah.number) && (
@@ -63,12 +65,12 @@ export function MushafShareModal({
                 <div className="mih-share-modal__actions">
                     <button className="mih-share-modal__btn" onClick={handleCopy}>
                         {copied ? <Check size={16} /> : <Copy size={16} />}
-                        {copied ? 'Copié !' : 'Copier'}
+                        {copied ? t('common.copied', 'Copié !') : t('common.copy', 'Copier')}
                     </button>
                     {'share' in navigator && (
                         <button className="mih-share-modal__btn mih-share-modal__btn--primary" onClick={handleShare}>
                             <Share2 size={16} />
-                            Partager
+                            {t('common.share', 'Partager')}
                         </button>
                     )}
                 </div>

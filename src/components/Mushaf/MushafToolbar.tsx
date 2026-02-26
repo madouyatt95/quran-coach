@@ -8,6 +8,7 @@ import {
     EyeOff,
 } from 'lucide-react';
 import { getTajweedCategories } from '../../lib/tajweedService';
+import { useTranslation } from 'react-i18next';
 import type { MaskMode } from './mushafConstants';
 import type { ArabicFontFamily } from '../../types';
 
@@ -67,6 +68,7 @@ export function MushafToolbar({
     maskMode,
     setMaskMode,
 }: MushafToolbarProps) {
+    const { t } = useTranslation();
     return (
         <>
             {/* ===== Inline Toolbar ===== */}
@@ -76,7 +78,7 @@ export function MushafToolbar({
                         <button
                             className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
                             onClick={() => setShowTajweedSheet(true)}
-                            title="Tajweed"
+                            title={t('mushaf.tajweed', 'Tajweed')}
                         >
                             <Palette size={18} />
                         </button>
@@ -85,7 +87,7 @@ export function MushafToolbar({
                     <button
                         className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
                         onClick={toggleTranslation}
-                        title="Traduction"
+                        title={t('mushaf.translation', 'Traduction')}
                     >
                         <Languages size={18} />
                     </button>
@@ -93,7 +95,7 @@ export function MushafToolbar({
                     <button
                         className={`mih-toolbar__btn ${showTransliteration ? 'active' : ''}`}
                         onClick={toggleTransliteration}
-                        title="Phonétique"
+                        title={t('mushaf.transliteration', 'Phonétique')}
                     >
                         <span style={{ fontSize: 14, fontWeight: 700 }}>Aa</span>
                     </button>
@@ -101,7 +103,7 @@ export function MushafToolbar({
                     <button
                         className={`mih-toolbar__btn ${showFontSheet ? 'active' : ''}`}
                         onClick={() => setShowFontSheet(true)}
-                        title="Taille police"
+                        title={t('mushaf.fontSize', 'Taille police')}
                     >
                         <Type size={18} />
                     </button>
@@ -109,7 +111,7 @@ export function MushafToolbar({
                     <button
                         className={`mih-toolbar__btn ${showMaskSheet ? 'active' : ''}`}
                         onClick={() => setShowMaskSheet(true)}
-                        title="Masquage"
+                        title={t('mushaf.mask', 'Masquage')}
                     >
                         <Layout size={18} />
                     </button>
@@ -123,7 +125,7 @@ export function MushafToolbar({
                     <div className="mih-sheet">
                         <div className="mih-sheet__handle" />
                         <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Règles de Tajweed</span>
+                            <span className="mih-sheet__title">{t('mushaf.tajweedRules', 'Règles de Tajweed')}</span>
                             <button className="mih-sheet__close" onClick={() => setShowTajweedSheet(false)}>
                                 <X size={18} />
                             </button>
@@ -134,7 +136,7 @@ export function MushafToolbar({
                             onClick={toggleTajwid}
                             style={{ cursor: 'pointer' }}
                         >
-                            <span>Tajweed {tajwidEnabled ? 'activé' : 'désactivé'}</span>
+                            <span>Tajweed {tajwidEnabled ? t('common.enabled', 'activé') : t('common.disabled', 'désactivé')}</span>
                             <div className={`mih-toggle-switch ${tajwidEnabled ? 'on' : ''}`} />
                         </div>
 
@@ -162,7 +164,7 @@ export function MushafToolbar({
                     <div className="mih-sheet">
                         <div className="mih-sheet__handle" />
                         <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Mode Masquage (Hifz)</span>
+                            <span className="mih-sheet__title">{t('mushaf.maskMode', 'Mode Masquage (Hifz)')}</span>
                             <button className="mih-sheet__close" onClick={() => setShowMaskSheet(false)}>
                                 <X size={18} />
                             </button>
@@ -174,28 +176,28 @@ export function MushafToolbar({
                                 onClick={() => { setMaskMode('visible'); setShowMaskSheet(false); }}
                             >
                                 <Eye size={20} />
-                                <span>Visible</span>
+                                <span>{t('mushaf.visible', 'Visible')}</span>
                             </div>
                             <div
                                 className={`mih-mask-card ${maskMode === 'hidden' ? 'active' : ''}`}
                                 onClick={() => { setMaskMode('hidden'); setShowMaskSheet(false); }}
                             >
                                 <EyeOff size={20} />
-                                <span>Tout caché</span>
+                                <span>{t('mushaf.hidden', 'Tout caché')}</span>
                             </div>
                             <div
                                 className={`mih-mask-card ${maskMode === 'partial' ? 'active' : ''}`}
                                 onClick={() => { setMaskMode('partial'); setShowMaskSheet(false); }}
                             >
                                 <Eye size={20} />
-                                <span>Partiel</span>
+                                <span>{t('mushaf.partial', 'Partiel')}</span>
                             </div>
                             <div
                                 className={`mih-mask-card ${maskMode === 'minimal' ? 'active' : ''}`}
                                 onClick={() => { setMaskMode('minimal'); setShowMaskSheet(false); }}
                             >
                                 <EyeOff size={20} />
-                                <span>Minimal (flou)</span>
+                                <span>{t('mushaf.minimal', 'Minimal (flou)')}</span>
                             </div>
                         </div>
                     </div>
@@ -209,7 +211,7 @@ export function MushafToolbar({
                     <div className="mih-sheet">
                         <div className="mih-sheet__handle" />
                         <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">Police & Taille</span>
+                            <span className="mih-sheet__title">{t('mushaf.fontAndSize', 'Police & Taille')}</span>
                             <button className="mih-sheet__close" onClick={() => setShowFontSheet(false)}>
                                 <X size={18} />
                             </button>
@@ -217,7 +219,7 @@ export function MushafToolbar({
 
                         {/* Font Family Selector */}
                         <div style={{ marginBottom: 16 }}>
-                            <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Style calligraphique</div>
+                            <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('mushaf.calligraphyStyle', 'Style calligraphique')}</div>
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <button
                                     className={`mih-fontsize-btn ${arabicFontFamily === 'scheherazade' ? 'active' : ''}`}
@@ -238,7 +240,7 @@ export function MushafToolbar({
                             </div>
                         </div>
 
-                        <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Taille</div>
+                        <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('mushaf.size', 'Taille')}</div>
 
                         <div className="mih-fontsize-grid">
                             {(['sm', 'md', 'lg', 'xl'] as const).map(size => (
@@ -251,7 +253,7 @@ export function MushafToolbar({
                                         بسم
                                     </span>
                                     <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>
-                                        {size === 'sm' ? 'Petit' : size === 'md' ? 'Normal' : size === 'lg' ? 'Grand' : 'Très grand'}
+                                        {size === 'sm' ? t('common.small', 'Petit') : size === 'md' ? t('common.normal', 'Normal') : size === 'lg' ? t('common.large', 'Grand') : t('common.extraLarge', 'Très grand')}
                                     </span>
                                 </button>
                             ))}
