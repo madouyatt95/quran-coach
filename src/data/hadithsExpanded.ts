@@ -22,6 +22,7 @@ export const HADITH_CATEGORIES: HadithCategoryInfo[] = [
     { id: 'mort', name: 'Mort & Funérailles', nameAr: 'الموت والجنائز', emoji: '⏳', color: '#546E7A' },
     { id: 'au_dela', name: 'Paradis & Au-delà', nameAr: 'الجنة والآخرة', emoji: '🌟', color: '#FFD54F' },
     { id: 'fraternite', name: 'Fraternité', nameAr: 'الأخوة في الإسلام', emoji: '🤲', color: '#42A5F5' },
+    { id: 'nawawi', name: 'Les 42 An-Nawawi', nameAr: 'الأربعون النووية', emoji: '📗', color: '#2E7D32' },
 ];
 
 const S = { B: 'Bukhari', M: 'Muslim', T: 'Tirmidhi', BM: 'Bukhari & Muslim' };
@@ -29,6 +30,7 @@ const S = { B: 'Bukhari', M: 'Muslim', T: 'Tirmidhi', BM: 'Bukhari & Muslim' };
 import { HADITHS_PART2 } from './hadithsPart2';
 import { HADITHS_PART3 } from './hadithsPart3';
 import { HADITHS_PART4 } from './hadithsPart4';
+import { HADITHS_NAWAWI } from './hadithsNawawi';
 
 export const EXPANDED_HADITHS: HadithEntry[] = [
     // ═══ FOI & INTENTION ═══
@@ -91,4 +93,5 @@ export const EXPANDED_HADITHS: HadithEntry[] = [
     ...HADITHS_PART2,
     ...HADITHS_PART3,
     ...HADITHS_PART4,
+    ...HADITHS_NAWAWI,
 ];

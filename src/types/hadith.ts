@@ -3,7 +3,7 @@ export type HadithCategory =
     | 'comportement' | 'patience' | 'charite' | 'parents'
     | 'repentir' | 'science' | 'au_dela' | 'fraternite'
     | 'qudsi' | 'mariage' | 'commerce' | 'coeur' | 'mort'
-    | 'prophete' | 'vendredi';
+    | 'prophete' | 'vendredi' | 'nawawi';
 
 export interface HadithEntry {
     id: number;
