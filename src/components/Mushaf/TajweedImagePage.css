@@ -78,20 +78,29 @@
 .tajweed-viewer {
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    /* top align so we can scroll if needed */
     justify-content: center;
     position: relative;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     touch-action: pan-y pinch-zoom;
+    background: var(--bg-primary);
+    /* ensure background blends with image borders */
 }
 
 .tajweed-viewer__img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: auto;
+    max-width: 800px;
+    /* constraint for large desktop screens */
     object-fit: contain;
     user-select: none;
     -webkit-user-drag: none;
     transition: opacity 0.3s ease;
+    transform: scale(1.03);
+    /* slightly scale up to hide exact bounding box borders and make it larger */
+    transform-origin: top center;
 }
 
 .tajweed-viewer__img.loading {

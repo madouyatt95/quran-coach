@@ -13,6 +13,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { useTranslation } from 'react-i18next';
 import { KhatmTracker } from '../Khatm/KhatmTracker';
 import { SideMenu } from '../Navigation/SideMenu';
+import { MushafSearchOverlay } from './MushafSearchOverlay';
 import { getJuzForPage } from '../../data/juzData';
 import { SURAH_PAGE_STARTS } from './tajweedPageData';
 import './TajweedImagePage.css';
@@ -40,7 +41,7 @@ const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 export function TajweedImagePage() {
     const { t } = useTranslation();
-    const { currentPage, setCurrentPage, goToPage } = useQuranStore();
+    const { currentPage, setCurrentPage, goToPage, goToSurah, goToAyah, surahs } = useQuranStore();
     const {
         isActive: khatmActive,
         isPageValidated,
@@ -54,7 +55,15 @@ export function TajweedImagePage() {
     const [imgLoading, setImgLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
     const [showSwipeHint, setShowSwipeHint] = useState(false);
+
+    // Sync local page state with global currentPage when it changes from outside (e.g., search)
+    useEffect(() => {
+        if (currentPage && currentPage !== page) {
+            setPage(currentPage);
+        }
+    }, [currentPage]);
 
     // Touch swipe state
     const touchStartX = useRef(0);
@@ -161,7 +170,7 @@ export function TajweedImagePage() {
                     <button className="tajweed-header__icon-btn" onClick={() => setShowSideMenu(true)}>
                         <Menu size={20} />
                     </button>
-                    <div className="tajweed-header__info">
+                    <div className="tajweed-header__info" onClick={() => setShowSearch(true)} style={{ cursor: 'pointer' }}>
                         <span className="tajweed-header__surah">{surahInfo.name}</span>
                         <span className="tajweed-header__meta">
                             {t('mushaf.page', 'Page')} {page} • {t('mushaf.juz', 'Juz')} {juzNumber}
@@ -278,6 +287,26 @@ export function TajweedImagePage() {
             </div>
 
             <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
+
+            {showSearch && (
+                <MushafSearchOverlay
+                    surahs={surahs}
+                    currentPage={page}
+                    goToSurah={(s) => {
+                        goToSurah(s);
+                        setShowSearch(false);
+                    }}
+                    goToPage={(p) => {
+                        goToPage(p);
+                        setShowSearch(false);
+                    }}
+                    goToAyah={(s, a) => {
+                        goToAyah(s, a);
+                        setShowSearch(false);
+                    }}
+                    onClose={() => setShowSearch(false)}
+                />
+            )}
         </div>
     );
 }
