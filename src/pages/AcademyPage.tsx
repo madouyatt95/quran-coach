@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Lock, CheckCircle, Star, Sparkles, BookOpen, RotateCcw, Trophy, Volume2 } from 'lucide-react';
+import { ChevronLeft, CheckCircle, Star, BookOpen, RotateCcw, Trophy, Volume2 } from 'lucide-react';
 import { useAcademyStore, type AcademyLevel } from '../stores/academyStore';
 import './AcademyPage.css';
 
@@ -25,7 +25,7 @@ interface ModuleContent {
 }
 
 interface LessonData {
-    sections: { title: string; body: string; arabic?: string }[];
+    sections: { title: string; body: string; arabic?: string; phonetic?: string }[];
 }
 
 interface QuizData {
@@ -51,45 +51,45 @@ const ACADEMY_MODULES: AcademyModule[] = [
             data: {
                 sections: [
                     // Groupe 1 — Ba family
-                    { title: 'Groupe 1 — Famille Ba (ب ت ث)', body: 'Ces 3 lettres ont la même forme de base. Seuls les points changent.', arabic: 'ب ت ث' },
-                    { title: '① Alif (ا) — [a/i/ou]', body: 'Première lettre. Support des voyelles. Se prononce selon sa voyelle : a, i ou ou. C\'est un trait vertical.', arabic: 'ا — أَلِف' },
-                    { title: '② Ba (ب) — [b]', body: 'Comme le B français. Un point EN DESSOUS. Forme : coupe avec un point en bas.', arabic: 'بَابٌ — (porte)' },
-                    { title: '③ Ta (ت) — [t]', body: 'Comme le T français. DEUX points au-dessus. Même forme que Ba.', arabic: 'تِينٌ — (figues)' },
-                    { title: '④ Tha (ث) — [th]', body: 'Comme le TH anglais dans "think". TROIS points au-dessus. Mettre la langue entre les dents.', arabic: 'ثَلَاثَةٌ — (trois)' },
+                    { title: 'Groupe 1 — Famille Ba (ب ت ث)', body: 'Ces 3 lettres ont la même forme de base. Seuls les points changent.', arabic: 'ب ت ث', phonetic: 'Ba, Ta, Tha' },
+                    { title: '① Alif (ا) — [a/i/ou]', body: 'Première lettre. Support des voyelles. Se prononce selon sa voyelle : a, i ou ou. C\'est un trait vertical.', arabic: 'ا — أَلِف', phonetic: 'Alif' },
+                    { title: '② Ba (ب) — [b]', body: 'Comme le B français. Un point EN DESSOUS. Forme : coupe avec un point en bas.', arabic: 'بَابٌ — (porte)', phonetic: 'Bab' },
+                    { title: '③ Ta (ت) — [t]', body: 'Comme le T français. DEUX points au-dessus. Même forme que Ba.', arabic: 'تِينٌ — (figues)', phonetic: 'Tiin' },
+                    { title: '④ Tha (ث) — [th]', body: 'Comme le TH anglais dans "think" ou le Zéziment. TROIS points au-dessus. Mettre la langue entre les dents.', arabic: 'ثَلَاثَةٌ — (trois)', phonetic: 'Thalatha' },
                     // Groupe 2 — Jim family
-                    { title: 'Groupe 2 — Famille Jim (ج ح خ)', body: 'Même forme de base en crochet. Les points changent.', arabic: 'ج ح خ' },
-                    { title: '⑤ Jim (ج) — [j]', body: 'Comme le J français. Un point au milieu du crochet.', arabic: 'جَنَّةٌ — (paradis)' },
-                    { title: '⑥ Ha (ح) — [ḥ]', body: 'H aspiré fort depuis la gorge. PAS de point. Son inexistant en français.', arabic: 'حَمْدٌ — (louange)' },
-                    { title: '⑦ Kha (خ) — [kh]', body: 'Comme le CH allemand ou la Jota espagnole. Un point AU-DESSUS.', arabic: 'خَيْرٌ — (bien)' },
+                    { title: 'Groupe 2 — Famille Jim (ج ح خ)', body: 'Même forme de base en crochet. Les points changent.', arabic: 'ج ح خ', phonetic: 'Jim, Ha, Kha' },
+                    { title: '⑤ Jim (ج) — [j]', body: 'Comme le DJ anglais (Jump). Un point au milieu du crochet.', arabic: 'جَنَّةٌ — (paradis)', phonetic: 'Jannah' },
+                    { title: '⑥ Ha (ح) — [ḥ]', body: 'H aspiré fort depuis la gorge (comme souffler sur des lunettes). PAS de point. Son inexistant en français.', arabic: 'حَمْدٌ — (louange)', phonetic: 'Hamd' },
+                    { title: '⑦ Kha (خ) — [kh]', body: 'Comme le CH allemand ou la Jota espagnole (râclement de gorge). Un point AU-DESSUS.', arabic: 'خَيْرٌ — (bien)', phonetic: 'Khayr' },
                     // Groupe 3 — Dal family
-                    { title: 'Groupe 3 — Famille Dal (د ذ ر ز)', body: 'Lettres qui ne se lient pas à la lettre suivante.', arabic: 'د ذ ر ز' },
-                    { title: '⑧ Dal (د) — [d]', body: 'Comme le D français. Pas de point.', arabic: 'دِينٌ — (religion)' },
-                    { title: '⑨ Dhal (ذ) — [dh]', body: 'Comme le TH anglais dans "the". Un point au-dessus. Langue entre les dents, sonore.', arabic: 'ذِكْرٌ — (rappel)' },
-                    { title: '⑩ Ra (ر) — [r]', body: 'R roulé (comme en espagnol ou arabe). Plus petit que le Dal.', arabic: 'رَحْمَةٌ — (miséricorde)' },
-                    { title: '⑪ Zay (ز) — [z]', body: 'Comme le Z français. Un point au-dessus du Ra.', arabic: 'زَكَاةٌ — (aumône)' },
+                    { title: 'Groupe 3 — Famille Dal (د ذ ر ز)', body: 'Lettres qui ne se lient pas à la lettre suivante.', arabic: 'د ذ ر ز', phonetic: 'Dal, Dhal, Ra, Zay' },
+                    { title: '⑧ Dal (د) — [d]', body: 'Comme le D français. Pas de point.', arabic: 'دِينٌ — (religion)', phonetic: 'Diin' },
+                    { title: '⑨ Dhal (ذ) — [dh]', body: 'Comme le TH anglais dans "the" (Zézaiement sonore). Un point au-dessus. Langue entre les dents.', arabic: 'ذِكْرٌ — (rappel)', phonetic: 'Dhikr' },
+                    { title: '⑩ Ra (ر) — [r]', body: 'R roulé (comme en espagnol ou arabe). Plus petit que le Dal.', arabic: 'رَحْمَةٌ — (miséricorde)', phonetic: 'Rahmah' },
+                    { title: '⑪ Zay (ز) — [z]', body: 'Comme le Z français. Un point au-dessus du Ra.', arabic: 'زَكَاةٌ — (aumône)', phonetic: 'Zakat' },
                     // Groupe 4 — Sin family
-                    { title: 'Groupe 4 — Famille Sin (س ش ص ض)', body: 'Lettres avec des dents en ligne.', arabic: 'س ش ص ض' },
-                    { title: '⑫ Sin (س) — [s]', body: 'Comme le S français. Trois petites dents sans points.', arabic: 'سَلَامٌ — (paix)' },
-                    { title: '⑬ Shin (ش) — [ch]', body: 'Comme le CH français dans "chat". Trois dents + trois points au-dessus.', arabic: 'شَمْسٌ — (soleil)' },
-                    { title: '⑭ Sad (ص) — [ṣ]', body: 'S emphatique. On arrondit la bouche et on épaissit le son. Pas de point.', arabic: 'صَلَاةٌ — (prière)' },
-                    { title: '⑮ Dad (ض) — [ḍ]', body: 'D emphatique, unique à l\'arabe ! Un point au-dessus. L\'arabe est appelée "la langue du Dad".', arabic: 'ضَوْءٌ — (lumière)' },
+                    { title: 'Groupe 4 — Famille Sin (س ش ص ض)', body: 'Lettres avec des dents en ligne.', arabic: 'س ش ص ض', phonetic: 'Sin, Shin, Sad, Dad' },
+                    { title: '⑫ Sin (س) — [s]', body: 'Comme le S français. Trois petites dents sans points.', arabic: 'سَلَامٌ — (paix)', phonetic: 'Salam' },
+                    { title: '⑬ Shin (ش) — [ch]', body: 'Comme le CH français dans "chat". Trois dents + trois points au-dessus.', arabic: 'شَمْسٌ — (soleil)', phonetic: 'Chams' },
+                    { title: '⑭ Sad (ص) — [ṣ]', body: 'S emphatique. On arrondit la bouche et on épaissit le son. Pas de point.', arabic: 'صَلَاةٌ — (prière)', phonetic: 'Salat' },
+                    { title: '⑮ Dad (ض) — [ḍ]', body: 'D emphatique, unique à l\'arabe ! Un point au-dessus. L\'arabe est appelée "la langue du Dad".', arabic: 'ضَوْءٌ — (lumière)', phonetic: 'Dhaw\'' },
                     // Groupe 5 — Ta/Dha + Ayn family  
-                    { title: 'Groupe 5 — Lettres emphatiques et gutturales', body: 'Lettres avec prononciation plus profonde.', arabic: 'ط ظ ع غ' },
-                    { title: '⑯ Ta emphatique (ط) — [ṭ]', body: 'T emphatique. Bouche arrondie, son lourd. Pas de point.', arabic: 'طَهَارَةٌ — (purification)' },
-                    { title: '⑰ Dha (ظ) — [ẓ]', body: 'TH emphatique. Un point au-dessus. Langue entre les dents avec emphase.', arabic: 'ظُلْمٌ — (injustice)' },
-                    { title: '⑱ Ayn (ع) — [ʿ]', body: 'Son guttural unique ! Contraction du fond de la gorge. Inexistant en français. Très important en arabe.', arabic: 'عِلْمٌ — (science)' },
-                    { title: '⑲ Ghayn (غ) — [gh]', body: 'Comme le R grasseyé parisien. Un point au-dessus du Ayn.', arabic: 'غَفُورٌ — (Pardonneur)' },
+                    { title: 'Groupe 5 — Lettres emphatiques et gutturales', body: 'Lettres avec prononciation plus profonde.', arabic: 'ط ظ ع غ', phonetic: 'Ta, Dha, Ayn, Ghayn' },
+                    { title: '⑯ Ta emphatique (ط) — [ṭ]', body: 'T emphatique. Bouche arrondie, son lourd. Pas de point.', arabic: 'طَهَارَةٌ — (purification)', phonetic: 'Taharah' },
+                    { title: '⑰ Dha (ظ) — [ẓ]', body: 'TH emphatique. Un point au-dessus. Langue entre les dents avec emphase.', arabic: 'ظُلْمٌ — (injustice)', phonetic: 'Dhulm' },
+                    { title: '⑱ Ayn (ع) — [ʿ]', body: 'Son guttural unique ! Contraction du fond de la gorge. Inexistant en français. Très important en arabe.', arabic: 'عِلْمٌ — (science)', phonetic: 'Ilm' },
+                    { title: '⑲ Ghayn (غ) — [gh]', body: 'Comme le R grasseyé parisien. Un point au-dessus du Ayn.', arabic: 'غَفُورٌ — (Pardonneur)', phonetic: 'Ghafour' },
                     // Groupe 6 — Fa/Qaf/Kaf/Lam/Mim
-                    { title: 'Groupe 6 — Lettres restantes', body: 'Les dernières lettres de l\'alphabet.', arabic: 'ف ق ك ل م ن ه و ي' },
-                    { title: '⑳ Fa (ف) — [f]', body: 'Comme le F français. Un point au-dessus.', arabic: 'فَجْرٌ — (aube)' },
-                    { title: '㉑ Qaf (ق) — [q]', body: 'K profond depuis la gorge. DEUX points au-dessus. Plus profond que le Kaf.', arabic: 'قُرْآنٌ — (Coran)' },
-                    { title: '㉒ Kaf (ك) — [k]', body: 'Comme le K français. Trait diagonal à l\'intérieur (hamza inversé).', arabic: 'كِتَابٌ — (livre)' },
-                    { title: '㉓ Lam (ل) — [l]', body: 'Comme le L français. Forme d\'un crochet vertical.', arabic: 'لَيْلَةٌ — (nuit)' },
-                    { title: '㉔ Mim (م) — [m]', body: 'Comme le M français. Petite boucle ronde.', arabic: 'مَسْجِدٌ — (mosquée)' },
-                    { title: '㉕ Noun (ن) — [n]', body: 'Comme le N français. Un point au-dessus. Forme de coupe.', arabic: 'نُورٌ — (lumière)' },
-                    { title: '㉖ Ha (ه) — [h]', body: 'H léger expiré (comme en anglais "hello"). Différent du ح (Ha guttural).', arabic: 'هُدَى — (guidée)' },
-                    { title: '㉗ Waw (و) — [w/ou]', body: 'Comme le W anglais ou le OU français long. Ne se lie pas à gauche.', arabic: 'وَحْيٌ — (révélation)' },
-                    { title: '㉘ Ya (ي) — [y/i]', body: 'Comme le Y français ou le I long. Deux points en dessous.', arabic: 'يَوْمٌ — (jour)' },
+                    { title: 'Groupe 6 — Lettres restantes', body: 'Les dernières lettres de l\'alphabet.', arabic: 'ف ق ك ل م ن ه و ي', phonetic: 'Fa, Qaf, Kaf, Lam, Mim...' },
+                    { title: '⑳ Fa (ف) — [f]', body: 'Comme le F français. Un point au-dessus.', arabic: 'فَجْرٌ — (aube)', phonetic: 'Fajr' },
+                    { title: '㉑ Qaf (ق) — [q]', body: 'K profond depuis la gorge. DEUX points au-dessus. Plus profond que le Kaf.', arabic: 'قُرْآنٌ — (Coran)', phonetic: 'Qur\'an' },
+                    { title: '㉒ Kaf (ك) — [k]', body: 'Comme le K français. Trait diagonal à l\'intérieur (hamza inversé).', arabic: 'كِتَابٌ — (livre)', phonetic: 'Kitab' },
+                    { title: '㉓ Lam (ل) — [l]', body: 'Comme le L français. Forme d\'un crochet vertical.', arabic: 'لَيْلَةٌ — (nuit)', phonetic: 'Laylah' },
+                    { title: '㉔ Mim (م) — [m]', body: 'Comme le M français. Petite boucle ronde.', arabic: 'مَسْجِدٌ — (mosquée)', phonetic: 'Masjid' },
+                    { title: '㉕ Noun (ن) — [n]', body: 'Comme le N français. Un point au-dessus. Forme de coupe.', arabic: 'نُورٌ — (lumière)', phonetic: 'Nour' },
+                    { title: '㉖ Ha (ه) — [h]', body: 'H léger expiré (comme en anglais "hello"). Différent du ح (Ha guttural).', arabic: 'هُدَى — (guidée)', phonetic: 'Huda' },
+                    { title: '㉗ Waw (و) — [w/ou]', body: 'Comme le W anglais ou le OU français long. Ne se lie pas à gauche.', arabic: 'وَحْيٌ — (révélation)', phonetic: 'Wahy' },
+                    { title: '㉘ Ya (ي) — [y/i]', body: 'Comme le Y français ou le I long. Deux points en dessous.', arabic: 'يَوْمٌ — (jour)', phonetic: 'Yawm' },
                 ]
             } as LessonData,
         }, {
@@ -471,7 +471,6 @@ export function AcademyPage() {
     );
 
     const handleStartModule = useCallback((moduleId: string) => {
-        if (!store.unlockedModules.includes(moduleId)) return;
         setActiveModule(moduleId);
         setLessonStep(0);
         setQuizIndex(0);
@@ -479,7 +478,7 @@ export function AcademyPage() {
         setQuizScore(0);
         setQuizTotal(0);
         setShowResult(false);
-    }, [store.unlockedModules]);
+    }, []);
 
     const handleCompleteModule = useCallback(() => {
         if (activeModule) {
@@ -518,12 +517,26 @@ export function AcademyPage() {
 
     const playAudio = useCallback((text: string) => {
         if ('speechSynthesis' in window) {
-            // Cancel any ongoing speech
             window.speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance(text);
             utter.lang = 'ar-SA';
-            utter.rate = 0.8; // Slightly slower for learning
+            utter.rate = 0.8;
+
+            utter.onerror = (e) => {
+                console.error("SpeechSynthesis error:", e);
+                alert("Votre appareil ne supporte pas l'audio arabe (Text-to-Speech).");
+            };
+
             window.speechSynthesis.speak(utter);
+
+            // Fallback for some Android/iOS browsers that need user interaction strictly bound
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.onvoiceschanged = () => {
+                    window.speechSynthesis.speak(utter);
+                };
+            }
+        } else {
+            alert("L'audio n'est pas supporté sur ce navigateur.");
         }
     }, []);
 
@@ -578,6 +591,11 @@ export function AcademyPage() {
                                     >
                                         <Volume2 size={24} />
                                     </button>
+                                </div>
+                            )}
+                            {lesson.sections[lessonStep].phonetic && (
+                                <div className="academy-lesson-phonetic" style={{ textAlign: 'center', color: '#c9a84c', fontSize: '0.9rem', marginBottom: '16px', fontWeight: 'bold' }}>
+                                    🗣️ {lesson.sections[lessonStep].phonetic}
                                 </div>
                             )}
                             <p>{lesson.sections[lessonStep].body}</p>
@@ -756,16 +774,11 @@ export function AcademyPage() {
 
                         <div className="academy-modules">
                             {group.modules.map(mod => {
-                                const isUnlocked = store.unlockedModules.includes(mod.id);
-                                const progress = store.progress[mod.id];
-                                const isCompleted = progress?.completed;
-
                                 return (
                                     <button
                                         key={mod.id}
-                                        className={`academy-module-card ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}`}
+                                        className={`academy-module-card ${store.progress[mod.id]?.completed ? 'completed' : ''}`}
                                         onClick={() => handleStartModule(mod.id)}
-                                        disabled={!isUnlocked}
                                     >
                                         <div className="academy-module-card-left">
                                             <span className="academy-module-card-emoji">{mod.emoji}</span>
@@ -779,15 +792,12 @@ export function AcademyPage() {
                                             </div>
                                         </div>
                                         <div className="academy-module-card-status">
-                                            {isCompleted ? (
+                                            {store.progress[mod.id]?.completed ? (
                                                 <div className="academy-module-done">
-                                                    <CheckCircle size={20} />
-                                                    <span>{progress.score}%</span>
+                                                    <CheckCircle size={16} />
                                                 </div>
-                                            ) : !isUnlocked ? (
-                                                <Lock size={18} />
                                             ) : (
-                                                <Sparkles size={18} />
+                                                <div className="academy-module-card-action">Commencer ›</div>
                                             )}
                                         </div>
                                     </button>
