@@ -13,6 +13,7 @@ import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
 import { UpdateBanner } from './components/UpdateBanner';
+import { KhatmCelebration } from './components/KhatmCelebration';
 import { updateLastVisit } from './lib/notificationService';
 import { trackAppOpen, trackPageView } from './lib/analyticsService';
 import './index.css';
@@ -37,6 +38,8 @@ const QiblaPage = lazy(() => import('./pages/QiblaPage').then(m => ({ default: m
 const PrayerSettingsPage = lazy(() => import('./pages/PrayerSettingsPage').then(m => ({ default: m.PrayerSettingsPage })));
 const SentinellePage = lazy(() => import('./pages/SentinellePage').then(m => ({ default: m.SentinellePage })));
 const StoragePage = lazy(() => import('./pages/StoragePage').then(m => ({ default: m.StoragePage })));
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const CoachPage = lazy(() => import('./pages/CoachPage').then(m => ({ default: m.CoachPage })));
 
 // Minimal loading fallback
 function PageLoader() {
@@ -164,6 +167,7 @@ function AppContent() {
         </button>
       )}
 
+      <KhatmCelebration />
       <main style={{ flex: 1, paddingBottom: '80px' }}>
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
@@ -191,6 +195,8 @@ function AppContent() {
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/hadiths" element={<HadithsPage />} />
             <Route path="/sentinel" element={<SentinellePage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/coach" element={<CoachPage />} />
           </Routes>
         </Suspense>
       </main>
