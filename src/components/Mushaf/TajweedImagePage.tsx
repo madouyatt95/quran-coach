@@ -18,10 +18,12 @@ import { getJuzForPage } from '../../data/juzData';
 import { SURAH_PAGE_STARTS } from './tajweedPageData';
 import './TajweedImagePage.css';
 
-// CDN source for Quran pages (Tajweed Colored Mushaf)
-// Uses ayat/tajweed for color-coded Tajweed rules (red, blue, green markings)
+// CDN source for Quran pages (HD Tajweed Colored - Dâr al-Ma'rifa edition)
+// Uses Archive.org BookReader API for high-quality colored Tajweed pages
+// File numbering: page 1 (Al-Fatiha) = file 0000, page 2 = file 0001, etc.
 function getPageImageUrl(page: number): string {
-    return `https://raw.githubusercontent.com/QuranHub/quran-pages-images/main/ayat/tajweed/${page}.png`;
+    const fileNum = String(page - 1).padStart(4, '0');
+    return `https://ia600405.us.archive.org/BookReader/BookReaderImages.php?zip=/3/items/mushaf-tajwid-darul-marifa/mushaf-tajwid-darul-marifa_jp2.zip&file=mushaf-tajwid-darul-marifa_jp2/mushaf-tajwid-darul-marifa_${fileNum}.jp2&id=mushaf-tajwid-darul-marifa&scale=2&rotate=0`;
 }
 
 // Determine which surah a page belongs to
