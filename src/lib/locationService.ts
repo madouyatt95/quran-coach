@@ -27,7 +27,7 @@ export async function resolveCoords(): Promise<{ lat: number; lng: number }> {
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 2000);
             const res = await fetch(
-                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`,
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude.toFixed(1)}&longitude=${longitude.toFixed(1)}&localityLanguage=fr`,
                 { signal: controller.signal }
             );
             clearTimeout(timer);

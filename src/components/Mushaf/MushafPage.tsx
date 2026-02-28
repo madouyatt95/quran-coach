@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 import {
     Settings,
     Menu,
@@ -591,7 +592,7 @@ export function MushafPage() {
 
                                         const wordElements = vw ? vw.words.map((word: any, wordIdx: number) => {
                                             const content = (tajwidEnabled && word.textTajweed)
-                                                ? <span dangerouslySetInnerHTML={{ __html: word.textTajweed }} />
+                                                ? <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(word.textTajweed) }} />
                                                 // NFC normalize fixes vowel/diacritic separation on mobile
                                                 : word.text.normalize('NFC');
 

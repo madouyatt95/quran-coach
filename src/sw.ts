@@ -17,7 +17,7 @@ registerRoute(
         cacheName: 'quran-api-cache',
         plugins: [
             new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 365 * 24 * 60 * 60 }),
-            new CacheableResponsePlugin({ statuses: [0, 200] }),
+            new CacheableResponsePlugin({ statuses: [200] }),
         ],
     })
 );
@@ -28,7 +28,7 @@ registerRoute(
         cacheName: 'qurancom-api-cache',
         plugins: [
             new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 365 * 24 * 60 * 60 }),
-            new CacheableResponsePlugin({ statuses: [0, 200] }),
+            new CacheableResponsePlugin({ statuses: [200] }),
         ],
     })
 );
@@ -73,7 +73,10 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    const targetUrl = (event.notification.data?.url as string) || '/';
+    // Validate URL to prevent open redirect (only allow internal paths)
+    const rawUrl = (event.notification.data?.url as string) || '/';
+    const targetUrl = rawUrl.startsWith('/') || rawUrl.startsWith(self.registration.scope)
+        ? rawUrl : '/';
 
     event.waitUntil(
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
