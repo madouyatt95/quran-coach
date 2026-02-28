@@ -283,6 +283,19 @@
     margin: 0;
 }
 
+.academy-lesson-arabic-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(201, 168, 76, 0.02));
+    border-radius: 12px;
+    border: 1px solid rgba(201, 168, 76, 0.12);
+    padding: 20px;
+    margin: 12px 0;
+}
+
 .academy-lesson-arabic {
     font-family: 'Amiri', 'Scheherazade New', serif;
     font-size: 1.6rem;
@@ -290,11 +303,29 @@
     color: var(--color-text);
     text-align: center;
     direction: rtl;
-    padding: 20px;
-    margin: 12px 0;
-    background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(201, 168, 76, 0.02));
-    border-radius: 12px;
-    border: 1px solid rgba(201, 168, 76, 0.12);
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+}
+
+.academy-audio-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(201, 168, 76, 0.15);
+    color: #c9a84c;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.academy-audio-btn:active {
+    transform: scale(0.9);
 }
 
 .academy-lesson-nav {

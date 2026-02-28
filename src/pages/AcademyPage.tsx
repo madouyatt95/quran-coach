@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Lock, CheckCircle, Star, Sparkles, BookOpen, RotateCcw, Trophy } from 'lucide-react';
+import { ChevronLeft, Lock, CheckCircle, Star, Sparkles, BookOpen, RotateCcw, Trophy, Volume2 } from 'lucide-react';
 import { useAcademyStore, type AcademyLevel } from '../stores/academyStore';
 import './AcademyPage.css';
 
@@ -447,12 +447,6 @@ const CATEGORIES = [
 
 const DIFFICULTY_LABELS = ['', '⭐ Débutant', '⭐⭐ Intermédiaire', '⭐⭐⭐ Avancé'];
 
-// Level → max difficulty mapping
-const LEVEL_MAX_DIFFICULTY: Record<AcademyLevel, number> = {
-    debutant: 2,
-    intermediaire: 3,
-};
-
 const LEVEL_DESCRIPTIONS: Record<AcademyLevel, string> = {
     debutant: 'Alphabet, Fatiha, Wudu, Prière, Sourates, Tajweed, Mémorisation, Jeûne',
     intermediaire: '+ Prières avancées, Zakat, Hajj',
@@ -522,6 +516,17 @@ export function AcademyPage() {
         }
     }, [quizIndex, currentModule]);
 
+    const playAudio = useCallback((text: string) => {
+        if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'ar-SA';
+            utter.rate = 0.8; // Slightly slower for learning
+            window.speechSynthesis.speak(utter);
+        }
+    }, []);
+
     // ─── Active Module View ──────────────────────────────
 
     if (activeModule && currentModule) {
@@ -562,8 +567,17 @@ export function AcademyPage() {
                         <div className="academy-lesson-card">
                             <h3>{lesson.sections[lessonStep].title}</h3>
                             {lesson.sections[lessonStep].arabic && (
-                                <div className="academy-lesson-arabic">
-                                    {lesson.sections[lessonStep].arabic}
+                                <div className="academy-lesson-arabic-container">
+                                    <div className="academy-lesson-arabic">
+                                        {lesson.sections[lessonStep].arabic}
+                                    </div>
+                                    <button
+                                        className="academy-audio-btn"
+                                        onClick={() => playAudio(lesson.sections[lessonStep].arabic!)}
+                                        title="Écouter la prononciation"
+                                    >
+                                        <Volume2 size={24} />
+                                    </button>
                                 </div>
                             )}
                             <p>{lesson.sections[lessonStep].body}</p>
@@ -672,8 +686,10 @@ export function AcademyPage() {
 
     // ─── Roadmap View (default) ──────────────────────────
 
-    const maxDiff = LEVEL_MAX_DIFFICULTY[store.level];
-    const filteredModules = ACADEMY_MODULES.filter(m => m.difficulty <= maxDiff);
+    // Strict filtering: Débutant sees only diff 1, Intermédiaire sees diff 2 and 3
+    const filteredModules = ACADEMY_MODULES.filter(m =>
+        store.level === 'debutant' ? m.difficulty === 1 : m.difficulty > 1
+    );
 
     const groupedModules = CATEGORIES.map(cat => ({
         ...cat,

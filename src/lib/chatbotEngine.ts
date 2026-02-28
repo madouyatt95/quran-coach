@@ -174,7 +174,7 @@ function searchHadiths(query: string): { text: string; source: string; score: nu
 
     for (const h of allHadiths) {
         const score = computeScore(query, h.fr);
-        if (score > 2) {
+        if (score >= 4) {
             results.push({ text: h.fr, source: h.src, score });
         }
     }
@@ -189,7 +189,7 @@ function searchInvocations(query: string): { title: string; text: string; score:
     for (const category of HISNUL_MUSLIM_DATA) {
         for (const chapter of category.chapters) {
             const titleScore = computeScore(query, chapter.title);
-            if (titleScore > 1) {
+            if (titleScore >= 3 || normalize(chapter.title).includes(normalize(query))) {
                 const firstDua = chapter.duas?.[0];
                 results.push({
                     title: chapter.title,
@@ -209,11 +209,14 @@ function searchProphets(query: string): { name: string; info: string; score: num
     for (const p of prophets) {
         const miracleText = p.miracles?.join(' ') || '';
         const score = computeScore(query, p.nameFr) + computeScore(query, p.summary || '') + computeScore(query, miracleText);
-        if (score > 1) {
+        // Ensure either the query explicitly names the prophet, or the score is very high
+        const directMatch = normalize(query).includes(normalize(p.nameFr));
+
+        if (score >= 4 || directMatch) {
             results.push({
                 name: `${p.nameFr} (${p.nameAr})`,
                 info: p.summary?.slice(0, 200) || miracleText.slice(0, 200) || '',
-                score,
+                score: directMatch ? score + 10 : score,
             });
         }
     }
@@ -226,11 +229,13 @@ function searchCompanions(query: string): { name: string; info: string; score: n
 
     for (const c of companions) {
         const score = computeScore(query, c.nameFr) + computeScore(query, c.summary || '') + computeScore(query, c.title || '');
-        if (score > 1) {
+        const directMatch = normalize(query).includes(normalize(c.nameFr.split(' ')[0])); // Match first name at least
+
+        if (score >= 4 || directMatch) {
             results.push({
                 name: `${c.nameFr} (${c.nameAr})`,
                 info: c.summary?.slice(0, 200) || c.title || '',
-                score,
+                score: directMatch ? score + 10 : score,
             });
         }
     }
@@ -313,7 +318,7 @@ export function chatbotAnswer(query: string): ChatMessage {
 
     // 2. Search hadiths
     const hadithResults = searchHadiths(query);
-    if (hadithResults.length > 0) {
+    if (hadithResults.length > 0 && hadithResults[0].score >= 4) {
         if (answer) answer += '\n\n---\n\n';
         answer += '**📜 Hadiths pertinents :**\n';
         for (const h of hadithResults.slice(0, 2)) {
@@ -324,7 +329,7 @@ export function chatbotAnswer(query: string): ChatMessage {
 
     // 3. Search invocations
     const invocResults = searchInvocations(query);
-    if (invocResults.length > 0) {
+    if (invocResults.length > 0 && invocResults[0].score >= 3) {
         if (answer) answer += '\n\n---\n\n';
         answer += '**🤲 Invocations :**\n';
         for (const inv of invocResults.slice(0, 2)) {
@@ -335,7 +340,7 @@ export function chatbotAnswer(query: string): ChatMessage {
 
     // 4. Search prophets
     const prophetResults = searchProphets(query);
-    if (prophetResults.length > 0) {
+    if (prophetResults.length > 0 && prophetResults[0].score >= 4) {
         if (answer) answer += '\n\n---\n\n';
         answer += '**📜 Prophètes :**\n';
         for (const p of prophetResults) {
@@ -346,7 +351,7 @@ export function chatbotAnswer(query: string): ChatMessage {
 
     // 5. Search companions
     const compResults = searchCompanions(query);
-    if (compResults.length > 0) {
+    if (compResults.length > 0 && compResults[0].score >= 4) {
         if (answer) answer += '\n\n---\n\n';
         answer += '**⭐ Compagnons :**\n';
         for (const c of compResults) {
