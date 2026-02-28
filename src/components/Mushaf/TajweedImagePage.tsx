@@ -18,10 +18,10 @@ import { getJuzForPage } from '../../data/juzData';
 import { SURAH_PAGE_STARTS } from './tajweedPageData';
 import './TajweedImagePage.css';
 
-// CDN source for Quran pages (King Fahd Complex - High Resolution Mushaf)
-// Uses kfgqpc/hafs-wasat for HD quality (~400KB/page vs 120KB)
+// CDN source for Quran pages (Tajweed Colored Mushaf)
+// Uses ayat/tajweed for color-coded Tajweed rules (red, blue, green markings)
 function getPageImageUrl(page: number): string {
-    return `https://raw.githubusercontent.com/QuranHub/quran-pages-images/main/kfgqpc/hafs-wasat/${page}.jpg`;
+    return `https://raw.githubusercontent.com/QuranHub/quran-pages-images/main/ayat/tajweed/${page}.png`;
 }
 
 // Determine which surah a page belongs to

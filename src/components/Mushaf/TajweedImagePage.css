@@ -303,50 +303,56 @@
     }
 }
 
-/* ===== SMOOTH PAGE SLIDE ANIMATIONS ===== */
+/* ===== 3D PAGE FLIP ANIMATIONS ===== */
 
-/* Next page: slides in smoothly from the left (Arabic RTL reading) */
+/* Next page (reading RTL): Page turns from the left */
 .tajweed-turn-next {
-    animation: page-slide-left 0.4s ease-out forwards;
+    animation: page-turn-left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes page-slide-left {
+@keyframes page-turn-left {
     0% {
-        transform: translateX(-40px) scale(0.97);
-        opacity: 0;
-        box-shadow: 15px 0 30px rgba(0, 0, 0, 0.15);
+        transform: perspective(2000px) rotateY(-80deg) translateX(-10%);
+        opacity: 0.2;
+        transform-origin: left center;
+        filter: brightness(0.5);
     }
 
-    60% {
+    50% {
         opacity: 1;
+        filter: brightness(0.9);
     }
 
     100% {
-        transform: translateX(0) scale(1);
+        transform: perspective(2000px) rotateY(0deg) translateX(0);
         opacity: 1;
-        box-shadow: none;
+        transform-origin: left center;
+        filter: brightness(1);
     }
 }
 
-/* Previous page: slides in smoothly from the right */
+/* Previous page: Page turns from the right */
 .tajweed-turn-prev {
-    animation: page-slide-right 0.4s ease-out forwards;
+    animation: page-turn-right 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes page-slide-right {
+@keyframes page-turn-right {
     0% {
-        transform: translateX(40px) scale(0.97);
-        opacity: 0;
-        box-shadow: -15px 0 30px rgba(0, 0, 0, 0.15);
+        transform: perspective(2000px) rotateY(80deg) translateX(10%);
+        opacity: 0.2;
+        transform-origin: right center;
+        filter: brightness(0.5);
     }
 
-    60% {
+    50% {
         opacity: 1;
+        filter: brightness(0.9);
     }
 
     100% {
-        transform: translateX(0) scale(1);
+        transform: perspective(2000px) rotateY(0deg) translateX(0);
         opacity: 1;
-        box-shadow: none;
+        transform-origin: right center;
+        filter: brightness(1);
     }
 }
