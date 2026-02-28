@@ -255,7 +255,7 @@ export function useSmartCoaching() {
                     const defaults = [
                         { id: 'def-1', emoji: '📖', title: 'Assiduité Coranique', textFr: 'Lis au moins une page du Coran aujourd\'hui pour ton lien spirituel.', gradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)', link: '/read' },
                         { id: 'def-2', emoji: '💪', title: 'Régularité', textFr: 'La régularité est meilleure que la quantité — même un verset par jour.', gradient: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)', link: '/read' },
-                        { id: 'def-3', emoji: '🤲', title: 'Adhkar du Jour', textFr: 'N\'oubliez pas vos protections du matin et du soir.', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', link: '/adhkar' }
+                        { id: 'def-3', emoji: '🤲', title: 'Invocations du Jour', textFr: 'N\'oubliez pas vos protections du matin et du soir.', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', link: '/adhkar' }
                     ];
                     const def = defaults[now.getDate() % defaults.length];
                     activeCards.push({ ...def, type: 'tip', textAr: 'خَيْرُ الأَعْمَالِ أَدْوَمُهَا وَإِنْ قَلَّ' });
