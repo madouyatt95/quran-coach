@@ -10,8 +10,13 @@ const CIRCLE_EMOJIS = ['📖', '🌙', '🕌', '📿', '⭐', '🤲', '☪️', 
 const CIRCLE_GOALS = [
     'Khatm en 30 jours',
     'Khatm en 60 jours',
+    'Khatm en 90 jours',
     'Juz par semaine',
     '1 page par jour',
+    '5 pages par jour',
+    'Mémorisation — 1 sourate/semaine',
+    'Révision du Hizb quotidien',
+    'Lire le Tafsir ensemble',
     'Lecture libre',
 ];
 

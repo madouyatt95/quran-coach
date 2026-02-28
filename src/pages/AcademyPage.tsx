@@ -35,38 +35,76 @@ interface QuizData {
 // ─── Modules Database ────────────────────────────────────
 
 const ACADEMY_MODULES: AcademyModule[] = [
-    // === ALPHABET ===
+    // === ALPHABET — Les 28 lettres ===
     {
         id: 'alphabet',
         emoji: '🔤',
-        title: 'L\'Alphabet Arabe',
+        title: 'Les 28 Lettres Arabes',
         titleAr: 'الحروف العربية',
-        description: 'Apprendre les 28 lettres arabes, leur forme et leur prononciation',
+        description: 'Toutes les lettres arabes, leur forme, prononciation et position dans le mot',
         category: 'alphabet',
         difficulty: 1,
-        estimatedMinutes: 30,
+        estimatedMinutes: 45,
         content: [{
             type: 'lesson',
-            title: 'Les lettres de base',
+            title: 'Les 28 lettres en 5 groupes',
             data: {
                 sections: [
-                    { title: 'Groupe 1 — Les lettres similaires au français', body: 'Certaines lettres arabes ont des sons proches du français. Commençons par celles-ci pour faciliter l\'apprentissage.', arabic: 'ب ت ث ن ي' },
-                    { title: 'Ba (ب)', body: 'Se prononce comme le B français. Un point sous la lettre.', arabic: 'بِسْمِ اللَّهِ' },
-                    { title: 'Ta (ت)', body: 'Se prononce comme le T français. Deux points au-dessus.', arabic: 'تَوْبَة' },
-                    { title: 'Tha (ث)', body: 'Se prononce comme le TH anglais dans "think". Trois points au-dessus.', arabic: 'ثَلَاثَة' },
-                    { title: 'Noun (ن)', body: 'Se prononce comme le N français. Un point au-dessus.', arabic: 'نُور' },
-                    { title: 'Ya (ي)', body: 'Se prononce comme le I long ou le Y français. Deux points en dessous.', arabic: 'يَوْم' },
+                    // Groupe 1 — Ba family
+                    { title: 'Groupe 1 — Famille Ba (ب ت ث)', body: 'Ces 3 lettres ont la même forme de base. Seuls les points changent.', arabic: 'ب ت ث' },
+                    { title: '① Alif (ا) — [a/i/ou]', body: 'Première lettre. Support des voyelles. Se prononce selon sa voyelle : a, i ou ou. C\'est un trait vertical.', arabic: 'ا — أَلِف' },
+                    { title: '② Ba (ب) — [b]', body: 'Comme le B français. Un point EN DESSOUS. Forme : coupe avec un point en bas.', arabic: 'بَابٌ — (porte)' },
+                    { title: '③ Ta (ت) — [t]', body: 'Comme le T français. DEUX points au-dessus. Même forme que Ba.', arabic: 'تِينٌ — (figues)' },
+                    { title: '④ Tha (ث) — [th]', body: 'Comme le TH anglais dans "think". TROIS points au-dessus. Mettre la langue entre les dents.', arabic: 'ثَلَاثَةٌ — (trois)' },
+                    // Groupe 2 — Jim family
+                    { title: 'Groupe 2 — Famille Jim (ج ح خ)', body: 'Même forme de base en crochet. Les points changent.', arabic: 'ج ح خ' },
+                    { title: '⑤ Jim (ج) — [j]', body: 'Comme le J français. Un point au milieu du crochet.', arabic: 'جَنَّةٌ — (paradis)' },
+                    { title: '⑥ Ha (ح) — [ḥ]', body: 'H aspiré fort depuis la gorge. PAS de point. Son inexistant en français.', arabic: 'حَمْدٌ — (louange)' },
+                    { title: '⑦ Kha (خ) — [kh]', body: 'Comme le CH allemand ou la Jota espagnole. Un point AU-DESSUS.', arabic: 'خَيْرٌ — (bien)' },
+                    // Groupe 3 — Dal family
+                    { title: 'Groupe 3 — Famille Dal (د ذ ر ز)', body: 'Lettres qui ne se lient pas à la lettre suivante.', arabic: 'د ذ ر ز' },
+                    { title: '⑧ Dal (د) — [d]', body: 'Comme le D français. Pas de point.', arabic: 'دِينٌ — (religion)' },
+                    { title: '⑨ Dhal (ذ) — [dh]', body: 'Comme le TH anglais dans "the". Un point au-dessus. Langue entre les dents, sonore.', arabic: 'ذِكْرٌ — (rappel)' },
+                    { title: '⑩ Ra (ر) — [r]', body: 'R roulé (comme en espagnol ou arabe). Plus petit que le Dal.', arabic: 'رَحْمَةٌ — (miséricorde)' },
+                    { title: '⑪ Zay (ز) — [z]', body: 'Comme le Z français. Un point au-dessus du Ra.', arabic: 'زَكَاةٌ — (aumône)' },
+                    // Groupe 4 — Sin family
+                    { title: 'Groupe 4 — Famille Sin (س ش ص ض)', body: 'Lettres avec des dents en ligne.', arabic: 'س ش ص ض' },
+                    { title: '⑫ Sin (س) — [s]', body: 'Comme le S français. Trois petites dents sans points.', arabic: 'سَلَامٌ — (paix)' },
+                    { title: '⑬ Shin (ش) — [ch]', body: 'Comme le CH français dans "chat". Trois dents + trois points au-dessus.', arabic: 'شَمْسٌ — (soleil)' },
+                    { title: '⑭ Sad (ص) — [ṣ]', body: 'S emphatique. On arrondit la bouche et on épaissit le son. Pas de point.', arabic: 'صَلَاةٌ — (prière)' },
+                    { title: '⑮ Dad (ض) — [ḍ]', body: 'D emphatique, unique à l\'arabe ! Un point au-dessus. L\'arabe est appelée "la langue du Dad".', arabic: 'ضَوْءٌ — (lumière)' },
+                    // Groupe 5 — Ta/Dha + Ayn family  
+                    { title: 'Groupe 5 — Lettres emphatiques et gutturales', body: 'Lettres avec prononciation plus profonde.', arabic: 'ط ظ ع غ' },
+                    { title: '⑯ Ta emphatique (ط) — [ṭ]', body: 'T emphatique. Bouche arrondie, son lourd. Pas de point.', arabic: 'طَهَارَةٌ — (purification)' },
+                    { title: '⑰ Dha (ظ) — [ẓ]', body: 'TH emphatique. Un point au-dessus. Langue entre les dents avec emphase.', arabic: 'ظُلْمٌ — (injustice)' },
+                    { title: '⑱ Ayn (ع) — [ʿ]', body: 'Son guttural unique ! Contraction du fond de la gorge. Inexistant en français. Très important en arabe.', arabic: 'عِلْمٌ — (science)' },
+                    { title: '⑲ Ghayn (غ) — [gh]', body: 'Comme le R grasseyé parisien. Un point au-dessus du Ayn.', arabic: 'غَفُورٌ — (Pardonneur)' },
+                    // Groupe 6 — Fa/Qaf/Kaf/Lam/Mim
+                    { title: 'Groupe 6 — Lettres restantes', body: 'Les dernières lettres de l\'alphabet.', arabic: 'ف ق ك ل م ن ه و ي' },
+                    { title: '⑳ Fa (ف) — [f]', body: 'Comme le F français. Un point au-dessus.', arabic: 'فَجْرٌ — (aube)' },
+                    { title: '㉑ Qaf (ق) — [q]', body: 'K profond depuis la gorge. DEUX points au-dessus. Plus profond que le Kaf.', arabic: 'قُرْآنٌ — (Coran)' },
+                    { title: '㉒ Kaf (ك) — [k]', body: 'Comme le K français. Trait diagonal à l\'intérieur (hamza inversé).', arabic: 'كِتَابٌ — (livre)' },
+                    { title: '㉓ Lam (ل) — [l]', body: 'Comme le L français. Forme d\'un crochet vertical.', arabic: 'لَيْلَةٌ — (nuit)' },
+                    { title: '㉔ Mim (م) — [m]', body: 'Comme le M français. Petite boucle ronde.', arabic: 'مَسْجِدٌ — (mosquée)' },
+                    { title: '㉕ Noun (ن) — [n]', body: 'Comme le N français. Un point au-dessus. Forme de coupe.', arabic: 'نُورٌ — (lumière)' },
+                    { title: '㉖ Ha (ه) — [h]', body: 'H léger expiré (comme en anglais "hello"). Différent du ح (Ha guttural).', arabic: 'هُدَى — (guidée)' },
+                    { title: '㉗ Waw (و) — [w/ou]', body: 'Comme le W anglais ou le OU français long. Ne se lie pas à gauche.', arabic: 'وَحْيٌ — (révélation)' },
+                    { title: '㉘ Ya (ي) — [y/i]', body: 'Comme le Y français ou le I long. Deux points en dessous.', arabic: 'يَوْمٌ — (jour)' },
                 ]
             } as LessonData,
         }, {
             type: 'quiz',
-            title: 'Quiz — Lettres de base',
+            title: 'Quiz — Les 28 lettres',
             data: {
                 questions: [
-                    { q: 'Quelle lettre est ب ?', options: ['Ba', 'Ta', 'Noun', 'Ya'], answer: 0, explanation: 'ب (Ba) a un point en dessous.' },
-                    { q: 'Combien de points a la lettre ث ?', options: ['1', '2', '3', '0'], answer: 2, explanation: 'ث (Tha) a trois points au-dessus.' },
-                    { q: 'Comment se lit ن ?', options: ['Ba', 'Ta', 'Noun', 'Ya'], answer: 2, explanation: 'ن (Noun) se prononce comme le N français.' },
-                    { q: 'Quelle lettre a deux points en dessous ?', options: ['ب', 'ت', 'ن', 'ي'], answer: 3, explanation: 'ي (Ya) a deux points en dessous.' },
+                    { q: 'Combien de lettres compte l\'alphabet arabe ?', options: ['24', '26', '28', '30'], answer: 2, explanation: 'L\'alphabet arabe compte 28 lettres.' },
+                    { q: 'Quelle lettre est ب ?', options: ['Ba', 'Ta', 'Tha', 'Noun'], answer: 0, explanation: 'ب (Ba) a un point en dessous.' },
+                    { q: 'Combien de points a ث (Tha) ?', options: ['0', '1', '2', '3'], answer: 3, explanation: 'ث (Tha) a trois points au-dessus.' },
+                    { q: 'Quel son fait ع (Ayn) ?', options: ['Comme le A', 'Son guttural unique', 'Comme le G', 'Comme le R'], answer: 1, explanation: 'Le Ayn (ع) est un son guttural unique à l\'arabe, inexistant en français.' },
+                    { q: 'Quelle lettre est unique à la langue arabe ?', options: ['ب (Ba)', 'ض (Dad)', 'ت (Ta)', 'ن (Noun)'], answer: 1, explanation: 'Le ض (Dad) est unique à l\'arabe. On appelle l\'arabe "la langue du Dad".' },
+                    { q: 'Quelle est la différence entre ح et خ ?', options: ['Aucune', 'ح a un point', 'خ a un point', 'Ils ont des formes différentes'], answer: 2, explanation: 'خ (Kha) a un point au-dessus, ح (Ha) n\'en a pas.' },
+                    { q: 'Que signifie قُرْآن ?', options: ['Livre', 'Prière', 'Coran', 'Science'], answer: 2, explanation: 'قُرْآن signifie Coran (récitation).' },
+                    { q: 'Quelles lettres ne se lient PAS à la lettre suivante ?', options: ['ب ت ث', 'د ذ ر ز و', 'ج ح خ', 'س ش'], answer: 1, explanation: 'Les lettres د ذ ر ز و (et ا) ne se lient pas à la lettre qui suit.' },
                 ]
             } as QuizData,
         }],
@@ -411,15 +449,13 @@ const DIFFICULTY_LABELS = ['', '⭐ Débutant', '⭐⭐ Intermédiaire', '⭐⭐
 
 // Level → max difficulty mapping
 const LEVEL_MAX_DIFFICULTY: Record<AcademyLevel, number> = {
-    enfant: 1,
     debutant: 2,
     intermediaire: 3,
 };
 
 const LEVEL_DESCRIPTIONS: Record<AcademyLevel, string> = {
-    enfant: 'Alphabet, Fatiha, Petites Sourates, 5 Piliers, Wudu',
-    debutant: '+ Lecture, Prière, Tajweed, Mémorisation, Jeûne',
-    intermediaire: '+ Prières avancées, Zakat, Hajj, Aqidah',
+    debutant: 'Alphabet, Fatiha, Wudu, Prière, Sourates, Tajweed, Mémorisation, Jeûne',
+    intermediaire: '+ Prières avancées, Zakat, Hajj',
 };
 
 // ─── Component ───────────────────────────────────────────
@@ -672,19 +708,19 @@ export function AcademyPage() {
                 </div>
                 <div className="academy-stat">
                     <Star size={16} />
-                    <span>{store.level === 'enfant' ? 'Enfant' : store.level === 'debutant' ? 'Débutant' : 'Intermédiaire'}</span>
+                    <span>{store.level === 'debutant' ? 'Débutant' : 'Intermédiaire'}</span>
                 </div>
             </div>
 
             {/* Level Selector */}
             <div className="academy-levels">
-                {(['enfant', 'debutant', 'intermediaire'] as AcademyLevel[]).map(lvl => (
+                {(['debutant', 'intermediaire'] as AcademyLevel[]).map(lvl => (
                     <button
                         key={lvl}
                         className={`academy-level ${store.level === lvl ? 'active' : ''}`}
                         onClick={() => store.setLevel(lvl)}
                     >
-                        <span>{lvl === 'enfant' ? '🧒 Enfant' : lvl === 'debutant' ? '📗 Débutant' : '📘 Intermédiaire'}</span>
+                        <span>{lvl === 'debutant' ? '📗 Débutant' : '📘 Intermédiaire'}</span>
                     </button>
                 ))}
             </div>

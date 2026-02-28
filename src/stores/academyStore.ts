@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type AcademyLevel = 'enfant' | 'debutant' | 'intermediaire';
+export type AcademyLevel = 'debutant' | 'intermediaire';
 
 export interface ModuleProgress {
     completed: boolean;

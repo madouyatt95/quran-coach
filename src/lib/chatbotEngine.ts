@@ -58,7 +58,7 @@ function normalize(text: string): string {
 }
 
 function tokenize(text: string): string[] {
-    return normalize(text).split(/\s+/).filter(w => w.length > 2);
+    return normalize(text).split(/\s+/).filter(w => w.length > 3);
 }
 
 function computeScore(query: string, target: string): number {
@@ -240,17 +240,29 @@ function searchCompanions(query: string): { name: string; info: string; score: n
 
 function searchThemes(query: string): { theme: string; verse: string; ref: string; score: number }[] {
     const results: { theme: string; verse: string; ref: string; score: number }[] = [];
+    const qNorm = normalize(query);
 
     for (const theme of QURAN_THEMES) {
-        const themeScore = computeScore(query, theme.nameFr || theme.id);
-        if (themeScore > 0) {
-            for (const verse of theme.verses.slice(0, 3)) {
-                results.push({
-                    theme: theme.nameFr || theme.id,
-                    verse: verse.textFr.slice(0, 150),
-                    ref: `Coran ${verse.surah}:${verse.ayah}`,
-                    score: themeScore + computeScore(query, verse.textFr),
-                });
+        const themeName = theme.nameFr || theme.id;
+        // Require strong match on theme name
+        const themeScore = computeScore(query, themeName);
+        // Also check if query directly contains the theme name or vice versa
+        const directMatch = qNorm.includes(normalize(themeName)) || normalize(themeName).includes(qNorm);
+
+        if (themeScore >= 3 || directMatch) {
+            for (const verse of theme.verses.slice(0, 5)) {
+                // Score each verse individually for relevance to the query
+                const verseScore = computeScore(query, verse.textFr);
+                const totalScore = themeScore + verseScore;
+                // Only include verses that are actually relevant
+                if (verseScore >= 2 || directMatch) {
+                    results.push({
+                        theme: themeName,
+                        verse: verse.textFr.slice(0, 150),
+                        ref: `Coran ${verse.surah}:${verse.ayah}`,
+                        score: totalScore,
+                    });
+                }
             }
         }
     }
@@ -343,9 +355,9 @@ export function chatbotAnswer(query: string): ChatMessage {
         }
     }
 
-    // 6. Search Quran themes
+    // 6. Search Quran themes — only if we have a strong match
     const themeResults = searchThemes(query);
-    if (themeResults.length > 0) {
+    if (themeResults.length > 0 && themeResults[0].score >= 4) {
         if (answer) answer += '\n\n---\n\n';
         answer += '**📖 Versets coraniques :**\n';
         for (const v of themeResults.slice(0, 2)) {
