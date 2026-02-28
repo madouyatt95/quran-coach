@@ -1,14 +1,18 @@
 import { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ExternalLink } from 'lucide-react';
+import { Search, ExternalLink, MessageCircle } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { coachSearch, QUICK_TAGS, type SearchResult } from '../lib/coachSearch';
+import { ChatbotView } from '../components/Coach/ChatbotView';
 import './CoachPage.css';
+
+type CoachTab = 'search' | 'chatbot';
 
 export function CoachPage() {
     const navigate = useNavigate();
     const goToAyah = useQuranStore(s => s.goToAyah);
 
+    const [activeTab, setActiveTab] = useState<CoachTab>('search');
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -97,88 +101,116 @@ export function CoachPage() {
                 </div>
             </div>
 
-            {/* Search Input */}
-            <div className="coach-search-wrapper">
-                <Search size={18} className="coach-search-icon" />
-                <input
-                    type="text"
-                    className="coach-search"
-                    placeholder="patience, prière, paradis, repentir..."
-                    value={query}
-                    onChange={e => handleInput(e.target.value)}
-                />
+            {/* Tab Switcher */}
+            <div className="coach-tabs">
+                <button
+                    className={`coach-tab ${activeTab === 'search' ? 'coach-tab--active' : ''}`}
+                    onClick={() => setActiveTab('search')}
+                >
+                    <Search size={16} />
+                    <span>Recherche</span>
+                </button>
+                <button
+                    className={`coach-tab ${activeTab === 'chatbot' ? 'coach-tab--active' : ''}`}
+                    onClick={() => setActiveTab('chatbot')}
+                >
+                    <MessageCircle size={16} />
+                    <span>Chatbot</span>
+                </button>
             </div>
 
-            {/* Quick Tags */}
-            <div className="coach-tags">
-                {QUICK_TAGS.map(tag => (
-                    <button
-                        key={tag.query}
-                        className={`coach-tag ${activeTag === tag.query ? 'active' : ''}`}
-                        onClick={() => handleTag(tag)}
-                    >
-                        <span>{tag.emoji}</span>
-                        <span>{tag.label}</span>
-                    </button>
-                ))}
-            </div>
-
-            {/* Loading */}
-            {isSearching && (
-                <div className="coach-loading">
-                    <div className="coach-spinner" />
-                    Recherche en cours...
-                </div>
-            )}
-
-            {/* Results */}
-            {!isSearching && hasSearched && results.length > 0 && (
-                <div className="coach-results">
-                    <div className="coach-results-count">
-                        {results.length} résultat{results.length > 1 ? 's' : ''}
+            {/* ─── Search Tab ─── */}
+            {activeTab === 'search' && (
+                <>
+                    {/* Search Input */}
+                    <div className="coach-search-wrapper">
+                        <Search size={18} className="coach-search-icon" />
+                        <input
+                            type="text"
+                            className="coach-search"
+                            placeholder="patience, prière, paradis, repentir..."
+                            value={query}
+                            onChange={e => handleInput(e.target.value)}
+                        />
                     </div>
-                    {results.map((r, i) => (
-                        <div
-                            key={`${r.type}-${i}`}
-                            className="coach-card"
-                            style={{ animationDelay: `${i * 0.05}s` }}
-                            onClick={() => handleCardClick(r)}
-                        >
-                            <div className="coach-card-header">
-                                <span className="coach-card-emoji">{r.emoji}</span>
-                                <span className="coach-card-type">{typeLabels[r.type] || r.type}</span>
-                                <span className="coach-card-title">{r.title}</span>
-                                <ExternalLink size={12} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-                            </div>
-                            {r.textAr && (
-                                <div className="coach-card-arabic">{r.textAr}</div>
-                            )}
-                            {r.textFr && (
-                                <div className="coach-card-french">{r.textFr}</div>
-                            )}
-                            {r.source && (
-                                <div className="coach-card-source">{r.source}</div>
-                            )}
+
+                    {/* Quick Tags */}
+                    <div className="coach-tags">
+                        {QUICK_TAGS.map(tag => (
+                            <button
+                                key={tag.query}
+                                className={`coach-tag ${activeTag === tag.query ? 'active' : ''}`}
+                                onClick={() => handleTag(tag)}
+                            >
+                                <span>{tag.emoji}</span>
+                                <span>{tag.label}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Loading */}
+                    {isSearching && (
+                        <div className="coach-loading">
+                            <div className="coach-spinner" />
+                            Recherche en cours...
                         </div>
-                    ))}
-                </div>
+                    )}
+
+                    {/* Results */}
+                    {!isSearching && hasSearched && results.length > 0 && (
+                        <div className="coach-results">
+                            <div className="coach-results-count">
+                                {results.length} résultat{results.length > 1 ? 's' : ''}
+                            </div>
+                            {results.map((r, i) => (
+                                <div
+                                    key={`${r.type}-${i}`}
+                                    className="coach-card"
+                                    style={{ animationDelay: `${i * 0.05}s` }}
+                                    onClick={() => handleCardClick(r)}
+                                >
+                                    <div className="coach-card-header">
+                                        <span className="coach-card-emoji">{r.emoji}</span>
+                                        <span className="coach-card-type">{typeLabels[r.type] || r.type}</span>
+                                        <span className="coach-card-title">{r.title}</span>
+                                        <ExternalLink size={12} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                                    </div>
+                                    {r.textAr && (
+                                        <div className="coach-card-arabic">{r.textAr}</div>
+                                    )}
+                                    {r.textFr && (
+                                        <div className="coach-card-french">{r.textFr}</div>
+                                    )}
+                                    {r.source && (
+                                        <div className="coach-card-source">{r.source}</div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* No Results */}
+                    {!isSearching && hasSearched && results.length === 0 && (
+                        <div className="coach-no-results">
+                            Aucun résultat pour « {query} »
+                        </div>
+                    )}
+
+                    {/* Empty State */}
+                    {!hasSearched && !isSearching && (
+                        <div className="coach-empty">
+                            <div className="coach-empty-emoji">🕌</div>
+                            <div className="coach-empty-text">
+                                Tapez un mot ou cliquez sur un thème pour trouver des hadiths, invocations et versets.
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
 
-            {/* No Results */}
-            {!isSearching && hasSearched && results.length === 0 && (
-                <div className="coach-no-results">
-                    Aucun résultat pour « {query} »
-                </div>
-            )}
-
-            {/* Empty State */}
-            {!hasSearched && !isSearching && (
-                <div className="coach-empty">
-                    <div className="coach-empty-emoji">🕌</div>
-                    <div className="coach-empty-text">
-                        Tapez un mot ou cliquez sur un thème pour trouver des hadiths, invocations et versets.
-                    </div>
-                </div>
+            {/* ─── Chatbot Tab ─── */}
+            {activeTab === 'chatbot' && (
+                <ChatbotView />
             )}
         </div>
     );

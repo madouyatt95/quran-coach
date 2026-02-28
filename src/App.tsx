@@ -40,6 +40,8 @@ const SentinellePage = lazy(() => import('./pages/SentinellePage').then(m => ({ 
 const StoragePage = lazy(() => import('./pages/StoragePage').then(m => ({ default: m.StoragePage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const CoachPage = lazy(() => import('./pages/CoachPage').then(m => ({ default: m.CoachPage })));
+const AcademyPage = lazy(() => import('./pages/AcademyPage').then(m => ({ default: m.AcademyPage })));
+const CirclePage = lazy(() => import('./pages/CirclePage').then(m => ({ default: m.CirclePage })));
 
 // Minimal loading fallback
 function PageLoader() {
@@ -197,6 +199,8 @@ function AppContent() {
             <Route path="/sentinel" element={<SentinellePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/coach" element={<CoachPage />} />
+            <Route path="/academy" element={<AcademyPage />} />
+            <Route path="/circles" element={<CirclePage />} />
           </Routes>
         </Suspense>
       </main>

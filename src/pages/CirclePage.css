@@ -1,0 +1,643 @@
+/* ═══ Circle Page ═══ */
+
+.circle-page {
+    padding: 16px;
+    padding-top: 56px;
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease;
+    min-height: calc(100vh - 140px);
+}
+
+/* ── Headers ── */
+.circle-list-header,
+.circle-form-header,
+.circle-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.circle-list-header h1,
+.circle-form-header h2,
+.circle-detail-header h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.circle-list-header p {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    margin: 2px 0 0;
+}
+
+.circle-back {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 8px;
+    color: var(--color-text);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* ── Detail Header ── */
+.circle-detail-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.circle-detail-emoji {
+    font-size: 1.5rem;
+}
+
+.circle-detail-title h2 {
+    margin-bottom: 0;
+}
+
+.circle-detail-goal {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+}
+
+/* ── Action Buttons ── */
+.circle-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.circle-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #fff;
+}
+
+.circle-action-btn:active {
+    transform: scale(0.97);
+}
+
+.circle-action-btn--create {
+    background: linear-gradient(135deg, #c9a84c, #b8962d);
+    box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+}
+
+.circle-action-btn--join {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+}
+
+/* ── Circle Card (list) ── */
+.circle-list-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.circle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.circle-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+    color: var(--color-text);
+}
+
+.circle-card:active {
+    transform: scale(0.98);
+}
+
+.circle-card-emoji {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.circle-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.circle-card-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.circle-card-meta {
+    display: flex;
+    gap: 6px;
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+.circle-card-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.circle-card-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #c9a84c, #FFD54F);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.circle-card-arrow {
+    transform: rotate(180deg);
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+/* ── Empty State ── */
+.circle-empty {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.circle-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+
+.circle-empty h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 4px;
+}
+
+.circle-empty p {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+/* ── Invite Box ── */
+.circle-invite-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(201, 168, 76, 0.06);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.circle-invite-label {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+}
+
+.circle-invite-code {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.circle-invite-code span {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #c9a84c;
+    letter-spacing: 2px;
+    font-family: monospace;
+}
+
+.circle-invite-code button {
+    background: rgba(201, 168, 76, 0.15);
+    border: none;
+    border-radius: 8px;
+    padding: 6px;
+    color: #c9a84c;
+    cursor: pointer;
+}
+
+/* ── Progress ── */
+.circle-progress {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+.circle-progress-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 8px;
+}
+
+.circle-progress-header svg {
+    color: #c9a84c;
+}
+
+.circle-progress-percent {
+    margin-left: auto;
+    color: #c9a84c;
+    font-weight: 700;
+}
+
+.circle-progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.circle-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #c9a84c, #FFD54F);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.circle-progress-stats {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    margin-top: 6px;
+    text-align: right;
+}
+
+/* ── Log Section ── */
+.circle-log-section {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+.circle-log-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 10px;
+}
+
+.circle-log-header svg {
+    color: #4CAF50;
+}
+
+.circle-log-mine {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
+.circle-log-input {
+    display: flex;
+    gap: 8px;
+}
+
+.circle-log-input input {
+    flex: 1;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    color: var(--color-text);
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.circle-log-input input:focus {
+    border-color: #c9a84c;
+}
+
+.circle-log-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.circle-log-btn:disabled {
+    opacity: 0.4;
+}
+
+/* ── Section ── */
+.circle-section {
+    margin-bottom: 16px;
+}
+
+.circle-section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.circle-section-title svg {
+    color: #c9a84c;
+}
+
+/* ── Members ── */
+.circle-members {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.circle-member {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+}
+
+.circle-member--me {
+    border-color: rgba(201, 168, 76, 0.2);
+    background: rgba(201, 168, 76, 0.04);
+}
+
+.circle-member-rank {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #c9a84c;
+    width: 20px;
+    text-align: center;
+}
+
+.circle-member-emoji {
+    font-size: 1.2rem;
+}
+
+.circle-member-info {
+    flex: 1;
+}
+
+.circle-member-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.circle-member-pages {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+}
+
+.circle-member-bar {
+    width: 50px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.circle-member-bar-fill {
+    height: 100%;
+    background: #c9a84c;
+    border-radius: 2px;
+}
+
+/* ── Activities ── */
+.circle-activities {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.circle-activity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.circle-activity-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.circle-activity--pages .circle-activity-dot {
+    background: #4CAF50;
+}
+
+.circle-activity--milestone .circle-activity-dot {
+    background: #c9a84c;
+}
+
+.circle-activity--join .circle-activity-dot {
+    background: #2196F3;
+}
+
+.circle-activity-text {
+    flex: 1;
+}
+
+.circle-activity-time {
+    font-size: 0.65rem;
+    white-space: nowrap;
+}
+
+/* ── Leave Button ── */
+.circle-leave-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 12px;
+    background: rgba(244, 67, 54, 0.06);
+    border: 1px solid rgba(244, 67, 54, 0.15);
+    border-radius: 12px;
+    color: #e57373;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* ── Form Styles ── */
+.circle-form-section {
+    margin-bottom: 20px;
+}
+
+.circle-form-section label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 8px;
+}
+
+.circle-form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    color: var(--color-text);
+    font-size: 0.85rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.circle-form-input:focus {
+    border-color: #c9a84c;
+}
+
+.circle-form-input--code {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    font-family: monospace;
+}
+
+.circle-form-error {
+    font-size: 0.72rem;
+    color: #e57373;
+    margin-top: 6px;
+}
+
+.circle-emoji-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.circle-emoji-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.circle-emoji-btn.active {
+    border-color: #c9a84c;
+    background: rgba(201, 168, 76, 0.15);
+    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.2);
+}
+
+.circle-goal-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.circle-goal-btn {
+    padding: 10px 14px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    color: var(--color-text);
+    font-size: 0.82rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.circle-goal-btn.active {
+    border-color: #c9a84c;
+    background: rgba(201, 168, 76, 0.08);
+    color: #c9a84c;
+}
+
+.circle-create-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #c9a84c, #b8962d);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+}
+
+.circle-create-btn:disabled {
+    opacity: 0.4;
+}
+
+.circle-create-btn:active {
+    transform: scale(0.97);
+}
+
+/* ── Theme ── */
+[data-theme="light"] .circle-card {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .circle-member {
+    background: rgba(0, 0, 0, 0.02);
+}
