@@ -303,56 +303,50 @@
     }
 }
 
-/* ===== 3D PAGE FLIP ANIMATIONS ===== */
+/* ===== SMOOTH PAGE SLIDE ANIMATIONS ===== */
 
-/* Next page (reading RTL): Page turns from the left */
+/* Next page: slides in smoothly from the left (Arabic RTL reading) */
 .tajweed-turn-next {
-    animation: page-turn-left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: page-slide-left 0.4s ease-out forwards;
 }
 
-@keyframes page-turn-left {
+@keyframes page-slide-left {
     0% {
-        transform: perspective(2000px) rotateY(-80deg) translateX(-10%);
-        opacity: 0.2;
-        transform-origin: left center;
-        filter: brightness(0.5);
+        transform: translateX(-40px) scale(0.97);
+        opacity: 0;
+        box-shadow: 15px 0 30px rgba(0, 0, 0, 0.15);
     }
 
-    50% {
+    60% {
         opacity: 1;
-        filter: brightness(0.9);
     }
 
     100% {
-        transform: perspective(2000px) rotateY(0deg) translateX(0);
+        transform: translateX(0) scale(1);
         opacity: 1;
-        transform-origin: left center;
-        filter: brightness(1);
+        box-shadow: none;
     }
 }
 
-/* Previous page: Page turns from the right */
+/* Previous page: slides in smoothly from the right */
 .tajweed-turn-prev {
-    animation: page-turn-right 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: page-slide-right 0.4s ease-out forwards;
 }
 
-@keyframes page-turn-right {
+@keyframes page-slide-right {
     0% {
-        transform: perspective(2000px) rotateY(80deg) translateX(10%);
-        opacity: 0.2;
-        transform-origin: right center;
-        filter: brightness(0.5);
+        transform: translateX(40px) scale(0.97);
+        opacity: 0;
+        box-shadow: -15px 0 30px rgba(0, 0, 0, 0.15);
     }
 
-    50% {
+    60% {
         opacity: 1;
-        filter: brightness(0.9);
     }
 
     100% {
-        transform: perspective(2000px) rotateY(0deg) translateX(0);
+        transform: translateX(0) scale(1);
         opacity: 1;
-        transform-origin: right center;
-        filter: brightness(1);
+        box-shadow: none;
     }
 }
