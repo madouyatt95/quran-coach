@@ -70,7 +70,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     };
 
     const SHORTCUTS = [
-        { path: '/quiz', emoji: '⚔️', label: t('sideMenu.quiz'), color: 'rgba(201,168,76,0.2)' },
+        { path: '/prophets', emoji: '📜', label: t('nav.prophets'), color: 'rgba(201,168,76,0.2)' },
         { path: '/qibla', emoji: '🧭', label: t('sideMenu.qibla'), color: 'rgba(201,168,76,0.2)' },
         { path: '/prayers', emoji: '🕌', label: t('sideMenu.prayers'), color: 'rgba(255,152,0,0.2)' },
         { path: '/themes', emoji: '📚', label: t('sideMenu.themes'), color: 'rgba(88,166,255,0.2)' },
