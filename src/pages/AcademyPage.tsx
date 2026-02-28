@@ -409,6 +409,19 @@ const CATEGORIES = [
 
 const DIFFICULTY_LABELS = ['', '⭐ Débutant', '⭐⭐ Intermédiaire', '⭐⭐⭐ Avancé'];
 
+// Level → max difficulty mapping
+const LEVEL_MAX_DIFFICULTY: Record<AcademyLevel, number> = {
+    enfant: 1,
+    debutant: 2,
+    intermediaire: 3,
+};
+
+const LEVEL_DESCRIPTIONS: Record<AcademyLevel, string> = {
+    enfant: 'Alphabet, Fatiha, Petites Sourates, 5 Piliers, Wudu',
+    debutant: '+ Lecture, Prière, Tajweed, Mémorisation, Jeûne',
+    intermediaire: '+ Prières avancées, Zakat, Hajj, Aqidah',
+};
+
 // ─── Component ───────────────────────────────────────────
 
 export function AcademyPage() {
@@ -623,12 +636,16 @@ export function AcademyPage() {
 
     // ─── Roadmap View (default) ──────────────────────────
 
+    const maxDiff = LEVEL_MAX_DIFFICULTY[store.level];
+    const filteredModules = ACADEMY_MODULES.filter(m => m.difficulty <= maxDiff);
+
     const groupedModules = CATEGORIES.map(cat => ({
         ...cat,
-        modules: ACADEMY_MODULES.filter(m => m.category === cat.id),
-    }));
+        modules: filteredModules.filter(m => m.category === cat.id),
+    })).filter(g => g.modules.length > 0);
 
     const completedCount = Object.values(store.progress).filter(p => p.completed).length;
+    const totalForLevel = filteredModules.length;
 
     return (
         <div className="academy-page">
@@ -651,7 +668,7 @@ export function AcademyPage() {
                 </div>
                 <div className="academy-stat">
                     <CheckCircle size={16} />
-                    <span>{completedCount}/{ACADEMY_MODULES.length} modules</span>
+                    <span>{completedCount}/{totalForLevel} modules</span>
                 </div>
                 <div className="academy-stat">
                     <Star size={16} />
@@ -667,9 +684,13 @@ export function AcademyPage() {
                         className={`academy-level ${store.level === lvl ? 'active' : ''}`}
                         onClick={() => store.setLevel(lvl)}
                     >
-                        {lvl === 'enfant' ? '🧒 Enfant' : lvl === 'debutant' ? '📗 Débutant' : '📘 Intermédiaire'}
+                        <span>{lvl === 'enfant' ? '🧒 Enfant' : lvl === 'debutant' ? '📗 Débutant' : '📘 Intermédiaire'}</span>
                     </button>
                 ))}
+            </div>
+            {/* Level description */}
+            <div className="academy-level-desc">
+                {LEVEL_DESCRIPTIONS[store.level]}
             </div>
 
             {/* Module Groups */}
