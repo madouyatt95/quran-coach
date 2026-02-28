@@ -72,12 +72,9 @@ export function CoachPage() {
                 return;
             }
         }
-        if (r.type === 'invocation') {
-            navigate('/adhkar');
-            return;
-        }
-        if (r.type === 'hadith') {
-            navigate('/hadiths');
+        // Use deep-link URL for hadiths and invocations
+        if (r.link) {
+            navigate(r.link);
             return;
         }
     }, [navigate, goToAyah]);

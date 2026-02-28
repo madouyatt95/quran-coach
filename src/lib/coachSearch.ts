@@ -97,6 +97,7 @@ function searchHadiths(query: string): SearchResult[] {
             textAr: hadith.textAr,
             textFr: hadith.textFr,
             source: `${hadith.source} — ${hadith.narrator}`,
+            link: `/hadiths?search=${encodeURIComponent(hadith.textFr.slice(0, 40))}`,
             score,
             emoji: '📜',
         };
@@ -142,7 +143,7 @@ async function searchHisnulMuslim(query: string): Promise<SearchResult[]> {
                         textAr: firstDua?.arabic || chapter.titleAr,
                         textFr: firstDua?.translation || chapter.title,
                         source: `Hisnul Muslim — ${chapter.duas.length} invocation(s)`,
-                        link: `/adhkar`,
+                        link: `/adhkar?mega=${encodeURIComponent(category.id)}`,
                         score,
                         emoji: '🤲',
                     });

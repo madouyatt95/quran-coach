@@ -17,7 +17,7 @@ export function HadithsPage() {
         }
         return null;
     });
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(() => searchParams.get('search') || '');
     const navigate = useNavigate();
     const { toggleFavoriteHadith, isFavoriteHadith } = useFavoritesStore();
 
