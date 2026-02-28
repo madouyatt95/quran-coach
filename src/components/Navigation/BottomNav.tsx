@@ -13,7 +13,7 @@ const navItems: NavItem[] = [
     { path: '/read', emoji: '📖', labelKey: 'nav.read' },
     { path: '/listen', emoji: '🎧', labelKey: 'nav.listen' },
     { path: '/hifdh', emoji: '🎙️', labelKey: 'nav.memorize' },
-    { path: '/prophets', emoji: '📜', labelKey: 'nav.prophets' },
+    { path: '/quiz', emoji: '🧠', labelKey: 'sideMenu.quiz' },
 ];
 
 export function BottomNav() {
