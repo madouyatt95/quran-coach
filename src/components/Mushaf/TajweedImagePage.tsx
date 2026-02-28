@@ -17,10 +17,10 @@ import { getJuzForPage } from '../../data/juzData';
 import { SURAH_PAGE_STARTS } from './tajweedPageData';
 import './TajweedImagePage.css';
 
-// CDN source for Quran pages (color-coded Tajweed Mushaf)
+// CDN source for Quran pages (Standard Madinah Mushaf)
 function getPageImageUrl(page: number): string {
     const padded = String(page).padStart(3, '0');
-    return `https://sufraat.com/quran-images/color/${padded}.png`;
+    return `https://everyayah.com/data/images_mushaf/page${padded}.png`;
 }
 
 // Determine which surah a page belongs to
