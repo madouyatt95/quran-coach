@@ -51,7 +51,7 @@ const HIJRI_MONTH_EVENTS: Record<number, { emoji: string; title: string; descrip
 };
 
 const SHORTCUTS = [
-    { path: '/quiz', emoji: '⚔️', labelKey: 'sideMenu.quiz', desc: 'Défis', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
+    { path: '/prophets', emoji: '📜', labelKey: 'nav.prophets', desc: 'Prophètes', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
     { path: '/qibla', emoji: '🧭', labelKey: 'sideMenu.qibla', desc: 'Direction', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
     { path: '/prayers', emoji: '🕌', labelKey: 'sideMenu.prayers', desc: 'Horaires', gradient: 'linear-gradient(135deg, rgba(255,152,0,0.2), rgba(255,152,0,0.05))' },
     { path: '/themes', emoji: '📚', labelKey: 'sideMenu.themes', desc: 'Coraniques', gradient: 'linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.05))' },
