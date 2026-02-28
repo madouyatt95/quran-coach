@@ -1,9 +1,14 @@
 import { useState, useCallback, useRef } from 'react';
-import { Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, ExternalLink } from 'lucide-react';
+import { useQuranStore } from '../stores/quranStore';
 import { coachSearch, QUICK_TAGS, type SearchResult } from '../lib/coachSearch';
 import './CoachPage.css';
 
 export function CoachPage() {
+    const navigate = useNavigate();
+    const goToAyah = useQuranStore(s => s.goToAyah);
+
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -52,6 +57,30 @@ export function CoachPage() {
             doSearch(tag.query);
         }
     }, [activeTag, doSearch]);
+
+    const handleCardClick = useCallback((r: SearchResult) => {
+        if (r.type === 'verse' && r.source) {
+            // Parse "Coran 2:45" → surah=2, ayah=45
+            const match = r.source.match(/Coran\s+(\d+):(\d+)/);
+            if (match) {
+                const surah = parseInt(match[1], 10);
+                const ayah = parseInt(match[2], 10);
+                sessionStorage.setItem('isSilentJump', 'true');
+                sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah, ayah }));
+                goToAyah(surah, ayah, undefined, { silent: true });
+                navigate('/read');
+                return;
+            }
+        }
+        if (r.type === 'invocation') {
+            navigate('/adhkar');
+            return;
+        }
+        if (r.type === 'hadith') {
+            navigate('/hadiths');
+            return;
+        }
+    }, [navigate, goToAyah]);
 
     const typeLabels: Record<string, string> = {
         hadith: 'Hadith',
@@ -116,11 +145,13 @@ export function CoachPage() {
                             key={`${r.type}-${i}`}
                             className="coach-card"
                             style={{ animationDelay: `${i * 0.05}s` }}
+                            onClick={() => handleCardClick(r)}
                         >
                             <div className="coach-card-header">
                                 <span className="coach-card-emoji">{r.emoji}</span>
                                 <span className="coach-card-type">{typeLabels[r.type] || r.type}</span>
                                 <span className="coach-card-title">{r.title}</span>
+                                <ExternalLink size={12} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
                             </div>
                             {r.textAr && (
                                 <div className="coach-card-arabic">{r.textAr}</div>
