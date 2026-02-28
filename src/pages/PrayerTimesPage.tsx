@@ -19,6 +19,7 @@ import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '.
 import { updatePushPreferences, updatePushLocation } from '../lib/notificationService';
 // PrayerCalendarModal removed — replaced by Sunnan Rawatib tracker
 import { LocationSearchModal } from '../components/Prayer/LocationSearchModal';
+import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import { SideMenu } from '../components/Navigation/SideMenu';
 import { resolveCoords } from '../lib/locationService';
 import './PrayerTimesPage.css';
@@ -502,6 +503,9 @@ export function PrayerTimesPage() {
                         <span className="prayer-action-badge">{sunnan.doneRakaat}/{TOTAL_MUAKKADAH_RAKAAT}</span>
                     </button>
                 </div>
+
+                {/* Islamic Calendar */}
+                <IslamicCalendar />
 
                 {/* Nawafil Section (collapsible) */}
                 {showNawafil && (
