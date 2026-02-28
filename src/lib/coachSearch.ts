@@ -156,22 +156,60 @@ async function searchHisnulMuslim(query: string): Promise<SearchResult[]> {
     }
 }
 
-// ─── Search Quran via API ─────
+// ─── Search Quran via API (Arabic + French) ─────
 async function searchQuranVerses(query: string): Promise<SearchResult[]> {
-    try {
-        const { searchQuran } = await import('./quranApi');
-        const ayahs = await searchQuran(query);
+    const API_BASE = 'https://api.alquran.cloud/v1';
 
-        return ayahs.slice(0, 5).map(ayah => ({
-            type: 'verse' as const,
-            title: `Sourate ${ayah.surah} — Verset ${ayah.numberInSurah}`,
-            textAr: ayah.text,
-            textFr: '',
-            source: `Coran ${ayah.surah}:${ayah.numberInSurah}`,
-            link: '/read',
-            score: 15,
-            emoji: '📖',
-        }));
+    // Search both Arabic and French translations in parallel
+    const searches = [
+        // French translation search (for semantic queries like "patience", "paradis")
+        fetch(`${API_BASE}/search/${encodeURIComponent(query)}/all/fr.hamidullah`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.code !== 200 || !data.data?.matches) return [];
+                return data.data.matches.slice(0, 5).map((m: any) => ({
+                    type: 'verse' as const,
+                    title: `Sourate ${m.surah?.englishName || m.surah?.number || '?'} — Verset ${m.numberInSurah}`,
+                    textAr: '',
+                    textFr: m.text,
+                    source: `Coran ${m.surah?.number || ''}:${m.numberInSurah}`,
+                    link: '/read',
+                    score: 20,
+                    emoji: '📖',
+                }));
+            })
+            .catch(() => []),
+        // Arabic text search (for Arabic queries)
+        fetch(`${API_BASE}/search/${encodeURIComponent(query)}/all/ar.quran-uthmani`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.code !== 200 || !data.data?.matches) return [];
+                return data.data.matches.slice(0, 5).map((m: any) => ({
+                    type: 'verse' as const,
+                    title: `Sourate ${m.surah?.englishName || m.surah?.number || '?'} — Verset ${m.numberInSurah}`,
+                    textAr: m.text,
+                    textFr: '',
+                    source: `Coran ${m.surah?.number || ''}:${m.numberInSurah}`,
+                    link: '/read',
+                    score: 18,
+                    emoji: '📖',
+                }));
+            })
+            .catch(() => []),
+    ];
+
+    try {
+        const [frResults, arResults] = await Promise.all(searches);
+        // Deduplicate by verse key
+        const seen = new Set<string>();
+        const combined: SearchResult[] = [];
+        for (const r of [...frResults, ...arResults]) {
+            if (!seen.has(r.source)) {
+                seen.add(r.source);
+                combined.push(r);
+            }
+        }
+        return combined.slice(0, 8);
     } catch {
         return [];
     }
