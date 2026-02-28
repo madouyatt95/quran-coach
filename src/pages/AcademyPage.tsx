@@ -125,12 +125,12 @@ const ACADEMY_MODULES: AcademyModule[] = [
             title: 'Al-Fatiha — La Mère du Livre',
             data: {
                 sections: [
-                    { title: 'Introduction', body: 'Al-Fatiha est la première sourate du Coran. Elle est récitée dans chaque rak\'at de la prière. Le Prophète ﷺ l\'a appelée "Oumm al-Kitab" (la Mère du Livre).', arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' },
-                    { title: 'Verset 1', body: '"Au nom d\'Allah, le Tout Miséricordieux, le Très Miséricordieux" — On commence tout par le nom d\'Allah.', arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' },
-                    { title: 'Verset 2', body: '"Louange à Allah, Seigneur des mondes" — Toute louange appartient à Allah seul.', arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ' },
-                    { title: 'Verset 3', body: '"Le Tout Miséricordieux, le Très Miséricordieux" — Deux noms qui expriment la miséricorde infinie d\'Allah.', arabic: 'الرَّحْمَٰنِ الرَّحِيمِ' },
-                    { title: 'Verset 4', body: '"Maître du Jour de la Rétribution" — Allah est le Juge suprême au Jour du Jugement.', arabic: 'مَالِكِ يَوْمِ الدِّينِ' },
-                    { title: 'Versets 5-7', body: '"C\'est Toi que nous adorons et c\'est Toi dont nous implorons secours. Guide-nous dans le droit chemin, le chemin de ceux que Tu as comblés de bienfaits, non pas de ceux qui ont encouru Ta colère, ni des égarés."', arabic: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ' },
+                    { title: 'Introduction', body: 'Al-Fatiha est la première sourate du Coran. Elle est récitée dans chaque rak\'at de la prière. Le Prophète ﷺ l\'a appelée "Oumm al-Kitab" (la Mère du Livre).', arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', phonetic: "Bismillaahir Rahmaanir Rahiim" },
+                    { title: 'Verset 1', body: '"Au nom d\'Allah, le Tout Miséricordieux, le Très Miséricordieux" — On commence tout par le nom d\'Allah.', arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', phonetic: "Bismillaahir Rahmaanir Rahiim" },
+                    { title: 'Verset 2', body: '"Louange à Allah, Seigneur des mondes" — Toute louange appartient à Allah seul.', arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', phonetic: "Alhamdu lillaahi Rabbil 'aalamiin" },
+                    { title: 'Verset 3', body: '"Le Tout Miséricordieux, le Très Miséricordieux" — Deux noms qui expriment la miséricorde infinie d\'Allah.', arabic: 'الرَّحْمَٰنِ الرَّحِيمِ', phonetic: "Ar-Rahmaanir-Rahiim" },
+                    { title: 'Verset 4', body: '"Maître du Jour de la Rétribution" — Allah est le Juge suprême au Jour du Jugement.', arabic: 'مَالِكِ يَوْمِ الدِّينِ', phonetic: "Maaliki Yawmid-Diin" },
+                    { title: 'Versets 5-7', body: '"C\'est Toi que nous adorons et c\'est Toi dont nous implorons secours. Guide-nous dans le droit chemin, le chemin de ceux que Tu as comblés de bienfaits, non pas de ceux qui ont encouru Ta colère, ni des égarés."', arabic: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ', phonetic: "Iyyaaka na'budu wa iyyaaka nasta'iin. Ihdinas-Siraatal-Mustaqiim" },
                 ]
             } as LessonData,
         }, {
@@ -162,7 +162,7 @@ const ACADEMY_MODULES: AcademyModule[] = [
             data: {
                 sections: [
                     { title: 'Introduction', body: 'L\'Islam repose sur 5 piliers fondamentaux, comme l\'a enseigné le Prophète ﷺ dans le célèbre hadith rapporté par ibn Omar.' },
-                    { title: '1. La Shahada (الشهادة)', body: 'L\'attestation de foi : "J\'atteste qu\'il n\'y a de divinité qu\'Allah et que Muhammad est Son messager." C\'est la porte d\'entrée dans l\'Islam.', arabic: 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ' },
+                    { title: '1. La Shahada (الشهادة)', body: 'L\'attestation de foi : "J\'atteste qu\'il n\'y a de divinité qu\'Allah et que Muhammad est Son messager." C\'est la porte d\'entrée dans l\'Islam.', arabic: 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ', phonetic: "Ash-hadu an laa ilaaha illaLlaah, wa ash-hadu anna Muhammadan rasuuluLlaah" },
                     { title: '2. La Salat (الصلاة)', body: 'Les 5 prières quotidiennes : Fajr (2), Dhuhr (4), Asr (4), Maghrib (3), Isha (4). C\'est le deuxième pilier et le plus important après la Shahada.' },
                     { title: '3. La Zakat (الزكاة)', body: 'L\'aumône obligatoire de 2,5% sur l\'épargne qui atteint le seuil (Nissab) pendant un an lunaire.' },
                     { title: '4. Le Sawm (الصيام)', body: 'Le jeûne du mois de Ramadan, de l\'aube au coucher du soleil.' },
@@ -224,14 +224,14 @@ const ACADEMY_MODULES: AcademyModule[] = [
             data: {
                 sections: [
                     { title: 'L\'intention (Niyyah)', body: 'Avant de commencer, formuler l\'intention dans son cœur de faire les ablutions pour la prière.' },
-                    { title: '1. Bismillah', body: 'Dire "Bismillah" (Au nom d\'Allah) pour commencer.', arabic: 'بِسْمِ اللَّهِ' },
+                    { title: '1. Bismillah', body: 'Dire "Bismillah" (Au nom d\'Allah) pour commencer.', arabic: 'بِسْمِ اللَّهِ', phonetic: "Bismillaah" },
                     { title: '2. Laver les mains', body: 'Se laver les mains 3 fois jusqu\'aux poignets.' },
                     { title: '3. Rincer la bouche et le nez', body: 'Prendre de l\'eau dans la main droite, rincer la bouche puis aspirer l\'eau par le nez et la rejeter. 3 fois chacun.' },
                     { title: '4. Laver le visage', body: 'Laver le visage 3 fois, du haut du front jusqu\'au menton et d\'une oreille à l\'autre.' },
                     { title: '5. Laver les avant-bras', body: 'Laver le bras droit puis le gauche, du bout des doigts jusqu\'au coude inclus. 3 fois chacun.' },
                     { title: '6. Essuyer la tête', body: 'Passer les mains mouillées sur la tête, d\'avant en arrière puis d\'arrière en avant. 1 fois.' },
                     { title: '7. Laver les pieds', body: 'Laver le pied droit puis le gauche, jusqu\'aux chevilles incluses, en passant les doigts entre les orteils. 3 fois chacun.' },
-                    { title: 'Invocation après le Wudu', body: '"Ash-hadu an la ilaha illa Allah, wahdahu la sharika lah, wa ash-hadu anna Muhammadan abduhu wa rasuluh"', arabic: 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ' },
+                    { title: 'Invocation après le Wudu', body: '"Ash-hadu an la ilaha illa Allah, wahdahu la sharika lah, wa ash-hadu anna Muhammadan abduhu wa rasuluh"', arabic: 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ', phonetic: "Ash-hadu an laa ilaaha illaLlaah, wahdahu laa shariika lah" },
                 ]
             } as LessonData,
         }],
@@ -252,10 +252,10 @@ const ACADEMY_MODULES: AcademyModule[] = [
             title: 'Sourates pour la prière',
             data: {
                 sections: [
-                    { title: 'Sourate Al-Ikhlas (112)', body: '"Dis : Il est Allah, Unique. Allah, le Seul à être imploré. Il n\'a jamais engendré, n\'a pas été engendré. Et nul n\'est égal à Lui." — Récitée, elle équivaut à un tiers du Coran.', arabic: 'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ' },
-                    { title: 'Sourate Al-Falaq (113)', body: '"Dis : Je cherche protection auprès du Seigneur de l\'aube naissante, contre le mal de ce qu\'Il a créé..."', arabic: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ' },
-                    { title: 'Sourate An-Nas (114)', body: '"Dis : Je cherche protection auprès du Seigneur des gens, le Souverain des gens, la Divinité des gens..."', arabic: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ' },
-                    { title: 'Sourate Al-Kawthar (108)', body: '"Nous t\'avons certes accordé l\'Abondance. Accomplis la prière pour ton Seigneur et sacrifie. Celui qui te hait sera lui le privé."', arabic: 'إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ ۝ فَصَلِّ لِرَبِّكَ وَانْحَرْ ۝ إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ' },
+                    { title: 'Sourate Al-Ikhlas (112)', body: '"Dis : Il est Allah, Unique. Allah, le Seul à être imploré. Il n\'a jamais engendré, n\'a pas été engendré. Et nul n\'est égal à Lui." — Récitée, elle équivaut à un tiers du Coran.', arabic: 'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ', phonetic: "Qul Huwa Llaahu Ahad. Allaahus-Samad. Lam yalid wa lam yuulad. Wa lam yakul-lahuu kufuwan ahad" },
+                    { title: 'Sourate Al-Falaq (113)', body: '"Dis : Je cherche protection auprès du Seigneur de l\'aube naissante, contre le mal de ce qu\'Il a créé..."', arabic: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ', phonetic: "Qul a'uudhu bi Rabbil-Falaq. Min sharri maa khalaq..." },
+                    { title: 'Sourate An-Nas (114)', body: '"Dis : Je cherche protection auprès du Seigneur des gens, le Souverain des gens, la Divinité des gens..."', arabic: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ', phonetic: "Qul a'uudhu bi Rabbin-Naas. Malikin-Naas. Ilaahin-Naas..." },
+                    { title: 'Sourate Al-Kawthar (108)', body: '"Nous t\'avons certes accordé l\'Abondance. Accomplis la prière pour ton Seigneur et sacrifie. Celui qui te hait sera lui le privé."', arabic: 'إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ ۝ فَصَلِّ لِرَبِّكَ وَانْحَرْ ۝ إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ', phonetic: "Innaa a'taynaakal-Kawthar. Fasalli li Rabbika wanhar. Inna shaani'aka huwal-abtar" },
                 ]
             } as LessonData,
         }],
@@ -277,13 +277,13 @@ const ACADEMY_MODULES: AcademyModule[] = [
             data: {
                 sections: [
                     { title: 'Préparation', body: 'S\'assurer d\'avoir les ablutions, un endroit propre, et être habillé convenablement. Se tourner vers la Qibla (direction de la Mecque).' },
-                    { title: '1. Takbir al-Ihram', body: 'Lever les mains au niveau des oreilles et dire "Allahu Akbar" pour commencer la prière.', arabic: 'اللَّهُ أَكْبَرُ' },
-                    { title: '2. Qiyam (debout)', body: 'Poser la main droite sur la gauche sur la poitrine. Réciter Al-Fatiha obligatoirement, puis une autre sourate.', arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ' },
-                    { title: '3. Ruku (inclinaison)', body: 'Dire "Allahu Akbar" et s\'incliner en posant les mains sur les genoux. Dire 3 fois "Subhana Rabbiyal Adhim".', arabic: 'سُبْحَانَ رَبِّيَ الْعَظِيمِ' },
-                    { title: '4. I\'tidal (relèvement)', body: 'Se relever en disant "Sami Allahu liman hamida, Rabbana wa lakal hamd".', arabic: 'سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ' },
-                    { title: '5. Sujud (prosternation)', body: 'Se prosterner front, nez, paumes, genoux et orteils au sol. Dire 3 fois "Subhana Rabbiyal A\'la".', arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَى' },
-                    { title: '6. Juloos (assis)', body: 'S\'asseoir brièvement entre les deux prosternations, en disant "Rabbi ghfir li".', arabic: 'رَبِّ اغْفِرْ لِي' },
-                    { title: '7. Tashahud et Salam', body: 'À la fin, réciter le Tashahud puis saluer à droite et à gauche en disant "Assalamu Alaykum wa Rahmatullah".', arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ' },
+                    { title: '1. Takbir al-Ihram', body: 'Lever les mains au niveau des oreilles et dire "Allahu Akbar" pour commencer la prière.', arabic: 'اللَّهُ أَكْبَرُ', phonetic: "Allaahu Akbar" },
+                    { title: '2. Al-Fatiha', body: 'Réciter la sourate Al-Fatiha en entier. Elle est obligatoire dans chaque rak\'at (unité de prière).', arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ...', phonetic: "Alhamdu lillaahi Rabbil 'aalamiin..." },
+                    { title: '3. Ruku (inclinaison)', body: 'Dire "Allahu Akbar" et s\'incliner en posant les mains sur les genoux. Dire 3 fois "Subhana Rabbiyal Adhim".', arabic: 'سُبْحَانَ رَبِّيَ الْعَظِيمِ', phonetic: "Subhaana Rabbiyal 'Adhiim" },
+                    { title: '4. I\'tidal (relèvement)', body: 'Se relever en disant "Sami Allahu liman hamida, Rabbana wa lakal hamd".', arabic: 'سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ', phonetic: "Sami' Allaahu liman hamidah, Rabbanaa wa lakal hamd" },
+                    { title: '5. Sujud (prosternation)', body: 'Se prosterner front, nez, paumes, genoux et orteils au sol. Dire 3 fois "Subhana Rabbiyal A\'la".', arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَى', phonetic: "Subhaana Rabbiyal A'laa" },
+                    { title: '6. Juloos (assis)', body: 'S\'asseoir brièvement entre les deux prosternations, en disant "Rabbi ghfir li".', arabic: 'رَبِّ اغْفِرْ لِي', phonetic: "Rabbi ghfir li" },
+                    { title: '7. Tashahud et Salam', body: 'À la fin, réciter le Tashahud puis saluer à droite et à gauche en disant "Assalamu Alaykum wa Rahmatullah".', arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ', phonetic: "As-salaamu 'alaykum wa rahmatullaah" },
                 ]
             } as LessonData,
         }],
