@@ -143,7 +143,7 @@ async function searchHisnulMuslim(query: string): Promise<SearchResult[]> {
                         textAr: firstDua?.arabic || chapter.titleAr,
                         textFr: firstDua?.translation || chapter.title,
                         source: `Hisnul Muslim — ${chapter.duas.length} invocation(s)`,
-                        link: `/adhkar?mega=${encodeURIComponent(category.id)}`,
+                        link: `/adhkar?cat=hisn_${encodeURIComponent(chapter.id)}`,
                         score,
                         emoji: '🤲',
                     });

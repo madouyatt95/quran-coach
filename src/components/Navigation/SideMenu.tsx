@@ -82,7 +82,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
     const TOOLS = [
         { path: '/sentinel', emoji: <ShieldCheck size={20} color="#c9a84c" />, label: t('sideMenu.sentinel'), color: 'rgba(201,168,76,0.1)' },
-        { path: '/coach', emoji: '🔍', label: 'Coach', color: 'rgba(76,175,80,0.1)' },
+        { path: '/coach', emoji: '🔍', label: 'Trouve', color: 'rgba(76,175,80,0.1)' },
         { path: '/dashboard', emoji: '📊', label: 'Tableau de bord', color: 'rgba(88,166,255,0.1)' },
         { path: '/settings', emoji: '⚙️', label: t('sideMenu.settings'), color: '#607D8B' },
     ];

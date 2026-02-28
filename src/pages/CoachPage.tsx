@@ -90,10 +90,10 @@ export function CoachPage() {
         <div className="coach-page">
             <div className="coach-header">
                 <div className="coach-title">
-                    🔍 Coach Coranique
+                    🔍 Trouve
                 </div>
                 <div className="coach-subtitle">
-                    Recherchez dans le Coran, les Hadiths et les Invocations
+                    Coran, Hadiths, Invocations — tout en un clic
                 </div>
             </div>
 
