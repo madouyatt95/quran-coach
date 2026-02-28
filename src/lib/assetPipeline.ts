@@ -49,8 +49,8 @@ function detectLicenseType(raw: string): string {
  */
 export function getReciterColor(id: string): string {
     const colors = [
-        '#4CAF50', '#2196F3', '#9C27B0', '#FF9800',
-        '#E91E63', '#00BCD4', '#673AB7', '#3F51B5'
+        '#c9a84c', '#b8943e', '#a67c32', '#d4af37',
+        '#8b7355', '#9e8c6c', '#7a6a4f', '#c4a265'
     ];
     let hash = 0;
     for (let i = 0; i < id.length; i++) {

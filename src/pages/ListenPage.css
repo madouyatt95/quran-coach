@@ -1,88 +1,72 @@
+/* ═══ ListenPage — Coherent with global app theme ═══ */
+
 .listen-page {
-    padding: var(--space-md);
+    min-height: 100dvh;
+    background: var(--bg, #0a0e17);
+    padding: 0 0 100px;
+    color: #e8e6e3;
     animation: fadeIn 0.4s ease;
 }
 
+/* ─── Header ─────────────────────────────────────── */
 .listen-header {
-    margin-bottom: var(--space-xl);
+    padding: 16px 20px;
     text-align: center;
     position: relative;
+    margin-bottom: var(--space-md);
 }
 
 .listen-back-btn {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 16px;
+    left: 16px;
     background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
+    border: none;
+    color: #d4af37;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text-primary);
-    transition: all 0.25s ease;
+    transition: background 0.2s;
 }
 
 .listen-back-btn:active {
-    transform: scale(0.9);
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(212, 175, 55, 0.15);
+    transform: scale(0.92);
 }
 
 .listen-header h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    color: #c9a84c;
-    margin-bottom: var(--space-xs);
-    background: linear-gradient(135deg, #c9a84c, #efd692, #c9a84c);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmerTitle 4s ease infinite;
-}
-
-@keyframes shimmerTitle {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
+    color: #d4af37;
+    margin-bottom: 4px;
 }
 
 .listen-header p {
-    color: var(--color-text-muted);
-    font-size: var(--text-ui-sm);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.82rem;
 }
 
-/* ─── Resume Banner ─────────────────────────────── */
+/* ─── Resume Banner ──────────────────────────────── */
 .listen-resume-banner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-md);
-    background: rgba(201, 168, 76, 0.08);
-    backdrop-filter: blur(16px);
+    margin: 0 16px 14px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.14) 0%, rgba(201, 168, 76, 0.04) 100%);
     border: 1px solid rgba(201, 168, 76, 0.2);
-    border-radius: 18px;
-    padding: var(--space-sm) var(--space-md);
-    margin-bottom: var(--space-lg);
-    animation: slideDown 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: 0 4px 20px rgba(201, 168, 76, 0.08);
+    border-radius: 16px;
+    animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes slideDown {
+@keyframes fade-up {
     from {
         opacity: 0;
-        transform: translateY(-12px);
+        transform: translateY(12px);
     }
 
     to {
@@ -94,28 +78,13 @@
 .listen-resume-info {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: 10px;
     min-width: 0;
 }
 
 .listen-resume-icon {
     font-size: 1.4rem;
     flex-shrink: 0;
-    animation: pulseGlow 2s ease-in-out infinite;
-}
-
-@keyframes pulseGlow {
-
-    0%,
-    100% {
-        filter: brightness(1);
-        transform: scale(1);
-    }
-
-    50% {
-        filter: brightness(1.3);
-        transform: scale(1.1);
-    }
 }
 
 .listen-resume-text {
@@ -126,7 +95,7 @@
 
 .listen-resume-reciter {
     font-size: 0.75rem;
-    color: #c9a84c;
+    color: #d4af37;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
@@ -136,14 +105,14 @@
 .listen-resume-surah {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--color-text-primary, #e8e6e3);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .listen-resume-pos {
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.35);
     font-weight: 400;
 }
 
@@ -151,325 +120,95 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: linear-gradient(135deg, #c9a84c, #b8943e);
+    background: #c9a84c;
     color: #0d1117;
     border: none;
-    border-radius: 14px;
-    padding: 10px 18px;
+    border-radius: 12px;
+    padding: 8px 16px;
     font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
     flex-shrink: 0;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 16px rgba(201, 168, 76, 0.25);
+    transition: all 0.2s ease;
 }
 
 .listen-resume-btn:active {
     transform: scale(0.93);
-    box-shadow: 0 2px 8px rgba(201, 168, 76, 0.15);
 }
 
 /* ─── Search ─────────────────────────────────────── */
 .listen-search {
-    margin-bottom: var(--space-xl);
+    margin: 0 16px 18px;
 }
 
 .audio-search-box {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
-    padding: var(--space-sm) var(--space-md);
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    transition: border-color 0.3s;
 }
 
 .audio-search-box:focus-within {
-    border-color: rgba(201, 168, 76, 0.4);
-    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1), 0 4px 20px rgba(201, 168, 76, 0.08);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(212, 175, 55, 0.35);
 }
 
 .audio-search-box input {
     background: transparent;
     border: none;
-    color: var(--color-text-primary);
-    padding: var(--space-xs);
+    color: #e8e6e3;
+    padding: 0;
     flex: 1;
-    font-size: 1rem;
-}
-
-.audio-search-box input:focus {
+    font-size: 0.9rem;
     outline: none;
 }
 
 .audio-search-box input::placeholder {
-    color: var(--color-text-muted);
-    opacity: 0.7;
+    color: #666;
 }
 
 .search-icon {
-    margin-right: var(--space-sm);
-    transition: transform 0.3s ease;
-}
-
-.audio-search-box:focus-within .search-icon {
-    transform: scale(1.15);
+    flex-shrink: 0;
 }
 
 /* ─── Sections ───────────────────────────────────── */
 .listen-section {
-    margin-bottom: var(--space-xl);
+    margin-bottom: 24px;
+}
+
+.listen-content {
+    padding: 0 16px;
 }
 
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--space-md);
+    margin-bottom: 10px;
 }
 
 .section-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: var(--space-md);
-    color: var(--color-text-primary);
-    letter-spacing: -0.01em;
-}
-
-/* ─── Featured Card (Arabe + Français) ───────────── */
-.featured-reciter-card {
-    display: flex;
-    align-items: center;
-    background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), rgba(201, 168, 76, 0.02));
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: var(--space-md) var(--space-lg);
-    gap: var(--space-md);
-    border: 1px solid rgba(201, 168, 76, 0.18);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.featured-reciter-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.06), transparent);
-    transition: left 0.6s ease;
-}
-
-.featured-reciter-card:hover::before {
-    left: 100%;
-}
-
-.featured-reciter-card:active {
-    transform: scale(0.98);
-}
-
-.reciter-photo-placeholder {
-    width: 68px;
-    height: 68px;
-    background: linear-gradient(135deg, #c9a84c, #a67c32, #d4b65c) !important;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    box-shadow: 0 6px 20px rgba(201, 168, 76, 0.35);
-    position: relative;
-    flex-shrink: 0;
-}
-
-.reciter-info h3 {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 3px;
-}
-
-.reciter-info p {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-xs);
-}
-
-.badge-featured {
-    background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.1));
-    color: #dbb85e;
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 8px;
-    letter-spacing: 0.8px;
-    border: 1px solid rgba(201, 168, 76, 0.25);
-    display: inline-block;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
+    padding-left: 4px;
 }
 
-/* ─── Reciter Grid ───────────────────────────────── */
-.reciter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: var(--space-md);
-}
-
-.reciter-mini-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(8px);
-    border-radius: 18px;
-    padding: var(--space-sm) var(--space-sm) var(--space-md);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    animation: cardAppear 0.5s ease backwards;
-}
-
-@keyframes cardAppear {
-    from {
-        opacity: 0;
-        transform: translateY(16px) scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.reciter-mini-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(201, 168, 76, 0.25);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(201, 168, 76, 0.1);
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.reciter-mini-card:active {
-    transform: scale(0.96) translateY(0);
-}
-
-.reciter-card-photo {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 14px;
-    overflow: hidden;
-    margin-bottom: var(--space-sm);
-    background: var(--color-bg-tertiary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.reciter-card-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-
-.reciter-mini-card:hover .reciter-card-photo img {
-    transform: scale(1.05);
-}
-
-/* ─── Fallback Avatar (grid) — dégradé + motif ──── */
-.reciter-avatar-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: rgba(255, 255, 255, 0.92);
-    position: relative;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    letter-spacing: 1px;
-}
-
-/* Islamic geometric pattern overlay */
-.reciter-avatar-fallback::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 2px, transparent 2px);
-    background-size: 20px 20px, 20px 20px, 30px 30px;
-    opacity: 0.7;
-    pointer-events: none;
-}
-
-/* Subtle light sweep */
-.reciter-avatar-fallback::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg,
-            transparent 40%,
-            rgba(255, 255, 255, 0.06) 45%,
-            rgba(255, 255, 255, 0.1) 50%,
-            rgba(255, 255, 255, 0.06) 55%,
-            transparent 60%);
-    pointer-events: none;
-}
-
-.reciter-card-info {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 0 2px;
-}
-
-.reciter-card-name {
-    font-size: 0.85rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 2px;
-}
-
-.reciter-card-moshaf {
-    font-size: 0.7rem;
-    color: var(--color-text-muted);
-    opacity: 0.8;
-}
-
-.listen-loading {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: var(--space-xl);
-    color: var(--color-text-muted);
-}
-
-/* ─── Popular Reciters Horizontal Scroll ─────────── */
+/* ─── Popular Reciters (Horizontal Scroll) ────── */
 .popular-reciters-scroll {
     display: flex;
-    gap: 18px;
+    gap: 14px;
     overflow-x: auto;
-    padding-bottom: var(--space-md);
-    margin: 0 calc(var(--space-md) * -1);
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
+    padding-bottom: 8px;
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
 }
@@ -479,88 +218,40 @@
 }
 
 .popular-reciter-card {
-    flex: 0 0 108px;
+    flex: 0 0 88px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-xs);
+    gap: 6px;
     cursor: pointer;
     scroll-snap-align: start;
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.2s ease;
 }
 
 .popular-reciter-card:active {
     transform: scale(0.93);
 }
 
-/* Golden ring with animated glow */
 .popular-card-photo {
-    width: 86px;
-    height: 86px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
     overflow: hidden;
-    background: var(--color-bg-tertiary);
-    position: relative;
-    box-shadow:
-        0 0 0 3px rgba(201, 168, 76, 0.35),
-        0 6px 20px rgba(0, 0, 0, 0.2),
-        0 0 20px rgba(201, 168, 76, 0.1);
-    transition: all 0.35s ease;
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .popular-reciter-card:hover .popular-card-photo {
-    box-shadow:
-        0 0 0 3px rgba(201, 168, 76, 0.6),
-        0 8px 28px rgba(0, 0, 0, 0.25),
-        0 0 28px rgba(201, 168, 76, 0.2);
-    transform: scale(1.06);
-}
-
-/* Animated golden ring border */
-.popular-card-photo::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg,
-            #c9a84c,
-            #efd692,
-            #c9a84c,
-            #a67c32,
-            #c9a84c,
-            #efd692,
-            #c9a84c);
-    z-index: -1;
-    animation: ringRotate 6s linear infinite;
-}
-
-@keyframes ringRotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Interior circle mask */
-.popular-card-photo::after {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    border-radius: 50%;
-    background: var(--color-bg-primary);
-    z-index: 0;
+    border-color: rgba(212, 175, 55, 0.6);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.12);
 }
 
 .popular-card-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    position: relative;
-    z-index: 1;
-    border-radius: 50%;
 }
 
 .popular-avatar-fallback {
@@ -569,91 +260,267 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 800;
-    color: rgba(255, 255, 255, 0.9);
-    position: relative;
-    z-index: 1;
-    border-radius: 50%;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* Geometric micro-pattern inside popular avatar */
-.popular-avatar-fallback::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-        radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-    background-size: 16px 16px;
-    opacity: 0.6;
-    pointer-events: none;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 1px;
 }
 
 .popular-card-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: rgba(255, 255, 255, 0.6);
     text-align: center;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.3;
-    max-width: 108px;
+    line-height: 1.25;
+    max-width: 88px;
 }
 
-/* ─── Playlist card variant ──────────────────────── */
-.playlist-section .popular-card-photo {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.playlist-section .popular-card-photo::before {
-    background: linear-gradient(135deg, #4a90d9, #6ba3e8);
-}
-
-.playlist-avatar {
+/* ─── Featured Card (Arabe + Français) ───────────── */
+.featured-reciter-card {
+    display: flex;
+    align-items: center;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.14) 0%, rgba(201, 168, 76, 0.04) 100%);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 16px;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
     position: relative;
-    z-index: 1;
+    overflow: hidden;
+}
+
+.featured-reciter-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.06), transparent);
+    animation: shimmer 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    100% {
+        transform: translateX(50%);
+    }
+}
+
+.featured-reciter-card:active {
+    transform: scale(0.98);
+}
+
+.reciter-photo-placeholder {
+    width: 56px;
+    height: 56px;
+    background: rgba(201, 168, 76, 0.2) !important;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.reciter-info h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+    color: #e8e6e3;
+}
+
+.reciter-info p {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 6px;
+}
+
+.badge-featured {
+    background: rgba(212, 175, 55, 0.12);
+    color: #d4af37;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.8px;
+    display: inline-block;
+}
+
+/* ─── Reciter Grid ───────────────────────────────── */
+.reciter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 10px;
+}
+
+.reciter-mini-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 10px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    animation: cardAppear 0.4s ease backwards;
+}
+
+@keyframes cardAppear {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reciter-mini-card:hover {
+    border-color: rgba(212, 175, 55, 0.2);
+    transform: translateY(-2px);
+}
+
+.reciter-mini-card:active {
+    transform: scale(0.96);
+}
+
+.reciter-card-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reciter-card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.reciter-mini-card:hover .reciter-card-photo img {
+    transform: scale(1.04);
+}
+
+/* ─── Fallback Avatar ────────────────────────────── */
+.reciter-avatar-fallback {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.8);
+    position: relative;
+    letter-spacing: 1px;
+}
+
+/* Subtle geometric pattern */
+.reciter-avatar-fallback::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.15;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 8px,
+            rgba(255, 255, 255, 0.05) 8px,
+            rgba(255, 255, 255, 0.05) 9px);
+}
+
+.reciter-card-info {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.reciter-card-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #e8e6e3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.reciter-card-moshaf {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.listen-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+/* ─── Playlist card variant ──────────────────────── */
+.playlist-card .popular-card-photo {
+    border-color: rgba(88, 166, 255, 0.25);
+}
+
+.playlist-avatar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(88, 166, 255, 0.7);
+    background: rgba(88, 166, 255, 0.08);
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(74, 144, 217, 0.3), rgba(107, 163, 232, 0.15));
+    position: relative;
 }
 
 .playlist-badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -2px;
+    right: -2px;
     background: #c9a84c;
     color: #0d1117;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 800;
-    min-width: 20px;
-    height: 20px;
-    border-radius: 10px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 5px;
-    box-shadow: 0 2px 8px rgba(201, 168, 76, 0.4);
+    padding: 0 4px;
 }
 
 /* ─── Coming Soon ────────────────────────────────── */
 .coming-soon-banner {
     background: rgba(255, 255, 255, 0.03);
     border: 1px dashed rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-lg);
+    border-radius: 16px;
     padding: var(--space-xl) var(--space-md);
     text-align: center;
-    margin-top: var(--space-2xl);
+    margin-top: 32px;
 }
 
 .emoji-pulse {
@@ -682,47 +549,43 @@
 
 .coming-soon-banner p {
     font-size: 0.9rem;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 /* ─── Responsive ─────────────────────────────────── */
 @media (min-width: 768px) {
     .reciter-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
     }
 
     .popular-reciter-card {
-        flex: 0 0 130px;
+        flex: 0 0 110px;
     }
 
     .popular-card-photo {
-        width: 110px;
-        height: 110px;
+        width: 90px;
+        height: 90px;
     }
 
     .popular-card-name {
-        font-size: 0.85rem;
-        max-width: 130px;
+        font-size: 0.8rem;
+        max-width: 110px;
     }
 }
 
-/* ─── Theme-specific overrides ───────────────────── */
-[data-theme="dark"] .reciter-mini-card {
-    background: rgba(26, 26, 46, 0.6);
-}
-
-[data-theme="dark"] .reciter-mini-card:hover {
-    background: rgba(26, 26, 46, 0.85);
+/* ─── Light Theme ────────────────────────────────── */
+[data-theme="light"] .listen-page {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
 }
 
 [data-theme="light"] .reciter-mini-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.02);
     border-color: rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="light"] .reciter-mini-card:hover {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.3);
 }
 
 [data-theme="light"] .audio-search-box {
@@ -732,26 +595,25 @@
 
 [data-theme="light"] .listen-back-btn {
     background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme="light"] .featured-reciter-card {
-    background: linear-gradient(135deg, rgba(201, 168, 76, 0.08), rgba(201, 168, 76, 0.02));
-    border-color: rgba(201, 168, 76, 0.15);
+[data-theme="light"] .reciter-card-name {
+    color: var(--color-text-primary);
 }
 
-[data-theme="light"] .listen-resume-banner {
-    background: rgba(201, 168, 76, 0.06);
-    border-color: rgba(201, 168, 76, 0.15);
+[data-theme="light"] .popular-card-name {
+    color: var(--color-text-secondary);
+}
+
+/* ─── Sepia Theme ────────────────────────────────── */
+[data-theme="sepia"] .listen-page {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
 }
 
 [data-theme="sepia"] .reciter-mini-card {
-    background: rgba(235, 227, 207, 0.5);
+    background: rgba(0, 0, 0, 0.02);
     border-color: rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="sepia"] .reciter-mini-card:hover {
-    background: rgba(235, 227, 207, 0.8);
 }
 
 [data-theme="sepia"] .audio-search-box {
