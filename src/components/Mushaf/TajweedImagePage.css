@@ -87,6 +87,8 @@
     touch-action: pan-y pinch-zoom;
     background: var(--bg-primary);
     /* ensure background blends with image borders */
+    padding-bottom: 24px;
+    /* extra space at the bottom to prevent nav overlap */
 }
 
 .tajweed-viewer__img {
@@ -303,40 +305,54 @@
 
 /* ===== 3D PAGE FLIP ANIMATIONS ===== */
 
-/* Next page (reading RTL): Page slaps in from the left edge */
+/* Next page (reading RTL): Page turns from the left */
 .tajweed-turn-next {
-    animation: flip-in-left 0.45s ease-out forwards;
+    animation: page-turn-left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes flip-in-left {
+@keyframes page-turn-left {
     0% {
-        transform: perspective(1500px) rotateY(-90deg) scale(1.03);
-        opacity: 0.1;
+        transform: perspective(2000px) rotateY(-80deg) translateX(-10%);
+        opacity: 0.2;
         transform-origin: left center;
+        filter: brightness(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        filter: brightness(0.9);
     }
 
     100% {
-        transform: perspective(1500px) rotateY(0deg) scale(1.03);
+        transform: perspective(2000px) rotateY(0deg) translateX(0);
         opacity: 1;
         transform-origin: left center;
+        filter: brightness(1);
     }
 }
 
-/* Previous page: Page slaps in from the right edge */
+/* Previous page: Page turns from the right */
 .tajweed-turn-prev {
-    animation: flip-in-right 0.45s ease-out forwards;
+    animation: page-turn-right 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes flip-in-right {
+@keyframes page-turn-right {
     0% {
-        transform: perspective(1500px) rotateY(90deg) scale(1.03);
-        opacity: 0.1;
+        transform: perspective(2000px) rotateY(80deg) translateX(10%);
+        opacity: 0.2;
         transform-origin: right center;
+        filter: brightness(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        filter: brightness(0.9);
     }
 
     100% {
-        transform: perspective(1500px) rotateY(0deg) scale(1.03);
+        transform: perspective(2000px) rotateY(0deg) translateX(0);
         opacity: 1;
         transform-origin: right center;
+        filter: brightness(1);
     }
 }
