@@ -192,6 +192,7 @@ export function ListenPage() {
                                 const asset = assets.get(reciter.id.toString());
                                 const isApproved = asset?.status === 'approved';
                                 const initials = reciter.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                                const bgColor = getReciterColor(reciter.id.toString());
 
                                 return (
                                     <div
@@ -205,7 +206,9 @@ export function ListenPage() {
                                             ) : (
                                                 <div
                                                     className="popular-avatar-fallback"
-                                                    style={{ backgroundColor: getReciterColor(reciter.id.toString()) }}
+                                                    style={{
+                                                        background: `linear-gradient(135deg, ${bgColor}, ${bgColor}cc, ${bgColor}88)`,
+                                                    }}
                                                 >
                                                     {initials}
                                                 </div>
@@ -243,16 +246,18 @@ export function ListenPage() {
                         {isLoading ? (
                             <div className="listen-loading">{t('common.loading', 'Chargement...')}</div>
                         ) : (
-                            filteredReciters.map(reciter => {
+                            filteredReciters.map((reciter, idx) => {
                                 const asset = assets.get(reciter.id.toString());
                                 const isApproved = asset?.status === 'approved';
                                 const initials = reciter.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                                const bgColor = getReciterColor(reciter.id.toString());
 
                                 return (
                                     <div
                                         key={reciter.id}
                                         className="reciter-mini-card"
                                         onClick={() => navigate(getReciterRoute(reciter.id))}
+                                        style={{ animationDelay: `${Math.min(idx, 30) * 30}ms` }}
                                     >
                                         <div className="reciter-card-photo">
                                             {isApproved ? (
@@ -260,7 +265,9 @@ export function ListenPage() {
                                             ) : (
                                                 <div
                                                     className="reciter-avatar-fallback"
-                                                    style={{ backgroundColor: getReciterColor(reciter.id.toString()) }}
+                                                    style={{
+                                                        background: `linear-gradient(135deg, ${bgColor}, ${bgColor}dd, ${bgColor}99)`,
+                                                    }}
                                                 >
                                                     {initials}
                                                 </div>
