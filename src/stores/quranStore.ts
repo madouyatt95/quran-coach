@@ -23,6 +23,7 @@ interface QuranState {
     // Reading progress
     progress: ReadingProgress | null;
     isExploring: boolean; // Flag for search/manual jumps (resumes tracking after 10 verses)
+    explorationOrigin: { surah: number, ayah: number } | null;
     isKhatmMode: boolean; // Flag for Khatm sessions (strictly freezes general bookmark)
     jumpSignal: number;  // Counter to trigger scroll effects on the same surah
 
@@ -59,9 +60,10 @@ export const useQuranStore = create<QuranState>()(
             error: null,
             progress: null,
             isExploring: false,
+            explorationOrigin: null,
             isKhatmMode: false,
             jumpSignal: 0,
-            version: '1.2.8', // Diagnostic internal version
+            version: '1.2.9', // Diagnostic internal version
 
             setSurahs: (surahs) => set({ surahs }),
             setCurrentPage: (currentPage) => set({ currentPage }),
@@ -81,6 +83,7 @@ export const useQuranStore = create<QuranState>()(
                 if (options.force) {
                     set({
                         isExploring: false,
+                        explorationOrigin: null,
                         progress: { lastSurah: currentSurah, lastAyah: currentAyah, lastPage: currentPage, updatedAt: Date.now() }
                     });
                     // Force also marks page as read in challenges
@@ -102,15 +105,16 @@ export const useQuranStore = create<QuranState>()(
 
                 if (isExploring) {
                     // SEARCH/EXPLORATION MODE:
-                    // If we moved 10 verses, we assume the user has started a new reading session
-                    const verseDiff = progress ? Math.abs(currentAyah - progress.lastAyah) : 0;
+                    // We protect the bookmark until the user has moved 10 verses away from their jump point
+                    const origin = get().explorationOrigin;
+                    const verseDiff = origin ? Math.abs(currentAyah - origin.ayah) : 0;
 
-                    if (verseDiff < 10 && currentSurah === progress?.lastSurah) {
-                        return; // Still in "silent" zone
+                    if (origin && currentSurah === origin.surah && verseDiff < 10) {
+                        return; // Still in "silent" zone relative to jump point
                     }
 
                     // Take over bookmark
-                    set({ isExploring: false });
+                    set({ isExploring: false, explorationOrigin: null });
                 }
 
                 // Normal threshold check (10 verses from last saved)
@@ -133,7 +137,7 @@ export const useQuranStore = create<QuranState>()(
                 });
             },
 
-            stopExploring: () => set({ isExploring: false }),
+            stopExploring: () => set({ isExploring: false, explorationOrigin: null }),
 
             goToPage: (page, options = {}) => {
                 if (page >= 1 && page <= 604) {
@@ -152,6 +156,7 @@ export const useQuranStore = create<QuranState>()(
                         currentSurah: surah,
                         currentAyah: 1,
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
+                        explorationOrigin: options.silent ? { surah, ayah: 1 } : state.explorationOrigin,
                         isKhatmMode: (options as any).khatm || false,
                         jumpSignal: state.jumpSignal + 1
                     }));
@@ -171,6 +176,7 @@ export const useQuranStore = create<QuranState>()(
                         currentAyah: 1,
                         currentPage: page,
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
+                        explorationOrigin: options.silent ? { surah, ayah: 1 } : state.explorationOrigin,
                         isKhatmMode: (options as any).khatm || false,
                         jumpSignal: state.jumpSignal + 1
                     }));
@@ -192,6 +198,7 @@ export const useQuranStore = create<QuranState>()(
                     return {
                         ...updateState,
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
+                        explorationOrigin: options.silent ? { surah, ayah } : state.explorationOrigin,
                         isKhatmMode: (options as any).khatm || false,
                         jumpSignal: state.jumpSignal + 1
                     };
