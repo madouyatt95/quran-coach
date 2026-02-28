@@ -57,6 +57,7 @@ export function TajweedImagePage() {
     const [showSideMenu, setShowSideMenu] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const [showSwipeHint, setShowSwipeHint] = useState(false);
+    const [turnDirection, setTurnDirection] = useState<'next' | 'prev' | null>(null);
 
     // Sync local page state with global currentPage when it changes from outside (e.g., search)
     useEffect(() => {
@@ -114,11 +115,17 @@ export function TajweedImagePage() {
     // ===== NAVIGATION =====
     const goTo = useCallback((newPage: number) => {
         if (newPage < 1 || newPage > 604) return;
+
+        // Determine turning direction for 3D flip CSS animation
+        if (newPage > page) setTurnDirection('next');
+        else if (newPage < page) setTurnDirection('prev');
+        else setTurnDirection(null);
+
         setPage(newPage);
         setImgLoading(true);
         setImgError(false);
         setCurrentPage(newPage);
-    }, [setCurrentPage]);
+    }, [page, setCurrentPage]);
 
     const prevPage = useCallback(() => goTo(page - 1), [page, goTo]);
     const nextPage = useCallback(() => goTo(page + 1), [page, goTo]);
@@ -234,7 +241,7 @@ export function TajweedImagePage() {
                     key={page}
                     src={getPageImageUrl(page)}
                     alt={`Mushaf Tajweed - Page ${page}`}
-                    className={`tajweed-viewer__img ${imgLoading ? 'loading' : ''}`}
+                    className={`tajweed-viewer__img ${imgLoading ? 'loading' : ''} ${turnDirection ? `tajweed-turn-${turnDirection}` : ''}`}
                     onLoad={() => setImgLoading(false)}
                     onError={() => { setImgLoading(false); setImgError(true); }}
                     draggable={false}
