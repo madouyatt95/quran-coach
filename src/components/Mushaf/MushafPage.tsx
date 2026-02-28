@@ -11,6 +11,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Heart,
+    Image as ImageIcon,
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -462,6 +463,26 @@ export function MushafPage() {
                 {/* Center: Khatm Tracker (Compact) */}
                 <div className="mih-header-center">
                     <KhatmTracker />
+                    <button
+                        onClick={() => useSettingsStore.getState().setViewMode('tajweed')}
+                        style={{
+                            marginLeft: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'var(--bg-tertiary, #f5f5f5)',
+                            border: '1px solid var(--border-color, #e8e4da)',
+                            borderRadius: '8px',
+                            padding: '4px 8px',
+                            cursor: 'pointer',
+                            color: 'var(--text-secondary, #555)',
+                            fontSize: '0.75rem',
+                            gap: '4px'
+                        }}
+                        title={t('settings.viewModeTajweed', 'Mode Image Tajweed')}
+                    >
+                        <ImageIcon size={14} />
+                    </button>
                 </div>
 
                 <div className="mih-header-right">
