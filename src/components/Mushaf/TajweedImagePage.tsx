@@ -18,9 +18,9 @@ import { SURAH_PAGE_STARTS } from './tajweedPageData';
 import './TajweedImagePage.css';
 
 // CDN source for Quran pages (Standard Madinah Mushaf)
+// Uses a raw GitHub release to avoid OpaqueResponseBlocking (CORB) and CORS issues
 function getPageImageUrl(page: number): string {
-    const padded = String(page).padStart(3, '0');
-    return `https://everyayah.com/data/images_mushaf/page${padded}.png`;
+    return `https://raw.githubusercontent.com/BetimShala/quran-images-api/master/quran-images/${page}.png`;
 }
 
 // Determine which surah a page belongs to
