@@ -219,43 +219,24 @@
     z-index: 2;
 }
 
-/* ===== FLOAT NAV (desktop) ===== */
-.tajweed-float-nav {
+/* ===== TAP ZONES ===== */
+.tajweed-tap-zone {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+    top: 0;
+    bottom: 0;
+    width: 30%;
     z-index: 5;
+    cursor: pointer;
+    background: transparent;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.tajweed-float-nav:hover {
-    opacity: 1;
+.tajweed-tap-zone--next {
+    left: 0;
 }
 
-.tajweed-float-nav--left {
-    left: 8px;
-}
-
-.tajweed-float-nav--right {
-    right: 8px;
-}
-
-/* Hide float nav on mobile */
-@media (max-width: 768px) {
-    .tajweed-float-nav {
-        display: none;
-    }
+.tajweed-tap-zone--prev {
+    right: 0;
 }
 
 /* ===== MODE TOGGLE (in Settings or header) ===== */

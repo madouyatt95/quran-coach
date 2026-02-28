@@ -17,10 +17,10 @@ import { getJuzForPage } from '../../data/juzData';
 import { SURAH_PAGE_STARTS } from './tajweedPageData';
 import './TajweedImagePage.css';
 
-// CDN source for Quran pages (Standard Madinah Mushaf)
-// Uses a raw GitHub release to avoid OpaqueResponseBlocking (CORB) and CORS issues
+// CDN source for Quran pages (Standard Madinah Mushaf Tajweed Colored)
+// Uses a raw GitHub repository that correctly stores the colored Tajweed Mushaf pages
 function getPageImageUrl(page: number): string {
-    return `https://raw.githubusercontent.com/BetimShala/quran-images-api/master/quran-images/${page}.png`;
+    return `https://raw.githubusercontent.com/QuranHub/quran-pages-images/main/ayat/tajweed/${page}.png`;
 }
 
 // Determine which surah a page belongs to
@@ -232,25 +232,18 @@ export function TajweedImagePage() {
                     style={imgError ? { display: 'none' } : undefined}
                 />
 
-                {/* Float navigation (desktop) */}
-                {!isMobile && (
-                    <>
-                        <button
-                            className="tajweed-float-nav tajweed-float-nav--left"
-                            onClick={prevPage}
-                            disabled={page <= 1}
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                        <button
-                            className="tajweed-float-nav tajweed-float-nav--right"
-                            onClick={nextPage}
-                            disabled={page >= 604}
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                    </>
-                )}
+                {/* Invisible Tap Zones for effortless navigation */}
+                <div
+                    className="tajweed-tap-zone tajweed-tap-zone--next"
+                    onClick={nextPage}
+                    title={t('mushaf.nextPage', 'Suivant')}
+                />
+
+                <div
+                    className="tajweed-tap-zone tajweed-tap-zone--prev"
+                    onClick={prevPage}
+                    title={t('mushaf.prevPage', 'Précédent')}
+                />
 
                 {/* Swipe hint */}
                 {showSwipeHint && (
