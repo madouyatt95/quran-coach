@@ -8,7 +8,7 @@
     min-height: 100vh;
     min-height: 100dvh;
     background: linear-gradient(180deg, #1a1a2e 0%, #2d1b3d 100%);
-    padding-top: env(safe-area-inset-top);
+    padding-top: calc(env(safe-area-inset-top) + var(--space-md));
     padding-bottom: calc(env(safe-area-inset-bottom) + 80px);
 }
 

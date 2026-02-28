@@ -23,7 +23,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 16px;
-    padding-top: calc(max(8px, env(safe-area-inset-top)) + 4px);
+    padding-top: calc(env(safe-area-inset-top) + 8px);
     background: #fff;
     border-bottom: 1px solid #e8e4da;
     z-index: 100;

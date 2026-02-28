@@ -4,7 +4,7 @@
     background: var(--color-bg-secondary);
     border-bottom: 1px solid var(--color-bg-tertiary);
     padding: var(--space-md);
-    padding-top: max(var(--space-md), env(safe-area-inset-top));
+    padding-top: calc(env(safe-area-inset-top) + var(--space-md));
     display: flex;
     align-items: center;
     justify-content: space-between;

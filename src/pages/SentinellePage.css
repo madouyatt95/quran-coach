@@ -1,6 +1,6 @@
 .sentinel-page {
     padding: var(--space-md);
-    padding-top: max(var(--space-md), env(safe-area-inset-top));
+    padding-top: calc(env(safe-area-inset-top) + var(--space-md));
     padding-bottom: 100px;
     min-height: 100vh;
     background: var(--color-bg-primary);

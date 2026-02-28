@@ -34,7 +34,7 @@
     flex-direction: column;
     animation: slideFromLeft 0.3s ease;
     box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
-    padding-top: env(safe-area-inset-top);
+    padding-top: calc(env(safe-area-inset-top) + 24px);
     padding-bottom: env(safe-area-inset-bottom);
 }
 

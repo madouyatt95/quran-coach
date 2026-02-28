@@ -17,7 +17,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    padding-top: max(8px, env(safe-area-inset-top));
+    padding-top: calc(env(safe-area-inset-top) + 8px);
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     min-height: 48px;

@@ -250,7 +250,7 @@ a {
 
 /* Safe Area for mobile */
 .safe-area-top {
-  padding-top: env(safe-area-inset-top);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
 }
 
 .safe-area-bottom {
