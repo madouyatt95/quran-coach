@@ -43,7 +43,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                         },
                         {
                             title: 'Les 6 Piliers de la Foi (Iman)',
-                            body: '1. **Croire en Allah** — Son unicité, Ses noms et attributs\n2. **Croire aux Anges** — Jibril, Mikail, Israfil, Azrail...\n3. **Croire aux Livres révélés** — Coran, Torah, Évangile, Psaumes, Feuillets\n4. **Croire aux Prophètes** — D\'Adam à Muhammad ﷺ\n5. **Croire au Jour Dernier** — Le jugement, le Paradis et l\'Enfer\n6. **Croire au Destin** — Le bien et le mal viennent d\'Allah',
+                            body: '1. **Croire en Allah** — Son unicité, Ses noms et attributs\n2. **Croire aux Anges** — Jibril, Mikail, Israfil, Azrail...\n3. **Croire aux Livres révélés** — Coran, Torah, Évangile, Psaumes, Feuillets\n4. **Croire aux Prophètes** — D\'Adam à Muhammad ﷺ\n5. **Croire au Jour Dernier** — Le jugement, le Paradis et l\'Enfer\n6. **Croire au Destin (Al-Qadr)** — Son bien et son mal',
                             image: '/academy/images/fiqh_6_piliers_foi.png',
                         },
                         {
