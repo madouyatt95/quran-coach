@@ -38,10 +38,12 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                         {
                             title: 'Les 5 Piliers de l\'Islam',
                             body: '1. **Chahada** — L\'attestation de foi\n2. **Salat** — Les 5 prières quotidiennes\n3. **Zakat** — L\'aumône obligatoire (2,5%)\n4. **Sawm** — Le jeûne du mois de Ramadan\n5. **Hajj** — Le pèlerinage à la Mecque (si possible)\n\nCes piliers sont les actes d\'adoration fondamentaux que tout musulman doit accomplir.',
+                            image: '/academy/images/fiqh_5_piliers.png',
                         },
                         {
                             title: 'Les 6 Piliers de la Foi (Iman)',
                             body: '1. **Croire en Allah** — Son unicité, Ses noms et attributs\n2. **Croire aux Anges** — Jibril, Mikail, Israfil, Azrail...\n3. **Croire aux Livres révélés** — Coran, Torah, Évangile, Psaumes, Feuillets\n4. **Croire aux Prophètes** — D\'Adam à Muhammad ﷺ\n5. **Croire au Jour Dernier** — Le jugement, le Paradis et l\'Enfer\n6. **Croire au Destin** — Le bien et le mal viennent d\'Allah',
+                            image: '/academy/images/fiqh_6_piliers_foi.png',
                         },
                         {
                             title: 'L\'Excellence (Al-Ihsan)',
