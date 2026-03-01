@@ -1,0 +1,303 @@
+/* ─── Admin Analytics Dashboard ─── */
+
+.admin-analytics {
+    min-height: 100vh;
+    background: #0a0e1a;
+    color: #e8e4da;
+    padding: 16px;
+    padding-bottom: 100px;
+}
+
+/* ─── Password Gate ─── */
+.admin-gate {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0e1a;
+}
+
+.admin-gate__box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    max-width: 340px;
+    width: 100%;
+}
+
+.admin-gate__box h2 {
+    color: #C9A84C;
+    font-size: 1.2rem;
+    margin: 0 0 8px;
+}
+
+.admin-gate__box p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    margin: 0 0 20px;
+}
+
+.admin-gate__input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.admin-gate__input:focus {
+    border-color: rgba(201, 168, 76, 0.4);
+}
+
+.admin-gate__btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #C9A84C, #B8963E);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+}
+
+.admin-gate__error {
+    color: #F44336;
+    font-size: 0.8rem;
+    margin-top: 8px;
+}
+
+/* ─── Header ─── */
+.admin-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.admin-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.admin-header__period {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+}
+
+.admin-header__period button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.admin-header__period button.active {
+    background: rgba(201, 168, 76, 0.15);
+    border-color: rgba(201, 168, 76, 0.3);
+    color: #C9A84C;
+}
+
+/* ─── KPI Cards ─── */
+.admin-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.admin-kpi {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+}
+
+.admin-kpi__icon {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+}
+
+.admin-kpi__value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #C9A84C;
+    line-height: 1;
+}
+
+.admin-kpi__label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.admin-kpi__sub {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 2px;
+}
+
+/* ─── Chart Cards ─── */
+.admin-charts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+    .admin-charts {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.admin-chart-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.admin-chart-card--wide {
+    grid-column: 1 / -1;
+}
+
+.admin-chart-card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 16px;
+}
+
+/* ─── Events Table ─── */
+.admin-events {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    overflow-x: auto;
+}
+
+.admin-events h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 12px;
+}
+
+.admin-events__filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-events__filters select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e8e4da;
+    font-size: 0.75rem;
+    outline: none;
+}
+
+.admin-events table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+}
+
+.admin-events th {
+    text-align: left;
+    padding: 8px 6px;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+}
+
+.admin-events td {
+    padding: 8px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
+}
+
+.admin-events__badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.admin-events__badge--app_open {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+}
+
+.admin-events__badge--page_view {
+    background: rgba(33, 150, 243, 0.15);
+    color: #2196F3;
+}
+
+.admin-events__badge--audio_play {
+    background: rgba(156, 39, 176, 0.15);
+    color: #9C27B0;
+}
+
+.admin-events__badge--search {
+    background: rgba(255, 152, 0, 0.15);
+    color: #FF9800;
+}
+
+.admin-events__badge--default {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.admin-events__platform {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.admin-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+}
+
+.admin-refresh-btn {
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 8px;
+    padding: 6px 14px;
+    color: #C9A84C;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
