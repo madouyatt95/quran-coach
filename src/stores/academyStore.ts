@@ -79,7 +79,25 @@ export const useAcademyStore = create<AcademyState>()(
                 currentModule: null,
             }),
         }),
-        { name: 'academy-store' }
+        {
+            name: 'academy-store',
+            version: 1,
+            migrate: (persistedState: any, version: number) => {
+                if (version === 0) {
+                    // Update unlocked modules for existing users to reflect the split
+                    const unlocked = new Set<string>(persistedState.unlockedModules || []);
+                    unlocked.add('wudu-fondamental');
+                    unlocked.add('priere-pas-a-pas');
+                    unlocked.delete('premiere-priere');
+
+                    // Always make sure initial unlocked are present
+                    INITIAL_UNLOCKED.forEach(id => unlocked.add(id));
+
+                    persistedState.unlockedModules = Array.from(unlocked);
+                }
+                return persistedState;
+            }
+        }
     )
 );
 
