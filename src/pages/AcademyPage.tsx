@@ -518,9 +518,19 @@ export function AcademyPage() {
     const playAudio = useCallback((text: string) => {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
+
+            // Clean text: keep only Arabic by removing Latin chars, numbers, parentheses, and dashes
+            let cleanText = text.replace(/[a-zA-ZàâäéèêëïîôöùûüÿçÀÂÄÉÈÊËÏÎÔÖÙÛÜŸÇ0-9\(\)\[\]—\-]/g, '').trim();
+
+            // If the text is a list of isolated short letters/sounds, add Arabic commas to force TTS pauses
+            const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+            if (words.length > 1 && words.every(w => w.length <= 3)) {
+                cleanText = words.join(' ، '); // Adds pause between letters like "ب ، ت ، ث"
+            }
+
+            const utter = new SpeechSynthesisUtterance(cleanText);
             utter.lang = 'ar-SA';
-            utter.rate = 0.8;
+            utter.rate = 0.75; // Slower for clear articulation
 
             utter.onerror = (e) => {
                 console.error("SpeechSynthesis error:", e);
