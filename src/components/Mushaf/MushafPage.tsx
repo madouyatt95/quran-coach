@@ -470,15 +470,14 @@ export function MushafPage() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: 'var(--bg-tertiary, #f5f5f5)',
-                            border: '1px solid var(--border-color, #e8e4da)',
-                            borderRadius: '8px',
-                            padding: '4px',
+                            background: 'transparent',
+                            border: 'none',
+                            padding: 0,
                             cursor: 'pointer',
                         }}
                         title={t('settings.viewModeTajweed', 'Mode Image Tajweed')}
                     >
-                        <img src="/images/tajweed-btn.png" alt="Tajweed" style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover', display: 'block' }} />
+                        <img src="/images/tajweed-btn.png" alt="Tajweed" style={{ width: 26, height: 26, borderRadius: 6, objectFit: 'cover', display: 'block', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
                     </button>
                 </div>
 
