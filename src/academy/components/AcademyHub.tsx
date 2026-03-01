@@ -257,22 +257,13 @@ export function AcademyHub() {
                     </div>
 
                     <div key={sectionIdx} className="academy-lesson__content">
-                        {/* Image-only section (illustration slide) */}
+                        {/* Premium Image */}
                         {section.image && (
                             <img
                                 src={section.image}
                                 alt={section.title || 'Illustration'}
                                 className="academy-lesson__illustration"
                             />
-                        )}
-                        {/* Inline SVG Illustration */}
-                        {section.illustration && ILLUSTRATION_MAP[section.illustration] && (
-                            <div className="academy-lesson__svg-wrapper">
-                                {(() => {
-                                    const Illustration = ILLUSTRATION_MAP[section.illustration!];
-                                    return <Illustration />;
-                                })()}
-                            </div>
                         )}
                         {section.title && <h3 className="academy-lesson__section-title">{section.title}</h3>}
                         {section.body && <div className="academy-lesson__body">{section.body}</div>}

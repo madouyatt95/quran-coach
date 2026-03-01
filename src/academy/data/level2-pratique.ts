@@ -134,13 +134,11 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
                             title: 'Zone 1 — La Gorge (الحَلْق)',
                             body: 'La gorge produit 6 lettres réparties en 3 niveaux :\n\n• **Fond de la gorge** : ء (Hamza) et ه (Ha léger)\n• **Milieu de la gorge** : ع (\'Ayn) et ح (Ha profond)\n• **Haut de la gorge** : غ (Ghayn) et خ (Kha)\n\nCes lettres sont aussi les 6 lettres d\'Izhar.',
                             arabic: 'ء ه ع ح غ خ',
-                            illustration: 'Zone 1 — La Gorge (الحَلْق)',
                             image: '/academy/images/makharij_intro.png',
                         },
                         {
                             title: 'Zone 2 — La Langue (اللِّسان)',
                             body: 'La langue est la zone la plus productive avec 18 lettres. Les sous-zones :\n\n• **Base de la langue** : ق (Qaf touche le palais mou) et ك (Kaf un peu plus avant)\n• **Milieu de la langue** : ج (Jim), ش (Shin), ي (Ya)\n• **Bout de la langue** : ت ط د (contre les dents supérieures), ن (bout contre le palais), ل (côtés), ر (vibration)\n• **Bord de la langue** : ص س ز (air entre la langue et les dents), ث ذ ظ (langue entre les dents)',
-                            illustration: 'Zone 2 — La Langue (اللِّسان)',
                             image: '/academy/images/makharij_intro.png',
                         },
                         {

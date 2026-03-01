@@ -190,7 +190,6 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             body: 'Dites « Allahou Akbar » et inclinez-vous, le dos droit, les mains sur les genoux. Dites 3 fois :',
                             arabic: 'سُبْحَانَ رَبِّيَ الْعَظِيمِ',
                             phonetic: 'Subhâna Rabbiya l-\'Adhîm',
-                            illustration: 'Le Ruku',
                             image: '/academy/images/priere_step2.png',
                         },
                         {
@@ -204,7 +203,6 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             body: 'Descendez en prosternation : le front, le nez, les deux paumes, les deux genoux et les orteils touchent le sol. Dites 3 fois :',
                             arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَى',
                             phonetic: 'Subhâna Rabbiya l-A\'lâ',
-                            illustration: 'Le Sujud',
                             image: '/academy/images/priere_step3.png',
                         },
                         {
@@ -212,7 +210,6 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             body: 'Asseyez-vous en disant « Allahou Akbar ». Dites « Rabbi ghfir lî » (Seigneur, pardonne-moi). Puis prosternez-vous à nouveau.',
                             arabic: 'رَبِّ اغْفِرْ لِي',
                             phonetic: 'Rabbi ghfir lî',
-                            illustration: 'L\'assise entre les deux prosternations',
                             image: '/academy/images/priere_step4.png',
                         },
                         {
@@ -220,7 +217,6 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             body: 'Après chaque 2 rak\'at, asseyez-vous et récitez le Tachahoud. Levez uniquement l\'index droit en disant « illa Llâh ».',
                             arabic: 'التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ',
                             phonetic: 'At-tahiyyâtou li-Llâhi wa s-salawâtou wa t-tayyibât',
-                            illustration: 'Tachahoud',
                             image: '/academy/images/priere_step5.png',
                         },
                         {
@@ -228,7 +224,6 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             body: 'À la fin de la prière, tournez la tête vers la droite puis vers la gauche en disant à chaque côté :',
                             arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
                             phonetic: 'As-salâmou \'alaykoum wa rahmatou Llâh',
-                            illustration: 'Le Salam final',
                             image: '/academy/images/priere_step6.png',
                         },
                     ],
