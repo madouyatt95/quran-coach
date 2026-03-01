@@ -109,7 +109,7 @@ export function useSmartCoaching() {
                         id: 'white-days', type: 'calendar', emoji: '🌕',
                         title: `Jour Blanc (${day} ${month})`,
                         textAr: 'السنة صيام الأيام البيض',
-                        textFr: 'C\'est l\'une des 3 jours blancs. Le jeûne y est fortement recommandé.',
+                        textFr: 'C\'est l\'un des 3 jours blancs. Le jeûne y est fortement recommandé.',
                         gradient: 'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)',
                         link: '/hadiths?cat=jeune'
                     });
