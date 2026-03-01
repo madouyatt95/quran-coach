@@ -97,39 +97,39 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             phonetic: 'Bismi Llâh',
                         },
                         {
-                            title: 'Étape 2 — Laver les mains (×3)',
+                            title: 'Étape 1 — Laver les mains (×3)',
                             body: 'Lavez les deux mains jusqu\'aux poignets trois fois, en commençant par la main droite. Passez l\'eau entre les doigts.',
-                            illustration: 'Laver les mains',
+                            image: '/academy/images/wudu_step1.png'
                         },
                         {
-                            title: 'Étape 3 — Se rincer la bouche et le nez (×3)',
+                            title: 'Étape 2 — Se rincer la bouche et le nez (×3)',
                             body: 'Prenez de l\'eau dans la main droite, rincez la bouche, puis aspirez de l\'eau dans le nez et expulsez-la avec la main gauche. Répétez 3 fois.',
-                            illustration: 'Rincer la bouche', // Using step 2 for mouth
+                            image: '/academy/images/wudu_step2.png'
                         },
                         {
                             title: 'Étape 3 suite — Le nez',
                             body: 'Aspirer l\'eau dans le nez avec la main droite, puis expulser l\'eau avec la main gauche. (Répétez 3 fois).',
-                            illustration: 'Aspirer et expulser l\'eau du nez',
+                            image: '/academy/images/wudu_step3.png'
                         },
                         {
                             title: 'Étape 4 — Laver le visage (×3)',
                             body: 'Lavez l\'intégralité du visage : du haut du front à la base du menton, d\'une oreille à l\'autre. Trois fois.',
-                            illustration: 'Laver le visage',
+                            image: '/academy/images/wudu_step4.png'
                         },
                         {
                             title: 'Étape 5 — Laver les avant-bras (×3)',
                             body: 'Lavez le bras droit puis le gauche, des doigts jusqu\'au coude (coude inclus). Trois fois chacun.',
-                            illustration: 'Laver les avant-bras',
+                            image: '/academy/images/wudu_step5.png'
                         },
                         {
                             title: 'Étape 6 — Essuyer la tête et les oreilles (×1)',
                             body: 'Passez les mains mouillées sur toute la tête, d\'avant en arrière puis d\'arrière en avant, une seule fois. Puis nettoyez l\'intérieur des oreilles avec l\'index et l\'extérieur avec le pouce.',
-                            illustration: 'Essuyer la tête',
+                            image: '/academy/images/wudu_step6.png'
                         },
                         {
                             title: 'Étape 7 — Laver les pieds (×3)',
                             body: 'Lavez le pied droit puis le gauche, des orteils jusqu\'à la cheville (cheville incluse). Passez l\'eau entre les orteils. Trois fois.',
-                            illustration: 'Laver les pieds',
+                            image: '/academy/images/wudu_step7.png'
                         },
                         {
                             title: 'Invocation de fin',
@@ -152,7 +152,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             body: 'Tenez-vous debout face à la Qibla (direction de la Ka\'ba). Levez les mains aux oreilles et dites « Allahou Akbar » (Takbirat al-Ihram). Posez la main droite sur la gauche sur la poitrine.',
                             arabic: 'اللَّهُ أَكْبَرُ',
                             phonetic: 'Allâhou Akbar',
-                            illustration: 'Qiyam',
+                            image: '/academy/images/priere_step1.png',
                         },
                         {
                             title: 'Position 2 — Récitation',
@@ -164,6 +164,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             arabic: 'سُبْحَانَ رَبِّيَ الْعَظِيمِ',
                             phonetic: 'Subhâna Rabbiya l-\'Adhîm',
                             illustration: 'Le Ruku',
+                            image: '/academy/images/priere_step2.png',
                         },
                         {
                             title: 'Position 4 — Se relever du Ruku',
@@ -177,6 +178,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             arabic: 'سُبْحَانَ رَبِّيَ الْأَعْلَى',
                             phonetic: 'Subhâna Rabbiya l-A\'lâ',
                             illustration: 'Le Sujud',
+                            image: '/academy/images/priere_step3.png',
                         },
                         {
                             title: 'Position 6 — Assis entre les deux prosternations',
@@ -184,6 +186,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             arabic: 'رَبِّ اغْفِرْ لِي',
                             phonetic: 'Rabbi ghfir lî',
                             illustration: 'L\'assise entre les deux prosternations',
+                            image: '/academy/images/priere_step4.png',
                         },
                         {
                             title: 'Position 7 — Le Tachahoud',
@@ -191,6 +194,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             arabic: 'التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ',
                             phonetic: 'At-tahiyyâtou li-Llâhi wa s-salawâtou wa t-tayyibât',
                             illustration: 'Tachahoud',
+                            image: '/academy/images/priere_step5.png',
                         },
                         {
                             title: 'Position 8 — Le Salam final',
@@ -198,6 +202,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
                             phonetic: 'As-salâmou \'alaykoum wa rahmatou Llâh',
                             illustration: 'Le Salam final',
+                            image: '/academy/images/priere_step6.png',
                         },
                     ],
                 },
@@ -234,18 +239,18 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                     type: 'lesson',
                     title: 'Les 28 lettres en 5 groupes',
                     sections: [
-                        { title: 'Groupe 1 — Famille Ba (ب ت ث ن)', body: 'Ces 4 lettres partagent la même forme de base (bol). Seul le nombre et la position des points changent.', arabic: 'ب ت ث ن', phonetic: 'Ba, Ta, Tha, Noun', illustration: 'Groupe 1 — Famille Ba (ب ت ث ن)' },
+                        { title: 'Groupe 1 — Famille Ba (ب ت ث ن)', body: 'Ces 4 lettres partagent la même forme de base (bol). Seul le nombre et la position des points changent.', arabic: 'ب ت ث ن', phonetic: 'Ba, Ta, Tha, Noun', image: '/academy/images/alphabet_g1.png' },
                         { title: '① Alif (ا) — [a/i/u]', body: 'Trait vertical. Support de la Hamza ou voyelle longue. La première lettre de l\'alphabet.', arabic: 'أَحَد — (unique)', phonetic: 'Ahad' },
                         { title: '② Ba (ب) — [b]', body: 'Comme le B français. Un point en dessous du bol.', arabic: 'بِسْمِ — (au nom de)', phonetic: 'Bismi' },
                         { title: '③ Ta (ت) — [t]', body: 'Comme le T français. Deux points au-dessus du bol.', arabic: 'تَوْبَة — (repentir)', phonetic: 'Tawbah' },
                         { title: '④ Tha (ث) — [th]', body: 'Comme le TH anglais (think). Trois points au-dessus du bol.', arabic: 'ثَلَاثَة — (trois)', phonetic: 'Thalâthah' },
 
-                        { title: 'Groupe 2 — Famille Jim (ج ح خ)', body: 'Même forme de base en crochet. Les points changent.', arabic: 'ج ح خ', phonetic: 'Jim, Hâ, Khâ', illustration: 'Groupe 2 — Famille Jim (ج ح خ)' },
+                        { title: 'Groupe 2 — Famille Jim (ج ح خ)', body: 'Même forme de base en crochet. Les points changent.', arabic: 'ج ح خ', phonetic: 'Jim, Hâ, Khâ', image: '/academy/images/alphabet_g2.png' },
                         { title: '⑤ Jim (ج) — [j]', body: 'Comme le DJ anglais (Jump). Un point au milieu du crochet.', arabic: 'جَنَّة — (paradis)', phonetic: 'Jannah' },
                         { title: '⑥ Hâ (ح) — [ḥ]', body: 'H aspiré profond depuis la gorge. Pas de point.', arabic: 'حَمْد — (louange)', phonetic: 'Hamd' },
                         { title: '⑦ Khâ (خ) — [kh]', body: 'Comme la Jota espagnole ou le CH allemand (Bach). Un point au-dessus.', arabic: 'خَيْر — (bien)', phonetic: 'Khayr' },
 
-                        { title: 'Groupe 3 — Famille Dal (د ذ ر ز)', body: 'Lettres courtes qui NE se lient PAS à la lettre suivante.', arabic: 'د ذ ر ز', phonetic: 'Dâl, Dhâl, Râ, Zây', illustration: 'Groupe 3 — Famille Dal (د ذ ر ز)' },
+                        { title: 'Groupe 3 — Famille Dal (د ذ ر ز)', body: 'Lettres courtes qui NE se lient PAS à la lettre suivante.', arabic: 'د ذ ر ز', phonetic: 'Dâl, Dhâl, Râ, Zây', image: '/academy/images/alphabet_g3.png' },
                         { title: '⑧ Dal (د) — [d]', body: 'Comme le D français. Petit triangle arrondi.', arabic: 'دِين — (religion)', phonetic: 'Dîn' },
                         { title: '⑨ Dhal (ذ) — [dh]', body: 'Comme le TH anglais (this). Un point au-dessus du Dal.', arabic: 'ذِكْر — (rappel)', phonetic: 'Dhikr' },
                         { title: '⑩ Râ (ر) — [r]', body: 'R roulé (comme en espagnol ou en arabe). Plus petit que le Dal.', arabic: 'رَحْمَة — (miséricorde)', phonetic: 'Rahmah' },
