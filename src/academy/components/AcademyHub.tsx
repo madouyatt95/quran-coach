@@ -7,7 +7,6 @@ import { LEVEL_1_FONDATIONS } from '../data/level1-fondations';
 import { LEVEL_2_PRATIQUE } from '../data/level2-pratique';
 import { TAJWEED_RULES, TAJWEED_COLOR_LEGEND } from '../data/tajweed-rules';
 import type { AcademyLevel, AcademyModule, AcademyLesson, AcademyQuiz } from '../data/types';
-import { ILLUSTRATION_MAP } from './LessonIllustrations';
 import './AcademyHub.css';
 
 const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE];
