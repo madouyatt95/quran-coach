@@ -376,7 +376,14 @@ export function AcademyHub() {
             <div className="academy-hub">
                 <div className="academy-modules-header">
                     <button onClick={() => setSelectedLevel(null)}><ChevronLeft size={20} /></button>
-                    <h2>{selectedLevel.icon} {selectedLevel.title}</h2>
+                    <h2>
+                        {selectedLevel.image ? (
+                            <img src={selectedLevel.image} alt="" style={{ width: 24, height: 24, objectFit: 'contain' }} />
+                        ) : (
+                            selectedLevel.icon
+                        )}{' '}
+                        {selectedLevel.title}
+                    </h2>
                 </div>
                 <div className="academy-modules-grid">
                     {selectedLevel.modules.map(mod => {
@@ -472,7 +479,9 @@ export function AcademyHub() {
                         >
                             <div className="academy-level-card__banner" style={{ background: level.gradient }}>
                                 <div className="academy-level-card__top">
-                                    <div className="academy-level-card__icon">{level.icon}</div>
+                                    <div className="academy-level-card__icon">
+                                        {level.image ? <img src={level.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : level.icon}
+                                    </div>
                                     <div className="academy-level-card__info">
                                         <h2 className="academy-level-card__title">{level.title}</h2>
                                         <p className="academy-level-card__subtitle">{level.description}</p>

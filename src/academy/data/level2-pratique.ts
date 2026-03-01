@@ -9,7 +9,8 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
     titleAr: 'الممارسة والفهم',
     description: 'Approfondir la récitation, la compréhension et la pratique',
     icon: '🕌',
-    gradient: 'linear-gradient(135deg, #1A237E 0%, #283593 100%)',
+    image: '/academy/images/level2_pratique.png',
+    gradient: 'linear-gradient(135deg, #FF6B6B 0%, #8C0032 100%)',
     modules: [
         // ════════════════════════════════════════
         // MODULE 1 — Tajwid Fondamental

@@ -9,6 +9,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
     titleAr: 'الأسس',
     description: 'Les bases essentielles de la foi et de la pratique',
     icon: '🌱',
+    image: '/academy/images/level1_fondations.png',
     gradient: 'linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%)',
     modules: [
         // ════════════════════════════════════════

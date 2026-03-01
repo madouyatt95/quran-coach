@@ -26,7 +26,8 @@ interface AcademyState {
 // Initial unlocked modules (Level 1 = fully open, Level 2 = locked until prerequisites)
 const INITIAL_UNLOCKED = [
     'bases-islam',
-    'premiere-priere',
+    'wudu-fondamental',
+    'priere-pas-a-pas',
     'alphabet-arabe',
     'sourates-courtes',
 ];
@@ -89,7 +90,8 @@ const MODULE_UNLOCK_MAP: Record<string, string[]> = {
     // Level 1 → Level 2
     'alphabet-arabe': ['tajweed-fondamental', 'makharij-al-huruf'],
     'sourates-courtes': ['comprehension-sourates'],
-    'premiere-priere': ['fiqh-simplifie'],
+    'priere-pas-a-pas': ['fiqh-simplifie'],
+    'wudu-fondamental': [],
     'bases-islam': [],  // foundational, no unlock needed
 
     // Level 2 internal

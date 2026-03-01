@@ -54,6 +54,7 @@ export interface AcademyLevel {
     titleAr: string;
     description: string;
     icon: string;
+    image?: string;
     gradient: string;
     modules: AcademyModule[];
 }
