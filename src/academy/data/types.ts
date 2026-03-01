@@ -8,6 +8,7 @@ export interface LessonSection {
     arabic?: string;
     phonetic?: string;
     audioHint?: string; // text to feed TTS
+    image?: string;     // path to illustration (from /academy/)
 }
 
 export interface QuizQuestion {

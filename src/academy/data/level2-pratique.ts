@@ -17,6 +17,7 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
         {
             id: 'tajweed-fondamental',
             icon: '🎨',
+            image: '/academy/tajweed.png',
             title: 'Tajwid Fondamental',
             titleAr: 'التجويد الأساسي',
             description: 'Les règles de récitation avec colorisation visuelle',
@@ -37,6 +38,11 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
                         {
                             title: 'Pourquoi apprendre le Tajwid ?',
                             body: '1. **Obligation** : Les savants considèrent que réciter le Coran avec Tajwid est un devoir.\n2. **Respect** : Le Coran est la parole d\'Allah, chaque lettre mérite d\'être prononcée correctement.\n3. **Récompense** : Le Prophète ﷺ a dit que celui qui récite le Coran avec difficulté a une double récompense.\n4. **Beauté** : Le Tajwid embellit la récitation et touche les cœurs.',
+                        },
+                        {
+                            title: '',
+                            body: '',
+                            image: '/academy/tajweed-rules.png',
                         },
                         {
                             title: 'Les 4 règles du Noon Sakin et Tanwin',
@@ -105,6 +111,7 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
         {
             id: 'makharij-al-huruf',
             icon: '👄',
+            image: '/academy/makharij.png',
             title: 'Makharij al-Huruf',
             titleAr: 'مخارج الحروف',
             description: 'Les points d\'articulation des lettres arabes',
@@ -116,6 +123,11 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
                     type: 'lesson',
                     title: 'Les 5 zones d\'articulation',
                     sections: [
+                        {
+                            title: '',
+                            body: '',
+                            image: '/academy/makharij-diagram.png',
+                        },
                         {
                             title: 'Qu\'est-ce qu\'un Makhraj ?',
                             body: 'Le mot « Makhraj » (مَخرَج) signifie « point de sortie ». C\'est l\'endroit précis dans la bouche, la gorge ou les lèvres d\'où provient le son de chaque lettre arabe.\n\nMaîtriser les Makharij est essentiel pour une récitation correcte du Coran.',
@@ -166,6 +178,7 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
         {
             id: 'comprehension-sourates',
             icon: '💡',
+            image: '/academy/comprehension.png',
             title: 'Compréhension des Sourates',
             titleAr: 'فهم السور',
             description: 'Le sens profond d\'Al-Fatiha et des sourates courtes',
@@ -239,6 +252,7 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
         {
             id: 'fiqh-simplifie',
             icon: '⚖️',
+            image: '/academy/fiqh.png',
             title: 'Fiqh Simplifié',
             titleAr: 'الفقه المبسط',
             description: 'Jeûne, Zakat, Hajj et prières spéciales',

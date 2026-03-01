@@ -17,6 +17,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
         {
             id: 'bases-islam',
             icon: '☪️',
+            image: '/academy/bases-islam.png',
             title: 'Bases de l\'Islam',
             titleAr: 'أساسيات الإسلام',
             description: 'Les 5 piliers, les 6 piliers de la foi et la chahada',
@@ -71,6 +72,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
         {
             id: 'premiere-priere',
             icon: '🕌',
+            image: '/academy/premiere-priere.png',
             title: 'Ma Première Prière',
             titleAr: 'صلاتي الأولى',
             description: 'Apprendre les ablutions et la prière pas à pas',
@@ -82,6 +84,11 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                     type: 'lesson',
                     title: 'Les Ablutions (Wudu)',
                     sections: [
+                        {
+                            title: '',
+                            body: '',
+                            image: '/academy/wudu-steps.png',
+                        },
                         {
                             title: 'Pourquoi les ablutions ?',
                             body: 'Les ablutions (Wudu) sont une purification rituelle indispensable avant la prière. Elles préparent le corps et l\'esprit à la rencontre avec Allah.\n\nAllah dit dans le Coran : « Ô vous qui croyez ! Lorsque vous vous levez pour la prière, lavez vos visages... »',
@@ -130,6 +137,11 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                     type: 'lesson',
                     title: 'La Prière pas à pas',
                     sections: [
+                        {
+                            title: '',
+                            body: '',
+                            image: '/academy/prayer-positions.png',
+                        },
                         {
                             title: 'Les 5 prières obligatoires',
                             body: 'Chaque musulman doit accomplir 5 prières par jour :\n\n• **Fajr** (Sobh) — 2 rak\'at — avant le lever du soleil\n• **Dhuhr** — 4 rak\'at — après le zénith\n• **Asr** — 4 rak\'at — milieu de l\'après-midi\n• **Maghrib** — 3 rak\'at — coucher du soleil\n• **Isha** — 4 rak\'at — nuit',
@@ -203,6 +215,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
         {
             id: 'alphabet-arabe',
             icon: '🔤',
+            image: '/academy/alphabet-arabe.png',
             title: 'Alphabet Arabe',
             titleAr: 'الحروف العربية',
             description: 'Les 28 lettres : forme, prononciation et position dans le mot',
@@ -214,6 +227,11 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                     type: 'lesson',
                     title: 'Les 28 lettres en 5 groupes',
                     sections: [
+                        {
+                            title: '',
+                            body: '',
+                            image: '/academy/arabic-groups.png',
+                        },
                         { title: 'Groupe 1 — Famille Ba (ب ت ث ن)', body: 'Ces 4 lettres partagent la même forme de base (bol). Seul le nombre et la position des points changent.', arabic: 'ب ت ث ن', phonetic: 'Ba, Ta, Tha, Noun' },
                         { title: '① Alif (ا) — [a/i/u]', body: 'Trait vertical. Support de la Hamza ou voyelle longue. La première lettre de l\'alphabet.', arabic: 'أَحَد — (unique)', phonetic: 'Ahad' },
                         { title: '② Ba (ب) — [b]', body: 'Comme le B français. Un point en dessous du bol.', arabic: 'بِسْمِ — (au nom de)', phonetic: 'Bismi' },
@@ -274,6 +292,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
         {
             id: 'sourates-courtes',
             icon: '📖',
+            image: '/academy/sourates-courtes.png',
             title: 'Sourates Courtes',
             titleAr: 'السور القصيرة',
             description: 'Al-Fatiha et les 3 protectrices — liées à la mémorisation',

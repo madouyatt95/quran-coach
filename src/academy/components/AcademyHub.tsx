@@ -256,8 +256,16 @@ export function AcademyHub() {
                     </div>
 
                     <div key={sectionIdx} className="academy-lesson__content">
-                        <h3 className="academy-lesson__section-title">{section.title}</h3>
-                        <div className="academy-lesson__body">{section.body}</div>
+                        {/* Image-only section (illustration slide) */}
+                        {section.image && (
+                            <img
+                                src={section.image}
+                                alt={section.title || 'Illustration'}
+                                className="academy-lesson__illustration"
+                            />
+                        )}
+                        {section.title && <h3 className="academy-lesson__section-title">{section.title}</h3>}
+                        {section.body && <div className="academy-lesson__body">{section.body}</div>}
 
                         {section.arabic && (
                             <div className="academy-lesson__arabic-block">
@@ -384,7 +392,14 @@ export function AcademyHub() {
                                 onClick={() => unlocked && startModule(mod)}
                             >
                                 <div className="academy-module-card__top">
-                                    <div className="academy-module-card__icon">{mod.icon}</div>
+                                    {mod.image && (
+                                        <img
+                                            src={mod.image}
+                                            alt={mod.title}
+                                            className="academy-module-card__image"
+                                        />
+                                    )}
+                                    {!mod.image && <div className="academy-module-card__icon">{mod.icon}</div>}
                                     <div className="academy-module-card__info">
                                         <h3 className="academy-module-card__title">{mod.title}</h3>
                                         <p className="academy-module-card__desc">{mod.description}</p>
