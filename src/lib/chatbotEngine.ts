@@ -103,6 +103,7 @@ const FAQ_TREE: KnowledgeEntry[] = [
 
     // Zakat
     { question: "Comment calculer la Zakat ?", answer: "La Zakat est de 2,5% sur l'épargne qui atteint le seuil (Nissab) pendant un an lunaire. Nissab en or : 85g (environ 5000€). Nissab en argent : 595g. On calcule sur tout ce qu'on possède (argent, or, actions, marchandises) moins les dettes. Les 8 bénéficiaires sont : pauvres, nécessiteux, collecteurs, ceux dont le cœur est à gagner, esclaves, endettés, pour la cause d'Allah, voyageurs.", keywords: ['zakat', 'aumone', 'calcul', 'nissab', 'pourcentage', 'richesse'], category: 'Zakat', source: 'Fiqh / Coran 9:60' },
+    { question: "Quel est le montant de Zakat al-Fitr ?", answer: "Zakat al-Fitr est obligatoire à la fin du Ramadan. Le montant est d'environ 9€ par personne cette année en France (ce montant peut varier, veuillez toujours vous référer aux autorités locales compétentes de votre pays). Il est préférable de la donner sous forme de nourriture (un Saa' ≈ 2,5 kg de la nourriture de base) si possible. Elle doit être donnée avant la prière de l'Aïd.", keywords: ['zakat', 'fitr', 'montant', 'ramadan', 'fin', 'prix', 'euro', 'euros', '9'], category: 'Zakat', source: 'Fiqh' },
 
     // Hajj
     { question: "Comment faire le Hajj ?", answer: "Le Hajj comprend 4 piliers : 1) L'Ihram (sacralisation) au Miqat 2) Le stationnement à Arafat (9 Dhul Hijjah) 3) Le Tawaf al-Ifada (7 tours autour de la Ka'ba) 4) Le Sa'y (7 trajets entre Safa et Marwa). Obligations : Ihram au Miqat, nuit à Muzdalifa, nuit à Mina, lapidation des Jamarat, rasage/raccourcissement, Tawaf d'adieu.", keywords: ['hajj', 'pelerinage', 'ihram', 'tawaf', 'arafat', 'mina', 'kaaba'], category: 'Hajj', source: 'Fiqh' },
@@ -375,6 +376,9 @@ export function chatbotAnswer(query: string): ChatMessage {
     if (!answer) {
         answer = `Je n'ai pas trouvé de réponse précise à "${query}". Essayez de reformuler votre question ou utilisez l'onglet **Recherche** pour trouver des hadiths et versets par mot-clé.`;
     }
+
+    // Add DISCLAIMER
+    answer += '\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*';
 
     // Suggestions based on topic
     const suggestions = getSuggestions(query);

@@ -307,7 +307,7 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
                         },
                         {
                             title: 'Zakat al-Fitr',
-                            body: 'Obligatoire à la fin du Ramadan pour chaque membre de la famille. Environ 7€ par personne (un Saa\' ≈ 2,5 kg de nourriture de base). Doit être payée **avant** la prière de l\'Aïd.',
+                            body: 'Obligatoire à la fin du Ramadan pour chaque membre de la famille. Environ 9€ par personne cette année en France (le montant peut varier, référez-vous aux autorités locales). Il est préférable de la donner sous forme de nourriture (un Saa\' ≈ 2,5 kg) si possible. Doit être payée **avant** la prière de l\'Aïd.',
                             illustration: 'Zakat al-Fitr',
                         },
                     ],
