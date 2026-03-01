@@ -12,6 +12,9 @@ interface SmartState {
     travelEnabled: boolean;
     saharEnabled: boolean;
 
+    // Debug
+    debugForceWeather: boolean;
+
     // Actions
     setWeatherEnabled: (val: boolean) => void;
     setWhiteDaysEnabled: (val: boolean) => void;
@@ -21,6 +24,9 @@ interface SmartState {
     setHistoryEnabled: (val: boolean) => void;
     setTravelEnabled: (val: boolean) => void;
     setSaharEnabled: (val: boolean) => void;
+
+    // Debug
+    setDebugForceWeather: (val: boolean) => void;
 
     // Global toggle (optional, for master switch)
     globalEnabled: boolean;
@@ -39,6 +45,7 @@ export const useSmartStore = create<SmartState>()(
             travelEnabled: true,
             saharEnabled: true,
             globalEnabled: true,
+            debugForceWeather: false,
 
             setWeatherEnabled: (weatherEnabled) => set({ weatherEnabled }),
             setWhiteDaysEnabled: (whiteDaysEnabled) => set({ whiteDaysEnabled }),
@@ -49,6 +56,7 @@ export const useSmartStore = create<SmartState>()(
             setTravelEnabled: (travelEnabled) => set({ travelEnabled }),
             setSaharEnabled: (saharEnabled) => set({ saharEnabled }),
             setGlobalEnabled: (globalEnabled) => set({ globalEnabled }),
+            setDebugForceWeather: (debugForceWeather) => set({ debugForceWeather }),
         }),
         {
             name: 'quran-coach-smart-sentinel',

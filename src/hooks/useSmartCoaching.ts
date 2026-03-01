@@ -273,10 +273,10 @@ export function useSmartCoaching() {
                     getCurrentWeather(lat, lng).then(weather => {
                         if (!mounted) return;
                         const weatherCards: SmartCardData[] = [];
-                        if (weather.event === 'rain') {
+                        if (weather.event === 'rain' || smart.debugForceWeather) {
                             weatherCards.push({
                                 id: 'weather-rain', type: 'weather', emoji: '🌧️',
-                                title: 'Il pleut à votre position',
+                                title: smart.debugForceWeather ? 'Pluie (Mode Test)' : 'Il pleut à votre position',
                                 textAr: 'اللَّهُمَّ صَيِّداً نَافِعاً',
                                 textFr: '« Ô Allah ! Fais que ce soit une pluie utile. »',
                                 phonetic: "Allâhumma sayyiban nâfi'an.",

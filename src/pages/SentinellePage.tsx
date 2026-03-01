@@ -23,8 +23,8 @@ export function SentinellePage() {
             </header>
 
             <section className="sentinel-hero">
-                <div className="sentinel-hero__icon">
-                    <ShieldCheck size={48} color="#c9a84c" />
+                <div className="sentinel-hero__icon" onClick={() => smart.setDebugForceWeather(!smart.debugForceWeather)}>
+                    <ShieldCheck size={48} color={smart.debugForceWeather ? "#4facfe" : "#c9a84c"} />
                 </div>
                 <h2>{t('sentinel.subtitle', 'Votre Compagnon de Route')}</h2>
                 <p>{t('sentinel.description', "La Sentinelle veille sur les moments propices aux invocations et s'adapte à votre environnement en temps réel.")}</p>
@@ -38,6 +38,12 @@ export function SentinellePage() {
                         <span className="toggle__knob" />
                     </button>
                 </div>
+
+                {smart.debugForceWeather && (
+                    <div style={{ marginTop: '1rem', background: 'rgba(79, 172, 254, 0.2)', padding: '8px 16px', borderRadius: '8px', color: '#4facfe', fontSize: '0.85rem' }}>
+                        🌧️ Mode Test Météo Activé
+                    </div>
+                )}
             </section>
 
             {smart.globalEnabled && (
