@@ -69,7 +69,15 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         }
     };
 
-    const SHORTCUTS = [
+    interface ShortcutItem {
+        path: string;
+        emoji: string | React.ReactNode;
+        label: string;
+        color: string;
+        onClick?: (e: React.MouseEvent) => void;
+    }
+
+    const SHORTCUTS: ShortcutItem[] = [
         { path: '/prophets', emoji: '📜', label: t('nav.prophets'), color: 'rgba(201,168,76,0.2)' },
         { path: '/qibla', emoji: '🧭', label: t('sideMenu.qibla'), color: 'rgba(201,168,76,0.2)' },
         { path: '/prayers', emoji: '🕌', label: t('sideMenu.prayers'), color: 'rgba(255,152,0,0.2)' },
@@ -138,9 +146,8 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                                 onClick={(e) => {
                                     if (s.onClick) {
                                         s.onClick(e);
-                                    } else {
-                                        onClose();
                                     }
+                                    onClose();
                                 }}
                                 style={{ background: `linear-gradient(135deg, ${s.color}, rgba(255,255,255,0.02))` }}
                             >
