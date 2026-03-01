@@ -79,10 +79,22 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
             category: 'fiqh',
             difficulty: 1,
             estimatedMinutes: 40,
+        // MODULE 2 — Les Ablutions (Wudu)
+        // ════════════════════════════════════════
+        {
+            id: 'wudu-fondamental',
+            icon: '🧴',
+            image: '/academy/premiere-priere.png', // Keep the original image for now, or update if a specific wudu image is available
+            title: 'Le Wudu',
+            titleAr: 'الوضوء',
+            description: 'Apprendre à faire ses ablutions étape par étape',
+            category: 'pratique',
+            difficulty: 1,
+            estimatedMinutes: 15,
             content: [
                 {
                     type: 'lesson',
-                    title: 'Les Ablutions (Wudu)',
+                    title: 'Les bases des ablutions (Wudu)',
                     sections: [
                         {
                             title: 'Pourquoi les ablutions ?',
@@ -91,8 +103,8 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             phonetic: 'Yâ ayyouha l-ladhîna âmanou idhâ qumtum ila s-salati fa-ghsilou wujouhakum',
                         },
                         {
-                            title: 'Étape 1 — L\'intention et le Bismillah',
-                            body: 'Formulez l\'intention dans votre cœur de faire les ablutions pour Allah, puis dites « Bismillah » (Au nom d\'Allah).',
+                            title: 'L\'intention et le Bismillah',
+                            body: 'L\'intention (an-Niyyah) se fait dans le cœur. On commence par dire « Bismillah » (Au nom d\'Allah).',
                             arabic: 'بِسْمِ اللَّهِ',
                             phonetic: 'Bismi Llâh',
                         },
@@ -140,8 +152,35 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                     ],
                 },
                 {
+                    type: 'quiz',
+                    title: 'Quiz — Wudu',
+                    passThreshold: 80,
+                    questions: [
+                        { q: 'Par quelle phrase commence-t-on le Wudu ?', options: ['Al-Hamdu li-Llâh', 'Bismillah', 'Allâhu Akbar', 'Subhan Allah'], answer: 1, explanation: 'On commence par « Bismillah » (Au nom d\'Allah).' },
+                        { q: 'Combien de fois lave-t-on le visage ?', options: ['1 fois', '2 fois', '3 fois', '4 fois'], answer: 2, explanation: 'Il est recommandé de laver le visage 3 fois.' },
+                        { q: 'Lave-t-on les mains avant ou après le visage ?', options: ['Avant', 'Après'], answer: 0, explanation: 'Les mains sont la première étape après Bismillah.' },
+                    ],
+                }
+            ],
+        },
+
+        // ════════════════════════════════════════
+        // MODULE 3 — La Prière pas à pas
+        // ════════════════════════════════════════
+        {
+            id: 'priere-pas-a-pas',
+            icon: '🕌',
+            image: '/academy/images/priere_step1.png',
+            title: 'La Prière',
+            titleAr: 'الصلاة',
+            description: 'Les positions et les récitations de la prière quotidienne',
+            category: 'pratique',
+            difficulty: 1,
+            estimatedMinutes: 25,
+            content: [
+                {
                     type: 'lesson',
-                    title: 'La Prière pas à pas',
+                    title: 'Guide de la Prière',
                     sections: [
                         {
                             title: 'Les 5 prières obligatoires',
@@ -222,7 +261,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
         },
 
         // ════════════════════════════════════════
-        // MODULE 3 — Alphabet Arabe
+        // MODULE 4 — Alphabet Arabe
         // ════════════════════════════════════════
         {
             id: 'alphabet-arabe',
@@ -230,7 +269,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
             image: '/academy/alphabet-arabe.png',
             title: 'Alphabet Arabe',
             titleAr: 'الحروف العربية',
-            description: 'Les 28 lettres : forme, prononciation et position dans le mot',
+            description: 'Les 28 lettres et leur prononciation',
             category: 'alphabet',
             difficulty: 1,
             estimatedMinutes: 45,
@@ -262,7 +301,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                         { title: '⑭ Sâd (ص) — [ṣ]', body: 'S emphatique prononcé avec la langue contre le palais. Corps arrondi.', arabic: 'صَبْر — (patience)', phonetic: 'Sabr' },
                         { title: '⑮ Dâd (ض) — [ḍ]', body: 'D emphatique. Un point au-dessus du Sâd. Lettre unique à la langue arabe !', arabic: 'ضَوْء — (lumière)', phonetic: 'Daw\'' },
 
-                        { title: 'Groupe 5 — Lettres profondes et gutturales', body: 'Lettres avec prononciation plus profonde.', arabic: 'ط ظ ع غ ف ق ك ل م ن ه و ي', phonetic: 'Tâ, Dhâ, \'Ayn, Ghayn, Fâ, Qâf, Kâf, Lâm, Mîm, Noûn, Hâ, Wâw, Yâ', illustration: 'Groupe 5 — Lettres profondes et gutturales' },
+                        { title: 'Groupe 5 — Lettres profondes et gutturales', body: 'Lettres avec prononciation plus profonde.', arabic: 'ط ظ ع غ ف ق ك ل m n h w y', phonetic: 'Tâ, Dhâ, \'Ayn, Ghayn, Fâ, Qâf, Kâf, Lâm, Mîm, Noûn, Hâ, Wâw, Yâ', illustration: 'Groupe 5 — Lettres profondes et gutturales' },
                         { title: '⑯ Tâ (ط) — [ṭ]', body: 'T emphatique, son lourd et profond.', arabic: 'طَهَارَة — (purification)', phonetic: 'Tahârah' },
                         { title: '⑰ Dhâ (ظ) — [ẓ]', body: 'Z emphatique. Un point au-dessus du Tâ.', arabic: 'ظُلْم — (injustice)', phonetic: 'Dhoulm' },
                         { title: '⑱ \'Ayn (ع) — [ʿ]', body: 'Son guttural unique venant du fond de la gorge. N\'existe pas en français.', arabic: 'عِلْم — (science)', phonetic: '\'Ilm' },
@@ -294,7 +333,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
         },
 
         // ════════════════════════════════════════
-        // MODULE 4 — Sourates Courtes
+        // MODULE 5 — Sourates Courtes
         // ════════════════════════════════════════
         {
             id: 'sourates-courtes',
@@ -302,7 +341,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
             image: '/academy/sourates-courtes.png',
             title: 'Sourates Courtes',
             titleAr: 'السور القصيرة',
-            description: 'Al-Fatiha et les 3 protectrices — liées à la mémorisation',
+            description: 'Mémoriser et comprendre les dernières sourates du Coran',
             category: 'quran',
             difficulty: 1,
             estimatedMinutes: 35,
