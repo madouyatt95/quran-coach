@@ -7,6 +7,7 @@ import { LEVEL_1_FONDATIONS } from '../data/level1-fondations';
 import { LEVEL_2_PRATIQUE } from '../data/level2-pratique';
 import { TAJWEED_RULES, TAJWEED_COLOR_LEGEND } from '../data/tajweed-rules';
 import type { AcademyLevel, AcademyModule, AcademyLesson, AcademyQuiz } from '../data/types';
+import { ILLUSTRATION_MAP } from './LessonIllustrations';
 import './AcademyHub.css';
 
 const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE];
@@ -263,6 +264,15 @@ export function AcademyHub() {
                                 alt={section.title || 'Illustration'}
                                 className="academy-lesson__illustration"
                             />
+                        )}
+                        {/* Inline SVG Illustration */}
+                        {section.illustration && ILLUSTRATION_MAP[section.illustration] && (
+                            <div className="academy-lesson__svg-wrapper">
+                                {(() => {
+                                    const Illustration = ILLUSTRATION_MAP[section.illustration!];
+                                    return <Illustration />;
+                                })()}
+                            </div>
                         )}
                         {section.title && <h3 className="academy-lesson__section-title">{section.title}</h3>}
                         {section.body && <div className="academy-lesson__body">{section.body}</div>}

@@ -9,6 +9,7 @@ export interface LessonSection {
     phonetic?: string;
     audioHint?: string; // text to feed TTS
     image?: string;     // path to illustration (from /academy/)
+    illustration?: string; // key for inline SVG illustration mapping
 }
 
 export interface QuizQuestion {
