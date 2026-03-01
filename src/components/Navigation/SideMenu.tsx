@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings } from 'lucide-react';
+import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings, ScrollText, Compass, Moon, BookOpen, HeartPulse, Headphones, Library, GraduationCap, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { usePrayerStore } from '../../stores/prayerStore';
@@ -78,16 +78,16 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     }
 
     const SHORTCUTS: ShortcutItem[] = [
-        { path: '/prophets', emoji: '📜', label: t('nav.prophets'), color: 'rgba(201,168,76,0.2)' },
-        { path: '/qibla', emoji: '🧭', label: t('sideMenu.qibla'), color: 'rgba(201,168,76,0.2)' },
-        { path: '/prayers', emoji: '🕌', label: t('sideMenu.prayers'), color: 'rgba(255,152,0,0.2)' },
-        { path: '/themes', emoji: '📚', label: t('sideMenu.themes'), color: 'rgba(88,166,255,0.2)' },
-        { path: '/adhkar', emoji: '🤲', label: t('sideMenu.adhkar'), color: 'rgba(231,76,60,0.2)' },
-        { path: '/listen', emoji: '🎧', label: t('sideMenu.listen'), color: 'rgba(76,175,80,0.2)' },
-        { path: '/hadiths', emoji: '📜', label: t('sideMenu.hadiths'), color: 'rgba(156,39,176,0.2)' },
-        { path: '/tafsir', emoji: '📖', label: t('sideMenu.tafsir'), color: 'rgba(121,85,72,0.2)' },
-        { path: '/academy', emoji: '🎓', label: t('sideMenu.academy'), color: 'rgba(76,175,80,0.2)' },
-        { path: '/circles', emoji: '👥', label: 'Cercle de Lecture', color: 'rgba(33,150,243,0.2)' },
+        { path: '/prophets', emoji: <ScrollText size={24} color="#c9a84c" />, label: t('nav.prophets'), color: 'rgba(201,168,76,0.2)' },
+        { path: '/qibla', emoji: <Compass size={24} color="#c9a84c" />, label: t('sideMenu.qibla'), color: 'rgba(201,168,76,0.2)' },
+        { path: '/prayers', emoji: <Moon size={24} color="#FF9800" />, label: t('sideMenu.prayers'), color: 'rgba(255,152,0,0.2)' },
+        { path: '/themes', emoji: <BookOpen size={24} color="#58A6FF" />, label: t('sideMenu.themes'), color: 'rgba(88,166,255,0.2)' },
+        { path: '/adhkar', emoji: <HeartPulse size={24} color="#E74C3C" />, label: t('sideMenu.adhkar'), color: 'rgba(231,76,60,0.2)' },
+        { path: '/listen', emoji: <Headphones size={24} color="#4CAF50" />, label: t('sideMenu.listen'), color: 'rgba(76,175,80,0.2)' },
+        { path: '/hadiths', emoji: <Library size={24} color="#9C27B0" />, label: t('sideMenu.hadiths'), color: 'rgba(156,39,176,0.2)' },
+        { path: '/tafsir', emoji: <BookOpen size={24} color="#795548" />, label: t('sideMenu.tafsir'), color: 'rgba(121,85,72,0.2)' },
+        { path: '/academy', emoji: <GraduationCap size={24} color="#4CAF50" />, label: t('sideMenu.academy'), color: 'rgba(76,175,80,0.2)' },
+        { path: '/circles', emoji: <Users size={24} color="#2196F3" />, label: 'Cercle de Lecture', color: 'rgba(33,150,243,0.2)' },
     ];
 
     const TOOLS = [
