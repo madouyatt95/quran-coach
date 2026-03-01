@@ -46,8 +46,9 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             image: '/academy/images/fiqh_6_piliers_foi.png',
                         },
                         {
-                            title: 'L\'Excellence (Al-Ihsan)',
-                            body: '« Que tu adores Allah comme si tu Le voyais, car si tu ne Le vois pas, Lui te voit. »\n\nL\'Ihsan est le plus haut degré de la foi. C\'est la conscience permanente de la présence divine dans chaque acte.',
+                            title: 'L\'Excellence (Al-Ihsan) / Le Comportement',
+                            body: 'L\'Ihsan est le plus haut degré de la religion. Le Prophète ﷺ l\'a défini ainsi :\n\n« C\'est que tu adores Allah comme si tu Le voyais, car si tu ne Le vois pas, certes, Lui te voit. »\n\nCela implique la perfection dans l\'adoration, mais aussi l\'excellence dans le comportement envers les créatures (parents, voisins, animaux, environnement).',
+                            image: '/academy/images/fiqh_comportement.png',
                             arabic: 'أَنْ تَعْبُدَ اللَّهَ كَأَنَّكَ تَرَاهُ فَإِنْ لَمْ تَكُنْ تَرَاهُ فَإِنَّهُ يَرَاكَ',
                             phonetic: 'An ta\'buda Llâha ka-annaka tarâhu, fa-in lam takun tarâhu fa-innahou yarâk',
                         },
