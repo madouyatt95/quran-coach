@@ -100,6 +100,8 @@
 .academy-level-card__banner {
     padding: 20px;
     position: relative;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 16px;
 }
 
 .academy-level-card__top {
