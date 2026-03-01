@@ -67,18 +67,6 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
         },
 
         // ════════════════════════════════════════
-        // MODULE 2 — Ma Première Prière
-        // ════════════════════════════════════════
-        {
-            id: 'premiere-priere',
-            icon: '🕌',
-            image: '/academy/premiere-priere.png',
-            title: 'Ma Première Prière',
-            titleAr: 'صلاتي الأولى',
-            description: 'Apprendre les ablutions et la prière pas à pas',
-            category: 'fiqh',
-            difficulty: 1,
-            estimatedMinutes: 40,
         // MODULE 2 — Les Ablutions (Wudu)
         // ════════════════════════════════════════
         {
@@ -88,7 +76,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
             title: 'Le Wudu',
             titleAr: 'الوضوء',
             description: 'Apprendre à faire ses ablutions étape par étape',
-            category: 'pratique',
+            category: 'fiqh',
             difficulty: 1,
             estimatedMinutes: 15,
             content: [
@@ -174,7 +162,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
             title: 'La Prière',
             titleAr: 'الصلاة',
             description: 'Les positions et les récitations de la prière quotidienne',
-            category: 'pratique',
+            category: 'fiqh',
             difficulty: 1,
             estimatedMinutes: 25,
             content: [
