@@ -1,10 +1,8 @@
-// ─── Academy Store (Parcours Guidé + Mode Enfant) ────────
-// Tracks user progress through learning modules
+// ─── Academy Store (Premium Redesign) ────────────────────
+// Tracks user progress through the 2-level Academy modules
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export type AcademyLevel = 'debutant' | 'intermediaire';
 
 export interface ModuleProgress {
     completed: boolean;
@@ -13,30 +11,33 @@ export interface ModuleProgress {
 }
 
 interface AcademyState {
-    level: AcademyLevel;
     currentModule: string | null;
     progress: Record<string, ModuleProgress>;
     unlockedModules: string[];
     totalXp: number;
 
     // Actions
-    setLevel: (level: AcademyLevel) => void;
     completeModule: (moduleId: string, score: number) => void;
     unlockModule: (moduleId: string) => void;
     setCurrentModule: (moduleId: string | null) => void;
     resetProgress: () => void;
 }
 
+// Initial unlocked modules (Level 1 = fully open, Level 2 = locked until prerequisites)
+const INITIAL_UNLOCKED = [
+    'bases-islam',
+    'premiere-priere',
+    'alphabet-arabe',
+    'sourates-courtes',
+];
+
 export const useAcademyStore = create<AcademyState>()(
     persist(
         (set) => ({
-            level: 'debutant',
             currentModule: null,
             progress: {},
-            unlockedModules: ['alphabet', 'fatiha', 'pillars'],
+            unlockedModules: INITIAL_UNLOCKED,
             totalXp: 0,
-
-            setLevel: (level) => set({ level }),
 
             completeModule: (moduleId, score) => set((state) => {
                 const progress = { ...state.progress };
@@ -72,7 +73,7 @@ export const useAcademyStore = create<AcademyState>()(
 
             resetProgress: () => set({
                 progress: {},
-                unlockedModules: ['alphabet', 'fatiha', 'pillars'],
+                unlockedModules: INITIAL_UNLOCKED,
                 totalXp: 0,
                 currentModule: null,
             }),
@@ -82,19 +83,19 @@ export const useAcademyStore = create<AcademyState>()(
 );
 
 // ─── Module Dependency Map ───────────────────────────────
-// When a module is completed, which modules get unlocked?
+// Level 1 modules unlock Level 2 modules
 
 const MODULE_UNLOCK_MAP: Record<string, string[]> = {
-    'alphabet': ['reading-basics', 'short-surahs'],
-    'fatiha': ['short-surahs'],
-    'pillars': ['wudu', 'salat-basics'],
-    'reading-basics': ['tajweed-intro'],
-    'short-surahs': ['memorization'],
-    'wudu': ['salat-basics'],
-    'salat-basics': ['salat-advanced', 'fasting'],
-    'tajweed-intro': ['tajweed-rules'],
-    'salat-advanced': ['zakat', 'hajj-basics'],
-    'fasting': ['zakat'],
-    'zakat': ['hajj-basics'],
-    'hajj-basics': ['aqidah-advanced'],
+    // Level 1 → Level 2
+    'alphabet-arabe': ['tajweed-fondamental', 'makharij-al-huruf'],
+    'sourates-courtes': ['comprehension-sourates'],
+    'premiere-priere': ['fiqh-simplifie'],
+    'bases-islam': [],  // foundational, no unlock needed
+
+    // Level 2 internal
+    'tajweed-fondamental': [],
+    'makharij-al-huruf': [],
+    'comprehension-sourates': [],
+    'fiqh-simplifie': [],
 };
+

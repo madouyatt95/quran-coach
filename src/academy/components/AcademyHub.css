@@ -1,0 +1,706 @@
+/* ─── Academy Hub — Premium Institutional Design ────────── */
+
+.academy-hub {
+    min-height: 100vh;
+    background: #0a0e1a;
+    color: #e8e4da;
+    padding-bottom: 100px;
+}
+
+/* ─── Header ──────────────────────────────── */
+.academy-header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.academy-back-btn {
+    background: none;
+    border: none;
+    color: #C9A84C;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.academy-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+/* ─── Overview Card ───────────────────────── */
+.academy-overview {
+    margin: 0 16px 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.12) 0%, rgba(27, 94, 32, 0.10) 100%);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 16px;
+    text-align: center;
+}
+
+.academy-overview__xp {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #C9A84C;
+    line-height: 1;
+}
+
+.academy-overview__xp-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+.academy-overview__badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.academy-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(201, 168, 76, 0.15);
+    font-size: 0.7rem;
+    color: #C9A84C;
+}
+
+/* ─── Level Cards ─────────────────────────── */
+.academy-levels {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.academy-level-card {
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.academy-level-card:active {
+    transform: scale(0.98);
+}
+
+.academy-level-card__banner {
+    padding: 20px;
+    position: relative;
+}
+
+.academy-level-card__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.academy-level-card__icon {
+    font-size: 2rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.academy-level-card__info {
+    flex: 1;
+}
+
+.academy-level-card__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.academy-level-card__subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 2px 0 0;
+}
+
+.academy-level-card__progress {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.academy-level-card__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C9A84C, #FFD700);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.academy-level-card__pct {
+    text-align: right;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
+}
+
+/* ─── Module Grid ─────────────────────────── */
+.academy-modules-header {
+    padding: 20px 20px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.academy-modules-header button {
+    background: none;
+    border: none;
+    color: #C9A84C;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.academy-modules-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.academy-modules-grid {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.academy-module-card {
+    background: rgba(255, 248, 231, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.academy-module-card:active {
+    transform: scale(0.98);
+}
+
+.academy-module-card.locked {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.academy-module-card.completed {
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.academy-module-card__top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.academy-module-card__icon {
+    font-size: 1.6rem;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(201, 168, 76, 0.1);
+    flex-shrink: 0;
+}
+
+.academy-module-card__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.academy-module-card__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.academy-module-card__desc {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 2px 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.academy-module-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.academy-module-card__badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: #4CAF50;
+}
+
+.academy-module-card__progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.academy-module-card__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C9A84C, #FFD700);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* ─── Lesson View ─────────────────────────── */
+.academy-lesson {
+    padding: 0 16px 40px;
+}
+
+.academy-lesson__header {
+    padding: 16px 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.academy-lesson__header button {
+    background: none;
+    border: none;
+    color: #C9A84C;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.academy-lesson__header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.academy-lesson__progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 0 0 20px;
+    overflow: hidden;
+}
+
+.academy-lesson__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C9A84C, #FFD700);
+    border-radius: 2px;
+    transition: width 0.3s;
+}
+
+.academy-lesson__content {
+    animation: fadeSlideUp 0.3s ease;
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.academy-lesson__section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #C9A84C;
+    margin: 0 0 12px;
+}
+
+.academy-lesson__body {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: pre-line;
+    margin-bottom: 16px;
+}
+
+.academy-lesson__arabic-block {
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.academy-lesson__arabic {
+    font-family: 'Amiri', 'KFGQPC Uthmanic Script HAFS', serif;
+    font-size: 1.4rem;
+    line-height: 2;
+    direction: rtl;
+    color: #C9A84C;
+}
+
+.academy-lesson__phonetic {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    margin-top: 8px;
+}
+
+.academy-lesson__audio-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    color: #C9A84C;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin: 8px auto 16px;
+}
+
+.academy-lesson__nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    gap: 12px;
+}
+
+.academy-lesson__nav button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+}
+
+.academy-lesson__nav-prev {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.academy-lesson__nav-next {
+    background: linear-gradient(135deg, #C9A84C, #B8963E);
+    color: #000;
+}
+
+/* ─── Quiz View ───────────────────────────── */
+.academy-quiz {
+    padding: 0 16px 40px;
+}
+
+.academy-quiz__header {
+    padding: 16px 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.academy-quiz__header button {
+    background: none;
+    border: none;
+    color: #C9A84C;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.academy-quiz__header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.academy-quiz__counter {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: auto;
+}
+
+.academy-quiz__question {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 16px 0 20px;
+    line-height: 1.5;
+}
+
+.academy-quiz__options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.academy-quiz__option {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e8e4da;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.academy-quiz__option:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.academy-quiz__option.correct {
+    background: rgba(76, 175, 80, 0.15);
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+.academy-quiz__option.wrong {
+    background: rgba(244, 67, 54, 0.1);
+    border-color: #F44336;
+    color: #F44336;
+}
+
+.academy-quiz__explanation {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(201, 168, 76, 0.08);
+    border-left: 3px solid #C9A84C;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    animation: fadeSlideUp 0.3s ease;
+}
+
+.academy-quiz__next-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #C9A84C, #B8963E);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+}
+
+/* ─── Results ─────────────────────────────── */
+.academy-result {
+    text-align: center;
+    padding: 40px 16px;
+    animation: fadeSlideUp 0.4s ease;
+}
+
+.academy-result__icon {
+    font-size: 4rem;
+    margin-bottom: 12px;
+}
+
+.academy-result__title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 0 8px;
+}
+
+.academy-result__title.success {
+    color: #4CAF50;
+}
+
+.academy-result__title.fail {
+    color: #FF9800;
+}
+
+.academy-result__score {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #C9A84C;
+    margin: 12px 0;
+}
+
+.academy-result__message {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 24px;
+}
+
+.academy-result__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.academy-result__btn {
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+}
+
+.academy-result__btn-primary {
+    background: linear-gradient(135deg, #C9A84C, #B8963E);
+    color: #000;
+}
+
+.academy-result__btn-hifdh {
+    background: linear-gradient(135deg, #1B5E20, #2E7D32);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.academy-result__btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ─── Tajweed Visualizer ──────────────────── */
+.tajweed-viz {
+    margin: 16px 0;
+}
+
+.tajweed-rule-card {
+    background: rgba(255, 248, 231, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+}
+
+.tajweed-rule-card__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tajweed-rule-card__color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.tajweed-rule-card__name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.tajweed-rule-card__name-ar {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: auto;
+    font-family: 'Amiri', serif;
+}
+
+.tajweed-rule-card__desc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.tajweed-rule-card__example {
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.tajweed-rule-card__example-arabic {
+    font-family: 'Amiri', serif;
+    font-size: 1.3rem;
+    direction: rtl;
+}
+
+.tajweed-rule-card__example-ref {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 4px;
+}
+
+.tajweed-rule-card__mistakes {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.6;
+    white-space: pre-line;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+/* ─── Tajweed Color Legend ─────────────────── */
+.tajweed-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 20px;
+}
+
+.tajweed-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+}

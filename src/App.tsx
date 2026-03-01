@@ -40,7 +40,7 @@ const SentinellePage = lazy(() => import('./pages/SentinellePage').then(m => ({ 
 const StoragePage = lazy(() => import('./pages/StoragePage').then(m => ({ default: m.StoragePage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const CoachPage = lazy(() => import('./pages/CoachPage').then(m => ({ default: m.CoachPage })));
-const AcademyPage = lazy(() => import('./pages/AcademyPage').then(m => ({ default: m.AcademyPage })));
+const AcademyPage = lazy(() => import('./academy/components/AcademyHub').then(m => ({ default: m.AcademyHub })));
 const CirclePage = lazy(() => import('./pages/CirclePage').then(m => ({ default: m.CirclePage })));
 
 // Minimal loading fallback
