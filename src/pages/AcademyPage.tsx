@@ -9,6 +9,7 @@ import './AcademyPage.css';
 interface AcademyModule {
     id: string;
     emoji: string;
+    image?: string;
     title: string;
     titleAr: string;
     description: string;
@@ -293,6 +294,7 @@ const ACADEMY_MODULES: AcademyModule[] = [
     {
         id: 'tajweed-intro',
         emoji: '🎵',
+        image: '/images/tajweed.png',
         title: 'Introduction au Tajweed',
         titleAr: 'مقدمة في التجويد',
         description: 'Les règles de base de la récitation du Coran',
@@ -569,7 +571,11 @@ export function AcademyPage() {
                         <ChevronLeft size={20} />
                     </button>
                     <div className="academy-module-info">
-                        <span className="academy-module-emoji">{currentModule.emoji}</span>
+                        {currentModule.image ? (
+                            <img src={currentModule.image} alt="Icon" className="academy-module-img" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover' }} />
+                        ) : (
+                            <span className="academy-module-emoji">{currentModule.emoji}</span>
+                        )}
                         <span className="academy-module-name">{currentModule.title}</span>
                     </div>
                     <div className="academy-module-progress-bar">
@@ -791,7 +797,11 @@ export function AcademyPage() {
                                         onClick={() => handleStartModule(mod.id)}
                                     >
                                         <div className="academy-module-card-left">
-                                            <span className="academy-module-card-emoji">{mod.emoji}</span>
+                                            {mod.image ? (
+                                                <img src={mod.image} alt={mod.title} className="academy-module-card-img" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover', flexShrink: 0, marginTop: 2 }} />
+                                            ) : (
+                                                <span className="academy-module-card-emoji">{mod.emoji}</span>
+                                            )}
                                             <div className="academy-module-card-info">
                                                 <div className="academy-module-card-title">{mod.title}</div>
                                                 <div className="academy-module-card-desc">{mod.description}</div>
