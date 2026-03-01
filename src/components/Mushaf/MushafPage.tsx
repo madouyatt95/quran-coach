@@ -477,7 +477,7 @@ export function MushafPage() {
                         }}
                         title={t('settings.viewModeTajweed', 'Mode Image Tajweed')}
                     >
-                        <img src="/images/tajweed-btn.png" alt="Tajweed" style={{ width: 26, height: 26, borderRadius: 6, objectFit: 'cover', display: 'block', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+                        <img src="/images/tajweed.png" alt="Tajweed" style={{ width: 26, height: 26, borderRadius: 6, objectFit: 'cover', display: 'block', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
                     </button>
                 </div>
 
