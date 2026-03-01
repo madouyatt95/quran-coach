@@ -78,16 +78,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         { path: '/listen', emoji: '🎧', label: t('sideMenu.listen'), color: 'rgba(76,175,80,0.2)' },
         { path: '/hadiths', emoji: '📜', label: t('sideMenu.hadiths'), color: 'rgba(156,39,176,0.2)' },
         { path: '/tafsir', emoji: '📖', label: t('sideMenu.tafsir'), color: 'rgba(121,85,72,0.2)' },
-        {
-            path: '#',
-            onClick: (e: React.MouseEvent) => {
-                e.preventDefault();
-                alert("L'Académie est temporairement verrouillée pour une mise à jour. De retour très bientôt in sha Allah !");
-            },
-            emoji: '🔒',
-            label: 'Académie (Verrouillé)',
-            color: 'rgba(255,152,0,0.2)'
-        },
+        { path: '/academy', emoji: '🎓', label: t('sideMenu.academy'), color: 'rgba(76,175,80,0.2)' },
         { path: '/circles', emoji: '👥', label: 'Cercle de Lecture', color: 'rgba(33,150,243,0.2)' },
     ];
 
