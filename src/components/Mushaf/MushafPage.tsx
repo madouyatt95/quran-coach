@@ -12,7 +12,6 @@ import {
     ChevronLeft,
     ChevronRight,
     Heart,
-    Image as ImageIcon,
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -474,15 +473,12 @@ export function MushafPage() {
                             background: 'var(--bg-tertiary, #f5f5f5)',
                             border: '1px solid var(--border-color, #e8e4da)',
                             borderRadius: '8px',
-                            padding: '4px 8px',
+                            padding: '4px',
                             cursor: 'pointer',
-                            color: 'var(--text-secondary, #555)',
-                            fontSize: '0.75rem',
-                            gap: '4px'
                         }}
                         title={t('settings.viewModeTajweed', 'Mode Image Tajweed')}
                     >
-                        <ImageIcon size={14} />
+                        <img src="/images/tajweed-btn.png" alt="Tajweed" style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover', display: 'block' }} />
                     </button>
                 </div>
 
