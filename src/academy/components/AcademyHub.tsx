@@ -12,15 +12,35 @@ import './AcademyHub.css';
 const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE];
 
 // ─── TTS Helper ──────────────────────────────────────────
-function playAudio(text: string) {
+function playAudio(text: string, audioHint?: string) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const clean = text.replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s]/g, '').trim();
+        const source = audioHint || text;
+        const clean = source.replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s,،.]/g, '').trim();
         if (!clean) return;
-        const utter = new SpeechSynthesisUtterance(clean);
-        utter.lang = 'ar-SA';
-        utter.rate = 0.75;
-        window.speechSynthesis.speak(utter);
+
+        // Check if it's individual letters (short tokens separated by spaces)
+        const tokens = clean.split(/\s+/).filter(t => t.length > 0);
+        const isLetterList = tokens.length > 1 && tokens.every(t => t.length <= 2);
+
+        if (isLetterList) {
+            // Read each letter separately with a pause
+            let delay = 0;
+            tokens.forEach((letter) => {
+                setTimeout(() => {
+                    const utter = new SpeechSynthesisUtterance(letter);
+                    utter.lang = 'ar-SA';
+                    utter.rate = 0.6;
+                    window.speechSynthesis.speak(utter);
+                }, delay);
+                delay += 900; // 900ms pause between letters
+            });
+        } else {
+            const utter = new SpeechSynthesisUtterance(clean);
+            utter.lang = 'ar-SA';
+            utter.rate = 0.75;
+            window.speechSynthesis.speak(utter);
+        }
     }
 }
 
@@ -275,7 +295,7 @@ export function AcademyHub() {
                                 )}
                                 <button
                                     className="academy-lesson__audio-btn"
-                                    onClick={() => playAudio(section.arabic!)}
+                                    onClick={() => playAudio(section.arabic!, section.audioHint)}
                                 >
                                     <Volume2 size={16} /> Écouter
                                 </button>
