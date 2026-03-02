@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, Users, BookOpen, Trophy, Copy, Check, LogOut, Clock, Sparkles, RefreshCw } from 'lucide-react';
+import { ChevronLeft, Plus, Users, BookOpen, Trophy, Copy, Check, LogOut, Clock, Sparkles, RefreshCw, X } from 'lucide-react';
 import { useCircleStore, MEMBER_EMOJIS, type ReadingCircle } from '../stores/circleStore';
 import { useKhatmStore } from '../stores/khatmStore';
 import './CirclePage.css';
@@ -174,6 +174,7 @@ export function CirclePage() {
         const totalGroupPages = activeCircle.members.reduce((s, m) => s + m.pagesRead, 0);
         const progressPercent = Math.min((totalGroupPages / activeCircle.totalPages) * 100, 100);
         const myPages = activeCircle.members.find(m => m.id === myId)?.pagesRead || 0;
+        const isCreator = activeCircle.creatorId === myId;
 
         // ── Feature 3: Countdown for timed goals ──
         const goalMatch = activeCircle.goal.match(/(\d+)\s*jours/i);
@@ -347,6 +348,15 @@ export function CirclePage() {
                                     <div className="circle-member-bar">
                                         <div className="circle-member-bar-fill" style={{ width: `${Math.min((m.pagesRead / 20) * 100, 100)}%` }} />
                                     </div>
+                                    {isCreator && m.id !== myId && (
+                                        <button
+                                            className="circle-remove-btn"
+                                            onClick={(e) => { e.stopPropagation(); store.removeMember(activeCircle.id, m.id); }}
+                                            title="Retirer du cercle"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                     </div>

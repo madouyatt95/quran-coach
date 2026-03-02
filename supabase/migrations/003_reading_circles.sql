@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS reading_circles (
     goal TEXT NOT NULL DEFAULT 'Khatm en 30 jours',
     total_pages INTEGER NOT NULL DEFAULT 604,
     invite_code TEXT NOT NULL UNIQUE,
+    creator_device_id TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

@@ -33,6 +33,7 @@ export interface ReadingCircle {
     members: CircleMember[];
     activities: CircleActivity[];
     inviteCode: string;
+    creatorId: string;
 }
 
 interface CircleState {
@@ -48,6 +49,7 @@ interface CircleState {
     createCircle: (name: string, emoji: string, goal: string) => Promise<ReadingCircle | null>;
     joinCircle: (inviteCode: string) => Promise<{ success: boolean; error?: string; circleId?: string }>;
     leaveCircle: (circleId: string) => Promise<void>;
+    removeMember: (circleId: string, memberDeviceId: string) => Promise<void>;
     logPages: (circleId: string, pages: number) => Promise<void>;
     reactToActivity: (circleId: string, activityId: string, emoji: string) => Promise<void>;
     refreshCircles: () => Promise<void>;
@@ -99,6 +101,7 @@ export const useCircleStore = create<CircleState>()(
                             goal,
                             total_pages: 604,
                             invite_code: inviteCode,
+                            creator_device_id: state.myDeviceId,
                         })
                         .select()
                         .single();
@@ -136,6 +139,7 @@ export const useCircleStore = create<CircleState>()(
                         goal,
                         totalPages: 604,
                         inviteCode,
+                        creatorId: state.myDeviceId,
                         members: [{
                             id: state.myDeviceId,
                             name: memberName,
@@ -238,6 +242,7 @@ export const useCircleStore = create<CircleState>()(
                         goal: circleData.goal,
                         totalPages: circleData.total_pages,
                         inviteCode: circleData.invite_code,
+                        creatorId: circleData.creator_device_id || '',
                         members: (members || []).map(m => ({
                             id: m.device_id,
                             name: m.name,
@@ -284,6 +289,39 @@ export const useCircleStore = create<CircleState>()(
                     }));
                 } catch (err) {
                     console.error('leaveCircle error:', err);
+                }
+            },
+
+            removeMember: async (circleId, memberDeviceId) => {
+                const state = get();
+                const circle = state.myCircles.find(c => c.id === circleId);
+                if (!circle || circle.creatorId !== state.myDeviceId) return;
+
+                try {
+                    await supabase
+                        .from('circle_members')
+                        .delete()
+                        .eq('circle_id', circleId)
+                        .eq('device_id', memberDeviceId);
+
+                    const memberName = circle.members.find(m => m.id === memberDeviceId)?.name || 'Membre';
+                    await supabase.from('circle_activities').insert({
+                        circle_id: circleId,
+                        member_device_id: state.myDeviceId,
+                        member_name: state.myName || 'Admin',
+                        type: 'join',
+                        message: `${memberName} a été retiré du cercle`,
+                    });
+
+                    set((s) => ({
+                        myCircles: s.myCircles.map(c =>
+                            c.id === circleId
+                                ? { ...c, members: c.members.filter(m => m.id !== memberDeviceId) }
+                                : c
+                        ),
+                    }));
+                } catch (err) {
+                    console.error('removeMember error:', err);
                 }
             },
 
@@ -396,6 +434,7 @@ export const useCircleStore = create<CircleState>()(
                             goal: c.goal,
                             totalPages: c.total_pages,
                             inviteCode: c.invite_code,
+                            creatorId: c.creator_device_id || '',
                             members: (members || []).map(m => ({
                                 id: m.device_id,
                                 name: m.name,
@@ -499,6 +538,7 @@ export const useCircleStore = create<CircleState>()(
                         goal: c.goal,
                         totalPages: c.total_pages,
                         inviteCode: c.invite_code,
+                        creatorId: c.creator_device_id || '',
                         members: (members || []).map(m => ({
                             id: m.device_id,
                             name: m.name,

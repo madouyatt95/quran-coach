@@ -828,3 +828,21 @@
 .spinning {
     animation: spin 1s linear infinite;
 }
+
+/* ── Remove Member Button ── */
+.circle-remove-btn {
+    background: rgba(244, 67, 54, 0.08);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+    border-radius: 6px;
+    padding: 4px;
+    color: #e57373;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-left: 4px;
+}
+
+.circle-remove-btn:active {
+    background: rgba(244, 67, 54, 0.2);
+    transform: scale(0.9);
+}
