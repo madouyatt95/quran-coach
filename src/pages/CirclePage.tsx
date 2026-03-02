@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Plus, Users, BookOpen, Trophy, Copy, Check, LogOut, Clock, Sparkles } from 'lucide-react';
 import { useCircleStore, MEMBER_EMOJIS, type ReadingCircle } from '../stores/circleStore';
@@ -45,19 +45,27 @@ export function CirclePage() {
     const [profileEmoji, setProfileEmoji] = useState(store.myEmoji);
 
     const activeCircle = activeCircleId ? store.getCircle(activeCircleId) : null;
+    const myId = store.myDeviceId;
 
-    const handleCreate = useCallback(() => {
+    // Refresh from Supabase on mount
+    useEffect(() => {
+        store.refreshCircles();
+    }, []);
+
+    const handleCreate = useCallback(async () => {
         if (!newName.trim()) return;
         if (!store.myName) {
             store.setProfile(profileName || 'Anonyme', profileEmoji);
         }
-        const circle = store.createCircle(newName.trim(), newEmoji, newGoal);
-        setActiveCircleId(circle.id);
-        setView('detail');
-        setNewName('');
+        const circle = await store.createCircle(newName.trim(), newEmoji, newGoal);
+        if (circle) {
+            setActiveCircleId(circle.id);
+            setView('detail');
+            setNewName('');
+        }
     }, [newName, newEmoji, newGoal, store, profileName, profileEmoji]);
 
-    const handleJoin = useCallback(() => {
+    const handleJoin = useCallback(async () => {
         if (joinCode.length < 4) {
             setJoinError('Code trop court');
             return;
@@ -65,15 +73,15 @@ export function CirclePage() {
         if (!store.myName) {
             store.setProfile(profileName || 'Anonyme', profileEmoji);
         }
-        const success = store.joinCircle(joinCode.toUpperCase());
-        if (success) {
+        const result = await store.joinCircle(joinCode.toUpperCase());
+        if (result.success) {
             const lastCircle = store.myCircles[store.myCircles.length - 1];
             setActiveCircleId(lastCircle.id);
             setView('detail');
             setJoinCode('');
             setJoinError('');
         } else {
-            setJoinError('Cercle déjà rejoint ou code invalide');
+            setJoinError(result.error || 'Erreur inconnue');
         }
     }, [joinCode, store, profileName, profileEmoji]);
 
@@ -83,10 +91,10 @@ export function CirclePage() {
         setTimeout(() => setCopied(false), 2000);
     }, []);
 
-    const handleLogPages = useCallback(() => {
+    const handleLogPages = useCallback(async () => {
         const pages = parseInt(pagesToLog);
         if (!pages || pages < 1 || !activeCircleId) return;
-        store.logPages(activeCircleId, pages);
+        await store.logPages(activeCircleId, pages);
         setPagesToLog('');
     }, [pagesToLog, activeCircleId, store]);
 
@@ -100,7 +108,7 @@ export function CirclePage() {
     if (view === 'detail' && activeCircle) {
         const totalGroupPages = activeCircle.members.reduce((s, m) => s + m.pagesRead, 0);
         const progressPercent = Math.min((totalGroupPages / activeCircle.totalPages) * 100, 100);
-        const myPages = activeCircle.members.find(m => m.id === 'me')?.pagesRead || 0;
+        const myPages = activeCircle.members.find(m => m.id === myId)?.pagesRead || 0;
 
         return (
             <div className="circle-page">
@@ -175,11 +183,11 @@ export function CirclePage() {
                         {activeCircle.members
                             .sort((a, b) => b.pagesRead - a.pagesRead)
                             .map((m, i) => (
-                                <div key={m.id} className={`circle-member ${m.id === 'me' ? 'circle-member--me' : ''}`}>
+                                <div key={m.id} className={`circle-member ${m.id === myId ? 'circle-member--me' : ''}`}>
                                     <span className="circle-member-rank">{i + 1}</span>
                                     <span className="circle-member-emoji">{m.emoji}</span>
                                     <div className="circle-member-info">
-                                        <span className="circle-member-name">{m.name} {m.id === 'me' ? '(moi)' : ''}</span>
+                                        <span className="circle-member-name">{m.name} {m.id === myId ? '(moi)' : ''}</span>
                                         <span className="circle-member-pages">{m.pagesRead} pages</span>
                                     </div>
                                     <div className="circle-member-bar">
@@ -210,7 +218,7 @@ export function CirclePage() {
                 </div>
 
                 {/* Leave */}
-                <button className="circle-leave-btn" onClick={() => { store.leaveCircle(activeCircle.id); setView('list'); }}>
+                <button className="circle-leave-btn" onClick={async () => { await store.leaveCircle(activeCircle.id); setView('list'); }}>
                     <LogOut size={16} />
                     <span>Quitter le cercle</span>
                 </button>
