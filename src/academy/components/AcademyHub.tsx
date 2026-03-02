@@ -265,13 +265,13 @@ export function AcademyHub() {
                             />
                         )}
                         {section.title && <h3 className="academy-lesson__section-title">{section.title}</h3>}
-                        {section.body && <div className="academy-lesson__body">{section.body}</div>}
+                        {section.body && <div className="academy-lesson__body">{section.body.split('\n').map((line, i) => <span key={i}>{line}{i < section.body!.split('\n').length - 1 && <br />}</span>)}</div>}
 
                         {section.arabic && (
                             <div className="academy-lesson__arabic-block">
-                                <div className="academy-lesson__arabic">{section.arabic}</div>
+                                <div className="academy-lesson__arabic">{section.arabic.split('\n').map((line, i) => <span key={i}>{line}{i < section.arabic!.split('\n').length - 1 && <br />}</span>)}</div>
                                 {section.phonetic && (
-                                    <div className="academy-lesson__phonetic">{section.phonetic}</div>
+                                    <div className="academy-lesson__phonetic">{section.phonetic.split('\n').map((line, i) => <span key={i}>{line}{i < section.phonetic!.split('\n').length - 1 && <br />}</span>)}</div>
                                 )}
                                 <button
                                     className="academy-lesson__audio-btn"
