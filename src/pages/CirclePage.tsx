@@ -20,6 +20,17 @@ const CIRCLE_GOALS = [
     'Lire le Tafsir ensemble',
     'Lecture libre',
 ];
+// ─── Quick-Add Button Configs by Goal ─────────────
+function getQuickAddButtons(goal: string): { label: string; pages: number }[] {
+    if (goal.includes('Juz par semaine')) return [{ label: '½ Juz', pages: 10 }, { label: '1 Juz', pages: 20 }];
+    if (goal.includes('1 page par jour')) return [{ label: 'page', pages: 1 }];
+    if (goal.includes('5 pages par jour')) return [{ label: 'pages', pages: 5 }];
+    if (goal.includes('Hizb')) return [{ label: 'Hizb', pages: 10 }, { label: '2 Hizb', pages: 20 }];
+    if (goal.includes('Mémorisation')) return [{ label: 'page', pages: 1 }, { label: '2p', pages: 2 }];
+    if (goal.includes('Tafsir')) return [{ label: 'section', pages: 1 }, { label: 'sourate', pages: 3 }];
+    // Default (Khatm, Lecture libre, etc.)
+    return [{ label: 'page', pages: 1 }, { label: 'pages', pages: 5 }, { label: 'pages', pages: 10 }];
+}
 
 // ─── Auto Sync from Khatm ─────────────────────────────────
 function AutoSyncButton({ circleId, myPages }: { circleId: string; myPages: number }) {
@@ -100,6 +111,13 @@ export function CirclePage() {
         store.refreshCircles();
     }, []);
 
+    // Feature 2: Subscribe to realtime updates when viewing a circle
+    useEffect(() => {
+        if (!activeCircleId) return;
+        const unsubscribe = store.subscribeToCircle(activeCircleId);
+        return unsubscribe;
+    }, [activeCircleId]);
+
     const handleCreate = useCallback(async () => {
         if (!newName.trim()) return;
         if (!store.myName) {
@@ -157,6 +175,32 @@ export function CirclePage() {
         const progressPercent = Math.min((totalGroupPages / activeCircle.totalPages) * 100, 100);
         const myPages = activeCircle.members.find(m => m.id === myId)?.pagesRead || 0;
 
+        // ── Feature 3: Countdown for timed goals ──
+        const goalMatch = activeCircle.goal.match(/(\d+)\s*jours/i);
+        const goalDays = goalMatch ? parseInt(goalMatch[1]) : 0;
+        const daysSinceCreation = Math.floor((Date.now() - activeCircle.createdAt) / 86400000);
+        const daysRemaining = goalDays > 0 ? Math.max(0, goalDays - daysSinceCreation) : 0;
+        const timeProgressPercent = goalDays > 0 ? Math.min((daysSinceCreation / goalDays) * 100, 100) : 0;
+
+        // ── Feature 4: Circle streak ──
+        const activityDays = new Set(
+            activeCircle.activities
+                .filter(a => a.type === 'pages')
+                .map(a => new Date(a.timestamp).toDateString())
+        );
+        const today = new Date();
+        let streak = 0;
+        for (let i = 0; i < 365; i++) {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            if (activityDays.has(d.toDateString())) {
+                streak++;
+            } else if (i > 0) break;
+        }
+
+        // ── Feature 1: Quick-add buttons config ──
+        const quickAddButtons = getQuickAddButtons(activeCircle.goal);
+
         return (
             <div className="circle-page">
                 <div className="circle-detail-header">
@@ -170,9 +214,13 @@ export function CirclePage() {
                             <span className="circle-detail-goal">{activeCircle.goal}</span>
                         </div>
                     </div>
+                    {/* Refresh button */}
+                    <button className="circle-refresh-btn" onClick={() => store.refreshSingleCircle(activeCircle.id)} title="Actualiser">
+                        <RefreshCw size={16} />
+                    </button>
                 </div>
 
-                {/* Invite Code */}
+                {/* ── Feature 11 & 12: Invite Code + WhatsApp + QR ── */}
                 <div className="circle-invite-box">
                     <span className="circle-invite-label">Code d'invitation</span>
                     <div className="circle-invite-code">
@@ -181,9 +229,43 @@ export function CirclePage() {
                             {copied ? <Check size={16} /> : <Copy size={16} />}
                         </button>
                     </div>
+                    <div className="circle-share-actions">
+                        <button
+                            className="circle-share-btn circle-share-btn--whatsapp"
+                            onClick={() => {
+                                const text = `📖 Rejoins mon cercle de lecture "${activeCircle.name}" sur Quran Coach !\n\nCode : ${activeCircle.inviteCode}\n\n🔗 https://quran-coach.vercel.app/cercle`;
+                                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                            }}
+                        >
+                            <span style={{ fontSize: '1.1rem' }}>📱</span> WhatsApp
+                        </button>
+                        <button
+                            className="circle-share-btn circle-share-btn--qr"
+                            onClick={() => {
+                                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`https://quran-coach.vercel.app/cercle?code=${activeCircle.inviteCode}`)}`;
+                                window.open(qrUrl, '_blank');
+                            }}
+                        >
+                            <span style={{ fontSize: '1.1rem' }}>📷</span> QR Code
+                        </button>
+                    </div>
                 </div>
 
-                {/* Group Progress */}
+                {/* ── Feature 3: Countdown (for timed goals) ── */}
+                {goalDays > 0 && (
+                    <div className="circle-countdown">
+                        <div className="circle-countdown-header">
+                            <Clock size={16} />
+                            <span>{daysRemaining > 0 ? `${daysRemaining} jours restants` : '⏰ Délai dépassé !'}</span>
+                            <span className="circle-countdown-day">Jour {daysSinceCreation + 1}/{goalDays}</span>
+                        </div>
+                        <div className="circle-progress-bar">
+                            <div className="circle-progress-fill circle-progress-fill--time" style={{ width: `${timeProgressPercent}%` }} />
+                        </div>
+                    </div>
+                )}
+
+                {/* Group Progress + Streak */}
                 <div className="circle-progress">
                     <div className="circle-progress-header">
                         <Trophy size={16} />
@@ -195,10 +277,14 @@ export function CirclePage() {
                     </div>
                     <div className="circle-progress-stats">
                         <span>{totalGroupPages} / {activeCircle.totalPages} pages</span>
+                        {/* ── Feature 4: Streak display ── */}
+                        {streak > 0 && (
+                            <span className="circle-streak">🔥 {streak} jour{streak > 1 ? 's' : ''}</span>
+                        )}
                     </div>
                 </div>
 
-                {/* Log Pages */}
+                {/* ── Feature 1: Quick-Add + Log Pages ── */}
                 <div className="circle-log-section">
                     <div className="circle-log-header">
                         <BookOpen size={16} />
@@ -209,19 +295,34 @@ export function CirclePage() {
                     {/* Auto-sync from Quran reader */}
                     <AutoSyncButton circleId={activeCircle.id} myPages={myPages} />
 
+                    {/* Quick-add buttons */}
+                    <div className="circle-quick-add">
+                        {quickAddButtons.map(btn => (
+                            <button
+                                key={btn.label}
+                                className="circle-quick-btn"
+                                onClick={async () => {
+                                    await store.logPages(activeCircle.id, btn.pages);
+                                }}
+                            >
+                                +{btn.pages} {btn.label}
+                            </button>
+                        ))}
+                    </div>
+
                     {/* Manual fallback */}
-                    <div className="circle-log-manual-label" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: '12px 0 6px', textAlign: 'center' }}>ou ajouter manuellement</div>
+                    <div className="circle-log-manual-label" style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', margin: '8px 0 4px', textAlign: 'center' }}>ou saisir un nombre</div>
                     <div className="circle-log-input">
                         <input
                             type="number"
                             min="1"
                             max="30"
-                            placeholder="Nombre de pages..."
+                            placeholder="Pages..."
                             value={pagesToLog}
                             onChange={e => setPagesToLog(e.target.value)}
                         />
                         <button className="circle-log-btn" onClick={handleLogPages} disabled={!pagesToLog}>
-                            <Plus size={16} /> Enregistrer
+                            <Plus size={16} /> OK
                         </button>
                     </div>
                 </div>
@@ -237,7 +338,7 @@ export function CirclePage() {
                             .sort((a, b) => b.pagesRead - a.pagesRead)
                             .map((m, i) => (
                                 <div key={m.id} className={`circle-member ${m.id === myId ? 'circle-member--me' : ''}`}>
-                                    <span className="circle-member-rank">{i + 1}</span>
+                                    <span className="circle-member-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
                                     <span className="circle-member-emoji">{m.emoji}</span>
                                     <div className="circle-member-info">
                                         <span className="circle-member-name">{m.name} {m.id === myId ? '(moi)' : ''}</span>
@@ -251,20 +352,33 @@ export function CirclePage() {
                     </div>
                 </div>
 
-                {/* Activity Feed */}
+                {/* ── Feature 6: Activity Feed with Reactions ── */}
                 <div className="circle-section">
                     <div className="circle-section-title">
                         <Clock size={16} />
                         <span>Activité récente</span>
                     </div>
                     <div className="circle-activities">
-                        {activeCircle.activities.slice(0, 10).map(act => (
+                        {activeCircle.activities.slice(0, 15).map(act => (
                             <div key={act.id} className={`circle-activity circle-activity--${act.type}`}>
                                 <span className="circle-activity-dot" />
                                 <span className="circle-activity-text">{act.message}</span>
                                 <span className="circle-activity-time">
                                     {formatTimeAgo(act.timestamp)}
                                 </span>
+                                {act.type === 'pages' && act.memberId !== myId && (
+                                    <div className="circle-reactions">
+                                        {['🤲', '💪', '⭐'].map(emoji => (
+                                            <button
+                                                key={emoji}
+                                                className="circle-reaction-btn"
+                                                onClick={() => store.reactToActivity(activeCircle.id, act.id, emoji)}
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

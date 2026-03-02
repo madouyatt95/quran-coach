@@ -18,7 +18,7 @@ export interface CircleActivity {
     id: string;
     memberId: string;
     memberName: string;
-    type: 'pages' | 'khatm' | 'join' | 'milestone';
+    type: 'pages' | 'khatm' | 'join' | 'milestone' | 'reaction';
     message: string;
     timestamp: number;
 }
@@ -49,7 +49,10 @@ interface CircleState {
     joinCircle: (inviteCode: string) => Promise<{ success: boolean; error?: string; circleId?: string }>;
     leaveCircle: (circleId: string) => Promise<void>;
     logPages: (circleId: string, pages: number) => Promise<void>;
+    reactToActivity: (circleId: string, activityId: string, emoji: string) => Promise<void>;
     refreshCircles: () => Promise<void>;
+    refreshSingleCircle: (circleId: string) => Promise<void>;
+    subscribeToCircle: (circleId: string) => () => void;
     getCircle: (circleId: string) => ReadingCircle | undefined;
 }
 
@@ -421,6 +424,135 @@ export const useCircleStore = create<CircleState>()(
 
             getCircle: (circleId) => {
                 return get().myCircles.find(c => c.id === circleId);
+            },
+
+            reactToActivity: async (circleId, activityId, emoji) => {
+                const state = get();
+                const memberName = state.myName || 'Anonyme';
+
+                try {
+                    // Get the activity we're reacting to
+                    const circle = state.myCircles.find(c => c.id === circleId);
+                    const activity = circle?.activities.find(a => a.id === activityId);
+                    if (!activity) return;
+
+                    const message = `${emoji} ${memberName} → ${activity.memberName}`;
+
+                    await supabase.from('circle_activities').insert({
+                        circle_id: circleId,
+                        member_device_id: state.myDeviceId,
+                        member_name: memberName,
+                        type: 'reaction',
+                        message,
+                    });
+
+                    // Update local
+                    const newActivity: CircleActivity = {
+                        id: crypto.randomUUID?.() || Date.now().toString(),
+                        memberId: state.myDeviceId,
+                        memberName,
+                        type: 'reaction',
+                        message,
+                        timestamp: Date.now(),
+                    };
+
+                    set((s) => ({
+                        myCircles: s.myCircles.map(c =>
+                            c.id === circleId
+                                ? { ...c, activities: [newActivity, ...c.activities].slice(0, 50) }
+                                : c
+                        ),
+                    }));
+                } catch (err) {
+                    console.error('reactToActivity error:', err);
+                }
+            },
+
+            refreshSingleCircle: async (circleId) => {
+                try {
+                    const { data: c } = await supabase
+                        .from('reading_circles')
+                        .select('*')
+                        .eq('id', circleId)
+                        .single();
+
+                    if (!c) return;
+
+                    const { data: members } = await supabase
+                        .from('circle_members')
+                        .select('*')
+                        .eq('circle_id', c.id)
+                        .order('joined_at', { ascending: true });
+
+                    const { data: activities } = await supabase
+                        .from('circle_activities')
+                        .select('*')
+                        .eq('circle_id', c.id)
+                        .order('created_at', { ascending: false })
+                        .limit(50);
+
+                    const updated: ReadingCircle = {
+                        id: c.id,
+                        name: c.name,
+                        emoji: c.emoji,
+                        createdAt: new Date(c.created_at).getTime(),
+                        goal: c.goal,
+                        totalPages: c.total_pages,
+                        inviteCode: c.invite_code,
+                        members: (members || []).map(m => ({
+                            id: m.device_id,
+                            name: m.name,
+                            emoji: m.emoji,
+                            joinedAt: new Date(m.joined_at).getTime(),
+                            pagesRead: m.pages_read,
+                            lastActivity: m.last_activity ? new Date(m.last_activity).getTime() : undefined,
+                        })),
+                        activities: (activities || []).map(a => ({
+                            id: a.id,
+                            memberId: a.member_device_id,
+                            memberName: a.member_name,
+                            type: a.type,
+                            message: a.message,
+                            timestamp: new Date(a.created_at).getTime(),
+                        })),
+                    };
+
+                    set((s) => ({
+                        myCircles: s.myCircles.map(existing =>
+                            existing.id === circleId ? updated : existing
+                        ),
+                    }));
+                } catch (err) {
+                    console.error('refreshSingleCircle error:', err);
+                }
+            },
+
+            subscribeToCircle: (circleId) => {
+                const channel = supabase
+                    .channel(`circle-${circleId}`)
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'circle_activities',
+                        filter: `circle_id=eq.${circleId}`,
+                    }, () => {
+                        // Auto-refresh when any activity is added
+                        get().refreshSingleCircle(circleId);
+                    })
+                    .on('postgres_changes', {
+                        event: '*',
+                        schema: 'public',
+                        table: 'circle_members',
+                        filter: `circle_id=eq.${circleId}`,
+                    }, () => {
+                        get().refreshSingleCircle(circleId);
+                    })
+                    .subscribe();
+
+                // Return cleanup function
+                return () => {
+                    supabase.removeChannel(channel);
+                };
             },
         }),
         { name: 'circle-store' }

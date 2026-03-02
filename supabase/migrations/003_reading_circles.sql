@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS circle_activities (
     circle_id UUID NOT NULL REFERENCES reading_circles(id) ON DELETE CASCADE,
     member_device_id TEXT NOT NULL,
     member_name TEXT NOT NULL,
-    type TEXT NOT NULL CHECK (type IN ('pages', 'khatm', 'join', 'milestone')),
+    type TEXT NOT NULL CHECK (type IN ('pages', 'khatm', 'join', 'milestone', 'reaction')),
     message TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
