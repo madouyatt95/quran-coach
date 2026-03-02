@@ -8,6 +8,13 @@ export interface ModuleProgress {
     completed: boolean;
     score: number; // 0-100
     completedAt?: number;
+    // Feature 1: Saved position for resume
+    lastContentIdx?: number;
+    lastSectionIdx?: number;
+    lastVisitedAt?: number;
+    // Feature 3: Spaced repetition
+    reviewDue?: number; // timestamp when review is due
+    reviewCount?: number;
 }
 
 interface AcademyState {
@@ -21,6 +28,11 @@ interface AcademyState {
     unlockModule: (moduleId: string) => void;
     setCurrentModule: (moduleId: string | null) => void;
     resetProgress: () => void;
+    // Feature 1: Save & resume position
+    savePosition: (moduleId: string, contentIdx: number, sectionIdx: number) => void;
+    // Feature 3: Spaced repetition
+    markReviewed: (moduleId: string) => void;
+    getModulesForReview: () => string[];
 }
 
 // Initial unlocked modules (Level 1 = fully open, Level 2 = locked until prerequisites)
@@ -32,9 +44,12 @@ const INITIAL_UNLOCKED = [
     'sourates-courtes',
 ];
 
+// Spaced repetition intervals (in days): 1, 3, 7, 14, 30
+const REVIEW_INTERVALS = [1, 3, 7, 14, 30];
+
 export const useAcademyStore = create<AcademyState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             currentModule: null,
             progress: {},
             unlockedModules: INITIAL_UNLOCKED,
@@ -42,10 +57,18 @@ export const useAcademyStore = create<AcademyState>()(
 
             completeModule: (moduleId, score) => set((state) => {
                 const progress = { ...state.progress };
+                const existing = progress[moduleId];
                 progress[moduleId] = {
                     completed: true,
                     score,
                     completedAt: Date.now(),
+                    // Feature 3: Schedule first review in 1 day
+                    reviewDue: Date.now() + 86400000,
+                    reviewCount: 0,
+                    // Clear saved position
+                    lastContentIdx: undefined,
+                    lastSectionIdx: undefined,
+                    lastVisitedAt: existing?.lastVisitedAt,
                 };
 
                 // Auto-unlock next modules based on module map
@@ -78,23 +101,56 @@ export const useAcademyStore = create<AcademyState>()(
                 totalXp: 0,
                 currentModule: null,
             }),
+
+            // Feature 1: Save position for resume
+            savePosition: (moduleId, contentIdx, sectionIdx) => set((state) => {
+                const progress = { ...state.progress };
+                progress[moduleId] = {
+                    ...(progress[moduleId] || { completed: false, score: 0 }),
+                    lastContentIdx: contentIdx,
+                    lastSectionIdx: sectionIdx,
+                    lastVisitedAt: Date.now(),
+                };
+                return { progress };
+            }),
+
+            // Feature 3: Mark as reviewed (schedule next review)
+            markReviewed: (moduleId) => set((state) => {
+                const progress = { ...state.progress };
+                const p = progress[moduleId];
+                if (!p) return state;
+                const count = (p.reviewCount || 0) + 1;
+                const intervalDays = REVIEW_INTERVALS[Math.min(count, REVIEW_INTERVALS.length - 1)];
+                progress[moduleId] = {
+                    ...p,
+                    reviewCount: count,
+                    reviewDue: Date.now() + intervalDays * 86400000,
+                };
+                return { progress };
+            }),
+
+            // Feature 3: Get modules due for review
+            getModulesForReview: () => {
+                const { progress } = get();
+                const now = Date.now();
+                return Object.entries(progress)
+                    .filter(([, p]) => p.completed && p.reviewDue && p.reviewDue <= now)
+                    .map(([id]) => id);
+            },
         }),
         {
             name: 'academy-store',
-            version: 1,
+            version: 2,
             migrate: (persistedState: any, version: number) => {
-                if (version === 0) {
-                    // Update unlocked modules for existing users to reflect the split
+                if (version < 1) {
                     const unlocked = new Set<string>(persistedState.unlockedModules || []);
                     unlocked.add('wudu-fondamental');
                     unlocked.add('priere-pas-a-pas');
                     unlocked.delete('premiere-priere');
-
-                    // Always make sure initial unlocked are present
                     INITIAL_UNLOCKED.forEach(id => unlocked.add(id));
-
                     persistedState.unlockedModules = Array.from(unlocked);
                 }
+                // v1 → v2: no breaking changes, just new optional fields
                 return persistedState;
             }
         }

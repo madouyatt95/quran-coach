@@ -728,3 +728,189 @@
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.7);
 }
+
+/* ─── Feature 8: Search ─────────── */
+.academy-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 20px 12px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.academy-search input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: #e8e4da;
+    font-size: 0.85rem;
+}
+
+.academy-search input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.academy-search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 20px 16px;
+}
+
+.academy-search-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #e8e4da;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.academy-search-item:active {
+    transform: scale(0.98);
+}
+
+.academy-search-item span {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.academy-search-item div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.academy-search-item strong {
+    font-size: 0.85rem;
+}
+
+.academy-search-item small {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.academy-search-empty {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+    padding: 16px;
+}
+
+/* ─── Feature 3: Review Banner ──── */
+.academy-review-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 20px 12px;
+    padding: 12px 14px;
+    background: rgba(255, 152, 0, 0.08);
+    border: 1px solid rgba(255, 152, 0, 0.2);
+    border-radius: 12px;
+}
+
+.academy-review-banner svg {
+    color: #FF9800;
+    flex-shrink: 0;
+}
+
+.academy-review-banner div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.academy-review-banner strong {
+    font-size: 0.8rem;
+    color: #FF9800;
+}
+
+.academy-review-banner small {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.academy-review-banner button {
+    padding: 6px 14px;
+    background: rgba(255, 152, 0, 0.15);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-radius: 8px;
+    color: #FF9800;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ─── Feature 1: Resume Badge ───── */
+.academy-module-card__resume {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #81C784;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 8px;
+}
+
+/* ─── Feature 3: Review Badge ───── */
+.academy-module-card__review {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 152, 0, 0.15);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    color: #FF9800;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 8px;
+}
+
+/* ─── Feature 7: Tajwid Practice ── */
+.academy-tajwid-practice-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 40px);
+    margin: 0 20px 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), rgba(103, 58, 183, 0.1));
+    border: 1px solid rgba(156, 39, 176, 0.2);
+    border-radius: 14px;
+    color: #CE93D8;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.academy-tajwid-practice-btn:active {
+    transform: scale(0.97);
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(103, 58, 183, 0.15));
+}
+
+/* Ensure module cards are positioned for badges */
+.academy-module-card {
+    position: relative;
+}

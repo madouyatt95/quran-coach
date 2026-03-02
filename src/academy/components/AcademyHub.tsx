@@ -1,7 +1,7 @@
 // ─── Academy Hub — Premium Redesign ──────────────────────
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, CheckCircle, Trophy, Volume2, BookOpen, ArrowRight } from 'lucide-react';
+import { ChevronLeft, CheckCircle, Trophy, Volume2, BookOpen, ArrowRight, Search, RotateCcw } from 'lucide-react';
 import { useAcademyStore } from '../../stores/academyStore';
 import { LEVEL_1_FONDATIONS } from '../data/level1-fondations';
 import { LEVEL_2_PRATIQUE } from '../data/level2-pratique';
@@ -99,6 +99,12 @@ export function AcademyHub() {
     const [quizTotal, setQuizTotal] = useState(0);
     const [showResult, setShowResult] = useState(false);
     const [showTajweed, setShowTajweed] = useState(false);
+    // Feature 8: Search
+    const [searchQuery, setSearchQuery] = useState('');
+    // Feature 7: Tajwid practice mode
+    const [tajwidPractice, setTajwidPractice] = useState(false);
+    const [tajwidAnswer, setTajwidAnswer] = useState<number | null>(null);
+    const [tajwidIdx, setTajwidIdx] = useState(0);
 
     const currentContent = activeModule?.content[contentIdx] ?? null;
 
@@ -131,34 +137,46 @@ export function AcademyHub() {
     const startModule = useCallback((mod: AcademyModule) => {
         if (!isModuleUnlocked(mod.id)) return;
         setActiveModule(mod);
-        setContentIdx(0);
-        setSectionIdx(0);
+        // Feature 1: Resume from saved position
+        const saved = store.progress[mod.id];
+        if (saved?.lastContentIdx !== undefined && !saved.completed) {
+            setContentIdx(saved.lastContentIdx);
+            setSectionIdx(saved.lastSectionIdx ?? 0);
+        } else {
+            setContentIdx(0);
+            setSectionIdx(0);
+        }
         setQuizIdx(0);
         setQuizAnswer(null);
         setQuizCorrect(0);
         setQuizTotal(0);
         setShowResult(false);
         setShowTajweed(false);
-    }, [isModuleUnlocked]);
+        setTajwidPractice(false);
+        setTajwidAnswer(null);
+    }, [isModuleUnlocked, store.progress]);
 
+    // Feature 1: Save position on navigation
     const nextSection = useCallback(() => {
         if (!currentContent || currentContent.type !== 'lesson') return;
         const lesson = currentContent as AcademyLesson;
         if (sectionIdx < lesson.sections.length - 1) {
-            setSectionIdx(s => s + 1);
+            const newIdx = sectionIdx + 1;
+            setSectionIdx(newIdx);
+            if (activeModule) store.savePosition(activeModule.id, contentIdx, newIdx);
         } else {
-            // Move to next content block
             if (activeModule && contentIdx < activeModule.content.length - 1) {
-                setContentIdx(c => c + 1);
+                const newContentIdx = contentIdx + 1;
+                setContentIdx(newContentIdx);
                 setSectionIdx(0);
                 setQuizIdx(0);
                 setQuizAnswer(null);
+                if (activeModule) store.savePosition(activeModule.id, newContentIdx, 0);
             } else {
-                // Module complete
                 finishModule();
             }
         }
-    }, [currentContent, sectionIdx, contentIdx, activeModule]);
+    }, [currentContent, sectionIdx, contentIdx, activeModule, store]);
 
     const prevSection = useCallback(() => {
         if (sectionIdx > 0) {
@@ -207,6 +225,90 @@ export function AcademyHub() {
     }, [quizCorrect, quizTotal]);
 
     const passed = finalScore >= 80;
+
+    // Feature 8: Filtered modules for search
+    const allModules = useMemo(() => LEVELS.flatMap(l => l.modules), []);
+    const searchResults = useMemo(() => {
+        if (!searchQuery.trim()) return [];
+        const q = searchQuery.toLowerCase();
+        return allModules.filter(m =>
+            m.title.toLowerCase().includes(q) ||
+            m.description.toLowerCase().includes(q) ||
+            m.titleAr.includes(q) ||
+            m.content.some(c => c.title.toLowerCase().includes(q))
+        );
+    }, [searchQuery, allModules]);
+
+    // Feature 3: Modules due for review
+    const reviewModuleIds = store.getModulesForReview();
+    const reviewModules = useMemo(() =>
+        allModules.filter(m => reviewModuleIds.includes(m.id)),
+        [reviewModuleIds, allModules]);
+
+    // Feature 7: Tajwid practice data
+    const TAJWID_EXERCISES = useMemo(() => [
+        { verse: 'مِن بَعْدِ', rule: 'Iqlab', options: ['Idgham', 'Iqlab', 'Ikhfa', 'Izhar'], answer: 1, explanation: 'Nun sakin (ن) avant Baa (ب) → Iqlab : le nun se transforme en Mim (م).' },
+        { verse: 'مِن يَعْمَلْ', rule: 'Idgham bi ghunna', options: ['Izhar', 'Ikhfa', 'Idgham bi ghunna', 'Iqlab'], answer: 2, explanation: 'Nun sakin suivie de Ya (ي) → Idgham avec ghunna (nasalisation).' },
+        { verse: 'مَن رَّبُّكَ', rule: 'Idgham bila ghunna', options: ['Idgham bila ghunna', 'Ikhfa', 'Izhar', 'Qalqalah'], answer: 0, explanation: 'Nun sakin suivie de Ra (ر) → Idgham sans ghunna.' },
+        { verse: 'مِنْ خَيْرٍ', rule: 'Izhar', options: ['Ikhfa', 'Iqlab', 'Idgham', 'Izhar'], answer: 3, explanation: 'Nun sakin suivie de Kha (خ) → Izhar : prononciation claire du nun.' },
+        { verse: 'أَنزَلْنَا', rule: 'Ikhfa', options: ['Ikhfa', 'Idgham', 'Izhar', 'Iqlab'], answer: 0, explanation: 'Nun sakin suivie de Za (ز) → Ikhfa : dissimulation partielle.' },
+        { verse: 'قُلْ هُوَ', rule: 'Qalqalah', options: ['Madd', 'Ghunna', 'Qalqalah', 'Izhar'], answer: 2, explanation: 'Lam (ل) avec sukun → Qalqalah : rebond dans la prononciation.' },
+    ], []);
+
+    // ─── RENDER: Tajwid Practice Mode ────────────────────
+    if (tajwidPractice) {
+        const ex = TAJWID_EXERCISES[tajwidIdx];
+        return (
+            <div className="academy-hub">
+                <div className="academy-quiz">
+                    <div className="academy-quiz__header">
+                        <button onClick={() => setTajwidPractice(false)}><ChevronLeft size={20} /></button>
+                        <h2>🎯 Pratique Tajwid</h2>
+                        <span className="academy-quiz__counter">{tajwidIdx + 1}/{TAJWID_EXERCISES.length}</span>
+                    </div>
+
+                    <div className="academy-lesson__arabic-block" style={{ margin: '20px 0' }}>
+                        <div className="academy-lesson__arabic" style={{ fontSize: '2rem' }}>{ex.verse}</div>
+                    </div>
+
+                    <p className="academy-quiz__question">Quelle règle de Tajwid s'applique ici ?</p>
+
+                    <div className="academy-quiz__options">
+                        {ex.options.map((opt, i) => {
+                            let cls = 'academy-quiz__option';
+                            if (tajwidAnswer !== null) {
+                                if (i === ex.answer) cls += ' correct';
+                                else if (i === tajwidAnswer) cls += ' wrong';
+                            }
+                            return (
+                                <button key={i} className={cls} onClick={() => setTajwidAnswer(i)} disabled={tajwidAnswer !== null}>
+                                    {opt}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {tajwidAnswer !== null && (
+                        <>
+                            <div className="academy-quiz__explanation">
+                                {tajwidAnswer === ex.answer ? '✅ ' : '❌ '}{ex.explanation}
+                            </div>
+                            <button className="academy-quiz__next-btn" onClick={() => {
+                                if (tajwidIdx < TAJWID_EXERCISES.length - 1) {
+                                    setTajwidIdx(i => i + 1);
+                                    setTajwidAnswer(null);
+                                } else {
+                                    setTajwidPractice(false);
+                                }
+                            }}>
+                                {tajwidIdx === TAJWID_EXERCISES.length - 1 ? 'Terminer' : 'Suivant →'}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     // ─── RENDER: Result Screen ───────────────────────────
     if (showResult && activeModule) {
@@ -411,6 +513,8 @@ export function AcademyHub() {
                         const completed = store.progress[mod.id]?.completed;
                         const score = store.progress[mod.id]?.score ?? 0;
                         const progress = getModuleProgress(mod);
+                        const hasSavedPos = !completed && store.progress[mod.id]?.lastContentIdx !== undefined;
+                        const isReviewDue = reviewModuleIds.includes(mod.id);
 
                         return (
                             <div
@@ -444,6 +548,16 @@ export function AcademyHub() {
                                         <CheckCircle size={22} />
                                     </div>
                                 )}
+                                {/* Feature 1: Resume badge */}
+                                {hasSavedPos && (
+                                    <div className="academy-module-card__resume">▶ Reprendre</div>
+                                )}
+                                {/* Feature 3: Review due badge */}
+                                {isReviewDue && (
+                                    <div className="academy-module-card__review">
+                                        <RotateCcw size={12} /> Réviser
+                                    </div>
+                                )}
                                 {!completed && unlocked && progress > 0 && (
                                     <div className="academy-module-card__progress">
                                         <div className="academy-module-card__progress-fill" style={{ width: `${progress}%` }} />
@@ -466,6 +580,54 @@ export function AcademyHub() {
                 </button>
                 <h1>📚 Académie</h1>
             </header>
+
+            {/* Feature 8: Search Bar */}
+            <div className="academy-search">
+                <Search size={16} />
+                <input
+                    type="text"
+                    placeholder="Rechercher un cours..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                />
+            </div>
+
+            {/* Feature 8: Search Results */}
+            {searchQuery.trim() && (
+                <div className="academy-search-results">
+                    {searchResults.length === 0 && <p className="academy-search-empty">Aucun résultat pour "{searchQuery}"</p>}
+                    {searchResults.map(mod => (
+                        <button key={mod.id} className="academy-search-item" onClick={() => { setSearchQuery(''); startModule(mod); }}>
+                            <span>{mod.icon}</span>
+                            <div>
+                                <strong>{mod.title}</strong>
+                                <small>{mod.description}</small>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Feature 3: Review Banner */}
+            {!searchQuery.trim() && reviewModules.length > 0 && (
+                <div className="academy-review-banner">
+                    <RotateCcw size={16} />
+                    <div>
+                        <strong>{reviewModules.length} module{reviewModules.length > 1 ? 's' : ''} à réviser</strong>
+                        <small>La révision espacée renforce la mémorisation</small>
+                    </div>
+                    <button onClick={() => { startModule(reviewModules[0]); store.markReviewed(reviewModules[0].id); }}>
+                        Réviser
+                    </button>
+                </div>
+            )}
+
+            {/* Feature 7: Tajwid Practice Button */}
+            {!searchQuery.trim() && (
+                <button className="academy-tajwid-practice-btn" onClick={() => { setTajwidPractice(true); setTajwidIdx(0); setTajwidAnswer(null); }}>
+                    🎯 Mode Pratique Tajwid
+                </button>
+            )}
 
             {/* Overview */}
             <div className="academy-overview">
