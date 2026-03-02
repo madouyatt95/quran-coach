@@ -210,18 +210,42 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
                             title: 'الْحَمْدُ لِلَّهِ — La louange est à Allah',
                             body: '« Al-Hamd » n\'est pas un simple « merci ». C\'est une louange complète qui reconnaît la perfection d\'Allah en toute circonstance — dans le bonheur ET dans l\'épreuve.\n\n« Rabb al-\'Alamin » signifie qu\'Allah est le Seigneur, l\'Éducateur et le Pourvoyeur de TOUS les mondes : les humains, les djinns, les anges, les animaux, les galaxies.',
                             arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
-                            image: '/academy/images/tafsir_ikhlas.png',
                         },
                         {
                             title: 'إِيَّاكَ نَعْبُدُ — C\'est Toi seul que nous adorons',
                             body: 'Ce verset est le cœur d\'Al-Fatiha et de tout l\'Islam (le Tawhid) :\n\n1. **Iyyaka na\'boudou** : Nous n\'adorons que Toi (pas d\'intermédiaire, pas d\'idole).\n2. **Wa iyyaka nasta\'in** : Nous ne demandons l\'aide qu\'à Toi.\n\nAllah a dit dans un Hadith Qudsi : « Cette partie est entre Moi et Mon serviteur, et Mon serviteur aura ce qu\'il demande. »',
                             arabic: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ',
-                            image: '/academy/images/tafsir_falaq.png',
                         },
                         {
                             title: 'اهْدِنَا الصِّرَاطَ — Guide-nous',
                             body: 'La plus grande demande qu\'un être humain puisse faire : la guidance.\n\n• **As-Sirat al-Mustaqim** : Le chemin droit, celui de l\'Islam.\n• **Ceux que Tu as comblés** : Les prophètes, les véridiques, les martyrs, les pieux.\n• **Non pas ceux qui ont encouru Ta colère** : Ceux qui connaissent la vérité mais ne l\'appliquent pas.\n• **Ni des égarés** : Ceux qui se sont écartés du chemin par ignorance.\n\nNous faisons cette invocation au minimum 17 fois par jour (dans les 5 prières obligatoires).',
                             arabic: 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',
+                        },
+                    ],
+                },
+                {
+                    type: 'lesson',
+                    title: 'Tafsir des Sourates Courtes',
+                    sections: [
+                        {
+                            title: 'Sourate Al-Ikhlas (112) — Le Monothéisme Pur',
+                            body: 'Sourate Al-Ikhlas équivaut au tiers du Coran car elle résume le Tawhid (l\'unicité d\'Allah) :\n\n• **Qul huwa Llahu Ahad** : Dis : « Il est Allah, Unique »\n• **Allahu s-Samad** : Allah, Le Seul à être imploré — Il n\'a besoin de rien, tout a besoin de Lui\n• **Lam yalid wa lam yulad** : Il n\'a pas engendré et n\'a pas été engendré\n• **Wa lam yakun lahu kufuwan ahad** : Et nul n\'est égal à Lui',
+                            arabic: 'قُلْ هُوَ اللَّهُ أَحَدٌ\nاللَّهُ الصَّمَدُ\nلَمْ يَلِدْ وَلَمْ يُولَدْ\nوَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',
+                            phonetic: 'Qul huwa Llâhu ahad\nAllâhu s-samad\nLam yalid wa lam yûlad\nWa lam yakun lahu kufuwan ahad',
+                            image: '/academy/images/tafsir_ikhlas.png',
+                        },
+                        {
+                            title: 'Sourate Al-Falaq (113) — L\'Aube Naissante',
+                            body: 'Sourate de protection révélée pour chercher refuge auprès d\'Allah contre 4 maux :\n\n1. Le mal des créatures\n2. L\'obscurité de la nuit\n3. Les sorcières qui soufflent dans les nœuds\n4. L\'envieux quand il envie\n\nLe Prophète ﷺ récitait cette sourate avec An-Nas chaque nuit avant de dormir, en soufflant dans ses mains.',
+                            arabic: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ\nمِن شَرِّ مَا خَلَقَ\nوَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ\nوَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ\nوَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ',
+                            phonetic: 'Qul a\'ûdhu bi Rabbi l-falaq\nMin charri mâ khalaq\nWa min charri ghâsiqin idhâ waqab\nWa min charri n-naffâthâti fî l-\'uqad\nWa min charri hâsidin idhâ hasad',
+                            image: '/academy/images/tafsir_falaq.png',
+                        },
+                        {
+                            title: 'Sourate An-Nas (114) — Les Hommes',
+                            body: 'Dernière sourate du Coran, elle cherche refuge auprès d\'Allah contre le mal le plus dangereux : les chuchotements (waswas) :\n\n• **Rabb an-Nas** : Le Seigneur des hommes\n• **Malik an-Nas** : Le Roi des hommes\n• **Ilah an-Nas** : Le Dieu des hommes\n\nOn cherche refuge contre le « waswâs al-khannâs » — celui qui chuchote puis recule quand on invoque Allah.',
+                            arabic: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ\nمَلِكِ النَّاسِ\nإِلَٰهِ النَّاسِ\nمِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ\nالَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ\nمِنَ الْجِنَّةِ وَالنَّاسِ',
+                            phonetic: 'Qul a\'ûdhu bi Rabbi n-nâs\nMaliki n-nâs\nIlâhi n-nâs\nMin charri l-waswâsi l-khannâs\nAlladhî yuwaswisu fî sudûri n-nâs\nMina l-jinnati wa n-nâs',
                             image: '/academy/images/tafsir_nas.png',
                         },
                     ],
@@ -230,7 +254,7 @@ export const LEVEL_2_PRATIQUE: AcademyLevel = {
                     type: 'lesson',
                     title: 'Vocabulaire Coranique Essentiel',
                     sections: [
-                        { title: 'اللَّه — Allah', body: 'Le Nom propre de Dieu. Il n\'a pas de pluriel ni de féminin. C\'est le Nom le plus utilisé dans le Coran (plus de 2 600 fois).', image: '/academy/images/tafsir_bienfaits.png' },
+                        { title: 'اللَّه — Allah', body: 'Le Nom propre de Dieu. Il n\'a pas de pluriel ni de féminin. C\'est le Nom le plus utilisé dans le Coran (plus de 2 600 fois).' },
                         { title: 'رَبّ — Rabb', body: 'Seigneur, Maître, Éducateur, Pourvoyeur. Ce Nom implique qu\'Allah prend soin de Sa création comme un tuteur avec amour.' },
                         { title: 'تَقْوَى — Taqwa', body: 'Piété, conscience d\'Allah. Littéralement : « se protéger » de la colère d\'Allah en obéissant à Ses commandements.' },
                         { title: 'صَبْر — Sabr', body: 'Patience. Dans le Coran, le Sabr a 3 formes : patience dans l\'obéissance, patience face aux épreuves, patience pour éviter les péchés.' },
