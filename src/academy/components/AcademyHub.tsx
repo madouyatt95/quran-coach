@@ -245,15 +245,46 @@ export function AcademyHub() {
         allModules.filter(m => reviewModuleIds.includes(m.id)),
         [reviewModuleIds, allModules]);
 
-    // Feature 7: Tajwid practice data
-    const TAJWID_EXERCISES = useMemo(() => [
-        { verse: 'مِن بَعْدِ', rule: 'Iqlab', options: ['Idgham', 'Iqlab', 'Ikhfa', 'Izhar'], answer: 1, explanation: 'Nun sakin (ن) avant Baa (ب) → Iqlab : le nun se transforme en Mim (م).' },
-        { verse: 'مِن يَعْمَلْ', rule: 'Idgham bi ghunna', options: ['Izhar', 'Ikhfa', 'Idgham bi ghunna', 'Iqlab'], answer: 2, explanation: 'Nun sakin suivie de Ya (ي) → Idgham avec ghunna (nasalisation).' },
-        { verse: 'مَن رَّبُّكَ', rule: 'Idgham bila ghunna', options: ['Idgham bila ghunna', 'Ikhfa', 'Izhar', 'Qalqalah'], answer: 0, explanation: 'Nun sakin suivie de Ra (ر) → Idgham sans ghunna.' },
-        { verse: 'مِنْ خَيْرٍ', rule: 'Izhar', options: ['Ikhfa', 'Iqlab', 'Idgham', 'Izhar'], answer: 3, explanation: 'Nun sakin suivie de Kha (خ) → Izhar : prononciation claire du nun.' },
-        { verse: 'أَنزَلْنَا', rule: 'Ikhfa', options: ['Ikhfa', 'Idgham', 'Izhar', 'Iqlab'], answer: 0, explanation: 'Nun sakin suivie de Za (ز) → Ikhfa : dissimulation partielle.' },
-        { verse: 'قُلْ هُوَ', rule: 'Qalqalah', options: ['Madd', 'Ghunna', 'Qalqalah', 'Izhar'], answer: 2, explanation: 'Lam (ل) avec sukun → Qalqalah : rebond dans la prononciation.' },
-    ], []);
+    // Feature 7: Tajwid practice data (25 exercises, shuffled)
+    const TAJWID_EXERCISES = useMemo(() => {
+        const all = [
+            // ── Iqlab (3) ──
+            { verse: 'مِن بَعْدِ', rule: 'Iqlab', options: ['Idgham', 'Iqlab', 'Ikhfa', 'Izhar'], answer: 1, explanation: 'Nun sakin (ن) avant Baa (ب) → Iqlab : le nun se transforme en Mim (م).' },
+            { verse: 'أَنبِئْهُمْ', rule: 'Iqlab', options: ['Izhar', 'Iqlab', 'Ikhfa', 'Madd'], answer: 1, explanation: 'Nun sakin suivie de Baa (ب) → Iqlab : transformation en Mim.' },
+            { verse: 'سَمِيعٌ بَصِيرٌ', rule: 'Iqlab', options: ['Qalqalah', 'Ikhfa', 'Iqlab', 'Idgham'], answer: 2, explanation: 'Tanwin suivie de Baa (ب) → Iqlab.' },
+            // ── Idgham avec Ghunna (4) ──
+            { verse: 'مِن يَعْمَلْ', rule: 'Idgham bi ghunna', options: ['Izhar', 'Ikhfa', 'Idgham bi ghunna', 'Iqlab'], answer: 2, explanation: 'Nun sakin suivie de Ya (ي) → Idgham avec ghunna.' },
+            { verse: 'مِن مَّاءٍ', rule: 'Idgham bi ghunna', options: ['Idgham bi ghunna', 'Izhar', 'Ikhfa', 'Iqlab'], answer: 0, explanation: 'Nun sakin suivie de Mim (م) → Idgham avec ghunna.' },
+            { verse: 'مِن وَلِيٍّ', rule: 'Idgham bi ghunna', options: ['Ikhfa', 'Iqlab', 'Izhar', 'Idgham bi ghunna'], answer: 3, explanation: 'Nun sakin suivie de Waw (و) → Idgham avec ghunna.' },
+            { verse: 'مِن نِّعْمَةٍ', rule: 'Idgham bi ghunna', options: ['Idgham bi ghunna', 'Idgham bila ghunna', 'Ikhfa', 'Izhar'], answer: 0, explanation: 'Nun sakin suivie de Nun (ن) → Idgham avec ghunna.' },
+            // ── Idgham sans Ghunna (3) ──
+            { verse: 'مَن رَّبُّكَ', rule: 'Idgham bila ghunna', options: ['Idgham bila ghunna', 'Ikhfa', 'Izhar', 'Qalqalah'], answer: 0, explanation: 'Nun sakin suivie de Ra (ر) → Idgham sans ghunna.' },
+            { verse: 'مِن لَّدُنْهُ', rule: 'Idgham bila ghunna', options: ['Izhar', 'Idgham bila ghunna', 'Iqlab', 'Ikhfa'], answer: 1, explanation: 'Nun sakin suivie de Lam (ل) → Idgham sans ghunna.' },
+            { verse: 'هُدًى لِّلْمُتَّقِينَ', rule: 'Idgham bila ghunna', options: ['Ikhfa', 'Iqlab', 'Idgham bila ghunna', 'Ghunna'], answer: 2, explanation: 'Tanwin suivie de Lam (ل) → Idgham sans ghunna.' },
+            // ── Izhar (4) ──
+            { verse: 'مِنْ خَيْرٍ', rule: 'Izhar', options: ['Ikhfa', 'Iqlab', 'Idgham', 'Izhar'], answer: 3, explanation: 'Nun sakin suivie de Kha (خ) → Izhar : prononciation claire.' },
+            { verse: 'مَنْ آمَنَ', rule: 'Izhar', options: ['Izhar', 'Ikhfa', 'Idgham', 'Iqlab'], answer: 0, explanation: 'Nun sakin suivie de Hamza (أ) → Izhar halqi.' },
+            { verse: 'مِنْ عِلْمٍ', rule: 'Izhar', options: ['Idgham', 'Ikhfa', 'Izhar', 'Madd'], answer: 2, explanation: 'Nun sakin suivie de Ayn (ع) → Izhar halqi.' },
+            { verse: 'أَنْعَمْتَ', rule: 'Izhar', options: ['Iqlab', 'Izhar', 'Ikhfa', 'Idgham'], answer: 1, explanation: 'Nun sakin suivie de Ayn (ع) → Izhar : les 6 lettres de la gorge.' },
+            // ── Ikhfa (4) ──
+            { verse: 'أَنزَلْنَا', rule: 'Ikhfa', options: ['Ikhfa', 'Idgham', 'Izhar', 'Iqlab'], answer: 0, explanation: 'Nun sakin suivie de Za (ز) → Ikhfa : dissimulation partielle.' },
+            { verse: 'مِنْ قَبْلِ', rule: 'Ikhfa', options: ['Izhar', 'Ikhfa', 'Idgham', 'Iqlab'], answer: 1, explanation: 'Nun sakin suivie de Qaf (ق) → Ikhfa.' },
+            { verse: 'عَنْكَ', rule: 'Ikhfa', options: ['Ikhfa', 'Izhar', 'Iqlab', 'Idgham'], answer: 0, explanation: 'Nun sakin suivie de Kaf (ك) → Ikhfa.' },
+            { verse: 'أَنْتُمْ', rule: 'Ikhfa', options: ['Idgham', 'Izhar', 'Iqlab', 'Ikhfa'], answer: 3, explanation: 'Nun sakin suivie de Ta (ت) → Ikhfa : entre Izhar et Idgham.' },
+            // ── Qalqalah (3) ──
+            { verse: 'قُلْ هُوَ', rule: 'Qalqalah', options: ['Madd', 'Ghunna', 'Qalqalah', 'Izhar'], answer: 2, explanation: 'Les 5 lettres de Qalqalah : ق ط ب ج د. Ici Qaf avec sukun.' },
+            { verse: 'لَمْ يَلِدْ', rule: 'Qalqalah', options: ['Qalqalah', 'Ikhfa', 'Izhar', 'Idgham'], answer: 0, explanation: 'Dal (د) avec sukun en fin de verset → Qalqalah kubra.' },
+            { verse: 'يَجْعَلُون', rule: 'Qalqalah', options: ['Ghunna', 'Madd', 'Izhar', 'Qalqalah'], answer: 3, explanation: 'Jim (ج) avec sukun → Qalqalah sughra (au milieu du mot).' },
+            // ── Ghunna (2) ──
+            { verse: 'إِنَّ', rule: 'Ghunna', options: ['Ghunna', 'Izhar', 'Ikhfa', 'Qalqalah'], answer: 0, explanation: 'Nun mushaddada (نّ) → Ghunna obligatoire de 2 temps.' },
+            { verse: 'ثُمَّ', rule: 'Ghunna', options: ['Madd', 'Ghunna', 'Qalqalah', 'Izhar'], answer: 1, explanation: 'Mim mushaddada (مّ) → Ghunna obligatoire de 2 temps.' },
+            // ── Madd (2) ──
+            { verse: 'قَالُوا', rule: 'Madd tabii', options: ['Madd tabii', 'Ghunna', 'Ikhfa', 'Izhar'], answer: 0, explanation: 'Waw sakin précédée de damma → Madd tabii (2 temps).' },
+            { verse: 'قِيلَ', rule: 'Madd tabii', options: ['Qalqalah', 'Izhar', 'Madd tabii', 'Ikhfa'], answer: 2, explanation: 'Ya sakin précédée de kasra → Madd tabii (allongement naturel de 2 temps).' },
+        ];
+        // Shuffle for variety
+        return all.sort(() => Math.random() - 0.5);
+    }, []);
 
     // ─── RENDER: Tajwid Practice Mode ────────────────────
     if (tajwidPractice) {
