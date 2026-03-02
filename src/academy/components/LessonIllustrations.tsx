@@ -436,16 +436,14 @@ export function PrayerTachahoud() {
                 {/* Legs */}
                 <path d="M100 75 Q95 90 85 100 Q80 105 75 102" fill="none" stroke={COLORS.gold} strokeWidth="2" />
                 <path d="M100 75 Q105 90 115 100 Q120 105 125 102" fill="none" stroke={COLORS.gold} strokeWidth="2" />
-                {/* Right hand - index finger pointing */}
-                <path d="M100 55 Q112 58 118 65" fill="none" stroke={COLORS.gold} strokeWidth="1.5" />
-                <line x1="118" y1="65" x2="130" y2="58" stroke={COLORS.teal} strokeWidth="2" />
-                <circle cx="131" cy="57" r="2" fill={COLORS.teal} />
-                <text x="135" y="52" fontSize="7" fill={COLORS.teal}>Index levé</text>
-                <text x="135" y="60" fontSize="7" fill={COLORS.teal}>(Tawhid)</text>
-                {/* Left hand flat on knee */}
+                {/* Right hand flat on right knee */}
+                <path d="M100 55 Q112 58 118 70" fill="none" stroke={COLORS.gold} strokeWidth="1.5" />
+                <text x="140" y="65" fontSize="7" fill={COLORS.textMuted}>Main droite</text>
+                <text x="140" y="73" fontSize="7" fill={COLORS.textMuted}>sur la cuisse</text>
+                {/* Left hand flat on left knee */}
                 <path d="M100 55 Q88 58 82 70" fill="none" stroke={COLORS.gold} strokeWidth="1.5" />
                 <text x="50" y="65" fontSize="7" fill={COLORS.textMuted} textAnchor="end">Main gauche</text>
-                <text x="50" y="73" fontSize="7" fill={COLORS.textMuted} textAnchor="end">à plat</text>
+                <text x="50" y="73" fontSize="7" fill={COLORS.textMuted} textAnchor="end">sur la cuisse</text>
                 {/* Ground */}
                 <line x1="40" y1="108" x2="170" y2="108" stroke={COLORS.textMuted} strokeWidth="0.5" />
                 {/* Tachahoud text */}

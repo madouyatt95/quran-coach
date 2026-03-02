@@ -15,7 +15,7 @@ const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE];
 function playAudio(text: string) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const clean = text.replace(/[^\\u0600-\\u06FF\\u0750-\\u077F\\uFB50-\\uFDFF\\uFE70-\\uFEFF\\s]/g, '').trim();
+        const clean = text.replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s]/g, '').trim();
         if (!clean) return;
         const utter = new SpeechSynthesisUtterance(clean);
         utter.lang = 'ar-SA';

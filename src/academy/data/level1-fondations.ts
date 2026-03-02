@@ -224,6 +224,12 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             image: '/academy/images/priere_step5.png',
                         },
                         {
+                            title: 'La Salat Ibrahimiyya (Prière sur le Prophète ﷺ)',
+                            body: 'Au dernier Tachahoud de chaque prière (juste avant le Salam), après avoir récité le Tachahoud complet, on ajoute la prière sur le Prophète Ibrahim et Muhammad ﷺ :\n\nCette invocation est obligatoire dans le dernier Tachahoud de chaque prière.',
+                            arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ\nكَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ\nاللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ\nكَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ',
+                            phonetic: 'Allâhoumma salli \'alâ Muhammadin wa \'alâ âli Muhammad\nKamâ sallayta \'alâ Ibrâhîma wa \'alâ âli Ibrâhîm, innaka Hamîdoun Majîd\nAllâhoumma bârik \'alâ Muhammadin wa \'alâ âli Muhammad\nKamâ bârakta \'alâ Ibrâhîma wa \'alâ âli Ibrâhîm, innaka Hamîdoun Majîd',
+                        },
+                        {
                             title: 'Position 8 — Le Salam final',
                             body: 'À la fin de la prière, tournez la tête vers la droite puis vers la gauche en disant à chaque côté :',
                             arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
