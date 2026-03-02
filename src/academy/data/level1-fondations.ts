@@ -230,6 +230,12 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             phonetic: 'Allâhoumma salli \'alâ Muhammadin wa \'alâ âli Muhammad\nKamâ sallayta \'alâ Ibrâhîma wa \'alâ âli Ibrâhîm, innaka Hamîdoun Majîd\nAllâhoumma bârik \'alâ Muhammadin wa \'alâ âli Muhammad\nKamâ bârakta \'alâ Ibrâhîma wa \'alâ âli Ibrâhîm, innaka Hamîdoun Majîd',
                         },
                         {
+                            title: 'Invocation avant le Salam (Protection)',
+                            body: 'Après la Salat Ibrahimiyya et juste avant le Salam, le Prophète ﷺ recommandait de réciter cette invocation de protection contre quatre épreuves.\n\n(Rapporté dans Sahih Muslim)',
+                            arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ جَهَنَّمَ\nوَمِنْ عَذَابِ الْقَبْرِ\nوَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ\nوَمِنْ شَرِّ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ',
+                            phonetic: 'Allâhoumma innî a\'ûdhou bika min \'adhâbi jahannam\nWa min \'adhâbi l-qabr\nWa min fitnati l-mahyâ wa l-mamât\nWa min charri fitnati l-masîhi d-dajjâl',
+                        },
+                        {
                             title: 'Position 8 — Le Salam final',
                             body: 'À la fin de la prière, tournez la tête vers la droite puis vers la gauche en disant à chaque côté :',
                             arabic: 'السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ',
