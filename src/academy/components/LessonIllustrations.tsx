@@ -428,7 +428,7 @@ export function PrayerJulus() {
 
 export function PrayerTachahoud() {
     return (
-        <IllustrationWrapper label="Position 5 — Tachahoud (attestation finale)">
+        <IllustrationWrapper label="Position 7 — Tachahoud (At-Tahiyyât)">
             <svg viewBox="0 0 200 140" style={{ width: '100%', maxWidth: 260 }}>
                 {/* Seated figure */}
                 <circle cx="100" cy="25" r="10" fill="none" stroke={COLORS.gold} strokeWidth="2" />

@@ -217,10 +217,10 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                             image: '/academy/images/priere_step4.png',
                         },
                         {
-                            title: 'Position 7 — Le Tachahoud',
-                            body: 'Après chaque 2 rak\'at, asseyez-vous et récitez le Tachahoud. Levez uniquement l\'index droit en disant « illa Llâh ».',
-                            arabic: 'التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ',
-                            phonetic: 'At-tahiyyâtou li-Llâhi wa s-salawâtou wa t-tayyibât',
+                            title: 'Position 7 — Le Tachahoud (At-Tahiyyât)',
+                            body: 'Après chaque 2 rak\'at, asseyez-vous et récitez le Tachahoud complet. La main droite est posée sur la cuisse droite, l\'index droit est pointé vers la Qibla pendant toute la durée du Tachahoud.\n\nAu dernier Tachahoud (avant le salam), on ajoute la prière Ibrahimiyya (Salat ala Nabi).',
+                            arabic: 'التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ\nالسَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ\nالسَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ\nأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ\nوَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ',
+                            phonetic: 'At-tahiyyâtou li-Llâhi wa s-salawâtou wa t-tayyibât\nAs-salâmou \'alayka ayyouha n-nabiyyou wa rahmatou Llâhi wa barakâtouh\nAs-salâmou \'alaynâ wa \'alâ \'ibâdi Llâhi s-sâlihîn\nAsh-hadou an lâ ilâha illa Llâh\nWa ash-hadou anna Muhammadan \'abdouhou wa rasoulouh',
                             image: '/academy/images/priere_step5.png',
                         },
                         {
