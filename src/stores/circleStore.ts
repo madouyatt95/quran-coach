@@ -46,7 +46,7 @@ interface CircleState {
     // Actions
     setProfile: (name: string, emoji: string) => void;
     createCircle: (name: string, emoji: string, goal: string) => Promise<ReadingCircle | null>;
-    joinCircle: (inviteCode: string) => Promise<{ success: boolean; error?: string }>;
+    joinCircle: (inviteCode: string) => Promise<{ success: boolean; error?: string; circleId?: string }>;
     leaveCircle: (circleId: string) => Promise<void>;
     logPages: (circleId: string, pages: number) => Promise<void>;
     refreshCircles: () => Promise<void>;
@@ -258,7 +258,7 @@ export const useCircleStore = create<CircleState>()(
                         loading: false,
                     }));
 
-                    return { success: true };
+                    return { success: true, circleId: circle.id };
                 } catch (err: unknown) {
                     const msg = err instanceof Error ? err.message : 'Erreur lors de la connexion';
                     set({ loading: false, error: msg });

@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, Users, BookOpen, Trophy, Copy, Check, LogOut, Clock, Sparkles } from 'lucide-react';
+import { ChevronLeft, Plus, Users, BookOpen, Trophy, Copy, Check, LogOut, Clock, Sparkles, RefreshCw } from 'lucide-react';
 import { useCircleStore, MEMBER_EMOJIS, type ReadingCircle } from '../stores/circleStore';
+import { useKhatmStore } from '../stores/khatmStore';
 import './CirclePage.css';
 
 type CircleView = 'list' | 'detail' | 'create' | 'join';
@@ -19,6 +20,53 @@ const CIRCLE_GOALS = [
     'Lire le Tafsir ensemble',
     'Lecture libre',
 ];
+
+// ─── Auto Sync from Khatm ─────────────────────────────────
+function AutoSyncButton({ circleId, myPages }: { circleId: string; myPages: number }) {
+    const khatm = useKhatmStore();
+    const circleStore = useCircleStore();
+    const [syncing, setSyncing] = useState(false);
+    const [synced, setSynced] = useState(false);
+
+    const khatmPages = khatm.validatedPages.length;
+    const diff = khatmPages - myPages;
+
+    const handleSync = async () => {
+        if (diff <= 0 || syncing) return;
+        setSyncing(true);
+        await circleStore.logPages(circleId, diff);
+        setSyncing(false);
+        setSynced(true);
+        setTimeout(() => setSynced(false), 3000);
+    };
+
+    if (!khatm.isActive && khatmPages === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: '8px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
+                Activez le suivi Khatm pour synchroniser automatiquement
+            </div>
+        );
+    }
+
+    return (
+        <button
+            className="circle-create-btn"
+            style={{ margin: '8px 0', opacity: diff > 0 ? 1 : 0.5 }}
+            onClick={handleSync}
+            disabled={diff <= 0 || syncing}
+        >
+            {synced ? (
+                <><Check size={16} /> Synchronisé !</>
+            ) : syncing ? (
+                <><RefreshCw size={16} className="spinning" /> Synchronisation...</>
+            ) : diff > 0 ? (
+                <><RefreshCw size={16} /> Synchroniser {diff} page{diff > 1 ? 's' : ''} depuis ma lecture</>
+            ) : (
+                <><Check size={16} /> À jour ({khatmPages} pages)</>
+            )}
+        </button>
+    );
+}
 
 export function CirclePage() {
     const navigate = useNavigate();
@@ -74,9 +122,8 @@ export function CirclePage() {
             store.setProfile(profileName || 'Anonyme', profileEmoji);
         }
         const result = await store.joinCircle(joinCode.toUpperCase());
-        if (result.success) {
-            const lastCircle = store.myCircles[store.myCircles.length - 1];
-            setActiveCircleId(lastCircle.id);
+        if (result.success && result.circleId) {
+            setActiveCircleId(result.circleId);
             setView('detail');
             setJoinCode('');
             setJoinError('');
@@ -155,9 +202,15 @@ export function CirclePage() {
                 <div className="circle-log-section">
                     <div className="circle-log-header">
                         <BookOpen size={16} />
-                        <span>Enregistrer ma lecture</span>
+                        <span>Ma lecture</span>
                         <span className="circle-log-mine">{myPages} pages lues</span>
                     </div>
+
+                    {/* Auto-sync from Quran reader */}
+                    <AutoSyncButton circleId={activeCircle.id} myPages={myPages} />
+
+                    {/* Manual fallback */}
+                    <div className="circle-log-manual-label" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: '12px 0 6px', textAlign: 'center' }}>ou ajouter manuellement</div>
                     <div className="circle-log-input">
                         <input
                             type="number"
