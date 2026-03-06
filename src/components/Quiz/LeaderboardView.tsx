@@ -1,6 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Globe } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
+
+// Compute ranking score: wins matter most, then win rate, then sprint
+function rankingScore(entry: any): number {
+    const wins = entry.total_wins || 0;
+    const played = entry.total_played || 1;
+    const winRate = played > 0 ? (wins / played) * 100 : 0;
+    const sprint = entry.sprint_best || 0;
+    return (wins * 100) + (winRate * 50) + sprint;
+}
 
 export function LeaderboardView() {
     const { setView, player, totalCorrect, sprintBest, totalPlayed, totalWins, submitToLeaderboard } = useQuizStore();
@@ -26,8 +35,7 @@ export function LeaderboardView() {
                 let query = supabase
                     .from('quiz_leaderboard')
                     .select('*')
-                    .order('total_correct', { ascending: false })
-                    .limit(50);
+                    .limit(100);
 
                 if (tab === 'weekly') {
                     query = query.gte('updated_at', getWeekStart());
@@ -41,6 +49,14 @@ export function LeaderboardView() {
             setLoading(false);
         });
     }, [submitToLeaderboard, tab]);
+
+    // Sort by ranking score client-side
+    const sortedEntries = useMemo(() =>
+        [...entries].sort((a, b) => rankingScore(b) - rankingScore(a)),
+        [entries]);
+
+    const myWinRate = totalPlayed > 0 ? Math.round((totalWins / totalPlayed) * 100) : 0;
+    const myRankScore = Math.round((totalWins * 100) + (myWinRate * 50) + sprintBest);
 
     return (
         <div className="quiz-container">
@@ -87,9 +103,13 @@ export function LeaderboardView() {
                 <span className="quiz-lb-emoji">{player?.avatar_emoji}</span>
                 <span className="quiz-lb-pseudo">{player?.pseudo}</span>
                 <div className="quiz-lb-my-stats">
-                    <span>✅ {totalCorrect}</span>
                     <span>🏆 {totalWins}/{totalPlayed}</span>
+                    <span>📊 {myWinRate}%</span>
                     <span>⚡ {sprintBest}</span>
+                    <span>✅ {totalCorrect}</span>
+                </div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
+                    Score: {myRankScore} pts
                 </div>
             </div>
 
@@ -98,28 +118,33 @@ export function LeaderboardView() {
                     <div className="quiz-spinner" />
                     <p>Chargement...</p>
                 </div>
-            ) : entries.length === 0 ? (
+            ) : sortedEntries.length === 0 ? (
                 <div className="quiz-empty-lb">
                     <p>🏆 {tab === 'weekly' ? 'Aucun joueur cette semaine.' : 'Aucun joueur dans le classement pour le moment.'}</p>
                     <p>Joue une partie pour apparaître !</p>
                 </div>
             ) : (
                 <div className="quiz-leaderboard-list">
-                    {entries.map((entry, i) => (
-                        <div key={entry.id} className={`quiz-lb-row ${entry.id === player?.id ? 'quiz-lb-me' : ''}`}>
-                            <span className="quiz-lb-rank">
-                                {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
-                            </span>
-                            <span className="quiz-lb-avatar">{entry.avatar_emoji}</span>
-                            <div className="quiz-lb-info">
-                                <span className="quiz-lb-name">{entry.pseudo}</span>
-                                <span className="quiz-lb-detail">
-                                    {entry.total_correct} correctes • {entry.total_wins} victoires
+                    {sortedEntries.map((entry, i) => {
+                        const played = entry.total_played || 0;
+                        const wins = entry.total_wins || 0;
+                        const winRate = played > 0 ? Math.round((wins / played) * 100) : 0;
+                        return (
+                            <div key={entry.id} className={`quiz-lb-row ${entry.id === player?.id ? 'quiz-lb-me' : ''}`}>
+                                <span className="quiz-lb-rank">
+                                    {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
                                 </span>
+                                <span className="quiz-lb-avatar">{entry.avatar_emoji}</span>
+                                <div className="quiz-lb-info">
+                                    <span className="quiz-lb-name">{entry.pseudo}</span>
+                                    <span className="quiz-lb-detail">
+                                        {wins} victoires • {winRate}% • {played} parties
+                                    </span>
+                                </div>
+                                <span className="quiz-lb-sprint">⚡{entry.sprint_best || 0}</span>
                             </div>
-                            <span className="quiz-lb-sprint">⚡{entry.sprint_best || 0}</span>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>
