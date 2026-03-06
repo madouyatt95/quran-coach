@@ -113,10 +113,15 @@ async function fetchFrenchTafsir(
     ayah: number
 ): Promise<TafsirContent | null> {
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
         // QuranEnc API: https://quranenc.com/api/v1/translation/aya/{resource_id}/{sura_number}/{aya_number}
         const response = await fetch(
-            `https://quranenc.com/api/v1/translation/aya/${resourceId}/${surah}/${ayah}`
+            `https://quranenc.com/api/v1/translation/aya/${resourceId}/${surah}/${ayah}`,
+            { signal: controller.signal }
         );
+        clearTimeout(timeoutId);
 
         if (!response.ok) throw new Error('Failed to fetch from QuranEnc');
 

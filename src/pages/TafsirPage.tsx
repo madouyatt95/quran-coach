@@ -52,7 +52,7 @@ export function TafsirPage() {
     const [selectedSurah, setSelectedSurah] = useState(1);
     const [selectedAyah, setSelectedAyah] = useState(1);
     const [maxAyahs, setMaxAyahs] = useState(7);
-    const [selectedTafsir, setSelectedTafsir] = useState<number | string>(AVAILABLE_TAFSIRS[0].id);
+    const [selectedTafsir, setSelectedTafsir] = useState<number | string>('french_ibnkathir_local');
 
     // Content state
     const [verseText, setVerseText] = useState<{ arabic: string; translation: string } | null>(null);
