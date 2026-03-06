@@ -127,13 +127,11 @@ export function HomeView() {
                     </div>
                 </button>
                 {wrongQuestions.length > 0 && (
-                    <button className="quiz-special-card revision-card" onClick={() => {
-                        useQuizStore.getState().startRevision();
-                    }}>
+                    <button className="quiz-special-card revision-card" onClick={() => setView('error-review')}>
                         <BookOpen size={24} />
                         <div>
-                            <h4>📝 Révision</h4>
-                            <p>{wrongQuestions.length} erreurs</p>
+                            <h4>📝 Mes Erreurs</h4>
+                            <p>{wrongQuestions.length} à revoir</p>
                         </div>
                     </button>
                 )}

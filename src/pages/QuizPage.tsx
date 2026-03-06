@@ -17,6 +17,7 @@ import { DailyChallengeView } from '../components/Quiz/DailyChallengeView';
 import { RoundEndView } from '../components/Quiz/RoundEndView';
 import { HistoryView } from '../components/Quiz/HistoryView';
 import { SiraMapView } from '../components/Quiz/SiraMapView';
+import { ErrorReviewView } from '../components/Quiz/ErrorReviewView';
 import './QuizPage.css';
 
 // ─── Main Quiz Page ──────────────────────────────────────
@@ -69,6 +70,8 @@ export function QuizPage() {
             return <CustomDuel />;
         case 'sira-map':
             return <SiraMapView />;
+        case 'error-review':
+            return <ErrorReviewView />;
         default:
             return <HomeView />;
     }

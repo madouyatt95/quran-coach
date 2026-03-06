@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Globe } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
+import { QUIZ_THEMES } from '../../data/quizTypes';
+import type { QuizThemeId } from '../../data/quizTypes';
 
 // Compute ranking score: wins matter most, then win rate, then sprint
 function rankingScore(entry: any): number {
@@ -12,16 +14,17 @@ function rankingScore(entry: any): number {
 }
 
 export function LeaderboardView() {
-    const { setView, player, totalCorrect, sprintBest, totalPlayed, totalWins, submitToLeaderboard } = useQuizStore();
+    const { setView, player, totalCorrect, sprintBest, totalPlayed, totalWins, submitToLeaderboard, themeStats } = useQuizStore();
     const [entries, setEntries] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState<'alltime' | 'weekly'>('alltime');
+    const [themeFilter, setThemeFilter] = useState<QuizThemeId | 'all'>('all');
 
     // Get Monday of current week (ISO week)
     const getWeekStart = () => {
         const now = new Date();
         const day = now.getDay();
-        const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
         const monday = new Date(now.setDate(diff));
         monday.setHours(0, 0, 0, 0);
         return monday.toISOString();
@@ -58,6 +61,11 @@ export function LeaderboardView() {
     const myWinRate = totalPlayed > 0 ? Math.round((totalWins / totalPlayed) * 100) : 0;
     const myRankScore = Math.round((totalWins * 100) + (myWinRate * 50) + sprintBest);
 
+    // Theme-specific stats for "my stats" card
+    const myThemeData = themeFilter !== 'all' ? themeStats[themeFilter] : null;
+    const myThemeAccuracy = myThemeData && myThemeData.attempts > 0
+        ? Math.round((myThemeData.correct / myThemeData.attempts) * 100) : 0;
+
     return (
         <div className="quiz-container">
             <div className="quiz-header">
@@ -70,9 +78,9 @@ export function LeaderboardView() {
                 </h1>
             </div>
 
-            {/* Tabs */}
+            {/* Time Tabs */}
             <div style={{
-                display: 'flex', gap: 8, marginBottom: 16, padding: '0 4px',
+                display: 'flex', gap: 8, marginBottom: 8, padding: '0 4px',
             }}>
                 <button
                     onClick={() => setTab('alltime')}
@@ -98,19 +106,61 @@ export function LeaderboardView() {
                 </button>
             </div>
 
+            {/* Theme Filter */}
+            <div style={{
+                display: 'flex', gap: 6, overflowX: 'auto', padding: '4px 4px 12px',
+                WebkitOverflowScrolling: 'touch',
+            }}>
+                <button
+                    onClick={() => setThemeFilter('all')}
+                    style={{
+                        padding: '6px 12px', borderRadius: 20, border: 'none',
+                        fontWeight: 600, fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
+                        background: themeFilter === 'all' ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)',
+                        color: themeFilter === 'all' ? '#fff' : 'rgba(255,255,255,0.5)',
+                    }}
+                >
+                    Tous
+                </button>
+                {QUIZ_THEMES.map(t => (
+                    <button
+                        key={t.id}
+                        onClick={() => setThemeFilter(t.id)}
+                        style={{
+                            padding: '6px 12px', borderRadius: 20, border: 'none',
+                            fontWeight: 600, fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap',
+                            background: themeFilter === t.id ? `${t.color}33` : 'rgba(255,255,255,0.04)',
+                            color: themeFilter === t.id ? t.color : 'rgba(255,255,255,0.5)',
+                        }}
+                    >
+                        {t.emoji} {t.name}
+                    </button>
+                ))}
+            </div>
+
             {/* My Stats Card */}
             <div className="quiz-my-leaderboard">
                 <span className="quiz-lb-emoji">{player?.avatar_emoji}</span>
                 <span className="quiz-lb-pseudo">{player?.pseudo}</span>
-                <div className="quiz-lb-my-stats">
-                    <span>🏆 {totalWins}/{totalPlayed}</span>
-                    <span>📊 {myWinRate}%</span>
-                    <span>⚡ {sprintBest}</span>
-                    <span>✅ {totalCorrect}</span>
-                </div>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
-                    Score: {myRankScore} pts
-                </div>
+                {themeFilter === 'all' ? (
+                    <>
+                        <div className="quiz-lb-my-stats">
+                            <span>🏆 {totalWins}/{totalPlayed}</span>
+                            <span>📊 {myWinRate}%</span>
+                            <span>⚡ {sprintBest}</span>
+                            <span>✅ {totalCorrect}</span>
+                        </div>
+                        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
+                            Score: {myRankScore} pts
+                        </div>
+                    </>
+                ) : (
+                    <div className="quiz-lb-my-stats">
+                        <span>📊 {myThemeAccuracy}%</span>
+                        <span>✅ {myThemeData?.correct || 0}/{myThemeData?.attempts || 0}</span>
+                        <span>🔥 {myThemeData?.bestStreak || 0}</span>
+                    </div>
+                )}
             </div>
 
             {loading ? (

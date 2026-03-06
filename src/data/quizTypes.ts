@@ -16,6 +16,7 @@ export type QuizView =
     | 'feedback'    // Answer feedback (correct/wrong)
     | 'roundEnd'    // End of round summary
     | 'sira-map'    // Sira story map
+    | 'error-review' // Error replay / review wrong answers
     | 'result';     // Final match result
 
 export type QuizMode = 'solo' | 'duel' | 'sprint' | 'revision' | 'daily' | 'sira';
