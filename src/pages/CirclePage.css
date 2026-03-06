@@ -448,6 +448,29 @@
     border-radius: 2px;
 }
 
+.circle-remove-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: none;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 8px;
+}
+
+.circle-remove-btn:hover {
+    background: rgba(244, 67, 54, 0.2);
+}
+
+.circle-remove-btn:active {
+    transform: scale(0.9);
+}
+
 /* ── Activities ── */
 .circle-activities {
     display: flex;

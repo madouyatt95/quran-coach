@@ -351,7 +351,12 @@ export function CirclePage() {
                                     {isCreator && m.id !== myId && (
                                         <button
                                             className="circle-remove-btn"
-                                            onClick={(e) => { e.stopPropagation(); store.removeMember(activeCircle.id, m.id); }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (window.confirm(`Voulez-vous vraiment retirer ${m.name} du cercle ?`)) {
+                                                    store.removeMember(activeCircle.id, m.id);
+                                                }
+                                            }}
                                             title="Retirer du cercle"
                                         >
                                             <X size={14} />
