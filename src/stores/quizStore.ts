@@ -159,7 +159,7 @@ function checkBadges(state: QuizState): BadgeId[] {
     };
     for (const [themeId, badgeId] of Object.entries(themeMap)) {
         const stats = state.themeStats[themeId];
-        if (stats && stats.attempts >= 20) {
+        if (stats && stats.attempts >= 10) {
             check(badgeId, stats.correct / stats.attempts >= 0.9);
         }
     }
