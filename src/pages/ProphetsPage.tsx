@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote, Share2 } from 'lucide-react';
 import { prophets } from '../data/prophets';
 import type { Prophet } from '../data/prophets';
 import { companions } from '../data/companions';
@@ -23,6 +23,19 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
         goToSurah(surahNumber);
         onClose();
         navigate('/read');
+    };
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `Histoire du Prophète ${prophet.nameFr}`,
+                    text: `${prophet.nameAr} - ${prophet.nameIslamic}\n\n${prophet.summary}\n\nSachez que vous pouvez trouver cette histoire et bien plus sur l'application Quran Coach 🕌\nhttps://qurancoach.com`
+                });
+            } catch (err) {
+                console.log("Partage annulé ou échoué", err);
+            }
+        }
     };
 
     return (
@@ -172,9 +185,13 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 </div>
 
                 {/* Close */}
-                <div className="prophet-modal__close">
-                    <button className="prophet-modal__close-btn" onClick={onClose}>
+                <div className="prophet-modal__close" style={{ display: 'flex', gap: '1rem' }}>
+                    <button className="prophet-modal__close-btn" onClick={onClose} style={{ flex: 1 }}>
                         {t('common.close', 'Fermer')}
+                    </button>
+                    <button className="prophet-modal__close-btn" onClick={handleShare} style={{ flex: 1, background: 'var(--color-primary)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                        <Share2 size={18} />
+                        {t('common.share', 'Partager')}
                     </button>
                 </div>
             </motion.div>
@@ -184,6 +201,20 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
 
 function CompanionDetail({ companion, onClose }: { companion: Companion; onClose: () => void }) {
     const { t } = useTranslation();
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `Histoire de ${companion.nameFr}`,
+                    text: `${companion.nameAr} - ${companion.nameFr}\n\n${companion.summary}\n\nSachez que vous pouvez trouver cette histoire et bien plus sur l'application Quran Coach 🕌\nhttps://qurancoach.com`
+                });
+            } catch (err) {
+                console.log("Partage annulé ou échoué", err);
+            }
+        }
+    };
+
     return (
         <motion.div
             className="prophet-modal__overlay"
@@ -325,9 +356,13 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
                 </div>
 
                 {/* Close */}
-                <div className="prophet-modal__close">
-                    <button className="prophet-modal__close-btn" onClick={onClose}>
+                <div className="prophet-modal__close" style={{ display: 'flex', gap: '1rem' }}>
+                    <button className="prophet-modal__close-btn" onClick={onClose} style={{ flex: 1 }}>
                         {t('common.close', 'Fermer')}
+                    </button>
+                    <button className="prophet-modal__close-btn" onClick={handleShare} style={{ flex: 1, background: 'var(--color-primary)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                        <Share2 size={18} />
+                        {t('common.share', 'Partager')}
                     </button>
                 </div>
             </motion.div>

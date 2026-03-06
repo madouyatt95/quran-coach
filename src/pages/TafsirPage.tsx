@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, ChevronDown, ChevronLeft, Loader2, Users, MessageCircle, Volume2 } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronLeft, Loader2, Users, MessageCircle, Volume2, Share2 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useNavigate } from 'react-router-dom';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
@@ -151,6 +151,20 @@ export function TafsirPage() {
         loadTafsir();
     }, [selectedSurah, selectedAyah, selectedTafsir]);
 
+    const handleShare = async () => {
+        if (navigator.share && verseText && tafsirContent) {
+            const verseTitle = `${currentSurah?.name} (${SURAH_NAMES_FR[selectedSurah] || currentSurah?.englishNameTranslation}) - Verset ${selectedAyah}`;
+            try {
+                await navigator.share({
+                    title: verseTitle,
+                    text: `${verseTitle}\n\n${verseText.arabic}\n\n${verseText.translation.replace(/<[^>]*>/g, '')}\n\nTafsir (${tafsirSource}) :\n${tafsirContent}\n\nSachez que vous pouvez trouver cette explication et bien plus sur l'application Quran Coach 🕌\nhttps://qurancoach.com`
+                });
+            } catch (err) {
+                console.log("Partage annulé ou échoué", err);
+            }
+        }
+    };
+
     const currentSurah = surahs.find(s => s.number === selectedSurah);
 
     return (
@@ -248,61 +262,73 @@ export function TafsirPage() {
                     <div className="tafsir-verse-arabic" dir="rtl">
                         {formatDivineNames(verseText.arabic)}
                     </div>
-                    <button
-                        className={`tafsir-tts-btn ${isSpeaking ? 'active' : ''}`}
-                        onClick={async () => {
-                            if (isSpeaking) {
-                                // Stop current audio
-                                const audio = window.tafsirAudioPlayer;
-                                if (audio) {
-                                    audio.pause();
-                                    audio.currentTime = 0;
-                                }
-                                setIsSpeaking(false);
-                            } else {
-                                setIsTtsLoadingState(true);
-                                try {
-                                    // 1. Fetch the exact audio URL for the current Surah and Ayah
-                                    const { fetchAyahAudioUrl } = await import('../lib/quranApi');
-                                    const audioUrl = await fetchAyahAudioUrl(selectedSurah, selectedAyah);
-
-                                    if (!audioUrl) {
-                                        console.error('Audio non disponible pour ce verset.');
-                                        setIsTtsLoadingState(false);
-                                        return;
-                                    }
-
-                                    // 2. Play the audio using a single shared audio element on window to avoid duplicates
-                                    if (!window.tafsirAudioPlayer) {
-                                        window.tafsirAudioPlayer = new Audio();
-                                    }
+                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                        <button
+                            className={`tafsir-tts-btn ${isSpeaking ? 'active' : ''}`}
+                            onClick={async () => {
+                                if (isSpeaking) {
+                                    // Stop current audio
                                     const audio = window.tafsirAudioPlayer;
-
-                                    audio.src = Object.assign(audioUrl, { crossOrigin: "anonymous" }); // to handle CORS if needed
-                                    // some quran.com urls don't need crossOrigin, but it's safe to add
-
-                                    audio.onended = () => setIsSpeaking(false);
-                                    audio.onerror = () => {
-                                        console.error('Erreur de lecture audio');
-                                        setIsSpeaking(false);
-                                    };
-
-                                    setIsSpeaking(true);
-                                    await audio.play();
-
-                                } catch (error) {
-                                    console.error('Failed to play audio:', error);
+                                    if (audio) {
+                                        audio.pause();
+                                        audio.currentTime = 0;
+                                    }
                                     setIsSpeaking(false);
-                                } finally {
-                                    setIsTtsLoadingState(false);
+                                } else {
+                                    setIsTtsLoadingState(true);
+                                    try {
+                                        // 1. Fetch the exact audio URL for the current Surah and Ayah
+                                        const { fetchAyahAudioUrl } = await import('../lib/quranApi');
+                                        const audioUrl = await fetchAyahAudioUrl(selectedSurah, selectedAyah);
+
+                                        if (!audioUrl) {
+                                            console.error('Audio non disponible pour ce verset.');
+                                            setIsTtsLoadingState(false);
+                                            return;
+                                        }
+
+                                        // 2. Play the audio using a single shared audio element on window to avoid duplicates
+                                        if (!window.tafsirAudioPlayer) {
+                                            window.tafsirAudioPlayer = new Audio();
+                                        }
+                                        const audio = window.tafsirAudioPlayer;
+
+                                        audio.src = Object.assign(audioUrl, { crossOrigin: "anonymous" }); // to handle CORS if needed
+                                        // some quran.com urls don't need crossOrigin, but it's safe to add
+
+                                        audio.onended = () => setIsSpeaking(false);
+                                        audio.onerror = () => {
+                                            console.error('Erreur de lecture audio');
+                                            setIsSpeaking(false);
+                                        };
+
+                                        setIsSpeaking(true);
+                                        await audio.play();
+
+                                    } catch (error) {
+                                        console.error('Failed to play audio:', error);
+                                        setIsSpeaking(false);
+                                    } finally {
+                                        setIsTtsLoadingState(false);
+                                    }
                                 }
-                            }
-                        }}
-                        title={isSpeaking ? t('common.stop', 'Arrêter') : t('tafsir.listenVerse', 'Écouter le verset')}
-                    >
-                        {isTtsLoadingState ? <Loader2 size={16} className="spin" /> : <Volume2 size={16} />}
-                        <span>{isSpeaking ? t('common.stop', 'Arrêter') : t('common.listen', 'Écouter')}</span>
-                    </button>
+                            }}
+                            title={isSpeaking ? t('common.stop', 'Arrêter') : t('tafsir.listenVerse', 'Écouter le verset')}
+                            style={{ flex: 1 }}
+                        >
+                            {isTtsLoadingState ? <Loader2 size={16} className="spin" /> : <Volume2 size={16} />}
+                            <span>{isSpeaking ? t('common.stop', 'Arrêter') : t('common.listen', 'Écouter')}</span>
+                        </button>
+                        <button
+                            className="tafsir-tts-btn"
+                            onClick={handleShare}
+                            title={t('common.share', 'Partager')}
+                            style={{ flex: 1 }}
+                        >
+                            <Share2 size={16} />
+                            <span>{t('common.share', 'Partager')}</span>
+                        </button>
+                    </div>
                     <div className="tafsir-verse-translation">
                         {formatDivineNames(verseText.translation.replace(/<[^>]*>/g, ''))}
                     </div>

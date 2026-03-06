@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X, Gauge } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X, Gauge, Share2 } from 'lucide-react';
 import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../data/hisnulMuslim';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { formatDivineNames } from '../lib/divineNames';
@@ -278,6 +278,19 @@ export function AdhkarPage() {
     const { toggleFavoriteDua, isFavoriteDua } = useFavoritesStore();
 
     const [searchParams] = useSearchParams();
+
+    const handleShare = async (dhikr: Dhikr, categoryName: string) => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: categoryName,
+                    text: `${dhikr.arabic}\n\n${dhikr.translation}\n\n${dhikr.source ? `Source : ${dhikr.source}\n\n` : ''}Sachez que vous pouvez trouver cette invocation et bien plus sur l'application Quran Coach 🕌\nhttps://qurancoach.com`
+                });
+            } catch (err) {
+                console.log("Partage annulé ou échoué", err);
+            }
+        }
+    };
 
     // ═══ Mega-category navigation layer ═══
     const [viewLevel, setViewLevel] = useState<'mega' | 'chapters' | 'category'>(() => {
@@ -748,6 +761,16 @@ export function AdhkarPage() {
                                 >
                                     <Heart size={14} fill={isFavoriteDua(selectedCategory.id, dhikr.id) ? 'currentColor' : 'none'} />
                                 </button>
+                                <button
+                                    className="list-item-tts-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleShare(dhikr, t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name));
+                                    }}
+                                    title={t('common.share', 'Partager')}
+                                >
+                                    <Share2 size={14} />
+                                </button>
                                 {dhikr.source && <span className="item-source">{dhikr.source}</span>}
                             </div>
                             <p className="item-arabic">{formatDivineNames(dhikr.arabic)}</p>
@@ -781,22 +804,33 @@ export function AdhkarPage() {
                                     📚 {currentDhikr.source}
                                 </div>
                             )}
-                            <button
-                                className={`dhikr-fav-btn ${isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'active' : ''}`}
-                                onClick={() => {
-                                    toggleFavoriteDua({
-                                        chapterId: selectedCategory.id,
-                                        duaId: currentDhikr.id,
-                                        arabic: currentDhikr.arabic,
-                                        translation: currentDhikr.translation,
-                                        source: currentDhikr.source || '',
-                                        chapterTitle: t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name),
-                                    });
-                                }}
-                            >
-                                <Heart size={18} fill={isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'currentColor' : 'none'} />
-                                {isFavoriteDua(selectedCategory.id, currentDhikr.id) ? t('common.inFavs', 'En favoris') : t('common.addToFavs', 'Ajouter aux favoris')}
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button
+                                    className={`dhikr-fav-btn ${isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'active' : ''}`}
+                                    onClick={() => {
+                                        toggleFavoriteDua({
+                                            chapterId: selectedCategory.id,
+                                            duaId: currentDhikr.id,
+                                            arabic: currentDhikr.arabic,
+                                            translation: currentDhikr.translation,
+                                            source: currentDhikr.source || '',
+                                            chapterTitle: t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name),
+                                        });
+                                    }}
+                                    style={{ flex: 1 }}
+                                >
+                                    <Heart size={18} fill={isFavoriteDua(selectedCategory.id, currentDhikr.id) ? 'currentColor' : 'none'} />
+                                    {isFavoriteDua(selectedCategory.id, currentDhikr.id) ? t('common.inFavs', 'En favoris') : t('common.addToFavs', 'Ajouter aux favoris')}
+                                </button>
+                                <button
+                                    className="dhikr-fav-btn"
+                                    onClick={() => handleShare(currentDhikr, t(`adhkar.categories.${selectedCategory.id}`, selectedCategory.name))}
+                                    style={{ flex: 1 }}
+                                >
+                                    <Share2 size={18} />
+                                    {t('common.share', 'Partager')}
+                                </button>
+                            </div>
                         </div>
 
                         {/* Audio Loop Player */}
