@@ -1,0 +1,73 @@
+.glossary-term-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.glossary-term {
+    color: #c9a84c;
+    border-bottom: 1px dashed rgba(201, 168, 76, 0.6);
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.glossary-term:hover {
+    background: rgba(201, 168, 76, 0.1);
+    border-bottom: 1px solid #c9a84c;
+}
+
+.glossary-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 280px;
+    background: #1a1b26;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 12px 16px;
+    z-index: 100;
+    pointer-events: none;
+    animation: fadeInTooltip 0.2s ease;
+}
+
+.glossary-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #1a1b26 transparent transparent transparent;
+}
+
+.glossary-tooltip strong {
+    display: block;
+    color: #c9a84c;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    text-transform: capitalize;
+}
+
+.glossary-tooltip p {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    white-space: normal;
+}
+
+@keyframes fadeInTooltip {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}

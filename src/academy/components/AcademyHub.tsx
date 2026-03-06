@@ -7,6 +7,8 @@ import { LEVEL_1_FONDATIONS } from '../data/level1-fondations';
 import { LEVEL_2_PRATIQUE } from '../data/level2-pratique';
 import { TAJWEED_RULES, TAJWEED_COLOR_LEGEND } from '../data/tajweed-rules';
 import type { AcademyLevel, AcademyModule, AcademyLesson, AcademyQuiz } from '../data/types';
+import { GlossaryText } from './GlossaryText';
+import { CertificateModal } from './CertificateModal';
 import './AcademyHub.css';
 
 const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE];
@@ -105,6 +107,7 @@ export function AcademyHub() {
     const [tajwidPractice, setTajwidPractice] = useState(false);
     const [tajwidAnswer, setTajwidAnswer] = useState<number | null>(null);
     const [tajwidIdx, setTajwidIdx] = useState(0);
+    const [showCertificate, setShowCertificate] = useState(false);
 
     const currentContent = activeModule?.content[contentIdx] ?? null;
 
@@ -418,7 +421,7 @@ export function AcademyHub() {
                             />
                         )}
                         {section.title && <h3 className="academy-lesson__section-title">{section.title}</h3>}
-                        {section.body && <div className="academy-lesson__body">{section.body.split('\n').map((line, i) => <span key={i}>{line}{i < section.body!.split('\n').length - 1 && <br />}</span>)}</div>}
+                        {section.body && <div className="academy-lesson__body"><GlossaryText text={section.body} /></div>}
 
                         {section.arabic && (
                             <div className="academy-lesson__arabic-block">
@@ -538,6 +541,22 @@ export function AcademyHub() {
                         {selectedLevel.title}
                     </h2>
                 </div>
+                {getLevelProgress(selectedLevel) === 100 && (
+                    <button
+                        className="academy-result__btn academy-result__btn-primary"
+                        style={{ margin: '0 16px 16px', background: 'linear-gradient(135deg, #c9a84c, #b8962d)', border: 'none', color: '#fff', width: 'calc(100% - 32px)' }}
+                        onClick={() => setShowCertificate(true)}
+                    >
+                        🎓 Obtenir mon diplôme
+                    </button>
+                )}
+                {showCertificate && (
+                    <CertificateModal
+                        userName={localStorage.getItem('qc_user_name') || ''}
+                        levelTitle={selectedLevel.title}
+                        onClose={() => setShowCertificate(false)}
+                    />
+                )}
                 <div className="academy-modules-grid">
                     {selectedLevel.modules.map(mod => {
                         const unlocked = isModuleUnlocked(mod.id);
