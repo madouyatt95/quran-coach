@@ -124,8 +124,13 @@ function checkBadges(state: QuizState): BadgeId[] {
     };
 
     check('first_quiz', state.totalPlayed >= 1);
-    check('streak_5', state.currentStreak >= 5);
-    check('streak_10', state.currentStreak >= 10);
+    // Use max of current streak and all-time best streaks from themeStats
+    const bestStreakEver = Math.max(
+        state.currentStreak,
+        ...Object.values(state.themeStats).map(s => s.bestStreak || 0)
+    );
+    check('streak_5', bestStreakEver >= 5);
+    check('streak_10', bestStreakEver >= 10);
     check('marathon', state.totalPlayed >= 50);
     check('scholar', state.totalCorrect >= 500);
     check('duel_winner', state.duelWins >= 1);
@@ -143,7 +148,7 @@ function checkBadges(state: QuizState): BadgeId[] {
         check('speed_demon', true);
     }
 
-    // Theme mastery
+    // Theme mastery — all 15 themes
     const themeMap: Record<string, BadgeId> = {
         prophets: 'master_prophets',
         companions: 'master_companions',
@@ -795,6 +800,13 @@ export const useQuizStore = create<QuizState>()(
                             timerStart: Date.now(),
                         });
                     }
+                }
+
+                // Check badges after every answer (catches streak, speed_demon mid-game)
+                const postAnswerState = get();
+                const midGameBadges = checkBadges(postAnswerState);
+                if (midGameBadges.length > 0) {
+                    set({ unlockedBadges: [...postAnswerState.unlockedBadges, ...midGameBadges] });
                 }
             },
 
