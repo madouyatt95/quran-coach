@@ -5,32 +5,22 @@ import './IslamicCalendar.css';
 
 // ─── Hijri Conversion (Kuwaiti Algorithm) ─────────────────
 function gregorianToHijri(date: Date): { year: number; month: number; day: number } {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
+    const format = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+    });
 
-    // Julian Day Number
-    const y = d.getFullYear();
-    const m = d.getMonth() + 1;
-    const day = d.getDate();
+    const parts = format.formatToParts(date);
+    const day = parts.find(p => p.type === 'day')?.value || '1';
+    const month = parts.find(p => p.type === 'month')?.value || '1';
+    const year = parts.find(p => p.type === 'year')?.value || '1445';
 
-    let jd = Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4)
-        + Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12)
-        - Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4)
-        + day - 32075;
-
-    // Kuwaiti algorithm
-    const l = jd - 1948440 + 10632;
-    const n = Math.floor((l - 1) / 10631);
-    const l2 = l - 10631 * n + 354;
-    const j = Math.floor((10985 - l2) / 5316) * Math.floor((50 * l2) / 17719)
-        + Math.floor(l2 / 5670) * Math.floor((43 * l2) / 15238);
-    const l3 = l2 - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50)
-        - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
-    const hm = Math.floor((24 * l3) / 709);
-    const hd = l3 - Math.floor((709 * hm) / 24);
-    const hy = 30 * n + j - 30;
-
-    return { year: hy, month: hm, day: hd };
+    return {
+        day: parseInt(day, 10),
+        month: parseInt(month, 10),
+        year: parseInt(year.split(' ')[0], 10)
+    };
 }
 
 const HIJRI_MONTHS = [
