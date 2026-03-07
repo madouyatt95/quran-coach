@@ -1,6 +1,6 @@
 // ─── Academy Data Types ──────────────────────────────────
 
-export type AcademyLevelId = 'fondations' | 'pratique';
+export type AcademyLevelId = 'fondations' | 'pratique' | 'junior';
 
 export interface LessonSection {
     title: string;

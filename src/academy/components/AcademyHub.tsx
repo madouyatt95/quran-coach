@@ -9,6 +9,7 @@ import { TAJWEED_RULES, TAJWEED_COLOR_LEGEND } from '../data/tajweed-rules';
 import type { AcademyLevel, AcademyModule, AcademyLesson, AcademyQuiz } from '../data/types';
 import { GlossaryText } from './GlossaryText';
 import { CertificateModal } from './CertificateModal';
+import { AcademyJunior } from './AcademyJunior';
 import './AcademyHub.css';
 
 const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE];
@@ -108,6 +109,7 @@ export function AcademyHub() {
     const [tajwidAnswer, setTajwidAnswer] = useState<number | null>(null);
     const [tajwidIdx, setTajwidIdx] = useState(0);
     const [showCertificate, setShowCertificate] = useState(false);
+    const [juniorMode, setJuniorMode] = useState(false);
 
     const currentContent = activeModule?.content[contentIdx] ?? null;
 
@@ -621,6 +623,11 @@ export function AcademyHub() {
         );
     }
 
+    // ─── RENDER: Junior Mode ─────────────────────────────
+    if (juniorMode) {
+        return <AcademyJunior onBack={() => setJuniorMode(false)} />;
+    }
+
     // ─── RENDER: Level Selector (Hub) ────────────────────
     return (
         <div className="academy-hub">
@@ -630,6 +637,30 @@ export function AcademyHub() {
                 </button>
                 <h1>📚 Académie</h1>
             </header>
+
+            {/* Mode Toggle: Classique / Junior */}
+            <div style={{ display: 'flex', gap: 4, margin: '0 16px 16px', background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 4 }}>
+                <button
+                    onClick={() => setJuniorMode(false)}
+                    style={{
+                        flex: 1, padding: '10px 0', borderRadius: 12, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem',
+                        background: !juniorMode ? 'linear-gradient(135deg, #c9a84c, #b8962d)' : 'transparent',
+                        color: !juniorMode ? '#fff' : 'rgba(255,255,255,0.5)',
+                        transition: 'all 0.2s'
+                    }}>
+                    📚 Classique
+                </button>
+                <button
+                    onClick={() => setJuniorMode(true)}
+                    style={{
+                        flex: 1, padding: '10px 0', borderRadius: 12, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem',
+                        background: juniorMode ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'transparent',
+                        color: juniorMode ? '#fff' : 'rgba(255,255,255,0.5)',
+                        transition: 'all 0.2s'
+                    }}>
+                    🧒 Junior
+                </button>
+            </div>
 
             {/* Feature 8: Search Bar */}
             <div className="academy-search">
