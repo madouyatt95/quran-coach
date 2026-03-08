@@ -9,6 +9,7 @@ import { useSettingsStore } from '../stores/settingsStore';
 import { Loader2 } from 'lucide-react';
 
 const TajweedImagePage = lazy(() => import('../components/Mushaf/TajweedImagePage').then(m => ({ default: m.TajweedImagePage })));
+const MadinahImagePage = lazy(() => import('../components/Mushaf/MadinahImagePage').then(m => ({ default: m.MadinahImagePage })));
 
 export function ReadPage() {
     const [showSearch, setShowSearch] = useState(false);
@@ -46,6 +47,10 @@ export function ReadPage() {
             {viewMode === 'tajweed' ? (
                 <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><Loader2 size={32} className="animate-spin" /></div>}>
                     <TajweedImagePage />
+                </Suspense>
+            ) : viewMode === 'madinah' ? (
+                <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><Loader2 size={32} className="animate-spin" /></div>}>
+                    <MadinahImagePage />
                 </Suspense>
             ) : (
                 <MushafPage />

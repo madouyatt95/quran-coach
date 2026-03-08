@@ -479,6 +479,27 @@ export function MushafPage() {
                     >
                         <img src="/images/tajweed.png" alt="Tajweed" style={{ width: 26, height: 26, borderRadius: 6, objectFit: 'cover', display: 'block', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
                     </button>
+                    <button
+                        onClick={() => useSettingsStore.getState().setViewMode('madinah')}
+                        style={{
+                            marginLeft: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: '#f8f6f0',
+                            border: '1px solid #d5cdb9',
+                            borderRadius: '6px',
+                            padding: '4px',
+                            cursor: 'pointer',
+                            color: '#222',
+                            fontWeight: 'bold',
+                            fontSize: '10px',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                        title="Mode Mushaf Madinah (Vectoriel)"
+                    >
+                        Madinah
+                    </button>
                 </div>
 
                 <div className="mih-header-right">

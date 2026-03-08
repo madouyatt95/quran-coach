@@ -191,7 +191,7 @@ export function TajweedImagePage() {
                     <KhatmTracker />
                 </div>
 
-                <div className="tajweed-header__right">
+                <div className="tajweed-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button
                         className="tajweed-mode-toggle"
                         onClick={switchToMushaf}
@@ -199,6 +199,26 @@ export function TajweedImagePage() {
                     >
                         <BookOpen size={14} />
                         <span>{t('settings.textMode', 'Texte')}</span>
+                    </button>
+                    <button
+                        onClick={() => { useSettingsStore.getState().setViewMode('madinah'); }}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: '#f8f6f0',
+                            border: '1px solid #d5cdb9',
+                            borderRadius: '6px',
+                            padding: '4px',
+                            cursor: 'pointer',
+                            color: '#222',
+                            fontWeight: 'bold',
+                            fontSize: '10px',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                        title="Mode Mushaf Madinah (Vectoriel)"
+                    >
+                        Madinah
                     </button>
                 </div>
             </div>

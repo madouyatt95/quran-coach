@@ -1,0 +1,361 @@
+.madinah-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    z-index: 10;
+    overflow: hidden;
+}
+
+/* ===== HEADER ===== */
+.madinah-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    padding-top: calc(env(safe-area-inset-top) + 8px);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    min-height: 48px;
+    gap: 8px;
+}
+
+.madinah-header__left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.madinah-header__icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.madinah-header__icon-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.madinah-header__info {
+    display: flex;
+    flex-direction: column;
+}
+
+.madinah-header__surah {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.madinah-header__meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.madinah-header__center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.madinah-header__right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ===== IMAGE VIEWER ===== */
+.madinah-viewer {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    /* top align so we can scroll if needed */
+    justify-content: center;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    touch-action: pan-y pinch-zoom;
+    background: var(--bg-primary);
+    /* ensure background blends with image borders */
+    padding-bottom: 24px;
+    /* extra space at the bottom to prevent nav overlap */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.madinah-viewer__img {
+    width: 100%;
+    height: auto;
+    max-width: 800px;
+    /* constraint for large desktop screens */
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: opacity 0.3s ease;
+    transform: scale(1.03);
+    /* slightly scale up to hide exact bounding box borders and make it larger */
+    transform-origin: top center;
+}
+
+.madinah-viewer__img.loading {
+    opacity: 0.3;
+}
+
+.madinah-viewer__loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-secondary);
+}
+
+.madinah-viewer__error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 24px;
+}
+
+.madinah-viewer__error button {
+    margin-top: 12px;
+    padding: 8px 20px;
+    background: var(--accent-color, #4CAF50);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* ===== NAVIGATION ===== */
+.madinah-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    gap: 12px;
+}
+
+.madinah-nav__btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.madinah-nav__btn:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+}
+
+.madinah-nav__btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.madinah-nav__page-input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.madinah-nav__page-input input {
+    width: 50px;
+    text-align: center;
+    padding: 6px 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.madinah-nav__page-input span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* ===== PROGRESS BAR ===== */
+.madinah-progress {
+    height: 3px;
+    background: var(--bg-tertiary);
+    width: 100%;
+}
+
+.madinah-progress__bar {
+    height: 100%;
+    background: var(--accent-color, #4CAF50);
+    transition: width 0.3s ease;
+    border-radius: 0 2px 2px 0;
+}
+
+/* ===== KHATM VALIDATED BADGE ===== */
+.madinah-khatm-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+}
+
+/* ===== TAP ZONES ===== */
+.madinah-tap-zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 30%;
+    z-index: 5;
+    cursor: pointer;
+    background: transparent;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.madinah-tap-zone--next {
+    left: 0;
+}
+
+.madinah-tap-zone--prev {
+    right: 0;
+}
+
+/* ===== MODE TOGGLE (in Settings or header) ===== */
+.madinah-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    color: var(--text-primary);
+    font-size: 12px;
+    transition: background 0.2s;
+}
+
+.madinah-mode-toggle:hover {
+    background: var(--bg-secondary);
+}
+
+/* ===== SWIPE INDICATOR ===== */
+.madinah-swipe-hint {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    opacity: 0;
+    animation: madinah-fade-hint 3s ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes madinah-fade-hint {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ===== 3D PAGE FLIP ANIMATIONS ===== */
+
+/* Next page (reading RTL): Page turns from the left */
+.madinah-turn-next {
+    animation: page-turn-left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes page-turn-left {
+    0% {
+        transform: perspective(2000px) rotateY(-80deg) translateX(-10%);
+        opacity: 0.2;
+        transform-origin: left center;
+        filter: brightness(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        filter: brightness(0.9);
+    }
+
+    100% {
+        transform: perspective(2000px) rotateY(0deg) translateX(0);
+        opacity: 1;
+        transform-origin: left center;
+        filter: brightness(1);
+    }
+}
+
+/* Previous page: Page turns from the right */
+.madinah-turn-prev {
+    animation: page-turn-right 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes page-turn-right {
+    0% {
+        transform: perspective(2000px) rotateY(80deg) translateX(10%);
+        opacity: 0.2;
+        transform-origin: right center;
+        filter: brightness(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        filter: brightness(0.9);
+    }
+
+    100% {
+        transform: perspective(2000px) rotateY(0deg) translateX(0);
+        opacity: 1;
+        transform-origin: right center;
+        filter: brightness(1);
+    }
+}
