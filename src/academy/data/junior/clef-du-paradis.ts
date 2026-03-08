@@ -21,7 +21,7 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             emoji: '🌟',
             illustration: '🌟',
             lessonTitle: 'Allah, notre Créateur',
-            lessonBody: 'Allah est Celui qui a créé tout ce qui existe : le ciel, la terre, les étoiles, les animaux, et toi aussi ! 🌍✨\n\nAllah est Unique. Il n\'a pas de papa, pas de maman, et personne ne Lui ressemble.\n\nIl nous voit, Il nous entend, et Il nous aime quand on fait le bien. 💛\n\nAllah a 99 beaux Noms, comme Ar-Rahman (Le Très Miséricordieux) et Al-Khaliq (Le Créateur).',
+            lessonBody: 'Allah est Celui qui a créé tout ce qui existe : le ciel, la terre, les étoiles, les animaux, et toi aussi ! 🌍✨\n\nAllah est Unique. Il n\'a pas de papa, pas de maman, et personne ne Lui ressemble.\n\nIl nous voit, Il nous entend, et Il nous aime quand on fait le bien. 💛\n\nAllah a 99 beaux Noms connus, comme Ar-Rahman (Le Très Miséricordieux) et Al-Khaliq (Le Créateur). Mais Ses Noms sont en réalité innombrables !',
             verse: 'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',
             verseRef: 'Sourate Al-Ikhlas (112:1-4)',
             activity: {
@@ -36,7 +36,7 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             },
             quiz: [
                 { question: 'Qui a créé tout ce qui existe ?', options: ['Les humains', 'Allah', 'Les anges', 'Les animaux'], answer: 1, feedback: 'C\'est Allah qui a tout créé ! 🌟' },
-                { question: 'Combien de beaux Noms Allah possède-t-Il ?', options: ['10', '50', '99', '1000'], answer: 2, feedback: 'Allah possède 99 beaux Noms (Asma ul-Husna) ! ✨' },
+                { question: 'Combien de beaux Noms connus d\'Allah y a-t-il ?', options: ['10', '50', '99', '1000'], answer: 2, feedback: 'On connaît 99 beaux Noms d\'Allah (Asma ul-Husna), mais Ses Noms sont innombrables ! ✨' },
             ],
         },
 
