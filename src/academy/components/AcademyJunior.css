@@ -410,6 +410,23 @@
     font-style: italic;
 }
 
+.junior-verse-box__phonetic {
+    color: rgba(201, 168, 76, 0.85);
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 6px;
+}
+
+.junior-verse-box__translation {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(201, 168, 76, 0.15);
+}
+
 .junior-hadith-box {
     background: rgba(46, 213, 115, 0.08);
     border: 1px solid rgba(46, 213, 115, 0.15);
@@ -432,6 +449,23 @@
     color: rgba(46, 213, 115, 0.6);
     font-size: 0.75rem;
     font-style: italic;
+}
+
+.junior-hadith-box__phonetic {
+    color: rgba(46, 213, 115, 0.85);
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 6px;
+}
+
+.junior-hadith-box__translation {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(46, 213, 115, 0.12);
 }
 
 /* Activity */

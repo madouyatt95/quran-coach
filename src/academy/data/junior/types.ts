@@ -34,8 +34,12 @@ export interface JuniorStep {
     lessonTitle: string;
     lessonBody: string;
     verse?: string;
+    versePhonetic?: string;
+    verseTranslation?: string;
     verseRef?: string;
     hadith?: string;
+    hadithPhonetic?: string;
+    hadithTranslation?: string;
     hadithRef?: string;
     illustration: string; // emoji-based illustration key
     // Interactive Activity

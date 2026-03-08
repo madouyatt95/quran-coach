@@ -215,6 +215,8 @@ export function AcademyJunior({ onBack }: { onBack: () => void }) {
                             <h3>📖 Verset à retenir</h3>
                             <div className="junior-verse-box">
                                 <div className="junior-verse-box__arabic">{activeStep.verse}</div>
+                                {activeStep.versePhonetic && <div className="junior-verse-box__phonetic">{activeStep.versePhonetic}</div>}
+                                {activeStep.verseTranslation && <div className="junior-verse-box__translation">{activeStep.verseTranslation}</div>}
                                 <div className="junior-verse-box__ref">{activeStep.verseRef}</div>
                             </div>
                         </div>
@@ -225,6 +227,8 @@ export function AcademyJunior({ onBack }: { onBack: () => void }) {
                             <h3>📜 Hadith à retenir</h3>
                             <div className="junior-hadith-box">
                                 <div className="junior-hadith-box__arabic">{activeStep.hadith}</div>
+                                {activeStep.hadithPhonetic && <div className="junior-hadith-box__phonetic">{activeStep.hadithPhonetic}</div>}
+                                {activeStep.hadithTranslation && <div className="junior-hadith-box__translation">{activeStep.hadithTranslation}</div>}
                                 <div className="junior-hadith-box__ref">{activeStep.hadithRef}</div>
                             </div>
                         </div>
@@ -283,12 +287,16 @@ export function AcademyJunior({ onBack }: { onBack: () => void }) {
                             {activeStep.verse && (
                                 <div className="junior-verse-box">
                                     <div className="junior-verse-box__arabic">{activeStep.verse}</div>
+                                    {activeStep.versePhonetic && <div className="junior-verse-box__phonetic">{activeStep.versePhonetic}</div>}
+                                    {activeStep.verseTranslation && <div className="junior-verse-box__translation">{activeStep.verseTranslation}</div>}
                                     <div className="junior-verse-box__ref">{activeStep.verseRef}</div>
                                 </div>
                             )}
                             {activeStep.hadith && (
                                 <div className="junior-hadith-box">
                                     <div className="junior-hadith-box__arabic">{activeStep.hadith}</div>
+                                    {activeStep.hadithPhonetic && <div className="junior-hadith-box__phonetic">{activeStep.hadithPhonetic}</div>}
+                                    {activeStep.hadithTranslation && <div className="junior-hadith-box__translation">{activeStep.hadithTranslation}</div>}
                                     <div className="junior-hadith-box__ref">{activeStep.hadithRef}</div>
                                 </div>
                             )}

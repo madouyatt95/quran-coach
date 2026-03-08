@@ -23,6 +23,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Allah, notre Créateur',
             lessonBody: 'Allah est Celui qui a créé tout ce qui existe : le ciel, la terre, les étoiles, les animaux, et toi aussi ! 🌍✨\n\nAllah est Unique. Il n\'a pas de papa, pas de maman, et personne ne Lui ressemble.\n\nIl nous voit, Il nous entend, et Il nous aime quand on fait le bien. 💛\n\nAllah a 99 beaux Noms connus, comme Ar-Rahman (Le Très Miséricordieux) et Al-Khaliq (Le Créateur). Mais Ses Noms sont en réalité innombrables !',
             verse: 'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ',
+            versePhonetic: 'Qoul houwa Allahou ahad. Allahou s-samad. Lam yalid wa lam youlad. Wa lam yakoun lahou koufouwan ahad.',
+            verseTranslation: 'Dis : « Il est Allah, l\'Unique. Allah, le Seul à être imploré. Il n\'a jamais engendré, et n\'a pas été engendré. Et nul ne Lui est égal. »',
             verseRef: 'Sourate Al-Ikhlas (112:1-4)',
             activity: {
                 type: 'truefalse',
@@ -52,6 +54,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Notre mission sur Terre',
             lessonBody: 'Allah nous a créés pour une raison très spéciale : L\'adorer ! 🤲\n\nAdorer Allah, ça veut dire :\n• Faire la prière (salat) 🕌\n• Être gentil avec les autres 🤝\n• Dire la vérité 💬\n• Aider ceux qui en ont besoin 💝\n\nQuand on adore Allah, on est heureux dans ce monde et dans l\'au-delà !',
             verse: 'وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ',
+            versePhonetic: 'Wa mâ khalaqtou l-jinna wal-insa illâ li ya\'boudoûn.',
+            verseTranslation: 'Je n\'ai créé les djinns et les hommes que pour qu\'ils M\'adorent.',
             verseRef: 'Sourate Adh-Dhariyat (51:56)',
             activity: {
                 type: 'match',
@@ -81,6 +85,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Les cadeaux d\'Allah',
             lessonBody: 'Allah nous a donné tellement de cadeaux ! 🎁\n\n🌞 Le soleil pour nous éclairer\n💧 L\'eau pour boire\n🍎 Les fruits pour manger\n👀 Les yeux pour voir\n👂 Les oreilles pour écouter\n❤️ Un cœur pour aimer\n👨‍👩‍👧‍👦 Une famille pour nous aimer\n\nTous ces bienfaits viennent d\'Allah. On dit « Al-Hamdulillah » (Louange à Allah) pour Le remercier !',
             verse: 'وَإِن تَعُدُّوا نِعْمَةَ اللَّهِ لَا تُحْصُوهَا',
+            versePhonetic: 'Wa in ta\'ouddou ni\'mata Allahi lâ touhsoûhâ.',
+            verseTranslation: 'Et si vous comptez les bienfaits d\'Allah, vous ne saurez pas les dénombrer.',
             verseRef: 'Sourate An-Nahl (16:18)',
             activity: {
                 type: 'order',
@@ -106,6 +112,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Allah est Unique',
             lessonBody: 'Le Tawhid, c\'est le message le plus important de l\'Islam :\n\n☝️ Allah est UN — Il n\'y a qu\'un seul Dieu.\n\nIl n\'a pas d\'associé, pas de fils, pas de fille.\nPersonne ne peut faire ce qu\'Allah fait :\n• Créer les étoiles ⭐\n• Faire tomber la pluie 🌧️\n• Donner la vie 🌱\n\nC\'est ce que tous les prophètes ont enseigné, d\'Adam jusqu\'à Muhammad ﷺ.',
             verse: 'وَمَا أَرْسَلْنَا مِن قَبْلِكَ مِن رَّسُولٍ إِلَّا نُوحِي إِلَيْهِ أَنَّهُ لَا إِلَٰهَ إِلَّا أَنَا فَاعْبُدُونِ',
+            versePhonetic: 'Wa mâ arsalnâ min qablika min rasoulin illâ noûhî ilayhi annahou lâ ilâha illâ ana fa\'boudoûn.',
+            verseTranslation: 'Et Nous n\'avons envoyé avant toi aucun messager à qui Nous n\'ayons révélé : « Point de divinité en dehors de Moi ; adorez-Moi donc ! »',
             verseRef: 'Sourate Al-Anbiya (21:25)',
             activity: {
                 type: 'truefalse',
@@ -135,6 +143,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Les messagers d\'Allah',
             lessonBody: 'Allah a envoyé des prophètes pour guider les gens vers le bien ! 🕊️\n\nVoici quelques prophètes :\n• Adam — Le premier homme 🌍\n• Nouh (Noé) — Il a construit l\'arche 🚢\n• Ibrahim (Abraham) — L\'ami d\'Allah 💛\n• Moussa (Moïse) — Il a traversé la mer 🌊\n• Issa (Jésus) — Il guérissait les malades 🤲\n• Muhammad ﷺ — Le dernier prophète, le plus aimé 💚\n\nTous les prophètes ont dit : « Adorez Allah seul ! »',
             verse: 'وَلَقَدْ بَعَثْنَا فِي كُلِّ أُمَّةٍ رَّسُولًا أَنِ اعْبُدُوا اللَّهَ',
+            versePhonetic: 'Wa laqad ba\'athnâ fî koulli oummatin rasoulan ani \'boudou Allâh.',
+            verseTranslation: 'Nous avons envoyé dans chaque communauté un messager (pour leur dire) : « Adorez Allah. »',
             verseRef: 'Sourate An-Nahl (16:36)',
             activity: {
                 type: 'match',
@@ -164,6 +174,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Le Livre d\'Allah',
             lessonBody: 'Le Coran est la parole d\'Allah ! 📖✨\n\nAllah l\'a révélé au prophète Muhammad ﷺ par l\'ange Jibril (Gabriel).\n\nLe Coran contient :\n• 114 sourates (chapitres) 📚\n• Des histoires magnifiques 📖\n• Les règles pour bien vivre ✅\n• Des invocations (douas) 🤲\n\nQuand on lit le Coran, on gagne des récompenses pour chaque lettre ! Lire « Alif Lam Mim » = 30 récompenses ! 🌟',
             verse: 'وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ',
+            versePhonetic: 'Wa laqad yassarnâ l-Qour\'âna li dh-dhikri fahal min mouddakir.',
+            verseTranslation: 'En effet, Nous avons rendu le Coran facile pour la méditation. Y a-t-il quelqu\'un pour réfléchir ?',
             verseRef: 'Sourate Al-Qamar (54:17)',
             activity: {
                 type: 'order',
@@ -189,6 +201,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Les serviteurs d\'Allah',
             lessonBody: 'Les anges sont des créatures d\'Allah faites de lumière ! ✨\n\nIls obéissent toujours à Allah et ne désobéissent jamais.\n\nQuelques anges importants :\n• Jibril — Transmet les messages d\'Allah 📜\n• Mikail — S\'occupe de la pluie et la nourriture 🌧️\n• Israfil — Soufflera dans la trompette le Jour Dernier 📯\n• Les anges gardiens — Ils écrivent tes bonnes et mauvaises actions 📝\n\nOn ne peut pas les voir, mais ils sont toujours là !',
             verse: 'بَلْ عِبَادٌ مُّكْرَمُونَ ۝ لَا يَسْبِقُونَهُ بِالْقَوْلِ وَهُم بِأَمْرِهِ يَعْمَلُونَ',
+            versePhonetic: 'Bal \'ibâdoun moukramoûn. Lâ yasbiqoûnahou bil-qawli wa houm bi-amrihi ya\'maloûn.',
+            verseTranslation: 'Ce sont plutôt des serviteurs honorés. Ils ne devancent pas Son commandement et ils agissent selon Ses ordres.',
             verseRef: 'Sourate Al-Anbiya (21:26-27)',
             activity: {
                 type: 'match',
@@ -218,6 +232,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Le grand jour',
             lessonBody: 'Un jour, cette vie sur Terre se terminera. Ce sera le Jour du Jugement ! ⚖️\n\nCe jour-là :\n• Tout le monde sera rassemblé devant Allah\n• Nos actions seront pesées sur une grande balance ⚖️\n• Les bonnes actions d\'un côté, les mauvaises de l\'autre\n• Même les toutes petites actions comptent ! \n\nC\'est pour cela qu\'il faut toujours essayer de faire le bien ! 💪',
             verse: 'فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ ۝ وَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّا يَرَهُ',
+            versePhonetic: 'Faman ya\'mal mithqâla dharratin khayran yarah. Wa man ya\'mal mithqâla dharratin sharran yarah.',
+            verseTranslation: 'Quiconque fait un bien du poids d\'un atome le verra. Et quiconque fait un mal du poids d\'un atome le verra.',
             verseRef: 'Sourate Az-Zalzalah (99:7-8)',
             activity: {
                 type: 'truefalse',
@@ -247,6 +263,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'La plus belle récompense',
             lessonBody: 'Le Paradis (Al-Jannah) est la récompense d\'Allah pour ceux qui font le bien ! 🏞️💚\n\nDans le Paradis :\n• Des jardins magnifiques avec des rivières 🌳💧\n• Des fruits délicieux à volonté 🍇🍎\n• Des palais en or et en perles 🏰\n• Plus jamais de tristesse ni de maladie 😊\n• On pourra voir Allah ! C\'est le plus grand bonheur 🌟\n\nLe Paradis est éternel — ça veut dire pour toujours ! ♾️',
             verse: 'وَسَارِعُوا إِلَىٰ مَغْفِرَةٍ مِّن رَّبِّكُمْ وَجَنَّةٍ عَرْضُهَا السَّمَاوَاتُ وَالْأَرْضُ أُعِدَّتْ لِلْمُتَّقِينَ',
+            versePhonetic: 'Wa sâri\'oû ilâ maghfiratin min rabbikoum wa jannatin \'ardouha s-samâwâtou wal-ardou ou\'iddat lil-mouttaqîn.',
+            verseTranslation: 'Et empressez-vous vers le pardon de votre Seigneur et un Paradis aussi large que les cieux et la terre, préparé pour les pieux.',
             verseRef: 'Sourate Al-Imran (3:133)',
             activity: {
                 type: 'truefalse',
@@ -276,6 +294,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Le châtiment à éviter',
             lessonBody: 'L\'Enfer (Jahannam) est l\'endroit qu\'Allah a préparé pour ceux qui désobéissent et refusent de croire. 🔥\n\nAllah ne veut pas que Ses serviteurs y aillent !\nC\'est pour cela qu\'Il nous prévient dans le Coran.\n\nPour s\'en protéger :\n• Croire en Allah et L\'adorer ☝️\n• Faire le bien et éviter le mal ✅\n• Demander pardon à Allah quand on se trompe 🤲\n• Être gentil avec les gens 💛\n\nAllah est très Miséricordieux, Il pardonne beaucoup ! 💚',
             verse: 'يَا أَيُّهَا الَّذِينَ آمَنُوا قُوا أَنفُسَكُمْ وَأَهْلِيكُمْ نَارًا',
+            versePhonetic: 'Yâ ayyouha l-ladhîna âmanoû qoû anfousakoum wa ahlîkoum nâran.',
+            verseTranslation: 'Ô vous qui avez cru ! Préservez vos personnes et vos familles d\'un Feu.',
             verseRef: 'Sourate At-Tahrim (66:6)',
             activity: {
                 type: 'order',
@@ -301,6 +321,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Chaque bonne action compte !',
             lessonBody: 'Allah aime les bonnes actions, même les plus petites ! ⭐\n\nExemples de bonnes actions :\n• 😊 Sourire — c\'est une aumône !\n• 🚰 Donner de l\'eau à quelqu\'un qui a soif\n• 📚 Apprendre et partager le savoir\n• 🗑️ Enlever un obstacle du chemin\n• 🤲 Dire « Bismillah » avant de manger\n• 💛 Être gentil avec ses parents\n• 🐱 Être bon avec les animaux\n\nLe Prophète ﷺ a dit : « Sourire à ton frère est une aumône. »',
             hadith: 'تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ صَدَقَةٌ',
+            hadithPhonetic: 'Tabassoumouka fî wajhi akhîka sadaqah.',
+            hadithTranslation: 'Ton sourire à ton frère est une aumône.',
             hadithRef: 'Rapporté par At-Tirmidhi',
             activity: {
                 type: 'truefalse',
@@ -331,6 +353,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'L\'obéissance, la clef du bonheur',
             lessonBody: 'Obéir à Allah, c\'est suivre Ses règles pour vivre heureux ! 🙏\n\nAllah nous demande :\n• De prier 5 fois par jour 🕌\n• De jeûner pendant le Ramadan 🌙\n• D\'obéir à nos parents 👨‍👩‍👧‍👦\n• D\'être gentil avec tout le monde 💛\n• De dire la vérité 💬\n\nObéir à Allah, c\'est aussi obéir au Prophète ﷺ et à ses parents.\nC\'est comme suivre un chemin lumineux qui mène au Paradis ! ✨🏞️',
             verse: 'يَا أَيُّهَا الَّذِينَ آمَنُوا أَطِيعُوا اللَّهَ وَأَطِيعُوا الرَّسُولَ وَأُولِي الْأَمْرِ مِنكُمْ',
+            versePhonetic: 'Yâ ayyouha l-ladhîna âmanoû atî\'oû Allâha wa atî\'oû r-rasoûla wa oulî l-amri minkoum.',
+            verseTranslation: 'Ô vous qui avez cru ! Obéissez à Allah, obéissez au Messager et à ceux d\'entre vous qui détiennent le commandement.',
             verseRef: 'Sourate An-Nisa (4:59)',
             activity: {
                 type: 'match',
@@ -360,6 +384,8 @@ export const CLEF_DU_PARADIS: JuniorModule = {
             lessonTitle: 'Le plus bel amour',
             lessonBody: 'Aimer Allah, c\'est le sentiment le plus beau et le plus fort ! 💚\n\nComment montrer qu\'on aime Allah ?\n• En Le mentionnant souvent (Dhikr) 📿\n• En Le remerciant pour Ses bienfaits 🤲\n• En lisant Son Livre (le Coran) 📖\n• En suivant le Prophète ﷺ 💛\n• En étant bon avec Ses créatures 🌍\n\nEt tu sais quoi ? Quand tu aimes Allah... Allah t\'aime aussi ! Et quand Allah t\'aime, Il te guide, te protège, et te prépare la plus belle place au Paradis ! 🏞️✨\n\n🔑 Voilà la clef du Paradis : croire en Allah, L\'aimer et L\'adorer !',
             verse: 'وَالَّذِينَ آمَنُوا أَشَدُّ حُبًّا لِّلَّهِ',
+            versePhonetic: 'Wa l-ladhîna âmanoû ashaddou houbban lillâh.',
+            verseTranslation: 'Et ceux qui croient ont pour Allah un amour plus intense.',
             verseRef: 'Sourate Al-Baqarah (2:165)',
             activity: {
                 type: 'order',
