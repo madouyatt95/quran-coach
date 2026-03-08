@@ -66,15 +66,38 @@ export async function fetchMadinahBoxes(page: number): Promise<MadinahBox[]> {
                     const widthPercent = (verseWords.length / totalWordsOnLine) * 100;
                     const leftPercent = 100 - currentRight - widthPercent;
 
+                    // Calculate vertical position (Top and Height)
+                    let topPercent: number;
+                    let heightPercent: number;
+
+                    if (page === 1) {
+                        // Page 1 (Al-Fatiha): 7 lines in a central decorative frame. API reports lines 2-8.
+                        const frameStart = 26; // approx % from the top 
+                        const lineH = 5.0;
+                        topPercent = frameStart + (lineNum - 2) * lineH;
+                        heightPercent = lineH;
+                    } else if (page === 2) {
+                        // Page 2 (Al-Baqarah): 6 lines + Surah Header. API reports lines 3-8.
+                        const frameStart = 26;
+                        const lineH = 5.0;
+                        const headerSpace = 2 * lineH; // 2 lines reserved for header+bismillah
+                        topPercent = frameStart + headerSpace + (lineNum - 3) * lineH;
+                        heightPercent = lineH;
+                    } else {
+                        // Standard 15-line layout scaling
+                        topPercent = (lineNum - 1) * (100 / MAX_LINES);
+                        heightPercent = 100 / MAX_LINES;
+                    }
+
                     boxes.push({
                         verseKey,
                         surah: verseWords[0].surah,
                         ayah: verseWords[0].ayah,
                         line: lineNum,
                         left: leftPercent,
-                        top: (lineNum - 1) * (100 / MAX_LINES),
+                        top: topPercent,
                         width: widthPercent,
-                        height: 100 / MAX_LINES
+                        height: heightPercent
                     });
 
                     currentRight += widthPercent;
