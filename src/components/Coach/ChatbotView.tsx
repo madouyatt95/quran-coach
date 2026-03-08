@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, Sparkles, ExternalLink, RotateCcw } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { chatbotAnswer, CHATBOT_QUICK_QUESTIONS, type ChatMessage } from '../../lib/chatbotEngine';
 import './ChatbotView.css';
 
@@ -98,7 +99,7 @@ export function ChatbotView() {
                         <div className="chatbot-msg__bubble">
                             {msg.role === 'assistant' ? (
                                 <div className="chatbot-msg__content" dangerouslySetInnerHTML={{
-                                    __html: formatMarkdown(msg.content)
+                                    __html: DOMPurify.sanitize(formatMarkdown(msg.content))
                                 }} />
                             ) : (
                                 <div className="chatbot-msg__content">{msg.content}</div>

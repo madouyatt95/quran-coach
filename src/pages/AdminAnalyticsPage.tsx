@@ -9,7 +9,7 @@ import { RefreshCw, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './AdminAnalyticsPage.css';
 
-const ADMIN_PASS = 'qc-admin-2026';
+const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS || crypto.randomUUID();
 const SESSION_AUTH_KEY = 'qc-admin-auth';
 
 // ─── Types ───────────────────────────────────────────
