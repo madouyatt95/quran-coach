@@ -74,6 +74,7 @@ export function MadinahImagePage() {
 
     const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const longPressTriggered = useRef(false);
+    const lastClickTime = useRef(0);
 
     const audio = useMushafAudio({
         selectedReciter,
@@ -345,15 +346,22 @@ export function MadinahImagePage() {
                                 onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                 onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
                                 onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    const now = Date.now();
+                                    if (now - lastClickTime.current < 400) return; // Debounce ghost clicks on mobile
+                                    lastClickTime.current = now;
+
                                     if (longPressTriggered.current) {
-                                        e.preventDefault();
                                         return;
                                     }
                                     setSelectedVerse(box.verseKey);
                                     // Find ayah index in pageAyahs to play it
                                     const aIdx = pageAyahs.findIndex(a => a.surah === box.surah && a.numberInSurah === box.ayah);
                                     if (aIdx !== -1) {
-                                        if (audio.currentPlayingAyah === pageAyahs[aIdx].number && audio.audioPlaying) {
+                                        const isSameVerse = audio.currentPlayingAyah === pageAyahs[aIdx].number;
+                                        if (isSameVerse && audio.audioPlaying) {
                                             audio.stopAudio();
                                         } else {
                                             audio.playAyahAtIndex(aIdx);
@@ -444,6 +452,11 @@ export function MadinahImagePage() {
                         if (aIdx !== -1) audio.playAyahAtIndex(aIdx);
                     }}
                     onTafsir={() => {
+                        sessionStorage.setItem('shazamResult', JSON.stringify({ surah: contextMenuState.ayah.surah, ayah: contextMenuState.ayah.numberInSurah, tafsirId: 'french_ibnkathir_local' }));
+                        navigate('/tafsir');
+                    }}
+                    onAsbab={() => {
+                        // Using French Ibn Kathir for Causes of Revelation as no native French Asbab API is complete.
                         sessionStorage.setItem('shazamResult', JSON.stringify({ surah: contextMenuState.ayah.surah, ayah: contextMenuState.ayah.numberInSurah, tafsirId: 'french_ibnkathir_local' }));
                         navigate('/tafsir');
                     }}
