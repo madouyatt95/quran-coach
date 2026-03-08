@@ -294,7 +294,8 @@ export function MadinahImagePage() {
 
                     {/* Bounding Boxes Layer */}
                     {!imgLoading && !imgError && boxes.map((box, idx) => {
-                        const isPlaying = audio.currentPlayingAyah === box.ayah && audio.currentSurahRef.current === box.surah;
+                        const aIdx = pageAyahs.findIndex(a => a.surah === box.surah && a.numberInSurah === box.ayah);
+                        const isPlaying = aIdx !== -1 && audio.currentPlayingAyah === pageAyahs[aIdx].number;
                         const isSelected = selectedVerse === box.verseKey || isPlaying;
 
                         return (
@@ -442,8 +443,14 @@ export function MadinahImagePage() {
                         const aIdx = pageAyahs.findIndex(a => a.number === contextMenuState.ayah.number);
                         if (aIdx !== -1) audio.playAyahAtIndex(aIdx);
                     }}
-                    onTafsir={() => alert('Tafsir: Bientôt disponible.')}
-                    onAsbab={() => alert('Asbab An-Nuzul: Bientôt disponible.')}
+                    onTafsir={() => {
+                        sessionStorage.setItem('shazamResult', JSON.stringify({ surah: contextMenuState.ayah.surah, ayah: contextMenuState.ayah.numberInSurah, tafsirId: 'french_ibnkathir_local' }));
+                        navigate('/tafsir');
+                    }}
+                    onAsbab={() => {
+                        sessionStorage.setItem('shazamResult', JSON.stringify({ surah: contextMenuState.ayah.surah, ayah: contextMenuState.ayah.numberInSurah, tafsirId: 16 }));
+                        navigate('/tafsir');
+                    }}
                     onHifdh={() => navigate(`/hifdh?surah=${contextMenuState.ayah.surah}&ayah=${contextMenuState.ayah.numberInSurah}`)}
                     onShare={() => {
                         if (navigator.share) {

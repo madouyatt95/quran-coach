@@ -79,12 +79,13 @@ export function TafsirPage() {
         const shazamResult = sessionStorage.getItem('shazamResult');
         if (shazamResult) {
             try {
-                const { surah, ayah } = JSON.parse(shazamResult);
+                const { surah, ayah, tafsirId } = JSON.parse(shazamResult);
                 if (surah) setSelectedSurah(surah);
                 if (ayah) {
                     setSelectedAyah(ayah);
                     setInitializedFromShazam(true);
                 }
+                if (tafsirId) setSelectedTafsir(tafsirId);
                 sessionStorage.removeItem('shazamResult'); // Clear after reading
             } catch (e) {
                 console.error('Failed to parse shazamResult', e);

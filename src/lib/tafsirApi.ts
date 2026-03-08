@@ -10,6 +10,7 @@ export const AVAILABLE_TAFSIRS = [
     { id: 'french_montada', name: 'Montada Islamic (Exégèse)', nameAr: 'المنتدى الإسلامي', language: 'fr', type: 'quranenc' },
     { id: 'french_ibnkathir_local', name: 'Ibn Kathir (Français - LOCAL)', nameAr: 'ابن كثير (محلي)', language: 'fr', type: 'local' },
     { id: 169, name: 'Ibn Kathir (English)', nameAr: 'ابن كثير', language: 'en', type: 'quran' },
+    { id: 16, name: 'Asbab Al-Nuzul (Arabe)', nameAr: 'أسباب النزول للواحدي', language: 'ar', type: 'quran' },
 ];
 
 export interface TafsirInfo {
