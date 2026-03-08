@@ -353,7 +353,7 @@ export function MadinahImagePage() {
                                     // Find ayah index in pageAyahs to play it
                                     const aIdx = pageAyahs.findIndex(a => a.surah === box.surah && a.numberInSurah === box.ayah);
                                     if (aIdx !== -1) {
-                                        if (audio.currentPlayingAyah === box.ayah && audio.audioPlaying) {
+                                        if (audio.currentPlayingAyah === pageAyahs[aIdx].number && audio.audioPlaying) {
                                             audio.stopAudio();
                                         } else {
                                             audio.playAyahAtIndex(aIdx);
@@ -445,10 +445,6 @@ export function MadinahImagePage() {
                     }}
                     onTafsir={() => {
                         sessionStorage.setItem('shazamResult', JSON.stringify({ surah: contextMenuState.ayah.surah, ayah: contextMenuState.ayah.numberInSurah, tafsirId: 'french_ibnkathir_local' }));
-                        navigate('/tafsir');
-                    }}
-                    onAsbab={() => {
-                        sessionStorage.setItem('shazamResult', JSON.stringify({ surah: contextMenuState.ayah.surah, ayah: contextMenuState.ayah.numberInSurah, tafsirId: 16 }));
                         navigate('/tafsir');
                     }}
                     onHifdh={() => navigate(`/hifdh?surah=${contextMenuState.ayah.surah}&ayah=${contextMenuState.ayah.numberInSurah}`)}

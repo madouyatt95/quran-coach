@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Play, Pause, BookOpen, Share2, Copy, BookmarkPlus, Info } from 'lucide-react';
+import { Play, Pause, BookOpen, Share2, Copy, BookmarkPlus } from 'lucide-react';
 import type { Ayah } from '../../types';
 import './MadinahContextMenu.css';
 
@@ -10,7 +10,6 @@ interface MadinahContextMenuProps {
     onClose: () => void;
     onPlay: () => void;
     onTafsir: () => void;
-    onAsbab: () => void;
     onHifdh: () => void;
     onShare: () => void;
     onCopy: () => void;
@@ -23,7 +22,6 @@ export function MadinahContextMenu({
     onClose,
     onPlay,
     onTafsir,
-    onAsbab,
     onHifdh,
     onShare,
     onCopy
@@ -69,11 +67,6 @@ export function MadinahContextMenu({
                 <button className="madinah-context-item" onClick={() => { onTafsir(); onClose(); }}>
                     <BookOpen size={18} />
                     <span>Lire le Tafsir</span>
-                </button>
-
-                <button className="madinah-context-item" onClick={() => { onAsbab(); onClose(); }}>
-                    <Info size={18} />
-                    <span>Causes de Révélation</span>
                 </button>
 
                 <div className="madinah-context-divider" />
