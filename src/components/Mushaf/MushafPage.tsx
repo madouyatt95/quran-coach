@@ -12,6 +12,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Heart,
+    BookOpen,
 } from 'lucide-react';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -463,43 +464,29 @@ export function MushafPage() {
                 {/* Center: Khatm Tracker (Compact) */}
                 <div className="mih-header-center">
                     <KhatmTracker />
-                    <button
-                        onClick={() => useSettingsStore.getState().setViewMode('tajweed')}
-                        style={{
-                            marginLeft: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'transparent',
-                            border: 'none',
-                            padding: 0,
-                            cursor: 'pointer',
-                        }}
-                        title={t('settings.viewModeTajweed', 'Mode Image Tajweed')}
-                    >
-                        <img src="/images/tajweed.png" alt="Tajweed" style={{ width: 26, height: 26, borderRadius: 6, objectFit: 'cover', display: 'block', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
-                    </button>
-                    <button
-                        onClick={() => useSettingsStore.getState().setViewMode('madinah')}
-                        style={{
-                            marginLeft: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: '#f8f6f0',
-                            border: '1px solid #d5cdb9',
-                            borderRadius: '6px',
-                            padding: '4px',
-                            cursor: 'pointer',
-                            color: '#222',
-                            fontWeight: 'bold',
-                            fontSize: '10px',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}
-                        title="Mode Mushaf Madinah (Vectoriel)"
-                    >
-                        Madinah
-                    </button>
+                    <div className="view-mode-selector" style={{ marginLeft: '12px', display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
+                        <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
+                        <select
+                            value="mushaf"
+                            onChange={(e) => {
+                                const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah';
+                                useSettingsStore.getState().setViewMode(mode);
+                            }}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                fontSize: '13px',
+                                outline: 'none',
+                                cursor: 'pointer',
+                                paddingRight: '4px'
+                            }}
+                        >
+                            <option value="mushaf">{t('settings.textMode', 'Texte Interactif')}</option>
+                            <option value="tajweed">Image (Tajweed)</option>
+                            <option value="madinah">Madinah (Vectoriel)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="mih-header-right">

@@ -165,10 +165,13 @@ export function TajweedImagePage() {
         }
     };
 
-    // Switch back to Mushaf text mode
-    const switchToMushaf = () => {
-        setViewMode('mushaf');
-        goToPage(page);
+    // Switch view mode
+    const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah';
+        setViewMode(mode);
+        if (mode === 'mushaf') {
+            goToPage(page);
+        }
     };
 
     return (
@@ -192,34 +195,26 @@ export function TajweedImagePage() {
                 </div>
 
                 <div className="tajweed-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <button
-                        className="tajweed-mode-toggle"
-                        onClick={switchToMushaf}
-                        title={t('settings.viewModeMushaf', 'Mode Mushaf interactif')}
-                    >
-                        <BookOpen size={14} />
-                        <span>{t('settings.textMode', 'Texte')}</span>
-                    </button>
-                    <button
-                        onClick={() => { useSettingsStore.getState().setViewMode('madinah'); }}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: '#f8f6f0',
-                            border: '1px solid #d5cdb9',
-                            borderRadius: '6px',
-                            padding: '4px',
-                            cursor: 'pointer',
-                            color: '#222',
-                            fontWeight: 'bold',
-                            fontSize: '10px',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}
-                        title="Mode Mushaf Madinah (Vectoriel)"
-                    >
-                        Madinah
-                    </button>
+                    <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
+                        <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
+                        <select
+                            value="tajweed"
+                            onChange={handleViewModeChange}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                fontSize: '13px',
+                                outline: 'none',
+                                cursor: 'pointer',
+                                paddingRight: '4px'
+                            }}
+                        >
+                            <option value="mushaf">{t('settings.textMode', 'Texte Interactif')}</option>
+                            <option value="tajweed">Image (Tajweed)</option>
+                            <option value="madinah">Madinah (Vectoriel)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

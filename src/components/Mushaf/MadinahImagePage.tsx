@@ -27,8 +27,8 @@ import './MadinahImagePage.css';
 // Vector / High Quality image source for Madinah Mushaf
 function getPageImageUrl(page: number): string {
     const fileNum = String(page).padStart(3, '0');
-    // We use a high quality PNG or SVG endpoint for Madinah pages
-    return `https://raw.githubusercontent.com/quran/quran.com-images/master/width_1024/page${fileNum}.png`;
+    // Using a reliable CDN for Madinah Mushaf pages
+    return `https://surahquran.com/img/pages-quran/page${fileNum}.png`;
 }
 
 // Determine which surah a page belongs to
@@ -191,10 +191,13 @@ export function MadinahImagePage() {
         }
     };
 
-    // Switch back to Mushaf text mode
-    const switchToMushaf = () => {
-        setViewMode('mushaf');
-        goToPage(page);
+    // Switch view mode
+    const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah';
+        setViewMode(mode);
+        if (mode === 'mushaf') {
+            goToPage(page);
+        }
     };
 
     return (
@@ -218,29 +221,26 @@ export function MadinahImagePage() {
                 </div>
 
                 <div className="madinah-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <button
-                        className="madinah-mode-toggle"
-                        onClick={switchToMushaf}
-                        title={t('settings.viewModeMushaf', 'Mode Mushaf interactif')}
-                    >
-                        <BookOpen size={14} />
-                        <span>{t('settings.textMode', 'Texte')}</span>
-                    </button>
-                    <button
-                        onClick={() => { useSettingsStore.getState().setViewMode('tajweed'); }}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'transparent',
-                            border: 'none',
-                            padding: 0,
-                            cursor: 'pointer',
-                        }}
-                        title={t('settings.viewModeTajweed', 'Mode Image Tajweed')}
-                    >
-                        <img src="/images/tajweed.png" alt="Tajweed" style={{ width: 26, height: 26, borderRadius: 6, objectFit: 'cover', display: 'block', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
-                    </button>
+                    <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
+                        <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
+                        <select
+                            value="madinah"
+                            onChange={handleViewModeChange}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                fontSize: '13px',
+                                outline: 'none',
+                                cursor: 'pointer',
+                                paddingRight: '4px'
+                            }}
+                        >
+                            <option value="mushaf">{t('settings.textMode', 'Texte Interactif')}</option>
+                            <option value="tajweed">Image (Tajweed)</option>
+                            <option value="madinah">Madinah (Vectoriel)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
