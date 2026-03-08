@@ -60,6 +60,19 @@
 .junior-module-card__emoji {
     font-size: 2.5rem;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    animation: junior-emoji-float 3s ease-in-out infinite;
+}
+
+@keyframes junior-emoji-float {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-6px) scale(1.08);
+    }
 }
 
 .junior-module-card__info h3 {
@@ -384,11 +397,11 @@
 
 .junior-verse-box__arabic {
     font-family: 'Amiri', serif;
-    font-size: 1.3rem;
+    font-size: 1.6rem;
     color: #c9a84c;
     direction: rtl;
-    line-height: 2;
-    margin-bottom: 8px;
+    line-height: 2.2;
+    margin-bottom: 10px;
 }
 
 .junior-verse-box__ref {
@@ -408,11 +421,11 @@
 
 .junior-hadith-box__arabic {
     font-family: 'Amiri', serif;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: #2ed573;
     direction: rtl;
-    line-height: 2;
-    margin-bottom: 8px;
+    line-height: 2.2;
+    margin-bottom: 10px;
 }
 
 .junior-hadith-box__ref {
@@ -517,6 +530,117 @@
     background: rgba(46, 213, 115, 0.15);
     opacity: 0.6;
     cursor: default;
+}
+
+/* Sequential Match Activity (Improvement #1) */
+.junior-match-sequential {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.junior-match-prompt {
+    text-align: center;
+    padding: 16px;
+    background: rgba(102, 126, 234, 0.1);
+    border: 2px solid rgba(102, 126, 234, 0.25);
+    border-radius: 16px;
+}
+
+.junior-match-prompt__label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.junior-match-prompt__item {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.junior-match-counter {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.junior-match-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.junior-match-option {
+    background: rgba(255, 255, 255, 0.06);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.junior-match-option:active {
+    transform: scale(0.97);
+}
+
+.junior-match-option--correct {
+    border-color: #2ed573;
+    background: rgba(46, 213, 115, 0.15);
+}
+
+.junior-match-option--wrong {
+    border-color: #ff4757;
+    background: rgba(255, 71, 87, 0.15);
+    animation: junior-shake 0.4s;
+}
+
+/* Recap Screen (Improvement #2) */
+.junior-recap {
+    animation: junior-fadeIn 0.5s;
+    padding: 8px 0;
+}
+
+.junior-recap__header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.junior-recap__header h2 {
+    color: #fff;
+    font-size: 1.4rem;
+    margin: 12px 0 8px;
+}
+
+.junior-recap__emoji {
+    font-size: 3rem;
+    animation: junior-bounce 0.6s;
+    display: inline-block;
+}
+
+.junior-recap__section {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.junior-recap__section h3 {
+    color: #fff;
+    font-size: 0.95rem;
+    margin: 0 0 8px;
+}
+
+.junior-recap__section p {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
 }
 
 /* Quiz */
