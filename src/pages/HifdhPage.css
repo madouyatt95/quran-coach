@@ -2085,3 +2085,110 @@
         /* Reduce gap between buttons to save space */
     }
 }
+
+/* ─── Error Log — Mots à revoir ──────────────────────── */
+.hifdh-errors-section {
+    background: rgba(244, 67, 54, 0.06);
+    border: 1px solid rgba(244, 67, 54, 0.15);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.hifdh-errors-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-ui-sm);
+    font-weight: 700;
+    color: #F44336;
+}
+
+.hifdh-errors-clear-all {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+    border-radius: var(--radius-md);
+    color: #F44336;
+    padding: 4px 10px;
+    font-size: var(--text-ui-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.hifdh-errors-clear-all:active {
+    transform: scale(0.95);
+}
+
+.hifdh-errors-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.hifdh-error-group {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.hifdh-error-group__header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    font-size: var(--text-ui-sm);
+    font-weight: 600;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hifdh-error-group__header:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hifdh-error-group__surah {
+    color: var(--color-accent);
+}
+
+.hifdh-error-group__arrow {
+    color: var(--color-text-muted);
+    font-size: var(--text-ui-md);
+}
+
+.hifdh-error-group__words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: var(--space-sm) var(--space-md) var(--space-md);
+}
+
+.hifdh-error-word {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: rgba(244, 67, 54, 0.08);
+    border: 1px solid rgba(244, 67, 54, 0.15);
+    border-radius: var(--radius-md);
+    padding: 6px 10px;
+}
+
+.hifdh-error-word__expected {
+    font-family: var(--font-arabic);
+    font-size: var(--text-arabic-md);
+    color: #F44336;
+    font-weight: 700;
+    direction: rtl;
+}
+
+.hifdh-error-word__spoken {
+    font-size: var(--text-ui-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+}

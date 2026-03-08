@@ -274,7 +274,7 @@ export function useCoach({
         return Math.min(1, processedInAyah / activeAyahWords.length);
     }, [wordStates, allCoachWords, playingIndex]);
 
-    // Save score when coach finishes
+    // Save score and persist errors when coach finishes
     useEffect(() => {
         if (isCoachMode && coachTotalProcessed > 0 && coachTotalProcessed >= allCoachWords.length) {
             try {
@@ -282,8 +282,41 @@ export function useCoach({
                 saved[scoreKey] = { accuracy: coachAccuracy, date: new Date().toISOString() };
                 localStorage.setItem('quran-coach-scores', JSON.stringify(saved));
             } catch { /* ignore */ }
+
+            // Persist errors for review
+            if (Object.keys(coachMistakes).length > 0) {
+                try {
+                    const existing: Array<{
+                        scoreKey: string;
+                        wordKey: string;
+                        expected: string;
+                        spoken: string;
+                        date: string;
+                    }> = JSON.parse(localStorage.getItem('hifdh-error-log') || '[]');
+
+                    const newErrors = Object.entries(coachMistakes).map(([wordKey, err]) => ({
+                        scoreKey,
+                        wordKey,
+                        expected: err.expected,
+                        spoken: err.spoken,
+                        date: new Date().toISOString(),
+                    }));
+
+                    // Deduplicate by scoreKey+wordKey, keep latest
+                    const merged = [...existing];
+                    for (const ne of newErrors) {
+                        const idx = merged.findIndex(e => e.scoreKey === ne.scoreKey && e.wordKey === ne.wordKey);
+                        if (idx >= 0) merged[idx] = ne;
+                        else merged.push(ne);
+                    }
+
+                    // Keep max 200 entries
+                    const trimmed = merged.slice(-200);
+                    localStorage.setItem('hifdh-error-log', JSON.stringify(trimmed));
+                } catch { /* ignore */ }
+            }
         }
-    }, [isCoachMode, coachTotalProcessed, allCoachWords.length, coachAccuracy, scoreKey]);
+    }, [isCoachMode, coachTotalProcessed, allCoachWords.length, coachAccuracy, scoreKey, coachMistakes]);
 
     return {
         isCoachMode,

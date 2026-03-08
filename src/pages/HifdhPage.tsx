@@ -733,6 +733,72 @@ export function HifdhPage() {
                 </div>
             )}
 
+            {/* Error Log — Mots à revoir */}
+            {(() => {
+                try {
+                    const errors: Array<{ scoreKey: string; wordKey: string; expected: string; spoken: string; date: string }> =
+                        JSON.parse(localStorage.getItem('hifdh-error-log') || '[]');
+                    if (errors.length === 0) return null;
+
+                    // Group by scoreKey (surah:ayahStart-ayahEnd)
+                    const grouped: Record<string, typeof errors> = {};
+                    errors.forEach(e => {
+                        if (!grouped[e.scoreKey]) grouped[e.scoreKey] = [];
+                        grouped[e.scoreKey].push(e);
+                    });
+
+                    return (
+                        <div className="hifdh-errors-section">
+                            <div className="hifdh-errors-header">
+                                <span>📝 Mots à revoir ({errors.length})</span>
+                                <button
+                                    className="hifdh-errors-clear-all"
+                                    onClick={() => {
+                                        localStorage.removeItem('hifdh-error-log');
+                                        window.location.reload();
+                                    }}
+                                >
+                                    Tout effacer
+                                </button>
+                            </div>
+                            <div className="hifdh-errors-list">
+                                {Object.entries(grouped).slice(0, 8).map(([key, errs]) => {
+                                    const parts = key.split(':');
+                                    const surahNum = parseInt(parts[0]);
+                                    const range = parts[1] || '';
+                                    const surahName = surahs.find(s => s.number === surahNum)?.name || `Sourate ${surahNum}`;
+
+                                    return (
+                                        <div key={key} className="hifdh-error-group">
+                                            <button
+                                                className="hifdh-error-group__header"
+                                                onClick={() => {
+                                                    const [start] = range.split('-').map(Number);
+                                                    setSelectedSurah(surahNum);
+                                                    setStartAyah(start || 1);
+                                                    setEndAyah(parseInt(range.split('-')[1]) || start || 1);
+                                                }}
+                                            >
+                                                <span className="hifdh-error-group__surah">{surahName} ({range})</span>
+                                                <span className="hifdh-error-group__arrow">→</span>
+                                            </button>
+                                            <div className="hifdh-error-group__words">
+                                                {errs.map((err, i) => (
+                                                    <div key={i} className="hifdh-error-word">
+                                                        <span className="hifdh-error-word__expected">{err.expected}</span>
+                                                        <span className="hifdh-error-word__spoken">→ {err.spoken}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    );
+                } catch { return null; }
+            })()}
+
             {/* Selection */}
             <div className="hifdh-selection">
                 <div className="hifdh-selection__row">

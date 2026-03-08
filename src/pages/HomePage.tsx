@@ -354,6 +354,54 @@ export function HomePage() {
                 </div>
             )}
 
+            {/* 🌙 Last 10 Nights of Ramadan Banner */}
+            {hijri.month === 9 && hijri.day >= 20 && (() => {
+                const nightNumber = hijri.day;
+                const isOddNight = nightNumber % 2 === 1;
+                return (
+                    <>
+                        <div className={`home-last-nights ${isOddNight ? 'home-last-nights--odd' : ''}`}>
+                            <div className="home-last-nights__stars">✦ ✧ ✦ ✧ ✦</div>
+                            <div className="home-last-nights__content">
+                                <div className="home-last-nights__night-number">
+                                    <span className="home-last-nights__number">{nightNumber}</span>
+                                    <span className="home-last-nights__suffix">ème nuit</span>
+                                </div>
+                                <div className="home-last-nights__info">
+                                    <strong>Les 10 Dernières Nuits</strong>
+                                    {isOddNight && (
+                                        <span className="home-last-nights__odd-badge">
+                                            ✨ Nuit impaire — Cherchez Laylatul Qadr !
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            <Link to="/last-nights" className="home-last-nights__dashboard-btn">
+                                📋 Mon Suivi
+                            </Link>
+                        </div>
+
+                        {/* Doua de Laylatul Qadr */}
+                        <div className="home-qadr-dua">
+                            <div className="home-qadr-dua__label">
+                                <span>🤲</span> Doua de Laylatul Qadr
+                            </div>
+                            <div className="home-qadr-dua__arabic">
+                                اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي
+                            </div>
+                            <div className="home-qadr-dua__phonetic">
+                                Allâhoumma innaka 'afouwwoun touhibboul-'afwa fa'fou 'annî
+                            </div>
+                            <div className="home-qadr-dua__translation">
+                                Ô Allah, Tu es Pardonneur, Tu aimes le pardon, alors pardonne-moi.
+                            </div>
+                            <div className="home-qadr-dua__source">
+                                Rapporté par Tirmidhi (3513) — Doua enseignée à Aïcha رضي الله عنها
+                            </div>
+                        </div>
+                    </>
+                );
+            })()}
 
             {/* Sentinelle Spirituelle (Météo, Voyage, Sahar, etc.) */}
             <SmartSentinel />
