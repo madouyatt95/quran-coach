@@ -11,6 +11,7 @@ const CHECKLIST_ITEMS = [
     { id: 'dua_qadr', emoji: '🤲', label: 'Doua Qadr' },
     { id: 'sadaqah', emoji: '💰', label: 'Sadaqah' },
     { id: 'dhikr', emoji: '📿', label: 'Dhikr & Istighfar' },
+    { id: 'itikaf', emoji: '⛺', label: "I'tikaf (Retraite)" },
     { id: 'qiyam', emoji: '🕐', label: 'Qiyam' },
     { id: 'witr', emoji: '🌟', label: 'Witr' },
 ];
