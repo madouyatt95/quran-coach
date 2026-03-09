@@ -300,7 +300,7 @@ export const LEVEL_1_FONDATIONS: AcademyLevel = {
                         { title: '⑭ Sâd (ص) — [ṣ]', body: 'S emphatique prononcé avec la langue contre le palais. Corps arrondi.', arabic: 'صَبْر — (patience)', phonetic: 'Sabr' },
                         { title: '⑮ Dâd (ض) — [ḍ]', body: 'D emphatique. Un point au-dessus du Sâd. Lettre unique à la langue arabe !', arabic: 'ضَوْء — (lumière)', phonetic: 'Daw\'' },
 
-                        { title: 'Groupe 5 — Lettres profondes et gutturales', body: 'Lettres avec prononciation plus profonde.', arabic: 'ط ظ ع غ ف ق ك ل m n h w y', phonetic: 'Tâ, Dhâ, \'Ayn, Ghayn, Fâ, Qâf, Kâf, Lâm, Mîm, Noûn, Hâ, Wâw, Yâ', illustration: 'Groupe 5 — Lettres profondes et gutturales' },
+                        { title: 'Groupe 5 — Lettres profondes et gutturales', body: 'Lettres avec prononciation plus profonde.', arabic: 'ط ظ ع غ ف ق ك ل م ن هـ و ي', phonetic: 'Tâ, Dhâ, \'Ayn, Ghayn, Fâ, Qâf, Kâf, Lâm, Mîm, Noûn, Hâ, Wâw, Yâ', illustration: 'Groupe 5 — Lettres profondes et gutturales' },
                         { title: '⑯ Tâ (ط) — [ṭ]', body: 'T emphatique, son lourd et profond.', arabic: 'طَهَارَة — (purification)', phonetic: 'Tahârah' },
                         { title: '⑰ Dhâ (ظ) — [ẓ]', body: 'Z emphatique. Un point au-dessus du Tâ.', arabic: 'ظُلْم — (injustice)', phonetic: 'Dhoulm' },
                         { title: '⑱ \'Ayn (ع) — [ʿ]', body: 'Son guttural unique venant du fond de la gorge. N\'existe pas en français.', arabic: 'عِلْم — (science)', phonetic: '\'Ilm' },
