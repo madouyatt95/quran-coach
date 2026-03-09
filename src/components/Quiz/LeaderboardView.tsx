@@ -4,17 +4,19 @@ import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES } from '../../data/quizTypes';
 import type { QuizThemeId } from '../../data/quizTypes';
 
-// Compute ranking score: wins matter most, then win rate, then sprint
+// Compute ranking score: primarily XP (total_score), tie-breaker is win rate
 function rankingScore(entry: any): number {
+    const xp = entry.total_score || 0;
     const wins = entry.total_wins || 0;
     const played = entry.total_played || 1;
-    const winRate = played > 0 ? (wins / played) * 100 : 0;
-    const sprint = entry.sprint_best || 0;
-    return (wins * 100) + (winRate * 50) + sprint;
+    const winRate = played > 0 ? (wins / played) : 0;
+
+    // Primary: XP. Secondary: Win Rate (as a fractional decimal added to XP to break ties without overpowering XP)
+    return xp + winRate;
 }
 
 export function LeaderboardView() {
-    const { setView, player, totalCorrect, sprintBest, totalPlayed, totalWins, submitToLeaderboard, themeStats } = useQuizStore();
+    const { setView, player, totalCorrect, sprintBest, totalPlayed, totalWins, submitToLeaderboard, themeStats, totalXP } = useQuizStore();
     const [entries, setEntries] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState<'alltime' | 'weekly'>('alltime');
@@ -38,6 +40,7 @@ export function LeaderboardView() {
                 let query = supabase
                     .from('quiz_leaderboard')
                     .select('*')
+                    .order('total_score', { ascending: false }) // Let Supabase do the heavy lifting for the Top 100
                     .limit(100);
 
                 if (tab === 'weekly') {
@@ -53,13 +56,14 @@ export function LeaderboardView() {
         });
     }, [submitToLeaderboard, tab]);
 
-    // Sort by ranking score client-side
+    // Sort by ranking score client-side (to handle ties or slightly adjust downloaded top 100)
     const sortedEntries = useMemo(() =>
         [...entries].sort((a, b) => rankingScore(b) - rankingScore(a)),
         [entries]);
 
     const myWinRate = totalPlayed > 0 ? Math.round((totalWins / totalPlayed) * 100) : 0;
-    const myRankScore = Math.round((totalWins * 100) + (myWinRate * 50) + sprintBest);
+    const myRankScore = totalXP; // Display their actual XP
+
 
     // Theme-specific stats for "my stats" card
     const myThemeData = themeFilter !== 'all' ? themeStats[themeFilter] : null;
@@ -179,6 +183,8 @@ export function LeaderboardView() {
                         const played = entry.total_played || 0;
                         const wins = entry.total_wins || 0;
                         const winRate = played > 0 ? Math.round((wins / played) * 100) : 0;
+                        const xp = entry.total_score || 0;
+
                         return (
                             <div key={entry.id} className={`quiz-lb-row ${entry.id === player?.id ? 'quiz-lb-me' : ''}`}>
                                 <span className="quiz-lb-rank">
@@ -188,10 +194,14 @@ export function LeaderboardView() {
                                 <div className="quiz-lb-info">
                                     <span className="quiz-lb-name">{entry.pseudo}</span>
                                     <span className="quiz-lb-detail">
-                                        {wins} victoires • {winRate}% • {played} parties
+                                        {winRate}% de victoires ({wins} / {played})
                                     </span>
                                 </div>
-                                <span className="quiz-lb-sprint">⚡{entry.sprint_best || 0}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
+                                    <span className="quiz-lb-sprint" style={{ color: '#FFD700', fontSize: '13px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        {xp} <span style={{ fontSize: '10px' }}>XP</span>
+                                    </span>
+                                </div>
                             </div>
                         );
                     })}
