@@ -150,9 +150,9 @@ export const CLEF_DU_PARADIS: JuniorModule = {
                 type: 'match',
                 instruction: 'Relie chaque prophète à son histoire ! 📖',
                 pairs: [
-                    { left: 'Nouh (Noé) 🚢', right: 'A construit l\'arche' },
-                    { left: 'Moussa (Moïse) 🌊', right: 'A traversé la mer' },
-                    { left: 'Ibrahim (Abraham) 💛', right: 'L\'ami d\'Allah' },
+                    { left: 'Nouh (Noé)', right: 'A construit l\'arche' },
+                    { left: 'Moussa (Moïse)', right: 'A traversé la mer' },
+                    { left: 'Ibrahim (Abraham)', right: 'L\'ami d\'Allah' },
                     { left: 'Muhammad ﷺ', right: 'Le dernier prophète' },
                 ],
             },
