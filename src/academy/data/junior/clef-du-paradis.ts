@@ -150,15 +150,15 @@ export const CLEF_DU_PARADIS: JuniorModule = {
                 type: 'match',
                 instruction: 'Relie chaque prophète à son histoire ! 📖',
                 pairs: [
-                    { left: 'Nouh 🚢', right: 'A construit l\'arche' },
-                    { left: 'Moussa 🌊', right: 'A traversé la mer' },
-                    { left: 'Ibrahim 💛', right: 'L\'ami d\'Allah' },
+                    { left: 'Nouh (Noé) 🚢', right: 'A construit l\'arche' },
+                    { left: 'Moussa (Moïse) 🌊', right: 'A traversé la mer' },
+                    { left: 'Ibrahim (Abraham) 💛', right: 'L\'ami d\'Allah' },
                     { left: 'Muhammad ﷺ', right: 'Le dernier prophète' },
                 ],
             },
             quiz: [
-                { question: 'Qui est le dernier prophète ?', options: ['Ibrahim', 'Moussa', 'Issa', 'Muhammad ﷺ'], answer: 3, feedback: 'Muhammad ﷺ est le dernier des prophètes ! 💚' },
-                { question: 'Quel prophète a construit l\'arche ?', options: ['Adam', 'Nouh', 'Moussa', 'Issa'], answer: 1, feedback: 'C\'est le prophète Nouh (Noé) qui a construit l\'arche ! 🚢' },
+                { question: 'Qui est le dernier prophète ?', options: ['Ibrahim (Abraham)', 'Moussa (Moïse)', 'Issa (Jésus)', 'Muhammad ﷺ'], answer: 3, feedback: 'Muhammad ﷺ est le dernier des prophètes ! 💚' },
+                { question: 'Quel prophète a construit l\'arche ?', options: ['Adam', 'Nouh (Noé)', 'Moussa (Moïse)', 'Issa (Jésus)'], answer: 1, feedback: 'C\'est le prophète Nouh (Noé) qui a construit l\'arche ! 🚢' },
             ],
         },
 

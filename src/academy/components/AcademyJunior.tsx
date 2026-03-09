@@ -107,6 +107,7 @@ export function AcademyJunior({ onBack }: { onBack: () => void }) {
     const [quizIdx, setQuizIdx] = useState(0);
     const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
     const [quizCorrect, setQuizCorrect] = useState(0);
+    const [shuffledQuizOptions, setShuffledQuizOptions] = useState<number[]>([]);
 
     // Final badge
     const [showFinalBadge, setShowFinalBadge] = useState(false);
@@ -123,6 +124,14 @@ export function AcademyJunior({ onBack }: { onBack: () => void }) {
         }
         return a;
     };
+
+    // Shuffle quiz options
+    useEffect(() => {
+        if (activeStep && phase === 'quiz') {
+            const numOptions = activeStep.quiz[quizIdx].options.length;
+            setShuffledQuizOptions(shuffleArray(Array.from({ length: numOptions }, (_, i) => i)));
+        }
+    }, [activeStep, phase, quizIdx]);
 
     // Reset states when entering a step
     const enterStep = (step: JuniorStep) => {
@@ -450,17 +459,18 @@ export function AcademyJunior({ onBack }: { onBack: () => void }) {
                             <div className="junior-quiz__counter">Question {quizIdx + 1} / {activeStep.quiz.length}</div>
                             <div className="junior-quiz__question">{activeStep.quiz[quizIdx].question}</div>
                             <div className="junior-quiz__options">
-                                {activeStep.quiz[quizIdx].options.map((opt, i) => {
+                                {shuffledQuizOptions.map((origIdx) => {
+                                    const opt = activeStep.quiz[quizIdx].options[origIdx];
                                     const answered = quizAnswer !== null;
-                                    const isCorrectOption = i === activeStep.quiz[quizIdx].answer;
-                                    const isSelected = quizAnswer === i;
+                                    const isCorrectOption = origIdx === activeStep.quiz[quizIdx].answer;
+                                    const isSelected = quizAnswer === origIdx;
                                     return (
-                                        <button key={i}
+                                        <button key={origIdx}
                                             className={`junior-quiz__option ${answered && isCorrectOption ? 'junior-quiz__option--correct' : ''} ${answered && isSelected && !isCorrectOption ? 'junior-quiz__option--wrong' : ''}`}
                                             disabled={answered}
                                             onClick={() => {
-                                                setQuizAnswer(i);
-                                                const correct = i === activeStep.quiz[quizIdx].answer;
+                                                setQuizAnswer(origIdx);
+                                                const correct = origIdx === activeStep.quiz[quizIdx].answer;
                                                 playSound(correct ? 'correct' : 'wrong');
                                                 if (correct) setQuizCorrect(prev => prev + 1);
                                             }}>
