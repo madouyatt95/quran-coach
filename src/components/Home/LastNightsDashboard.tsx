@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { getHijriDate } from '../../lib/hadithEngine';
+import { usePrayerStore } from '../../stores/prayerStore';
 import './LastNightsDashboard.css';
 
 const CHECKLIST_ITEMS = [
@@ -34,15 +35,31 @@ function saveProgress(data: Record<string, NightData>) {
 
 export function LastNightsDashboard() {
     const navigate = useNavigate();
-    const hijri = useMemo(() => getHijriDate(new Date()), []);
+    const now = useMemo(() => new Date(), []);
+    const hijri = useMemo(() => getHijriDate(now), [now]);
     const [progress, setProgress] = useState<Record<string, NightData>>(loadProgress);
+
+    const isPostMaghrib = useMemo(() => {
+        const result = usePrayerStore.getState().getTodayResult();
+        if (!result) return now.getHours() >= 19; // Fallback
+        const maghribStr = result.formattedTimes.maghrib || result.formattedTimes.Maghrib;
+        if (!maghribStr) return now.getHours() >= 19;
+        const [h, m] = maghribStr.split(':').map(Number);
+        const maghribMin = h * 60 + m;
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        return nowMin >= maghribMin;
+    }, [now]);
+
+    let baseNight = hijri.month === 9 ? hijri.day : 0;
+    if (baseNight > 0 && now.getHours() >= 12 && isPostMaghrib) {
+        baseNight += 1;
+    }
+    const currentNight = baseNight;
 
     const nights = useMemo(() => {
         // Generate nights 21-30 (standard)
         return Array.from({ length: 10 }, (_, i) => 21 + i);
     }, []);
-
-    const currentNight = hijri.month === 9 ? hijri.day : 0;
 
     const toggleItem = (night: number, itemId: string) => {
         setProgress(prev => {

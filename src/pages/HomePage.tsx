@@ -355,8 +355,15 @@ export function HomePage() {
             )}
 
             {/* 🌙 Last 10 Nights of Ramadan Banner */}
-            {hijri.month === 9 && hijri.day >= 20 && (() => {
-                const nightNumber = hijri.day;
+            {hijri.month === 9 && hijri.day >= 19 && (() => {
+                let nightNumber = hijri.day;
+                // In Islam, the new day starts at Maghrib. 
+                // If it's afternoon/evening and Maghrib has passed (next prayer is Isha or Fajr), it's the next Islamic night.
+                if (now.getHours() >= 12 && (nextPrayer?.name === 'Isha' || nextPrayer?.name === 'Fajr')) {
+                    nightNumber += 1;
+                }
+                if (nightNumber < 20 || nightNumber > 30) return null;
+
                 const isOddNight = nightNumber % 2 === 1;
                 return (
                     <>
