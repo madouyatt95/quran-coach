@@ -5,11 +5,12 @@ import { getHijriDate } from '../../lib/hadithEngine';
 import './LastNightsDashboard.css';
 
 const CHECKLIST_ITEMS = [
-    { id: 'isha', emoji: '🕌', label: "Isha" },
+    { id: 'tahajjud', emoji: '🌌', label: "Tahajjud" },
     { id: 'tarawih', emoji: '🌙', label: 'Tarawih' },
     { id: 'quran', emoji: '📖', label: 'Coran' },
     { id: 'dua_qadr', emoji: '🤲', label: 'Doua Qadr' },
     { id: 'sadaqah', emoji: '💰', label: 'Sadaqah' },
+    { id: 'dhikr', emoji: '📿', label: 'Dhikr & Istighfar' },
     { id: 'qiyam', emoji: '🕐', label: 'Qiyam' },
     { id: 'witr', emoji: '🌟', label: 'Witr' },
 ];
