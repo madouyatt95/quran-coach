@@ -22,6 +22,7 @@ export interface Story {
   morals: string[];
   surahs: StorySurah[];
   color: string;
+  audio?: string;
 }
 
 export const STORY_CATEGORIES: Record<StoryCategory, { label: string; labelAr: string; icon: string; color: string }> = {

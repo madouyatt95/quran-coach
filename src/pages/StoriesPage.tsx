@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, BookOpen, Lightbulb, ChevronRight, Share2 } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story, type StoryCategory } from '../data/storiesData';
 import { useQuranStore } from '../stores/quranStore';
+import { playTts, stopTts } from '../lib/ttsService';
 import './StoriesPage.css';
 
 type FilterMode = 'all' | StoryCategory;
@@ -11,6 +12,37 @@ type FilterMode = 'all' | StoryCategory;
 function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) {
     const navigate = useNavigate();
     const { goToSurah } = useQuranStore();
+
+    const [isAudioLoading, setIsAudioLoading] = useState(false);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+    useEffect(() => {
+        return () => stopTts();
+    }, []);
+
+    const toggleAudio = async () => {
+        if (isAudioPlaying || isAudioLoading) {
+            stopTts();
+            setIsAudioPlaying(false);
+            setIsAudioLoading(false);
+        } else {
+            setIsAudioLoading(true);
+            try {
+                setIsAudioPlaying(true);
+                await playTts(story.summary, {
+                    onEnd: () => {
+                        setIsAudioPlaying(false);
+                        setIsAudioLoading(false);
+                    }
+                });
+            } catch (e) {
+                console.error("Audio error", e);
+                setIsAudioPlaying(false);
+            } finally {
+                setIsAudioLoading(false);
+            }
+        }
+    };
 
     const goToSurahPage = (surahNumber: number) => {
         goToSurah(surahNumber);
@@ -62,15 +94,26 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
 
                 {/* Story */}
                 <div className="story-modal__section">
-                    <h3 className="story-modal__section-title">
-                        <BookOpen size={16} />
-                        Le récit
-                    </h3>
-                    {story.audio && (
-                        <div className="story-modal__audio" style={{ marginBottom: '1rem' }}>
-                            <audio controls src={story.audio} style={{ width: '100%', borderRadius: '8px' }} />
-                        </div>
-                    )}
+                    <div className="story-modal__section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <h3 className="story-modal__section-title" style={{ margin: 0 }}>
+                            <BookOpen size={16} />
+                            Le récit
+                        </h3>
+                        <button 
+                            className="story-modal__tts-btn"
+                            onClick={toggleAudio}
+                            style={{ 
+                                display: 'flex', alignItems: 'center', gap: '6px', 
+                                padding: '6px 12px', borderRadius: '20px', 
+                                border: 'none', background: 'var(--color-bg-tertiary)', 
+                                color: 'var(--color-primary)', cursor: 'pointer',
+                                fontSize: '0.85rem', fontWeight: 600
+                            }}
+                        >
+                            {isAudioLoading ? <Loader2 size={16} className="spin" /> : (isAudioPlaying ? <Square size={14} fill="currentColor" /> : <Volume2 size={16} />)}
+                            {isAudioPlaying ? 'Arrêter' : 'Écouter'}
+                        </button>
+                    </div>
                     <p className="story-modal__text">{story.summary}</p>
                 </div>
 
