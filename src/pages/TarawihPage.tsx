@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Radio, ChevronLeft, ChevronRight, Mic, Volume2, Pause, Play, ArrowLeft, SkipForward, SkipBack } from 'lucide-react';
 import { useTarawihStore } from '../stores/tarawihStore';
 import { buildNightPlan, voiceActivityDetector } from '../lib/tarawihService';
-import { playTts, stopTts } from '../lib/ttsService';
+import { playTts, stopTts, unlockAudio } from '../lib/ttsService';
 import { JUZ_DATA } from '../data/juzData';
 import './TarawihPage.css';
 
@@ -34,7 +34,12 @@ export function TarawihPage() {
     // --- SETUP ---
 
     const handleStart = useCallback(async () => {
+        // SYNCHRONOUS iOS UNLOCK: Must happen immediately on button click, 
+        // before any async await calls block the event loop.
+        unlockAudio();
+
         store.setPhase('loading');
+        store.setLoadingMessage('Chargement des traductions...');
         const plan = await buildNightPlan(
             store.nightNumber,
             store.numberOfPairs,

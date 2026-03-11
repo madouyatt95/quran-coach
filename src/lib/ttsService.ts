@@ -61,12 +61,40 @@ export function isTtsLoading(): boolean {
 export function stopTts() {
     const audio = getTtsAudio();
     audio.pause();
-    audio.src = '';
+    // Do not reset src to '' because it sometimes resets the iOS unlock state
     audio.currentTime = 0;
     window.speechSynthesis?.cancel();
     _isPlaying = false;
     _isLoading = false;
     notifyChange();
+}
+
+/**
+ * Unlock audio context for iOS/Safari
+ * MUST be called directly inside a UI event handler (like onClick)
+ */
+export function unlockAudio() {
+    try {
+        // Unlock HTML Audio Element using a tiny silent mp3
+        const audio = getTtsAudio();
+        // 0.1s silent mp3 base64
+        audio.src = 'data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(() => {
+            // Ignore errors here, this is just a priming attempt
+        });
+
+        // Unlock Web Speech API
+        if (window.speechSynthesis) {
+            const utterance = new SpeechSynthesisUtterance('');
+            utterance.volume = 0;
+            window.speechSynthesis.speak(utterance);
+        }
+    } catch (e) {
+        console.warn('Silent audio unlock failed', e);
+    }
 }
 
 /**
