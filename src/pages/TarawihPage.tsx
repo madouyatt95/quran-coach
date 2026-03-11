@@ -211,13 +211,42 @@ export function TarawihPage() {
         store.reset();
     }, []);
 
+    const handleSkipVerse = useCallback((direction: 'next' | 'prev') => {
+        if (direction === 'next') store.nextVerse();
+        else store.prevVerse();
+
+        const state = useTarawihStore.getState();
+        if (state.phase === 'translating') {
+            ttsAbortRef.current = true;
+            stopTts();
+            setFatihaCountdown(0);
+            
+            // Allow the active loop to exit, then restart
+            setTimeout(() => {
+                if (!isTranslatingRef.current) {
+                    startTranslating();
+                }
+            }, 100);
+        } else {
+            stopTts();
+            setFatihaCountdown(0);
+        }
+    }, [store, startTranslating]);
+
     const handleNextPair = useCallback(() => {
         store.nextPair();
-        store.setPhase('translating');
-        if (!isTranslatingRef.current) {
-            startTranslating();
+        const state = useTarawihStore.getState();
+        if (state.phase === 'translating') {
+            ttsAbortRef.current = true;
+            stopTts();
+            setFatihaCountdown(0);
+            setTimeout(() => {
+                if (!isTranslatingRef.current) {
+                    startTranslating();
+                }
+            }, 100);
         }
-    }, []);
+    }, [store, startTranslating]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -471,7 +500,7 @@ export function TarawihPage() {
 
             {/* Controls */}
             <div className="tarawih-controls">
-                <button className="tarawih-ctrl-btn" onClick={() => store.prevVerse()} title="Verset précédent">
+                <button className="tarawih-ctrl-btn" onClick={() => handleSkipVerse('prev')} title="Verset précédent">
                     <ChevronLeft size={22} />
                 </button>
 
@@ -485,7 +514,7 @@ export function TarawihPage() {
                     </button>
                 )}
 
-                <button className="tarawih-ctrl-btn" onClick={() => store.nextVerse()} title="Verset suivant">
+                <button className="tarawih-ctrl-btn" onClick={() => handleSkipVerse('next')} title="Verset suivant">
                     <ChevronRight size={22} />
                 </button>
 
