@@ -9,6 +9,7 @@ interface TarawihState {
     nightNumber: number;
     numberOfPairs: number;
     ttsSpeed: number;
+    fatihaDelay: number;  // Seconds to wait for Fatiha before resuming
 
     // Live state (not persisted)
     phase: TarawihPhase;
@@ -22,6 +23,7 @@ interface TarawihState {
     setNightNumber: (n: number) => void;
     setNumberOfPairs: (n: number) => void;
     setTtsSpeed: (s: number) => void;
+    setFatihaDelay: (d: number) => void;
     setPhase: (p: TarawihPhase) => void;
     setNightPlan: (plan: TarawihNightPlan | null) => void;
     setCurrentPair: (p: number) => void;
@@ -44,6 +46,7 @@ export const useTarawihStore = create<TarawihState>()(
             nightNumber: 1,
             numberOfPairs: 4,
             ttsSpeed: 1.0,
+            fatihaDelay: 30,
 
             // Live state
             phase: 'setup',
@@ -57,6 +60,7 @@ export const useTarawihStore = create<TarawihState>()(
             setNightNumber: (n) => set({ nightNumber: Math.max(1, Math.min(30, n)) }),
             setNumberOfPairs: (n) => set({ numberOfPairs: Math.max(1, Math.min(10, n)) }),
             setTtsSpeed: (s) => set({ ttsSpeed: Math.max(0.5, Math.min(2.0, s)) }),
+            setFatihaDelay: (d) => set({ fatihaDelay: Math.max(0, Math.min(60, d)) }),
             setPhase: (p) => set({ phase: p }),
             setNightPlan: (plan) => set({ nightPlan: plan }),
             setCurrentPair: (p) => set({ currentPair: p, currentVerseIndex: 0 }),
@@ -130,6 +134,7 @@ export const useTarawihStore = create<TarawihState>()(
                 nightNumber: state.nightNumber,
                 numberOfPairs: state.numberOfPairs,
                 ttsSpeed: state.ttsSpeed,
+                fatihaDelay: state.fatihaDelay,
             }),
         }
     )

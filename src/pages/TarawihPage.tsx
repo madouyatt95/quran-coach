@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Radio, ChevronLeft, ChevronRight, Mic, Volume2, Pause, Play, ArrowLeft, SkipForward } from 'lucide-react';
 import { useTarawihStore } from '../stores/tarawihStore';
 import { buildNightPlan, voiceActivityDetector } from '../lib/tarawihService';
@@ -11,6 +11,7 @@ export function TarawihPage() {
     const ttsAbortRef = useRef(false);
     const wakeLockRef = useRef<any>(null);
     const isTranslatingRef = useRef(false);
+    const [fatihaCountdown, setFatihaCountdown] = useState(0);
 
     // Wake Lock — keep screen on during live session
     useEffect(() => {
@@ -153,10 +154,24 @@ export function TarawihPage() {
 
     const startVAD = useCallback(async () => {
         const vadStarted = await voiceActivityDetector.start({
-            onVoiceDetected: () => {
-                const currentPhase = useTarawihStore.getState().phase;
-                if (currentPhase === 'paused') {
-                    useTarawihStore.getState().setPhase('translating');
+            onVoiceDetected: async () => {
+                const state = useTarawihStore.getState();
+                if (state.phase === 'paused') {
+                    // Imam resumed — wait for Fatiha to finish first
+                    const delay = state.fatihaDelay;
+                    if (delay > 0) {
+                        // Show countdown
+                        for (let sec = delay; sec > 0; sec--) {
+                            if (ttsAbortRef.current) return;
+                            setFatihaCountdown(sec);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+                        setFatihaCountdown(0);
+                    }
+                    // Now resume translation
+                    if (!ttsAbortRef.current) {
+                        useTarawihStore.getState().setPhase('translating');
+                    }
                 }
             },
             onSilenceDetected: () => {
@@ -297,6 +312,26 @@ export function TarawihPage() {
                         </div>
                     </div>
 
+                    {/* Fatiha Delay */}
+                    <div className="tarawih-setup-card">
+                        <h3>🕌 Délai Fatiha</h3>
+                        <p style={{ fontSize: '0.8rem', color: '#999', margin: '0 0 8px' }}>
+                            L'imam récite la Fatiha à chaque raka'a. L'app attend ce délai avant de reprendre.
+                        </p>
+                        <div className="tarawih-slider-row">
+                            <span className="tarawih-slider-label">0s</span>
+                            <input
+                                type="range"
+                                min="0"
+                                max="60"
+                                step="5"
+                                value={store.fatihaDelay}
+                                onChange={(e) => store.setFatihaDelay(parseInt(e.target.value))}
+                            />
+                            <span className="tarawih-slider-value">{store.fatihaDelay}s</span>
+                        </div>
+                    </div>
+
                     {/* How it works */}
                     <div className="tarawih-setup-card">
                         <h3>🎧 Comment ça marche</h3>
@@ -304,7 +339,7 @@ export function TarawihPage() {
                             1. Mettez votre oreillette<br />
                             2. L'app lit les traductions FR en continu<br />
                             3. Pause auto quand l'imam fait ruku<br />
-                            4. Reprise auto quand l'imam reprend<br />
+                            4. Attente Fatiha ({store.fatihaDelay}s) puis reprise auto<br />
                             5. Contrôles manuels ◀ ▶ si besoin
                         </div>
                     </div>
@@ -374,7 +409,10 @@ export function TarawihPage() {
                 {store.phase === 'paused' && (
                     <>
                         <Pause size={18} />
-                        ⏸️ En pause — Appuyez ▶ ou attendez la reprise
+                        {fatihaCountdown > 0
+                            ? `🕌 Fatiha en cours... reprise dans ${fatihaCountdown}s`
+                            : '⏸️ En pause — Appuyez ▶ ou attendez la reprise'
+                        }
                     </>
                 )}
             </div>
