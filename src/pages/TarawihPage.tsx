@@ -58,20 +58,31 @@ export function TarawihPage() {
     // VAD handles auto-pause (silence = ruku) and auto-resume (voice = imam resumed).
 
     const startTranslating = useCallback(async () => {
-        store.setPhase('translating');
+        // IMPORTANT: Read fresh state from Zustand, not from stale React closure
+        const s = useTarawihStore.getState();
+        s.setPhase('translating');
         ttsAbortRef.current = false;
         isTranslatingRef.current = true;
 
         // Start VAD in background — it will auto-pause on silence, auto-resume on voice
         startVAD();
 
-        const allPairs = store.nightPlan?.pairs || [];
-        let pairIdx = store.currentPair - 1;
-        let verseIdx = store.currentVerseIndex;
+        const allPairs = s.nightPlan?.pairs || [];
+        let pairIdx = s.currentPair - 1;
+        let verseIdx = s.currentVerseIndex;
+
+        console.log(`[Tarawih] Starting translation: ${allPairs.length} pairs, starting at pair ${pairIdx + 1}, verse ${verseIdx}`);
+
+        if (allPairs.length === 0) {
+            console.error('[Tarawih] No pairs found! nightPlan:', s.nightPlan);
+            isTranslatingRef.current = false;
+            s.setPhase('setup');
+            return;
+        }
 
         while (pairIdx < allPairs.length) {
             const pair = allPairs[pairIdx];
-            store.setCurrentPair(pairIdx + 1);
+            useTarawihStore.getState().setCurrentPair(pairIdx + 1);
 
             for (let i = verseIdx; i < pair.verses.length; i++) {
                 if (ttsAbortRef.current) {
@@ -79,13 +90,23 @@ export function TarawihPage() {
                     return;
                 }
 
-                store.setCurrentVerseIndex(i);
+                // Wait if paused (by VAD or manual)
+                while (useTarawihStore.getState().phase === 'paused' && !ttsAbortRef.current) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+                if (ttsAbortRef.current) {
+                    isTranslatingRef.current = false;
+                    return;
+                }
+
+                useTarawihStore.getState().setCurrentVerseIndex(i);
                 const verse = pair.verses[i];
 
                 if (verse.textFrench && verse.textFrench.trim().length > 0) {
                     try {
+                        const currentSpeed = useTarawihStore.getState().ttsSpeed;
                         await playTts(verse.textFrench, {
-                            rate: store.ttsSpeed,
+                            rate: currentSpeed,
                             lang: 'fr',
                         });
                     } catch {
@@ -102,24 +123,18 @@ export function TarawihPage() {
                 await new Promise(resolve => setTimeout(resolve, 300));
             }
 
-            // Finished pair — show pause between pairs
+            // Finished pair
             pairIdx++;
-            verseIdx = 0; // Reset for next pair
+            verseIdx = 0;
 
             if (pairIdx < allPairs.length && !ttsAbortRef.current) {
-                // Brief auto-pause between pairs
-                store.setPhase('paused');
-                store.setLoadingMessage(`Paire ${pairIdx}/${allPairs.length} terminée`);
+                // Auto-pause between pairs — wait for resume
+                useTarawihStore.getState().setPhase('paused');
+                console.log(`[Tarawih] Pair ${pairIdx} done, waiting for resume...`);
 
-                // Wait for user or VAD to resume
-                await new Promise<void>((resolve) => {
-                    const checkInterval = setInterval(() => {
-                        if (ttsAbortRef.current || store.phase === 'translating') {
-                            clearInterval(checkInterval);
-                            resolve();
-                        }
-                    }, 500);
-                });
+                while (useTarawihStore.getState().phase === 'paused' && !ttsAbortRef.current) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
 
                 if (ttsAbortRef.current) {
                     isTranslatingRef.current = false;
@@ -131,30 +146,27 @@ export function TarawihPage() {
         // All pairs done
         isTranslatingRef.current = false;
         voiceActivityDetector.stop();
-        store.setPhase('finished');
-    }, [store.ttsSpeed]);
+        useTarawihStore.getState().setPhase('finished');
+    }, []);
 
     // --- VAD: Auto-pause on silence, auto-resume on voice ---
-    // This runs in background while translating.
-    // When silence detected > 3s (imam doing ruku) → pause TTS
-    // When voice detected > 2s (imam resumed) → resume TTS
 
     const startVAD = useCallback(async () => {
         const vadStarted = await voiceActivityDetector.start({
             onVoiceDetected: () => {
-                // Imam resumed reciting — resume TTS if paused
-                if (store.phase === 'paused') {
-                    store.setPhase('translating');
+                const currentPhase = useTarawihStore.getState().phase;
+                if (currentPhase === 'paused') {
+                    useTarawihStore.getState().setPhase('translating');
                 }
             },
             onSilenceDetected: () => {
-                // Silence (ruku/sujud) — pause TTS
-                if (store.phase === 'translating') {
+                const currentPhase = useTarawihStore.getState().phase;
+                if (currentPhase === 'translating') {
                     stopTts();
-                    store.setPhase('paused');
+                    useTarawihStore.getState().setPhase('paused');
                 }
             },
-            onVolumeUpdate: (v) => store.setVolume(v),
+            onVolumeUpdate: (v) => useTarawihStore.getState().setVolume(v),
         });
 
         if (!vadStarted) {
