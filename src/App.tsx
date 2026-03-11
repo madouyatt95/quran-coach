@@ -29,7 +29,7 @@ const PlaylistDetailPage = lazy(() => import('./pages/PlaylistDetailPage').then(
 const AdminAssetsPage = lazy(() => import('./pages/AdminAssetsPage').then(m => ({ default: m.AdminAssetsPage })));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage').then(m => ({ default: m.AdminAnalyticsPage })));
 const TafsirPage = lazy(() => import('./pages/TafsirPage').then(m => ({ default: m.TafsirPage })));
-const ShazamPage = lazy(() => import('./pages/ShazamPage').then(m => ({ default: m.ShazamPage })));
+const TarawihPage = lazy(() => import('./pages/TarawihPage').then(m => ({ default: m.TarawihPage })));
 const ProphetsPage = lazy(() => import('./pages/ProphetsPage').then(m => ({ default: m.ProphetsPage })));
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then(m => ({ default: m.FavoritesPage })));
 const ThemesPage = lazy(() => import('./pages/ThemesPage').then(m => ({ default: m.ThemesPage })));
@@ -192,7 +192,7 @@ function AppContent() {
             <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
             <Route path="/storage" element={<StoragePage />} />
             <Route path="/tafsir" element={<TafsirPage />} />
-            <Route path="/shazam" element={<ShazamPage />} />
+            <Route path="/tarawih" element={<TarawihPage />} />
             <Route path="/prophets" element={<ProphetsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/themes" element={<ThemesPage />} />
