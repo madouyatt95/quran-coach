@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { Radio, ChevronLeft, ChevronRight, Mic, Volume2, Pause, Play, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Radio, ChevronLeft, ChevronRight, Mic, Volume2, Pause, Play, ArrowLeft, SkipForward } from 'lucide-react';
 import { useTarawihStore } from '../stores/tarawihStore';
-import { buildNightPlan, voiceActivityDetector, verseConfirmer, findVerseInPlan } from '../lib/tarawihService';
+import { buildNightPlan, voiceActivityDetector } from '../lib/tarawihService';
 import { playTts, stopTts } from '../lib/ttsService';
 import { JUZ_DATA } from '../data/juzData';
 import './TarawihPage.css';
@@ -10,6 +10,7 @@ export function TarawihPage() {
     const store = useTarawihStore();
     const ttsAbortRef = useRef(false);
     const wakeLockRef = useRef<any>(null);
+    const isTranslatingRef = useRef(false);
 
     // Wake Lock — keep screen on during live session
     useEffect(() => {
@@ -29,7 +30,7 @@ export function TarawihPage() {
     // Get juz info for current night
     const currentJuz = JUZ_DATA.find(j => j.number === store.nightNumber);
 
-    // --- SETUP Actions ---
+    // --- SETUP ---
 
     const handleStart = useCallback(async () => {
         store.setPhase('loading');
@@ -47,171 +48,147 @@ export function TarawihPage() {
 
         store.setNightPlan(plan);
         store.setCurrentPair(1);
-        store.setPhase('detecting');
 
-        // Start VAD + verse confirmation
-        startDetection();
+        // Start translating immediately — no detection needed!
+        startTranslating();
     }, [store.nightNumber, store.numberOfPairs]);
 
-    // --- LIVE Actions ---
+    // --- CORE: Sequential Translation ---
+    // The app simply reads FR translations one by one.
+    // VAD handles auto-pause (silence = ruku) and auto-resume (voice = imam resumed).
 
-    const startDetection = useCallback(async () => {
-        store.setPhase('detecting');
-        ttsAbortRef.current = true;
-        stopTts();
-
-        const verse = store.getCurrentVerse();
-        if (!verse) return;
-
-        // Start VAD to monitor volume
-        const vadStarted = await voiceActivityDetector.start({
-            onVoiceDetected: async () => {
-                // Voice detected — imam has started reciting
-                // Wait ~40 seconds for Al-Fatiha to finish before detecting the actual verse
-                voiceActivityDetector.stop();
-                store.setLoadingMessage('⏳ Fatiha en cours... détection dans 40s');
-                store.setPhase('loading');
-                await new Promise(resolve => setTimeout(resolve, 40000));
-                detectAndTranslate();
-            },
-            onSilenceDetected: () => {
-                // Silence while detecting — ignore, keep waiting
-            },
-            onVolumeUpdate: (v) => store.setVolume(v),
-        });
-
-        if (!vadStarted) {
-            // Mic not available — skip detection, go straight to translation
-            detectAndTranslate();
-        }
-    }, []);
-
-    const detectAndTranslate = useCallback(async () => {
-        voiceActivityDetector.stop();
-
-        const plan = store.nightPlan;
-        if (!plan) {
-            // No plan — just start translating from current position
-            startTranslationSequence();
-            return;
-        }
-
-        // Listen for 6 seconds to capture what the imam is reciting
-        store.setPhase('detecting');
-        const transcript = await verseConfirmer.listen(6000);
-        console.log('[Tarawih] Transcript captured:', transcript);
-
-        if (transcript && transcript.trim().length > 0) {
-            // Search all verses in the plan to find the best match
-            const match = findVerseInPlan(plan, transcript);
-
-            if (match && match.score >= 0.3) {
-                // Found it! Jump to the matched verse
-                console.log(`[Tarawih] Jumping to pair ${match.pairIndex + 1}, verse ${match.verseIndex} (${match.verse.surah}:${match.verse.ayah})`);
-                store.setCurrentPair(match.pairIndex + 1);
-                store.setCurrentVerseIndex(match.verseIndex);
-            } else {
-                console.log('[Tarawih] No strong match found, keeping current position');
-            }
-        } else {
-            console.log('[Tarawih] No transcript captured, keeping current position');
-        }
-
-        // Start reading translations from the (possibly updated) position
-        startTranslationSequence();
-    }, []);
-
-    const startTranslationSequence = useCallback(async () => {
+    const startTranslating = useCallback(async () => {
         store.setPhase('translating');
         ttsAbortRef.current = false;
+        isTranslatingRef.current = true;
 
-        const verses = store.getPairVerses();
-        const startIdx = store.currentVerseIndex;
+        // Start VAD in background — it will auto-pause on silence, auto-resume on voice
+        startVAD();
 
-        for (let i = startIdx; i < verses.length; i++) {
-            if (ttsAbortRef.current) break;
+        const allPairs = store.nightPlan?.pairs || [];
+        let pairIdx = store.currentPair - 1;
+        let verseIdx = store.currentVerseIndex;
 
-            store.setCurrentVerseIndex(i);
-            const verse = verses[i];
+        while (pairIdx < allPairs.length) {
+            const pair = allPairs[pairIdx];
+            store.setCurrentPair(pairIdx + 1);
 
-            if (verse.textFrench && verse.textFrench.trim().length > 0) {
-                await playTts(verse.textFrench, {
-                    rate: store.ttsSpeed,
-                    lang: 'fr',
-                });
+            for (let i = verseIdx; i < pair.verses.length; i++) {
+                if (ttsAbortRef.current) {
+                    isTranslatingRef.current = false;
+                    return;
+                }
+
+                store.setCurrentVerseIndex(i);
+                const verse = pair.verses[i];
+
+                if (verse.textFrench && verse.textFrench.trim().length > 0) {
+                    try {
+                        await playTts(verse.textFrench, {
+                            rate: store.ttsSpeed,
+                            lang: 'fr',
+                        });
+                    } catch {
+                        // TTS failed — continue to next verse
+                    }
+                }
+
+                if (ttsAbortRef.current) {
+                    isTranslatingRef.current = false;
+                    return;
+                }
+
+                // Small pause between verses
+                await new Promise(resolve => setTimeout(resolve, 300));
             }
 
-            if (ttsAbortRef.current) break;
+            // Finished pair — show pause between pairs
+            pairIdx++;
+            verseIdx = 0; // Reset for next pair
 
-            // Small pause between verses
-            await new Promise(resolve => setTimeout(resolve, 400));
+            if (pairIdx < allPairs.length && !ttsAbortRef.current) {
+                // Brief auto-pause between pairs
+                store.setPhase('paused');
+                store.setLoadingMessage(`Paire ${pairIdx}/${allPairs.length} terminée`);
+
+                // Wait for user or VAD to resume
+                await new Promise<void>((resolve) => {
+                    const checkInterval = setInterval(() => {
+                        if (ttsAbortRef.current || store.phase === 'translating') {
+                            clearInterval(checkInterval);
+                            resolve();
+                        }
+                    }, 500);
+                });
+
+                if (ttsAbortRef.current) {
+                    isTranslatingRef.current = false;
+                    return;
+                }
+            }
         }
 
-        if (!ttsAbortRef.current) {
-            // Finished this pair — go to paused state, waiting for next pair
-            store.setPhase('paused');
-
-            // Start VAD to detect when imam resumes for next pair
-            startVADForNextPair();
-        }
+        // All pairs done
+        isTranslatingRef.current = false;
+        voiceActivityDetector.stop();
+        store.setPhase('finished');
     }, [store.ttsSpeed]);
 
-    const startVADForNextPair = useCallback(async () => {
+    // --- VAD: Auto-pause on silence, auto-resume on voice ---
+    // This runs in background while translating.
+    // When silence detected > 3s (imam doing ruku) → pause TTS
+    // When voice detected > 2s (imam resumed) → resume TTS
+
+    const startVAD = useCallback(async () => {
         const vadStarted = await voiceActivityDetector.start({
-            onVoiceDetected: async () => {
-                voiceActivityDetector.stop();
-                // Imam resumed — wait for Fatiha to finish before detecting
-                store.setLoadingMessage('⏳ Fatiha en cours... détection dans 40s');
-                store.setPhase('loading');
-                await new Promise(resolve => setTimeout(resolve, 40000));
-                // Move to next pair
-                store.nextPair();
-                if (store.phase !== 'finished') {
-                    detectAndTranslate();
+            onVoiceDetected: () => {
+                // Imam resumed reciting — resume TTS if paused
+                if (store.phase === 'paused') {
+                    store.setPhase('translating');
                 }
             },
-            onSilenceDetected: () => { },
+            onSilenceDetected: () => {
+                // Silence (ruku/sujud) — pause TTS
+                if (store.phase === 'translating') {
+                    stopTts();
+                    store.setPhase('paused');
+                }
+            },
             onVolumeUpdate: (v) => store.setVolume(v),
         });
 
         if (!vadStarted) {
-            // No mic — wait for manual action
+            console.log('[Tarawih] VAD not available — manual pause/resume only');
         }
     }, []);
 
+    // --- Manual Controls ---
+
     const handlePause = useCallback(() => {
-        ttsAbortRef.current = true;
         stopTts();
-        voiceActivityDetector.stop();
         store.setPhase('paused');
     }, []);
 
     const handleResume = useCallback(() => {
-        startTranslationSequence();
-    }, []);
-
-    const handleResync = useCallback(() => {
-        ttsAbortRef.current = true;
-        stopTts();
-        voiceActivityDetector.stop();
-        startDetection();
+        store.setPhase('translating');
+        // Re-trigger translation from current position
+        if (!isTranslatingRef.current) {
+            startTranslating();
+        }
     }, []);
 
     const handleStop = useCallback(() => {
         ttsAbortRef.current = true;
         stopTts();
         voiceActivityDetector.stop();
-        verseConfirmer.stop();
         store.reset();
     }, []);
 
-    const handleNextPairManual = useCallback(() => {
-        ttsAbortRef.current = true;
-        stopTts();
-        voiceActivityDetector.stop();
+    const handleNextPair = useCallback(() => {
         store.nextPair();
-        if (store.phase !== 'finished') {
-            startDetection();
+        store.setPhase('translating');
+        if (!isTranslatingRef.current) {
+            startTranslating();
         }
     }, []);
 
@@ -221,7 +198,6 @@ export function TarawihPage() {
             ttsAbortRef.current = true;
             stopTts();
             voiceActivityDetector.stop();
-            verseConfirmer.stop();
         };
     }, []);
 
@@ -309,9 +285,21 @@ export function TarawihPage() {
                         </div>
                     </div>
 
+                    {/* How it works */}
+                    <div className="tarawih-setup-card">
+                        <h3>🎧 Comment ça marche</h3>
+                        <div className="tarawih-juz-info" style={{ textAlign: 'left' }}>
+                            1. Mettez votre oreillette<br />
+                            2. L'app lit les traductions FR en continu<br />
+                            3. Pause auto quand l'imam fait ruku<br />
+                            4. Reprise auto quand l'imam reprend<br />
+                            5. Contrôles manuels ◀ ▶ si besoin
+                        </div>
+                    </div>
+
                     {/* Start */}
                     <button className="tarawih-start-btn" onClick={handleStart}>
-                        <Radio size={22} />
+                        <Play size={22} />
                         Démarrer le Tarawih
                     </button>
                 </div>
@@ -351,7 +339,7 @@ export function TarawihPage() {
         );
     }
 
-    // Live screen (detecting / translating / paused)
+    // Live screen (translating / paused)
     const verse = store.getCurrentVerse();
     const progress = store.getPairProgress();
     const progressPercent = progress.total > 0 ? (progress.current / progress.total) * 100 : 0;
@@ -365,12 +353,6 @@ export function TarawihPage() {
 
             {/* Phase indicator */}
             <div className={`tarawih-phase-bar ${store.phase}`}>
-                {store.phase === 'detecting' && (
-                    <>
-                        <Mic size={18} className="tarawih-mic-icon" />
-                        Détection en cours... Écoutez l'imam
-                    </>
-                )}
                 {store.phase === 'translating' && (
                     <>
                         <Volume2 size={18} />
@@ -380,7 +362,7 @@ export function TarawihPage() {
                 {store.phase === 'paused' && (
                     <>
                         <Pause size={18} />
-                        ⏸️ En pause — En attente de reprise
+                        ⏸️ En pause — Appuyez ▶ ou attendez la reprise
                     </>
                 )}
             </div>
@@ -457,24 +439,21 @@ export function TarawihPage() {
                     <ChevronRight size={22} />
                 </button>
 
-                <button className="tarawih-ctrl-btn" onClick={handleResync} title="Re-détecter">
-                    <RotateCcw size={18} />
-                </button>
-
-                <button className="tarawih-ctrl-btn" onClick={handleNextPairManual} title="Paire suivante">
-                    <ChevronRight size={14} /><ChevronRight size={14} style={{ marginLeft: -10 }} />
+                <button className="tarawih-ctrl-btn" onClick={handleNextPair} title="Paire suivante">
+                    <SkipForward size={18} />
                 </button>
             </div>
 
-            {/* Volume indicator (during detection) */}
-            {store.phase === 'detecting' && (
-                <div className="tarawih-volume">
-                    <Mic size={14} />
-                    <div className="tarawih-volume-bar">
-                        <div className="tarawih-volume-fill" style={{ width: `${Math.min(100, store.volume * 2)}%` }} />
-                    </div>
+            {/* Volume indicator */}
+            <div className="tarawih-volume">
+                <Mic size={14} />
+                <div className="tarawih-volume-bar">
+                    <div className="tarawih-volume-fill" style={{ width: `${Math.min(100, store.volume * 2)}%` }} />
                 </div>
-            )}
+                <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
+                    {store.phase === 'translating' ? 'Silence → pause auto' : 'Voix → reprise auto'}
+                </span>
+            </div>
         </div>
     );
 }
