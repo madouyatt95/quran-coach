@@ -315,6 +315,23 @@
     line-height: 1.2;
 }
 
+.side-menu-beta-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    font-size: 0.5rem;
+    font-weight: 800;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    z-index: 2;
+    transform: rotate(10deg);
+}
+
 /* Footer */
 .side-menu-footer {
     padding: var(--space-lg);

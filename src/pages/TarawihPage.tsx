@@ -284,6 +284,7 @@ export function TarawihPage() {
                     <h1 className="tarawih-title">
                         <Radio size={26} />
                         Tarawih Live
+                        <span className="tarawih-beta-badge">BETA</span>
                     </h1>
                     <p className="tarawih-subtitle">
                         Traduction simultanée dans votre oreillette
