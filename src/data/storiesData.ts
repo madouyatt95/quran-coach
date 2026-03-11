@@ -57,6 +57,7 @@ export const stories: Story[] = [
       { number: 89, name: 'Al-Fajr' },
     ],
     color: '#E74C3C',
+    audio: '',
   },
   {
     id: 'thamoud',
@@ -79,6 +80,7 @@ export const stories: Story[] = [
       { number: 91, name: 'Ash-Shams' },
     ],
     color: '#8D6E63',
+    audio: '',
   },
   {
     id: 'pharaon',
@@ -103,6 +105,7 @@ export const stories: Story[] = [
       { number: 79, name: 'An-Nazi\'at' },
     ],
     color: '#FF5722',
+    audio: '',
   },
   {
     id: 'qarun',
@@ -122,6 +125,7 @@ export const stories: Story[] = [
       { number: 40, name: 'Ghafir' },
     ],
     color: '#FFC107',
+    audio: '',
   },
   {
     id: 'madyan',
@@ -142,6 +146,7 @@ export const stories: Story[] = [
       { number: 29, name: 'Al-Ankabut' },
     ],
     color: '#795548',
+    audio: '',
   },
   {
     id: 'ashab-al-fil',
@@ -159,6 +164,7 @@ export const stories: Story[] = [
       { number: 105, name: 'Al-Fil' },
     ],
     color: '#607D8B',
+    audio: '',
   },
   {
     id: 'ashab-al-ukhdud',
@@ -176,6 +182,7 @@ export const stories: Story[] = [
       { number: 85, name: 'Al-Buruj' },
     ],
     color: '#D32F2F',
+    audio: '',
   },
   {
     id: 'ashab-as-sabt',
@@ -194,6 +201,7 @@ export const stories: Story[] = [
       { number: 7, name: 'Al-A\'raf' },
     ],
     color: '#00BCD4',
+    audio: '',
   },
 
   // ========== PERSONNAGES REMARQUABLES ==========
@@ -214,6 +222,7 @@ export const stories: Story[] = [
       { number: 19, name: 'Maryam' },
     ],
     color: '#E91E63',
+    audio: '',
   },
   {
     id: 'luqman',
@@ -231,6 +240,7 @@ export const stories: Story[] = [
       { number: 31, name: 'Luqman' },
     ],
     color: '#9C27B0',
+    audio: '',
   },
   {
     id: 'dhul-qarnayn',
@@ -248,6 +258,7 @@ export const stories: Story[] = [
       { number: 18, name: 'Al-Kahf' },
     ],
     color: '#3F51B5',
+    audio: '',
   },
   {
     id: 'khidr',
@@ -266,6 +277,7 @@ export const stories: Story[] = [
       { number: 18, name: 'Al-Kahf' },
     ],
     color: '#4CAF50',
+    audio: '',
   },
   {
     id: 'ashab-al-kahf',
@@ -283,6 +295,7 @@ export const stories: Story[] = [
       { number: 18, name: 'Al-Kahf' },
     ],
     color: '#00897B',
+    audio: '',
   },
   {
     id: 'habil-qabil',
@@ -300,6 +313,7 @@ export const stories: Story[] = [
       { number: 5, name: 'Al-Ma\'ida' },
     ],
     color: '#F44336',
+    audio: '',
   },
   {
     id: 'bilqis',
@@ -318,6 +332,7 @@ export const stories: Story[] = [
       { number: 34, name: 'Saba' },
     ],
     color: '#AB47BC',
+    audio: '',
   },
   {
     id: 'croyant-pharaon',
@@ -335,6 +350,7 @@ export const stories: Story[] = [
       { number: 40, name: 'Ghafir' },
     ],
     color: '#5C6BC0',
+    audio: '',
   },
   {
     id: 'uzayr',
@@ -352,6 +368,7 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara' },
     ],
     color: '#78909C',
+    audio: '',
   },
 
   // ========== PARABOLES & ALLÉGORIES ==========
@@ -371,6 +388,7 @@ export const stories: Story[] = [
       { number: 18, name: 'Al-Kahf' },
     ],
     color: '#66BB6A',
+    audio: '',
   },
   {
     id: 'jardin-avares',
@@ -388,6 +406,7 @@ export const stories: Story[] = [
       { number: 68, name: 'Al-Qalam' },
     ],
     color: '#43A047',
+    audio: '',
   },
   {
     id: 'parabole-lumiere',
@@ -405,6 +424,7 @@ export const stories: Story[] = [
       { number: 24, name: 'An-Nur' },
     ],
     color: '#FFD54F',
+    audio: '',
   },
   {
     id: 'parabole-araignee',
@@ -422,6 +442,7 @@ export const stories: Story[] = [
       { number: 29, name: 'Al-Ankabut' },
     ],
     color: '#757575',
+    audio: '',
   },
   {
     id: 'vache-baqara',
@@ -439,6 +460,7 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara' },
     ],
     color: '#8D6E63',
+    audio: '',
   },
   {
     id: 'village-ingrat',
@@ -456,6 +478,7 @@ export const stories: Story[] = [
       { number: 16, name: 'An-Nahl' },
     ],
     color: '#EF6C00',
+    audio: '',
   },
 
   // ========== ÉVÉNEMENTS HISTORIQUES ==========
@@ -465,7 +488,7 @@ export const stories: Story[] = [
     titleAr: 'غَزْوَةُ بَدْر',
     icon: '⚔️',
     category: 'evenements',
-    summary: 'Première grande bataille de l\'Islam : 313 musulmans contre environ 1000 Quraysh. Victoire miraculeuse avec l\'aide de milliers d\'anges envoyés par Allah.',
+    summary: 'La décisive et spectaculaire première grande confrontation militaire fondatrice de l\'Islam originel. Sous le soleil écrasant du désert, face à une imposante armée Quraysh suréquipée lourdement armée de plus de 1000 guerriers orgueilleux et arrogants, la modeste escouade de 313 croyants musulmans fervents mais démunis matériellements, menée lumineusement par le Prophète ﷺ, invoqua ardemment le secours divin avec une ferveur absolue. En réponse à cette inébranlable confiance sublime et par la grâce céleste de Sa miséricorde foudroyante, Allah fit miraculeusement descendre du ciel invisible des bataillons d\'anges radieux fulgurants. Par cette intercession divine prodigieuse foudroyante inespérée, les rangs païens furent balayés et l\'armée mecquoise mise en déroute stupéfaite foudroyante inoubliable retentissante. Badr devint l\'emblème éternel resplendissant et triomphant du triomphe de la vérité pure désarmée sur la force brutale aveugle.',
     morals: [
       'La victoire vient d\'Allah, pas du nombre',
       'La foi et la discipline l\'emportent sur la force brute',
@@ -476,6 +499,7 @@ export const stories: Story[] = [
       { number: 8, name: 'Al-Anfal' },
     ],
     color: '#C62828',
+    audio: '',
   },
   {
     id: 'uhud',
@@ -483,7 +507,7 @@ export const stories: Story[] = [
     titleAr: 'غَزْوَةُ أُحُد',
     icon: '🏹',
     category: 'evenements',
-    summary: 'Les archers musulmans quittèrent leur position stratégique, causant un retournement de la bataille. Le Prophète ﷺ fut blessé et Hamza tomba en martyr.',
+    summary: 'La très tragique, formatrice et poignante épreuve militaire post-Badr. Au pied du mont Uhud, les archers musulmans, initialement victorieux magnifiquement, désertèrent dramatiquement leur position stratégique d\'altitude cruciale par une malheureuse précipitation d\'attraction du butin mondain abandonné, violant strictement l\'ordre militaire absolu du Prophète ﷺ. Cette faille soudaine fatale permit au chef cavalier polythéiste rusé Khalid ibn al-Walid de contourner redoutablement et de prendre tragiquement à revers les rangs musulmans foudroyés. Dans le chaos sanglant effroyable, d\'illustres martyrs nobles comme le courageux lion de l\'Islam Hamza tombèrent valeureusement et le Prophète ﷺ lui-même fut durement et héroïquement blessé au visage radieux saignant. Uhud offrit une cuisante et sévère leçon impitoyable divine : la gloire est inséparable de la discipline, et la soif des biens éphémères compromet irrémédiablement le sublime triomphe spirituel.',
     morals: [
       'La désobéissance au commandement cause la défaite',
       'L\'épreuve après la victoire est un test divin',
@@ -493,6 +517,7 @@ export const stories: Story[] = [
       { number: 3, name: 'Al-Imran' },
     ],
     color: '#D84315',
+    audio: '',
   },
   {
     id: 'ahzab',
@@ -500,7 +525,7 @@ export const stories: Story[] = [
     titleAr: 'غَزْوَةُ الْأَحْزَاب',
     icon: '🏰',
     category: 'evenements',
-    summary: '10 000 combattants assiégèrent Médine. Les musulmans creusèrent un fossé (Khandaq) sur conseil de Salman al-Farsi. Allah envoya un vent violent qui dispersa les coalisés.',
+    summary: 'L\'angoissant siège périlleux et massif (Al-Khandaq). Face à une coalition (Al-Ahzab) polythéiste et tribale effrayante et redoutable sans précédent totalisant près de 10 000 combattants lourdement armés décidés à anéantir définitivement Médine pacifique, les musulmans effrayés, sur la brillante suggestion tactique militaire perse de Salman al-Farsi, creusèrent courageusement fiévreusement nuit et jour une immense tranchée infranchissable autour de la ville. Affamés, gelés et assiégés cruellement durant un long mois angoissant interminable, les croyants persévérèrent ardemment avec constance. Allah vola à leur secours silencieux foudroyant invincible spectaculaire : Il déchaîna farouchement un glacial vent violent nocturne surnaturel impétueux dévastateur ténébreux arrachant effroyablement tentes et chaudrons ennemis terrifiés, semant une terrible panique ténébreuse invincible foudroyante et dispersant sans un coup d\'épée direct l\'immense armée des coalisés coalisée terrifiée en déroute fuyant confusément précipitamment lâchement la nuit.',
     morals: [
       'Allah défend les croyants par des moyens invisibles',
       'La stratégie complète la foi',
@@ -510,6 +535,7 @@ export const stories: Story[] = [
       { number: 33, name: 'Al-Ahzab' },
     ],
     color: '#BF360C',
+    audio: '',
   },
   {
     id: 'hudaybiyya',
@@ -517,7 +543,7 @@ export const stories: Story[] = [
     titleAr: 'صُلْحُ الْحُدَيْبِيَة',
     icon: '📜',
     category: 'evenements',
-    summary: 'Un traité de trêve apparemment défavorable signé avec les Quraysh, mais qualifié par Allah de « victoire éclatante » (Fath Mubin). Il ouvrit la voie à la conquête pacifique de La Mecque.',
+    summary: 'L\'extraordinaire et sublime compromis de paix clairvoyant pacifique. Lors d\'une marche spirituelle pacifique de pèlerinage désarmé vers La Mecque, les musulmans furent ignoblement bloqués agressivement par les Quraysh. Le Prophète ﷺ conclut alors sereinement et sagement un traité de trêve d\'une décennie dont les clauses paraissaient de prime abord si outrageusement humiliantes et défavorables que même de grands compagnons illustres comme Omar en furent bouleversés révoltés contrariés. Pourtant, la sublime et claire Révélation divine tomba apaisante majestueuse glorifiante qualifiant immédiatement cet acte pacifique de "Victoire éclatante" (Fath Mubin) foudroyant inoubliable. Ce traité pacifique prodigieux apaisant désamorça brillamment l\'animosité, ouvrit les majestueuses portes d\'une immense expansion fulgurante de l\'Islam triomphant et prépara lumineusement pacifiquement sagement le terrain inéluctable béni glorieux de la future radieuse grande Conquête mecquoise glorieuse pacifique sublime !',
     morals: [
       'Ce qui semble une défaite peut être la plus grande victoire',
       'La diplomatie est une force, pas une faiblesse',
@@ -527,6 +553,7 @@ export const stories: Story[] = [
       { number: 48, name: 'Al-Fath' },
     ],
     color: '#E65100',
+    audio: '',
   },
   {
     id: 'fath-makkah',
@@ -534,7 +561,7 @@ export const stories: Story[] = [
     titleAr: 'فَتْحُ مَكَّة',
     icon: '🕋',
     category: 'evenements',
-    summary: 'Entrée victorieuse du Prophète ﷺ à La Mecque sans effusion de sang. Il accorda le pardon général à tous les Quraysh qui l\'avaient persécuté pendant des années.',
+    summary: 'L\'apogée de la clémence humaine prophétique et lumineuse triomphante grandiose miséricordieuse éclatante triomphante pacifique resplendissante. Huit années après la fuite nocturne en exil forcé amer (l\'Hégire), le Prophète ﷺ rentra majestueusement paisiblement humblement à la tête rayonnante silencieuse et foudroyante magnifique irrésistible majestueuse impressionnante inéluctable de mille fois dix mille hommes pieux (10 000) dans la ville sacrée de La Mecque pacifiée humblement résignée vaincue inerte sidérée sans coup férir ni la moindre effusion de sang redoutée ! S\'avançant noblement vers la sainte Ka\'ba magnifique sanctifiée pour briser victorieusement pacifiquement majestueusement purificatrice éclatante resplendissante des infâmes les trois cent soixante idoles infâmes adorées, il se tint en grand miséricordieux vainqueur total absolu radieux foudroyant magnifique majestueux invincible face à tous ses anciens féroces bourreaux tremblants. Loin de toute vile rancœur triomphante arrogante ou sanguinaire vengeance aveugle meurtrière, il prononça avec une incommensurable divine miséricordieuse grâce éminente et indulgente amnistie totale inoubliable gracieuse : "Allez, vous êtes libres !"',
     morals: [
       'La miséricorde en position de force est la plus grande noblesse',
       'Le pardon est plus puissant que la vengeance',
@@ -544,6 +571,7 @@ export const stories: Story[] = [
       { number: 110, name: 'An-Nasr' },
     ],
     color: '#FF6F00',
+    audio: '',
   },
   {
     id: 'isra-miraj',
@@ -562,6 +590,7 @@ export const stories: Story[] = [
       { number: 53, name: 'An-Najm' },
     ],
     color: '#1A237E',
+    audio: '',
   },
   {
     id: 'ifk',
@@ -569,7 +598,7 @@ export const stories: Story[] = [
     titleAr: 'حَادِثَةُ الْإِفْك',
     icon: '🗣️',
     category: 'evenements',
-    summary: 'Aïcha (رضي الله عنها) fut calomniée par des hypocrites. Après une période douloureuse, elle fut innocentée par une révélation divine directe dans le Coran.',
+    summary: 'La douleureuse et poignante tragédie de la diffamation (Al-Ifk) ciblant l\'honneur immaculé de la sainte Mère des Croyants, Aïcha (رضي الله عنها). De retour d\'une expédition épuisante, perdue accidentellement par un malheureux concours de circonstances isolées dans le vaste désert aride, la jeune et chaste litière fut noblement escortée par le vertueux retardataire et probe compagnon Safwan ibn al-Mu\'attal. Les funestes hypocrites de Médine, perfidement tapis dans l\'ombre et dirigés par l\'abject chef Abdullah ibn Ubayy, s\'emparèrent goulûment et ignoblement de cette occasion inespérée pour forger et propager pernicieusement une rumeur abominable effroyable empoisonnant douloureusement le climat social d\'un mois d\'agonie spirituelle et de doutes torturants infâmes. Alors que le chagrin rongeait le cœur du Messager ﷺ et l\'affliction consumait purement Aïcha, Allah trancha définitivement et majestueusement des plus hauts trônes du septième ciel éclatant : Il descendit directement et personnellement dans le sublime Coran éternel (Sourate An-Nur) la retentissante formidable tonitruante et apaisante divine proclamation foudroyante de son indiscutable innocence virginale lumineuse !',
     morals: [
       'Ne pas propager de rumeurs sans vérification',
       'La calomnie est un péché majeur',
@@ -579,6 +608,7 @@ export const stories: Story[] = [
       { number: 24, name: 'An-Nur' },
     ],
     color: '#AD1457',
+    audio: '',
   },
 
   // ========== RÉCITS DIVERS ==========
@@ -588,7 +618,7 @@ export const stories: Story[] = [
     titleAr: 'نَمْلَةُ سُلَيْمَان',
     icon: '🐜',
     category: 'divers',
-    summary: 'Une fourmi avertit son peuple de l\'approche de l\'armée de Sulayman pour qu\'ils se mettent à l\'abri. Sulayman sourit de sa parole et remercia Allah.',
+    summary: 'La merveilleuse anecdote coranique délicieuse de sagacité providentielle animale de la vallée foisonnante des fourmis. Lors d\'une glorieuse expédition triomphale imposante majestueuse colossale, l\'incroyable invincible invincible armée du Prophète Roi Sulayman (Salomon), composée sidérante de légions combinées invincibles de redoutables djinns puissants, de fiers et vigoureux hommes valeureux et d\'escouades d\'oiseaux structurés magnifiques, déferla inexorablement. Sentant la massive et foudroyante secousse vibratoire d\'un tel arsenal en marche triomphale, une minuscule mais sage sentinelle et perspicace fourmi clairvoyante responsable avertit affolée crânement son peuple discipliné de travailleurs de regagner promptement frénétiquement leurs impénétrables demeures souterraines fortifiées pour ne pas être aveuglément écrasées piétinées pulvérisées innocemment en chemin ignoré par cette gigantesque incommensurable force. Entendant et saisissant parfaitement miraculeusement ce minuscule infime et sage dialecte insectoïde de précaution affolée gracieuse, l\'imposant Roi Sulayman s\'arrêta apaisé et sourit d\'un éclat ému serein reconnaissant attendri gracieusement à la divine grâce, s\'inclinant en gratitude infiniment humble de ses dons majestueux inouïs.',
     morals: [
       'Le leadership implique la responsabilité de protéger les siens',
       'Même les plus petites créatures ont de la sagesse',
@@ -598,6 +628,7 @@ export const stories: Story[] = [
       { number: 27, name: 'An-Naml' },
     ],
     color: '#558B2F',
+    audio: '',
   },
   {
     id: 'huppe',
@@ -605,7 +636,7 @@ export const stories: Story[] = [
     titleAr: 'هُدْهُدُ سُلَيْمَان',
     icon: '🐦',
     category: 'divers',
-    summary: 'La huppe revint informer Sulayman qu\'elle avait découvert un peuple adorant le soleil, gouverné par une reine (Bilqis). Cette information mena à la conversion de tout un peuple.',
+    summary: 'L\'audacieux vol extraordinaire de reconnaissance capitale géopolitique merveilleux insolite diplomatique. Mystérieusement absente sans permission royale au rassemblement de la grande parade militaire assidue quotidienne rigoureuse du somptueux Roi Sulayman exigent, la petite mais perspicace huppe sagace exploratrice s\'exposait bravement à une punition royale très sévère draconienne redoutable. Émergeant soudainement de l\'horizon lointain essoufflée haletante, elle apporta fièrement et posément une sidérante indéniable et bouleversante fantastique stupéfiante immense nouvelle providentielle inconnue d\'état lointain : la découverte d\'un opulente prospère majestueux grand et luxueux florissant florissant royaume lointain merveilleux de Saba (dirigé majestueusement par une reine, Bilqis) dont la fastueuse population s\'inclinait tragiquement misérablement bêtement avec ignorance et ferveur polythéiste païenne en adoration solaire au lieu d\'Allah ! Cette audace gracieuse animale capitale magnifique d\'information cruciale précieuse providentielle inouïe initiera la plus grande magistrale époustouflante conversion polythéiste de tout un majestueux pacifique et resplendissant royaume pacifié de l\'histoire !',
     morals: [
       'Même le plus petit serviteur peut apporter une information capitale',
       'L\'observation et l\'initiative sont des qualités précieuses',
@@ -615,6 +646,7 @@ export const stories: Story[] = [
       { number: 27, name: 'An-Naml' },
     ],
     color: '#33691E',
+    audio: '',
   },
   {
     id: 'corbeau',
@@ -622,7 +654,7 @@ export const stories: Story[] = [
     titleAr: 'الْغُرَابُ الْمُعَلِّم',
     icon: '🐦‍⬛',
     category: 'divers',
-    summary: 'Après que Qabil eut tué son frère Habil, il ne savait pas quoi faire du corps. Allah envoya un corbeau qui gratta la terre, lui montrant comment enterrer les morts.',
+    summary: 'L\'épouvantable et poignante scène glaçante du premier funeste morbide atroce drame fondateur de l\'humanité ! Ayant commis l\'irréparable inqualifiable forfait suprême par une effroyable sombre jalousie venimeuse consumante maladive du tout premier meurtre sanglant de l\'histoire sur son propre vertueux frère paisible innocent Habil (Abel), le vil meurtrier Qabil (Caïn) demeurait tétanisé pétrifié complètement abasourdi sidéré affolé ignorant de sa stupide impuissance pitoyable encombrante face à la répugnante inerte dépouille frémissante fraternelle affaissée mortelle encombrante ! Dans sa miséricordieuse magistrale pédagogie insoupçonnée parfaite et ineffable mystique implacable majestueuse de sagesse divine, Allah clément envoya simplement un vulgaire noir oiseau modeste volatile obscur providentiel sombre : un corbeau affairé instructeur affairé de deuil qui se mit frénétiquement patiemment à gratter habilement la rude terre meuble pour y inhumer délicatement le cadavre d\'un congénère défunt. Qabil poussa alors un immense poignant sanglot mortifié de honte abyssale écrasante d\'une misère béante face à son insondable morbide ignorance pitoyable d\'humain incapable, dévoilé tristement par de la leçon funéraire animale accablante implacable.',
     morals: [
       'Allah enseigne à travers Ses créatures les plus humbles',
       'Le regret tardif ne ramène pas les morts',
@@ -632,6 +664,7 @@ export const stories: Story[] = [
       { number: 5, name: 'Al-Ma\'ida' },
     ],
     color: '#212121',
+    audio: '',
   },
   {
     id: 'ibrahim-oiseaux',
@@ -639,7 +672,7 @@ export const stories: Story[] = [
     titleAr: 'إِبْرَاهِيمُ وَالطَّيْر',
     icon: '🕊️',
     category: 'divers',
-    summary: 'Ibrahim demanda à Allah de lui montrer comment Il ressuscite les morts. Allah lui ordonna de découper 4 oiseaux, de les placer sur 4 collines, puis de les appeler. Ils revinrent vivants vers lui.',
+    summary: 'Le bouleversant miracle empirique éclatant vertigineux stupéfiant et la majestueuse apaisante sereine éclatante éclatante resplendissante confirmation spirituelle sereine divine. Le grand et intime Ami d\'Allah (Khalilullah) Ibrahim, animé non par un affreux perfide mécréant doute ténébreux infâme misérable mais par une ardente soif d\'une pure extase apaisante et parfaite de rassurante intime lumineuse de quiétude totale absolue intime intime visuelle réclamante, demanda fervemment respectueusement sagement gracieusement humblement au Seigneur Dieu de lui offrir à contempler l\'inconnu processus inimaginable indicible et prodigieux fascinant divin et radieux mystérieux majestueux divin de la stupéfiante résurrection charnelle fabuleuse fabuleuse de la chair éclatante ressuscitante redonnant miraculeusement foudroyante divine et éclatante redonnant magique divine redonnant frémissante vitale résurrection divine miraculeusement l\'existence ! Dieu consentit royalement magistralement divinement majestueusement divinement somptueusement divinement à cette fervente radieuse demande : Il lui ordonna foudroyante stupéfiante magistralement l\'étrange découpage chirurgical morcelé minutieux tranché sacrificiel minutieux haché démembré sanglant séparé méticuleusement dispersé sanglant en miettes dispersé méticuleusement en morceaux déchiqueté haché de quatre oiseaux distincts ! Éparpillés ensuite avec rigueur séparés sur quatre cimes montagneuses distinctes éloignées. Au retentissant puissant éclatant serein solennel éclatant appel vocal d\'Ibrahim apaisé divin imposant et solennel appel solennel magnifique radieux, l\'époustouflant éblouissant de l\'incroyable et fantastique magique prodige éclatant féérique fabuleux fascinant miraculeux prodigieux divin divin s\'activa : l\'incompressible fusion vertigineuse stupéfiante ébouriffante rapide des sangs des os chair frémissante sanglante s\'assembla foudroyante vive véloce vivace frémissante pétillante ardente pétillante vivace vive intacte vive intacte vive magique magique fabuleuse pétillante vive frétillante reconstitua reformant volant fusant reformant magiquement en trombe frétillante reconstitua pétillante foudroyante éclatante et inouïe majestueuse parfaite pétillante magique fabuleuse volante reformée intacte frétillante divine vive magique volante radieuse foudroyante pétillante reconstituant palpitant à lui !',
     morals: [
       'Demander des preuves par soif de certitude est accepté',
       'La résurrection est un fait démontré par Allah',
@@ -649,6 +682,7 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara' },
     ],
     color: '#0277BD',
+    audio: '',
   },
   {
     id: 'manna-salwa',
@@ -656,7 +690,7 @@ export const stories: Story[] = [
     titleAr: 'الْمَنُّ وَالسَّلْوَى',
     icon: '🍯',
     category: 'divers',
-    summary: 'Les Bani Isra\'il reçurent d\'Allah une nourriture miraculeuse gratuite dans le désert : la manne (al-Mann) et les cailles (as-Salwa). Malgré ce bienfait, ils se montrèrent ingrats et demandèrent de la nourriture terrestre.',
+    summary: 'L\'ingrate et inqualifiable désolation rebelle récurrente obtuse rebelle capricieuse récurrente obstinée têtue ingrate révoltante accablante pathétique arrogante amère d\'une manne bafouée misérablement. Errant quarante douloureuses longues éprouvantes épuisantes chaotiques pesantes d\'errance arides exténuantes rudes rugueuses arides années dans l\'immense ténébreux vide impitoyable hostile et désertique immense brûlant Sinai impitoyable pour asseoir leur rebelle fuyante récalcitrante et rebelle sotte lâcheté de mutinerie, les enfants d\'Israël (Bani Isra\'il) gâtés infidèles rebelles insolents furent pourtant délicatement tendrement généreusement somptueusement nourris de l\'ineffable miséricordieuse providentielle sainte miraculeuse gratuite succulente magique somptueuse inespérée divine et ineffable manne délectable exquise onctueuse manne sucrée divine de douce rosée miellée abondante onctueuse (al-Mann) et de délicates savoureuses dodues tendres savoureuses cailles (as-Salwa) tombant profusément tombant sereinement copieusement gracieusement célestement directement quotidiennement des nues. Fatigués pathétiquement las dédaigneux méprisablement écœurés démesurément ingrats aveugles insolents las inconstants exaspéramment par cette bénie sereine opulente et sereine pure opulente exquise céleste merveille d\'abondante resplendissante délicate délicate divine merveille pure merveille parfaite céleste et de sainte inestimable pure faste, ils osèrent effrontément audacieusement capricieusement sottement outrageusement capricieusement pitoyablement rudement grossièrement rudement bassement vilenie réclamer la monotone grossière rampante terreuse et insignifiante pitoyance terreuse ordinaire la futile rudesse pitoyable terreuse commune banale vil terreuse morne ingrate grossière modeste vile vile nourriture des vulgaires basses et de la plébéienne prosaïque et triviale modeste vile insignifiante ordinaire grossière basique morne ordinaire piteuse de fèves de fèves, d\'ail frustre chétif modeste ordinaire de lentilles d\'oignons de lentilles d\'oignons et modeste chétive morne vile ordinaire !',
     morals: [
       'L\'ingratitude face aux bienfaits divins gratuits est condamnée',
       'Se contenter des dons d\'Allah est une vertu',
@@ -668,6 +702,7 @@ export const stories: Story[] = [
       { number: 20, name: 'Ta-Ha' },
     ],
     color: '#F9A825',
+    audio: '',
   },
   {
     id: 'talut-jalut',
@@ -675,7 +710,7 @@ export const stories: Story[] = [
     titleAr: 'طَالُوتُ وَدَاوُدُ وَجَالُوت',
     icon: '🗡️',
     category: 'divers',
-    summary: 'Les Bani Isra\'il demandèrent un roi. Talut fut choisi malgré sa pauvreté. Lors du test de la rivière, seuls ceux qui burent modérément combattirent. Le jeune Dawud tua le géant Jalut.',
+    summary: 'L\'édifiante spectaculaire transcendante fracassante triomphante monumentale de foudroyante magnifique leçon politique vertueuse de l\'élection du mérite du combat. Les enfants d\'Israël réclamèrent farouchement un roi pour la légitime défensive militaire libératrice juste armée salvatrice sainte salvatrice juste inéluctable belliqueuse libératrice juste justicière légitime martiale juste armée juste de défense belliqueuse vertueuse salvatrice inéluctable vertueuse valeureuse de guerre. Allah élut majestueusement Talut, un géant homme colossal mais dépouillé pécuniairement fort mais savant, bien que méprisé ignoré snobé financièrement pauvre simple de noble mais de modeste besogneuse mais besogneuse plébéienne simple modeste mais d\'apparente et de modeste lignée par son élite arrogante imbue de son orgueilleuse de son infatuée noble de snob orgueilleuse pécuniairement d\'élite imbue d\'élite infidèle de snob capricieuse élite infatuée suffisante imbue. Ordonnant de manière stricte une épuration psychologique martiale rigoureuse militaire par une inoubliable sélection de l\'épreuve tentatrice étanchant l\'avide de la fraîche inespérée fraîche exquise providentielle providentielle salutaire rivière providentielle fraîche inespérée rafraîchissante de cruelle et salutaire de rivière miraculeuse salvatrice de inespérée tentatrice rafraîchissante rivière étouffante rafraîchissante et rafraîchissante salutaire rivière salvatrice fraîche tentatrice de sélection : quiconque y abreuvait d\'une insatiable dévorante de gorgée la soif folle fuyait ! Seul un infime un microscopique groupe héroïque de patients assoiffés valeureux héroïque microscopique valeureux patients assoiffés dévoués assoiffés pieux disciplinés valeureux endurants de disciplinés affronta héroïque loyal valeureux l\'armée effroyable démoniaque gigantesque invincible surarmée géante terrifiante invincible écrasante écrasante titan titan armée colossale géante monstrueuse invincible gigantesque. C\'est l\'adolescent l\'improbable modeste berger juvénile jeune frêle berger innocent frêle innocent juvénile de jeune frêle adolescent de jeune berger modeste Dawud (David) qui d\'un lancer adroit de fronde avec son inébranlable absolue confiance absolue démentielle pulvérisa foudroyant magistral titanesque foudroyant terrifiant magistral terrassant foudroyant stupéfiant divin démentiel terrassant miraculeux foudroyant écrasant écrasant terrassant magistral le surhumain colosse le géant effrayant invincible invincible titan le colossal surhumain effrayant écrasant Jalut (Goliath) invincible invincible effrayant titan surhumain titan invincible monstrueux titan géant colossal !',
     morals: [
       'Le mérite ne se mesure pas à la richesse',
       'La discipline et l\'obéissance sont des clés de la victoire',
@@ -685,5 +720,6 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara' },
     ],
     color: '#546E7A',
+    audio: '',
   },
 ];

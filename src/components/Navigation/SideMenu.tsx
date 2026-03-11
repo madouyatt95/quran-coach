@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings, ScrollText, Compass, Moon, BookOpen, HeartPulse, Headphones, Library, GraduationCap, Users, Radio, BookMarked } from 'lucide-react';
+import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings, ScrollText, Compass, Moon, BookOpen, HeartPulse, Headphones, Library, GraduationCap, Users, BookMarked } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { usePrayerStore } from '../../stores/prayerStore';
@@ -90,7 +90,6 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         { path: '/hadiths', emoji: <Library size={24} color="#9C27B0" />, label: t('sideMenu.hadiths'), color: 'rgba(156,39,176,0.2)' },
         { path: '/tafsir', emoji: <BookOpen size={24} color="#795548" />, label: t('sideMenu.tafsir'), color: 'rgba(121,85,72,0.2)' },
         { path: '/academy', emoji: <GraduationCap size={24} color="#4CAF50" />, label: t('sideMenu.academy'), color: 'rgba(76,175,80,0.2)', isNew: true },
-        { path: '/tarawih', emoji: <Radio size={24} color="#26A69A" />, label: 'Tarawih Live', color: 'rgba(38,166,154,0.2)', isBeta: true },
         { path: '/circles', emoji: <Users size={24} color="#2196F3" />, label: 'Cercle de Lecture', color: 'rgba(33,150,243,0.2)' },
     ];
 

@@ -66,6 +66,11 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                         <BookOpen size={16} />
                         Le récit
                     </h3>
+                    {story.audio && (
+                        <div className="story-modal__audio" style={{ marginBottom: '1rem' }}>
+                            <audio controls src={story.audio} style={{ width: '100%', borderRadius: '8px' }} />
+                        </div>
+                    )}
                     <p className="story-modal__text">{story.summary}</p>
                 </div>
 
