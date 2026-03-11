@@ -77,14 +77,14 @@ export function stopTts() {
  */
 // We use Google TTS API directly via audio source to avoid CORS issues.
 // `client=tw-ob` is the unofficial endpoint parameter that allows direct media playback.
-function getGoogleTtsUrl(text: string): string {
-    return `https://translate.google.com/translate_tts?ie=UTF-8&client=dict-chrome-ex&tl=ar&q=${encodeURIComponent(text)}`;
+function getGoogleTtsUrl(text: string, lang: string = 'ar'): string {
+    return `https://translate.google.com/translate_tts?ie=UTF-8&client=dict-chrome-ex&tl=${lang}&q=${encodeURIComponent(text)}`;
 }
 
 /**
  * Fallback: use Web Speech API (SpeechSynthesisUtterance)
  */
-function speakWithWebSpeech(text: string, rate: number = 0.85): Promise<void> {
+function speakWithWebSpeech(text: string, rate: number = 0.85, lang: string = 'ar'): Promise<void> {
     return new Promise((resolve) => {
         if (!window.speechSynthesis) {
             console.warn('Speech synthesis not supported');
@@ -94,14 +94,33 @@ function speakWithWebSpeech(text: string, rate: number = 0.85): Promise<void> {
 
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ar-SA';
+        utterance.lang = lang === 'fr' ? 'fr-FR' : 'ar-SA';
         utterance.rate = rate;
         utterance.pitch = 1;
 
-        // Try to find an Arabic voice
+        // Select the best voice for the language
         const voices = window.speechSynthesis.getVoices();
-        const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
-        if (arabicVoice) utterance.voice = arabicVoice;
+        const langPrefix = lang === 'fr' ? 'fr' : 'ar';
+        const langVoices = voices.filter(v => v.lang.startsWith(langPrefix));
+
+        if (lang === 'fr') {
+            // Prefer masculine French voice
+            const maleVoice = langVoices.find(v =>
+                v.name.toLowerCase().includes('thomas') ||
+                v.name.toLowerCase().includes('male') ||
+                v.name.toLowerCase().includes('homme') ||
+                v.name.toLowerCase().includes('paul') ||
+                v.name.toLowerCase().includes('henri') ||
+                v.name.toLowerCase().includes('google français')
+            );
+            if (maleVoice) {
+                utterance.voice = maleVoice;
+            } else if (langVoices.length > 0) {
+                utterance.voice = langVoices[0];
+            }
+        } else {
+            if (langVoices.length > 0) utterance.voice = langVoices[0];
+        }
 
         utterance.onend = () => {
             _isPlaying = false;
@@ -112,7 +131,7 @@ function speakWithWebSpeech(text: string, rate: number = 0.85): Promise<void> {
             console.warn('Web Speech API error:', e);
             _isPlaying = false;
             notifyChange();
-            resolve(); // Resolve anyway so it doesn't block the app
+            resolve();
         };
 
         _isPlaying = true;
@@ -153,9 +172,10 @@ function chunkText(text: string, maxLength: number = 180): string[] {
  */
 export async function playTts(
     text: string,
-    options?: { rate?: number; onEnd?: () => void }
+    options?: { rate?: number; lang?: string; onEnd?: () => void }
 ): Promise<void> {
     const rate = options?.rate ?? 1.0;
+    const lang = options?.lang ?? 'ar';
 
     // Stop any current playback
     stopTts();
@@ -169,9 +189,9 @@ export async function playTts(
     // Fetch URLs (serving from cache if available)
     try {
         const fetchPromises = textChunks.map(async (chunk) => {
-            let url = audioCache.get(chunk);
+            let url = audioCache.get(`${lang}:${chunk}`);
             if (!url) {
-                const reqUrl = getGoogleTtsUrl(chunk);
+                const reqUrl = getGoogleTtsUrl(chunk, lang);
                 // Fetch as blob with no-referrer to bypass Google preventing direct audio playback from non-Google origins
                 const res = await fetch(reqUrl, { referrerPolicy: 'no-referrer' });
                 if (!res.ok) throw new Error(`Google TTS request failed: ${res.status}`);
@@ -185,7 +205,7 @@ export async function playTts(
                     reader.readAsDataURL(blob);
                 });
 
-                audioCache.set(chunk, url);
+                audioCache.set(`${lang}:${chunk}`, url);
             }
             return url;
         });
@@ -240,7 +260,7 @@ export async function playTts(
                 _isPlaying = false; // reset flag before fallback
                 const remainingText = textChunks.slice(i).join(' ');
                 console.log(`[TTS] Falling back to Web Speech for remaining ${textChunks.length - i} chunks.`);
-                await speakWithWebSpeech(remainingText, rate);
+                await speakWithWebSpeech(remainingText, rate, lang);
                 break; // Stop loop, fallback handles the rest
             }
         }
@@ -252,7 +272,7 @@ export async function playTts(
 
     // Direct Web Speech fallback if no URLs were generated
     try {
-        await speakWithWebSpeech(text, rate);
+        await speakWithWebSpeech(text, rate, lang);
         options?.onEnd?.();
     } catch {
         options?.onEnd?.();

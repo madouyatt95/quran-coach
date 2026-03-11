@@ -65,8 +65,13 @@ export function TarawihPage() {
 
         // Start VAD to monitor volume
         const vadStarted = await voiceActivityDetector.start({
-            onVoiceDetected: () => {
-                // Voice detected — run verse detection
+            onVoiceDetected: async () => {
+                // Voice detected — imam has started reciting
+                // Wait ~40 seconds for Al-Fatiha to finish before detecting the actual verse
+                voiceActivityDetector.stop();
+                store.setLoadingMessage('⏳ Fatiha en cours... détection dans 40s');
+                store.setPhase('loading');
+                await new Promise(resolve => setTimeout(resolve, 40000));
                 detectAndTranslate();
             },
             onSilenceDetected: () => {
@@ -132,6 +137,7 @@ export function TarawihPage() {
             if (verse.textFrench && verse.textFrench.trim().length > 0) {
                 await playTts(verse.textFrench, {
                     rate: store.ttsSpeed,
+                    lang: 'fr',
                 });
             }
 
@@ -152,12 +158,16 @@ export function TarawihPage() {
 
     const startVADForNextPair = useCallback(async () => {
         const vadStarted = await voiceActivityDetector.start({
-            onVoiceDetected: () => {
+            onVoiceDetected: async () => {
                 voiceActivityDetector.stop();
-                // Imam resumed — move to next pair
+                // Imam resumed — wait for Fatiha to finish before detecting
+                store.setLoadingMessage('⏳ Fatiha en cours... détection dans 40s');
+                store.setPhase('loading');
+                await new Promise(resolve => setTimeout(resolve, 40000));
+                // Move to next pair
                 store.nextPair();
                 if (store.phase !== 'finished') {
-                    startDetection();
+                    detectAndTranslate();
                 }
             },
             onSilenceDetected: () => { },
