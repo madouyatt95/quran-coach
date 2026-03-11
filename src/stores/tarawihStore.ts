@@ -46,7 +46,7 @@ export const useTarawihStore = create<TarawihState>()(
             nightNumber: 1,
             numberOfPairs: 4,
             ttsSpeed: 1.0,
-            fatihaDelay: 30,
+            fatihaDelay: 40,
 
             // Live state
             phase: 'setup',

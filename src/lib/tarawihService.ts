@@ -134,8 +134,8 @@ export class VoiceActivityDetector {
     // Config
     private voiceThreshold = 15;     // Volume above this = voice
     private silenceThreshold = 8;    // Volume below this = silence
-    private voiceConfirmMs = 2000;   // Must be above threshold for 2s
-    private silenceConfirmMs = 3000; // Must be below threshold for 3s
+    private voiceConfirmMs = 3500;   // Must be above threshold for 3.5s (filters Takbirs)
+    private silenceConfirmMs = 4000; // Must be below threshold for 4s (ensures real pause)
 
     // State
     private voiceStartTime = 0;
