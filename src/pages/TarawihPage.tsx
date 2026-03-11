@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Radio, ChevronLeft, ChevronRight, Mic, Volume2, Pause, Play, RotateCcw, ArrowLeft } from 'lucide-react';
 import { useTarawihStore } from '../stores/tarawihStore';
-import { buildNightPlan, voiceActivityDetector, verseConfirmer } from '../lib/tarawihService';
+import { buildNightPlan, voiceActivityDetector, verseConfirmer, findVerseInPlan } from '../lib/tarawihService';
 import { playTts, stopTts } from '../lib/ttsService';
 import { JUZ_DATA } from '../data/juzData';
 import './TarawihPage.css';
@@ -66,8 +66,8 @@ export function TarawihPage() {
         // Start VAD to monitor volume
         const vadStarted = await voiceActivityDetector.start({
             onVoiceDetected: () => {
-                // Voice detected — run verse confirmation
-                confirmAndTranslate();
+                // Voice detected — run verse detection
+                detectAndTranslate();
             },
             onSilenceDetected: () => {
                 // Silence while detecting — ignore, keep waiting
@@ -77,21 +77,42 @@ export function TarawihPage() {
 
         if (!vadStarted) {
             // Mic not available — skip detection, go straight to translation
-            confirmAndTranslate();
+            detectAndTranslate();
         }
     }, []);
 
-    const confirmAndTranslate = useCallback(async () => {
+    const detectAndTranslate = useCallback(async () => {
         voiceActivityDetector.stop();
 
-        const verse = store.getCurrentVerse();
-        if (!verse) return;
+        const plan = store.nightPlan;
+        if (!plan) {
+            // No plan — just start translating from current position
+            startTranslationSequence();
+            return;
+        }
 
-        // Brief speech recognition to confirm (non-blocking)
-        const result = await verseConfirmer.confirm(verse.textArabic, 5000);
-        console.log('[Tarawih] Confirmation:', result);
+        // Listen for 6 seconds to capture what the imam is reciting
+        store.setPhase('detecting');
+        const transcript = await verseConfirmer.listen(6000);
+        console.log('[Tarawih] Transcript captured:', transcript);
 
-        // Start reading translations
+        if (transcript && transcript.trim().length > 0) {
+            // Search all verses in the plan to find the best match
+            const match = findVerseInPlan(plan, transcript);
+
+            if (match && match.score >= 0.3) {
+                // Found it! Jump to the matched verse
+                console.log(`[Tarawih] Jumping to pair ${match.pairIndex + 1}, verse ${match.verseIndex} (${match.verse.surah}:${match.verse.ayah})`);
+                store.setCurrentPair(match.pairIndex + 1);
+                store.setCurrentVerseIndex(match.verseIndex);
+            } else {
+                console.log('[Tarawih] No strong match found, keeping current position');
+            }
+        } else {
+            console.log('[Tarawih] No transcript captured, keeping current position');
+        }
+
+        // Start reading translations from the (possibly updated) position
         startTranslationSequence();
     }, []);
 

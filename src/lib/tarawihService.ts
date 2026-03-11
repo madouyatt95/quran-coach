@@ -247,68 +247,62 @@ export class VerseConfirmer {
     private recognition: any = null;
 
     /**
-     * Listen for ~5 seconds and return the best transcript.
-     * Used to confirm the imam is at the expected verse.
+     * Listen for a few seconds and return the raw Arabic transcript.
+     * Does NOT confirm against any specific verse — just captures what the mic hears.
      */
-    confirm(expectedArabicText: string, timeoutMs: number = 6000): Promise<{
-        confirmed: boolean;
-        transcript: string;
-        confidence: number;
-    }> {
+    listen(timeoutMs: number = 6000): Promise<string> {
         return new Promise((resolve) => {
             const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
             if (!SpeechRecognitionClass) {
-                // No Speech API available — auto-confirm
-                resolve({ confirmed: true, transcript: '', confidence: 0 });
+                resolve('');
                 return;
             }
 
             this.recognition = new SpeechRecognitionClass();
             this.recognition.lang = 'ar-SA';
-            this.recognition.continuous = false;
+            this.recognition.continuous = true;
             this.recognition.interimResults = false;
-            this.recognition.maxAlternatives = 1;
+            this.recognition.maxAlternatives = 3;
 
-            let bestTranscript = '';
+            let allTranscripts: string[] = [];
 
             const timeout = setTimeout(() => {
                 try { this.recognition?.stop(); } catch { }
-                // If we got no transcript at all, auto-confirm (mic might not work)
-                resolve({
-                    confirmed: bestTranscript.length === 0 ? true : matchesVerse(bestTranscript, expectedArabicText),
-                    transcript: bestTranscript,
-                    confidence: bestTranscript.length === 0 ? 0 : 1,
-                });
             }, timeoutMs);
 
             this.recognition.onresult = (event: any) => {
-                const result = event.results[0];
-                if (result) {
-                    bestTranscript = result[0].transcript;
+                for (let i = 0; i < event.results.length; i++) {
+                    const result = event.results[i];
+                    if (result.isFinal || result[0]) {
+                        // Collect all alternatives for better matching
+                        for (let j = 0; j < result.length; j++) {
+                            if (result[j].transcript) {
+                                allTranscripts.push(result[j].transcript);
+                            }
+                        }
+                    }
                 }
             };
 
             this.recognition.onend = () => {
                 clearTimeout(timeout);
-                resolve({
-                    confirmed: bestTranscript.length === 0 ? true : matchesVerse(bestTranscript, expectedArabicText),
-                    transcript: bestTranscript,
-                    confidence: bestTranscript.length === 0 ? 0 : 1,
-                });
+                const combined = allTranscripts.join(' ');
+                console.log('[VerseConfirmer] Heard:', combined);
+                resolve(combined);
             };
 
-            this.recognition.onerror = () => {
+            this.recognition.onerror = (e: any) => {
+                console.warn('[VerseConfirmer] Error:', e.error);
                 clearTimeout(timeout);
-                // On error, auto-confirm to not block the user
-                resolve({ confirmed: true, transcript: '', confidence: 0 });
+                resolve(allTranscripts.join(' '));
             };
 
             try {
                 this.recognition.start();
             } catch {
                 clearTimeout(timeout);
-                resolve({ confirmed: true, transcript: '', confidence: 0 });
+                resolve('');
             }
         });
     }
@@ -335,44 +329,81 @@ function normalizeArabic(text: string): string {
         .trim();
 }
 
-function matchesVerse(transcript: string, expectedText: string): boolean {
-    const norm1 = normalizeArabic(transcript);
-    const norm2 = normalizeArabic(expectedText);
 
-    // Check if the first few words match
-    const words1 = norm1.split(' ').filter(w => w.length > 0).slice(0, 4);
-    const words2 = norm2.split(' ').filter(w => w.length > 0).slice(0, 4);
 
-    if (words1.length === 0 || words2.length === 0) return false;
 
-    let matches = 0;
-    for (let i = 0; i < Math.min(words1.length, words2.length); i++) {
-        if (words1[i] === words2[i]) {
-            matches++;
-        } else {
-            // Fuzzy: check if words are similar (Levenshtein)
-            const maxLen = Math.max(words1[i].length, words2[i].length);
-            let dist = 0;
-            const s1 = words1[i], s2 = words2[i];
-            const m = s1.length, n = s2.length;
-            const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
-            for (let a = 0; a <= m; a++) dp[a][0] = a;
-            for (let b = 0; b <= n; b++) dp[0][b] = b;
-            for (let a = 1; a <= m; a++) {
-                for (let b = 1; b <= n; b++) {
-                    dp[a][b] = s1[a - 1] === s2[b - 1]
-                        ? dp[a - 1][b - 1]
-                        : 1 + Math.min(dp[a - 1][b], dp[a][b - 1], dp[a - 1][b - 1]);
+// --- Find verse in plan by comparing transcript ---
+
+export interface VerseMatch {
+    pairIndex: number;   // 0-based index of the pair
+    verseIndex: number;  // 0-based index of the verse within the pair
+    verse: TarawihVerse;
+    score: number;       // 0-1 match score
+}
+
+/**
+ * Search all verses in a night plan to find which one best matches
+ * the given transcript. Returns the best match or null.
+ */
+export function findVerseInPlan(
+    plan: TarawihNightPlan,
+    transcript: string
+): VerseMatch | null {
+    if (!transcript || transcript.trim().length === 0) return null;
+
+    const normTranscript = normalizeArabic(transcript);
+    const transcriptWords = normTranscript.split(' ').filter(w => w.length > 1);
+    if (transcriptWords.length === 0) return null;
+
+    let bestMatch: VerseMatch | null = null;
+    let bestScore = 0;
+
+    for (let pi = 0; pi < plan.pairs.length; pi++) {
+        const pair = plan.pairs[pi];
+        for (let vi = 0; vi < pair.verses.length; vi++) {
+            const verse = pair.verses[vi];
+            const normVerse = normalizeArabic(verse.textArabic);
+            const verseWords = normVerse.split(' ').filter(w => w.length > 1);
+            if (verseWords.length === 0) continue;
+
+            // Score: how many transcript words appear in the verse text
+            let matchCount = 0;
+            for (const tw of transcriptWords) {
+                // Check if any verse word is similar
+                for (const vw of verseWords) {
+                    if (tw === vw) {
+                        matchCount++;
+                        break;
+                    }
+                    // Fuzzy: starts-with or contained
+                    if (tw.length >= 3 && (vw.startsWith(tw) || tw.startsWith(vw))) {
+                        matchCount += 0.7;
+                        break;
+                    }
                 }
             }
-            dist = dp[m][n];
-            if ((1 - dist / maxLen) >= 0.6) matches++;
+
+            // Also check if transcript is a substring of the verse
+            if (normVerse.includes(normTranscript)) {
+                matchCount = transcriptWords.length; // perfect substring match
+            }
+
+            const score = matchCount / transcriptWords.length;
+
+            if (score > bestScore && score >= 0.3) {
+                bestScore = score;
+                bestMatch = { pairIndex: pi, verseIndex: vi, verse, score };
+            }
         }
     }
 
-    // At least half the words should match
-    return matches >= Math.ceil(Math.min(words1.length, words2.length) / 2);
+    console.log('[Tarawih] Best verse match:', bestMatch ? 
+        `${bestMatch.verse.surah}:${bestMatch.verse.ayah} (score: ${bestMatch.score.toFixed(2)})` : 
+        'none');
+
+    return bestMatch;
 }
+
 
 // Singleton instances
 export const voiceActivityDetector = new VoiceActivityDetector();
