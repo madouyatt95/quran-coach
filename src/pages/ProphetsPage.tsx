@@ -17,10 +17,14 @@ type TabMode = 'prophets' | 'companions';
 function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => void }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { goToSurah } = useQuranStore();
+    const { goToSurah, goToAyah } = useQuranStore();
 
-    const goToSurahPage = (surahNumber: number) => {
-        goToSurah(surahNumber);
+    const goToSurahPage = (surahNumber: number, startAyah?: number) => {
+        if (startAyah) {
+            goToAyah(surahNumber, startAyah);
+        } else {
+            goToSurah(surahNumber);
+        }
         onClose();
         navigate('/read');
     };
@@ -158,10 +162,11 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                             <button
                                 key={s.number}
                                 className="prophet-modal__surah-chip"
-                                onClick={() => goToSurahPage(s.number)}
+                                onClick={() => goToSurahPage(s.number, s.startAyah)}
                             >
                                 <span className="prophet-modal__surah-number">#{s.number}</span>
                                 {s.name}
+                                {s.startAyah && <span className="story-modal__ayah-badge">:v{s.startAyah}</span>}
                                 <ChevronRight size={14} />
                             </button>
                         ))}
