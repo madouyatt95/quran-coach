@@ -40,7 +40,7 @@ export const stories: Story[] = [
     titleAr: 'قَوْمُ عَاد',
     icon: '🌪️',
     category: 'peuples',
-    summary: 'Civilisation de géants puissants et orgueilleux, construisant des monuments grandioses. Ils furent détruits par un vent glacial et violent pendant 7 nuits et 8 jours pour avoir refusé le message du Prophète Houd.',
+    summary: 'Le peuple de \'Aad était une civilisation ancienne et exceptionnellement puissante du Yémen, dotée par Allah d\'une force physique rare et d\'une prospérité éclatante. Ils bâtirent des monuments gigantesques (Iram) dont les pareils n\'avaient jamais été créés sur terre. Grisés par leur suprématie, ils sombrèrent dans l\'idolâtrie et l\'oppression. Le Prophète Houd (psl) tenta sans relâche de les ramener au monothéisme, mais rencontra moqueries et hostilité. En châtiment de leur arrogance obstinée, Allah leur envoya un vent glacial d\'une furie destructrice inouïe. Soufflant violemment pendant sept nuits et huit jours ininterrompus, il anéantit leur civilisation, ne laissant derrière lui que des corps semblables à des souches de palmiers évidées.',
     morals: [
       'La puissance physique et matérielle ne protège pas de la punition divine',
       'L\'arrogance mène à la ruine',
@@ -64,7 +64,7 @@ export const stories: Story[] = [
     titleAr: 'قَوْمُ ثَمُود',
     icon: '🏔️',
     category: 'peuples',
-    summary: 'Peuple sculptant des maisons dans la roche, envoyé au Prophète Salih. Ils tuèrent la chamelle miraculeuse d\'Allah, signe qui leur avait été donné, et furent détruits par un cri terrifiant (as-sayha).',
+    summary: 'Successeurs spirituels des \'Aad, les Thamoud, établis à Al-Hijr, excellaient dans une ingénierie spectaculaire : ils taillaient d\'imposantes et robustes demeures directement dans les flancs des montagnes de roche blanche pour se croire immortels. Le Prophète Salih (psl) leur fut envoyé. Pour éprouver leur foi à leur propre demande, Allah fit miraculeusement surgir d\'un rocher une chamelle monumentale, avec l\'ordre formel de la laisser paître paisiblement. Mais orgueil et rébellion prirent le dessus. Neuf individus corrompus, avec l\'assentiment de la population, égorgèrent cruellement le miracle vivant. En réponse à cette suprême impudence, un cataclysme foudroyant (un cri dévastateur venu du ciel) les terrassa tous à l\'aube dans leurs luxueux palais rupestres.'Allah, signe qui leur avait été donné, et furent détruits par un cri terrifiant (as-sayha).',
     morals: [
       'Détruire les signes d\'Allah entraîne la destruction',
       'L\'art et la civilisation sans foi n\'ont aucune valeur',
@@ -86,7 +86,7 @@ export const stories: Story[] = [
     titleAr: 'فِرْعَوْنُ وَقَوْمُهُ',
     icon: '👑',
     category: 'peuples',
-    summary: 'Pharaon se prétendit divinité ("Ana rabbukum al-a\'la"), persécuta les Bani Isra\'il et s\'opposa au Prophète Musa. Il fut noyé dans la mer Rouge et son corps fut préservé comme signe pour les générations futures.',
+    summary: 'Pharaon (Fir\'awn) d\'Égypte incarne la quintessence du tyran politique et de l\'aveuglement de l\'ego dans le Coran. Dominant son puissant empire et asservissant les Enfants d\'Israël (Bani Isra\'il) jusqu\'à massacrer leurs nouveau-nés mâles, il franchit l\'insurpassable ligne de l\'infamie en se proclamant publiquement "Seigneur le Très-Haut". Face aux prodiges de Moïse (Musa) — le bâton changé en serpent et les neuf fléaux — et malgré la défaite publique et la conversion de ses propres maîtres magiciens, il demeura sourd et vindicatif. Pourchassant Moïse et son peuple en fuite à travers la mer miraculeusement ouverte par Allah, il y trouva une mort misérable par noyade avec l\'intégralité de son immense armée. Son repentir de la dernière seconde, formulé dans les flots mortels, fut rejeté à jamais.'la"), persécuta les Bani Isra\'il et s\'opposa au Prophète Musa. Il fut noyé dans la mer Rouge et son corps fut préservé comme signe pour les générations futures.',
     morals: [
       'Le tyran qui se prend pour Dieu sera humilié',
       'Le repentir au moment de la mort n\'est pas accepté',
@@ -110,7 +110,7 @@ export const stories: Story[] = [
     titleAr: 'قَارُون',
     icon: '💰',
     category: 'peuples',
-    summary: 'Homme extrêmement riche du peuple de Musa. Ses clés étaient si lourdes qu\'un groupe d\'hommes forts peinait à les porter. Il se vantait de sa richesse et refusait de partager. Il fut englouti par la terre avec sa maison.',
+    summary: 'Membre des Enfants d\'Israël (contemporain de Moïse), Qarun (Coré) fut gratifié par Allah de trésors d\'une abondance si colossale et de coffres si inestimables qu\'une force d\'hommes remarquablement robustes en ployait sous le simple poids des clefs. Mais l\'ivresse de la richesse pervertit son âme. Se paradant avec faste devant une foule souvent envieuse, il refusa l\'injonction de charité en proclamant avec haughteur qu\'il ne devait sa fortune qu\'à sa propre science et son intelligence personnelle, reniant la Grâce d\'Allah. L\'avertissement divin fut retentissant : le sol s\'ouvrit subitement, l\'engloutissant vif avec tout son palais, son or, et son insolence, démontrant brutalement la fragilité des biens matériels.'un groupe d\'hommes forts peinait à les porter. Il se vantait de sa richesse et refusait de partager. Il fut englouti par la terre avec sa maison.',
     morals: [
       'La richesse est un don d\'Allah, pas un mérite personnel',
       'L\'arrogance due à la richesse mène à la perte',
@@ -129,7 +129,7 @@ export const stories: Story[] = [
     titleAr: 'أَصْحَابُ مَدْيَن',
     icon: '⚖️',
     category: 'peuples',
-    summary: 'Peuple qui fraudait systématiquement dans le commerce, trichant dans les mesures et les poids. Le Prophète Shu\'ayb les avertit mais ils refusèrent de s\'amender. Ils furent détruits par un tremblement de terre.',
+    summary: 'Le peuple commerçant de Madyan, situé au carrefour d\'importantes routes marchandes, avait institutionnalisé la fraude et le brigandage économique : ils abusaient des poids, trompaient sur les mesures, ruinaient l\'économie de leurs partenaires et semaient le désordre sur les axes de transit. Le Prophète Shu\'ayb, surnommé l\'orateur des prophètes par sa grande éloquence, tenta de les raisonner, leur enjoignant de pratiquer le commerce équitable et de se contenter des gains licites bénis. Moqué et menacé d\'expulsion par ses compatriotes cupides, le peuple entier fut surpris et foudroyé par "le Jour de l\'Ombre" : croyant trouver refuge contre une chaleur accablante sous un large nuage noir, ils y trouvèrent en réalité une pluie de braises suivie d\'un séisme mortel qui les laissa gisants dans leurs demeures.'ayb les avertit mais ils refusèrent de s\'amender. Ils furent détruits par un tremblement de terre.',
     morals: [
       'L\'honnêteté dans le commerce est un pilier de la société',
       'La fraude économique est un péché majeur',
@@ -149,7 +149,7 @@ export const stories: Story[] = [
     titleAr: 'أَصْحَابُ الْفِيل',
     icon: '🐘',
     category: 'peuples',
-    summary: 'Abraha et son armée d\'éléphants marchèrent contre la Ka\'ba pour la détruire. Allah envoya des oiseaux (Ababil) qui lancèrent des pierres d\'argile brûlante, anéantissant l\'armée entière.',
+    summary: 'En l\'An 570, l\'année même de la naissance du Prophète Muhammad (psl), Abraha, l\'ambitieux vice-roi abyssin du Yémen furieux de voir le Pèlerinage arabe se diriger immanquablement vers la modeste Ka\'ba de La Mecque au détriment de sa cathédrale fastueuse, lança une expédition militaire faramineuse vers la ville sainte. Son armée d\'invasion inédite, appuyée par des chars et de puissants éléphants de guerre censés semer la terrifiante panique, apparut invincible. Contre toute attente humaine, La Mecque sans défense militaire n\'eut besoin d\'aucune armée : Allah expédia en essaims de minuscules oiseaux (les Ababil), portant dans leurs becs et griffes des pierres d\'argile durcie ardente. Cette frappe aérienne miraculeuse et implacable anéantit les phalanges lourdement armées, les réduisant à l\'état de "paille mâchée".'éléphants marchèrent contre la Ka\'ba pour la détruire. Allah envoya des oiseaux (Ababil) qui lancèrent des pierres d\'argile brûlante, anéantissant l\'armée entière.',
     morals: [
       'Allah protège Sa Maison sacrée',
       'La supériorité militaire ne vaut rien face à la volonté d\'Allah',
@@ -166,7 +166,7 @@ export const stories: Story[] = [
     titleAr: 'أَصْحَابُ الْأُخْدُود',
     icon: '🔥',
     category: 'peuples',
-    summary: 'Un roi tyran creusa des fossés remplis de feu pour y jeter les croyants qui refusaient de renier leur foi. Les croyants acceptèrent le martyre plutôt que d\'abandonner Allah.',
+    summary: 'Victimes d\'une terrible inquisition religieuse en des temps anciens (souvent associés à Najran), les "Gens du Fossé" furent une communauté croyante monothéiste inébranlable vivant sous le joug d\'un perfide et féroce roi païen qui se prenait pour un dieu. Refusant l\'ordre absolu de renier Allah suite à l\'exemplaire foi d\'un jeune garçon prodige de la région, la communauté entière fut condamnée par d\'effroyables représailles. Le tyran fit creuser de profondes tranchées remplies d\'immenses brasiers incandescents où les croyants, gardant le nom d\'Allah sur leurs lèvres, furent suppliciés et précipités vivants avec un terrifiant cynisme. Le Coran exalte la splendeur de leur foi intègre pour laquelle ils témoignèrent et promet un terrible châtiment brûlant pour les meurtriers réjouis.'abandonner Allah.',
     morals: [
       'Les croyants martyrs sont victorieux même dans la mort',
       'La foi est plus précieuse que la vie',
@@ -183,7 +183,7 @@ export const stories: Story[] = [
     titleAr: 'أَصْحَابُ السَّبْت',
     icon: '🐟',
     category: 'peuples',
-    summary: 'Un peuple juif au bord de la mer, testé par Allah qui envoyait les poissons uniquement le samedi, jour où la pêche était interdite. Ils rusèrent en posant des filets la veille et furent transformés en singes.',
+    summary: 'Vivant au bord de la mer, cette communauté israélite fut durement testée par son obéissance à la solennelle obligation chômée rituelle du samedi (le Sabbat). Comme épreuve divine, une extraordinaire abondance de poissons argentés bondissants se manifestait à la surface des flots uniquement le magnifique jour du Sabbat, fuyant complètement la zone les autres jours tolérés de la semaine. Dévorés par leur avidité marchande et refusant la patience du test spirituel, ils imaginèrent de très mesquines astuces juridiques insidieuses avec effronterie : bloquer la miraculeuse pêche dans des enclos fermés le samedi béni pour la ramasser opportunément le dimanche profané. A l\'encontre de cette malheureuse et grave manipulation de Ses décrets stricts sacrés, Allah châtia terriblement les transgresseurs en les avilissant d\'une tragique et fulgurante transformation divine corporelle en singes.',
     morals: [
       'Ruser avec les interdits d\'Allah revient à les violer',
       'La lettre de la loi ne prime pas sur l\'esprit',
@@ -203,7 +203,7 @@ export const stories: Story[] = [
     titleAr: 'مَرْيَمُ عَلَيْهَا السَّلَام',
     icon: '🌸',
     category: 'personnages',
-    summary: 'Consacrée au temple par sa mère, elle reçut une nourriture miraculeuse. L\'ange Jibril lui annonça la naissance miraculeuse de \'Isa (sans père). Elle accoucha seule sous un palmier et le nouveau-né parla au berceau pour défendre son honneur.',
+    summary: 'Maryam (Marie) est la seule femme dont le nom éclaire glorieusement les sourates du Coran, désignée modèle insigne de pureté universelle. Vouée exclusivement au temple adorateur de Jérusalem par le serment mystique de sa mère très pieuse de la grande famille de Imran, elle étonna son protecteur, le prophète Zacharie, en prodiguant de mystérieuses et douces nourritures du Paradis dans son modeste sanctuaire solitaire. Retirée à l\'est, elle rencontra et conversera avec l\'Archange Jibril (Gabriel) avec chasteté, lui annonçant l\'incompréhensible miracle exceptionnel divin imminent et inédit d\'être enceinte, sans mariage mâle préalable, d\'un Esprit du Seigneur (\'Isa/Jésus). C\'est dans une absolue solitude douloureuse, adossée affligée au tronc rugueux d\'un aride petit dattier isolé qu\'elle affronta le dur enfantement par la seule force sublime de la fraîcheur d\'une source miraculeusement et doucement apparue, avant le magnifique triomphe social stupéfiant du grand miracle du berceau divin oral et purificateur de son bel enfant.'ange Jibril lui annonça la naissance miraculeuse de \'Isa (sans père). Elle accoucha seule sous un palmier et le nouveau-né parla au berceau pour défendre son honneur.',
     morals: [
       'La piété féminine est exemplaire dans le Coran',
       'La confiance en Allah dans la solitude et l\'épreuve',
@@ -221,7 +221,7 @@ export const stories: Story[] = [
     titleAr: 'لُقْمَانُ الْحَكِيم',
     icon: '🧓',
     category: 'personnages',
-    summary: 'Sage mentionné dans le Coran pour ses précieux conseils à son fils : ne pas associer à Allah, être bon envers les parents, accomplir la prière, ordonner le bien, patienter, ne pas être arrogant, marcher avec modestie et baisser la voix.',
+    summary: 'Bien qu\'il ne fût qu\'un humble homme, probablement modeste charpentier ou petit berger originaire de Nubie par sa lignée, Allah accorda immensément au sage et noble Luqman une vertu rarissime du cœur : Al-Hikma (la Sagesse clairvoyante lumineuse). Le Coran grave éternellement dans l\'humanité la magistrale série d\'enseignements de tendre préceptorat adressée profondément par le père avisé à un fils à l\'orée cruciale de vie : un absolu rejet premier foudroyant radical de toutes les stupides idolâtries pernicieuses (le plus grave forfait d\'injustice des cœurs), allié magnifiquement avec la bonté parentale sincère primordiale. Il insista majestueusement doucement ensuite pragmatiquement avec une humble fermeté vertueuse sur toute patience requise, la courtoise démarche paisible des pas, le juste milieu et l\'éviction expresse sublime des affreux travers de jactance criarde et sociale ou la fière hauteur outrecuidante.',
     morals: [
       'La sagesse est un don d\'Allah',
       'L\'éducation des enfants est un devoir sacré',
@@ -551,7 +551,7 @@ export const stories: Story[] = [
     titleAr: 'الْإِسْرَاءُ وَالْمِعْرَاج',
     icon: '🌙',
     category: 'evenements',
-    summary: 'Voyage nocturne du Prophète ﷺ de La Mecque à Jérusalem (Isra\'), puis ascension à travers les cieux (Mi\'raj). Il rencontra les prophètes précédents et reçut la prescription des 5 prières quotidiennes.',
+    summary: 'Le Voyage Nocturne et l\'Ascension forment l\'un des miracles majeurs du pèlerinage prophétique pur. Par une nuit très lourde, au cœur terrible et amer d\'une décennie douloureuse (généralement désignée \'L\'Année de la tristesse\'), le sublime Prophète Muhammad (psl) chevaucha de la très sainte et noble mosquée inviolable sereine endormie de la vertueuse La Mecque vers d\'autres saintes contrées saintes, à l\'antique pieuse lumineuse mosquée Al-Aqsa magnifique et sainte lointaine sur le dos lumineux majestueux très preste de l\'étourdissant rapide de l\'héroïque monture l\'aérienne destrier divin Al-Buraq. De Jérusalem majestueuse commença l\'ascension cosmique (Mi\'raj) : la noble admirable très extraordinaire magnifique fabuleuse éclatante montée foudroyante très pure cosmique ascension majestueuse fabuleuse des immenses et inouïs sept immaculés fabuleux cieux de mystère divin.'), puis ascension à travers les cieux (Mi\'raj). Il rencontra les prophètes précédents et reçut la prescription des 5 prières quotidiennes.',
     morals: [
       'L\'honneur divin vient souvent après l\'épreuve',
       'Les 5 prières sont un cadeau direct d\'Allah',
