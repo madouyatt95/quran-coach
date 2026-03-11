@@ -30,6 +30,7 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
             try {
                 setIsAudioPlaying(true);
                 await playTts(story.summary, {
+                    lang: 'fr',
                     onEnd: () => {
                         setIsAudioPlaying(false);
                         setIsAudioLoading(false);
