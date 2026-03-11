@@ -427,6 +427,16 @@
   font-size: var(--text-ui-xs);
 }
 
+.story-modal__ayah-badge {
+  background: var(--gold);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
 /* Close / Share */
 .story-modal__actions {
   display: flex;

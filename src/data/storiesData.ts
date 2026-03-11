@@ -10,6 +10,8 @@ export type StoryCategory =
 export interface StorySurah {
   number: number;
   name: string;
+  startAyah?: number;
+  page?: number;
 }
 
 export interface Story {

@@ -11,7 +11,7 @@ type FilterMode = 'all' | StoryCategory;
 
 function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) {
     const navigate = useNavigate();
-    const { goToSurah } = useQuranStore();
+    const { goToSurah, goToAyah } = useQuranStore();
 
     const [isAudioLoading, setIsAudioLoading] = useState(false);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -44,8 +44,12 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
         }
     };
 
-    const goToSurahPage = (surahNumber: number) => {
-        goToSurah(surahNumber);
+    const goToSurahPage = (surahNumber: number, startAyah?: number, page?: number) => {
+        if (startAyah) {
+            goToAyah(surahNumber, startAyah, page);
+        } else {
+            goToSurah(surahNumber);
+        }
         onClose();
         navigate('/read');
     };
@@ -144,10 +148,11 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                             <button
                                 key={s.number}
                                 className="story-modal__surah-chip"
-                                onClick={() => goToSurahPage(s.number)}
+                                onClick={() => goToSurahPage(s.number, s.startAyah, s.page)}
                             >
                                 <span className="story-modal__surah-number">#{s.number}</span>
                                 {s.name}
+                                {s.startAyah && <span className="story-modal__ayah-badge">:v{s.startAyah}</span>}
                                 <ChevronRight size={14} />
                             </button>
                         ))}
