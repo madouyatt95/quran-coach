@@ -1,0 +1,485 @@
+/* ==========================================
+   Stories & Morals Page Styles
+   ========================================== */
+
+.stories-page {
+  padding: 0 var(--space-md) var(--space-xl);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Hero Section */
+.stories-hero {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md) var(--space-xl);
+  position: relative;
+}
+
+.stories-hero__icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: var(--space-sm);
+  filter: drop-shadow(0 4px 12px rgba(201, 168, 76, 0.3));
+}
+
+.stories-hero__title {
+  font-family: var(--font-arabic);
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: var(--space-xs);
+  line-height: 1.4;
+}
+
+.stories-hero__subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--text-ui-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.stories-hero__count {
+  display: inline-block;
+  background: rgba(201, 168, 76, 0.15);
+  color: var(--gold);
+  padding: 4px 16px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-ui-xs);
+  font-weight: 600;
+}
+
+/* Category Filters */
+.stories-filters {
+  display: flex;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  padding: var(--space-sm) 0;
+  scrollbar-width: none;
+  margin-bottom: var(--space-md);
+}
+
+.stories-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.stories-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-ui-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-bg-tertiary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.stories-filter-btn:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.stories-filter-btn.active {
+  background: rgba(201, 168, 76, 0.15);
+  color: var(--gold);
+  border-color: rgba(201, 168, 76, 0.3);
+}
+
+.stories-filter-btn__count {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+}
+
+/* Search */
+.stories-search {
+  margin-bottom: var(--space-md);
+}
+
+.stories-search__wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.stories-search__icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.stories-search__input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-ui-sm);
+  font-family: var(--font-ui);
+  transition: border-color var(--transition-fast);
+}
+
+.stories-search__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.stories-search__input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* Category Header */
+.stories-category-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-xl) 0 var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.stories-category-header__icon {
+  font-size: 1.5rem;
+}
+
+.stories-category-header__text h2 {
+  font-size: var(--text-ui-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.stories-category-header__text span {
+  font-family: var(--font-arabic);
+  font-size: var(--text-ui-md);
+  color: var(--gold);
+  direction: rtl;
+}
+
+/* Story Card */
+.story-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.story-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--card-accent, var(--gold));
+  border-radius: 4px 0 0 4px;
+}
+
+.story-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(201, 168, 76, 0.3);
+}
+
+.story-card:active {
+  transform: translateY(0);
+}
+
+.story-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.story-card__icon {
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.story-card__titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.story-card__title {
+  font-size: var(--text-ui-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.story-card__title-ar {
+  font-family: var(--font-arabic);
+  font-size: 1.1rem;
+  color: var(--gold);
+  direction: rtl;
+  text-align: right;
+}
+
+.story-card__summary {
+  color: var(--color-text-secondary);
+  font-size: var(--text-ui-sm);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.story-card__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.story-card__surah-count {
+  font-size: var(--text-ui-xs);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.story-card__moral-count {
+  font-size: var(--text-ui-xs);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Story Modal (Detail View) */
+.story-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.story-modal {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  width: 100%;
+  max-width: 600px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.story-modal__handle {
+  width: 40px;
+  height: 4px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  margin: 12px auto;
+}
+
+.story-modal__hero {
+  text-align: center;
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
+  background: linear-gradient(180deg, rgba(201, 168, 76, 0.08) 0%, transparent 100%);
+}
+
+.story-modal__emoji {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.story-modal__title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.story-modal__title-ar {
+  font-family: var(--font-arabic);
+  font-size: 1.6rem;
+  color: var(--gold);
+  direction: rtl;
+  margin-bottom: var(--space-sm);
+}
+
+.story-modal__category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-ui-xs);
+  font-weight: 600;
+  background: rgba(201, 168, 76, 0.12);
+  color: var(--gold);
+}
+
+/* Sections */
+.story-modal__section {
+  padding: var(--space-md) var(--space-lg);
+}
+
+.story-modal__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-ui-sm);
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: var(--space-md);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.story-modal__text {
+  color: var(--color-text-secondary);
+  font-size: var(--text-ui-sm);
+  line-height: 1.8;
+}
+
+/* Morals */
+.story-modal__morals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.story-modal__moral {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(76, 175, 80, 0.08);
+  border-radius: var(--radius-md);
+  border-left: 3px solid #4CAF50;
+}
+
+.story-modal__moral-icon {
+  color: #4CAF50;
+  font-size: 0.9rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.story-modal__moral-text {
+  font-size: var(--text-ui-sm);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+
+/* Surahs */
+.story-modal__surahs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.story-modal__surah-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-ui-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.story-modal__surah-chip:hover {
+  background: rgba(201, 168, 76, 0.2);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.story-modal__surah-chip:active {
+  transform: translateY(0);
+}
+
+.story-modal__surah-number {
+  color: var(--gold);
+  font-weight: 700;
+  font-size: var(--text-ui-xs);
+}
+
+/* Close / Share */
+.story-modal__actions {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+}
+
+.story-modal__action-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-ui-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.story-modal__action-btn--close {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-bg-tertiary);
+}
+
+.story-modal__action-btn--close:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.story-modal__action-btn--share {
+  background: linear-gradient(135deg, #c9a84c, #a8883a);
+  color: #fff;
+  border: none;
+}
+
+.story-modal__action-btn--share:hover {
+  filter: brightness(1.1);
+}
+
+/* Empty state */
+.stories-empty {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+}
+
+.stories-empty__icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+}
+
+.stories-empty__text {
+  color: var(--color-text-muted);
+  font-size: var(--text-ui-sm);
+}

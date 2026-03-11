@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings, ScrollText, Compass, Moon, BookOpen, HeartPulse, Headphones, Library, GraduationCap, Users, Radio } from 'lucide-react';
+import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings, ScrollText, Compass, Moon, BookOpen, HeartPulse, Headphones, Library, GraduationCap, Users, Radio, BookMarked } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { usePrayerStore } from '../../stores/prayerStore';
@@ -80,6 +80,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
     const SHORTCUTS: ShortcutItem[] = [
         { path: '/prophets', emoji: <ScrollText size={24} color="#c9a84c" />, label: t('nav.prophets'), color: 'rgba(201,168,76,0.2)' },
+        { path: '/stories', emoji: <BookMarked size={24} color="#26A69A" />, label: 'Histoires & Moralités', color: 'rgba(38,166,154,0.2)' },
         { path: '/qibla', emoji: <Compass size={24} color="#c9a84c" />, label: t('sideMenu.qibla'), color: 'rgba(201,168,76,0.2)' },
         { path: '/prayers', emoji: <Moon size={24} color="#FF9800" />, label: t('sideMenu.prayers'), color: 'rgba(255,152,0,0.2)' },
         { path: '/themes', emoji: <BookOpen size={24} color="#58A6FF" />, label: t('sideMenu.themes'), color: 'rgba(88,166,255,0.2)' },
