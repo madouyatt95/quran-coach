@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Radio, ChevronLeft, ChevronRight, Mic, Volume2, Pause, Play, ArrowLeft, SkipForward } from 'lucide-react';
+import { Radio, ChevronLeft, ChevronRight, Mic, Volume2, Pause, Play, ArrowLeft, SkipForward, SkipBack } from 'lucide-react';
 import { useTarawihStore } from '../stores/tarawihStore';
 import { buildNightPlan, voiceActivityDetector } from '../lib/tarawihService';
 import { playTts, stopTts } from '../lib/ttsService';
@@ -230,6 +230,23 @@ export function TarawihPage() {
         } else {
             stopTts();
             setFatihaCountdown(0);
+        }
+    }, [store, startTranslating]);
+
+    const handlePrevPair = useCallback(() => {
+        const state = useTarawihStore.getState();
+        if (state.currentPair > 1) {
+            store.prevPair();
+            if (state.phase === 'translating') {
+                ttsAbortRef.current = true;
+                stopTts();
+                setFatihaCountdown(0);
+                setTimeout(() => {
+                    if (!isTranslatingRef.current) {
+                        startTranslating();
+                    }
+                }, 100);
+            }
         }
     }, [store, startTranslating]);
 
@@ -500,6 +517,15 @@ export function TarawihPage() {
 
             {/* Controls */}
             <div className="tarawih-controls">
+                <button 
+                    className="tarawih-ctrl-btn" 
+                    onClick={handlePrevPair} 
+                    disabled={store.currentPair <= 1}
+                    title="Paire précédente"
+                >
+                    <SkipBack size={18} />
+                </button>
+
                 <button className="tarawih-ctrl-btn" onClick={() => handleSkipVerse('prev')} title="Verset précédent">
                     <ChevronLeft size={22} />
                 </button>

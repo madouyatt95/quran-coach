@@ -33,6 +33,7 @@ interface TarawihState {
     nextVerse: () => void;
     prevVerse: () => void;
     nextPair: () => void;
+    prevPair: () => void;
     getCurrentVerse: () => TarawihVerse | null;
     getPairVerses: () => TarawihVerse[];
     getPairProgress: () => { current: number; total: number };
@@ -91,6 +92,13 @@ export const useTarawihStore = create<TarawihState>()(
                     set({ currentPair: currentPair + 1, currentVerseIndex: 0 });
                 } else {
                     set({ phase: 'finished' });
+                }
+            },
+
+            prevPair: () => {
+                const { currentPair } = get();
+                if (currentPair > 1) {
+                    set({ currentPair: currentPair - 1, currentVerseIndex: 0 });
                 }
             },
 
