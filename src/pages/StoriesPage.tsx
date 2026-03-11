@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square, Sparkles } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story, type StoryCategory } from '../data/storiesData';
 import { useQuranStore } from '../stores/quranStore';
 import { playTts, stopTts } from '../lib/ttsService';
@@ -131,7 +131,7 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                     <div className="story-modal__morals">
                         {story.morals.map((moral, i) => (
                             <div key={i} className="story-modal__moral">
-                                <span className="story-modal__moral-icon">✦</span>
+                                <span className="story-modal__moral-icon"><Sparkles size={18} /></span>
                                 <span className="story-modal__moral-text">{moral}</span>
                             </div>
                         ))}
