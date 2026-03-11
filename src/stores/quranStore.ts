@@ -171,6 +171,11 @@ export const useQuranStore = create<QuranState>()(
             goToSurah: (surah, options = {}) => {
                 if (surah >= 1 && surah <= 114) {
                     const page = SURAH_START_PAGES[surah - 1];
+                    if (options.silent) {
+                        sessionStorage.setItem('isSilentJump', 'true');
+                    }
+                    sessionStorage.setItem('scrollToPage', '0');
+
                     set((state) => ({
                         currentSurah: surah,
                         currentAyah: 1,
@@ -194,6 +199,11 @@ export const useQuranStore = create<QuranState>()(
                     currentAyah: ayah,
                     currentPage: page || SURAH_START_PAGES[surah - 1],
                 };
+                if (options.silent) {
+                    sessionStorage.setItem('isSilentJump', 'true');
+                }
+                sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah, ayah }));
+
                 set((state) => {
                     return {
                         ...updateState,
