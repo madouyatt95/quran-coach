@@ -13,7 +13,10 @@ import {
     AlignJustify,
     BookOpen,
     MousePointerClick,
-    MoreVertical
+    MoreVertical,
+    Bookmark,
+    Copy,
+    Maximize
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -1012,13 +1015,40 @@ export function HifdhPage() {
                                                     <div className="hifdh-verse-card__menu">
                                                         <button 
                                                             onClick={() => {
-                                                                setCurrentAyahIndex(aIdx);
                                                                 setActiveMenu(null);
-                                                                // Future: open SRS directly
-                                                                alert(`Options pour ${selectedSurah}:${ayah.numberInSurah}`);
+                                                                // Bookmark (sauvegarde locale dans un 1er temps)
+                                                                localStorage.setItem('hifdh-bookmark', JSON.stringify({ surah: selectedSurah, ayah: ayah.numberInSurah }));
+                                                                alert(`Verset ${selectedSurah}:${ayah.numberInSurah} mis en favori !`);
                                                             }}
                                                         >
-                                                            Options de mémorisation
+                                                            <Bookmark size={14} style={{ marginRight: '8px' }} />
+                                                            Mettre en favori
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => {
+                                                                setActiveMenu(null);
+                                                                let textToCopy = ayah.text;
+                                                                if (translations.has(ayah.number)) {
+                                                                    textToCopy += `\n\n${translations.get(ayah.number)}`;
+                                                                }
+                                                                navigator.clipboard.writeText(textToCopy);
+                                                                alert('Texte copié !');
+                                                            }}
+                                                        >
+                                                            <Copy size={14} style={{ marginRight: '8px' }} />
+                                                            Copier le texte
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => {
+                                                                setActiveMenu(null);
+                                                                setCurrentAyahIndex(aIdx);
+                                                                setSingleVerseMode(true); // Enable Focus Mode equivalent
+                                                                localStorage.setItem('hifdh-single-verse', 'true');
+                                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                            }}
+                                                        >
+                                                            <Maximize size={14} style={{ marginRight: '8px' }} />
+                                                            Isoler ce verset
                                                         </button>
                                                     </div>
                                                 )}
