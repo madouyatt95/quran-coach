@@ -354,6 +354,35 @@
     justify-content: center;
 }
 
+.hifdh-verse-card__menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    min-width: 150px;
+}
+
+.hifdh-verse-card__menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--color-text-primary);
+    font-size: var(--text-ui-sm);
+    border-radius: var(--radius-sm);
+    background: transparent;
+}
+
+.hifdh-verse-card__menu button:hover {
+    background: var(--color-bg-tertiary);
+}
+
 .hifdh-verse-card__arabic {
     display: flex;
     flex-wrap: wrap;

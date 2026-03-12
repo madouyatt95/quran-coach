@@ -12,7 +12,8 @@ import {
     Languages,
     AlignJustify,
     BookOpen,
-    MousePointerClick
+    MousePointerClick,
+    MoreVertical
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -55,6 +56,9 @@ export function HifdhPage() {
 
     // Timing cache for all ayahs in the current range
     const [allTimings, setAllTimings] = useState<Map<number, VerseWords>>(new Map());
+
+    // Context Menu State
+    const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
     // Phonetics and Translations state
     const [showPhonetics, setShowPhonetics] = useState(false);
@@ -1001,6 +1005,28 @@ export function HifdhPage() {
                                     <div key={ayah.number} className={`hifdh-verse-card ${isActive ? 'hifdh-verse-card--active' : ''}`}>
                                         <div className="hifdh-verse-card__header">
                                             <span className="hifdh-verse-card__badge">{selectedSurah}:{ayah.numberInSurah}</span>
+                                            <div style={{ position: 'relative' }}>
+                                                <button 
+                                                    className="hifdh-verse-card__more"
+                                                    onClick={() => setActiveMenu(activeMenu === ayah.number ? null : ayah.number)}
+                                                >
+                                                    <MoreVertical size={16} />
+                                                </button>
+                                                {activeMenu === ayah.number && (
+                                                    <div className="hifdh-verse-card__menu">
+                                                        <button 
+                                                            onClick={() => {
+                                                                setCurrentAyahIndex(aIdx);
+                                                                setActiveMenu(null);
+                                                                // Future: open SRS directly
+                                                                alert(`Options pour ${selectedSurah}:${ayah.numberInSurah}`);
+                                                            }}
+                                                        >
+                                                            Options de mémorisation
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                         
                                         <div className="hifdh-verse-card__arabic" dir="rtl">
