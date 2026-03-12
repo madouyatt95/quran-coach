@@ -265,12 +265,67 @@
     /* Leave space for floating player + nav */
 }
 
-.hifdh-words-grid {
+.hifdh-verses-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.hifdh-verse-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    transition: all var(--transition-normal);
+}
+
+.hifdh-verse-card--active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(201, 168, 76, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hifdh-verse-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hifdh-verse-card__badge {
+    font-size: var(--text-ui-xs);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.hifdh-verse-card__arabic {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start; /* RTL means this starts from right */
     gap: 8px;
-    direction: rtl;
+    padding: var(--space-sm) 0;
+}
+
+.hifdh-verse-card__translation {
+    font-size: var(--text-ui-md);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    padding-top: var(--space-sm);
+    border-top: 1px dashed rgba(255, 255, 255, 0.05);
+}
+
+.hifdh-verse-card__phonetics {
+    font-size: var(--text-ui-sm);
+    color: var(--color-accent);
+    line-height: 1.5;
+    padding-bottom: var(--space-xs);
 }
 
 .hifdh-word {

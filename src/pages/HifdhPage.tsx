@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Play,
@@ -17,7 +17,7 @@ import {
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
 import { useStatsStore } from '../stores/statsStore';
-import { fetchSurah, fetchSurahTransliteration, getAudioUrl } from '../lib/quranApi';
+import { fetchSurah, fetchSurahTransliteration, fetchSurahTranslation, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
 import { useSRSStore } from '../stores/srsStore';
@@ -56,9 +56,10 @@ export function HifdhPage() {
     // Timing cache for all ayahs in the current range
     const [allTimings, setAllTimings] = useState<Map<number, VerseWords>>(new Map());
 
-    // Phonetics state
+    // Phonetics and Translations state
     const [showPhonetics, setShowPhonetics] = useState(false);
     const [transliterations, setTransliterations] = useState<Map<number, string>>(new Map());
+    const [translations, setTranslations] = useState<Map<number, string>>(new Map());
 
     // Single verse display mode (localStorage persisted)
     const [singleVerseMode, setSingleVerseMode] = useState(() => {
@@ -191,13 +192,15 @@ export function HifdhPage() {
 
         Promise.all([
             fetchSurah(selectedSurah),
-            fetchSurahTransliteration(selectedSurah)
-        ]).then(([surahData, transData]) => {
+            fetchSurahTransliteration(selectedSurah),
+            fetchSurahTranslation(selectedSurah)
+        ]).then(([surahData, transData, translationData]) => {
             const filtered = surahData.ayahs.filter(
                 a => a.numberInSurah >= fetchStart && a.numberInSurah <= fetchEnd
             );
             setAyahs(filtered);
             setTransliterations(transData);
+            setTranslations(translationData);
             setCurrentAyahIndex(0);
             setCurrentRepeat(1);
             setSelectionStart(null);
@@ -904,10 +907,10 @@ export function HifdhPage() {
                     onEnded={handleAudioEnded}
                 />
 
-                {/* Ayah View — Mushaf-style continuous block */}
-                <div className="hifdh-ayah-container" dir="rtl">
+                {/* Ayah View — Vertical List */}
+                <div className="hifdh-ayah-container">
                     {ayahs.length > 0 ? (
-                        <div className="hifdh-words-grid hifdh-mushaf-block">
+                        <div className="hifdh-verses-list">
                             {(singleVerseMode ? [{ ayah: ayahs[currentAyahIndex], aIdx: currentAyahIndex }] : ayahs.map((ayah, aIdx) => ({ ayah, aIdx }))).map(({ ayah, aIdx }) => {
                                 const isActive = aIdx === currentAyahIndex;
                                 const wordsContent = isActive && wordTimings
@@ -988,13 +991,30 @@ export function HifdhPage() {
                                     });
 
                                 return (
-                                    <React.Fragment key={ayah.number}>
-                                        {wordsContent}
-                                        {/* Verse-end marker ﴿N﴾ */}
-                                        <span className={`hifdh-verse-marker ${isActive ? 'hifdh-verse-marker--active' : ''}`}>
-                                            ﴿{ayah.numberInSurah}﴾
-                                        </span>
-                                    </React.Fragment>
+                                    <div key={ayah.number} className={`hifdh-verse-card ${isActive ? 'hifdh-verse-card--active' : ''}`}>
+                                        <div className="hifdh-verse-card__header">
+                                            <span className="hifdh-verse-card__badge">{selectedSurah}:{ayah.numberInSurah}</span>
+                                        </div>
+                                        
+                                        <div className="hifdh-verse-card__arabic" dir="rtl">
+                                            {wordsContent}
+                                            <span className={`hifdh-verse-marker ${isActive ? 'hifdh-verse-marker--active' : ''}`}>
+                                                ﴿{ayah.numberInSurah}﴾
+                                            </span>
+                                        </div>
+
+                                        {showPhonetics && transliterations.has(ayah.number) && (
+                                            <div className="hifdh-verse-card__phonetics" dir="ltr">
+                                                {formatDivineNames(transliterations.get(ayah.number))}
+                                            </div>
+                                        )}
+
+                                        {translations.has(ayah.number) && (
+                                            <div className="hifdh-verse-card__translation" dir="ltr">
+                                                {translations.get(ayah.number)}
+                                            </div>
+                                        )}
+                                    </div>
                                 );
                             })}
                         </div>
@@ -1004,14 +1024,7 @@ export function HifdhPage() {
                         </div>
                     )}
 
-                    {/* Phonetics Display */}
-                    {showPhonetics && currentAyah && transliterations.has(currentAyah.number) && (
-                        <div className="hifdh-phonetics-container" dir="ltr">
-                            <p className="hifdh-phonetics-text">
-                                {formatDivineNames(transliterations.get(currentAyah.number))}
-                            </p>
-                        </div>
-                    )}
+                    {/* Phonetics Display moved per card */}
                 </div>
 
                 {/* Player Controls */}
