@@ -12,7 +12,8 @@ import {
     Languages,
     AlignJustify,
     BookOpen,
-    MousePointerClick
+    MousePointerClick,
+    MoreVertical
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
@@ -907,6 +908,13 @@ export function HifdhPage() {
                     onEnded={handleAudioEnded}
                 />
 
+                {/* Surah Header Ornament */}
+                {surahs.find(s => s.number === selectedSurah) && (
+                    <div className="hifdh-surah-header-ornament">
+                        <div className="hifdh-surah-header-text">{surahs.find(s => s.number === selectedSurah)?.name}</div>
+                    </div>
+                )}
+
                 {/* Ayah View — Vertical List */}
                 <div className="hifdh-ayah-container">
                     {ayahs.length > 0 ? (
@@ -994,6 +1002,9 @@ export function HifdhPage() {
                                     <div key={ayah.number} className={`hifdh-verse-card ${isActive ? 'hifdh-verse-card--active' : ''}`}>
                                         <div className="hifdh-verse-card__header">
                                             <span className="hifdh-verse-card__badge">{selectedSurah}:{ayah.numberInSurah}</span>
+                                            <button className="hifdh-verse-card__more">
+                                                <MoreVertical size={16} />
+                                            </button>
                                         </div>
                                         
                                         <div className="hifdh-verse-card__arabic" dir="rtl">
