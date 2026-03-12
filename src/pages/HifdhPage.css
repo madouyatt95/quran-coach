@@ -244,14 +244,13 @@
     color: #fff;
 }
 
-/* Main Card */
+/* Main Card (removed background to blend with dark UI) */
 .hifdh-main-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
+    background: transparent;
+    padding: 0;
     margin-bottom: var(--space-md);
     transition: all var(--transition-normal);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: none;
 }
 
 .hifdh-main-card.test-active {
@@ -316,10 +315,10 @@
     border: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* very subtle divider */
     border-radius: 0;
-    padding: var(--space-xl) 0;
+    padding: var(--space-lg) 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-sm);
     transition: all var(--transition-normal);
 }
 
