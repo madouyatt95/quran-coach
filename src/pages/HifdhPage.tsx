@@ -30,7 +30,6 @@ import { CoachOverlay } from '../components/Coach/CoachOverlay';
 import { useTranslation } from 'react-i18next';
 import type { VerseWords } from '../lib/wordTimings';
 import type { Ayah } from '../types';
-import { formatDivineNames } from '../lib/divineNames';
 import './HifdhPage.css';
 
 // Hifdh always uses Mishari Al-Afasy — only reciter with reliable word-by-word timings
@@ -962,7 +961,7 @@ export function HifdhPage() {
                                                 `}
                                                 onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
-                                                {showText ? formatDivineNames(word.text) : '●●●'}{' '}
+                                                {showText ? word.text : '●●●'}{' '}
                                             </span>
                                         );
                                     })
@@ -999,7 +998,7 @@ export function HifdhPage() {
                                                 `}
                                                 onClick={() => handleWordClick(aIdx, wIdx)}
                                             >
-                                                {showText ? formatDivineNames(wordText) : '●●●'}{' '}
+                                                {showText ? wordText : '●●●'}{' '}
                                             </span>
                                         );
                                     });
@@ -1068,7 +1067,7 @@ export function HifdhPage() {
 
                                         {showPhonetics && transliterations.has(ayah.number) && (
                                             <div className="hifdh-verse-card__phonetics" dir="ltr">
-                                                {formatDivineNames(transliterations.get(ayah.number))}
+                                                {transliterations.get(ayah.number)}
                                             </div>
                                         )}
 
