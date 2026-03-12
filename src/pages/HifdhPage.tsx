@@ -612,17 +612,13 @@ export function HifdhPage() {
                         setCurrentRepeat(1);
                         return;
                     }
-                } else if (!isFinalVerseInRange && audio.currentTime >= (audio.duration - margin)) {
-                    // Navigate to next ayah normally within the range
-                    setCurrentAyahIndex(prev => prev + 1);
-                    setSeekOnLoad(0); // Ensure next start from 0
                 }
 
                 // Force seek on start verse if needed (extra safety)
                 if (isStartVerseInRange && seekOnLoad === null && audio.currentTime < selectedTimeRange.start - 0.2) {
                     audio.currentTime = selectedTimeRange.start;
                 }
-            } else if (isPlaying && audio.currentTime >= (audio.duration - (isIOS ? 0.3 : 0.05))) {
+            } else if (!selectedTimeRange && isPlaying && audio.currentTime >= (audio.duration - (isIOS ? 0.3 : 0.05))) {
                 // Fallback for when no time range is selected (playing entire surah/page without selection)
                 // Or in Duo Mode when playing a single un-selected verse
                 const currentCoach = coachRef.current;
