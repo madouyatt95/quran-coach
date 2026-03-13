@@ -1381,3 +1381,180 @@
     text-align: center;
     font-style: italic;
 }
+
+/* ─── Custom Dhikr / Duaa ─────────────────────────────── */
+.dhikr-card--custom {
+    border-style: dashed;
+}
+
+.dhikr-card__delete {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(255, 80, 80, 0.15);
+    border: none;
+    border-radius: 6px;
+    color: rgba(255, 100, 100, 0.6);
+    padding: 3px 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.dhikr-card__delete:active {
+    transform: scale(0.85);
+    background: rgba(255, 80, 80, 0.3);
+}
+
+.dhikr-card--add {
+    border: 2px dashed rgba(255, 255, 255, 0.12);
+    background: transparent;
+    opacity: 0.6;
+    transition: all 0.2s;
+}
+
+.dhikr-card--add:active {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.dhikr-card--add::before {
+    display: none;
+}
+
+/* ─── Duaa Modal ──────────────────────────────────────── */
+.duaa-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fade-in 0.2s ease;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.duaa-modal {
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    max-width: 400px;
+    width: 100%;
+    overflow: hidden;
+    animation: modal-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-slide {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.duaa-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.duaa-modal__header h3 {
+    font-size: 1rem;
+    color: #e0e0e0;
+    font-weight: 700;
+    margin: 0;
+}
+
+.duaa-modal__header button {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.duaa-modal__body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.duaa-modal__body label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.duaa-modal__body input {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.duaa-modal__body input:focus {
+    border-color: rgba(201, 168, 76, 0.5);
+}
+
+.duaa-modal__body input[dir="rtl"] {
+    font-family: 'Amiri', 'Traditional Arabic', serif;
+    font-size: 1.1rem;
+}
+
+.duaa-modal__emojis {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.duaa-modal__emojis button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.duaa-modal__emojis button.active {
+    border-color: #c9a84c;
+    background: rgba(201, 168, 76, 0.15);
+}
+
+.duaa-modal__submit {
+    margin: 0 20px 20px;
+    padding: 14px;
+    background: linear-gradient(135deg, #c9a84c, #8B6914);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.duaa-modal__submit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.duaa-modal__submit:not(:disabled):active {
+    transform: scale(0.97);
+}

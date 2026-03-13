@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart } from 'lucide-react';
+import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, Trash2, X } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
 import { formatDivineNames } from '../lib/divineNames';
 import { useStatsStore } from '../stores/statsStore';
@@ -83,7 +83,19 @@ const ESSENTIAL_SURAHS: EssentialSurah[] = [
 ];
 
 // ─── Dhikr data ──────────────────────────────────────────
-const DHIKR_LIST = [
+interface DhikrItem {
+    id: string;
+    text: string;
+    textFr: string;
+    descFr: string;
+    target: number;
+    daily: string;
+    color: string;
+    emoji: string;
+    isCustom?: boolean;
+}
+
+const DHIKR_LIST: DhikrItem[] = [
     { id: 'subhanallah', text: 'سُبْحَانَ اللَّه', textFr: 'SubhanAllah', descFr: 'Gloire à Allah', target: 33, daily: '33×/jour', color: '#4facfe', emoji: '📿' },
     { id: 'alhamdulillah', text: 'الحَمْدُ لِلَّه', textFr: 'Alhamdulillah', descFr: 'Louange à Allah', target: 33, daily: '33×/jour', color: '#c9a84c', emoji: '🤲' },
     { id: 'allahu_akbar', text: 'اللَّهُ أَكْبَر', textFr: 'Allahu Akbar', descFr: 'Allah est le plus Grand', target: 33, daily: '33×/jour', color: '#38ef7d', emoji: '✨' },
@@ -95,10 +107,28 @@ const DHIKR_LIST = [
     { id: 'subhan_azim', text: 'سُبْحَانَ اللَّهِ الْعَظِيم', textFr: "SubhânAllâh al-'Azîm", descFr: 'Gloire à Allah le Magnifique', target: 0, daily: '∞ illimité', color: '#00BCD4', emoji: '💎' },
 ];
 
+const CUSTOM_COLORS = ['#9C27B0', '#009688', '#FF5722', '#607D8B', '#E91E63', '#3F51B5', '#795548', '#00BCD4'];
+const CUSTOM_EMOJIS = ['🤲', '📿', '💚', '🌙', '⭐', '🕌', '📖', '🤍'];
+
+function loadCustomDhikr(): DhikrItem[] {
+    try {
+        const saved = localStorage.getItem('custom-dhikr');
+        if (saved) return JSON.parse(saved);
+    } catch { /* ignore */ }
+    return [];
+}
+
+function saveCustomDhikr(items: DhikrItem[]) {
+    localStorage.setItem('custom-dhikr', JSON.stringify(items));
+}
+
 // ─── Dhikr Hook (localStorage persisted, independent counters) ─
 function useDhikr() {
     const todayKey = `dhikr-v2-${new Date().toISOString().split('T')[0]}`;
     const [counts, setCounts] = useState<Record<string, number>>({});
+    const [customDhikr, setCustomDhikr] = useState<DhikrItem[]>(loadCustomDhikr);
+
+    const allItems = useMemo(() => [...DHIKR_LIST, ...customDhikr], [customDhikr]);
 
     useEffect(() => {
         const saved = localStorage.getItem(todayKey);
@@ -109,15 +139,14 @@ function useDhikr() {
 
     const tap = useCallback((id: string) => {
         setCounts(prev => {
-            const dhikr = DHIKR_LIST.find(d => d.id === id);
+            const dhikr = allItems.find(d => d.id === id);
             if (!dhikr) return prev;
             const current = prev[id] || 0;
-            // No cap — counter always increments, series are tracked
             const next = { ...prev, [id]: current + 1 };
             localStorage.setItem(todayKey, JSON.stringify(next));
             return next;
         });
-    }, [todayKey]);
+    }, [todayKey, allItems]);
 
     const reset = useCallback((id: string) => {
         setCounts(prev => {
@@ -134,11 +163,27 @@ function useDhikr() {
 
     const getCount = useCallback((id: string) => counts[id] || 0, [counts]);
 
-    const completedCount = DHIKR_LIST.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
-    const targetedCount = DHIKR_LIST.filter(d => d.target > 0).length;
+    const addCustom = useCallback((item: DhikrItem) => {
+        setCustomDhikr(prev => {
+            const next = [...prev, { ...item, isCustom: true }];
+            saveCustomDhikr(next);
+            return next;
+        });
+    }, []);
+
+    const removeCustom = useCallback((id: string) => {
+        setCustomDhikr(prev => {
+            const next = prev.filter(d => d.id !== id);
+            saveCustomDhikr(next);
+            return next;
+        });
+    }, []);
+
+    const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
+    const targetedCount = allItems.filter(d => d.target > 0).length;
     const allTargetedDone = completedCount >= targetedCount;
 
-    return { counts, tap, reset, resetAll, getCount, completedCount, targetedCount, allTargetedDone };
+    return { counts, tap, reset, resetAll, getCount, completedCount, targetedCount, allTargetedDone, allItems, addCustom, removeCustom };
 }
 // ─── Next Prayer Hook (uses local engine) ────────────────
 function useNextPrayer() {
@@ -255,6 +300,9 @@ export function HomePage() {
     const nextPrayer = useNextPrayer();
     const dhikr = useDhikr();
 
+    // Custom Duaa Modal state
+    const [showAddDuaa, setShowAddDuaa] = useState(false);
+    const [newDuaa, setNewDuaa] = useState<{ text: string; textFr: string; descFr: string; target: number; emoji: string }>({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
 
     const handleSurahClick = useCallback((surahNumber: number) => {
         sessionStorage.setItem('isSilentJump', 'true');
@@ -494,7 +542,7 @@ export function HomePage() {
                 </div>
 
                 <div className="home-dhikr__grid">
-                    {DHIKR_LIST.map(d => {
+                    {dhikr.allItems.map(d => {
                         const count = dhikr.getCount(d.id);
                         const isUnlimited = d.target === 0;
                         const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
@@ -504,7 +552,7 @@ export function HomePage() {
                         return (
                             <button
                                 key={d.id}
-                                className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''}`}
+                                className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${d.isCustom ? 'dhikr-card--custom' : ''}`}
                                 onClick={() => dhikr.tap(d.id)}
                                 style={{ '--dhikr-color': d.color } as React.CSSProperties}
                             >
@@ -531,11 +579,102 @@ export function HomePage() {
                                         <RotateCcw size={10} />
                                     </button>
                                 )}
+                                {d.isCustom && (
+                                    <button
+                                        className="dhikr-card__delete"
+                                        onClick={(e) => { e.stopPropagation(); dhikr.removeCustom(d.id); }}
+                                        title="Supprimer"
+                                    >
+                                        <Trash2 size={10} />
+                                    </button>
+                                )}
                             </button>
                         );
                     })}
+
+                    {/* Add Custom Duaa Button */}
+                    <button
+                        className="dhikr-card dhikr-card--add"
+                        onClick={() => setShowAddDuaa(true)}
+                        style={{ '--dhikr-color': '#666' } as React.CSSProperties}
+                    >
+                        <span className="dhikr-card__emoji"><Plus size={24} /></span>
+                        <span className="dhikr-card__fr">Ajouter une duaa</span>
+                        <span className="dhikr-card__desc">Invocation personnelle</span>
+                    </button>
                 </div>
             </div>
+
+            {/* Add Custom Duaa Modal */}
+            {showAddDuaa && (
+                <div className="duaa-modal-overlay" onClick={() => setShowAddDuaa(false)}>
+                    <div className="duaa-modal" onClick={e => e.stopPropagation()}>
+                        <div className="duaa-modal__header">
+                            <h3>Ajouter une invocation</h3>
+                            <button onClick={() => setShowAddDuaa(false)}><X size={20} /></button>
+                        </div>
+                        <div className="duaa-modal__body">
+                            <label>Texte arabe (optionnel)</label>
+                            <input
+                                dir="rtl"
+                                placeholder="ادخل الدعاء بالعربية"
+                                value={newDuaa.text}
+                                onChange={e => setNewDuaa(p => ({ ...p, text: e.target.value }))}
+                            />
+                            <label>Texte français / phonétique</label>
+                            <input
+                                placeholder="Ex: Allahumma inni as'aluka..."
+                                value={newDuaa.textFr}
+                                onChange={e => setNewDuaa(p => ({ ...p, textFr: e.target.value }))}
+                            />
+                            <label>Description</label>
+                            <input
+                                placeholder="Ex: Doua pour la science"
+                                value={newDuaa.descFr}
+                                onChange={e => setNewDuaa(p => ({ ...p, descFr: e.target.value }))}
+                            />
+                            <label>Objectif quotidien (0 = illimité)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                value={newDuaa.target}
+                                onChange={e => setNewDuaa(p => ({ ...p, target: parseInt(e.target.value) || 0 }))}
+                            />
+                            <div className="duaa-modal__emojis">
+                                {CUSTOM_EMOJIS.map(e => (
+                                    <button
+                                        key={e}
+                                        className={newDuaa.emoji === e ? 'active' : ''}
+                                        onClick={() => setNewDuaa(p => ({ ...p, emoji: e }))}
+                                    >{e}</button>
+                                ))}
+                            </div>
+                        </div>
+                        <button
+                            className="duaa-modal__submit"
+                            disabled={!newDuaa.textFr.trim()}
+                            onClick={() => {
+                                const target = newDuaa.target;
+                                dhikr.addCustom({
+                                    id: `custom_${Date.now()}`,
+                                    text: newDuaa.text || newDuaa.textFr,
+                                    textFr: newDuaa.textFr,
+                                    descFr: newDuaa.descFr,
+                                    target,
+                                    daily: target > 0 ? `${target}×/jour` : '∞ illimité',
+                                    color: CUSTOM_COLORS[Math.floor(Math.random() * CUSTOM_COLORS.length)],
+                                    emoji: newDuaa.emoji,
+                                    isCustom: true,
+                                });
+                                setNewDuaa({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
+                                setShowAddDuaa(false);
+                            }}
+                        >
+                            Ajouter
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Quick Shortcuts */}
             <div className="home-shortcuts">
