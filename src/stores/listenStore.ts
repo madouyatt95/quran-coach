@@ -50,7 +50,8 @@ const POPULAR_RECITER_IDS = [
     118, // Mahmoud Khalil Al-Hussary
     2,   // Ibrahime Al Jebrine
     81,  // Faress Abbad
-    4    // Shaik Aboubaker Al-Chateri
+    4,   // Shaik Aboubaker Al-Chateri
+    160, // Adel Al-Khalbany
 ];
 
 // Display name overrides for popular reciters (API uses French transliterations)
@@ -69,6 +70,7 @@ const POPULAR_NAME_OVERRIDES: Record<number, string> = {
     2: 'Ibrahim Al-Jibreen',
     81: 'Fares Abbad',
     4: 'Abu Bakr Ash-Shatri',
+    160: 'Adil Al-Kalbani',
 };
 
 export const useListenStore = create<ListenState>()(
