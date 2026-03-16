@@ -204,6 +204,48 @@
     border-radius: 8px;
 }
 
+/* Commentary Section */
+.hadith-card__commentary-section {
+    margin: 14px 0;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 10px;
+}
+
+.hadith-card__commentary-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: #d4af37;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 0;
+    width: 100%;
+    transition: opacity 0.2s;
+}
+
+.hadith-card__commentary-toggle:hover {
+    opacity: 0.8;
+}
+
+.hadith-card__commentary-content {
+    margin-top: 10px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border-left: 3px solid #d4af37;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #c0bdb8;
+}
+
+.hadith-card__commentary-content b,
+.hadith-card__commentary-content strong {
+    color: #e8e6e3;
+}
+
 .hadith-card__actions {
     display: flex;
     gap: 8px;

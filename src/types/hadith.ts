@@ -3,7 +3,7 @@ export type HadithCategory =
     | 'comportement' | 'patience' | 'charite' | 'parents'
     | 'repentir' | 'science' | 'au_dela' | 'fraternite'
     | 'qudsi' | 'mariage' | 'commerce' | 'coeur' | 'mort'
-    | 'prophete' | 'vendredi' | 'nawawi';
+    | 'prophete' | 'vendredi' | 'nawawi' | 'bulugh';
 
 export interface HadithEntry {
     id: number;
@@ -12,6 +12,7 @@ export interface HadithEntry {
     src: string; // 'B' = Bukhari, 'M' = Muslim, 'T' = Tirmidhi, 'BM' = both
     nar: string;
     cat: HadithCategory;
+    commentaryFr?: string; // Optionnel : explication ou commentaire du hadith
 }
 
 export interface HadithCategoryInfo {

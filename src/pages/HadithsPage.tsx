@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { ArrowLeft, Heart, Share2, Search } from 'lucide-react';
+import { ArrowLeft, Heart, Share2, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { HADITH_CATEGORIES, EXPANDED_HADITHS, type HadithCategory, type HadithEntry } from '../data/hadithsExpanded';
 import { useFavoritesStore } from '../stores/favoritesStore';
@@ -166,6 +166,7 @@ function HadithCard({ hadith, isFav, onFav, onShare }: {
     onShare: () => void;
 }) {
     const { t } = useTranslation();
+    const [showCommentary, setShowCommentary] = useState(false);
 
     return (
         <div className="hadith-card">
@@ -175,6 +176,24 @@ function HadithCard({ hadith, isFav, onFav, onShare }: {
                 <span className="hadith-card__source">📕 {hadith.src}</span>
                 <span className="hadith-card__narrator">🗣️ {hadith.nar}</span>
             </div>
+
+            {hadith.commentaryFr && (
+                <div className="hadith-card__commentary-section">
+                    <button 
+                        className="hadith-card__commentary-toggle"
+                        onClick={(e) => { e.stopPropagation(); setShowCommentary(!showCommentary); }}
+                    >
+                        <span>{showCommentary ? t('hadiths.hideCommentary', 'Masquer le commentaire') : t('hadiths.showCommentary', 'Lire le commentaire')}</span>
+                        {showCommentary ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+                    {showCommentary && (
+                        <div className="hadith-card__commentary-content">
+                            {formatDivineNames(hadith.commentaryFr)}
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className="hadith-card__actions">
                 <button
                     className={`hadith-card__fav ${isFav ? 'active' : ''}`}
