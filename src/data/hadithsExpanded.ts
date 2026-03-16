@@ -1,7 +1,9 @@
-import type { HadithCategory, HadithEntry, HadithCategoryInfo } from '../types/hadith';
-export type { HadithCategory, HadithEntry, HadithCategoryInfo };
+import type { HadithCategory, HadithEntry, HadithCategoryInfo, BulughChapter } from '../types/hadith';
+export type { HadithCategory, HadithEntry, HadithCategoryInfo, BulughChapter };
 
 export const HADITH_CATEGORIES: HadithCategoryInfo[] = [
+    { id: 'bulugh', name: 'Boulough Al-Marâm', nameAr: 'بلوغ المرام', emoji: '⚖️', color: '#8D6E63' },
+    { id: 'nawawi', name: 'Les 42 An-Nawawi', nameAr: 'الأربعون النووية', emoji: '📗', color: '#2E7D32' },
     { id: 'foi', name: 'Foi & Intention', nameAr: 'الإيمان والنية', emoji: '🕌', color: '#c9a84c' },
     { id: 'qudsi', name: 'Hadiths Qudsi', nameAr: 'الأحاديث القدسية', emoji: '✨', color: '#FFD700' },
     { id: 'priere', name: 'Prière', nameAr: 'الصلاة', emoji: '🙏', color: '#4CAF50' },
@@ -22,8 +24,6 @@ export const HADITH_CATEGORIES: HadithCategoryInfo[] = [
     { id: 'mort', name: 'Mort & Funérailles', nameAr: 'الموت والجنائز', emoji: '⏳', color: '#546E7A' },
     { id: 'au_dela', name: 'Paradis & Au-delà', nameAr: 'الجنة والآخرة', emoji: '🌟', color: '#FFD54F' },
     { id: 'fraternite', name: 'Fraternité', nameAr: 'الأخوة في الإسلام', emoji: '🤲', color: '#42A5F5' },
-    { id: 'nawawi', name: 'Les 42 An-Nawawi', nameAr: 'الأربعون النووية', emoji: '📗', color: '#2E7D32' },
-    { id: 'bulugh', name: 'Boulough Al-Marâm', nameAr: 'بلوغ المرام', emoji: '⚖️', color: '#8D6E63' },
 ];
 
 const S = { B: 'Bukhari', M: 'Muslim', T: 'Tirmidhi', BM: 'Bukhari & Muslim' };

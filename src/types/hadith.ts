@@ -5,6 +5,10 @@ export type HadithCategory =
     | 'qudsi' | 'mariage' | 'commerce' | 'coeur' | 'mort'
     | 'prophete' | 'vendredi' | 'nawawi' | 'bulugh';
 
+export type BulughChapter = 
+    | 'tahara' | 'salat' | 'zakat' | 'siyam' 
+    | 'hajj' | 'buyu' | 'jami';
+
 export interface HadithEntry {
     id: number;
     ar: string;
@@ -12,6 +16,7 @@ export interface HadithEntry {
     src: string; // 'B' = Bukhari, 'M' = Muslim, 'T' = Tirmidhi, 'BM' = both
     nar: string;
     cat: HadithCategory;
+    subcat?: BulughChapter; // Sous-catégorie spécifique (ex: pour l'œuvre Boulough Al-Marâm)
     commentaryFr?: string; // Optionnel : explication ou commentaire du hadith
 }
 
