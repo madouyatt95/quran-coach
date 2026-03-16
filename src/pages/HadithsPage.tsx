@@ -52,7 +52,7 @@ export function HadithsPage() {
             );
         }
         return list;
-    }, [selectedCat, search]);
+    }, [selectedCat, selectedSubcat, search]);
 
     const catInfo = useMemo(
         () => selectedCat ? HADITH_CATEGORIES.find(c => c.id === selectedCat) : null,
@@ -123,7 +123,10 @@ export function HadithsPage() {
                                 <button
                                     key={cat.id}
                                     className="hadiths-cat-card"
-                                    onClick={() => setSelectedCat(cat.id)}
+                                    onClick={() => {
+                                        setSelectedCat(cat.id);
+                                        setSelectedSubcat(null);
+                                    }}
                                     style={{ '--cat-color': cat.color } as React.CSSProperties}
                                 >
                                     <span className="hadiths-cat-emoji">{cat.emoji}</span>
