@@ -610,6 +610,257 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 
 *(Source : Tas-hil al-Ilmam par Cheikh Al-Fawzân)*`
     },
+    {
+        id: 1054,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : أَنَّ اَلنَّبِيَّ بَعَثَ مُعَاذًا إِلَى اَلْيَمَنِ, فَذَكَرَ اَلْحَدِيثَ, وَفِيهِ: فَأَعْلِمْهُمْ أَنَّ اَللَّهَ اِفْتَرَضَ عَلَيْهمْ صَدَقَةً فِي أَمْوَالِهِمْ, تُؤْخَذُ مِنْ أَغْنِيَائِهِمْ وَتُرَدُّ فِي فُقَرَائِهِمْ",
+        fr: "Ibn 'Abbas rapporte : Le Prophète ﷺ envoya Mu'adh au Yémen et lui dit : « [...] Fais-leur savoir qu'Allah leur a imposé une aumône (Zakat) prélevée sur leurs biens, qui est prise aux riches parmi eux pour être redistribuée à leurs pauvres. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **La mission de l'État :** Ce hadith prouve qu'il incombe au gouverneur (ou à ses représentants) de collecter la Zakat des gens fortunés.
+2. **Solidarité locale :** La Zakat collectée dans une région doit être redistribuée en priorité aux pauvres de cette même région, pour renforcer la solidarité locale. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1055,
+        ar: "عَنْ أَنَسٍ : أَنَّ أَبَا بَكْرٍ كَتَبَ لَهُ هَذِهِ اَلْفَرِيضَةَ الَّتِي أَمَرَ اَللَّهُ رَسُولَهُ: وَلَا يُجْمَعُ بَيْنَ مُتَفَرِّقٍ, وَلَا يُفَرَّقُ بَيْنَ مُجْتَمِعٍ; خَشْيَةَ اَلصَّدَقَةِ",
+        fr: "Anas rapporte de la lettre d'Abu Bakr détaillant les obligations de la Zakat : « On ne doit pas rassembler ce qui est séparé, ni séparer ce qui est rassemblé, de peur de la Zakat. »",
+        src: "Bukhari",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La fraude à la Zakat :** Ce texte vise spécifiquement à empêcher les stratagèmes pour réduire le montant dû. Séparer un troupeau ou le fusionner tactiquement pour passer sous le seuil d'imposition est une ruse interdite.
+2. **Transparence :** L'islam exige une honnêteté totale dans l'évaluation de son patrimoine.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1056,
+        ar: "عَنْ مُعَاذِ بْنِ جَبَلٍ : بَعَثَنِي اَلنَّبِيُّ إِلَى اَلْيَمَنِ, فَأَمَرَنِي أَنْ آخُذَ مِنْ كُلِّ ثَلَاثِينَ بَقَرَةً تَبِيعًا, أَوْ تَبِيعَةً, وَمِنْ كُلِّ أَرْبَعِينَ مُسِنَّةً",
+        fr: "Mu'adh ibn Jabal a dit : Le Prophète ﷺ m'a envoyé au Yémen, et m'a ordonné de prélever (pour la Zakat sur les bovins) sur chaque trentaine (de vaches) un veau d'un an, et sur chaque quarantaine une vache de deux ans.",
+        src: "As-Sunan",
+        nar: "Mu'adh ibn Jabal",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Le Nisab des bovins :** Le seuil d'imposition pour les vaches/bœufs est de 30 têtes. Un éleveur possédant moins ne paie rien.
+2. **Précision législative :** Les tranches de la Zakat sont fixées par la révélation et non par l'opinion humaine.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1057,
+        ar: "عَنْ عَلِيِّ بْنِ أَبِي طَالِبٍ : قَالَ رَسُولُ اَللَّهِ: إِذَا كَانَتْ لَكَ مِائَتَا دِرْهَمٍ, وَحَالَ عَلَيْهَا اَلْحَوْلُ, فَفِيهَا خَمْسَةُ دَرَاهِمَ...",
+        fr: "Ali ibn Abi Talib a dit : Le Messager d'Allah ﷺ a dit : « Si tu possèdes deux cents dirhams (d'argent) et qu'une année (lunaire) s'est écoulée, tu dois en prélever cinq dirhams. »",
+        src: "Abu Dawud",
+        nar: "Ali ibn Abi Talib",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Taux de 2,5 % :** Le prélèvement de 5 sur 200 correspond à 2,5%. C'est le taux invariable appliqué à la monnaie et à l'épargne. 
+2. **Condition du temps :** L'écoulement de toute une année lunaire (Hawl) est nécessaire avant que la Zakat ne soit due sur l'argent.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1058,
+        ar: "عَنْ اِبْنِ عُمَرَ قَالَ: قَالَ رَسُولُ اَللَّهِ: مَنْ اِسْتَفَادَ مَالًا فَلَا زَكَاةَ عَلَيْهِ حَتَّى يَحُولَ عَلَيْهِ اَلْحَوْلُ",
+        fr: "Ibn 'Umar rapporte que le Messager d'Allah ﷺ a dit : « Quiconque acquiert des biens, il n'y a pas de Zakat à payer sur ceux-ci, tant qu'il ne les a pas possédés durant une année entière (Hawl). »",
+        src: "Tirmidhi",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Calcul de l'année :** Chaque somme d'argent acquise (héritage, cadeau) commence son propre décompte d'un an, à moins qu'elle ne soit le produit d'un capital déjà existant.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1059,
+        ar: "عَنْ سَمُرَةَ بْنِ جُنْدُبٍ قَالَ: كَانَ رَسُولُ اَللَّهِ يَأْمُرُنَا أَنْ نُخْرِجَ اَلصَّدَقَةَ مِنَ اَلَّذِي نَعُدُّهُ لِلْبَيْعِ",
+        fr: "Samurah ibn Jundub a dit : « Le Messager d'Allah ﷺ nous ordonnait de verser la Zakat sur tout ce que nous préparions pour la vente (le commerce). »",
+        src: "Abu Dawud",
+        nar: "Samurah ibn Jundub",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Zakat commerciale :** Toute marchandise destinée à être revendue avec profit est soumise à la Zakat sur sa valeur marchande actuelle. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1060,
+        ar: "عَنْ جَابِرِ بْنِ عَبْدِ اَللَّهِ : عَنِ اَلنَّبِيِّ قَالَ: فِيمَا سَقَتِ اَلْأَنْهَارُ وَالْغَيْمُ اَلْعُشُورُ, وَفِيمَا سُقِيَ بِالسَّانِيَةِ نِصْفُ اَلْعُشْرِ",
+        fr: "Jabir rapporte que le Prophète ﷺ a dit : « Pour ce qui est irrigué par les fleuves et par la pluie, c'est un dixième (10 %). Et pour ce qui est irrigué par irrigation artificielle (effort), c'est la moitié du dixième (5 %). »",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Prise en compte de l'effort :** L'islam allège la charge fiscale si l'agriculteur doit dépenser de l'énergie ou de l'argent pour irriguer ses terres. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1061,
+        ar: "وَعَنْ عَمْرِو بْنِ شُعَيْبٍ : مَنْ وَلِيَ يَتِيمًا لَهُ مَالٌ فَلْيَتَّجِرْ فِيهِ, وَلَا يَتْرُكْهُ حَتَّى تَأْكُلَهُ اَلصَّدَقَةُ",
+        fr: "Le Prophète ﷺ a dit : « Quiconque gère les biens d'un orphelin, qu'il commerce avec et qu'il ne les laisse pas inactifs au point que la Zakat ne finisse par les consumer. »",
+        src: "Tirmidhi",
+        nar: "Amr ibn Shu'ayb",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La Zakat sur les mineurs :** La Zakat est due sur les biens, même si le propriétaire est un enfant. Le tuteur doit investir ces biens pour que les prélèvements annuels ne les réduisent pas à néant. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1062,
+        ar: "عَنْ أَبِي هُرَيْرَةَ قَالَ: قَالَ رَسُولُ اَللَّهِ: لَيْسَ عَلَى اَلْمُسْلِمِ فِي عَبْدِهِ وَلَا فَرَسِهِ صَدَقَةٌ",
+        fr: "Le Messager d'Allah ﷺ a dit : « Le musulman n'est pas tenu de verser la Zakat pour ses serviteurs ni pour ses chevaux (destinés à l'usage personnel). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Biens d'usage personnel :** Tout ce qui est possédé pour un besoin personnel (maison, voiture, habits) n'est pas soumis à la Zakat. La Zakat cible les biens qui fructifient.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1063,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ قَالَ: فَرَضَ رَسُولُ اَللَّهِ زَكَاةَ اَلْفِطْرِ; طُهْرَةً لِلصَّائِمِ مِنَ اَللَّغْوِ وَالرَّفَثِ, وَطُعْمَةً لِلْمَسَاكِينِ",
+        fr: "Ibn 'Abbas a dit : « Le Messager d'Allah ﷺ a imposé la Zakat al-Fitr pour purifier le jeûneur des bavardages et des vulgarités, et pour nourrir les pauvres. »",
+        src: "Abu Dawud",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Sagesse de l'aumône de rupture :** Elle répare les imperfections du jeûneur durant le mois et assure que les pauvres puissent fêter l'Aïd sans avoir à mendier. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1064,
+        ar: "عَنْ اِبْنِ عُمَرَ قَالَ: فَرَضَ رَسُولُ اَللَّهِ زَكَاةَ اَلْفِطْرِ صَاعًا مِنْ تَمْرٍ, أَوْ صَاعًا مِنْ شَعِيرٍ...",
+        fr: "Ibn 'Umar a dit : « Le Messager d'Allah ﷺ a imposé la Zakat al-Fitr d'une mesure (Sâ') de dattes ou d'orge pour chaque musulman. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Quantité :** Un Sâ' représente environ 2,5 à 3 kg de nourriture de base. Elle est due pour toute la famille. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1065,
+        ar: "فَمَنْ أَدَّاهَا قَبْلَ اَلصَّلَاةِ فَهِيَ زَكَاةٌ مَقْبُولَةٌ, وَمَنْ أَدَّاهَا بَعْدَ اَلصَّلَاةِ فَهِيَ صَدَقَةٌ مِنَ اَلصَّدَقَاتِ",
+        fr: "« Celui qui s'en acquitte avant la prière (de l'Aïd), c'est une Zakat agréée. Celui qui la donne après, ce n'est qu'une aumône ordinaire. »",
+        src: "Ibn Majah",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Respect des délais :** La limite de validité est le début de la prière de l'Aïd. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1066,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنَعَ اِبْنُ جَمِيلٍ, وَخَالِدُ بْنِ اَلْوَلِيدِ, وَعَبَّاسُ بْنُ عَبْدِ اَلْمُطَّلِبِ...",
+        fr: "Le Prophète ﷺ a cité le cas d'Al-Abbas qui avait déjà payé sa Zakat pour deux années à l'avance.",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Avancer la Zakat :** Il est permis de payer la Zakat avant l'échéance annuelle si un besoin survient pour les pauvres ou la communauté. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1067,
+        ar: "عَنْ أَبِي سَعِيدٍ اَلْخُدْرِيِّ قَالَ: قَالَ رَسُولُ اَللَّهِ: لَا تَحِلُّ اَلصَّدَقَةُ لِغَنِيٍّ إِلَّا لِخَمْسَةٍ...",
+        fr: "« La Zakat n'est pas licite pour le riche, sauf dans cinq cas (dont celui qui travaille à sa collecte ou l'endetté). »",
+        src: "Abu Dawud",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Bénéficiaires :** Seules les 8 catégories mentionnées dans le Coran peuvent recevoir la Zakat rattachée à un fond obligatoire. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1068,
+        ar: "عَنْ عُبَيْدِ اَللَّهِ بْنِ عَدِيِّ : لا حَظَّ فِيهَا لِغَنِيٍّ, وَلَا لِقَوِيٍّ مُكْتَسِبٍ",
+        fr: "Le Prophète ﷺ a dit : « Il n'y a pas de part (de Zakat) pour celui qui est riche ou pour la personne forte capable de subvenir à ses besoins par son travail. »",
+        src: "Sunan an-Nasa'i",
+        nar: "Ubaydullah ibn Adiy",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Encouragement au travail :** L'islam valorise l'indépendance financière et interdit de vivre des aumônes si l'on a la force physique de travailler. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1069,
+        ar: "عَنْ قَبِيصَةَ بْنِ مُخَارِقٍ : إِنَّ اَلْمَسْأَلَةَ لَا تَحِلُّ إِلَّا لِأَحَدِ ثَلَاثَةٍ...",
+        fr: "Le Prophète ﷺ a restreint la permission de mendier à trois catégories, dont l'homme endetté pour une réconciliation ou celui ayant tout perdu dans une catastrophe.",
+        src: "Muslim",
+        nar: "Qabisa",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Lutte contre la mendicité :** Mendier sans une nécessité extrême est un acte illicite et destructeur pour la dignité. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1070,
+        ar: "أَهَدِيَّةٌ أَمْ صَدَقَةٌ? فَإِنْ قِيلَ: صَدَقَةٌ... لَمْ يَأْكُلْ",
+        fr: "Le Prophète ﷺ refusait les aumônes (pour lui et sa famille) mais acceptait les cadeaux.",
+        src: "Bukhari",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Interdiction aux Ahl al-Bayt :** La famille du Prophète ne peut consommer la Zakat obligatoire, afin de préserver leur noblesse de rang. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1071,
+        ar: "عَنْ اِبْنِ عُمَرَ : وَمَا جَاءَكَ مِنْ هَذَا اَلْمَالِ وَأَنْتَ غَيْرُ مُشْرِفٍ وَلَا سَائِلٍ, فَخُذْهُ",
+        fr: "« Tout bien qui te parvient sans que tu l'aies sollicité ou convoité, prends-le. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Dons non sollicités :** Il ne faut pas refuser un bienfait licite offert sans demande. C'est une subsistance qu'Allah envoie. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1072,
+        ar: "عَنْ زَيْدِ بْنِ خَالِدٍ : اِعْرِفْ عِفَاصَهَا وَوِكاَءَهَا, ثُمَّ عَرِّفْهَا سَنَةً",
+        fr: "À propos des objets trouvés : « Mémorise ses caractéristiques et annonce-le pendant un an. »",
+        src: "Bukhari & Muslim",
+        nar: "Zayd ibn Khalid",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Dépôt et honnêteté :** Celui qui trouve un objet de valeur doit faire l'effort de retrouver son propriétaire pendant une année entière. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
 
     // ── Chapitre du Jeûne (Siyâm) ──
     {
@@ -642,6 +893,241 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 
 *(Source : Fath Dhi Al-Jalal wal-Ikram par Cheikh Ibn 'Uthaymîn)*`
     },
+    {
+        id: 1073,
+        ar: "عَنْ أَبِي هُرَيْرَةَ قَالَ: مَنْ لَم يَدَعْ قَوْلَ اَلزُّورِ وَالْعَمَلَ بِهِ, فَلَيْسَ لِلَّهِ حَاجَةٌ فِي أَنْ يَدَعَ طَعَامَهُ وَشَرَابَهُ",
+        fr: "D'après Abu Hurayra, le Messager d'Allah ﷺ a dit : « Celui qui ne délaisse pas les propos mensongers et les agissements qui vont avec, Allah n'a que faire qu'il délaisse sa nourriture et sa boisson. »",
+        src: "Bukhari",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **But du jeûne :** Le jeûne n'est pas une simple privation physique. Sa récompense est liée à la piété comportementale.
+2. **Acceptation :** Le mensonge et la triche durant le Ramadan peuvent annuler la valeur spirituelle du jeûne.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1074,
+        ar: "عَنْ عَائِشَةَ قَالَتْ: كَانَ رَسُولُ اَللَّهِ يُدْرِكُهُ اَلْفَجْرُ وَهُوَ جُنُبٌ مِنْ أَهْلِهِ, ثُمَّ يَغْتَسِلُ وَيَصُومُ",
+        fr: "Aisha rapporte : « Il arrivait que l'aube se lève alors que le Prophète ﷺ était en état de grande impureté (Junub) ; il faisait alors ses grandes ablutions et commençait son jeûne. »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Janaba et jeûne :** Être en état de pureté n'est pas une condition pour *commencer* le jeûne. On peut se laver après l'aube.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1075,
+        ar: "عَنْ لَقِيطِ بْنِ صَبِرَةَ : أَسْبِغِ اَلْوُضُوءَ, وَبَالِغْ فِي اَلِاسْتِنْشَاقِ, إِلَّا أَنْ تَكُونَ صَائِمًا",
+        fr: "« Accomplis les ablutions avec soin et insiste sur l'aspiration de l'eau par le nez, sauf si tu jeûnes. »",
+        src: "As-Sunan",
+        nar: "Laqit ibn Sabirah",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Précaution :** Il faut éviter de faire entrer de l'eau dans la gorge via le nez durant le jeûne.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1076,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ ذَرَعَهُ اَلْقَيءُ فَلَا قَضَاءَ عَلَيْهِ, وَمَنْ اسْتَقَاءَ فَلْيَقْضِ",
+        fr: "« Celui qui vomit involontairement n'a pas à rattraper son jeûne, mais celui qui se fait vomir volontairement doit le rattraper. »",
+        src: "Abu Dawud & Tirmidhi",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Volonté :** Seul l'acte délibéré invalide le jeûne. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1077,
+        ar: "عَنْ جَابِرِ بْنِ عَبْدِ اَللَّهِ : أَنَّ رَسُولُ اَللَّهِ خَرَجَ فِي رَمَضَانَ... ثُمَّ دَعَا بِقَدَحٍ مِنْ مَاءٍ فَشَرِبَ",
+        fr: "Le Prophète ﷺ a rompu son jeûne publiquement durant un voyage pénible pour montrer la permission accordée par Allah.",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Voyageur :** Il est permis de rompre le jeûne en voyage pour préserver ses forces. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1078,
+        ar: "عَنْ حَمْزَةَ بْنِ عَمْرٍو : إَنِّي أَجِدُ بِي قُوَّةً عَلَى اَلصِّيَامِ فِي اَلسَّفَرِ...",
+        fr: "« C'est une permission d'Allah (de rompre), celui qui la prend fait bien, et celui qui veut jeûner ne commet pas de péché. »",
+        src: "Muslim",
+        nar: "Hamzah ibn 'Amr",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Souplesse :** Le jeûne en voyage est optionnel selon la capacité de chacun. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1079,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : جَاءَهُ رَجُلٌ, فَقَالَ: يَا رَسُولَ اَللَّهِ, هَلَكْتُ! وَقَعْتُ عَلَى اِمْرَأَتِي وَأَنَا صَائِمٌ",
+        fr: "Un homme a rompu son jeûne par un rapport charnel. Le Prophète ordonna une expiation sévère (Kaffarah).",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Gravité :** Le rapport sexuel volontaire est la rupture la plus grave. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1080,
+        ar: "عَنْ سَهْلِ بْنِ سَعْدٍ : لَا يَزَالُ اَلنَّاسُ بِخَيْرٍ مَا عَجَّلُوا اَلْفِطْرَ",
+        fr: "« Les gens resteront dans le bien tant qu'ils s'empresseront de rompre le jeûne. »",
+        src: "Bukhari & Muslim",
+        nar: "Sahl ibn Sa'd",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Hâte :** Il faut rompre dès le coucher du soleil sans attendre l'obscurité totale. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1081,
+        ar: "عَنْ أَنَسِ بْنِ مَالِكٍ : تَسَحَّرُوا فَإِنَّ فِي اَلسُّحُورِ بَرَكَةً",
+        fr: "« Prenez le repas de l'aube (Suhûr), car il y a certes une bénédiction dans le Suhûr. »",
+        src: "Bukhari & Muslim",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Bénédiction :** Ce repas donne de la force et suit la Sunnah. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1082,
+        ar: "عَنْ سَلْمَانَ بْنِ عَامِرٍ : إِذَا أَفْطَرَ أَحَدُكُمْ فَلْيُفْطِرْ عَلَى تَمْرٍ...",
+        fr: "« Quand l'un de vous rompt son jeûne, qu'il le fasse avec des dattes ou de l'eau. »",
+        src: "As-Sunan",
+        nar: "Salman ibn 'Amir",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Sante :** Les dattes sont le meilleur aliment de rupture. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1083,
+        ar: "عَنْ أَبِي أَيُّوبَ : مَنْ صَامَ رَمَضَانَ ثُمَّ أَتْبَعَهُ سِتًّا مِنْ شَوَّالٍ...",
+        fr: "« Quiconque jeûne le Ramadan puis six jours de Shawwâl, c'est comme s'il avait jeûné toute l'année. »",
+        src: "Muslim",
+        nar: "Abu Ayub al-Ansari",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Récompense :** Motivation pour les œuvres après le Ramadan. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1084,
+        ar: "عَنْ أَبِي قَتَادَةَ : صِيَامُ يَوْمِ عَرَفَةَ أَحْتَسِبُ عَلَى اَللَّهَ أَنْ يُكَفِّرَ اَلسَّنَةَ اَلَّتِي قَبْلَهُ...",
+        fr: "À propos du jour d'Arafat : « J'espère d'Allah qu'il expie les péchés de l'année précédente et suivante. »",
+        src: "Muslim",
+        nar: "Abu Qatadah",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Arafat :** Jour d'immense miséricorde. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1085,
+        ar: "عَنْ اِبْنِ عُمَرَ : نَهَى رَسُولُ اَللَّهِ عَنِ اَلْوِصَالِ",
+        fr: "Le Prophète ﷺ a interdit d'enchaîner deux jours de jeûne sans rompre la nuit.",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Modération :** L'islam refuse l'excès dans l'ascétisme. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1086,
+        ar: "عَنْ أَبِي سَعِيدٍ اَلْخُدْرِيِّ : لَا يَصُومُ أَحَدُكُمْ يَوْمَ اَلْجُمُعَةِ إِلَّا أَنْ يَصُومَ قَبْلَهُ أَوْ بَعْدَهُ",
+        fr: "On ne doit pas singulariser le vendredi par le jeûne.",
+        src: "Bukhari & Muslim",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Vendredi :** C'est un jour de fête hebdomadaire. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1087,
+        ar: "عَنْ عَائِشَةَ : كَانَ رَسُولُ اَللَّهِ إِذَا دَخَلَ اَلْعَشْرُ أَحْيَا اَللَّيْلَ...",
+        fr: "Durant les dix dernières nuits de Ramadan, le Prophète ﷺ redoublait d'adoration.",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Destin :** Intensification pour la Nuit du Destin. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1088,
+        ar: "عَنْ اِبْنِ عُمَرَ : اِعْتَكَفَ رَسُولُ اَللَّهِ اَلْعَشْرَ اَلْأَوَاخِرَ",
+        fr: "Le Messager d'Allah ﷺ faisait une retraite spirituelle (I'tikâf) les dix derniers jours de Ramadan.",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **I'tikaf :** S'isoler pour prier est une Sunnah forte. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1089,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ",
+        fr: "« Quiconque jeûne le Ramadan avec foi et en espérant la récompense, ses péchés passés seront pardonnés. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Sincérité :** Le pardon est lié à l'intention profonde. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1090,
+        ar: "عَنْ عَائِشَةَ : أَنَّ حَمْزَةَ بْنَ عُمَرَ اَلْأَسْلَمِيَّ سَأَلَ: أَأَصُومُ فِي اَلسَّفَرِ?",
+        fr: "Le Prophète ﷺ a laissé le choix de jeûner ou non en voyage selon la capacité de l'individu.",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Choix :** Le voyageur n'est pas contraint. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
 
     // ── Chapitre du Pèlerinage (Hajj) ──
     {
@@ -658,6 +1144,253 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 3. **Conséquence juridique :** Traverser le Miqât vers la Mecque sans Ihram oblige le pèlerin à retourner au Miqât, ou à compenser par le sacrifice d'une bête (Fidyah, Dam) distribuée aux pauvres de La Mecque s'il ne retourne pas.
 
 *(Source : Al-Minhat al-Rabbaniyyah par Cheikh Al-Fawzân)*`
+    },
+    {
+        id: 1091,
+        ar: "عَنْ أَبِي هُرَيْرَةَ قَالَ: خَطَبَنَا رَسُولُ اَللَّهِ فَقَالَ: يَا أَيُّهَا اَلنَّاسُ, قَدْ فَرَضَ اَللَّهُ عَلَيْكُمُ اَلْحَجَّ فَحُجُّوا",
+        fr: "D'après Abu Hurayra, le Messager d'Allah ﷺ nous a fait un sermon et a dit : « Ô gens ! Allah vous a prescrit le Hajj, accomplissez-le donc. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Obligation :** Le Hajj est un pilier de l'islam obligatoire une fois dans la vie pour celui qui en a la capacité physique et financière. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1092,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : أَنَّ اَلنَّبِيَّ ﷺ سَمِعَ رَجُلًا يَقُولُ: لَبَّيْكَ عَنْ شُبْرُمَةَ... قَالَ: حُجَّ عَنْ نَفْسِكَ ثُمَّ حُجَّ عَنْ شُبْرُمَةَ",
+        fr: "Le Prophète ﷺ entendit un homme dire : « Me voici (Labbayk) au nom de Shubrumah ». Il lui demanda : « As-tu fait le Hajj pour toi-même ? ». L'homme répondit que non. Il lui dit : « Fais d'abord ton propre Hajj, puis tu le feras pour Shubrumah. »",
+        src: "Abu Dawud & Ibn Majah",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Priorité :** On ne peut pas accomplir le Hajj pour autrui (par procuration) tant qu'on n'a pas soi-même accompli son Hajj obligatoire. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1093,
+        ar: "عَنْ عَائِشةَ قَالَتْ: يَا رَسُولَ اَللَّهِ, عَلَى اَلنِّسَاءِ جِهَادٌ? قَالَ: نَعَمْ, جِهَادٌ لَا قِتَالَ فِيهِ: اَلْحَجُّ وَالْعُمْرَةُ",
+        fr: "Aisha demanda : « Ô Messager d'Allah, le Jihad est-il obligatoire pour les femmes ? ». Il répondit : « Oui, un Jihad sans combat : le Hajj et la 'Umrah. »",
+        src: "Ahmad & Ibn Majah",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Effort :** Le Hajj demande un effort physique et une patience tels qu'il est considéré comme le Jihad des femmes et des faibles. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1094,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : لَا تُسَافِرُ اَلْمَرْأَةُ إِلَّا مَعَ ذِي مَحْرَمٍ... فَقَالَ رَجُلٌ: يَا رَسُولَ اَللَّهِ, إِنَّ اِمْرَأَتِي خَرَجَتْ حَاجَّةً, وَإِنِّي اكْتُتِبْتُ فِي غَزْوَةِ كَذَا وَكَذَا, فَقَالَ: انْطَلِقْ فَحُجَّ مَعَ اِمْرَأَتِكَ",
+        fr: "Un homme dit : « Ma femme est partie faire le Hajj alors que je suis inscrit pour telle bataille. » Le Prophète ﷺ lui dit : « Pars et fais le Hajj avec ta femme. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Mahram :** La présence d'un Mahram (tuteur légal) est une condition de capacité pour le Hajj de la femme. Sa protection prime sur le départ au combat volontaire de son mari. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1095,
+        ar: "عَنْ جَابِرٍ : أَنَّ رَسُولُ اَللَّهِ ﷺ لَبَّى فَصَمَدَ لَهُ اَلنَّاسُ... فَقَالَ: لَبَّيْكَ اَللَّهُمَّ لَبَّيْكَ... لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ",
+        fr: "Description de la Talbiyah : « Me voici, Ô Allah, me voici ! Tu n'as aucun associé ! À Toi la louange, le bienfait et la royauté ! »",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Unicité (Tawhid) :** La Talbiyah est le chant de l'unicité divine. Le pèlerin répond à l'appel d'Ibrahim. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1096,
+        ar: "عَنْ عَائِشةَ قَالَتْ: خَرَجْنَا مَعَ رَسُولِ اَللَّهِ ﷺ... فَمِنَّا مَنْ أَهَلَّ بِعُمْرَةٍ, وَمِنَّا مَنْ أَهَلَّ بِحَجٍّ وَعُمْرَةٍ, وَمِنَّا مَنْ أَهَلَّ بِحَجٍّ",
+        fr: "Aisha rapporte qu'ils ont pratiqué les trois types de Hajj : Tamattu', Qiran et Ifrad.",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Types de Hajj :** L'islam permet plusieurs manières d'accomplir le rite, notamment le Tamattu' qui est le plus recommandé pour celui qui n'a pas amené sa bête de sacrifice. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1097,
+        ar: "عَنْ ابْنِ عُمَرَ : أَنَّ رَسُولُ اَللَّهِ ﷺ كَانَ يَلْبَسُ فِي اَلْإِحْرَامِ إِزَارًا وَرِدَاءً",
+        fr: "Le Prophète ﷺ portait pour l'Ihram un pagne (Izar) et un manteau (Rida').",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Simplicité :** L'habit de sacralisation souligne l'égalité de tous devant Allah, riches comme pauvres. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1098,
+        ar: "عَنْ عُثْمَانَ : لَا يَنْكِحُ اَلْمُحْرِمُ وَلَا يُنْكِحُ وَلَا يَخْطُبُ",
+        fr: "« Celui qui est en état de sacralisation ne doit pas se marier, ni marier autrui, ni faire une demande en mariage. »",
+        src: "Muslim",
+        nar: "Uthman ibn Affan",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Interdictions (Muharramat) :** Le mariage est nul s'il est contracté en état d'Ihram. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1099,
+        ar: "عَنْ جَابِرٍ : رَأَيْتُ اَلنَّبِيَّ ﷺ يَرْمِي عَلَى رَاحِلَتِهِ يَوْمَ اَلنَّحْرِ, وَيَقُولُ: لِتَأْخُذُوا عَنِّي مَنَاسِكَكُمْ",
+        fr: "« Prenez de moi vos rites (de pèlerinage). »",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Exemple :** Le Prophète est le modèle absolu pour l'application des détails rituels du Hajj. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1100,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : اَلشَّهْرُ اَلْحَرَامُ, وَمِنَ اَلْمَوَاقِيتِ اَلزَّمَانِيَّةِ لِلْحَجِّ: شَوَّالُ وَذُو اَلْقَعْدَةِ وَعَشْرٌ مِنْ ذِي اَلْحِجَّةِ",
+        fr: "Les mois du Hajj sont Shawwal, Dhu al-Qa'dah et les dix premiers jours de Dhu al-Hijjah.",
+        src: "Bukhari",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Temps :** On ne peut pas se sacraliser pour le Hajj en dehors de ces moments précis de l'année. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1101,
+        ar: "عَنْ جَابِرٍ : دَخَلَ اَلنَّبِيُّ ﷺ اَلْمَسْجِدَ, فَاسْتَلَمَ اَلرُّكْنَ, ثُمَّ مَضَى عَنْ يَمِينِهِ... فَطَافَ سَبْعًا",
+        fr: "Description du Tawaf : Le Prophète ﷺ commença par la Pierre Noire, puis fit sept tours de la Ka'bah.",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Tawaf :** Le rite de la circumambulation est le cœur de la visite de la Maison d'Allah. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1102,
+        ar: "عَنْ اِبْنِ عُمَرَ : كَانَ رَسُولُ اَللَّهِ ﷺ يَسْعَى بَيْنَ اَلصَّفَا وَالْمَرْوَةِ سَبْعَةَ أَشْوَاطٍ",
+        fr: "Le Prophète ﷺ effectuait sept trajets entre Safa et Marwah.",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Sa'y :** Ce rite commémore l'effort de Hajar cherchant de l'eau pour son fils Isma'il. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1103,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : اَلْحَجُّ عَرَفَةُ",
+        fr: "« Le Hajj, c'est Arafah. »",
+        src: "As-Sunan",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Pilier central :** La présence à Arafah le 9ème jour est l'élément constitutif sans lequel le Hajj n'est pas valide. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1104,
+        ar: "عَنْ اِبْنِ عُمَرَ : أَنَّ اَلنَّبِيَّ ﷺ حَلَقَ رَأْسَهُ فِي حَجَّتِهِ",
+        fr: "Le Prophète ﷺ s'est rasé la tête lors de son pèlerinage.",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Désacralisation (Tahallul) :** Le rasage ou la coupe des cheveux marque la fin de l'état d'Ihram. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1105,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : أَمَرَ اَلنَّاسُ أَنْ يَكُونَ آخِرُ عَهْدِهِمْ بِالْبَيْتِ... إِلَّا اَلْحَائِضَ",
+        fr: "« Les gens ont reçu l'ordre que leur dernier acte soit le Tawaf autour de la Maison, sauf pour la femme en période de menstrues. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Tawaf d'adieu (Wada') :** C'est une obligation pour quitter la Mecque après avoir terminé ses rites. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1106,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْعُمْرَةُ إِلَى اَلْعُمْرَةِ كَفَّارَةٌ لِمَا بَيْنَهُمَا, وَالْحَجُّ اَلْمَبْرُورُ لَيْسَ لَهُ جَزَاءٌ إِلَّا اَلْجَنَّةُ",
+        fr: "« 'Umrah après 'Umrah expie les péchés entre les deux. Et le Hajj agréé (Mabrûr) n'a d'autre récompense que le Paradis. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Mabrûr :** Un Hajj accompli sincèrement, sans péché et sans parole vulgaire. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1107,
+        ar: "عَنْ عَائِشةَ : اِسْتَأْذَنْتُ اَلنَّبِيَّ ﷺ فِي اَلْجِهَادِ, فَقَالَ: جِهَادُكُنَّ اَلْحَجُّ",
+        fr: "« Votre Jihad (à vous les femmes), c'est le Hajj. »",
+        src: "Bukhari",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Récompense :** La femme obtient une récompense équivalente au Jihad par son pèlerinage. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1108,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : اَلْعُمْرَةُ وَاجِبَةٌ كَالْحَجِّ",
+        fr: "« La 'Umrah est obligatoire tout comme le Hajj. »",
+        src: "Ibn Khuzaymah (Mawquf)",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Obligation :** Selon l'avis le plus fort, la 'Umrah est obligatoire une fois dans la vie pour celui qui peut. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1109,
+        ar: "عَنْ أَبِي سَعِيدٍ : لَا تُشَدُّ اَلرِّحَالُ إِلَّا إِلَى ثَلَاثَةِ مَسَاجِدَ...",
+        fr: "« On ne doit entreprendre de voyage (sacré) que vers trois mosquées : Al-Masjid al-Haram, ma mosquée-ci, et Al-Masjid al-Aqsa. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Lieux saints :** La sacralité du voyage pour l'adoration est restreinte à ces trois lieux éminents. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
     },
 
     // ── Chapitre des Ventes & Transactions (Buyû') ──
@@ -676,6 +1409,253 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 
 *(Source : Fath Dhi Al-Jalal wal-Ikram - Volume des Transactions Commerciales)*`
     },
+    {
+        id: 1110,
+        ar: "عَنْ جَابِرِ بْنِ عَبْدِ اَللَّهِ : أَنَّهُ سَمِعَ رَسُولَ اَللَّهِ ﷺ يَقُولُ يَوْمَ اَلْفَتْحِ: إِنَّ اَللَّهَ وَرَسُولَهُ حَرَّمَ بَيْعَ اَلْخَمْرِ, وَالْمَيْتَةِ, وَالْخِنْزِيرِ, وَالْأَصْنَامِ",
+        fr: "« Allah et Son Messager ont interdit la vente de l'alcool, de la bête morte (non égorgée), du porc et des idoles. »",
+        src: "Bukhari & Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Illicite :** La vente de ce qu'Allah a interdit de consommer ou d'utiliser est également interdite. Le gain issu de ces ventes est illicite (Suhit). 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1111,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : نَهَى رَسُولُ اَللَّهِ ﷺ عَنْ بَيْعِ اَلْحَصَاةِ, وَعَنْ بَيْعِ اَلْغَرَرِ",
+        fr: "« Le Messager d'Allah ﷺ a interdit la vente par jet de pierre (al-hasâh) ainsi que la vente aléatoire (al-gharar). »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Incertitude (Gharar) :** L'islam interdit les contrats basés sur une incertitude majeure où l'un des deux partis risque d'être lésé (comme vendre un poisson dans l'eau pas encore pêché). 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1112,
+        ar: "عَنْ ابْنِ عُمَرَ : أَنَّ رَسُولُ اَللَّهِ ﷺ نَهَى عَنْ بَيْعِ حَبَلِ اَلْحَبَلَةِ",
+        fr: "Le Messager d'Allah ﷺ a interdit la vente de ce que portera la portée d'une chamelle (vente d'un futur lointain et incertain).",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Ignorance (Jahalah) :** Vendre quelque chose qui n'existe pas encore et dont la venue est incertaine est une forme de Gharar interdite. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1113,
+        ar: "عَنْ أَبِي سَعِيدٍ : نَهَى رَسُولُ اَللَّهِ ﷺ عَنْ اَلْمُلَامَسَةِ وَالْمُنَابَذَةِ",
+        fr: "Le Prophète ﷺ a interdit la vente par simple toucher (Mulâmasah) ou par jet de marchandise (Munâbadhah) sans examen préalable.",
+        src: "Bukhari & Muslim",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Examen :** L'acheteur doit avoir le droit d'examiner ce qu'il achète pour éviter toute tromperie ou regret. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1114,
+        ar: "عَنْ عَمْرِو بْنِ شُعَيْبٍ : نَهَى رَسُولُ اَللَّهِ ﷺ عَنْ بَيْعِ اَلْعُرْبَانِ",
+        fr: "Le Prophète ﷺ a interdit la vente avec arrhes (Arbân) si elles sont conservées par le vendeur en cas d'annulation sans contrepartie.",
+        src: "Abu Dawud & Malik",
+        nar: "Amr ibn Shu'ayb",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Équité :** Bien que l'avis des savants diverge sur ce point précis, l'interdiction vise à empêcher de consommer les biens d'autrui injustement. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1115,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : مَنِ اِبْتَاعَ طَعَامًا فَلَا يَبِعْهُ حَتَّى يَسْتَوْفِيَهُ",
+        fr: "« Celui qui achète de la nourriture ne doit pas la revendre avant d'en avoir pris possession physiquement. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Possession (Qabd) :** On ne peut pas spéculer sur une marchandise qu'on n'a pas encore reçue dans ses propres entrepôts ou sous sa responsabilité. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1116,
+        ar: "عَنْ اِبْنِ عُمَرَ : نَهَى رَسُولُ اَللَّهِ ﷺ عَنْ بَيْعِ اَلثِّمَارِ حَتَّى يَبْدُوَ صَلَاحُهَا",
+        fr: "Le Prophète ﷺ a interdit la vente des fruits (sur l'arbre) tant qu'ils ne sont pas mûrs (ou que leur qualité n'est pas apparente).",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Risque :** Vendre trop tôt expose à la perte de la récolte par les intempéries, ce qui causerait un litige entre vendeur et acheteur. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1117,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : لَا تُصَرُّوا اَلْإِبِلَ وَالْغَنَمَ... فَمَنِ اِبْتَاعَهَا بَعْدُ فَهُوَ بِخَيْرِ اَلنَّظَرَيْنِ",
+        fr: "Interdiction de ne pas traire les bêtes volontairement avant la vente (Tasriyah) pour faire croire qu'elles produisent beaucoup de lait.",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Fraude :** C'est une tromperie visuelle (Tadlis) interdite. L'acheteur a le droit d'annuler la vente s'il découvre la ruse. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1118,
+        ar: "عَنْ اِبْنِ عُمَرَ : نَهَى رَسُولُ اَللَّهِ ﷺ أَنْ يَبِيعَ حَاضِرٌ لِبَادٍ",
+        fr: "« Que le citadin ne vende pas pour le campagnard (en servant d'intermédiaire pour gonfler les prix). »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Prix du marché :** Il faut laisser les marchandises arriver au marché pour que les prix se régulent naturellement au profit des consommateurs. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1119,
+        ar: "عَنْ أَنَسٍ : نَهَى رَسُولُ اَللَّهِ ﷺ عَنْ اَلْمُحاقَلَةِ, وَالْمُخَاضَرَةِ, وَالْمُلَامَسَةِ...",
+        fr: "Le Prophète ﷺ a interdit plusieurs types de transactions basées sur l'échange de grains non récoltés contre des grains secs (Muhaqalah) par incertitude de poids.",
+        src: "Bukhari",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Égalité :** Dans l'échange de denrées de même nature, l'égalité parfaite de poids est requise pour éviter l'usure (Riba). 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1120,
+        ar: "عَنْ اِبْنِ عُمَرَ : نَهَى رَسُولُ اَللَّهِ ﷺ عَنِ اَلنَّجْشِ",
+        fr: "« Le Prophète ﷺ a interdit le Najsh (enchère fictive pour faire monter les prix). »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Enchères :** Il est interdit de faire semblant de vouloir acheter un bien pour inciter un véritable acheteur à payer plus cher. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1121,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : لَا يَبِعْ بَعْضُكُمْ عَلَى بَيْعِ بَعْضٍ",
+        fr: "« Ne vendez pas au détriment de la vente de votre frère (en proposant moins cher après qu'un accord a été conclu). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Fraternité :** Une fois qu'un vendeur et un acheteur sont tombés d'accord, il est interdit à un tiers d'intervenir pour casser la vente. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1122,
+        ar: "عَنْ عُبادةَ بْنِ اَلصَّامِتِ : اَلذَّهَبُ بِالذَّهَبِ, وَالْفِضَّةُ بِالْفِضَّةِ... مِثْلًا بِمِثْلٍ, سَوَاءً بِسَوَاءٍ, يَدًا بِيَدٍ",
+        fr: "« L'or contre l'or, l'argent contre l'argent... poids pour poids, main à main. Celui qui donne plus ou demande plus est tombé dans l'usure (Riba). »",
+        src: "Muslim",
+        nar: "Ubadah ibn al-Samit",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Riba :** Ce hadith est la base du droit sur l'usure. L'échange de métaux précieux ou de denrées de base doit être instantané et égal. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1123,
+        ar: "عَنْ اِبْنِ عُمَرَ : لَعَنَ رَسُولُ اَللَّهِ ﷺ آكِلَ اَلرِّبَا وَمُوكِلَهُ وَكَاتِبَهُ وَشَاهِدَيْهِ",
+        fr: "« Le Prophète ﷺ a maudit celui qui consomme l'usure, celui qui la donne, celui qui l'écrit et ses deux témoins. »",
+        src: "Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Complicité :** Tous ceux qui participent à un contrat usuraire partagent le péché. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1124,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْمُطْلُ اَلْغَنِيِّ ظُلْمٌ",
+        fr: "« Le fait pour une personne riche (capable de payer) de retarder le remboursement de sa dette est une injustice. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Dettes :** Retarder le paiement alors qu'on a l'argent est une oppression envers le créancier. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1125,
+        ar: "عَنْ سَلَمَةَ بْنِ اَلْأَكْوَعِ : أُتِيَ اَلنَّبِيُّ ﷺ بِجَنَازَةٍ لِيُصَلِّيَ عَلَيْهَا, فَقَالَ: هَلْ عَلَيْهِ دَيْنٌ?",
+        fr: "Le Prophète ﷺ refusait parfois de prier sur un mort qui laissait des dettes non garanties, pour souligner la gravité de la dette.",
+        src: "Bukhari",
+        nar: "Salamah ibn al-Akwa'",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Responsabilité :** L'âme du croyant reste suspendue à sa dette tant qu'elle n'est pas remboursée. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1126,
+        ar: "عَنْ جَابِرٍ : نَهَى رَسُولُ اَللَّهِ ﷺ عَنِ اَلْمُخَابَرَةِ, وَالْمُحَاقَلَةِ, وَعَنِ اَلْمُزَابَنَةِ",
+        fr: "Interdiction de louer une terre contre une partie indéterminée de sa récolte future (risques de litige).",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Partage des risques :** Les contrats doivent être clairs pour éviter que l'un ne profite de l'autre injustement. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1127,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْمُسْلِمُونَ عَلَى شُرُوطِهِمْ",
+        fr: "« Les Musulmans doivent respecter les conditions (de leurs contrats). »",
+        src: "Abu Dawud & Hakim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Engagement :** La parole donnée et les clauses contractuelles licites engagent le croyant. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1128,
+        ar: "عَنْ اِبْنِ عُمَرَ : مَنْ بَاعَ نَخْلًا بَعْدَ أَنْ تُؤَبَّرَ فَثَمَرَتُهَا لِلْبَائِعِ... إِلَّا أَنْ يَشْتَرِطَ اَلْمُبْتَاعُ",
+        fr: "Si quelqu'un vend un palmier déjà pollinisé, les fruits appartiennent au vendeur, sauf si l'acheteur demande à les inclure dans la vente.",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Propriété :** Règle par défaut pour savoir à qui appartient le fruit au moment d'une transaction de verger. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
 
     // ── Chapitre du Bon Comportement (Jâmi') ──
     {
@@ -693,5 +1673,252 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 4. **Le soutien dans la maladie et le deuil :** Rendre visite au malade allège sa peine et renforce les liens communautaires. Assister aux funérailles garantit une grande récompense (les Qirats évoqués dans d'autres ahadith) et rappelle l'au-delà.
 
 *(Source : Sharh Bulugh al-Maram - Kitab al-Jâmi')*`
-    }
+    },
+    {
+        id: 1129,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : انْظُرُوا إِلَى مَنْ هُوَ أَسْفَلَ مِنْكُمْ, وَلَا تَنْظُرُوا إِلَى مَنْ هُوَ فَوْقَكُمْ",
+        fr: "« Regardez ceux qui sont en dessous de vous (en termes de biens mondains) et ne regardez pas ceux qui sont au-dessus de vous ; cela est plus à même de ne pas vous faire mépriser les bienfaits d'Allah sur vous. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Contentement (Qana'ah) :** Cette règle d'or permet d'être toujours reconnaissant envers Allah. En comparant notre situation matérielle à ceux qui ont moins, on réalise l'immensité de la grâce divine. 
+
+*(Source : Sharh Riyad al-Salihin / Bulugh al-Maram)*`
+    },
+    {
+        id: 1130,
+        ar: "عَنْ النَّوَّاسِ بْنِ سَمْعَانَ : اَلْبِرُّ حُسْنُ اَلْخُلُقِ, وَالْإِثْمُ مَا حَاكَ فِي صَدْرِكَ وَكَرِهْتَ أَنْ يَطَّلِعَ عَلَيْهِ اَلنَّاسُ",
+        fr: "« La piété, c'est le bon comportement. Le péché, c'est ce qui crée un malaise dans ton cœur et que tu n'aimerais pas que les gens découvrent. »",
+        src: "Muslim",
+        nar: "An-Nawwas ibn Sam'an",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Conscience :** Le croyant possède une boussole intérieure. Si une action le fait hésiter ou lui cause de la honte secrète, c'est souvent le signe d'une déviance par rapport à la piété. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1131,
+        ar: "عَنْ ابْنِ مَسْعُودٍ : إِيَّاكُمْ وَالْكَذِبَ, فَإِنَّ اَلْكَذِبَ يَهْدِي إِلَى اَلْفُجُورِ... وَعَلَيْكُمْ بِالصِّدْقِ",
+        fr: "« Prenez garde au mensonge, car le mensonge mène à la perversion... Attachez-vous à la vérité, car la vérité mène à la piété. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Sincérité :** L'honnêteté n'est pas seulement verbale, elle doit imprégner tout l'être du musulman jusqu'à ce qu'il soit inscrit comme "véridique" auprès d'Allah. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1132,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : لَيْسَ اَلشَّدِيدُ بِالصُّرَعَةِ, إِنَّمَا اَلشَّدِيدُ اَلَّذِي يَمْلِكُ نَفْسَهُ عِنْدَ اَلْغَضَبِ",
+        fr: "« L'homme fort n'est pas celui qui terrasse les autres à la lutte ; l'homme fort est celui qui se maîtrise au moment de la colère. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Maîtrise de soi :** La véritable force est spirituelle et psychologique, capable de dompter les pulsions agressives. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1133,
+        ar: "عَنْ ابْنِ عُمَرَ : اَلظُّلْمُ ظُلُمَاتٌ يَوْمَ اَلْقِيَامَةِ",
+        fr: "« L'injustice (Dhoum) deviendra ténèbres au Jour de la Résurrection. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Avertissement :** Toute injustice commise envers les biens, l'honneur ou la vie d'autrui sera une cause d'angoisse et de châtiment dans l'au-delà. 
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1134,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ اَلْآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+        fr: "« Que celui qui croit en Allah et au Jour Dernier dise du bien ou qu'il se taise. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Langue :** La préservation de la langue est un signe de la perfection de la foi. Le silence est préférable à une parole vaine ou nuisible. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1135,
+        ar: "عَنْ جُبَيْرِ بْنِ مُطْعِمٍ : لَا يَدْخُلُ اَلْجَنَّةَ قَاطِعٌ",
+        fr: "« N'entrera pas au Paradis celui qui rompt ses liens de parenté. »",
+        src: "Bukhari & Muslim",
+        nar: "Jubayr ibn Mut'im",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Famille :** Maintenir les liens avec les proches est une obligation majeure, et les rompre est un péché capital. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1136,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : آيَةُ اَلْمُنَافِقِ ثَلَاثٌ: إِذَا حَدَّثَ كَذَبَ, وَإِذَا وَعَدَ أَخْلَفَ, وَإِذَا اؤْتُمِنَ خَانَ",
+        fr: "« Les signes de l'hypocrite sont au nombre de trois : lorsqu'il parle il ment, lorsqu'il promet il trahit, et lorsqu'on lui confie un dépôt il le détourne. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Nifaq :** Même si la personne prie, ces traits de caractère sont des caractéristiques des hypocrites dont il faut se purifier. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1137,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : اِحْفَظِ اَللَّهَ يَحْفَظْكَ, اِحْفَظِ اَللَّهَ تَجِدْهُ تُجَاهَكَ",
+        fr: "« Préserve Allah (Ses commandements) et Il te préservera. Préserve Allah et tu Le trouveras devant toi. »",
+        src: "Tirmidhi",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Tawakkul :** La protection divine est le fruit de l'obéissance et de la vigilance constante envers les limites fixées par la religion. 
+
+*(Source : Sharh al-Arba'in al-Nawawiyyah / Bulugh)*`
+    },
+    {
+        id: 1138,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْمُؤْمِنُ اَلْقَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اَللَّهِ مِنَ اَلْمُؤْمِنِ اَلضَّعِيفِ",
+        fr: "« Le croyant fort est meilleur et plus aimé d'Allah que le croyant faible, bien qu'il y ait du bien dans les deux. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Force globale :** La force ici inclut la force de la foi, de la volonté, de la science et du corps mis au service de l'islam. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1139,
+        ar: "عَنْ أَنَسٍ : لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+        fr: "« Aucun de vous n'est véritablement croyant tant qu'il n'aime pas pour son frère ce qu'il aime pour lui-même. »",
+        src: "Bukhari & Muslim",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Fraternité :** Ce hadith pose le socle de l'altruisme et de l'absence d'envie au sein de la communauté. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1140,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ نَفَّسَ عَنْ مُؤْمِنٍ كُرْبَةً مِنْ كُرَبِ اَلدُّنْيَا نَفَّسَ اَللَّهُ عَنْهُ كُرْبَةً مِنْ كُرَبِ يَوْمِ اَلْقِيَامَةِ",
+        fr: "« Celui qui soulage un croyant d'une peine dans ce monde, Allah le soulagera d'une peine au Jour de la Résurrection. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Solidarité :** L'aide apportée aux autres est un investissement direct pour sa propre sécurité dans l'au-delà. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1141,
+        ar: "عَنْ اِبْنِ عُمَرَ : كُنْ فِي اَلدُّنْيَا كَأَنَّكَ غَرِيبٌ أَوْ عَابِرُ سَبِيلٍ",
+        fr: "« Sois dans ce monde comme un étranger ou un voyageur de passage. »",
+        src: "Bukhari",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Zuhd (Ascétisme) :** Le coeur ne doit pas s'attacher à ce monde éphémère comme s'il y résidait éternellement ; il doit préparer sa demeure finale. 
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1142,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلدُّنْيَا سِجْنُ اَلْمُؤْمِنِ وَجَنَّةُ اَلْكَافِرِ",
+        fr: "« Ce monde est la prison du croyant et le paradis du mécréant. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Perspectives :** Par rapport aux délices du Paradis, la vie ici est une prison de contraintes et d'épreuves pour le croyant. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1143,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : نِعْمَتَانِ مَغْبُونٌ فِيهِمَا كَثِيرٌ مِنَ اَلنَّاسِ: اَلصِّحَّةُ وَالْفَرَاغُ",
+        fr: "« Il y a deux bienfaits que beaucoup de gens gaspillent : la santé et le temps libre. »",
+        src: "Bukhari",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Gestion du temps :** Le croyant rendra des comptes sur l'usage qu'il a fait de sa jeunesse, de son temps et de sa vitalité. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1144,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْمُسْلِمُ مَنْ سَلِمَ اَلْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ",
+        fr: "« Le véritable musulman est celui dont les autres musulmans sont à l'abri des méfaits de sa langue et de sa main. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Paix :** L'islam est une religion de sécurité. Ne pas nuire aux autres est le premier degré de la foi. 
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1145,
+        ar: "عَنْ أَنَسٍ : يَتْبَعُ اَلْمَيِّتَ ثَلَاثَةٌ... فَيَرْجِعُ اِثْنَانِ وَيَبْقَى مَعَهُ وَاحِدٌ: يَبْقَى مَعَهُ عَمَلُهُ",
+        fr: "« Trois choses accompagnent le mort au tombeau : sa famille, ses biens et ses œuvres. Deux reviennent et une seule reste avec lui : ses œuvres. »",
+        src: "Bukhari & Muslim",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Essentiel :** Seules les actions accomplies pour Allah sont d'une quelconque utilité après la mort. 
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1146,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اَللَّهُ لَهُ بِهِ طَرِيقًا إِلَى اَلْجَنَّةِ",
+        fr: "« Celui qui emprunte un chemin pour acquérir une science, Allah lui facilitera grâce à cela un chemin vers le Paradis. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Science :** L'apprentissage de la religion est une forme d'adoration majeure qui ouvre les portes de la réussite éternelle. 
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1147,
+        ar: "عَنْ عَائِشةَ : أَنَّ اَلنَّبِيَّ ﷺ كَانَ يُعْجِبُهُ اَلتَّيَمُّنُ فِي تَنَعُّلِهِ وَتَرَجُّلِهِ وَطُهُورِهِ وَفِي شَأْنِهِ كُلِّهِ",
+        fr: "« Le Prophète ﷺ aimait commencer par la droite quand il mettait ses chaussures, quand il se peignait, quand il se purifiait et dans toutes ses affaires. »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Sunnah :** Commencer par la droite pour les choses honorables est une marque de respect et une tradition que le musulman doit s'efforcer de suivre. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
 ];
