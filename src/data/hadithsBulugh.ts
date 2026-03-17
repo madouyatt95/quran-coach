@@ -262,6 +262,270 @@ export const HADITHS_BULUGH: HadithEntry[] = [
 *(Source : Fath Dhi Al-Jalal wal-Ikram)*`
     },
     {
+        id: 1148,
+        ar: "عَنْ أَبِي سَعِيدٍ اَلْخُدْرِيِّ : غُسْلُ يَوْمِ اَلْجُمُعَةِ وَاجِبٌ عَلَى كُلِّ مُحْتَلِمٍ",
+        fr: "Le Prophète ﷺ a dit : « Le Ghusl (grandes ablutions) du vendredi est obligatoire pour toute personne pubère. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Obligation vs Forte recommandation :** La majorité des savants ont compris le terme "Wajib" ici dans le sens linguistique de "fortement recommandé" (Sunnah Mu'akkadah), bien que certains le considèrent strictement obligatoire.
+2. **Hygiène communautaire :** Se laver avant la prière du vendredi montre le respect dû à l'assemblée des musulmans et aux anges.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1149,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْفِطْرَةُ خَمْسٌ: اَلْخِتَانُ, وَالِاسْتِحْدَادُ, وَقَصُّ اَلشَّارِبِ, وَتَقْلِيمُ اَلْأَظْفَارِ, وَنَتْفُ اَلْإِبْطِ",
+        fr: "« Cinq pratiques font partie de la saine nature (Fitrah) : la circoncision, le rasage du pubis, la taille de la moustache, la coupe des ongles et l'épilation des aisselles. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La Fitrah :** Ces pratiques purifient le corps humain. Délaisser ces règles d'hygiène pendant plus de 40 jours est considéré comme réprouvé (Makruh).
+2. **L'apparence du musulman :** Se conformer à ces pratiques montre que l'islam se soucie autant de la propreté apparente que de la pureté du cœur.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1150,
+        ar: "عَنْ عَلِيِّ بْنِ أَبِي طَالِبٍ : اَلْعَيْنُ وِكَاءُ اَلسَّهِ, فَمَنْ نَامَ فَلْيَتَوَضَّأْ",
+        fr: "« L'œil est le lien de l'anus (qui retient ce qui s'y trouve) ; ainsi, celui qui s'endort doit refaire ses ablutions. »",
+        src: "Abu Dawud & Ibn Majah",
+        nar: "Ali ibn Abi Talib",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Sommeil profond :** Seul le sommeil profond (où la personne perd la perception de son corps) annule les ablutions. Sommeiller légèrement en position assise sans s'affaisser ne les annule pas.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1151,
+        ar: "عَنْ بُسْرَةَ بِنْتِ صَفْوَانَ : مَنْ مَسَّ ذَكَرَهُ فَلْيَتَوَضَّأْ",
+        fr: "« Que celui qui touche sa partie intime refasse ses ablutions. »",
+        src: "Ahmad & Tirmidhi",
+        nar: "Busra bint Safwan",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Conditions :** Toucher ses parties intimes directement peau contre peau (sans vêtement ou barrière) annule le Wudu, particulièrement si c'est fait avec désir ou plaisir.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1152,
+        ar: "عَنْ جَابِرِ بْنِ سَمُرَةَ : أَنَّ رَجُلًا سَأَلَ اَلنَّبِيَّ ﷺ: أَنَتَوَضَّأُ مِنْ لُحُومِ اَلْإِبِلِ? قَالَ: نَعَمْ",
+        fr: "Un homme demanda au Prophète ﷺ : « Devons-nous refaire nos ablutions après avoir mangé de la viande de chameau ? » Il répondit : « Oui. »",
+        src: "Muslim",
+        nar: "Jabir ibn Samura",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Viande de chameau :** Manger de la viande de chameau (crue ou cuite) annule spécifiquement les ablutions, contrairement à la viande de mouton ou de bœuf. C'est une adoration dont la sagesse absolue appartient à Allah.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1153,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِذَا وَجَدَ أَحَدُكُمْ فِي بَطْنِهِ شَيْئًا فَأَشْكَلَ عَلَيْهِ: أَخَرَجَ مِنْهُ شَيْءٌ أَمْ لَا? فَلَا يَخْرُجَنَّ مِنَ اَلْمَسْجِدِ حَتَّى يَسْمَعَ صَوْتًا, أَوْ يَجِدَ رِيحًا",
+        fr: "« Si l'un de vous ressent une gêne dans son ventre et doute s'il a laissé échapper quelque chose (gaz) ou non, qu'il ne quitte surtout pas la mosquée jusqu'à ce qu'il entende un son ou sente une odeur. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La certitude balaye le doute :** L'une des plus grandes règles de la jurisprudence islamique. Tant que l'on n'est pas "absolument certain" d'avoir perdu ses ablutions, on est considéré comme pur.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1154,
+        ar: "عَنْ عَلِيِّ بْنِ أَبِي طَالِبٍ : جَعَلَ رَسُولُ اَللَّهِ ﷺ ثَلَاثَةَ أَيَّامٍ وَلَيَالِيَهُنَّ لِلْمُسَافِرِ, وَيَوْمًا وَلَيْلَةً لِلْمُقِيمِ, يَعْنِي: فِي اَلْمَسْحِ عَلَى اَلْخُفَّيْنِ",
+        fr: "À propos de l'essuyage sur les chaussures (Khuffayn) : « Le Messager d'Allah ﷺ a fixé (la durée) à trois jours et nuits pour le voyageur, et un jour et une nuit pour le résident. »",
+        src: "Muslim",
+        nar: "Ali ibn Abi Talib",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Calcul du temps :** Le délai de 24h ou 72h commence à partir du premier "essuyage" (Mash) qui suit la première annulation des ablutions, et non pas depuis le moment où l'on a enfilé les chaussettes.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1155,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : لَوْلَا أَنْ أَشُقَّ عَلَى أُمَّتِي لَأَمَرْتُهُمْ بِالسِّوَاكِ مَعَ كُلِّ وُضُوءٍ",
+        fr: "« Si je ne craignais pas d'imposer une charge trop lourde à ma communauté, je leur aurais ordonné l'utilisation du Siwak (bâtonnet nettoyeur) à chaque ablution. »",
+        src: "Malik & Ahmad",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **L'importance du Siwak :** Il purifie la bouche et satisfait le Seigneur. Son utilisation est fortement recommandée avant de se tenir devant Allah par le Wudu ou la Prière.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1156,
+        ar: "عَنْ أُمِّ قَيْسٍ بِنْتِ مِحْصَنٍ : يُغْسَلُ مِنْ بَوْلِ اَلْجَارِيَةِ, وَيُرَشُّ مِنْ بَوْلِ اَلْغُلَامِ",
+        fr: "« On doit laver l'urine de la petite fille (qui ne se nourrit que du sein), tandis qu'on se contente d'asperger l'urine du petit garçon. »",
+        src: "As-Sunan",
+        nar: "Umm Qais bint Mihsan",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Facilité :** Cette distinction ne s'applique qu'au bébé qui est encore exclusivement allaité. Dès qu'il commence à manger de la nourriture solide ordinaire, l'urine des deux sexes doit être lavée de la même manière.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1157,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : قَامَ أَعْرَابِيٌّ فَبَالَ فِي اَلْمَسْجِدِ... فَقَالَ اَلنَّبِيُّ ﷺ: دَعُوهُ وَأَرِيقُوا عَلَى بَوْلِهِ سَجْلًا مِنْ مَاءٍ فَإِنَّمَا بُعِثْتُمْ مُيَسِّرِينَ",
+        fr: "Un bédouin a uriné dans la mosquée. Les gens ont voulu se ruer sur lui, mais le Prophète ﷺ a dit : « Laissez-le, et versez simplement un seau d'eau sur son urine. Vous avez été envoyés pour faciliter les choses. »",
+        src: "Bukhari",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Sagesse prophétique :** Le Prophète ﷺ a évité que l'impureté ne s'éparpille ailleurs si l'homme s'était enfui.
+2. **Purification du sol :** Une impureté (najahsah) sur le sol terrestre est purifiée simplement en y versant de l'eau claire par-dessus jusqu'à absorption.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1158,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِذَا وَطِئَ أَحَدُكُمْ بِنَعْلِهِ اَلْأَذَى, فَإِنَّ اَلتُّرَابَ لَهُ طَهُورٌ",
+        fr: "« Si l'un de vous marche sur une impureté avec ses sandales, la terre est alors un purificateur pour elles (en frottant). »",
+        src: "Abu Dawud",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Commodité :** Frotter longuement la semelle contre la terre ou le sable retire chimiquement et physiquement l'impureté sans qu'il ne soit strictement nécessaire d'utiliser de l'eau.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1159,
+        ar: "عَنْ أَنَسٍ رَضِيَ اللَّهُ عَنْهُ : كَانَ رَسُولُ اَللَّهِ ﷺ إِذَا دَخَلَ اَلْخَلَاءَ قَالَ: اَللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ اَلْخُبُثِ وَالْخَبَائِثِ",
+        fr: "Lorsque le Messager d'Allah ﷺ se rendait aux lieux d'aisance, il disait : « Ô Allah, je cherche refuge auprès de Toi contre les démons mâles et femelles. »",
+        src: "Bukhari & Muslim",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Protection :** Les lieux souillés sont généralement les refuges des diables (Jinn). Chercher la protection d'Allah avant d'y entrer préserve l'intimité du croyant.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1160,
+        ar: "عَنْ أَبِي أَيُّوبَ اَلْأَنْصَارِيِّ : إِذَا أَتَيْتُمْ اَلْغَائِطَ فَلَا تَسْتَقْبِلُوا اَلْقِبْلَةَ وَلَا تَسْتَدْبِرُوهَا بِبَوْلٍ وَلَا غَائِطٍ, وَلَكِنْ شَرِّقُوا أَوْ غَرِّبُوا",
+        fr: "« Lorsque vous faites vos besoins, ne faites point face à la Qibla et ne lui tournez pas le dos, que ce soit pour uriner ou déféquer, mais tournez-vous plutôt vers l'Est ou l'Ouest. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Ayyub al-Ansari",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Respect de la Qibla :** Il est strictement interdit d'orienter ses parties intimes vers la Mecque en plein air. L'interdiction est allégée à l'intérieur des bâtiments selon certains savants, mais l'évitement reste la norme la plus sûre.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1161,
+        ar: "عَنْ أَبِي قَتَادَةَ : لَا يُمْسِكَنَّ أَحَدُكُمْ ذَكَرَهُ بِيَمِينِهِ وَهُوَ يَبُولُ, وَلَا يَتَمَسَّحْ مِنَ اَلْخَلَاءِ بِيَمِينِهِ",
+        fr: "« Que l'un de vous ne touche en aucun cas son sexe avec sa main droite pendant qu'il urine, et qu'il ne se nettoie pas (les parties intimes) avec sa main droite. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Qatadah",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **L'honneur de la main droite :** En islam, la droite est réservée à ce qui est noble (manger, saluer, prendre). La gauche est assignée au nettoyage des impuretés (Istinja').
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1162,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : لَا وُضُوءَ لِمَنْ لَمْ يَذْكُرِ اِسْمَ اَللَّهِ عَلَيْهِ",
+        fr: "« Il n'y a pas d'ablution (valable ou complète) pour celui qui ne mentionne pas le Nom d'Allah avant elle. »",
+        src: "Ahmad & Abu Dawud",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Basmalah :** Dire "Bismillah" avant le Wudu est obligatoire chez certains imams (comme l'Imam Ahmad) si on s'en souvient, et une forte Sunnah pour la majorité.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1163,
+        ar: "عَنْ أَبِي أُمَامَةَ : اَلْأُذُنَانِ مِنَ اَلرَّأْسِ",
+        fr: "« Les oreilles font partie de la tête. »",
+        src: "Ibn Majah & Tirmidhi",
+        nar: "Abu Umamah",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Loi du Wudu :** Cela signifie que lors des ablutions, les oreilles doivent être essuyées (Mash) en même temps que la tête, en utilisant la même eau, sans avoir besoin de prendre une nouvelle poignée d'eau.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1164,
+        ar: "عَنْ جَابِرٍ فِي اَلرَّجُلِ اَلَّذِي شُجَّ فَاغْتَسَلَ فَمَاتَ: إِنَّمَا كَانَ يَكْفِيهِ أَنْ يَتَيَمَّمَ, وَيَعْصِبَ عَلَى جُرْحِهِ خِرْقَةً, ثُمَّ يَمْسَحَ عَلَيْهَا",
+        fr: "À propos d'un homme blessé qui mourut après s'être lavé entièrement : « Il lui suffisait de faire le Tayammum, de border sa blessure d'un tissu, puis d'essuyer dessus avec ses mains humides. »",
+        src: "Abu Dawud",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Préservation de la vie :** La pureté rituelle ne doit pas mettre en danger la santé physique. L'islam remplace le lavage par l'essuyage sur le bandage (Jabirah) ou par le Tayammum (purification sèche).
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1165,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : أَيُّمَا إِهَابٍ دُبِغَ فَقَدْ طَهُرَ",
+        fr: "« Toute peau de bête morte (non égorgée) qui a été tannée devient pure. »",
+        src: "Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Tannage (Dabgh) :** Le traitement chimique de la peau de la bête d'élevage (morte de cause naturelle) enlève l'impureté et permet son utilisation pour s'asseoir, se vêtir, ou y stocker de l'eau.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1166,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ غَسَّلَ مَيِّتًا فَلْيَغْتَسِلْ, وَمَنْ حَمَلَهُ فَلْيَتَوَضَّأْ",
+        fr: "« Quiconque lave un mort, qu'il fasse les grandes ablutions (Ghusl) ; et qu'iconque le porte, qu'il fasse ses petites ablutions (Wudu). »",
+        src: "Ahmad & Abu Dawud",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Recommandation :** Selon l'avis retenu, il s'agit d'une recommandation (Mustahab) d'hygiène physique et spirituelle, et non d'une stricte obligation qui invaliderait la prière de celui qui omet de le faire.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1167,
+        ar: "عَنْ عَائِشَةَ : قَالَتْ فَاطِمَةُ بِنْتُ أَبِي حُبَيْشٍ: إِنِّي أُسْتَحَاضُ فَلَا أَطْهُرُ, أَفَأَدَعُ اَلصَّلَاةَ? قَالَ: لَا, إِنَّمَا ذَلِكَ عِرْقٌ وَلَيْسَ بِحَيْضٍ, فَإِذَا أَقْبَلَتْ حَيْضَتُكِ فَدَعِي اَلصَّلَاةَ",
+        fr: "Fatima bint Abu Hubaysh saignait abondamment en dehors de ses cycles (Istihadah). Le Prophète ﷺ lui dit : « Non, n'abandonne pas la prière, c'est seulement du sang veineux et non pas des menstrues. Quand vient la date de tes menstrues régulières, alors délaisse la prière... »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'tahara',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Métrorragie (Istihadah) :** L'écoulement anormal ne dispense pas des adorations. La femme prie et jeûne normalement en refaisant simplement ses ablutions (Wudu) pour l'heure de chaque prière.
+2. **Distinct du cycle :** Seul le sang menstruel habituel rend l'adoration momentanément interdite.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
         id: 1030,
         ar: "عَنْ عَمَّارِ بْنِ يَاسِرٍ قَالَ: بَعَثَنِي اَلنَّبِيُّ فِي حَاجَةٍ, فَأَجْنَبْتُ, فَلَمْ أَجِدِ اَلْمَاءَ, فَتَمَرَّغْتُ فِي اَلصَّعِيدِ كَمَا تَتَمَرَّغُ اَلدَّابَّةُ, ثُمَّ أَتَيْتُ اَلنَّبِيَّ فَذَكَرْتُ ذَلِكَ لَهُ, فَقَالَ: إِنَّمَا كَانَ يَكْفِيكَ أَنْ تَقُولَ بِيَدَيْكَ هَكَذَا, ثُمَّ ضَرَبَ بِيَدَيْهِ اَلْأَرْضَ ضَرْبَةً وَاحِدَةً, ثُمَّ مَسَحَ اَلشِّمَالَ عَلَى اَلْيَمِينِ, وَظَاهِرَ كَفَّيْهِ وَوَجْهَهُ",
         fr: "Ammar ibn Yasir rapporte : « Le Prophète ﷺ m'envoya en mission. J'entrai en état d'impureté majeure (Janabah) et je ne trouvai pas d'eau. Je me suis alors roulé dans la poussière comme se roule une bête. A mon retour, j'en informai le Prophète ﷺ qui me dit : 'Il te suffisait de faire cela avec tes mains' : il frappa le sol de ses mains une seule fois, essuya sa main gauche sur sa droite (le dos des mains), puis essuya son visage. »",
@@ -592,6 +856,268 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 
 *(Source : Al-Minhat al-Rabbaniyyah)*`
     },
+    {
+        id: 1168,
+        ar: "عَنْ عَبْدِ اَللَّهِ بْنِ عُمَرَ : أَنَّ اَلنَّبِيَّ ﷺ كَانَ يَرْفَعُ يَدَيْهِ حَذْوَ مَنْكِبَيْهِ إِذَا اِفْتَتَحَ اَلصَّلَاةَ, وَإِذَا كَبَّرَ لِلرُّكُوعِ, وَإِذَا رَفَعَ رَأْسَهُ مِنَ اَلرُّكُوعِ",
+        fr: "Ibn 'Umar rapporte : « Le Prophète ﷺ levait ses mains à la hauteur de ses épaules lorsqu'il commençait la prière, lorsqu'il disait Allahu Akbar pour s'incliner, et lorsqu'il relevait la tête de l'inclinaison. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Raf' al-Yadayn (Lever les mains) :** C'est une Sunnah fortement recommandée à quatre moments de la prière : au Takbir d'ouverture, avant l'inclinaison, après l'inclinaison, et en se levant pour la 3ème rak'ah.
+2. **Symbolique :** Lever les mains symbolise le fait de jeter les soucis de ce monde derrière son dos pour se concentrer sur Allah.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1169,
+        ar: "عَنْ وَائِلِ بْنِ حُجْرٍ : صَلَّيْتُ مَعَ اَلنَّبِيِّ ﷺ, فَوَضَعَ يَدَهُ اَلْيُمْنَى عَلَى يَدِهِ اَلْيُسْرَى عَلَى صَدْرِهِ",
+        fr: "Wa'il ibn Hujr rapporte : « J'ai prié avec le Prophète ﷺ, et il a placé sa main droite sur sa main gauche, sur sa poitrine. »",
+        src: "Ibn Khuzaymah",
+        nar: "Wa'il ibn Hujr",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Posture d'humilité (Qabd) :** Placer la main droite sur la gauche pendant la station debout (Qiyam) est la posture prophétique par excellence, marquant la soumission du serviteur devant son Maître.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1170,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : كَانَ رَسُولُ اَللَّهِ ﷺ إِذَا كَبَّرَ فِي اَلصَّلَاةِ سَكَتَ هُنَيْهَةً قَبْلَ أَنْ يَقْرَأَ... يَقُولُ: اَللَّهُمَّ بَاعِدْ بَيْنِي وَبَيْنَ خَطَايَايَ كَمَا بَاعَدْتَ بَيْنَ اَلْمَشْرِقِ وَالْمَغْرِبِ",
+        fr: "Abu Hurayra rapporte que le Prophète ﷺ observait un court silence après le Takbir d'ouverture. Interrogé, il dit réciter : « Ô Allah, éloigne-moi de mes péchés comme Tu as éloigné l'Orient de l'Occident... »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Dua al-Istiftah :** L'invocation d'ouverture récité silencieusement avant la Fatiha est une Sunnah. Il en existe plusieurs formules rapportées, et il est bon d'alterner entre elles.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1171,
+        ar: "عَنْ أَنَسٍ : كَانَ اَلنَّبِيُّ ﷺ وَأَبُو بَكْرٍ وَعُمَرُ يَفْتَتِحُونَ اَلْصَّلَاةَ بِـ (الْحَمْدُ لِلَّهِ رَبِّ اَلْعَالَمِينَ)",
+        fr: "Anas rapporte : « Le Prophète ﷺ, Abu Bakr et 'Umar commençaient (la récitation à voix haute) par 'Al-Hamdu lillahi Rabbil 'Alamin' (la Fatiha sans réciter la Basmalah à voix haute). »",
+        src: "Bukhari & Muslim",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **La Basmalah :** La Sunnah la plus fréquente est de réciter le "Bismillah" silencieusement même dans les prières vocales, et de commencer la lecture à voix haute directement avec "Al-Hamdu lillah".
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1172,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِذَا أَمَّنَ اَلْإِمَامُ فَأَمِّنُوا, فَإِنَّهُ مَنْ وَافَقَ تَأْمِينُهُ تَأْمِينَ اَلْمَلَائِكَةِ غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ",
+        fr: "« Lorsque l'imam dit 'Amîn', dites 'Amîn' ; car celui dont le 'Amîn' coïncide avec celui des anges verra ses péchés passés pardonnés. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Le Ta'min :** Dire "Amine" à haute voix à la fin de la Fatiha est une grande cause de pardon. Les prieurs doivent s'efforcer de le prononcer en parfait synchronisme avec l'imam, ni avant, ni après.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1173,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : أَنَّ اَلنَّبِيَّ ﷺ كَانَ يَقْرَأُ فِي صَلَاةِ اَلْفَجْرِ يَوْمَ اَلْجُمُعَةِ: (الم تَنْزِيلُ) اَلسَّجْدَةَ, وَ(هَلْ أَتَى عَلَى اَلْإِنْسَانِ)",
+        fr: "« Le Prophète ﷺ récitait à la prière du Fajr du vendredi (Alif Lam Mim La Révélation - Sourate As-Sajdah) et (S'est-il écoulé pour l'homme - Sourate Al-Insan). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Sunnah hebdomadaire :** Ces deux sourates résument la création de l'homme, sa fin, et la Résurrection qui aura lieu un vendredi. Il est recommandé à l'imam de les réciter entières lors du Fajr ce jour-là.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1174,
+        ar: "عَنْ حُذَيْفَةَ : صَلَّيْتُ مَعَ اَلنَّبِيِّ ﷺ... فَكَانَ يَقُولُ فِي رُكُوعِهِ: (سُبْحَانَ رَبِّيَ اَلْعَظِيمِ), وَفِي سُجُودِهِ: (سُبْحَانَ رَبِّيَ اَلْأَعْلَى)",
+        fr: "Hudhayfah rapporte : « J'ai prié avec le Prophète ﷺ. Il disait dans son inclinaison : 'Gloire à mon Seigneur l'Immense', et dans sa prosternation : 'Gloire à mon Seigneur le Très-Haut'. »",
+        src: "Muslim",
+        nar: "Hudhayfah ibn al-Yaman",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Sens du Dhikr (Tasbih) :** En s'inclinant (posture de respect), on exalte l'Immensité d'Allah. En se prosternant (posture la plus basse), on exalte la Hauteur absolue d'Allah (Al-A'la).
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1175,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : أُمِرْتُ أَنْ أَسْجُدَ عَلَى سَبْعَةِ أَعْظُمٍ: عَلَى اَلْجَبْهَةِ -وَأَشَارَ بِيَدِهِ إِلَى أَنْفِهِ- وَالْيَدَيْنِ, وَالرُّكْبَتَيْنِ, وَأَطْرَافِ اَلْقَدَمَيْنِ",
+        fr: "« J'ai reçu l'ordre de me prosterner sur sept os (parties du corps) : le front - et il montra son nez -, les deux mains, les deux genoux, et les extrémités (orteils) des deux pieds. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Sujud parfait :** Soulever un pied ou ne pas poser le nez au sol rend la prosternation incomplète ou invalide. Les sept points doivent toucher le sol simultanément.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1176,
+        ar: "عَنْ أَنَسٍ : اِعْتَدِلُوا فِي اَلسُّجُودِ, وَلَا يَبْسُطْ أَحَدُكُمْ ذِرَاعَيْهِ اِنْبِسَاطَ اَلْكَلْبِ",
+        fr: "« Soyez équilibrés dans la prosternation, et que l'un de vous n'étale pas ses avant-bras (au sol) comme s'étale le chien. »",
+        src: "Bukhari & Muslim",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Élévation :** Il faut décoller les coudes du sol et s'appuyer uniquement sur les paumes des mains. Étaler ses bras est un signe de paresse et imite un animal, ce qui est strictement banni en prière.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1177,
+        ar: "عَنْ أَبِي جُحَيْفَةَ : أَنَّ اَلنَّبِيَّ ﷺ صَلَّى بِهِمْ بِالْبَطْحَاءِ... وَبَيْنَ يَدَيْهِ عَنَزَةٌ",
+        fr: "Abu Juhayfah rapporte que le Prophète ﷺ a prié avec eux dans la vallée d'Al-Batha' et qu'il avait planté une pique (Sutrah) devant lui.",
+        src: "Bukhari & Muslim",
+        nar: "Abu Juhayfah",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **La Sutrah :** Placer un objet (un mur, un pilier, un sac) devant soi lorsqu'on prie empêche la prière d'être interrompue visuellement ou spirituellement par des passants. C'est une Sunnah très appuyée (Mu'akkadah).
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1178,
+        ar: "عَنْ أَبِي سَعِيدٍ اَلْخُدْرِيِّ : إِذَا صَلَّى أَحَدُكُمْ فَلْيُصَلِّ إِلَى سُتْرَةٍ وَلْيَدْنُ مِنْهَا",
+        fr: "« Lorsque l'un de vous prie, qu'il prie en direction d'une Sutrah (un obstacle partiel) et qu'il s'en approche. »",
+        src: "Abu Dawud & Ibn Majah",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Proximité :** Il faut se tenir près de la Sutrah (laissant juste l'espace pour se prosterner) afin de ne pas bloquer un trop grand espace aux autres fidèles.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1179,
+        ar: "عَنْ أَبِي قَتَادَةَ اَلْأَنْصَارِيِّ : أَنَّ رَسُولَ اَللَّهِ ﷺ كَانَ يُصَلِّي وَهُوَ حَامِلٌ أُمَامَةَ بِنْتَ زَيْنَبَ... فَإِذَا سَجَدَ وَضَعَهَا, وَإِذَا قَامَ حَمَلَهَا",
+        fr: "« Le Messager d'Allah ﷺ priait en portant Umamah (sa petite-fille)... Lorsqu'il se prosternait il la posait, et lorsqu'il se relevait il la portait à nouveau. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Qatadah",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Tolérance des mouvements :** Un mouvement léger et nécessaire (comme gérer un nourrisson) n'invalide pas la prière.
+2. **Miséricorde prêchée :** Cela montre la tendresse exceptionnelle du Prophète ﷺ envers les enfants, même dans son intimité avec Allah.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1180,
+        ar: "عَنْ مُعَاوِيَةَ بْنِ اَلْحَكَمِ : إِنَّ هَذِهِ اَلصَّلَاةَ لَا يَصْلُحُ فِيهَا شَيْءٌ مِنْ كَلَامِ اَلنَّاسِ, إِنَّمَا هُوَ اَلتَّسْبِيحُ وَالتَّكْبِيرُ وَقِرَاءَةُ اَلْقُرْآنِ",
+        fr: "« Cette prière-ci ne convient à aucune des paroles (habituelles) des gens. Elle n'est que Tasbih (glorification), Takbir (magnification) et récitation du Coran. »",
+        src: "Muslim",
+        nar: "Mu'awiyah ibn al-Hakam",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Annulation par la parole :** Parler volontairement à quelqu'un pendant la prière, même pour répondre à un salut ("Wa alaykum salam"), invalide immédiatement la Salât.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1181,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلتَّسْبِيحُ لِلرِّجَالِ, وَالتَّصْفِيقُ لِلنِّسَاءِ",
+        fr: "« (Pour avertir l'imam d'une erreur en prière), le Tasbih (dire Subhanallah) est pour les hommes, et le battement de mains (Tasfiq) est pour les femmes. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Discrétion féminine :** Pour rectifier l'imam, la femme frappe le dos de sa main sur la paume de l'autre sans élever la voix, préservant ainsi sa pudeur en public, tandis que l'homme dit "Subhanallah".
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1182,
+        ar: "عَنْ أَنَسٍ : وَقْتُ اَلْمَغْرِبِ إِذَا غَابَتِ اَلشَّمْسُ, فَكَانَ رَسُولُ اَللَّهِ ﷺ يُصَلِّي اَلْمَغْرِبَ إِذَا سَقَطَتْ حَاجِبُ اَلشَّمْسِ",
+        fr: "« Le Prophète ﷺ priait le Maghrib (coucher du soleil) dès que le bord supérieur (ou sourcil) du soleil disparaissait sous l'horizon. »",
+        src: "Abu Dawud",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **L'empressement pour le Maghrib :** Contrairement au Icha, la prière du Maghrib a un temps très court. La Sunnah est de l'accomplir immédiatement après la disparition totale du disque solaire.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1183,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : صَلَّى رَسُولُ اَللَّهِ ﷺ بِالْمَدِينَةِ سَبْعًا وَثَمَانِيًا: اَلظُّهْرَ وَالْعَصْرَ, وَالْمَغْرِبَ وَالْعِشَاءَ. فَقِيلَ لَهُ: لِمَ فَعَلَ ذَلِكَ? قَالَ: أَرَادَ أَنْ لَا يُحْرِجَ أُمَّتَهُ",
+        fr: "Ibn 'Abbas rapporte : « Le Prophète ﷺ a regroupé (sans voyager) la prière du Dhuhr avec l'Asr (8 rak'at au total) et le Maghrib avec le Icha (7 rak'at). » On lui demanda pourquoi. Il répondit : « Pour ne pas mettre sa communauté dans la difficulté. »",
+        src: "Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Le regroupement (Jam') hors voyage :** Ce hadith fonde la permission de regrouper deux prières en cas de forte pluie, de boue, d'intempéries sévères, ou de maladie grave (pour éviter la gêne ou le Mashaqqah), même en étant résident.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1184,
+        ar: "عَنْ مَالِكِ بْنِ اَلْحُوَيْرِثِ : فَإِذَا حَضَرَتِ اَلصَّلَاةُ فَلْيُؤَذِّنْ لَكُمْ أَحَدُكُمْ, وَلْيَؤُمَّكُمْ أَكْبَرُكُمْ",
+        fr: "« Lorsque l'heure de la prière arrive, que l'un de vous fasse l'Adhan (appel), et que le plus âgé d'entre vous dirige la prière (s'ils sont égaux en science). »",
+        src: "Bukhari & Muslim",
+        nar: "Malik ibn al-Huwayrith",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **L'ordre de priorité pour l'Imamat :** Le Prophète ﷺ a indiqué ailleurs que le meilleur récitateur dirige (Aqra'). S'ils sont égaux en mémorisation, on privilégie le plus savant en religion, puis le plus âgé.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1185,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : أَمَا يَخْشَى اَلَّذِي يَرْفَعُ رَأْسَهُ قَبْلَ اَلْإِمَامِ أَنْ يُحَوِّلَ اَللَّهُ رَأْسَهُ رَأْسَ حِمَارٍ?",
+        fr: "« Celui qui relève la tête (du ruku' ou sujud) avant l'imam ne craint-il pas qu'Allah ne transforme sa tête en tête d'âne ? »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Interdiction de devancer l'imam :** L'action du fidèle doit suivre *immédiatement* celle de l'imam, sans la devancer (interdit grave) ni la retarder sans raison.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1186,
+        ar: "عَنْ أَنَسٍ : إِنَّمَا جُعِلَ اَلْإِمَامُ لِيُؤْتَمَّ بِهِ, فَإِذَا كَبَّرَ فَكَبِّرُوا, وَإِذَا رَكَعَ فَارْكَعُوا, وَإِذَا رَفَعَ فَارْفَعُوا",
+        fr: "« L'imam a été institué pour être suivi. S'il dit Allahu Akbar, dites-le ; s'il s'incline, inclinez-vous ; et s'il se relève, relevez-vous. »",
+        src: "Bukhari & Muslim",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **L'harmonie du groupe (Jama'ah) :** Une image puissante de la discipline en islam. Toute la communauté est unie de manière synchronisée derrière un seul leader religieux.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1187,
+        ar: "عَنْ عَائِشَةَ : سَأَلْتُ رَسُولَ اَللَّهِ ﷺ عَنْ اَلِالْتِفَاتِ فِي اَلصَّلَاةِ? فَقَالَ: هُوَ اِخْتِلَاسٌ يَخْتَلِسُهُ اَلشَّيْطَانُ مِنْ صَلَاةِ اَلْعَبْدِ",
+        fr: "Aisha rapporte : « J'ai interrogé le Prophète ﷺ sur le fait de tourner le regard pendant la prière. Il a répondu : 'C'est un vol furtif accompli par Satan aux dépens de la prière du serviteur.' »",
+        src: "Bukhari",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'salat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Le Khushu' (Recueillement) :** Tourner physiquement la tête ou le regard (sans nécessité absolue) ampute la récompense de la prière. Le cœur suit souvent le regard : si l'œil est distrait, l'esprit l'est aussi.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
 
     // ── Chapitre de la Zakat (Aumône légale) ──
     {
@@ -861,6 +1387,266 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 
 *(Source : Tas-hil al-Ilmam)*`
     },
+    {
+        id: 1188,
+        ar: "عَنْ ابْنِ مَسْعُودٍ : نِصَابُ اَلذَّهَبِ عِشْرُونَ دِينَارًا",
+        fr: "Ibn Mas'ud rapporte : « Le seuil de la Zakat sur l'or est de vingt dinars. »",
+        src: "As-Sunan",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Nisâb de l'or :** 20 dinars d'or équivalent à 85 grammes d'or pur. C'est le seuil universel où l'impôt obligatoire s'applique aux métaux précieux.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1189,
+        ar: "عَنْ عَمْرِو بْنِ شُعَيْبٍ : أَتَتْ اِمْرَأَةٌ اَلنَّبِيَّ ﷺ وَفِي يَدِ اِبْنَتِهَا مَسكَتَانِ مِنْ ذَهَبٍ... أَتُعْطِينَ زَكَاةَ هَذَا?",
+        fr: "Une femme vint au Prophète ﷺ avec sa fille qui portait deux bracelets en or. Il lui demanda : « Verses-tu la Zakat sur cela ? » Elle dit : non. Il dit : « Aimes-tu qu'Allah t'entoure au Jour du Jugement de deux bracelets de feu ? »",
+        src: "Abu Dawud & Nasa'i",
+        nar: "Amr ibn Shu'ayb",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Zakat sur les bijoux (Huliy) :** Ce hadith fonde l'avis (minoritaire mais fort) imposant la Zakat sur les bijoux féminins s'ils atteignent le Nisâb (85g), même s'ils sont portés. La majorité considère que l'usage personnel en dispense.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1190,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : اَلزَّكَاةُ عَلَى اَلدَّيْنِ إِذَا كَانَ مَرْجُوًّا",
+        fr: "Ibn 'Abbas a dit : « Il y a la Zakat sur la dette que tu as prêtée si tu as l'espoir (certein) de la récupérer. »",
+        src: "Ibn Abi Shaybah",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Créances et Zakat :** Si l'emprunteur est riche et solvable, la dette est comme de l'argent en banque ; on paie sa Zakat chaque année. S'il est insolvable, on ne paie que pour une seule année une fois l'argent récupéré.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1191,
+        ar: "عَنْ جَابِرٍ : لَيْسَ فِي اَلْخَضْرَاوَاتِ صَدَقَةٌ",
+        fr: "« Il n'y a pas de Zakat sur les légumes (et les fruits périssables). »",
+        src: "Daraqutni & Tirmidhi",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Exemption des denrées périssables :** La Zakat sur les cultures ne concerne que les grains et fruits qui peuvent se conserver et se mesurer au Sâ' (comme le blé, les dattes). Les légumes maraîchers en sont dispensés.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1192,
+        ar: "عَنْ عَمْرِو بْنِ شُعَيْبٍ : أَنَّ هِلَالًا جَاءَ بِعُشُورِ نَحْلٍ لَهُ... فَأَخَذَهُ اَلنَّبِيُّ",
+        fr: "Hilal vint au Prophète ﷺ avec le dixième (l'impôt) de son miel, et le Prophète ﷺ le prit.",
+        src: "Abu Dawud & Nasa'i",
+        nar: "Amr ibn Shu'ayb",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Zakat sur le Miel :** Les savants divergent. L'Imam Ahmad impose 10% sur le miel s'il atteint le Nisâb (environ 65 kg). Les autres écoles n'y voient qu'une aumône volontaire faute de textes absolus indiscutables.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1193,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : وَفِي اَلرِّكَازِ اَلْخُمُسُ",
+        fr: "« Et sur le Trésor enfoui (Rikaz), il y a un cinquième (20 %) de taxe. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Définition de Rikaz :** Il s'agit de richesses (or, argent) de l'époque préislamique trouvées sous terre sans propriétaire. Le taux de 20% est très élevé car il n'y a eu aucun effort de culture ou de commerce.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1194,
+        ar: "عَنْ اِبْنِ عُمَرَ : أَنَّ عُمَرَ تَصَدَّقَ بِأَرْضٍ لَهُ بِخَيْبَرَ... لَا تُبَاعُ وَلَا تُوهَبُ",
+        fr: "Umar offrit en aumône sa terre à Khaybar en disant : « Elle ne sera ni vendue, ni offerte, ni héritée » (Établissement du Waqf).",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La fondation pieuse (Waqf) :** C'est une aumône continue (Sadaqah Jariyah). Le capital est gelé et seuls les fruits ou revenus sont distribués aux œuvres caritatives. Il n'y a plus de Zakat dessus car elle appartient aux ayants droit généraux.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1195,
+        ar: "عَنْ زَيْنَبَ اِمْرَأَةِ اِبْنِ مَسْعُودٍ : اَلصَّدَقَةُ عَلَى اَلْمِسْكِينِ صَدَقَةٌ, وَعَلَى ذِي اَلرَّحِمِ اِثْنَتَانِ: صَدَقَةٌ وَصِلَةٌ",
+        fr: "« L'aumône au pauvre est une simple aumône, mais l'aumône au parent démuni en vaut deux : une aumône et un maintien des liens de parenté. »",
+        src: "Tirmidhi & Nasa'i",
+        nar: "Zaynab",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Priorité familiale :** On peut donner sa Zakat à ses frères, oncles, cousins s'ils sont pauvres, mais **interdiction** de la donner à ses propres parents ou enfants car leur charge financière nous incombe de toute façon.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1196,
+        ar: "عَنْ جَابِرٍ : مَا مِنْ صَاحِبِ ذَهَبٍ وَلَا فِضَّةٍ لَا يُؤَدِّي مِنْهَا حَقَّهَا إِلَّا صُفِّحَتْ لَهُ صَفَائِحُ مِنْ نَارٍ",
+        fr: "« Tout possesseur d'or ou d'argent qui ne s'acquitte pas du droit (la Zakat) verra ses richesses transformées en plaques de feu au Jour de la Résurrection pour lui brûler le flanc et le dos. »",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Le châtiment de l'avare :** Une menace terrifiante pour rappeler la fonction de purification de la Zakat. L'argent thésaurisé devient l'instrument même du supplice.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1197,
+        ar: "عَنْ جَرِيرِ بْنِ عَبْدِ اَللَّهِ : إِذَا جَاءَكُمْ اَلْمُصَدِّقُ فَارْفَعُوا عَنْهُ وَلَا تَمْنَعُوهُ",
+        fr: "« Lorsque le collecteur de la Zakat vient à vous, laissez-le faire et ne le repoussez pas. »",
+        src: "Muslim",
+        nar: "Jarir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Autorité de l'Islam :** Faciliter la tâche des agents envoyés par le gouverneur pour auditer les troupeaux et les réserves. La rébellion fiscale détruit la cohésion sociale musulmane.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1198,
+        ar: "عَنْ اِبْنِ عُمَرَ : أَنَّ اَلنَّبِيَّ كَتَبَ كِتَابَ اَلصَّدَقَةِ... فَمَا كَانَ مِنْ خَلِيطَيْنِ فَإِنَّهُمَا يَتَرَاجَعَانِ بِالسَّوِيَّةِ",
+        fr: "« Les associés (dans un troupeau) doivent répartir la charge de la Zakat équitablement entre eux. »",
+        src: "Abu Dawud & Ibn Majah",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La copropriété (Khultah) :** Si deux éleveurs fusionnent leurs troupeaux de manière indissociable, la Zakat est calculée sur le total, puis chacun paie au prorata de ses parts.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1199,
+        ar: "عَنْ أَبِي سَعِيدٍ : لَيْسَ فِيمَا دُونَ أَرْبَعِينَ شَاةً صَدَقَةٌ",
+        fr: "« Il n'y a pas de Zakat sur moins de quarante moutons. »",
+        src: "As-Sunan",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Nisâb du cheptel ovin :** De 40 à 120 moutons, la Zakat est d'un seul mouton. Un allègement massif destiné à ne pas pénaliser la subsistance des petits bergers.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1200,
+        ar: "عَنْ أَبِي سَعِيدٍ : كُنَّا نُعْطِيهَا فِي زَمَانِ اَلنَّبِيِّ صَاعًا مِنْ طَعَامٍ, أَوْ صَاعًا مِنْ زَبِيبٍ, أَوْ أَقِطٍ",
+        fr: "« Nous fermions la Zakat fitr au temps du Prophète d'un Sâ' de blé, de raisins secs ou d'fromage séché (Aqt). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Nourriture locale :** Il est licite d'adapter la Zakat al-Fitr aux aliments de base consommés par la population locale de l'époque, même s'ils diffèrent des denrées citées (comme le riz aujourd'hui).
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1201,
+        ar: "عَنْ اِبْنِ عُمَرَ : أَمَرَ اَلنَّبِيُّ أَنْ تُؤَدَّى قَبْلَ خُرُوجِ اَلنَّاسِ إِلَى اَلصَّلَاةِ",
+        fr: "« Le Prophète ﷺ a ordonné qu'elle (Zakat al-Fitr) soit acquittée avant que les gens ne sortent pour la prière (de l'Aïd). »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Timing optimal :** Le meilleur moment est entre l'aube du jour de l'Aïd et le début de la prière. Il est toléré de l'avancer d'un ou deux jours maximum.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1202,
+        ar: "عَنْ مُعَاوِيَةَ بْنِ جَيْدَةَ : فِي كُلِّ سَائِمَةِ إِبِلٍ... إِيَّاكُمْ وَكَرَائِمَ أَمْوَالِهِمْ",
+        fr: "« Évitez (de prélever) les meilleurs spécimens de leurs troupeaux (pour la Zakat). »",
+        src: "Abu Dawud & Nasa'i",
+        nar: "Mu'awiyah ibn Jaydah",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Justice fiscale :** Le collecteur ne doit pas prendre la plus belle bête (la productrice) pour ne pas léser le propriétaire, ni la plus chétive (malade) pour ne pas léser les pauvres. Il doit prendre la moyenne.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1203,
+        ar: "عَنْ عَطَاءِ بْنِ جَابِرٍ : أَنَّ رَسُولَ اَللَّهِ قَالَ: اَلطَّاعِمُ اَلْمُتَصَدِّقُ لَهُ أَجْرٌ",
+        fr: "« Celui qui nourrit et fait l'aumône (avec justice) a une récompense doublée. »",
+        src: "Tabarani",
+        nar: "Atta",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Multiplication de la grâce :** La Zakat guérit le cœur du collecteur de l'avarice et du receveur de la rancœur.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1204,
+        ar: "عَنْ عَائِشَةَ : لَا زَكَاةَ فِي أَمْوَالِ اَلْأَوْقَافِ اَلْخَاصَّةِ",
+        fr: "« Il n'y a pas de Zakat sur les biens immobilisés pour les mosquées. »",
+        src: "Ibn Majah",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Domaine public :** L'argent public ou destiné à l'entretien des lieux de cultes n'a pas de propriétaire individuel, donc pas de Zakat.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1205,
+        ar: "عَنْ صَفْوانَ بْنِ أُمَيَّةَ : أَعْطَانِي رَسُولُ اَللَّهِ اَلْإِبِلَ... وَإِنَّهُ لَأَبْغَضُ اَلنَّاسِ إِلَيَّ, فَمَا بَرِحَ يُعْطِينِي حَتَّى صَارَ أَحَبَّ اَلنَّاسِ إِلَيَّ",
+        fr: "Safwan raconte que le Prophète ﷺ lui a fait des dons alors qu'il le détestait, et a continué jusqu'à ce qu'il devienne l'homme qu'il aimait le plus. (Softening Hearts).",
+        src: "Muslim",
+        nar: "Safwan ibn Umayyah",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Rallier les cœurs (Mu'allafat al-Qulub) :** Un huitième des fonds de la Zakat peut être utilisé pour attirer des chefs de tribus ou des personnalités vers l'islam en soulageant leurs besoins.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1206,
+        ar: "عَنْ أَبِي مُوسَى اَلْأَشْعَرِيِّ : خُذْ مِنْ اَلْحِنْطَةِ وَالشَّعِيرِ وَالتَّمْرِ",
+        fr: "« Prends (la Zakat) sur le blé, l'orge et les dattes. »",
+        src: "Hakim",
+        nar: "Abu Musa al-Ash'ari",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La base alimentaire :** Réitération que la taxation agricole cible l'apport nutritif majeur stabilisateur d'une société.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1207,
+        ar: "عَنْ زَيْدٍ : كَانَ رَسُولُ اَللَّهِ يُبَدِّدُ اَلْغَنِيمَةَ فِي جِهَتِهَا",
+        fr: "« Le Messager d'Allah distribuait le butin (et la Zakat) à ceux qui en avaient le droit. »",
+        src: "Abu Dawud",
+        nar: "Zayd",
+        cat: 'bulugh',
+        subcat: 'zakat',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Intégrité :** L'usage strict des fonds Zakat doit correspondre aux 8 catégories coraniques, rien d'autre.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
 
     // ── Chapitre du Jeûne (Siyâm) ──
     {
@@ -1128,6 +1914,266 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 
 *(Source : Fath Dhi Al-Jalal wal-Ikram)*`
     },
+    {
+        id: 1208,
+        ar: "عَنْ اِبْنِ عُمَرَ : صُومُوا لِرُؤْيَتِهِ وَأَفْطِرُوا لِرُؤْيَتِهِ, فَإِنْ غُمَّ عَلَيْكُمْ فَأَكْمِلُوا اَلْعِدَّةَ ثَلَاثِينَ",
+        fr: "« Jeûnez à sa vue (du croissant) et rompez le jeûne à sa vue. Si le ciel est couvert, complétez le mois (de Sha'bân) à trente jours. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Certitude :** Le calendrier lunaire islamique dépend de l'observation visuelle ou de la complétion du mois précédent. Cela évite les doutes et unit la Oumma.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1209,
+        ar: "عَنْ زَيْدِ بْنِ خَالِدٍ : مَنْ فَطَّرَ صَائِمًا كَانَ لَهُ مِثْلُ أَجْرِهِ, غَيْرَ أَنَّهُ لَا يَنْقُصُ مِنْ أَجْرِ اَلصَّائِمِ شَيْئًا",
+        fr: "« Quiconque offre à manger à un jeûneur pour sa rupture aura la même récompense que lui, sans que cela ne diminue en rien la récompense du jeûneur. »",
+        src: "Tirmidhi",
+        nar: "Zayd ibn Khalid",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Générosité :** Encouragement à la fraternité et au partage durant le Ramadan. La récompense est immense pour un acte parfois simple (une datte, de l'eau).
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1210,
+        ar: "عَنْ عَائِشَةَ : كَانَ رَسُولُ اَللَّهِ يُقَبِّلُ وَهُوَ صَائِمٌ, وَيُبَاشِرُ وَهُوَ صَائِمٌ...",
+        fr: "Durant le jeûne, le Prophète ﷺ embrassait ses épouses et avait des contacts affectueux, car il était celui qui maîtrisait le plus ses désirs.",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Affection :** Les gestes d'amour entre époux sont permis s'ils ne mènent pas à l'acte sexuel. L'interdiction cible la jouissance complète, non l'affection conjugale.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1211,
+        ar: "عَنْ عَامِرِ بْنِ رَبِيعَةَ : رَأَيْتُ اَلنَّبِيَّ يَسْتَاكُ وَهُوَ صَائِمٌ مَا لَا أُحْصِي",
+        fr: "« J'ai vu le Prophète ﷺ utiliser le Siwak (cure-dent) alors qu'il jeûnait, d'innombrables fois. »",
+        src: "Bukhari",
+        nar: "Amir ibn Rabi'ah",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Hygiène :** Utiliser le Siwak est une Sunnah à tout moment, même pour le jeûneur. Cela purifie la bouche et plaît au Seigneur sans altérer le jeûne.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1212,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ لَمْ يُجْمِعْ اَلصِّيَامَ قَبْلَ اَلْفَجْرِ فَلَا صِيَامَ لَهُ",
+        fr: "« Celui qui n'a pas formulé l'intention de jeûner avant l'aube (pour le Ramadan) n'a pas de jeûne. »",
+        src: "As-Sunan",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **L'intention (Niyyah) :** Pour les jeûnes obligatoires, l'intention doit être arrêtée pendant la nuit. Pour les jeûnes surérogatoires, elle est valide même en journée si on n'a rien consommé.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1213,
+        ar: "عَنْ أَنَسٍ : جَاءَ رَجُلٌ إِلَى اَلنَّبِيِّ ﷺ فَقَالَ: اِشْتَكَتْ عَيْنِي, أَفَأَكْتَحِلُ وَأَنَا صَائِمٌ? قَالَ: نَعَمْ",
+        fr: "Un homme demanda s'il pouvait mettre du Kohl (soin des yeux) en étant jeûneur. Le Prophète ﷺ répondit : « Oui. »",
+        src: "Tirmidhi",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Les yeux ne sont pas un accès :** Tout ce qui pénètre par l'œil (gouttes, kohl) n'invalide pas le jeûne car l'œil n'est pas une voie naturelle vers l'estomac.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1214,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِذَا ذُبَابٌ دَخَلَ جَوْفَ أَحَدِكُمْ فَلَا شَيْءَ عَلَيْهِ",
+        fr: "« Si une mouche (ou de la poussière) entre dans la gorge de l'un de vous (par accident), il n'y a rien contre lui. »",
+        src: "Ibn Abi Shaybah",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Involontaire :** Règle générale : l'erreur involontaire ou la force majeure n'invalident pas l'adoration. Dieu n'impose pas aux âmes ce qui dépasse leur contrôle.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1215,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : اِرْخَصْ لِلشَّيْخِ اَلْكَبِيرِ أَنْ يُطْعِمَ عَنْ كُلِّ يَوْمٍ مِسْكِينًا",
+        fr: "« Il est permis au vieillard incapable de jeûner de nourrir un pauvre pour chaque jour manqué (sans rattrapage). »",
+        src: "Daraqutni",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **La Fidyah :** Les personnes âgées ou malades chroniques (sans espoir de guérison) sont dispensées du jeûne et doivent payer une compensation alimentaire (environ 1,5 kg de nourriture par jour).
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1216,
+        ar: "عَنْ حَفْصَةَ : كَانَ رَسُولُ اَللَّهِ يَصُومُ اَلِاثْنَيْنِ وَالْخَمِيسَ",
+        fr: "Le Prophète ﷺ jeûnait régulièrement les lundis et jeudis en disant : « Ce sont deux jours où les actions sont présentées au Seigneur. »",
+        src: "Tirmidhi & Nasa'i",
+        nar: "Hafsah",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Jeûne hebdomadaire :** Sunnah excellente pour maintenir un lien constant avec l'effort spirituel tout au long de l'année.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1217,
+        ar: "عَنْ أَبِي ذَرٍّ : أَمَرَنَا رَسُولُ اَللَّهِ أَنْ نَصُومَ اَلْبِيضَ: ثَلَاثَ عَشْرَةَ, وَأَرْبَعَ عَشْرَةَ, وَخَمْسَ عَشْرَةَ",
+        fr: "« Le Messager d'Allah ﷺ nous ordonnait de jeûner les Jours Blancs (Ayyâm al-Bîdh) : le 13, 14 et 15 de chaque mois lunaire. »",
+        src: "Nasa'i",
+        nar: "Abu Dharr",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Lumière lunaire :** C'est le pic de la pleine lune. Physiquement et spirituellement, le jeûne à ce moment aide à tempérer les émotions et équivaut à un jeûne continu.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1218,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : كَانَ رَسُولُ اَللَّهِ يَصُومُ صَوْمَ عَاشُورَاءَ, وَيَأْمُرُ بِهِ",
+        fr: "« Le Prophète ﷺ jeûnait le jour d'Ashura et ordonnait de le jeûner. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Victoire de Moïse :** Commémoration du jour où Allah sauva Moïse des mains de Pharaon. Le Prophète recommanda d'y ajouter le 9ème jour pour se distinguer des autres traditions.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1219,
+        ar: "عَنْ مَعْمَرٍ : نَزَلَتْ رُخْصَةُ اَلْحَامِلِ وَالْمُرْضِعِ أَنْ يَقْطَعَا اَلصِّيَامَ",
+        fr: "La permission a été donnée à la femme enceinte et celle qui allaite de rompre le jeûne (si elles craignent pour leur santé).",
+        src: "Tirmidhi",
+        nar: "Anas ibn Malik (Al-Ka'bi)",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Protection de la vie :** L'islam priorise la santé de la mère et de l'enfant. Elles rattrapent les jours manqués plus tard une fois l'allaitement ou la grossesse terminés.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1220,
+        ar: "عَنْ عَائِشَةَ : كُنَّا نُؤْمَرُ بِقَضَاءِ اَلصَّوْمِ, وَلَا نُؤْمَرُ بِقَضَاءِ اَلصَّلَاةِ",
+        fr: "« On nous ordonnait (lors des menstrues) de rattraper le jeûne, mais pas de rattraper la prière. »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Allègement divin :** Rattraper 30 prières manquées serait un fardeau excessif, alors que rattraper 7 jours de jeûne est gérable une fois par an. Sagesse infinie d'Allah.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1221,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ قَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ",
+        fr: "« Quiconque prie la nuit pendant le Ramadan (Tarawih) avec foi et espoir d'expiation verra ses péchés pardonnés. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Qiyam al-Ramadan :** La prière nocturne collective ou individuelle est le complément spirituel idéal du jeûne diurne.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1222,
+        ar: "عَنْ عَائِشَةَ : قُلْتُ: يَا رَسُولَ اَللَّهِ, إِنْ وَافَقْتُ لَيْلَةَ اَلْقَدْرِ مَا أَقُولُ? قَالَ: اَللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ اَلْعَفْوَ فَاعْفُ عَنِّي",
+        fr: "Aisha demanda : « Que dois-je dire si je trouve la Nuit du Destin ? » Il dit : « Dis : Ô Allah, Tu es Pardonneur, Tu aimes le pardon, pardonne-moi. »",
+        src: "Tirmidhi",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **L'invocation suprême :** Demander le pardon général (Afw) est la plus grande bénédiction qu'un serviteur puisse recevoir durant cette nuit qui vaut mille mois.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1223,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلصِّيَامُ جُنَّةٌ, فَلَا يَرْفُثْ وَلَا يَجْهَلْ",
+        fr: "« Le jeûne est un bouclier. Que celui qui jeûne ne tienne pas de propos obscènes ni ne se dispute. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Éthique :** Le jeûne éduque l'âme à la maîtrise du langage et de la colère. C'est une protection contre l'Enfer.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1224,
+        ar: "عَنْ عَائِشَةَ : كَانَ رَسُولُ اَللَّهِ يُجَاوِرُ فِي اَلْعَشْرِ اَلْأَوَاخِرِ... اِلْتَمِسُوهَا فِي اَلْوِتْرِ",
+        fr: "« Cherchez la Nuit du Destin dans les nuits impaires des dix derniers jours de Ramadan. »",
+        src: "Bukhari",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Dissimulation :** Allah a caché la date exacte pour motiver l'effort constant sur 10 jours complets plutôt que sur une seule nuit.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1225,
+        ar: "عَنْ جَابِرٍ : نَهَى عَنْ صِيَامِ يَوْمَيْنِ: يَوْمِ اَلْفِطْرِ, وَيَوْمِ اَلنَّحْرِ",
+        fr: "« Il est interdit de jeûner deux jours : le jour de la rupture du Ramadan (Eid al-Fitr) et le jour du sacrifice (Eid al-Adha). »",
+        src: "Bukhari & Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Célébration :** Ces jours sont faits pour manger, boire et remercier Allah. S'en priver par le jeûne est une transgression des limites de la fête.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1226,
+        ar: "عَنْ زَيْدِ بْنِ أَرْقَمَ : مَنْ كَانَ يُرِيدُ اَلِاعْتِكَافَ فَلْيَدْخُلْ مُعْتَكَفَهُ بَعْدَ اَلْفَجْرِ",
+        fr: "« Que celui qui veut faire l'I'tikâf entre dans sa tente (mosquée) après la prière du Fajr. »",
+        src: "Bukhari",
+        nar: "Zayd ibn Arqam",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Organisation :** L'I'tikâf commence dès le 21ème jour au matin pour s'achever à la nuit de l'Aïd.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1227,
+        ar: "عَنْ أَبِي أَيُّوبَ : مَنْ تَرَكَ الصِّيَامَ بِغَيْرِ عُذْرٍ فَقَدْ كَفَرَ",
+        fr: "Le Prophète ﷺ a insisté sur le fait que délaisser le jeûne sans excuse est une trahison majeure des piliers de l'islam.",
+        src: "Mousnad Ahmad",
+        nar: "Abu Ayub al-Ansari",
+        cat: 'bulugh',
+        subcat: 'siyam',
+        commentaryFr: `**Commentaire (Sharh) - Fiqh Général :**
+1. **Pilier :** Le jeûne n'est pas une option culturelle mais une obligation sacrée pour tout musulman pubère et doué de raison.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
 
     // ── Chapitre du Pèlerinage (Hajj) ──
     {
@@ -1389,6 +2435,266 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
         subcat: 'hajj',
         commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
 1. **Lieux saints :** La sacralité du voyage pour l'adoration est restreinte à ces trois lieux éminents. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1228,
+        ar: "عَنْ عَائِشَةَ : كَأَنِّي أَنْظُرُ إِلَى وَبِيصِ اَلطِّيبِ فِي مَفْرِقِ رَسُولِ اَللَّهِ ﷺ وَهُوَ مُحْرِمٌ",
+        fr: "« C'est comme si je voyais encore la brillance du parfum dans la raie des cheveux du Prophète ﷺ alors qu'il était en état d'Ihram. »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Parfum pré-Ihram :** Il est recommandé (Sunnah) de se parfumer le corps *avant* de prononcer l'intention d'Ihram. L'odeur qui subsiste après n'est pas un péché, car l'interdiction ne concerne que l'application de parfum *pendant* l'état de sacralisation.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1229,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : اِمْرَأَةٌ رَفَعَتْ إِلَى اَلنَّبِيِّ ﷺ صَبِيًّا, فَقَالَتْ: أَلِهَذَا حَجٌّ? قَالَ: نَعَمْ, وَلَكِ أَجْرٌ",
+        fr: "Une femme souleva un enfant vers le Prophète ﷺ et dit : « Y a-t-il un Hajj pour cet enfant ? » Il répondit : « Oui, et tu en auras la récompense. »",
+        src: "Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Hajj des mineurs :** Le pèlerinage d'un enfant est valide et lui apporte une récompense spirituelle, ainsi qu'à ses parents pour l'effort. Cependant, cela ne le dispense pas d'accomplir son Hajj obligatoire une fois adulte.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1230,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : أَنَّ اِمْرَأَةً مِنْ جُهَيْنَةَ جَاءَتْ إِلَى اَلنَّبِيِّ ﷺ فَقَالَتْ: إِنَّ أُمِّي نَذَرَتْ أَنْ تَحُجَّ فَمَاتَتْ... قَالَ: نَعَمْ, حُجِّي عَنْهَا",
+        fr: "Une femme dit : « Ma mère avait fait le vœu de faire le Hajj mais elle est morte avant. Puis-je le faire pour elle ? » Le Prophète ﷺ répondit : « Oui, fais-le pour elle. Vois-tu, si elle avait une dette, ne la rembourserais-tu pas ? »",
+        src: "Bukhari",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Dette spirituelle :** Le Hajj par procuration (Niyâbah) est permis pour les défunts ou les vivants incapables physiquement (maladie incurable), à condition que le remplaçant ait déjà fait son propre Hajj.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1231,
+        ar: "عَنْ ابْنِ عُمَرَ : أَنَّ رَسُولُ اَللَّهِ ﷺ نَهَى اَلْمُحْرِمَ عَنِ لُبْسِ اَلْقَمِيصِ وَالْعَمَائِمِ وَالسَّرَاوِيلَاتِ",
+        fr: "« Le Prophète ﷺ a interdit au Muhrim (homme) de porter une chemise, un turban ou des pantalons (vêtements cousus épousant les formes). »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **L'habit de l'humilité :** L'interdiction du 'Makhît' (vêtement cousu) s'applique aux habits qui enveloppent des membres précis (chemises, gants). On s'en remet à la simplicité totale devant Allah.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1232,
+        ar: "عَنْ جَابِرٍ : نَهَى عَنْ قَتْلِ اَلصَّيْدِ لِلْمُحْرِمِ",
+        fr: "« La chasse d'animaux terrestres est interdite pour celui qui est en état de sacralisation (Ihram). »",
+        src: "Bukhari & Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Respect de la création :** Interdiction stricte de tuer ou de chasser du gibier terrestre ou d'aider à sa capture durant l'Ihram. Les animaux marins (pêche) restent autorisés.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1233,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : لَا يُعْضَدُ شَجَرُ اَلْحَرَمِ وَلَا يُخْتَلَى خَلَاهُ",
+        fr: "« On ne doit pas couper les arbres du Haram (la Mecque) ni arracher ses herbes fraîches (non plantées par l'homme). »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Dignité du sanctuaire :** La Mecque est un espace de paix absolue où même la flore sauvage est protégée de la destruction par l'homme.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1234,
+        ar: "عَنْ عَائِشَةَ : خَمْسٌ مِنَ اَلدَّوَابِّ كُلُّهُنَّ فَاسِقٌ, يُقْتَلْنَ فِي اَلْ حِلِّ وَالْحَرَمِ: اَلْغُرَابُ, وَالْحِدَأَةُ, وَالْعَقْرَبُ, وَالْفَارَةُ, وَالْكَلْبُ اَلْعَقُورُ",
+        fr: "« Cinq animaux nuisibles peuvent être tués que l'on soit hors du Haram ou dedans : le corbeau, le milan (rapace), le scorpion, la souris et le chien enragé. »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Légitime défense :** Tout animal qui cause un préjudice direct à la sécurité ou à la santé humaine fait exception à l'interdiction de tuer dans le sanctuaire.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1235,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : كَانَ رَسُولُ اَللَّهِ يَسِيرُ بَيْنَ عَرَفَةَ وَمُزْدَلِفَةَ اَلْعَنَقَ, فَإِذَا وَجَدَ فِجْوَةً نَصَّ",
+        fr: "« Le Prophète ﷺ marchait à une allure modérée entre Arafah et Muzdalifah ; s'il trouvait un espace libre, il accélérait. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Tranquillité (Sakinah) :** Recommandation de calme et de sérénité durant les déplacements rituels pour éviter les bousculades et préserver la concentration.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1236,
+        ar: "عَنْ اِبْنِ مَسْعُودٍ : أَنَّ رَسُولَ اَللَّهِ رَمَى اَلْجَمَرَةَ بِمِثْلِ حَصَى اَلْخَذْفِ",
+        fr: "« Le Messager d'Allah ﷺ a lapidé la stèle (Jamarah) avec des petits cailloux (de la taille d'un noyau ou d'une fève). »",
+        src: "Muslim",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Modération dans la taille :** Les cailloux ne doivent pas être des pierres lourdes (risquant de blesser) ni de la poussière. Ils symbolisent le rejet du mal d'Iblis.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1237,
+        ar: "عَنْ جَابِرٍ : نَحَرَ اَلنَّبِيُّ ﷺ اَلْبُدْنَ قِيَامًا مَعْقُولَةً",
+        fr: "Description du sacrifice : « Le Prophète ﷺ a sacrifié les chameaux debout, ayant une patte avant attachée. »",
+        src: "Bukhari",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Nahr (Slaughtering method) :** C'est la Sunnah pour le chameau (Nahr). On l'égorge debout au bas du cou alors qu'il s'appuie sur trois pattes, pour une mort rapide et moins douloureuse.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1238,
+        ar: "عَنْ جَابِرٍ : مَاءُ زَمْزَمَ لِمَا شُرِبَ لَهُ",
+        fr: "« L'eau de Zamzam est efficace pour ce pour quoi elle a été bue (santé, savoir, subsistance). »",
+        src: "Ibn Majah & Ahmad",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Bénédiction (Barakah) :** L'eau du puits béni de Zamzam est une subsistance spirituelle et médicale. Il est recommandé de boire abondamment et de faire des invocations en la buvant.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1239,
+        ar: "عَنْ اِبْنِ عَبَّاسٍ : أَنَّ عُمَرَ بْنَ اَلْخَطَّابِ قَالَ لِلْحَجَرِ: إِنِّي أَعْلَمُ أَنَّكَ حَجَرٌ لَا تَضُرُّ وَلَا تَنْفَعُ...",
+        fr: "Umar s'adressa à la Pierre Noire : « Je sais bien que tu n'es qu'une pierre qui ne peut ni nuire ni être utile. Si je n'avais pas vu le Prophète ﷺ t'embrasser, je ne t'aurais pas embrassé. »",
+        src: "Bukhari & Muslim",
+        nar: "Umar ibn al-Khattab",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Fixation du Tawhid :** Une mise en garde absolue contre la superstition. On embrasse la pierre par pure obéissance au Prophète ﷺ (Ta'abbud) et non pour une vertu magique attribuée à la pierre elle-même.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1240,
+        ar: "عَنْ سَفِينَةَ : كَانَ رَسُولُ اَللَّهِ يَسْعَى بَيْنَ اَلصَّفَا وَالْمَرْوَةِ حَتَّى تَعْلَقَ سُرَّتُهُ",
+        fr: "« Le Prophète ﷺ accélérait (faisait le Harwalah) entre les deux piliers verts lors du Sa'y. »",
+        src: "Bukhari",
+        nar: "Safinah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Harwalah :** Accélérer le pas pour les hommes (non les femmes) uniquement entre les deux repères verts (anciens murs) au fond de la vallée.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1241,
+        ar: "عَنْ ابْنِ مَسْعُودٍ : جَاءَ رَجُلٌ فَقَالَ لِلنَّبِيِّ ﷺ: أُنَادِي بِالتَّلْبِيَةِ? قَالَ: نَعَمْ, مَنْ سَمِعَكَ مِنْ شَجَرٍ أَوْ حَجَرٍ شَهِدَ لَكَ",
+        fr: "Le Prophète ﷺ a encouragé les hommes à élever la voix pour la Talbiyah : « Tout arbre ou toute pierre qui entend la voix témoignera pour lui au Jour de la Résurrection. »",
+        src: "Tirmidhi",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Vibration du désert :** Élever la voix est une Sunnah pour les hommes (les femmes se contenant de chuchoter pour la pudeur), créant une atmosphère d'unité sonore.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1242,
+        ar: "عَنْ عَائِشَةَ : نَهَى اَلنَّبِيُّ سَفَرَ اَلْمَرْأَةِ بِغَيْرِ مَحْرَمٍ",
+        fr: "Reconnaissance que toute femme nécessite d'être accompagnée pour sa sécurité extérieure.",
+        src: "Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Résumé de Fiqh :**
+1. **Compagnie sûre :** Aujourd'hui, certains savants autorisent le Hajj obligatoire au sein d'un groupe de femmes extrêmement sécurisé et organisé par l'État si le Mahram est inexistant.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1243,
+        ar: "عَنْ جَابِرٍ : أَنَّ رَسُولُ اَللَّهِ قَالَ: اَلطَّوَافُ بَيْنَ اَلصَّفَا وَالْمَرْوَةِ لَا يَصِحُّ إِلَّا لِلسَّبْعِ",
+        fr: "« Le trajet ne se valide point au dessous de l'exécution complète des trajets. »",
+        src: "As-Sunan",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Règle absolue :** Omettre un tour invalide complètement le rite.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1244,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ حَجَّ لِلَّهِ فَلَمْ يَرْفُثْ وَلَمْ يَفْسُقْ رَجَعَ كَيَوْمِ وَلَدَتْهُ أُمُّهُ",
+        fr: "« Quiconque fait le Hajj pour Allah sans commettre de péché ni tenir de propos vulgaires revient lavé de ses péchés comme le jour où sa mère l'a enfanté. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Renaissance spirituelle :** Le pardon absolu est la récompense d'une maîtrise totale des émotions et du respect des règles du pèlerinage.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1245,
+        ar: "عَنْ صَفْوانَ بْنِ يَعْلَى : جَاءَ رَجُلٌ وَعَلَيْهِ جُبَّةٌ وَهُوَ مُتَضَمِّخٌ بِالْخَلُوقِ... فَقَالَ اَلنَّبِيُّ: اِغْسِلْ اَلْخَلُوقَ وَانْزِعْ اَلْجُبَّةَ",
+        fr: "Un homme vint avec une cape parfumée. Le Prophète ﷺ lui dit : « Lave le parfum de toi et retire cette cape » avant de formuler son Ihram.",
+        src: "Bukhari & Muslim",
+        nar: "Safwan ibn Ya'la",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Lavage obligatoire :** Si l'huile parfumée reste visiblement sur le tissu du Muhrim après le commencement du rite, elle doit être retirée.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1246,
+        ar: "عَنْ دُبَاعَةَ بِنْتِ اَلزُّبَيْرِ : أَنَّ اَلنَّبِيَّ ﷺ قَالَ لَهَا: اِشْتَرِطِي: مَحِلِّي حَيْثُ حَبَسْتَنِي",
+        fr: "Le Prophète ﷺ conseilla à une compagne malade de conditionner son pèlerinage en disant : « Ma désacralisation se fera là où Tu m'arrêteras. »",
+        src: "Bukhari & Muslim",
+        nar: "Duba'ah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **La condition (Ishtirât) :** Utile pour les malades. S'ils sont bloqués (par la maladie ou un accident), ils peuvent interrompre leur Hajj sans avoir à payer de pénalité (sacrifice).
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1247,
+        ar: "عَنْ جَابِرٍ : أَنَّ اَلنَّبِيَّ ﷺ صَلَّى اَلْمَغْرِبَ وَالْعِشَاءَ بِمُزْدَلِفَةَ بِأَذَانٍ وَاحِدٍ وَإِقَامَتَيْنِ",
+        fr: "« Le Prophète ﷺ a prié le Maghrib et le Icha à Muzdalifah avec un seul Adhan et deux Iqamah. »",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'hajj',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Regroupement retardé :** C'est la Sunnah de ne pas prier le Maghrib sur la route depuis Arafah, mais d'attendre l'arrivée à Muzdalifah pour regrouper les deux prières nocturnes.
 
 *(Source : Fath Dhi Al-Jalal wal-Ikram)*`
     },
@@ -1656,6 +2962,266 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
 
 *(Source : Al-Minhat al-Rabbaniyyah)*`
     },
+    {
+        id: 1248,
+        ar: "عَنْ مَعْمَرِ بْنِ عَبْدِ اَللَّهِ : لَا يَحْتَكِرُ إِلَّا خَاطِئٌ",
+        fr: "« Nul ne monopolise (ne retient les denrées pour faire monter les prix) si ce n'est un pécheur. »",
+        src: "Muslim",
+        nar: "Ma'mar ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Ihtikâr (Monopole) :** Il est interdit d'acheter des produits de première nécessité (nourriture, médicaments) et de les stocker dans le seul but de créer une pénurie artificielle et de s'enrichir sur le dos des gens.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1249,
+        ar: "عَنْ أَنَسٍ : قَالَ اَلنَّاسُ: يَا رَسُولَ اَللَّهِ, غَلَا اَلسِّعْرُ فَسَعِّرْ لَنَا... فَقَالَ اَلنَّبِيُّ: إِنَّ اَللَّهَ هُوَ اَلسَّعِّرُ, اَلْقَابِضُ, اَلْبَاسِطُ, اَلرَّازِقُ",
+        fr: "Les gens dirent : « Ô Messager d'Allah, les prix ont augmenté, fixe-les pour nous. » Il répondit : « C'est Allah qui fixe les prix, qui restreint et qui accorde la subsistance. »",
+        src: "Tirmidhi & Abu Dawud",
+        nar: "Anas ibn Malik",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Libre marché :** L’islam favorise la régulation naturelle par l'offre et la demande. Fixer les prix autoritairement peut léser les vendeurs, sauf en cas de spéculation abusive où l'autorité peut intervenir pour protéger le public.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1250,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : مَنْ أَسْلَفَ فِي شَيْءٍ فَلْيُسْلِفْ فِي كَيْلٍ مَعْلُومٍ, وَوَزْنٍ مَعْلُومٍ, إِلَى أَجَلٍ مَعْلُومٍ",
+        fr: "« Quiconque paie à l'avance (Salam) pour une marchandise, qu'il le fasse pour une mesure connue, un poids connu et un délai connu. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Contrat de Salam :** C'est une exception autorisée au principe de ne pas vendre ce qu'on ne possède pas. On paie aujourd’hui pour une livraison future, à condition que TOUS les détails (quantité, date) soient indiscutables pour éviter le litige.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1251,
+        ar: "عَنْ أَبِي سَعِيدٍ : بَعْ اَلْجَمْعَ بِالدَّرَاهِمِ, ثُمَّ اِبْتَعْ بِالدَّرَاهِمِ جَنِيبًا",
+        fr: "Le Prophète ﷺ dit concernant l'échange de dates de qualités différentes : « Vends les dattes de qualité inférieure contre de l'argent (dirhams), puis avec cet argent, achète les bonnes dattes. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Riba al-Fadl :** Échanger 2 kg de mauvaises dattes contre 1 kg de bonnes dattes est de l'usure (Riba). Il faut passer par l'argent comme étalon neutre pour que la transaction soit licite.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1252,
+        ar: "عَنْ ابْنِ مَسْعُودٍ : كُلُّ قَرْضٍ جَرَّ مَنْفَعَةً فَهُوَ رِبًا",
+        fr: "« Tout prêt (Qard) qui engendre un bénéfice (au profit du créancier) est une forme d'usure (Riba). »",
+        src: "Mawquf / Al-Harith ibn Abi Usamah",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Prêt gratuit :** Le but du prêt en Islam est l'entraide (Ihsan), non le profit. Si le prêteur exige un surplus, même un cadeau ou un service en échange de son argent, c'est du Riba.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1253,
+        ar: "عَنْ أَبِي مَسْعُودٍ : نَهَى عَنْ ثَمَنِ اَلْكَلْبِ, وَمَهْرِ اَلْبَغِيِّ, وَحُلْوَانِ اَلْكَاهِنِ",
+        fr: "« Le Prophète ﷺ a interdit le prix de vente du chien, la dot de la prostituée et le pourboire du devin (fortune teller). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Mas'ud al-Ansari",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Gains impurs :** L'argent issu du vice, de l'imposture ou de la vente d'animaux non autorisés à la possession (sauf chiens de chasse/garde selon certains) est rejeté par la loi islamique.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1254,
+        ar: "عَنْ جَابِرٍ : نَهَى عَنْ بَيْعِ فَضْلِ اَلْمَاءِ",
+        fr: "« Le Messager d'Allah ﷺ a interdit la vente de l'excédent d'eau (qui dépasse les besoins d'un puit/source). »",
+        src: "Muslim",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Ressource commune :** L'eau coulant naturellement ou l'excédent d'un puit ne doit pas être vendu pour asseoir un monopole sur les pâturages environnants. L'entraide est prioritaire.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1255,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : أَعْطُوا اَلْأَجِيرَ أَجْرَهُ قَبْلَ أَنْ يَجِفَّ عَرَقُهُ",
+        fr: "« Donnez à l'employé son salaire avant que sa sueur ne sèche. »",
+        src: "Ibn Majah",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Droit du travail :** Obligation morale et juridique de rémunérer le travailleur sans délai excessif dès que la tâche est accomplie, pour éviter toute injustice (Zulm).
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1256,
+        ar: "عَنْ جَابِرٍ : نَهَى عَنْ عَسْبِ اَلْفَحْلِ",
+        fr: "« Le Prophète ﷺ a interdit de faire payer la saillie (l'accouplement) d'un animal mâle reproducteur. »",
+        src: "Bukhari",
+        nar: "Jabir ibn 'Abdillah",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Gratuité :** Pour encourager la reproduction du bétail, le service du mâle ne doit pas faire l'objet d'un commerce. C'est une aide gratuite entre éleveurs.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1257,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِذَا أُحِيلَ أَحَدُكُمْ عَلَى مَلِيءٍ فَلْيَتْبَعْ",
+        fr: "« Si l'un de vous est renvoyé (pour sa créance) vers une personne riche (capable de payer), qu'il accepte (le transfert de dette). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Hawalah (Transfert de dette) :** Si un débiteur (A) doit de l'argent à (B), et que (A) a une créance sur (C), (A) peut transférer la dette de (B) vers (C). C'est valide et encourage la circulation de l'argent.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1258,
+        ar: "عَنْ سَمُرَةَ : اَلزَّعِيمُ غَارِمٌ",
+        fr: "« Le garant (Kafîl) est responsable (et doit payer si le débiteur fait défaut). »",
+        src: "Tirmidhi & Abu Dawud",
+        nar: "Samurah ibn Jundub",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Daman (Garantie) :** S'engager comme garant pour quelqu'un n'est pas un acte léger. En cas de non-paiement par le débiteur principal, le créancier a le droit de réclamer la somme au garant.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1259,
+        ar: "عَنْ عَائِشَةَ : أَنَّ رَسُولُ اَللَّهِ ﷺ اِشْتَرَى مِنْ يَهُودِيٍّ طَعَامًا إِلَى أَجَلٍ, وَرَهَنَهُ دِرْعَهُ",
+        fr: "« Le Prophète ﷺ a acheté de la nourriture à crédit d’un juif et lui a laissé son armure en gage (Rahn). »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Rahn (Gage) :** Légitimité de déposer une garantie matérielle pour rassurer le créancier. Le hadith montre aussi la permission de commercer avec les non-musulmans dans le cadre légal.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1260,
+        ar: "عَنْ عَمْرِو بْنِ عَوْفٍ : اَلصُّلْحُ جَائِزٌ بَيْنَ اَلْمُسْلِمِينَ, إِلَّا صُلْحًا حَرَّمَ حَلَالًا, أَوْ أَحَلَّ حَرَامًا",
+        fr: "« La réconciliation (Sulh) est permise entre les Musulmans, sauf une réconciliation qui interdit le licite ou autorise l'illicite. »",
+        src: "Tirmidhi",
+        nar: "Amr ibn 'Awf",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+2. **Arbitrage :** Encouragement à régler les litiges commerciaux à l'amiable en trouvant un terrain d'entente équitable sans transgresser la loi divine.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1261,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ أَدْرَكَ مَالَهُ بِعَيْنِهِ عِنْدَ رَجُلٍ قَدْ أَفْلَسَ فَهُوَ أَحَقُّ بِهِ",
+        fr: "« Celui qui retrouve sa marchandise exacte chez un homme tombé en faillite est le plus en droit de la récupérer (avant les autres créanciers). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Faillite (Iflas) :** Si l'objet vendu n'a pas été modifié ou consommé, son propriétaire initial peut le reprendre directement plutôt que d'attendre la liquidation des dettes.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1262,
+        ar: "عَنْ حَكِيمِ بْنِ حِزَامٍ : نَهَى اَلنَّبِيُّ ﷺ أَنْ أَبِيعَ مَا لَيْسَ عِنْدِي",
+        fr: "« Le Prophète ﷺ m'a interdit de vendre ce que je ne possède pas (encore). »",
+        src: "Tirmidhi & Nasa'i",
+        nar: "Hakim ibn Hizam",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Règle générale :** Interdiction de vendre un objet déterminé (comme une voiture spécifique) avant de l'avoir acheté et d'en être propriétaire, pour éviter de d'engager sur de l'incertain.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1263,
+        ar: "عَنْ ابْنِ عُمَرَ : أَنَّ فَرَسًا قَدْ اِرْتَبَطَتْ... فَنَهَى عَنْ كِرَاءِ اَلْأَرْضِ",
+        fr: "Permission de louer des terres agricoles contre de l'or ou de l'argent (prix fixe), contrairement aux récoltes aléatoires.",
+        src: "Muslim",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Location :** Louer un champ pour un montant d'argent connu est valide car le risque est équilibré.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1264,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِنَّ اَللَّهَ إِذَا حَرَّمَ شَيْئًا حَرَّمَ ثَمَنَهُ",
+        fr: "« Quand Allah interdit une chose, Il en interdit également le prix de vente. »",
+        src: "Daraqutni & Abu Dawud",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Cohérence :** Tout ce qui est nocif ou haram en soi (drogues, idoles) ne peut pas générer de commerce licite.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1265,
+        ar: "عَنْ ابْنِ مَسْعُودٍ : قَاتَلَ اَللَّهُ اَلْيَهُودَ, حَرَّمَ اَللَّهُ عَلَيْهِمْ اَلشُّحُومَ فَبَاعُوهَا وَأَكَلُوا أَثْمَانَهَا",
+        fr: "« Qu'Allah combatte les fraudeurs ! Allah leur avait interdit les graisses (de bêtes), ils les ont fait fondre, les ont vendues et ont consommé l'argent. »",
+        src: "Bukhari & Muslim",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Contournement (Hiyal) :** Il est interdit d'inventer des ruses juridiques pour rendre licite ce qu'Allah a interdit de vendre.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1266,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : مَنِ اِبْتَاعَ طَعَامًا فَلَا يَبِعْهُ حَتَّى يَكْتَالَهُ",
+        fr: "« Celui qui achète de la nourriture ne doit pas la vendre avant de l'avoir mesurée/pesée pour lui-même. »",
+        src: "Bukhari",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Vérification :** Le transfert de propriété doit être physique et mesurable avant d'entrer dans une nouvelle vente.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1267,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْخَدِيعَةُ فِي اَلنَّارِ",
+        fr: "« La tromperie conduit en Enfer. »",
+        src: "Bukhari (Mu'allaq)",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'buyu',
+        commentaryFr: `**Commentaire (Sharh) - Récapitulatif :**
+1. **Éthique suprême :** Le commerce en islam est une affaire de confiance. La triche annule la bénédiction ici-bas et mène au châtiment dans l'au-delà.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
 
     // ── Chapitre du Bon Comportement (Jâmi') ──
     {
@@ -1918,6 +3484,266 @@ Ce hadith est surnommé le "Hadith de celui qui prude mal" (Al-Musî'u fî Salâ
         subcat: 'jami',
         commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
 1. **Sunnah :** Commencer par la droite pour les choses honorables est une marque de respect et une tradition que le musulman doit s'efforcer de suivre. 
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1268,
+        ar: "عَنْ أَبِي ذَرٍّ : تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ",
+        fr: "« Ton sourire à l'adresse de ton frère est une aumône (Sadaqah). »",
+        src: "Tirmidhi",
+        nar: "Abu Dharr",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Aumône morale :** L'islam ne restreint pas la charité au don d'argent. Un visage avenant et rassurant envers les autres est une adoration qui propage la paix.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1269,
+        ar: "عَنْ عِمْرَانَ بْنِ حُصَيْنٍ : اَلْحَيَاءُ لَا يَأْتِي إِلَّا بِخَيْرٍ",
+        fr: "« La pudeur (Haya') n'apporte que du bien. »",
+        src: "Bukhari & Muslim",
+        nar: "Imran ibn Husayn",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Pudeur :** C'est un frein intérieur contre le péché et la vulgarité. Elle pousse à l'excellence comportementale vis-à-vis d'Allah et des gens.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1270,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : أَنَّ رَجُلًا قَالَ: أَوْصِنِي. قَالَ: لَا تَغْضَبْ. فَرَدَّدَ مِرَارًا, قَالَ: لَا تَغْضَبْ",
+        fr: "Un homme dit : « Conseille-moi. » Le Prophète ﷺ dit : « Ne te mets pas en colère. » L’homme répéta sa demande plusieurs fois, et il répondit à chaque fois : « Ne te mets pas en colère. »",
+        src: "Bukhari",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Contrôle :** La colère est la clé de tous les maux. Le conseil répété montre que la maîtrise de ses émotions est la base de la sagesse et de la préservation sociale.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1271,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِيَّاكُمْ وَالظَّنَّ, فَإِنَّ اَلظَّنَّ أَكْذَبُ اَلْحَدِيثِ",
+        fr: "« Méfiez-vous de la suspicion (mauvais soupçons), car la suspicion est la parole la plus mensongère. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Fraternité :** Il faut accorder le bénéfice du doute à son frère musulman et ne pas interpréter ses actes de la pire des manières sans preuve.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1272,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ اَلْآخِرِ فَلْيُكْرِمْ جَارَهُ",
+        fr: "« Que celui qui croit en Allah et au Jour Dernier soit bon envers son voisin. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Voisinage :** Les droits du voisin sont sacrés en islam, qu'il soit proche ou lointain, musulman ou non. Le respect de sa tranquillité est une branch de la foi.
+
+*(Source : Sharh Riyad al-Salihin)*`
+    },
+    {
+        id: 1273,
+        ar: "عَنْ عَائِشَةَ : مَا كَانَ اَلرِّفْقُ فِي شَيْءٍ إِلَّا زَانَهُ, وَلَا نُزِعَ مِنْ شَيْءٍ إِلَّا شَانَهُ",
+        fr: "« La douceur n'est pas présente dans une chose sans qu'elle ne l'embellisse, et elle n'est pas retirée d'une chose sans qu'elle ne l'enlaidisse. »",
+        src: "Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Gentillesse (Rifq) :** Allah est Doux et aime la douceur. Elle ouvre les cœurs là où la dureté et la violence ne récoltent que la haine.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1274,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : سُئِلَ نَبِيُّنَا: أَيُّ اَلْأَعْمَالِ أَفْضَلُ? قَالَ: إِيمَانٌ بِاللَّهِ وَرَسُولِهِ... ثُمَّ بِرُّ اَلْوَالِدَيْنِ",
+        fr: "Questionné sur la meilleure œuvre, le Prophète ﷺ mentionna la foi, puis la bonté envers les parents (Birr al-Walidayn).",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Piété filiale :** Le droit des parents est couplé au droit d'Allah dans le Coran. Leur obéir (dans le bien) et les honorer est une priorité absolue.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1275,
+        ar: "عَنْ ابْنِ مَسْعُودٍ : لَا يَدْخُلُ اَلْجَنَّةَ مَنْ كَانَ فِي قَلْبِهِ مِثْقَالُ ذَرَّةٍ مِنْ كِبْرٍ",
+        fr: "« N'entrera pas au Paradis celui qui a dans le cœur le poids d'un atome d'orgueil (Kibr). »",
+        src: "Muslim",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Orgueil :** Défini par le Prophète comme : "rejeter la vérité et mépriser les gens". C’est le péché qui a causé la chute d’Iblis. Il exige une humilité constante.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1276,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : اَلْإِيمَانُ بِضْعٌ وَسَبْعُونَ شُعْبَةً... أَعْلَاهَا قَوْلُ لَا إِلَهَ إِلَّا اَللَّهُ, وَأَدْنَاهَا إِمَاطَةُ اَلْأَذَى عَنِ اَلطَّرِيقِ",
+        fr: "« La foi comporte plus de 70 branches... La plus haute est l'attestation qu'il n'y a d'autre divinité qu'Allah, et la plus basse est le fait d'écarter un obstacle de la route. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Action :** La foi n'est pas une simple croyance. Elle s'exprime par le culte (Tawhid) mais aussi par le civisme et la bienfaisance quotidienne.
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1277,
+        ar: "عَنْ عَائِشَةَ : خَمْسٌ مِنَ اَلْفِطْرَةِ: اَلْقَصُّ مِنَ اَلشَّارِبِ, وَتَقْلِيمُ اَلْأَظْفَارِ, وَحَلْقُ اَلْعَانَةِ...",
+        fr: "« Cinq pratiques font partie de la saine nature (Fitrah) : la circoncision, le rasage des poils pubiens, la taille des moustaches, la coupe des ongles et l'épilation des aisselles. »",
+        src: "Bukhari & Muslim",
+        nar: "Aisha",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Propreté innée :** L'islam est la religion de la propreté et de la dignité physique. Ces soins réguliers maintiennent l'être humain dans sa noblesse originelle.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1278,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : مَنْ لَايَرْحَمْ لَا يُرْحَمْ",
+        fr: "« Celui qui ne fait pas miséricorde (aux autres) ne recevra pas de miséricorde (de la part d'Allah). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Rahmah :** La clé pour obtenir le pardon d'Allah est d'être clément et empathique envers les créatures (humains et animaux).
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1279,
+        ar: "عَنْ ابْنِ عُمَرَ : كُلُّ بَنِي آدَمَ خَطَّاءٌ, وَخَيْرُ اَلْخَطَّائِينَ اَلتَّوَّابُونَ",
+        fr: "« Tous les fils d'Adam commettent des péchés, et les meilleurs des pécheurs sont ceux qui se repentent (Tawbah). »",
+        src: "Tirmidhi & Ibn Majah",
+        nar: "Ibn 'Umar",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Espoir :** L'humain est imparfait, mais la porte du repentir est toujours ouverte. L'important n'est pas de ne jamais tomber, mais de se relever immédiatement vers Allah.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1280,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : إِذَا كَانَ ثَلَاثَةٌ فَلَا يَتَنَاجَى اِثْنَانِ دُونَ اَلْآخَرِ",
+        fr: "« Si vous êtes trois, que deux ne s'entretiennent pas à voix basse à l'exclusion du troisième (car cela l'attriste). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Savoir-vivre :** L'islam veille à la sensibilité des cœurs. Exclure quelqu'un d'une conversation en sa présence crée de la suspicion et de la tristesse, ce qui est contraire à la fraternité.
+
+*(Source : Sharh Riyad al-Salihin)*`
+    },
+    {
+        id: 1281,
+        ar: "عَنْ ابْنِ عَبَّاسٍ : كُلُوا, وَاشْرَبُوا, وَتَصَدَّقُوا... فِي غَيْرِ إِسْرَافٍ وَلَا مَخِيلَةٍ",
+        fr: "« Mangez, buvez, donnez l'aumône et habillez-vous, sans gaspillage (Israf) ni orgueil. »",
+        src: "Bukhari (Mu'allaq)",
+        nar: "Ibn 'Abbas",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Juste milieu :** L'islam n'interdit pas de profiter des bonnes choses de la vie, mais impose deux limites : ne pas jeter l'argent par les fenêtres et ne pas le faire pour écraser les autres du regard.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1282,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : لَا تَحَاسَدُوا, وَلَا تَبَاغَضُوا, وَكُونُوا عِبَادَ اَللَّهِ إِخْوَانًا",
+        fr: "« Ne soyez pas jaloux les uns des autres, ne vous détestez pas, et soyez des serviteurs d'Allah frères. »",
+        src: "Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Unité :** La jalousie (Hasad) est une maladie du cœur qui ronge les bonnes actions. Elle conteste le partage des richesses fait par Allah.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1283,
+        ar: "عَنْ النُّعْمَانِ بْنِ بَشِيرٍ : أَلَا وَإِنَّ فِي اَلْجَسَدِ مُضْغَةً... إِذَا صَلَحَتْ صَلَحَ اَلْجَسَدُ كُلُّهُ: وَهِيَ اَلْقَلْبُ",
+        fr: "« N'est-ce pas qu'il y a dans le corps un morceau de chair ? S'il est bon, tout le corps est bon ; s'il est corrompu, tout le corps est corrompu. C’est le cœur. »",
+        src: "Bukhari & Muslim",
+        nar: "An-Nu'man ibn Bashir",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Intériorité :** Toutes les actions extérieures dépendent de la santé spirituelle du cœur (sincérité, amour, crainte d'Allah). Soigner son cœur est le grand combat.
+
+*(Source : Tas-hil al-Ilmam)*`
+    },
+    {
+        id: 1284,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : لَيْسَ اَلْغِنَى عَنْ كَثْرَةِ اَلْعَرَضِ, وَلَكِنَّ اَلْغِنَى غِنَى اَلنَّفْسِ",
+        fr: "« La richesse ne réside pas dans l'abondance des biens, mais la vraie richesse est celle de l'âme (ou du cœur). »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Richesse :** Celui qui est riche matériellement mais insatiable est pauvre psychologiquement. Celui qui est satisfait de ce qu'il a vit dans l'opulence mentale.
+
+*(Source : Fath Dhi Al-Jalal wal-Ikram)*`
+    },
+    {
+        id: 1285,
+        ar: "عَنْ ابْنِ مَسْعُودٍ : مَنْ سَتَرَ مُسْلِمًا سَتَرَهُ اَللَّهُ فِي اَلدُّنْيَا وَالْآخِرَةِ",
+        fr: "« Celui qui cache les défauts d’un musulman, Allah cachera ses défauts dans ce monde et dans l'autre. »",
+        src: "Muslim",
+        nar: "Ibn Mas'ud",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Cheikh Al-Fawzân :**
+1. **Préservation :** Ne pas exposer les péchés d'autrui sur la place publique s'il ne s'agit pas d'un danger public. Favoriser le repentir discret.
+
+*(Source : Al-Minhat al-Rabbaniyyah)*`
+    },
+    {
+        id: 1286,
+        ar: "عَنْ أَبِي سَعِيدٍ : إِيَّاكُمْ وَالْجُلُوسَ فِي اَلطُّرُقَاتِ... أَعْطُوا اَلطَّرِيقَ حَقَّهُ",
+        fr: "« Évitez de vous asseoir sur les chemins... Donnez à la route son droit : baisser le regard, ne pas nuire, répondre au salut et ordonner le bien. »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Sa'id al-Khudri",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Ibn 'Uthaymîn :**
+1. **Voie publique :** Recommandations éthiques pour l'occupation de l'espace public afin de garantir la sécurité et le respect de tous les passants (notamment les femmes).
+
+*(Source : Sharh Bulugh al-Maram)*`
+    },
+    {
+        id: 1287,
+        ar: "عَنْ أَبِي هُرَيْرَةَ : سَبْعَةٌ يُظِلُّهُمُ اَللَّهُ فِي ظِلِّهِ... إِمَامٌ عَادِلٌ, وَشَابٌّ نَشَأَ فِي عِبَادَةِ اَللَّهِ",
+        fr: "« Sept catégories de personnes seront ombragées par Allah le Jour (de la Résurrection)... un dirigeant juste, un jeune qui a grandi dans l'adoration d'Allah... »",
+        src: "Bukhari & Muslim",
+        nar: "Abu Hurayra",
+        cat: 'bulugh',
+        subcat: 'jami',
+        commentaryFr: `**Commentaire (Sharh) - Récapitulatif :**
+1. **Élite spirituelle :** Ce hadith résume les sommets de la vertu : la justice, la chasteté, la dévotion et l'amour désintéressé pour la Face d'Allah.
 
 *(Source : Fath Dhi Al-Jalal wal-Ikram)*`
     },
