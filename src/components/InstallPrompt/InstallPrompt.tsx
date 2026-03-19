@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Download, Monitor, Smartphone } from 'lucide-react';
+import { X, Download, Monitor } from 'lucide-react';
 import './InstallPrompt.css';
 
-type Platform = 'ios' | 'android' | 'pc';
+type Platform = 'ios' | 'pc';
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;
@@ -12,11 +12,14 @@ interface BeforeInstallPromptEvent extends Event {
 function detectPlatform(): Platform {
     const ua = navigator.userAgent;
     if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
-    if (/Android/.test(ua)) return 'android';
+    // Removed Android detect explicitly to avoid App Store rejection (Guideline 2.3.10)
     return 'pc';
 }
 
 function isStandalone(): boolean {
+    const isCapacitor = typeof window !== 'undefined' && (window as any).Capacitor?.isNative;
+    if (isCapacitor) return true; // Never show Install Prompt inside a Capacitor Native App
+
     return window.matchMedia('(display-mode: standalone)').matches
         || (navigator as any).standalone === true;
 }
@@ -24,7 +27,7 @@ function isStandalone(): boolean {
 export function InstallPrompt() {
     const [showModal, setShowModal] = useState(false);
     const [showBanner, setShowBanner] = useState(false);
-    const [platform, setPlatform] = useState<Platform>('android');
+    const [platform, setPlatform] = useState<Platform>('pc');
     const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
 
     useEffect(() => {
@@ -127,16 +130,10 @@ export function InstallPrompt() {
                                 <span>🍎</span> iOS
                             </button>
                             <button
-                                className={`install-tab ${platform === 'android' ? 'active' : ''}`}
-                                onClick={() => setPlatform('android')}
-                            >
-                                <Smartphone size={16} /> Android
-                            </button>
-                            <button
                                 className={`install-tab ${platform === 'pc' ? 'active' : ''}`}
                                 onClick={() => setPlatform('pc')}
                             >
-                                <Monitor size={16} /> PC
+                                <Monitor size={16} /> Web / PC
                             </button>
                         </div>
 
@@ -158,33 +155,11 @@ export function InstallPrompt() {
                                 </>
                             )}
 
-                            {platform === 'android' && (
-                                <>
-                                    <div className="install-platform-label">
-                                        <span className="install-platform-icon">🤖</span>
-                                        Android
-                                    </div>
-                                    <ol className="install-steps">
-                                        <li>1. Appuyez sur le menu <strong>⋮</strong> (3 points)</li>
-                                        <li>2. Appuyez sur <strong>"Installer l'application"</strong> ou <strong>"Ajouter à l'écran d'accueil"</strong></li>
-                                        <li>3. Confirmez l'installation</li>
-                                    </ol>
-
-                                    {/* Native install button for Chrome */}
-                                    {deferredPrompt.current && (
-                                        <button className="install-native-btn" onClick={handleNativeInstall}>
-                                            <Download size={20} />
-                                            Installer maintenant
-                                        </button>
-                                    )}
-                                </>
-                            )}
-
                             {platform === 'pc' && (
                                 <>
                                     <div className="install-platform-label">
                                         <span className="install-platform-icon">💻</span>
-                                        PC / Mac
+                                        Navigateur (Web / PC)
                                     </div>
                                     <ol className="install-steps">
                                         <li>1. Cliquez sur l'icône <strong>⊕</strong> dans la barre d'adresse</li>
