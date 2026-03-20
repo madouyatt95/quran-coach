@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote, Share2 } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote, Share2, MapPin } from 'lucide-react';
 import { prophets } from '../data/prophets';
 import type { Prophet } from '../data/prophets';
 import { companions } from '../data/companions';
@@ -194,6 +194,12 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                     <button className="prophet-modal__close-btn" onClick={onClose} style={{ flex: 1 }}>
                         {t('common.close', 'Fermer')}
                     </button>
+                    {prophet.location && (
+                        <button className="prophet-modal__close-btn" onClick={() => { onClose(); navigate(`/atlas?prophet=${prophet.id}`); }} style={{ flex: 1, background: 'rgba(201,168,76,0.1)', color: 'var(--color-accent)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                            <MapPin size={18} />
+                            Carte
+                        </button>
+                    )}
                     <button className="prophet-modal__close-btn" onClick={handleShare} style={{ flex: 1, background: 'var(--color-primary)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                         <Share2 size={18} />
                         {t('common.share', 'Partager')}
@@ -377,9 +383,29 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
 
 export function ProphetsPage() {
     const { t } = useTranslation();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [search, setSearch] = useState('');
     const [selectedProphet, setSelectedProphet] = useState<Prophet | null>(null);
     const [selectedCompanion, setSelectedCompanion] = useState<Companion | null>(null);
+
+    useEffect(() => {
+        const prophetId = searchParams.get('prophet');
+        if (prophetId) {
+            const prophet = prophets.find(p => p.id === prophetId);
+            if (prophet && (!selectedProphet || selectedProphet.id !== prophetId)) {
+                setSelectedProphet(prophet);
+            }
+        }
+    }, [searchParams]);
+
+    const handleCloseModal = () => {
+        setSelectedProphet(null);
+        setSelectedCompanion(null);
+        if (searchParams.has('prophet')) {
+            searchParams.delete('prophet');
+            setSearchParams(searchParams, { replace: true });
+        }
+    };
     const [tab, setTab] = useState<TabMode>('prophets');
     const [viewMode, setViewMode] = useState<'grid' | 'graph'>('grid');
     const [viewModeCompanions, setViewModeCompanions] = useState<'grid' | 'graph'>('grid');
@@ -511,7 +537,7 @@ export function ProphetsPage() {
                                 <motion.div
                                     key={prophet.id}
                                     className="prophet-card"
-                                    onClick={() => setSelectedProphet(prophet)}
+                                    onClick={() => { setSelectedProphet(prophet); setSearchParams({ prophet: prophet.id }); }}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.03, duration: 0.3 }}
@@ -593,13 +619,13 @@ export function ProphetsPage() {
                 {selectedProphet && (
                     <ProphetDetail
                         prophet={selectedProphet}
-                        onClose={() => setSelectedProphet(null)}
+                        onClose={handleCloseModal}
                     />
                 )}
                 {selectedCompanion && (
                     <CompanionDetail
                         companion={selectedCompanion}
-                        onClose={() => setSelectedCompanion(null)}
+                        onClose={handleCloseModal}
                     />
                 )}
             </AnimatePresence>

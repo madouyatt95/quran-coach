@@ -3,7 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { ArrowLeft, MapPin } from 'lucide-react';
-import { stories, STORY_CATEGORIES, type StoryCategory, type Story } from '../data/storiesData';
+import { stories, STORY_CATEGORIES, type Story } from '../data/storiesData';
+import { prophets } from '../data/prophets';
 import 'leaflet/dist/leaflet.css';
 import './AtlasPage.css';
 
@@ -42,69 +43,126 @@ const HUPPE_ROUTE: [number, number][] = [
   [15.42, 45.35],  // Ma'rib
 ];
 
+type AtlasItem = {
+  id: string;
+  type: 'story' | 'prophet';
+  title: string;
+  titleAr: string;
+  summary: string;
+  icon: string;
+  color: string;
+  category: string;
+  location: NonNullable<Story['location']>;
+  originalId: string;
+  categoryLabel: string;
+  categoryIcon: string;
+};
+
 export function AtlasPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState<StoryCategory | 'all'>('all');
-  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [selectedItem, setSelectedItem] = useState<AtlasItem | null>(null);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
 
-  // Get stories with locations
-  const storiesWithLocation = useMemo(() =>
-    stories.filter(s => s.location),
-    []
-  );
+  const atlasItems = useMemo<AtlasItem[]>(() => {
+    const items: AtlasItem[] = [];
+    
+    stories.forEach(s => {
+      if (s.location) {
+        items.push({
+          id: `story-${s.id}`,
+          type: 'story',
+          title: s.title,
+          titleAr: s.titleAr,
+          summary: s.summary,
+          icon: s.icon,
+          color: STORY_CATEGORIES[s.category].color,
+          category: s.category,
+          location: s.location,
+          originalId: s.id,
+          categoryLabel: STORY_CATEGORIES[s.category].label,
+          categoryIcon: STORY_CATEGORIES[s.category].icon,
+        });
+      }
+    });
 
-  // Filter stories
-  const filteredStories = useMemo(() =>
+    prophets.forEach(p => {
+      if (p.location) {
+        items.push({
+          id: `prophet-${p.id}`,
+          type: 'prophet',
+          title: p.nameFr,
+          titleAr: p.nameAr,
+          summary: p.summary,
+          icon: p.icon,
+          color: p.color,
+          category: 'prophetes',
+          location: p.location,
+          originalId: p.id,
+          categoryLabel: 'Prophètes',
+          categoryIcon: '📜',
+        });
+      }
+    });
+
+    return items;
+  }, []);
+
+  const filteredItems = useMemo(() =>
     activeFilter === 'all'
-      ? storiesWithLocation
-      : storiesWithLocation.filter(s => s.category === activeFilter),
-    [activeFilter, storiesWithLocation]
+      ? atlasItems
+      : atlasItems.filter(i => i.category === activeFilter),
+    [activeFilter, atlasItems]
   );
 
-  // Handle story query param (from StoriesPage "Voir sur la carte")
   useEffect(() => {
     const storyId = searchParams.get('story');
+    const prophetId = searchParams.get('prophet');
+    let item: AtlasItem | undefined;
+
     if (storyId) {
-      const story = stories.find(s => s.id === storyId);
-      if (story?.location) {
-        setSelectedStory(story);
-        setFlyTo({ lat: story.location.lat, lng: story.location.lng, zoom: 10 });
-        // Open popup after fly animation
-        setTimeout(() => {
-          markerRefs.current[storyId]?.openPopup();
-        }, 1600);
-      }
+      item = atlasItems.find(i => i.type === 'story' && i.originalId === storyId);
+    } else if (prophetId) {
+      item = atlasItems.find(i => i.type === 'prophet' && i.originalId === prophetId);
     }
-  }, [searchParams]);
 
-  // Count per category
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: storiesWithLocation.length };
-    storiesWithLocation.forEach(s => {
-      counts[s.category] = (counts[s.category] || 0) + 1;
-    });
-    return counts;
-  }, [storiesWithLocation]);
-
-  const handleMarkerClick = (story: Story) => {
-    setSelectedStory(story);
-  };
-
-  const handleListItemClick = (story: Story) => {
-    if (story.location) {
-      setSelectedStory(story);
-      setFlyTo({ lat: story.location.lat, lng: story.location.lng, zoom: 10 });
+    if (item) {
+      setSelectedItem(item);
+      setFlyTo({ lat: item.location.lat, lng: item.location.lng, zoom: 10 });
       setTimeout(() => {
-        markerRefs.current[story.id]?.openPopup();
+        markerRefs.current[item!.id]?.openPopup();
       }, 1600);
     }
+  }, [searchParams, atlasItems]);
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: atlasItems.length };
+    atlasItems.forEach(i => {
+      counts[i.category] = (counts[i.category] || 0) + 1;
+    });
+    return counts;
+  }, [atlasItems]);
+
+  const handleMarkerClick = (item: AtlasItem) => {
+    setSelectedItem(item);
   };
 
-  const handleReadStory = (story: Story) => {
-    navigate(`/stories?story=${story.id}`);
+  const handleListItemClick = (item: AtlasItem) => {
+    setSelectedItem(item);
+    setFlyTo({ lat: item.location.lat, lng: item.location.lng, zoom: 10 });
+    setTimeout(() => {
+      markerRefs.current[item.id]?.openPopup();
+    }, 1600);
+  };
+
+  const handleReadStory = (item: AtlasItem) => {
+    if (item.type === 'story') {
+      navigate(`/stories?story=${item.originalId}`);
+    } else {
+      navigate(`/prophets?prophet=${item.originalId}`);
+    }
   };
 
   return (
@@ -124,11 +182,11 @@ export function AtlasPage() {
       {/* Stats */}
       <div className="atlas-stats">
         <div className="atlas-stat">
-          <div className="stat-value">{storiesWithLocation.length}</div>
+          <div className="stat-value">{atlasItems.length}</div>
           <div className="stat-label">Lieux</div>
         </div>
         <div className="atlas-stat">
-          <div className="stat-value">{Object.keys(STORY_CATEGORIES).length}</div>
+          <div className="stat-value">{Object.keys(STORY_CATEGORIES).length + 1}</div>
           <div className="stat-label">Catégories</div>
         </div>
         <div className="atlas-stat">
@@ -145,11 +203,18 @@ export function AtlasPage() {
         >
           🌍 Tous <span className="count">{categoryCounts.all}</span>
         </button>
+        <button
+          className={`atlas-filter-btn ${activeFilter === 'prophetes' ? 'active' : ''}`}
+          onClick={() => setActiveFilter('prophetes')}
+          style={activeFilter === 'prophetes' ? {} : { borderColor: '#c9a84c66' }}
+        >
+          📜 Prophètes <span className="count">{categoryCounts['prophetes'] || 0}</span>
+        </button>
         {Object.entries(STORY_CATEGORIES).map(([key, cat]) => (
           <button
             key={key}
             className={`atlas-filter-btn ${activeFilter === key ? 'active' : ''}`}
-            onClick={() => setActiveFilter(key as StoryCategory)}
+            onClick={() => setActiveFilter(key)}
             style={activeFilter === key ? {} : { borderColor: cat.color + '66' }}
           >
             {cat.icon} {cat.label} <span className="count">{categoryCounts[key] || 0}</span>
@@ -190,63 +255,61 @@ export function AtlasPage() {
             />
           )}
 
-          {/* Story markers */}
-          {filteredStories.map(story => (
-            story.location && (
-              <Marker
-                key={story.id}
-                position={[story.location.lat, story.location.lng]}
-                icon={createEmojiIcon(
-                  story.icon,
-                  STORY_CATEGORIES[story.category].color,
-                  selectedStory?.id === story.id
-                )}
-                ref={(ref) => { if (ref) markerRefs.current[story.id] = ref; }}
-                eventHandlers={{
-                  click: () => handleMarkerClick(story),
-                }}
-              >
-                <Popup className="atlas-popup" maxWidth={280}>
-                  <div className="popup-content">
-                    <div className="popup-header">
-                      <span className="popup-emoji">{story.icon}</span>
-                      <div className="popup-titles">
-                        <div className="popup-title">{story.title}</div>
-                        <div className="popup-title-ar">{story.titleAr}</div>
-                      </div>
+          {/* Story and Prophet markers */}
+          {filteredItems.map(item => (
+            <Marker
+              key={item.id}
+              position={[item.location.lat, item.location.lng]}
+              icon={createEmojiIcon(
+                item.icon,
+                item.color,
+                selectedItem?.id === item.id
+              )}
+              ref={(ref) => { if (ref) markerRefs.current[item.id] = ref; }}
+              eventHandlers={{
+                click: () => handleMarkerClick(item),
+              }}
+            >
+              <Popup className="atlas-popup" maxWidth={280}>
+                <div className="popup-content">
+                  <div className="popup-header">
+                    <span className="popup-emoji">{item.icon}</span>
+                    <div className="popup-titles">
+                      <div className="popup-title">{item.title}</div>
+                      <div className="popup-title-ar">{item.titleAr}</div>
                     </div>
-                    <span className="popup-category" style={{ background: STORY_CATEGORIES[story.category].color }}>
-                      {STORY_CATEGORIES[story.category].icon} {STORY_CATEGORIES[story.category].label}
-                    </span>
-                    <div className="popup-location">
-                      <MapPin size={12} /> {story.location.name} — {story.location.nameAr}
-                    </div>
-                    <div className="popup-summary">{story.summary}</div>
-                    <button className="popup-btn" onClick={() => handleReadStory(story)}>
-                      📖 Lire le récit
-                    </button>
                   </div>
-                </Popup>
-              </Marker>
-            )
+                  <span className="popup-category" style={{ background: item.color }}>
+                    {item.categoryIcon} {item.categoryLabel}
+                  </span>
+                  <div className="popup-location">
+                    <MapPin size={12} /> {item.location.name} — {item.location.nameAr}
+                  </div>
+                  <div className="popup-summary">{item.summary}</div>
+                  <button className="popup-btn" onClick={() => handleReadStory(item)}>
+                    {item.type === 'story' ? '📖 Lire le récit' : '📜 Voir la biographie'}
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
           ))}
         </MapContainer>
       </div>
 
       {/* Location list */}
       <div className="atlas-list">
-        <h3>📍 {filteredStories.length} lieux sur la carte</h3>
+        <h3>📍 {filteredItems.length} lieux sur la carte</h3>
         <div className="atlas-list-grid">
-          {filteredStories.map(story => (
+          {filteredItems.map(item => (
             <div
-              key={story.id}
-              className={`atlas-list-item ${selectedStory?.id === story.id ? 'active' : ''}`}
-              onClick={() => handleListItemClick(story)}
+              key={item.id}
+              className={`atlas-list-item ${selectedItem?.id === item.id ? 'active' : ''}`}
+              onClick={() => handleListItemClick(item)}
             >
-              <span className="item-emoji">{story.icon}</span>
+              <span className="item-emoji">{item.icon}</span>
               <div className="item-info">
-                <div className="item-title">{story.title}</div>
-                <div className="item-location">{story.location?.name}</div>
+                <div className="item-title">{item.title}</div>
+                <div className="item-location">{item.location.name}</div>
               </div>
             </div>
           ))}
