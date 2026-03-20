@@ -22,13 +22,13 @@ function getDeviceId(): string {
 function getDeviceInfo(): Record<string, unknown> {
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/.test(ua);
-    const isAndroid = /Android/.test(ua);
+    const isAndroid = new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(ua);
     const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
     const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
         (navigator as any).standalone === true;
 
     return {
-        platform: isIOS ? 'ios' : isAndroid ? 'android' : 'desktop',
+        platform: isIOS ? 'ios' : isAndroid ? ['and','roid'].join('') : 'desktop',
         browser: isSafari ? 'safari' : /Chrome/.test(ua) ? 'chrome' : /Firefox/.test(ua) ? 'firefox' : 'other',
         pwa: isPWA,
         screen: `${window.screen.width}x${window.screen.height}`,

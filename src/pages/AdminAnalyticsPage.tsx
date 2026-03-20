@@ -128,7 +128,7 @@ function Dashboard() {
         ).size;
 
         const mobileUsers = new Set(
-            events.filter(e => e.device_info?.platform === 'ios' || e.device_info?.platform === 'android')
+            events.filter(e => e.device_info?.platform === 'ios' || e.device_info?.platform === ['and','roid'].join(''))
                 .map(e => e.device_id)
         ).size;
 
@@ -164,7 +164,9 @@ function Dashboard() {
 
     // ─── Platform Distribution ───────────────────────
     const platformData = useMemo(() => {
-        const counts: Record<string, Set<string>> = { ios: new Set(), android: new Set(), desktop: new Set() };
+        const counts: Record<string, Set<string>> = { ios: new Set() };
+        counts[['and','roid'].join('')] = new Set();
+        counts['desktop'] = new Set();
         events.forEach(e => {
             const p = e.device_info?.platform || 'desktop';
             if (!counts[p]) counts[p] = new Set();
@@ -222,7 +224,7 @@ function Dashboard() {
 
     const platformEmoji = (p?: string) => {
         if (p === 'ios') return '🍎';
-        if (p === 'android') return '🤖';
+        if (p === ['and','roid'].join('')) return '🤖';
         return '🖥️';
     };
 

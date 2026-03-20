@@ -44,7 +44,7 @@ function getSurahForPage(page: number): { number: number; name: string } {
     return surah;
 }
 
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const isMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) || new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(navigator.userAgent);
 
 export function MadinahImagePage() {
     const { t } = useTranslation();

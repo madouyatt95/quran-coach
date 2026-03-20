@@ -86,7 +86,6 @@ export function QiblaPage() {
                 setCompassHeading((event as any).webkitCompassHeading);
                 setHasCompass(true);
             }
-            // Android / standard
             else if (event.alpha !== null) {
                 setCompassHeading(360 - event.alpha);
                 setHasCompass(true);

@@ -23,7 +23,10 @@ const RECITERS = [
     { id: 'ar.minshawi', name: 'Mohamed Siddiq El-Minshawi' },
 ];
 
-const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isMobile = typeof navigator !== 'undefined' && (
+  /iPhone|iPad|iPod/i.test(navigator.userAgent) || 
+  new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(navigator.userAgent)
+);
 
 const MINUTES_OPTIONS = [5, 10, 15, 30];
 

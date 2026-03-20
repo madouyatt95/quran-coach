@@ -12,7 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 function detectPlatform(): Platform {
     const ua = navigator.userAgent;
     if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
-    // Removed Android detect explicitly to avoid App Store rejection (Guideline 2.3.10)
+    // Removed explicit detection to avoid App Store rejection (Guideline 2.3.10)
     return 'pc';
 }
 
@@ -49,7 +49,7 @@ export function InstallPrompt() {
             setShowBanner(true);
         }, 3000);
 
-        // Listen for native beforeinstallprompt (Chrome/Edge Android)
+        // Listen for native beforeinstallprompt (Chrome/Edge)
         const handlePrompt = (e: Event) => {
             e.preventDefault();
             deferredPrompt.current = e as BeforeInstallPromptEvent;

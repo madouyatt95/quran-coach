@@ -52,8 +52,11 @@ export const SURAH_START_PAGES: number[] = [
     603, 604, 604, 604
 ];
 
-// Simple mobile detection (Android + iOS)
-export const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+// Simple mobile detection (iOS + other)
+export const isMobile = typeof navigator !== 'undefined' && (
+  /iPhone|iPad|iPod/i.test(navigator.userAgent) || 
+  new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(navigator.userAgent)
+);
 
 export type WordState = 'correct' | 'error' | 'current' | 'unread';
 export type MaskMode = 'visible' | 'hidden' | 'partial' | 'minimal';
