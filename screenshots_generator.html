@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  
+  body {
+    background: #111;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .screenshot {
+    width: 440px;
+    height: 956px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .screenshot .title-zone {
+    flex: 0 0 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 24px 10px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .screenshot .title-zone h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+
+  .screenshot .title-zone p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .screenshot .app-frame {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 16px 0;
+    overflow: hidden;
+  }
+
+  .screenshot .app-frame img {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+
+  /* Gradient backgrounds for each screenshot */
+  .bg-accueil { background: linear-gradient(180deg, #0f1b3d 0%, #1a1a2e 50%, #0d0d1a 100%); }
+  .bg-memorisation { background: linear-gradient(180deg, #1a0a3e 0%, #1a1a2e 50%, #0d0d1a 100%); }
+  .bg-ecoute { background: linear-gradient(180deg, #2d1b00 0%, #1a1a2e 50%, #0d0d1a 100%); }
+  .bg-quiz { background: linear-gradient(180deg, #3d0f0f 0%, #1a1a2e 50%, #0d0d1a 100%); }
+  .bg-academie { background: linear-gradient(180deg, #0f3d1b 0%, #1a1a2e 50%, #0d0d1a 100%); }
+  .bg-menu { background: linear-gradient(180deg, #0f2d3d 0%, #1a1a2e 50%, #0d0d1a 100%); }
+
+  /* Golden accent line */
+  .title-zone::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #c9a84c, #f0d68a);
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+
+  .label {
+    color: #aaa;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. ACCUEIL -->
+<div>
+  <div class="screenshot bg-accueil" id="s1">
+    <div class="title-zone">
+      <h2>Votre compagnon<br>quotidien pour le Coran</h2>
+    </div>
+    <div class="app-frame">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="img1">
+    </div>
+  </div>
+  <p class="label">1 — Accueil</p>
+</div>
+
+<!-- 2. MÉMORISATION -->
+<div>
+  <div class="screenshot bg-memorisation" id="s2">
+    <div class="title-zone">
+      <h2>Votre prof de poche</h2>
+      <p>Sélection précise de la boucle à répéter</p>
+    </div>
+    <div class="app-frame">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="img2">
+    </div>
+  </div>
+  <p class="label">2 — Mémorisation</p>
+</div>
+
+<!-- 3. ÉCOUTE -->
+<div>
+  <div class="screenshot bg-ecoute" id="s3">
+    <div class="title-zone">
+      <h2>Grande bibliothèque</h2>
+      <p>Playlist complètement personnalisable</p>
+    </div>
+    <div class="app-frame">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="img3">
+    </div>
+  </div>
+  <p class="label">3 — Écoute</p>
+</div>
+
+<!-- 4. QUIZ -->
+<div>
+  <div class="screenshot bg-quiz" id="s4">
+    <div class="title-zone">
+      <h2>Testez vos connaissances islamiques</h2>
+    </div>
+    <div class="app-frame">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="img4">
+    </div>
+  </div>
+  <p class="label">4 — Quiz</p>
+</div>
+
+<!-- 5. ACADÉMIE -->
+<div>
+  <div class="screenshot bg-academie" id="s5">
+    <div class="title-zone">
+      <h2>Apprenez les bases de l'Islam</h2>
+    </div>
+    <div class="app-frame">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="img5">
+    </div>
+  </div>
+  <p class="label">5 — Académie</p>
+</div>
+
+<!-- 6. MENU -->
+<div>
+  <div class="screenshot bg-menu" id="s6">
+    <div class="title-zone">
+      <h2>12+ fonctionnalités en une seule app</h2>
+    </div>
+    <div class="app-frame">
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="img6">
+    </div>
+  </div>
+  <p class="label">6 — Menu</p>
+</div>
+
+<script>
+  // Load images from the captured screenshots
+  const basePath = '../.gemini/antigravity/brain/fe3db20e-8ef6-42c9-bbca-51f5863b3e9c/';
+  const images = {
+    img1: basePath + 'appstore_home_1774043888826.png',
+    img2: basePath + 'appstore_memorisation_1774043904824.png',
+    img3: basePath + 'appstore_ecoute_1774043927356.png',
+    img4: basePath + 'appstore_quiz_1774043956293.png',
+    img5: basePath + 'appstore_academie_1774043972873.png',
+    img6: basePath + 'appstore_menu_1774043985302.png',
+  };
+  
+  Object.entries(images).forEach(([id, src]) => {
+    document.getElementById(id).src = src;
+  });
+</script>
+
+</body>
+</html>

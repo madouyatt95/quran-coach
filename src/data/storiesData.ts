@@ -14,6 +14,13 @@ export interface StorySurah {
   page?: number;
 }
 
+export interface StoryLocation {
+  lat: number;
+  lng: number;
+  name: string;
+  nameAr: string;
+}
+
 export interface Story {
   id: string;
   title: string;
@@ -25,6 +32,7 @@ export interface Story {
   surahs: StorySurah[];
   color: string;
   audio?: string;
+  location?: StoryLocation;
 }
 
 export const STORY_CATEGORIES: Record<StoryCategory, { label: string; labelAr: string; icon: string; color: string }> = {
@@ -60,6 +68,7 @@ export const stories: Story[] = [
       { number: 89, name: 'Al-Fajr', startAyah: 6 },
     ],
     color: '#E74C3C',
+    location: { lat: 16.0, lng: 49.5, name: 'Al-Ahqaf, Yémen', nameAr: 'الأحقاف، اليمن' },
     audio: '',
   },
   {
@@ -83,6 +92,7 @@ export const stories: Story[] = [
       { number: 91, name: 'Ash-Shams', startAyah: 11 },
     ],
     color: '#8D6E63',
+    location: { lat: 26.79, lng: 37.95, name: 'Madâin Sâlih, Arabie Saoudite', nameAr: 'مدائن صالح، السعودية' },
     audio: '',
   },
   {
@@ -108,6 +118,7 @@ export const stories: Story[] = [
       { number: 79, name: 'An-Nazi\'at', startAyah: 17 },
     ],
     color: '#FF5722',
+    location: { lat: 25.69, lng: 32.64, name: 'Louxor, Égypte', nameAr: 'الأقصر، مصر' },
     audio: '',
   },
   {
@@ -128,6 +139,7 @@ export const stories: Story[] = [
       { number: 40, name: 'Ghafir', startAyah: 24 },
     ],
     color: '#FFC107',
+    location: { lat: 30.04, lng: 31.24, name: 'Égypte', nameAr: 'مصر' },
     audio: '',
   },
   {
@@ -149,6 +161,7 @@ export const stories: Story[] = [
       { number: 29, name: 'Al-Ankabut', startAyah: 36 },
     ],
     color: '#795548',
+    location: { lat: 28.45, lng: 36.55, name: 'Madyan, Tabuk', nameAr: 'مدين، تبوك' },
     audio: '',
   },
   {
@@ -167,6 +180,7 @@ export const stories: Story[] = [
       { number: 105, name: 'Al-Fil', startAyah: 1 },
     ],
     color: '#607D8B',
+    location: { lat: 21.42, lng: 39.83, name: 'La Mecque', nameAr: 'مكة المكرمة' },
     audio: '',
   },
   {
@@ -185,6 +199,7 @@ export const stories: Story[] = [
       { number: 85, name: 'Al-Buruj', startAyah: 4 },
     ],
     color: '#D32F2F',
+    location: { lat: 17.49, lng: 44.13, name: 'Najran, Yémen', nameAr: 'نجران، اليمن' },
     audio: '',
   },
   {
@@ -204,6 +219,7 @@ export const stories: Story[] = [
       { number: 7, name: 'Al-A\'raf', startAyah: 163 },
     ],
     color: '#00BCD4',
+    location: { lat: 29.55, lng: 34.95, name: 'Côte de la Mer Rouge', nameAr: 'ساحل البحر الأحمر' },
     audio: '',
   },
 
@@ -225,6 +241,7 @@ export const stories: Story[] = [
       { number: 19, name: 'Maryam', startAyah: 16 },
     ],
     color: '#E91E63',
+    location: { lat: 31.70, lng: 35.21, name: 'Bethléem, Palestine', nameAr: 'بيت لحم، فلسطين' },
     audio: '',
   },
   {
@@ -243,6 +260,7 @@ export const stories: Story[] = [
       { number: 31, name: 'Luqman', startAyah: 12 },
     ],
     color: '#9C27B0',
+    location: { lat: 14.13, lng: 38.72, name: 'Aksoum, Éthiopie', nameAr: 'أكسوم، إثيوبيا' },
     audio: '',
   },
   {
@@ -261,6 +279,7 @@ export const stories: Story[] = [
       { number: 18, name: 'Al-Kahf', startAyah: 83 },
     ],
     color: '#3F51B5',
+    location: { lat: 42.06, lng: 48.29, name: 'Derbent, Caucase', nameAr: 'دربند، القوقاز' },
     audio: '',
   },
   {
@@ -280,6 +299,7 @@ export const stories: Story[] = [
       { number: 18, name: 'Al-Kahf', startAyah: 60 },
     ],
     color: '#4CAF50',
+    location: { lat: 35.97, lng: -5.50, name: 'Confluent des deux mers', nameAr: 'مجمع البحرين' },
     audio: '',
   },
   {
@@ -298,6 +318,7 @@ export const stories: Story[] = [
       { number: 18, name: 'Al-Kahf', startAyah: 9 },
     ],
     color: '#00897B',
+    location: { lat: 37.94, lng: 27.37, name: 'Éphèse, Turquie', nameAr: 'أفسس، تركيا' },
     audio: '',
   },
   {
@@ -316,6 +337,7 @@ export const stories: Story[] = [
       { number: 5, name: 'Al-Ma\'ida', startAyah: 27 },
     ],
     color: '#F44336',
+    location: { lat: 33.53, lng: 36.29, name: 'Mont Qassioun, Damas', nameAr: 'جبل قاسيون، دمشق' },
     audio: '',
   },
   {
@@ -335,6 +357,7 @@ export const stories: Story[] = [
       { number: 34, name: 'Saba', startAyah: 15 },
     ],
     color: '#AB47BC',
+    location: { lat: 15.42, lng: 45.35, name: 'Ma\'rib, Yémen', nameAr: 'مأرب، اليمن' },
     audio: '',
   },
   {
@@ -353,6 +376,7 @@ export const stories: Story[] = [
       { number: 40, name: 'Ghafir', startAyah: 28 },
     ],
     color: '#5C6BC0',
+    location: { lat: 30.04, lng: 31.24, name: 'Le Caire, Égypte', nameAr: 'القاهرة، مصر' },
     audio: '',
   },
   {
@@ -371,6 +395,7 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara', startAyah: 259 },
     ],
     color: '#78909C',
+    location: { lat: 31.78, lng: 35.23, name: 'Jérusalem', nameAr: 'بيت المقدس' },
     audio: '',
   },
 
@@ -463,6 +488,7 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara', startAyah: 67 },
     ],
     color: '#8D6E63',
+    location: { lat: 28.55, lng: 33.97, name: 'Sinaï, Égypte', nameAr: 'سيناء، مصر' },
     audio: '',
   },
   {
@@ -481,6 +507,7 @@ export const stories: Story[] = [
       { number: 16, name: 'An-Nahl', startAyah: 112 },
     ],
     color: '#EF6C00',
+    location: { lat: 21.42, lng: 39.83, name: 'La Mecque', nameAr: 'مكة المكرمة' },
     audio: '',
   },
 
@@ -502,6 +529,7 @@ export const stories: Story[] = [
       { number: 8, name: 'Al-Anfal', startAyah: 5 },
     ],
     color: '#C62828',
+    location: { lat: 23.78, lng: 38.79, name: 'Badr, Arabie Saoudite', nameAr: 'بدر، السعودية' },
     audio: '',
   },
   {
@@ -520,6 +548,7 @@ export const stories: Story[] = [
       { number: 3, name: 'Al-Imran', startAyah: 121 },
     ],
     color: '#D84315',
+    location: { lat: 24.51, lng: 39.62, name: 'Mont Uhud, Médine', nameAr: 'جبل أحد، المدينة' },
     audio: '',
   },
   {
@@ -538,6 +567,7 @@ export const stories: Story[] = [
       { number: 33, name: 'Al-Ahzab', startAyah: 9 },
     ],
     color: '#BF360C',
+    location: { lat: 24.47, lng: 39.61, name: 'Médine', nameAr: 'المدينة المنورة' },
     audio: '',
   },
   {
@@ -556,6 +586,7 @@ export const stories: Story[] = [
       { number: 48, name: 'Al-Fath', startAyah: 1 },
     ],
     color: '#E65100',
+    location: { lat: 21.45, lng: 39.75, name: 'Hudaybiyya, La Mecque', nameAr: 'الحديبية، مكة' },
     audio: '',
   },
   {
@@ -574,6 +605,7 @@ export const stories: Story[] = [
       { number: 110, name: 'An-Nasr', startAyah: 1 },
     ],
     color: '#FF6F00',
+    location: { lat: 21.42, lng: 39.83, name: 'La Mecque', nameAr: 'مكة المكرمة' },
     audio: '',
   },
   {
@@ -593,6 +625,7 @@ export const stories: Story[] = [
       { number: 53, name: 'An-Najm', startAyah: 1 },
     ],
     color: '#1A237E',
+    location: { lat: 31.78, lng: 35.24, name: 'Jérusalem → La Mecque', nameAr: 'القدس → مكة' },
     audio: '',
   },
   {
@@ -611,6 +644,7 @@ export const stories: Story[] = [
       { number: 24, name: 'An-Nur', startAyah: 11 },
     ],
     color: '#AD1457',
+    location: { lat: 24.47, lng: 39.61, name: 'Médine', nameAr: 'المدينة المنورة' },
     audio: '',
   },
 
@@ -631,6 +665,7 @@ export const stories: Story[] = [
       { number: 27, name: 'An-Naml', startAyah: 18 },
     ],
     color: '#558B2F',
+    location: { lat: 31.90, lng: 35.20, name: 'Wadi an-Naml, Palestine', nameAr: 'وادي النمل، فلسطين' },
     audio: '',
   },
   {
@@ -649,6 +684,7 @@ export const stories: Story[] = [
       { number: 27, name: 'An-Naml', startAyah: 20 },
     ],
     color: '#33691E',
+    location: { lat: 31.78, lng: 35.23, name: 'Jérusalem', nameAr: 'بيت المقدس' },
     audio: '',
   },
   {
@@ -667,6 +703,7 @@ export const stories: Story[] = [
       { number: 5, name: 'Al-Ma\'ida', startAyah: 31 },
     ],
     color: '#212121',
+    location: { lat: 33.53, lng: 36.29, name: 'Damas, Syrie', nameAr: 'دمشق، سوريا' },
     audio: '',
   },
   {
@@ -685,6 +722,7 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara', startAyah: 260 },
     ],
     color: '#0277BD',
+    location: { lat: 31.53, lng: 35.10, name: 'Hébron, Palestine', nameAr: 'الخليل، فلسطين' },
     audio: '',
   },
   {
@@ -705,6 +743,7 @@ export const stories: Story[] = [
       { number: 20, name: 'Ta-Ha', startAyah: 80 },
     ],
     color: '#F9A825',
+    location: { lat: 28.55, lng: 33.97, name: 'Désert du Sinaï', nameAr: 'صحراء سيناء' },
     audio: '',
   },
   {
@@ -723,6 +762,7 @@ export const stories: Story[] = [
       { number: 2, name: 'Al-Baqara', startAyah: 246 },
     ],
     color: '#546E7A',
+    location: { lat: 31.68, lng: 34.95, name: 'Vallée d\'Elah, Palestine', nameAr: 'وادي السنط، فلسطين' },
     audio: '',
   },
 ];

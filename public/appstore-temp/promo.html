@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  body { background: #000; font-family: 'Inter', sans-serif; }
+
+  .screenshot {
+    width: 440px;
+    height: 956px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title-zone {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 28px 10px;
+    text-align: center;
+  }
+
+  .title-zone h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+
+  .title-zone p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+  }
+
+  .gold-line {
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #c9a84c, #f0d68a);
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+
+  .app-frame {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10px 20px 0;
+    overflow: hidden;
+  }
+
+  .app-frame img {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  .bg1 { background: linear-gradient(180deg, #0f1b3d 0%, #0d0d1a 100%); }
+  .bg2 { background: linear-gradient(180deg, #1a0a3e 0%, #0d0d1a 100%); }
+  .bg3 { background: linear-gradient(180deg, #2d1b00 0%, #0d0d1a 100%); }
+  .bg4 { background: linear-gradient(180deg, #3d0f0f 0%, #0d0d1a 100%); }
+  .bg5 { background: linear-gradient(180deg, #0f3d1b 0%, #0d0d1a 100%); }
+  .bg6 { background: linear-gradient(180deg, #0f2d3d 0%, #0d0d1a 100%); }
+</style>
+</head>
+<body>
+
+<div class="screenshot bg1" id="page1">
+  <div class="title-zone">
+    <h2>Votre compagnon quotidien pour le Coran</h2>
+    <div class="gold-line"></div>
+  </div>
+  <div class="app-frame">
+    <img src="/appstore-temp/home.png">
+  </div>
+</div>
+
+</body>
+</html>

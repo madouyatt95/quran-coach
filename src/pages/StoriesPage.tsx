@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square, Sparkles } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square, Sparkles, MapPin } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story, type StoryCategory } from '../data/storiesData';
 import { useQuranStore } from '../stores/quranStore';
 import { playTts, stopTts } from '../lib/ttsService';
@@ -165,6 +165,12 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                     <button className="story-modal__action-btn story-modal__action-btn--close" onClick={onClose}>
                         Fermer
                     </button>
+                    {story.location && (
+                        <button className="story-modal__action-btn" onClick={() => navigate(`/atlas?story=${story.id}`)} style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--color-accent)' }}>
+                            <MapPin size={18} />
+                            Carte
+                        </button>
+                    )}
                     <button className="story-modal__action-btn story-modal__action-btn--share" onClick={handleShare}>
                         <Share2 size={18} />
                         Partager

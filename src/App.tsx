@@ -43,6 +43,7 @@ const CoachPage = lazy(() => import('./pages/CoachPage').then(m => ({ default: m
 const AcademyPage = lazy(() => import('./academy/components/AcademyHub').then(m => ({ default: m.AcademyHub })));
 const CirclePage = lazy(() => import('./pages/CirclePage').then(m => ({ default: m.CirclePage })));
 const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ default: m.StoriesPage })));
+const AtlasPage = lazy(() => import('./pages/AtlasPage').then(m => ({ default: m.AtlasPage })));
 const LastNightsDashboard = lazy(() => import('./components/Home/LastNightsDashboard').then(m => ({ default: m.LastNightsDashboard })));
 
 // Minimal loading fallback
@@ -204,6 +205,7 @@ function AppContent() {
             <Route path="/academy" element={<AcademyPage />} />
             <Route path="/circles" element={<CirclePage />} />
             <Route path="/stories" element={<StoriesPage />} />
+            <Route path="/atlas" element={<AtlasPage />} />
             <Route path="/last-nights" element={<LastNightsDashboard />} />
           </Routes>
         </Suspense>
