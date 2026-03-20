@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square, Sparkles, MapPin } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story, type StoryCategory } from '../data/storiesData';
@@ -182,9 +182,33 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
 }
 
 export function StoriesPage() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<FilterMode>('all');
     const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+
+    useEffect(() => {
+        const storyId = searchParams.get('story');
+        if (storyId) {
+            const story = stories.find(s => s.id === storyId);
+            if (story && (!selectedStory || selectedStory.id !== story.id)) {
+                setSelectedStory(story);
+            }
+        }
+    }, [searchParams]);
+
+    const handleCloseModal = () => {
+        setSelectedStory(null);
+        if (searchParams.has('story')) {
+            searchParams.delete('story');
+            setSearchParams(searchParams, { replace: true });
+        }
+    };
+
+    const handleOpenModal = (story: Story) => {
+        setSelectedStory(story);
+        setSearchParams({ story: story.id });
+    };
 
     const filteredStories = useMemo(() => {
         let result = stories;
@@ -307,7 +331,7 @@ export function StoriesPage() {
                                     key={story.id}
                                     className="story-card"
                                     style={{ '--card-accent': story.color } as React.CSSProperties}
-                                    onClick={() => setSelectedStory(story)}
+                                    onClick={() => handleOpenModal(story)}
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.03, duration: 0.3 }}
@@ -340,7 +364,7 @@ export function StoriesPage() {
                 {selectedStory && (
                     <StoryDetail
                         story={selectedStory}
-                        onClose={() => setSelectedStory(null)}
+                        onClose={handleCloseModal}
                     />
                 )}
             </AnimatePresence>
