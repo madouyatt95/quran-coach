@@ -517,64 +517,7 @@ export const stories: Story[] = [
   },
 
   // ========== ÉVÉNEMENTS HISTORIQUES ==========
-  {
-    id: 'badr',
-    title: 'La bataille de Badr',
-    titleAr: 'غَزْوَةُ بَدْر',
-    icon: '⚔️',
-    category: 'evenements',
-    summary: 'La bataille de Badr est la première grande confrontation entre les Musulmans de Médine et les Qurayshites de La Mecque. Survenant la deuxième année de l\'Hégire, elle fut un tournant décisif. Les Musulmans, au nombre de 313 et peu équipés, faisaient face à une armée mecquoise de 1000 hommes lourdement armés. Le Prophète ﷺ passa la nuit à prier Allah de lui accorder la victoire, craignant que si sa petite communauté était détruite, personne d\'autre n\'adorerait Allah sur terre. Allah répondit à son appel en envoyant des milliers d\'anges pour soutenir les croyants. Malgré leur infériorité numérique, les Musulmans remportèrent une victoire éclatante, tuant plusieurs chefs prestigieux de La Mecque. Badr est devenue le symbole ultime du secours divin accordé à ceux qui placent leur confiance totale en Allah, prouvant que la force réelle ne réside pas dans le nombre mais dans la sincérité de la foi.',
-    morals: [
-      'La victoire vient d\'Allah, pas du nombre',
-      'La foi et la discipline l\'emportent sur la force brute',
-      'Allah envoie Son secours à ceux qui Lui font confiance',
-    ],
-    surahs: [
-      { number: 3, name: 'Al-Imran', startAyah: 123 },
-      { number: 8, name: 'Al-Anfal', startAyah: 5 },
-    ],
-    color: '#C62828',
-    location: { lat: 23.78, lng: 38.79, name: 'Badr, Arabie Saoudite', nameAr: 'بدر، السعودية' },
-    audio: '',
-  },
-  {
-    id: 'uhud',
-    title: 'La bataille de Uhud',
-    titleAr: 'غَزْوَةُ أُحُد',
-    icon: '🏹',
-    category: 'evenements',
-    summary: 'Un an après Badr, les Mecquois revinrent pour se venger avec 3000 hommes au pied du mont Uhud. Le Prophète ﷺ avait établi un plan stratégique en plaçant 50 archers sur une colline avec l\'ordre strict de ne jamais quitter leur poste, quelle que soit l\'issue du combat. Au début, les Musulmans prirent l\'avantage, et voyant l\'ennemi fuir en laissant son butin, la majorité des archers abandonnèrent leur position pour ramasser les richesses, malgré les ordres. Khalid ibn al-Walid, alors général mecquois, saisit cette faille, contourna la montagne et attaqua les Musulmans par derrière. La victoire se transforma en déroute. Le Prophète ﷺ lui-même fut blessé et de nombreux compagnons périrent, dont son oncle Hamza. Uhud fut une leçon douloureuse sur les conséquences de la désobéissance et de l\'attrait pour les biens terrestres, mais aussi une épreuve pour distinguer les croyants sincères des hypocrites.',
-    morals: [
-      'La désobéissance au commandement cause la défaite',
-      'L\'épreuve après la victoire est un test divin',
-      'L\'amour du butin peut compromettre la victoire',
-    ],
-    surahs: [
-      { number: 3, name: 'Al-Imran', startAyah: 121 },
-    ],
-    color: '#D84315',
-    location: { lat: 24.51, lng: 39.62, name: 'Mont Uhud, Médine', nameAr: 'جبل أحد، المدينة' },
-    audio: '',
-  },
-  {
-    id: 'ahzab',
-    title: 'La bataille des Coalisés (Al-Khandaq)',
-    titleAr: 'غَزْوَةُ الْأَحْزَاب',
-    icon: '🏰',
-    category: 'evenements',
-    summary: 'Aussi appelée bataille du Fossé (Khandaq), cet événement vit une coalition massive de 10 000 hommes, regroupant les Qurayshites et plusieurs tribus arabes et juives, assiéger Médine. Devant cette menace sans précédent, le Prophète ﷺ accepta le conseil de Salman le Perse de creuser une immense tranchée autour de la ville, une tactique inconnue des Arabes. Le siège dura près d\'un mois dans un froid intense et une faim sévère. La tension était extrême, surtout avec la trahison interne d\'une tribu juive. Cependant, les Musulmans restèrent fermes dans leur foi. Allah finit par envoyer un vent glacial et violent qui arracha les tentes des coalisés, éteignit leurs feux et sema la discorde parmi eux. Terrifiés et épuisés par les éléments, ils abandonnèrent le siège et repartirent. Cette bataille marqua la fin des grandes offensives mecquoises contre Médine.',
-    morals: [
-      'Allah défend les croyants par des moyens invisibles',
-      'La stratégie complète la foi',
-      'La patience dans le siège mène à la victoire',
-    ],
-    surahs: [
-      { number: 33, name: 'Al-Ahzab', startAyah: 9 },
-    ],
-    color: '#BF360C',
-    location: { lat: 24.47, lng: 39.61, name: 'Médine', nameAr: 'المدينة المنورة' },
-    audio: '',
-  },
+
   {
     id: 'hudaybiyya',
     title: 'Le traité de Hudaybiyya',

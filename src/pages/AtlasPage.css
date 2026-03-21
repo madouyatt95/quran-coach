@@ -186,6 +186,80 @@
   line-height: 1.5;
 }
 
+/* Timeline Buttons */
+.timeline-era-btn {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  margin-right: 8px;
+  border-radius: 20px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+}
+
+.timeline-era-btn.active {
+  background: var(--color-bg-hover);
+}
+
+.timeline-era-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.atlas-timeline {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 0 16px 12px;
+  margin-top: 10px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.atlas-timeline::-webkit-scrollbar {
+  display: none;
+}
+
+/* Map specific controls */
+.atlas-map-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-style-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.map-style-btn.active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
 /* Popup */
 .atlas-popup .leaflet-popup-content-wrapper {
   background: var(--color-bg-secondary);
