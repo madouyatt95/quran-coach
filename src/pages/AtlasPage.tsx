@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import { ArrowLeft, MapPin, Layers, Clock } from 'lucide-react';
+import { ArrowLeft, MapPin, Layers, Clock, Compass } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story } from '../data/storiesData';
 import { prophets } from '../data/prophets';
 import 'leaflet/dist/leaflet.css';
@@ -59,6 +59,23 @@ const IBRAHIM_ROUTE: [number, number][] = [
   [31.52, 35.10],  // Hébron (Palestine)
   [21.42, 39.83],  // La Mecque
 ];
+
+const HD_SITES = [
+  { id: 'hira', lat: 21.459, lng: 39.859, name: 'Grotte de Hira', icon: '⛰️', desc: 'Première révélation formelle (Surah Al-Alaq)' },
+  { id: 'thawr', lat: 21.378, lng: 39.851, name: 'Grotte de Thawr', icon: '🕷️', desc: 'Refuge du Prophète ﷺ et d\'Abu Bakr pendant la Hijra' },
+  { id: 'safa-marwa', lat: 21.423, lng: 39.827, name: 'Safa et Marwa', icon: '🏃', desc: 'Le parcours de Hajar cherchant de l\'eau' },
+  { id: 'arafat', lat: 21.354, lng: 39.984, name: 'Mont Arafat', icon: '🤲', desc: 'Lieu du pardon, essentiel du Hajj' },
+  { id: 'mina', lat: 21.413, lng: 39.888, name: 'Mina', icon: '⛺', desc: 'La vallée des tentes' },
+  { id: 'aqsa', lat: 31.776, lng: 35.235, name: 'Mosquée Al-Aqsa', icon: '🕌', desc: 'Première Qibla et lieu du voyage nocturne' },
+  { id: 'rock', lat: 31.778, lng: 35.235, name: 'Le Rocher (Mont du Temple)', icon: '🪨', desc: 'Lieu d\'Ascension (Mi\'raj) du Prophète ﷺ' },
+];
+
+function ZoomListener({ onZoom }: { onZoom: (zoom: number) => void }) {
+  useMapEvents({
+    zoomend: (e) => onZoom(e.target.getZoom()),
+  });
+  return null;
+}
 
 // Era Constants
 export type Era = 'pre-flood' | 'patriarchs' | 'exodus' | 'kings' | 'roman' | 'prophetic';
@@ -121,6 +138,9 @@ export function AtlasPage() {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [activeEra, setActiveEra] = useState<Era | 'all'>('all');
   const [mapStyle, setMapStyle] = useState<keyof typeof MAP_STYLES>('dark');
+  const [currentZoom, setCurrentZoom] = useState(5);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
   const [selectedItem, setSelectedItem] = useState<AtlasItem | null>(null);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
@@ -171,13 +191,13 @@ export function AtlasPage() {
     return items;
   }, []);
 
-  const filteredItems = useMemo(() => {
+  const filteredItems = useMemo<AtlasItem[]>(() => {
     let result = atlasItems;
     if (activeFilter !== 'all') {
-      result = result.filter(i => i.category === activeFilter);
+      result = result.filter((i: AtlasItem) => i.category === activeFilter);
     }
     if (activeEra !== 'all') {
-      result = result.filter(i => i.era === activeEra);
+      result = result.filter((i: AtlasItem) => i.era === activeEra);
     }
     return result;
   }, [activeFilter, activeEra, atlasItems]);
@@ -202,13 +222,34 @@ export function AtlasPage() {
     }
   }, [searchParams, atlasItems]);
 
-  const categoryCounts = useMemo(() => {
+  const categoryCounts = useMemo<Record<string, number>>(() => {
     const counts: Record<string, number> = { all: atlasItems.length };
-    atlasItems.forEach(i => {
+    atlasItems.forEach((i: AtlasItem) => {
       counts[i.category] = (counts[i.category] || 0) + 1;
     });
     return counts;
   }, [atlasItems]);
+
+  const handleFindQibla = () => {
+    setIsLocating(true);
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
+          setUserLocation(loc);
+          setFlyTo({ lat: loc[0], lng: loc[1], zoom: 4 });
+          setIsLocating(false);
+        },
+        () => {
+          alert("Impossible de déterminer votre position. Veuillez autoriser la géolocalisation.");
+          setIsLocating(false);
+        }
+      );
+    } else {
+      alert("La géolocalisation n'est pas supportée par votre navigateur.");
+      setIsLocating(false);
+    }
+  };
 
   const handleMarkerClick = (item: AtlasItem) => {
     setSelectedItem(item);
@@ -242,6 +283,14 @@ export function AtlasPage() {
         </div>
         <div className="atlas-title-ar">أَطْلَسُ القُرْآن</div>
         <p>Découvrez les lieux des récits coraniques</p>
+        <button 
+          className="qibla-btn"
+          onClick={handleFindQibla}
+          disabled={isLocating}
+          style={{ marginTop: '15px', padding: '8px 16px', borderRadius: '20px', background: 'rgba(201,168,76,0.15)', color: 'var(--color-accent)', border: '1px solid rgba(201,168,76,0.4)', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.2s' }}
+        >
+          <Compass size={18} /> {isLocating ? 'Recherche...' : userLocation ? 'Ma Qibla' : 'Afficher ma Qibla'}
+        </button>
       </div>
 
       {/* Stats */}
@@ -335,7 +384,44 @@ export function AtlasPage() {
             attribution='&copy; Atlas'
           />
 
+          <ZoomListener onZoom={setCurrentZoom} />
+
           {flyTo && <FlyToLocation lat={flyTo.lat} lng={flyTo.lng} zoom={flyTo.zoom} />}
+
+          {/* User Qibla Line */}
+          {userLocation && (
+            <>
+              <Marker position={userLocation} icon={createEmojiIcon('📍', '#2196F3', false)}>
+                <Popup className="atlas-popup">
+                  <div className="popup-content" style={{ textAlign: 'center', padding: '10px' }}>
+                    <strong>Votre position</strong>
+                  </div>
+                </Popup>
+              </Marker>
+              <Polyline 
+                positions={[userLocation, [21.4225, 39.8262]]} 
+                pathOptions={{ color: '#2196F3', weight: 3, dashArray: '5, 10', opacity: 0.8 }} 
+              />
+            </>
+          )}
+
+          {/* HD Markers (Zoom > 12) */}
+          {currentZoom > 12 && HD_SITES.map(site => (
+            <Marker key={site.id} position={[site.lat, site.lng]} icon={createEmojiIcon(site.icon, '#9C27B0', false)}>
+              <Popup className="atlas-popup" maxWidth={250}>
+                <div className="popup-content">
+                  <div className="popup-header">
+                    <span className="popup-emoji">{site.icon}</span>
+                    <div className="popup-titles">
+                      <div className="popup-title">{site.name}</div>
+                      <div className="popup-category" style={{ background: '#9C27B0' }}>Lieu Saint (Vue HD)</div>
+                    </div>
+                  </div>
+                  <div className="popup-summary" style={{ marginTop: '10px' }}>{site.desc}</div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
 
           {/* Polylines for routes */}
           {(activeEra === 'all' || activeEra === 'prophetic') && (
