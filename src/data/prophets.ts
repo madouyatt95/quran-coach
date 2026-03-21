@@ -27,9 +27,11 @@ export interface Prophet {
   mentionCount: number;
   miracles?: string[];
   keyVerses: KeyVerse[];
+  sourceAyah?: string;
+  sourceSurah?: string;
   lineage?: string;
   duas?: Dua[];
-  location?: { lat: number; lng: number; name: string; nameAr: string };
+  location?: { lat: number; lng: number; name: string; nameAr: string; imageUrl?: string };
 }
 
 // Source : Coran & Tafsir Ibn Kathir — Qisas al-Anbiya (قصص الأنبياء)
@@ -186,12 +188,14 @@ export const prophets: Prophet[] = [
     nameEn: 'Lot',
     nameIslamic: 'Lut',
     title: 'Neveu d\'Ibrahim',
-    titleAr: 'ابن أخي إبراهيم',
+    titleAr: 'ابn أخي إبراهيم',
     period: 'Contemporain d\'Ibrahim',
     icon: '🌋',
     color: '#E53935',
     mentionCount: 27,
-    location: { lat: 31.3333, lng: 35.5, name: 'Sodome (Mer Morte)', nameAr: 'سدوم (البحر الميت)' },
+    sourceAyah: '160',
+    sourceSurah: 'Al-A\'raf',
+    location: { lat: 31.3333, lng: 35.5, name: 'Sodome (Mer Morte)', nameAr: 'سدوم (البحر الميت)', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Dead_Sea_by_David_Shankbone.jpg/640px-Dead_Sea_by_David_Shankbone.jpg' },
     lineage: 'Ibrahim (neveu — fils de son frère Haran)',
     surahs: [{ number: 7, name: 'Al-A\'raf', startAyah: 80 }, { number: 11, name: 'Hud', startAyah: 77 }, { number: 15, name: 'Al-Hijr', startAyah: 51 }, { number: 26, name: 'Ash-Shu\'ara', startAyah: 160 }],
     summary: 'Ibn Kathir rapporte que Lut émigra avec Ibrahim et s\'installa dans la région de Sodome. Son peuple pratiquait la turpitude (fahishah) jamais commise avant eux. Des anges vinrent sous forme de beaux jeunes hommes pour éprouver le peuple. Celui-ci se rua vers la maison de Lut. Les anges lui dirent de partir de nuit avec sa famille sans se retourner. Sa femme, qui était du côté des mécréants, périt. Allah retourna la cité sens dessus dessous et fit pleuvoir des pierres d\'argile marquées (Coran 11:82-83).',

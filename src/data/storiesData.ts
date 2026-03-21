@@ -21,6 +21,7 @@ export interface StoryLocation {
   lng: number;
   name: string;
   nameAr: string;
+  imageUrl?: string;
 }
 
 export interface Story {
@@ -72,7 +73,7 @@ export const stories: Story[] = [
       { number: 89, name: 'Al-Fajr', startAyah: 6 },
     ],
     color: '#E74C3C',
-    location: { lat: 16.0, lng: 49.5, name: 'Al-Ahqaf, Yémen', nameAr: 'الأحقاف، اليمن' },
+    location: { lat: 16.0, lng: 49.5, name: 'Al-Ahqaf, Yémen', nameAr: 'الأحقاف، اليمن', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Ubar_Ruins_%283%29_%2834079841804%29.jpg/640px-Ubar_Ruins_%283%29_%2834079841804%29.jpg' },
     audio: '',
   },
   {
@@ -96,7 +97,7 @@ export const stories: Story[] = [
       { number: 91, name: 'Ash-Shams', startAyah: 11 },
     ],
     color: '#8D6E63',
-    location: { lat: 26.79, lng: 37.95, name: 'Madâin Sâlih, Arabie Saoudite', nameAr: 'مدائن صالح، السعودية' },
+    location: { lat: 26.79, lng: 37.95, name: 'Madâin Sâlih, Arabie Saoudite', nameAr: 'مدائن صالح، السعودية', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Mada%27in_Saleh%2C_Qasr_al-Farid.jpg/640px-Mada%27in_Saleh%2C_Qasr_al-Farid.jpg' },
     audio: '',
   },
   {
@@ -164,8 +165,8 @@ export const stories: Story[] = [
       { number: 26, name: 'Ash-Shu\'ara', startAyah: 176 },
       { number: 29, name: 'Al-Ankabut', startAyah: 36 },
     ],
-    color: '#795548',
-    location: { lat: 28.45, lng: 36.55, name: 'Madyan, Tabuk', nameAr: 'مدين، تبوك' },
+    color: '#00796B',
+    location: { lat: 28.45, lng: 36.55, name: 'Madyan (Tabuk)', nameAr: 'مدين (تبوك)', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Mugha%27ir_Shu%27ayb.jpg/640px-Mugha%27ir_Shu%27ayb.jpg' },
     audio: '',
   },
   {
@@ -659,7 +660,7 @@ export const stories: Story[] = [
     titleAr: 'نَمْلَةُ سُلَيْمَان',
     icon: '🐜',
     category: 'divers',
-    summary: 'Le Prophète Sulayman (Salomon) régnait sur un royaume sans pareil dans l\'histoire. Allah lui avait soumis non seulement les hommes, mais aussi les djinns qui bâtissaient pour lui palais et forteresses, et les oiseaux qui le servaient en éclaireurs. Il comprenait le langage de toutes les créatures vivantes, un don qu\'aucun autre roi n\'avait reçu. Un jour, Sulayman mobilisa son armée pour une grande expédition. Le spectacle était saisissant : des colonnes d\'hommes en armure marchaient aux côtés de djinns imposants, tandis que des formations d\'oiseaux couvraient le ciel, le tout avançant en rangs ordonnés à travers le désert. Lorsque cette armée colossale atteignit une vallée où vivait une colonie de fourmis, une petite fourmi sentit le sol trembler sous les pas de cette multitude. Comprenant le danger imminent pour tout son peuple, elle lança un cri d\'alarme à ses compagnes : "Ô fourmis ! Entrez dans vos demeures, de peur que Salomon et ses armées ne vous écrasent sans s\'en rendre compte !". Elle ne les accusa pas de malveillance — elle précisa bien "sans s\'en rendre compte" — faisant preuve à la fois de sagesse et de bonne opinion envers le prophète-roi. Sulayman, grâce au don divin, entendit distinctement cet appel minuscule au milieu du fracas de son armée. Loin de l\'ignorer, il s\'arrêta net. Un sourire ému se dessina sur son visage, non pas de moquerie, mais d\'émerveillement devant la sagesse et le sens des responsabilités de cette créature si infime. Il leva les mains au ciel et prononça cette prière que le Coran immortalise : "Seigneur ! Inspire-moi pour que je rende grâce au bienfait dont Tu m\'as comblé, ainsi qu\'à mes parents, et pour que j\'accomplisse une bonne œuvre que Tu agrées. Fais-moi entrer, par Ta miséricorde, parmi Tes serviteurs vertueux". Cet épisode révèle que le véritable pouvoir ne réside pas dans la capacité de détruire, mais dans la conscience de protéger jusqu\'aux plus faibles.',
+    summary: 'Le Prophète Sulayman (Salomon) régnait sur un royaume sans pareil dans l\'histoire. Allah lui avait soumis non seulement les hommes, mais aussi les djinns qui bâtissaient pour lui palais et forteresses, et les oiseaux qui le servaient en éclaireurs. Il comprenait le langage de toutes les créatures vivantes, un don qu\'aucun autre roi n\'avait reçu. Un jour, Sulayman mobilisa son armée pour une grande expédition. Le spectacle était saisissant : des colonnes d\'hommes en armure marchaient aux côtés de djinns imposants, tandis que des formations d\'oiseaux couvraient le ciel, le tout avançant en rangs ordonnés à travers le désert. Lorsque cette armée colossale atteignit une vallée où vivait une colonie de fourmis, une petite fourmi sentit le sol trembler sous les pas de cette multitude. Comprenant le danger imminent pour tout son peuple, elle lança un cri d\'alarme à ses compagnes : "Ô fourmis ! Entrez dans vos demeures, de peur que Salomon et ses armées ne vous écrasent sans s\'en rendre compte !". Elle ne les accusa pas de malveillance — elle précisa bien "sans s\'en rendre compte" — faisant preuve à la fois de sagesse et de bonne opinion envers le prophète-roi. Sulayman, grâce au don divin, entendit distinctement cet appel minuscule au milieu du fracas de son armée. Loin de l\'ignorer, il s\'arrêta net. Un sourire ému se dessina sur son visage, non pas de moquerie, mais d\'émerveillement devant la sagesse et le sens des responsabilités de cette créature si infime. Il leva les mains au ciel et prononça cette prière que le Coran immortalise : "Seigneur ! Inspire-moi pour que je rende grâce au bienfait dont Tu m\'as comblé, ainsi qu\'à mes parents, et pour que j\'accomplisse une bonne œuvre que Tu agrées. Fais-me entrer, par Ta miséricorde, parmi Tes serviteurs vertueux". Cet épisode révèle que le véritable pouvoir ne réside pas dans la capacité de détruire, mais dans la conscience de protéger jusqu\'aux plus faibles.',
     morals: [
       'Le leadership implique la responsabilité de protéger les siens',
       'Même les plus petites créatures ont de la sagesse',
@@ -765,8 +766,8 @@ export const stories: Story[] = [
     surahs: [
       { number: 2, name: 'Al-Baqara', startAyah: 246 },
     ],
-    color: '#546E7A',
-    location: { lat: 31.68, lng: 34.95, name: 'Vallée d\'Elah, Palestine', nameAr: 'وادي السنط، فلسطين' },
+    color: '#D32F2F',
+    location: { lat: 25.69, lng: 32.64, name: 'Vallée des Rois (Louxor)', nameAr: 'وادي الملوك (الأقصر)', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Karnak_Temple_Complex_01.jpg/640px-Karnak_Temple_Complex_01.jpg' },
     audio: '',
   },
   // ========== LA SIRA (BIOGRAPHIE PROPHÉTIQUE) ==========

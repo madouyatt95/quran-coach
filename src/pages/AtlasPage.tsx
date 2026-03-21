@@ -130,6 +130,7 @@ type AtlasItem = {
   categoryLabel: string;
   categoryIcon: string;
   era: Era;
+  imageUrl?: string;
 };
 
 export function AtlasPage() {
@@ -163,7 +164,8 @@ export function AtlasPage() {
           originalId: s.id,
           categoryLabel: STORY_CATEGORIES[s.category].label,
           categoryIcon: STORY_CATEGORIES[s.category].icon,
-          era: getEraForStory(s.id)
+          era: getEraForStory(s.id),
+          imageUrl: s.location?.imageUrl
         });
       }
     });
@@ -183,7 +185,8 @@ export function AtlasPage() {
           originalId: p.id,
           categoryLabel: 'Prophètes',
           categoryIcon: '📜',
-          era: getEraForProphet(p.nameFr)
+          era: getEraForProphet(p.nameFr),
+          imageUrl: p.location?.imageUrl
         });
       }
     });
@@ -479,15 +482,22 @@ export function AtlasPage() {
                     </div>
                   </div>
                   <span className="popup-category" style={{ background: item.color }}>
-                    {item.categoryIcon} {item.categoryLabel}
+                    {item.categoryLabel}
                   </span>
+                  {item.imageUrl && (
+                    <div style={{ marginTop: '10px', borderRadius: '8px', overflow: 'hidden' }}>
+                      <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '130px', objectFit: 'cover' }} />
+                    </div>
+                  )}
                   <div className="popup-location">
                     <MapPin size={12} /> {item.location.name} — {item.location.nameAr}
                   </div>
                   <div className="popup-summary">{item.summary}</div>
-                  <button className="popup-btn" onClick={() => handleReadStory(item)}>
-                    {item.type === 'story' ? '📖 Lire le récit' : '📜 Voir la biographie'}
-                  </button>
+                  <div className="popup-actions" style={{ marginTop: item.imageUrl ? '10px' : '15px' }}>
+                    <button className="popup-btn" onClick={() => handleReadStory(item)}>
+                      {item.type === 'story' ? '📖 Lire le récit' : '📜 Voir la biographie'}
+                    </button>
+                  </div>
                 </div>
               </Popup>
             </Marker>
