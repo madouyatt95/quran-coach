@@ -123,7 +123,7 @@ export const stories: Story[] = [
       { number: 79, name: 'An-Nazi\'at', startAyah: 17 },
     ],
     color: '#FF5722',
-    location: { lat: 25.69, lng: 32.64, name: 'Louxor, Égypte', nameAr: 'الأقصر، مصر' },
+    location: { lat: 25.69, lng: 32.64, name: 'Louxor, Égypte', nameAr: 'الأقصر، مصر', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Karnak_Temple_Complex_01.jpg/640px-Karnak_Temple_Complex_01.jpg' },
     audio: '',
   },
   {
@@ -144,7 +144,7 @@ export const stories: Story[] = [
       { number: 40, name: 'Ghafir', startAyah: 24 },
     ],
     color: '#FFC107',
-    location: { lat: 30.04, lng: 31.24, name: 'Égypte', nameAr: 'مصر' },
+    location: { lat: 30.04, lng: 31.24, name: 'Égypte', nameAr: 'مصر', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Pyramids_of_the_Giza_Plateau.jpg/640px-Pyramids_of_the_Giza_Plateau.jpg' },
     audio: '',
   },
   {
@@ -185,7 +185,7 @@ export const stories: Story[] = [
       { number: 105, name: 'Al-Fil', startAyah: 1 },
     ],
     color: '#607D8B',
-    location: { lat: 21.42, lng: 39.83, name: 'La Mecque', nameAr: 'مكة المكرمة' },
+    location: { lat: 21.42, lng: 39.83, name: 'La Mecque', nameAr: 'مكة المكرمة', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Mecca_Clock_Tower_2014.jpg/640px-Mecca_Clock_Tower_2014.jpg' },
     audio: '',
   },
   {
@@ -204,7 +204,7 @@ export const stories: Story[] = [
       { number: 85, name: 'Al-Buruj', startAyah: 4 },
     ],
     color: '#D32F2F',
-    location: { lat: 17.49, lng: 44.13, name: 'Najran, Yémen', nameAr: 'نجران، اليمن' },
+    location: { lat: 17.49, lng: 44.13, name: 'Najran, Yémen', nameAr: 'نجران، اليمن', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ancient_site_of_al-Ukhdud%2C_Najran%2C_Saudi_Arabia_%2864%29.jpg/640px-Ancient_site_of_al-Ukhdud%2C_Najran%2C_Saudi_Arabia_%2864%29.jpg' },
     audio: '',
   },
   {
@@ -224,7 +224,7 @@ export const stories: Story[] = [
       { number: 7, name: 'Al-A\'raf', startAyah: 163 },
     ],
     color: '#00BCD4',
-    location: { lat: 29.55, lng: 34.95, name: 'Côte de la Mer Rouge', nameAr: 'ساحل البحر الأحمر' },
+    location: { lat: 29.55, lng: 34.95, name: 'Côte de la Mer Rouge', nameAr: 'ساحل البحر الأحمر', imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Red_Sea%2C_Saudi_Arabia.jpg/640px-Red_Sea%2C_Saudi_Arabia.jpg' },
     audio: '',
   },
 

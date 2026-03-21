@@ -344,6 +344,10 @@ export function AtlasPage() {
     }
   };
 
+  const handleGoToQuran = (surah: number, ayah?: number) => {
+    navigate(`/read?surah=${surah}${ayah ? `&ayah=${ayah}` : ''}`);
+  };
+
   return (
     <div className="atlas-page">
       {/* Header */}
@@ -583,19 +587,59 @@ export function AtlasPage() {
                   <span className="popup-category" style={{ background: item.color }}>
                     {item.categoryLabel}
                   </span>
-                  {item.imageUrl && (
-                    <div style={{ marginTop: '10px', borderRadius: '8px', overflow: 'hidden' }}>
-                      <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '130px', objectFit: 'cover' }} />
+                  
+                  {/* Image Display Fixed */}
+                  {item.location.imageUrl && (
+                    <div style={{ marginTop: '10px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                      <img 
+                        src={item.location.imageUrl} 
+                        alt={item.title} 
+                        style={{ width: '100%', height: '140px', objectFit: 'cover' }} 
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
                     </div>
                   )}
+
                   <div className="popup-location">
                     <MapPin size={12} /> {item.location.name} — {item.location.nameAr}
                   </div>
                   <div className="popup-summary">{item.summary}</div>
-                  <div className="popup-actions" style={{ marginTop: item.imageUrl ? '10px' : '15px' }}>
+                  
+                  <div className="popup-actions" style={{ marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <button className="popup-btn" onClick={() => handleReadStory(item)}>
                       {item.type === 'story' ? '📖 Lire le récit' : '📜 Voir la biographie'}
                     </button>
+                    
+                    {/* Redirection vers le Coran */}
+                    {item.type === 'story' && (stories.find(s => s.id === item.originalId)?.surahs?.[0]) && (
+                      <button 
+                        className="popup-btn" 
+                        style={{ background: 'transparent', border: '1px solid var(--color-accent)', color: 'var(--color-accent)' }}
+                        onClick={() => {
+                          const s = stories.find(st => st.id === item.originalId);
+                          if (s?.surahs?.[0]) {
+                            handleGoToQuran(s.surahs[0].number, s.surahs[0].startAyah);
+                          }
+                        }}
+                      >
+                        📖 Lire le Verset Coranique
+                      </button>
+                    )}
+                    
+                    {item.type === 'prophet' && (prophets.find(p => p.id === item.originalId)?.surahs?.[0]) && (
+                      <button 
+                        className="popup-btn" 
+                        style={{ background: 'transparent', border: '1px solid var(--color-accent)', color: 'var(--color-accent)' }}
+                        onClick={() => {
+                          const p = prophets.find(pr => pr.id === item.originalId);
+                          if (p?.surahs?.[0]) {
+                            handleGoToQuran(p.surahs[0].number, p.surahs[0].startAyah);
+                          }
+                        }}
+                      >
+                        📖 Lire le Verset Coranique
+                      </button>
+                    )}
                   </div>
                 </div>
               </Popup>
