@@ -97,6 +97,19 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                     </span>
                 </div>
 
+                {/* Location Image */}
+                {story.location?.imageUrl && (
+                    <div className="story-modal__image-container" style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>
+                        <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                            <img 
+                                src={story.location.imageUrl} 
+                                alt={story.title}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                        </div>
+                    </div>
+                )}
+
                 {/* Story */}
                 <div className="story-modal__section">
                     <div className="story-modal__section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

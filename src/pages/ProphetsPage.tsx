@@ -74,6 +74,19 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                     </div>
                 </div>
 
+                {/* Location Image */}
+                {prophet.location?.imageUrl && (
+                    <div className="prophet-modal__image-container" style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>
+                        <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                            <img 
+                                src={prophet.location.imageUrl} 
+                                alt={prophet.nameFr}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                        </div>
+                    </div>
+                )}
+
                 {/* Lineage */}
                 {prophet.lineage && (
                     <div className="prophet-modal__section">
