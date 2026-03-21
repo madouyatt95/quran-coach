@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { ArrowLeft, MapPin } from 'lucide-react';
+import { ArrowLeft, MapPin, Layers, Clock } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story } from '../data/storiesData';
 import { prophets } from '../data/prophets';
 import 'leaflet/dist/leaflet.css';
@@ -43,6 +43,44 @@ const HUPPE_ROUTE: [number, number][] = [
   [15.42, 45.35],  // Ma'rib
 ];
 
+// Era Constants
+export type Era = 'pre-flood' | 'patriarchs' | 'exodus' | 'kings' | 'roman' | 'prophetic';
+
+export const ERA_INFO: Record<Era | 'all', { label: string, color: string }> = {
+  'all': { label: 'Toutes les époques', color: '#ffffff' },
+  'pre-flood': { label: "L'Aube de l'Humanité", color: '#8D6E63' },
+  'patriarchs': { label: 'L\'Ère des Patriarches', color: '#D4E157' },
+  'exodus': { label: 'L\'Exode', color: '#FF7043' },
+  'kings': { label: 'Le Royaume d\'Israël', color: '#AB47BC' },
+  'roman': { label: 'L\'Ère Romaine', color: '#26C6DA' },
+  'prophetic': { label: 'L\'Ère Prophétique', color: '#FFD700' },
+};
+
+function getEraForProphet(name: string): Era {
+   const n = name.toLowerCase();
+   if (['adam', 'idris', 'nuh'].some(x => n.includes(x))) return 'pre-flood';
+   if (['musa', 'harun'].some(x => n.includes(x))) return 'exodus';
+   if (['dawud', 'sulayman', 'ilyas', 'alyasa', 'yunus'].some(x => n.includes(x))) return 'kings';
+   if (['zakariyya', 'yahya', 'isa'].some(x => n.includes(x))) return 'roman';
+   if (['muhammad'].some(x => n.includes(x))) return 'prophetic';
+   return 'patriarchs';
+}
+
+function getEraForStory(id: string): Era {
+   if (id === 'caverne' || id === 'maryam') return 'roman';
+   if (id === 'elephant' || id === 'isra-miraj') return 'prophetic';
+   if (id === 'pharaon' || id === 'karun' || id === 'vache' || id === 'samiri') return 'exodus';
+   if (id === 'talut-jalut' || id === 'saba' || id === 'huppe') return 'kings';
+   return 'patriarchs'; // Default fallback 
+}
+
+// Map layer constants
+const MAP_STYLES = {
+  dark: { name: 'Thème Sombre', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' },
+  satellite: { name: 'Satellite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' },
+  parchment: { name: 'Mappemonde', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}' }
+};
+
 type AtlasItem = {
   id: string;
   type: 'story' | 'prophet';
@@ -56,12 +94,15 @@ type AtlasItem = {
   originalId: string;
   categoryLabel: string;
   categoryIcon: string;
+  era: Era;
 };
 
 export function AtlasPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [activeEra, setActiveEra] = useState<Era | 'all'>('all');
+  const [mapStyle, setMapStyle] = useState<keyof typeof MAP_STYLES>('dark');
   const [selectedItem, setSelectedItem] = useState<AtlasItem | null>(null);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
@@ -84,6 +125,7 @@ export function AtlasPage() {
           originalId: s.id,
           categoryLabel: STORY_CATEGORIES[s.category].label,
           categoryIcon: STORY_CATEGORIES[s.category].icon,
+          era: getEraForStory(s.id)
         });
       }
     });
@@ -103,6 +145,7 @@ export function AtlasPage() {
           originalId: p.id,
           categoryLabel: 'Prophètes',
           categoryIcon: '📜',
+          era: getEraForProphet(p.nameFr)
         });
       }
     });
@@ -110,12 +153,16 @@ export function AtlasPage() {
     return items;
   }, []);
 
-  const filteredItems = useMemo(() =>
-    activeFilter === 'all'
-      ? atlasItems
-      : atlasItems.filter(i => i.category === activeFilter),
-    [activeFilter, atlasItems]
-  );
+  const filteredItems = useMemo(() => {
+    let result = atlasItems;
+    if (activeFilter !== 'all') {
+      result = result.filter(i => i.category === activeFilter);
+    }
+    if (activeEra !== 'all') {
+      result = result.filter(i => i.era === activeEra);
+    }
+    return result;
+  }, [activeFilter, activeEra, atlasItems]);
 
   useEffect(() => {
     const storyId = searchParams.get('story');
@@ -222,8 +269,40 @@ export function AtlasPage() {
         ))}
       </div>
 
+      {/* Timeline Filter */}
+      <div className="atlas-timeline">
+        <button
+          className={`timeline-era-btn ${activeEra === 'all' ? 'active' : ''}`}
+          onClick={() => setActiveEra('all')}
+        >
+          <Clock size={16} /> Chronologie (Toutes)
+        </button>
+        {(Object.keys(ERA_INFO) as Array<Era | 'all'>).filter(k => k !== 'all').map(era => (
+          <button
+            key={era}
+            className={`timeline-era-btn ${activeEra === era ? 'active' : ''}`}
+            onClick={() => setActiveEra(era)}
+            style={{ color: activeEra === era ? '#fff' : ERA_INFO[era].color, borderColor: ERA_INFO[era].color }}
+          >
+            <div className="timeline-era-dot" style={{ background: ERA_INFO[era].color }}></div>
+            {ERA_INFO[era].label}
+          </button>
+        ))}
+      </div>
+
       {/* Map */}
-      <div className="atlas-map-container">
+      <div className="atlas-map-container" style={{ position: 'relative' }}>
+        <div className="atlas-map-controls">
+           {Object.entries(MAP_STYLES).map(([key, style]) => (
+             <button
+               key={key}
+               className={`map-style-btn ${mapStyle === key ? 'active' : ''}`}
+               onClick={() => setMapStyle(key as keyof typeof MAP_STYLES)}
+             >
+               <Layers size={14} /> {style.name}
+             </button>
+           ))}
+        </div>
         <MapContainer
           center={[25, 40]}
           zoom={5}
@@ -233,8 +312,9 @@ export function AtlasPage() {
           style={{ height: '100%', width: '100%' }}
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+            key={mapStyle}
+            url={MAP_STYLES[mapStyle].url}
+            attribution='&copy; Atlas'
           />
 
           {flyTo && <FlyToLocation lat={flyTo.lat} lng={flyTo.lng} zoom={flyTo.zoom} />}
