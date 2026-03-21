@@ -5,7 +5,8 @@ export type StoryCategory =
   | 'personnages'
   | 'paraboles'
   | 'evenements'
-  | 'divers';
+  | 'divers'
+  | 'sira';
 
 export interface StorySurah {
   number: number;
@@ -41,6 +42,7 @@ export const STORY_CATEGORIES: Record<StoryCategory, { label: string; labelAr: s
   paraboles: { label: 'Paraboles & Allégories', labelAr: 'أَمثَال وعِبَر', icon: '🔮', color: '#2196F3' },
   evenements: { label: 'Événements historiques', labelAr: 'أَحدَاث تَارِيخِيَّة', icon: '⚔️', color: '#FF9800' },
   divers: { label: 'Récits divers', labelAr: 'قِصَص مُتَنَوِّعَة', icon: '📜', color: '#4CAF50' },
+  sira: { label: 'La Sira (Biographie)', labelAr: 'السيرة النبوية', icon: '⚔️', color: '#B71C1C' },
 };
 
 export const stories: Story[] = [
@@ -765,4 +767,78 @@ export const stories: Story[] = [
     location: { lat: 31.68, lng: 34.95, name: 'Vallée d\'Elah, Palestine', nameAr: 'وادي السنط، فلسطين' },
     audio: '',
   },
+  // ========== LA SIRA (BIOGRAPHIE PROPHÉTIQUE) ==========
+  {
+    id: 'badr',
+    title: 'La Bataille de Badr',
+    titleAr: 'غزوة بدر',
+    icon: '⚔️',
+    category: 'sira',
+    summary: 'La première grande bataille de l\'Islam (an 2 de l\'Hégire), où 313 musulmans ont vaincu une armée mecquoise de 1000 hommes, grâce à l\'aide des anges envoyés par Allah. Cette victoire éclatante a consolidé la jeune communauté musulmane de Médine et prouvé que la foi l\'emportait sur le nombre et l\'équipement.',
+    morals: [
+      'La victoire vient d\'Allah seul et non de la supériorité numérique',
+      'L\'importance de la foi inébranlable et de l\'invocation (Du\'a)',
+      'La justice divine intervient toujours pour secourir les opprimés',
+    ],
+    surahs: [
+      { number: 3, name: 'Al-Imran', startAyah: 123 },
+      { number: 8, name: 'Al-Anfal', startAyah: 9 },
+    ],
+    color: '#B71C1C',
+    location: { lat: 23.774, lng: 38.784, name: 'Plaine de Badr', nameAr: 'بدر' },
+  },
+  {
+    id: 'uhud',
+    title: 'La Bataille de Uhud',
+    titleAr: 'غزوة أحُد',
+    icon: '🛡️',
+    category: 'sira',
+    summary: 'Une année après Badr (an 3 de l\'Hégire), les Qurayshites reviennent se venger. La bataille d\'Uhud fut une épreuve difficile pour les musulmans suite à la désobéissance des archers qui ont quitté leur poste croyant le butin acquis. Le Prophète ﷺ fut blessé et son oncle Hamza martyrisé. C\'est une leçon majeure sur les conséquences de la désobéissance.',
+    morals: [
+      'L\'obéissance stricte au Messager est primordiale',
+      'L\'attrait des biens de ce monde (le butin) peut mener à la défaite',
+      'Les épreuves et les échecs forgent les croyants sincères',
+    ],
+    surahs: [
+      { number: 3, name: 'Al-Imran', startAyah: 153 },
+    ],
+    color: '#E53935',
+    location: { lat: 24.505, lng: 39.613, name: 'Mont Uhud', nameAr: 'جبل أحد' },
+  },
+  {
+    id: 'khandaq',
+    title: 'La Bataille du Fossé (Al-Khandaq)',
+    titleAr: 'غزوة الخندق',
+    icon: '⛏️',
+    category: 'sira',
+    summary: 'Également appelée Bataille des Coalisés (Al-Ahzab) en l\'an 5 de l\'Hégire. Face à une coalition massive de 10 000 hommes menaçant Médine, le Prophète ﷺ suivit l\'idée novatrice du compagnon Salman al-Farisi et fit creuser un immense fossé défensif autour de la ville. Le siège échoua après douze jours grâce à l\'intervention d\'une tempête par décret divin.',
+    morals: [
+      'L\'importance de la consultation (Al-Choura) et d\'écouter les bonnes idées',
+      'La patience face aux blocus et aux mensonges de l\'ennemi',
+      'Allah secourt ceux qui agissent et s\'en remettent à Lui',
+    ],
+    surahs: [
+      { number: 33, name: 'Al-Ahzab', startAyah: 9 },
+    ],
+    color: '#795548',
+    location: { lat: 24.475, lng: 39.593, name: 'Al-Khandaq (Médine)', nameAr: 'الخندق' },
+  },
+  {
+    id: 'tabuk',
+    title: 'L\'Expédition de Tabuk',
+    titleAr: 'غزوة تبوك',
+    icon: '🏜️',
+    category: 'sira',
+    summary: 'La dernière grande expédition menée par le Prophète ﷺ (an 9 de l\'Hégire) en plein été brûlant ("l\'Heure de la Difficulté"), pour faire face à la rumeur d\'une attaque de l\'Empire Byzantin. Cette marche éprouvante de 600km révéla la nature des hypocrites qui restèrent en arrière, tandis que les vrais croyants sacrifièrent tous leurs biens.',
+    morals: [
+      'L\'épreuve financière et physique révèle les vrais croyants (les hypocrites)',
+      'Le repentir est ouvert à ceux qui commettent des erreurs sincèrement (ex: l\'histoire de Ka\'b ibn Malik)',
+      'La fermeté de la communauté face aux superpuissances de l\'époque',
+    ],
+    surahs: [
+      { number: 9, name: 'At-Tawbah', startAyah: 117 },
+    ],
+    color: '#F57C00',
+    location: { lat: 28.383, lng: 36.578, name: 'Tabuk', nameAr: 'تبوك' },
+  }
 ];

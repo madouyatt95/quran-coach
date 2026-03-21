@@ -43,6 +43,23 @@ const HUPPE_ROUTE: [number, number][] = [
   [15.42, 45.35],  // Ma'rib
 ];
 
+const HIJRA_ROUTE: [number, number][] = [
+  [21.42, 39.83],  // La Mecque
+  [24.47, 39.61],  // Médine
+];
+
+const EXODUS_ROUTE: [number, number][] = [
+  [30.79, 31.83],  // Égypte (Gosen)
+  [29.97, 32.55],  // Traversée de la Mer Rouge
+  [28.54, 33.97],  // Mont Sinaï
+];
+
+const IBRAHIM_ROUTE: [number, number][] = [
+  [30.96, 46.10],  // Ur (Irak)
+  [31.52, 35.10],  // Hébron (Palestine)
+  [21.42, 39.83],  // La Mecque
+];
+
 // Era Constants
 export type Era = 'pre-flood' | 'patriarchs' | 'exodus' | 'kings' | 'roman' | 'prophetic';
 
@@ -68,9 +85,10 @@ function getEraForProphet(name: string): Era {
 
 function getEraForStory(id: string): Era {
    if (id === 'caverne' || id === 'maryam') return 'roman';
-   if (id === 'elephant' || id === 'isra-miraj') return 'prophetic';
-   if (id === 'pharaon' || id === 'karun' || id === 'vache' || id === 'samiri') return 'exodus';
-   if (id === 'talut-jalut' || id === 'saba' || id === 'huppe') return 'kings';
+   if (['elephant', 'isra-miraj', 'badr', 'uhud', 'khandaq', 'tabuk'].includes(id)) return 'prophetic';
+   if (['pharaon', 'karun', 'vache', 'samiri'].includes(id)) return 'exodus';
+   if (['talut-jalut', 'saba', 'huppe'].includes(id)) return 'kings';
+   if (['aad', 'thamud', 'madyan', 'luqman', 'jardin', 'qabil-habil'].includes(id)) return 'patriarchs';
    return 'patriarchs'; // Default fallback 
 }
 
@@ -319,20 +337,24 @@ export function AtlasPage() {
 
           {flyTo && <FlyToLocation lat={flyTo.lat} lng={flyTo.lng} zoom={flyTo.zoom} />}
 
-          {/* Isra & Mi'raj route */}
-          {(activeFilter === 'all' || activeFilter === 'evenements') && (
-            <Polyline
-              positions={ISRA_MIRAJ_ROUTE}
-              pathOptions={{ color: '#c9a84c', weight: 2, dashArray: '8, 8', opacity: 0.7 }}
-            />
+          {/* Polylines for routes */}
+          {(activeEra === 'all' || activeEra === 'prophetic') && (
+            <>
+              <Polyline positions={ISRA_MIRAJ_ROUTE} pathOptions={{ color: '#c9a84c', weight: 2, dashArray: '8, 8', opacity: 0.7 }} />
+              <Polyline positions={HIJRA_ROUTE} pathOptions={{ color: '#FFD700', weight: 2, dashArray: '8, 8', opacity: 0.7 }} />
+            </>
           )}
 
-          {/* Huppe route */}
-          {(activeFilter === 'all' || activeFilter === 'divers') && (
-            <Polyline
-              positions={HUPPE_ROUTE}
-              pathOptions={{ color: '#33691E', weight: 2, dashArray: '8, 8', opacity: 0.7 }}
-            />
+          {(activeEra === 'all' || activeEra === 'kings') && (
+            <Polyline positions={HUPPE_ROUTE} pathOptions={{ color: '#33691E', weight: 2, dashArray: '8, 8', opacity: 0.7 }} />
+          )}
+
+          {(activeEra === 'all' || activeEra === 'exodus') && (
+            <Polyline positions={EXODUS_ROUTE} pathOptions={{ color: '#FF7043', weight: 2, dashArray: '8, 8', opacity: 0.7 }} />
+          )}
+
+          {(activeEra === 'all' || activeEra === 'patriarchs') && (
+            <Polyline positions={IBRAHIM_ROUTE} pathOptions={{ color: '#D4E157', weight: 2, dashArray: '8, 8', opacity: 0.7 }} />
           )}
 
           {/* Story and Prophet markers */}
