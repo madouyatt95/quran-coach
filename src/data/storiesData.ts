@@ -6,7 +6,8 @@ export type StoryCategory =
   | 'paraboles'
   | 'evenements'
   | 'divers'
-  | 'sira';
+  | 'sira'
+  | 'duas';
 
 export interface StorySurah {
   number: number;
@@ -43,6 +44,7 @@ export const STORY_CATEGORIES: Record<StoryCategory, { label: string; labelAr: s
   evenements: { label: 'Événements historiques', labelAr: 'أَحدَاث تَارِيخِيَّة', icon: '⚔️', color: '#FF9800' },
   divers: { label: 'Récits divers', labelAr: 'قِصَص مُتَنَوِّعَة', icon: '📜', color: '#4CAF50' },
   sira: { label: 'La Sira (Biographie)', labelAr: 'السيرة النبوية', icon: '⚔️', color: '#B71C1C' },
+  duas: { label: 'Invocations (Du\'as)', labelAr: 'أدعية', icon: '🤲', color: '#00BCD4' },
 };
 
 export const stories: Story[] = [
@@ -840,5 +842,42 @@ export const stories: Story[] = [
     ],
     color: '#F57C00',
     location: { lat: 28.383, lng: 36.578, name: 'Tabuk', nameAr: 'تبوك' },
+  },
+  // ========== INVOCATIONS ==========
+  {
+    id: 'dua-yunus',
+    title: 'L\'Invocation de Yunus',
+    titleAr: 'لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
+    icon: '🐋',
+    category: 'duas',
+    summary: 'Dans les ténèbres du ventre de la baleine, au fond de la mer, Yunus implora Allah avec cette invocation de détresse. Le Prophète ﷺ a dit : "Aucun musulman ne supplie son Seigneur avec cette invocation sans qu\'Allah ne l\'exauce."',
+    morals: ["Le repentir sincère dans les moments de désespoir", "La puissance du Tasbih (glorification)"],
+    surahs: [{ number: 21, name: 'Al-Anbiya', startAyah: 87 }],
+    color: '#00BCD4',
+    location: { lat: 36.3639, lng: 43.1492, name: 'Mer Méditerranée / Ninive', nameAr: 'نينوى / البحر' },
+  },
+  {
+    id: 'dua-musa',
+    title: 'L\'Invocation de Musa',
+    titleAr: 'رَبِّ إِنِّي لِمَا أَنْزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ',
+    icon: '🏜️',
+    category: 'duas',
+    summary: 'Fuyant l\'Égypte, épuisé et affamé à Madyan, après avoir abreuvé les troupeaux de deux jeunes femmes, Musa s\'assit à l\'ombre et fit cette invocation humble. Allah lui envoya immédiatement un abri, un emploi et une épouse.',
+    morals: ["Exprimer son besoin total envers Allah", "Le bienfait d'aider autrui avant de demander pour soi"],
+    surahs: [{ number: 28, name: 'Al-Qasas', startAyah: 24 }],
+    color: '#00BCD4',
+    location: { lat: 28.5, lng: 34.8, name: 'Madyan (Arabie)', nameAr: 'مدين' },
+  },
+  {
+    id: 'dua-ibrahim',
+    title: 'L\'Invocation d\'Ibrahim',
+    titleAr: 'رَبَّنَا تَقَبَّلْ مِنَّا ۖ إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ',
+    icon: '🕋',
+    category: 'duas',
+    summary: 'En élevant les fondations de la Ka\'ba avec son fils Ismaïl, Ibrahim prononça cette invocation, soulignant que même les œuvres les plus grandioses nécessitent l\'acceptation d\'Allah.',
+    morals: ["L'humilité même après les grandes actions", "S'associer en famille dans l'adoration"],
+    surahs: [{ number: 2, name: 'Al-Baqarah', startAyah: 127 }],
+    color: '#00BCD4',
+    location: { lat: 21.4225, lng: 39.8262, name: 'La Mecque (Ka\'ba)', nameAr: 'مكة المكرمة' },
   }
 ];

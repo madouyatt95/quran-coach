@@ -464,7 +464,18 @@ export function AtlasPage() {
                     <span className="popup-emoji">{item.icon}</span>
                     <div className="popup-titles">
                       <div className="popup-title">{item.title}</div>
-                      <div className="popup-title-ar">{item.titleAr}</div>
+                      <div className="popup-title-ar" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {item.titleAr}
+                        {item.category === 'duas' && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); const u = new SpeechSynthesisUtterance(item.titleAr); u.lang='ar-SA'; window.speechSynthesis.speak(u); }} 
+                            style={{ background: 'rgba(0,188,212,0.15)', border: '1px solid rgba(0,188,212,0.3)', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#00BCD4' }}
+                            title="Écouter"
+                          >
+                            🔊
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <span className="popup-category" style={{ background: item.color }}>
