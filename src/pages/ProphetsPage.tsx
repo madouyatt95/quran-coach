@@ -18,6 +18,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { goToSurah, goToAyah } = useQuranStore();
+    const [imageError, setImageError] = useState(false);
 
     const goToSurahPage = (surahNumber: number, startAyah?: number) => {
         if (startAyah) {
@@ -75,12 +76,13 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 </div>
 
                 {/* Location Image */}
-                {prophet.location?.imageUrl && (
+                {prophet.location?.imageUrl && !imageError && (
                     <div className="prophet-modal__image-container" style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>
                         <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
                             <img 
                                 src={prophet.location.imageUrl} 
                                 alt={prophet.nameFr}
+                                onError={() => setImageError(true)}
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
                         </div>

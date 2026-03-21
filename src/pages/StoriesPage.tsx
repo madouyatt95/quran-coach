@@ -12,6 +12,7 @@ type FilterMode = 'all' | StoryCategory;
 function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) {
     const navigate = useNavigate();
     const { goToSurah, goToAyah } = useQuranStore();
+    const [imageError, setImageError] = useState(false);
 
     const [isAudioLoading, setIsAudioLoading] = useState(false);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -98,12 +99,13 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                 </div>
 
                 {/* Location Image */}
-                {story.location?.imageUrl && (
+                {story.location?.imageUrl && !imageError && (
                     <div className="story-modal__image-container" style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>
                         <div style={{ width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
                             <img 
                                 src={story.location.imageUrl} 
                                 alt={story.title}
+                                onError={() => setImageError(true)}
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
                         </div>
