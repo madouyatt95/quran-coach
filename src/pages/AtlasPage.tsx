@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import { ArrowLeft, MapPin, Layers, Clock, Compass } from 'lucide-react';
+import { ArrowLeft, MapPin, Layers, Clock, Compass, Target } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story } from '../data/storiesData';
 import { prophets } from '../data/prophets';
 import 'leaflet/dist/leaflet.css';
@@ -60,6 +60,16 @@ const IBRAHIM_ROUTE: [number, number][] = [
   [21.42, 39.83],  // La Mecque
 ];
 
+const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+};
+
 const HD_SITES = [
   { id: 'hira', lat: 21.459, lng: 39.859, name: 'Grotte de Hira', icon: '⛰️', desc: 'Première révélation formelle (Surah Al-Alaq)' },
   { id: 'thawr', lat: 21.378, lng: 39.851, name: 'Grotte de Thawr', icon: '🕷️', desc: 'Refuge du Prophète ﷺ et d\'Abu Bakr pendant la Hijra' },
@@ -73,6 +83,15 @@ const HD_SITES = [
 function ZoomListener({ onZoom }: { onZoom: (zoom: number) => void }) {
   useMapEvents({
     zoomend: (e) => onZoom(e.target.getZoom()),
+  });
+  return null;
+}
+
+function QuizMapListener({ active, onMapClick }: { active: boolean; onMapClick: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click(e) {
+      if (active) onMapClick(e.latlng.lat, e.latlng.lng);
+    }
   });
   return null;
 }
@@ -142,6 +161,11 @@ export function AtlasPage() {
   const [currentZoom, setCurrentZoom] = useState(5);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [isQuizMode, setIsQuizMode] = useState(false);
+  const [quizTarget, setQuizTarget] = useState<AtlasItem | null>(null);
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizTurn, setQuizTurn] = useState(0);
+  const [quizFeedback, setQuizFeedback] = useState<{message: string, success: boolean} | null>(null);
   const [selectedItem, setSelectedItem] = useState<AtlasItem | null>(null);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
@@ -233,6 +257,52 @@ export function AtlasPage() {
     return counts;
   }, [atlasItems]);
 
+  const startQuiz = () => {
+    setIsQuizMode(true);
+    setQuizScore(0);
+    setQuizTurn(1);
+    setQuizFeedback(null);
+    setMapStyle('parchment'); 
+    setFlyTo({ lat: 25, lng: 40, zoom: 4 });
+    const candidates = atlasItems;
+    setQuizTarget(candidates[Math.floor(Math.random() * candidates.length)]);
+  };
+
+  const stopQuiz = () => {
+    setIsQuizMode(false);
+    setQuizTarget(null);
+    setQuizFeedback(null);
+    setFlyTo({ lat: 25, lng: 40, zoom: 5 });
+  };
+
+  const handleQuizClick = (lat: number, lng: number) => {
+    if (!quizTarget || quizFeedback) return;
+    
+    const dist = getDistance(lat, lng, quizTarget.location.lat, quizTarget.location.lng);
+    const success = dist < 300; // tolérance
+    
+    if (success) {
+      setQuizScore(s => s + 1);
+      setQuizFeedback({ message: `Bravo ! Vous étiez à ${Math.round(dist)} km.`, success: true });
+    } else {
+      setQuizFeedback({ message: `Raté ! La cible était à ${Math.round(dist)} km (${quizTarget.location.name}).`, success: false });
+    }
+
+    setFlyTo({ lat: quizTarget.location.lat, lng: quizTarget.location.lng, zoom: 6 });
+
+    setTimeout(() => {
+      if (quizTurn < 5) {
+        setQuizTurn(t => t + 1);
+        setQuizFeedback(null);
+        const candidates = atlasItems;
+        setQuizTarget(candidates[Math.floor(Math.random() * candidates.length)]);
+      } else {
+        alert(`Quiz terminé ! Score : ${success ? quizScore + 1 : quizScore}/5`);
+        stopQuiz();
+      }
+    }, 4000);
+  };
+
   const handleFindQibla = () => {
     setIsLocating(true);
     if ('geolocation' in navigator) {
@@ -286,18 +356,44 @@ export function AtlasPage() {
         </div>
         <div className="atlas-title-ar">أَطْلَسُ القُرْآن</div>
         <p>Découvrez les lieux des récits coraniques</p>
-        <button 
-          className="qibla-btn"
-          onClick={handleFindQibla}
-          disabled={isLocating}
-          style={{ marginTop: '15px', padding: '8px 16px', borderRadius: '20px', background: 'rgba(201,168,76,0.15)', color: 'var(--color-accent)', border: '1px solid rgba(201,168,76,0.4)', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.2s' }}
-        >
-          <Compass size={18} /> {isLocating ? 'Recherche...' : userLocation ? 'Ma Qibla' : 'Afficher ma Qibla'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '15px' }}>
+          <button 
+            className="qibla-btn"
+            onClick={handleFindQibla}
+            disabled={isLocating || isQuizMode}
+            style={{ padding: '8px 16px', borderRadius: '20px', background: 'rgba(201,168,76,0.15)', color: 'var(--color-accent)', border: '1px solid rgba(201,168,76,0.4)', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.2s' }}
+          >
+            <Compass size={18} /> {isLocating ? 'Recherche...' : userLocation ? 'Ma Qibla' : 'Afficher ma Qibla'}
+          </button>
+          {!isQuizMode && (
+             <button 
+               className="quiz-btn"
+               onClick={startQuiz}
+               style={{ padding: '8px 16px', borderRadius: '20px', background: 'rgba(76,175,80,0.15)', color: '#4CAF50', border: '1px solid rgba(76,175,80,0.4)', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.2s' }}
+             >
+               <Target size={18} /> Jouer au Quiz
+             </button>
+          )}
+        </div>
       </div>
 
+      {isQuizMode && quizTarget && (
+        <div className="atlas-quiz-overlay" style={{ background: 'rgba(15,23,42,0.9)', padding: '15px 20px', borderRadius: '12px', margin: '0 20px 20px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',  border: '1px solid rgba(255,255,255,0.1)' }}>
+          <h3 style={{ color: '#fff', fontSize: '1.2rem', textAlign: 'center' }}>📌 Trouvez : <span style={{ color: 'var(--color-accent)' }}>{quizTarget.title}</span></h3>
+          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Tour {quizTurn}/5 — Score: {quizScore}</p>
+          {quizFeedback && (
+            <div style={{ background: quizFeedback.success ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)', color: quizFeedback.success ? '#81C784' : '#E57373', padding: '10px', borderRadius: '8px', width: '100%', textAlign: 'center' }}>
+              {quizFeedback.message}
+            </div>
+          )}
+          <button onClick={stopQuiz} style={{ background: 'transparent', color: '#ccc', border: '1px solid rgba(255,255,255,0.2)', padding: '6px 16px', borderRadius: '20px', cursor: 'pointer', marginTop: '5px' }}>Quitter le Quiz</button>
+        </div>
+      )}
+
       {/* Stats */}
-      <div className="atlas-stats">
+      {!isQuizMode && (
+        <>
+          <div className="atlas-stats">
         <div className="atlas-stat">
           <div className="stat-value">{atlasItems.length}</div>
           <div className="stat-label">Lieux</div>
@@ -359,6 +455,8 @@ export function AtlasPage() {
           </button>
         ))}
       </div>
+      </>
+      )}
 
       {/* Map */}
       <div className="atlas-map-container" style={{ position: 'relative' }}>
@@ -388,6 +486,7 @@ export function AtlasPage() {
           />
 
           <ZoomListener onZoom={setCurrentZoom} />
+          <QuizMapListener active={isQuizMode} onMapClick={handleQuizClick} />
 
           {flyTo && <FlyToLocation lat={flyTo.lat} lng={flyTo.lng} zoom={flyTo.zoom} />}
 
@@ -446,8 +545,8 @@ export function AtlasPage() {
             <Polyline positions={IBRAHIM_ROUTE} pathOptions={{ color: '#D4E157', weight: 2, dashArray: '8, 8', opacity: 0.7 }} />
           )}
 
-          {/* Story and Prophet markers */}
-          {filteredItems.map(item => (
+          {/* Story and Prophet markers (Hidden during quiz except for feedback) */}
+          {(!isQuizMode || quizFeedback) && filteredItems.map(item => (
             <Marker
               key={item.id}
               position={[item.location.lat, item.location.lng]}
