@@ -8,8 +8,19 @@ import { usePrayerStore } from '../stores/prayerStore';
 
 let VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
-// ─── Permission ──────────────────────────────────────
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
+
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
+    if (Capacitor.isNativePlatform()) {
+        try {
+            const permStatus = await LocalNotifications.requestPermissions();
+            return permStatus.display === 'granted' ? 'granted' : 'denied';
+        } catch {
+            return 'denied';
+        }
+    }
+
     if (!('Notification' in window)) {
         console.warn('[Push] Notifications not supported');
         return 'denied';
@@ -20,6 +31,7 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 }
 
 export function getNotificationPermission(): NotificationPermission {
+    if (Capacitor.isNativePlatform()) return 'granted'; // Rely on requestPermissions dynamically instead
     if (!('Notification' in window)) return 'denied';
     return Notification.permission;
 }
@@ -52,6 +64,10 @@ export async function subscribeToPush(options: {
     prayerSettings?: any;
 }): Promise<boolean> {
     try {
+        if (Capacitor.isNativePlatform()) {
+            return true; // We use Local Notifications on Native
+        }
+
         if (!VAPID_PUBLIC_KEY) {
             throw new Error('VITE_VAPID_PUBLIC_KEY manquante dans le fichier .env');
         }
@@ -131,6 +147,12 @@ export async function updatePushPreferences(prefs: {
     prayerSettings?: any;
 }): Promise<boolean> {
     try {
+        if (Capacitor.isNativePlatform()) {
+            // Preferences are saved in the app's local stores (Zustand) and will be used by local notifications
+            // If syncing with Supabase is still desired for backup, we can do it without push subscription endpoint
+            return true;
+        }
+
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         if (!subscription) return false;
@@ -176,6 +198,8 @@ export async function updatePushPreferences(prefs: {
 // ─── Update location (for prayer times) ─────────────
 export async function updatePushLocation(latitude: number, longitude: number): Promise<void> {
     try {
+        if (Capacitor.isNativePlatform()) return;
+
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         if (!subscription) return;
@@ -197,6 +221,12 @@ export async function updatePushLocation(latitude: number, longitude: number): P
 // ─── Unsubscribe ────────────────────────────────────
 export async function unsubscribeFromPush(): Promise<void> {
     try {
+        if (Capacitor.isNativePlatform()) {
+            await LocalNotifications.removeAllDeliveredNotifications();
+            // TODO: Unschedule all future notifications if desired
+            return;
+        }
+
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         if (!subscription) return;
@@ -218,6 +248,12 @@ export async function unsubscribeFromPush(): Promise<void> {
 // ─── Check if push is active ────────────────────────
 export async function isPushSubscribed(): Promise<boolean> {
     try {
+        if (Capacitor.isNativePlatform()) {
+            // Check if Local Notifications permission is granted
+            const req = await LocalNotifications.checkPermissions();
+            return req.display === 'granted';
+        }
+
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         return !!subscription;
@@ -230,6 +266,24 @@ export async function isPushSubscribed(): Promise<boolean> {
 export async function sendTestNotification(): Promise<boolean> {
     const permission = await requestNotificationPermission();
     if (permission !== 'granted') return false;
+
+    if (Capacitor.isNativePlatform()) {
+        try {
+            await LocalNotifications.schedule({
+                notifications: [
+                    {
+                        title: "🔔 Quran Coach",
+                        body: "Les notifications natives fonctionnent parfaitement ! بارك الله فيك",
+                        id: new Date().getTime(),
+                        schedule: { at: new Date(Date.now() + 1000) },
+                    }
+                ]
+            });
+            return true;
+        } catch {
+            return false;
+        }
+    }
 
     try {
         const registration = await navigator.serviceWorker.ready;

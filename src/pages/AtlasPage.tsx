@@ -5,6 +5,9 @@ import L from 'leaflet';
 import { ArrowLeft, MapPin, Layers, Clock, Compass, Target } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story } from '../data/storiesData';
 import { prophets } from '../data/prophets';
+import { Capacitor } from '@capacitor/core';
+import { Geolocation } from '@capacitor/geolocation';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import 'leaflet/dist/leaflet.css';
 import './AtlasPage.css';
 
@@ -282,9 +285,11 @@ export function AtlasPage() {
     const success = dist < 300; // tolérance
     
     if (success) {
+      if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Medium });
       setQuizScore(s => s + 1);
       setQuizFeedback({ message: `Bravo ! Vous étiez à ${Math.round(dist)} km.`, success: true });
     } else {
+      if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light });
       setQuizFeedback({ message: `Raté ! La cible était à ${Math.round(dist)} km (${quizTarget.location.name}).`, success: false });
     }
 
@@ -303,32 +308,50 @@ export function AtlasPage() {
     }, 4000);
   };
 
-  const handleFindQibla = () => {
+  const handleFindQibla = async () => {
     setIsLocating(true);
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
-          setUserLocation(loc);
-          setFlyTo({ lat: loc[0], lng: loc[1], zoom: 4 });
-          setIsLocating(false);
-        },
-        () => {
-          alert("Impossible de déterminer votre position. Veuillez autoriser la géolocalisation.");
-          setIsLocating(false);
+    
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const permission = await Geolocation.checkPermissions();
+        if (permission.location !== 'granted') {
+          const req = await Geolocation.requestPermissions();
+          if (req.location !== 'granted') throw new Error('PERMISSION_DENIED');
         }
-      );
-    } else {
-      alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+        const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
+        setUserLocation(loc);
+        setFlyTo({ lat: loc[0], lng: loc[1], zoom: 4 });
+      } else {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
+              setUserLocation(loc);
+              setFlyTo({ lat: loc[0], lng: loc[1], zoom: 4 });
+            },
+            () => {
+              alert("Impossible de déterminer votre position. Veuillez autoriser la géolocalisation.");
+            }
+          );
+        } else {
+          alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        }
+      }
+    } catch (e) {
+      alert("Impossible de déterminer votre position. Veuillez autoriser la géolocalisation.");
+    } finally {
       setIsLocating(false);
     }
   };
 
   const handleMarkerClick = (item: AtlasItem) => {
+    if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light });
     setSelectedItem(item);
   };
 
   const handleListItemClick = (item: AtlasItem) => {
+    if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light });
     setSelectedItem(item);
     setFlyTo({ lat: item.location.lat, lng: item.location.lng, zoom: 10 });
     setTimeout(() => {

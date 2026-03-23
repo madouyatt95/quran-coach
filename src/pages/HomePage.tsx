@@ -8,6 +8,7 @@ import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { SmartSentinel } from '../components/Home/SmartSentinel';
+import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -253,12 +254,15 @@ function useNextPrayer() {
                 if (pMin > currentMin) {
                     const diff = pMin - currentMin;
                     const hrs = Math.floor(diff / 60);
+                    const nameLoc = namesFr[p] || p;
+                    const timeLoc = timeStr;
                     setData({
-                        name: namesFr[p] || p,
+                        name: nameLoc,
                         nameAr: namesAr[p] || '',
-                        time: timeStr,
+                        time: timeLoc,
                         countdown: hrs > 0 ? `${hrs}h ${diff % 60}min` : `${diff % 60} min`,
                     });
+                    updateNextPrayerWidget(nameLoc, timeLoc).catch(() => {});
                     return;
                 }
             }
@@ -266,10 +270,12 @@ function useNextPrayer() {
             const fajrStr = timings.fajr || timings.Fajr || '05:00';
             const [fH, fM] = fajrStr.split(':').map(Number);
             const diff = (24 * 60 - currentMin) + (fH || 5) * 60 + (fM || 0);
+            const nameLocFajr = namesFr.fajr || 'Fajr';
             setData({
-                name: namesFr.fajr || 'Fajr', nameAr: namesAr.fajr || 'الفجر', time: fajrStr,
+                name: nameLocFajr, nameAr: namesAr.fajr || 'الفجر', time: fajrStr,
                 countdown: `${Math.floor(diff / 60)}h ${diff % 60}min`,
             });
+            updateNextPrayerWidget(nameLocFajr, fajrStr).catch(() => {});
         };
 
         computeNextPrayer();
@@ -299,6 +305,13 @@ export function HomePage() {
     const navigate = useNavigate();
     const nextPrayer = useNextPrayer();
     const dhikr = useDhikr();
+
+    // Sync Hadith widget
+    useEffect(() => {
+        if (hadith) {
+            updateHadithWidget(hadith.textFr, hadith.source).catch(() => {});
+        }
+    }, [hadith]);
 
     // Custom Duaa Modal state
     const [showAddDuaa, setShowAddDuaa] = useState(false);

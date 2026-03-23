@@ -216,6 +216,11 @@ export function useSmartCoaching() {
                 // 9. Mot du Jour
                 const wordIdx = now.getDate() % QURAN_VOCABULARY.length;
                 const word = QURAN_VOCABULARY[wordIdx];
+                
+                import('../lib/widgetService').then(({ updateSentinelWidget }) => {
+                    updateSentinelWidget(word.ar, `${word.word} : ${word.meaning}`).catch(() => {});
+                }).catch(() => {});
+
                 activeCards.push({
                     id: 'vocab-day', type: 'education', emoji: '✍️',
                     title: 'Mot du Jour',

@@ -35,7 +35,7 @@
 
   /* Typography */
   --font-arabic: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
-  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
 
   --text-arabic-xl: 2.5rem;
   --text-arabic-lg: 2rem;
@@ -152,6 +152,12 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+input, textarea, .arabic, p {
+  user-select: text;
 }
 
 #root {
@@ -159,6 +165,7 @@ body {
   display: flex;
   flex-direction: column;
   padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Arabic Text Styles */

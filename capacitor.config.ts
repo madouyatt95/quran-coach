@@ -13,6 +13,13 @@ const config: CapacitorConfig = {
     contentInset: 'automatic',
     scheme: 'Quran Coach',
   },
+  plugins: {
+    Keyboard: {
+      resize: 'body',
+      style: 'dark',
+      resizeOnFullScreen: true,
+    },
+  },
 };
 
 export default config;

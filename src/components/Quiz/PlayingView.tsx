@@ -4,6 +4,8 @@ import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES, DIFFICULTY_CONFIG } from '../../data/quizTypes';
 import type { PowerUpEffect } from '../../data/quizTypes';
 import { AudioPlayer } from './AudioPlayer';
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 export function PlayingView() {
     const { questions, currentIndex, submitAnswer, mode, player, opponent, score, opponentScore, opponentAnswers, difficulty, sprintCorrect, currentStreak, duelRound, duelRounds, powerUps, applyPowerUp, resetQuiz, activeEffects } = useQuizStore();
@@ -62,6 +64,15 @@ export function PlayingView() {
 
     const handleChoice = (index: number) => {
         if (selectedIndex !== null && !isSprint) return;
+
+        if (Capacitor.isNativePlatform()) {
+            if (index === question.correctIndex) {
+                 Haptics.impact({ style: ImpactStyle.Medium });
+            } else {
+                 Haptics.impact({ style: ImpactStyle.Heavy }); // Heavy for wrong answer
+            }
+        }
+
         setSelectedIndex(index);
         if (!isSprint) {
             clearInterval(timerRef.current);
