@@ -148,8 +148,68 @@ export async function updatePushPreferences(prefs: {
 }): Promise<boolean> {
     try {
         if (Capacitor.isNativePlatform()) {
-            // Preferences are saved in the app's local stores (Zustand) and will be used by local notifications
-            // If syncing with Supabase is still desired for backup, we can do it without push subscription endpoint
+            const { LocalNotifications } = await import('@capacitor/local-notifications');
+            const { computeDay, PRAYER_NAMES_FR } = await import('./prayerEngine');
+            const prayerState = usePrayerStore.getState();
+            
+            const lat = prefs.latitude !== undefined ? prefs.latitude : prayerState.lat;
+            const lng = prefs.longitude !== undefined ? prefs.longitude : prayerState.lng;
+            const pSettings = prefs.prayerSettings !== undefined ? prefs.prayerSettings : prayerState.settings;
+            const pConf = prefs.prayerMinutesConfig !== undefined ? prefs.prayerMinutesConfig : {};
+            
+            // Annuler d'abord toutes les notifications en attente
+            try {
+                const pending = await LocalNotifications.getPending();
+                if (pending.notifications.length > 0) {
+                    await LocalNotifications.cancel({ notifications: pending.notifications });
+                }
+            } catch (e) { console.error('Cancel failed', e); }
+
+            if (prefs.prayerEnabled === false || lat == null || lng == null) {
+                return true;
+            }
+
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            const notificationsToSchedule = [];
+            let notifId = 1000;
+
+            // Préparer 7 jours de notifications
+            for (let i = 0; i < 7; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                const result = computeDay(date, lat, lng, pSettings);
+
+                for (const p of prayers) {
+                    const offsetMin = pConf[p] ?? 10; // 10 min par défaut
+                    const timeStr = result.formattedTimes[p];
+                    if (!timeStr) continue;
+
+                    const [h, m] = timeStr.split(':').map(Number);
+                    const prayerDate = new Date(date);
+                    prayerDate.setHours(h, m, 0, 0);
+                    prayerDate.setMinutes(prayerDate.getMinutes() - offsetMin);
+
+                    // Ne pas programmer dans le passé
+                    if (prayerDate.getTime() <= Date.now()) continue;
+
+                    notificationsToSchedule.push({
+                        id: notifId++,
+                        title: `Rappel : ${PRAYER_NAMES_FR[p as keyof typeof PRAYER_NAMES_FR] || p}`,
+                        body: offsetMin === 0 ? "C'est l'heure de la prière." : `La prière commence dans ${offsetMin} minutes.`,
+                        schedule: { at: prayerDate },
+                        sound: 'default'
+                    });
+                }
+            }
+
+            if (notificationsToSchedule.length > 0) {
+                try {
+                    await LocalNotifications.schedule({ notifications: notificationsToSchedule });
+                    console.log(`[Native] Scheduled ${notificationsToSchedule.length} local prayer notifications.`);
+                } catch (e) {
+                    console.error('Failed to schedule local notifications', e);
+                }
+            }
             return true;
         }
 
