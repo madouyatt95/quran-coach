@@ -134,7 +134,7 @@ export function useCoach({
     }, []);
 
     // Start listening (ASR)
-    const startCoachListening = useCallback((overrideAyahIndex?: number) => {
+    const startCoachListening = useCallback(async (overrideAyahIndex?: number) => {
         if (ayahs.length === 0) return;
         resetCoach();
 
@@ -144,7 +144,7 @@ export function useCoach({
         const startWordIndex = allCoachWords.findIndex(w => w.ayahIndex === currentAyahIdx);
         const safeStartIndex = startWordIndex >= 0 ? startWordIndex : 0;
 
-        const success = speechRecognitionService.start(expectedText, {
+        const success = await speechRecognitionService.start(expectedText, {
             onWordMatch: (wordIndex, isCorrect, spokenWord) => {
                 const word = allCoachWords[wordIndex];
                 if (!word) return;
@@ -193,8 +193,8 @@ export function useCoach({
     }, [ayahs, allCoachWords, resetCoach, playingIndex, startWhisperBackup]);
 
     // Stop listening
-    const stopCoachListening = useCallback(() => {
-        speechRecognitionService.stop();
+    const stopCoachListening = useCallback(async () => {
+        await speechRecognitionService.stop();
         if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
             mediaRecorderRef.current.stop();
             mediaRecorderRef.current.stream.getTracks().forEach(t => t.stop());

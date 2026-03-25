@@ -1,5 +1,7 @@
 // Speech Recognition Service for real-time Quran recitation feedback
-// Uses Web Speech API for free, real-time speech-to-text
+// Hybrid: Native Capacitor plugin on iOS, Web Speech API on PWA/browser
+
+import { Capacitor } from '@capacitor/core';
 
 // Arabic normalization helpers - improved for Quran
 function normalizeArabic(text: string): string {
@@ -81,7 +83,7 @@ export interface WordMatch {
 export interface RecognitionCallbacks {
     onWordMatch: (wordIndex: number, isCorrect: boolean, spokenWord?: string) => void;
     onInterimResult: (text: string) => void;
-    onCurrentWord: (wordIndex: number) => void; // NEW: for real-time highlighting
+    onCurrentWord: (wordIndex: number) => void;
     onError: (error: string) => void;
     onEnd: () => void;
 }
@@ -92,30 +94,84 @@ class SpeechRecognitionService {
     private expectedWords: string[] = [];
     private currentWordIndex = 0;
     private callbacks: RecognitionCallbacks | null = null;
-    private processedWords: Set<number> = new Set(); // Track already processed words
+    private processedWords: Set<number> = new Set();
+    private useNative = false;
+    private nativeListenerHandle: any = null;
 
-    // Check if Web Speech API is supported
+    // Check if speech recognition is supported (native or web)
     isSupported(): boolean {
+        if (Capacitor.isNativePlatform()) {
+            return true; // Native plugin always available on iOS
+        }
         return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
     }
 
     // Initialize recognition session
-    start(expectedText: string, callbacks: RecognitionCallbacks, startIndex: number = 0): boolean {
-        if (!this.isSupported()) {
-            callbacks.onError('Speech recognition not supported');
-            return false;
-        }
-
+    async start(expectedText: string, callbacks: RecognitionCallbacks, startIndex: number = 0): Promise<boolean> {
         // Parse expected words
         this.expectedWords = expectedText
-            .replace(/[\u064B-\u065F\u0670]/g, '') // Remove tashkeel for comparison
+            .replace(/[\u064B-\u065F\u0670]/g, '')
             .split(/\s+/)
             .filter(w => w.length > 0);
         this.currentWordIndex = startIndex;
         this.callbacks = callbacks;
         this.processedWords = new Set();
+        this.useNative = Capacitor.isNativePlatform();
 
-        // Create recognition instance
+        if (this.useNative) {
+            return this.startNative(callbacks);
+        } else {
+            return this.startWeb(callbacks);
+        }
+    }
+
+    // ─── Native iOS (Capacitor plugin) ───────────────────────
+    private async startNative(callbacks: RecognitionCallbacks): Promise<boolean> {
+        try {
+            const { SpeechRecognition } = await import('@capacitor-community/speech-recognition');
+
+            // Request permissions
+            const permResult = await SpeechRecognition.requestPermissions();
+            if (permResult.speechRecognition !== 'granted') {
+                callbacks.onError('Veuillez autoriser la reconnaissance vocale dans les Réglages.');
+                return false;
+            }
+
+            // Listen for partial results
+            this.nativeListenerHandle = await SpeechRecognition.addListener('partialResults', (data: any) => {
+                const matches: string[] = data.matches || [];
+                if (matches.length > 0) {
+                    const transcript = matches[0];
+                    this.callbacks?.onInterimResult(transcript);
+                    // Process as final since native returns accumulated text
+                    this.processTranscriptRealtime(transcript, true);
+                }
+            });
+
+            // Start listening
+            await SpeechRecognition.start({
+                language: 'ar-SA',
+                partialResults: true,
+                popup: false,
+            });
+
+            this.isListening = true;
+            this.callbacks?.onCurrentWord(this.currentWordIndex);
+            return true;
+        } catch (error: any) {
+            console.error('[SpeechRecognition] Native start failed:', error);
+            callbacks.onError(error.message || 'Erreur de reconnaissance vocale native');
+            return false;
+        }
+    }
+
+    // ─── Web Speech API (PWA / Browser) ──────────────────────
+    private startWeb(callbacks: RecognitionCallbacks): boolean {
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            callbacks.onError('Speech recognition not supported');
+            return false;
+        }
+
         const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         this.recognition = new SpeechRecognitionClass();
 
@@ -125,16 +181,14 @@ class SpeechRecognitionService {
         this.recognition.interimResults = true;
         this.recognition.maxAlternatives = 1;
 
-        // Handle results - IMPROVED for mobile
+        // Handle results
         this.recognition.onresult = (event: any) => {
             const results = event.results;
             const lastResult = results[results.length - 1];
             const transcript = lastResult[0].transcript;
 
-            // Send interim result for display
             this.callbacks?.onInterimResult(transcript);
 
-            // On some mobile devices, isFinal can be very delayed. 
             const isAndrMobile = new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(navigator.userAgent);
             this.processTranscriptRealtime(transcript, lastResult.isFinal || isAndrMobile);
         };
@@ -157,8 +211,7 @@ class SpeechRecognitionService {
         try {
             this.recognition.start();
             this.isListening = true;
-            // Highlight first word as current
-            this.callbacks?.onCurrentWord(0);
+            this.callbacks?.onCurrentWord(this.currentWordIndex);
             return true;
         } catch (error) {
             console.error('Failed to start speech recognition:', error);
@@ -167,11 +220,22 @@ class SpeechRecognitionService {
     }
 
     // Stop recognition
-    stop(): void {
-        if (this.recognition && this.isListening) {
+    async stop(): Promise<void> {
+        if (this.useNative) {
+            try {
+                const { SpeechRecognition } = await import('@capacitor-community/speech-recognition');
+                await SpeechRecognition.stop();
+                if (this.nativeListenerHandle) {
+                    this.nativeListenerHandle.remove();
+                    this.nativeListenerHandle = null;
+                }
+            } catch (e) {
+                console.warn('[SpeechRecognition] Native stop error:', e);
+            }
+        } else if (this.recognition && this.isListening) {
             this.recognition.stop();
-            this.isListening = false;
         }
+        this.isListening = false;
     }
 
     // Process transcript in real-time
@@ -180,18 +244,10 @@ class SpeechRecognitionService {
             .split(/\s+/)
             .filter(w => w.length > 0);
 
-        // N'utiliser que les résultats "finaux" pour valider les mots
-        // Cela évite que le même mot soit compté plusieurs fois pendant qu'il est "en cours"
         if (!isFinal) {
-            // Toutefois, on peut faire du highlighting en temps réel
-            if (spokenWords.length > 0) {
-                // On ne valide pas, mais on peut donner un indice visuel sur le mot actuel
-                // this.callbacks?.onInterimResult(transcript); // Déjà fait dans onresult
-            }
             return;
         }
 
-        // Pour les résultats finaux, on traite tous les mots parlés
         for (const spokenWord of spokenWords) {
             if (this.currentWordIndex >= this.expectedWords.length) break;
 
@@ -199,7 +255,6 @@ class SpeechRecognitionService {
             const matchResult = this.findBestMatch(spokenWord, this.currentWordIndex);
 
             if (matchResult.matched) {
-                // Marquer les mots sautés comme erreurs
                 for (let j = this.currentWordIndex; j < matchResult.matchIndex; j++) {
                     if (!this.processedWords.has(j)) {
                         this.processedWords.add(j);
@@ -207,7 +262,6 @@ class SpeechRecognitionService {
                     }
                 }
 
-                // Valider le mot actuel
                 if (!this.processedWords.has(matchResult.matchIndex)) {
                     this.processedWords.add(matchResult.matchIndex);
                     this.callbacks?.onWordMatch(matchResult.matchIndex, true, spokenWord);
@@ -215,7 +269,6 @@ class SpeechRecognitionService {
 
                 this.currentWordIndex = matchResult.matchIndex + 1;
             } else {
-                // Pas de match direct, on regarde si c'est une erreur sur le mot attendu
                 if (!this.processedWords.has(this.currentWordIndex)) {
                     this.processedWords.add(this.currentWordIndex);
                     const fuzzyMatch = areWordsEqual(spokenWord, expectedWord);
@@ -224,18 +277,15 @@ class SpeechRecognitionService {
                 this.currentWordIndex++;
             }
 
-            // Highlight next word
             if (this.currentWordIndex < this.expectedWords.length) {
                 this.callbacks?.onCurrentWord(this.currentWordIndex);
             }
         }
     }
 
-
-
-    // IMPROVED: Sliding window to find best match (allows skipping ahead)
+    // Sliding window to find best match (allows skipping ahead)
     private findBestMatch(spokenWord: string, startIndex: number): { matched: boolean; matchIndex: number } {
-        const windowSize = 4; // Look up to 4 words ahead for better tolerance
+        const windowSize = 4;
 
         for (let i = startIndex; i < Math.min(startIndex + windowSize, this.expectedWords.length); i++) {
             if (areWordsEqual(spokenWord, this.expectedWords[i])) {
@@ -250,8 +300,6 @@ class SpeechRecognitionService {
     setCurrentWordIndex(index: number): void {
         if (index >= 0 && index < this.expectedWords.length) {
             this.currentWordIndex = index;
-            // Clear processed status for subsequent words if needed? 
-            // Better to let processTranscriptRealtime handle it or just clear everything from here on
             for (let i = index; i < this.expectedWords.length; i++) {
                 this.processedWords.delete(i);
             }
@@ -278,4 +326,3 @@ class SpeechRecognitionService {
 }
 
 export const speechRecognitionService = new SpeechRecognitionService();
-
