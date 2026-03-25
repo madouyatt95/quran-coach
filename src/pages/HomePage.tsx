@@ -210,11 +210,10 @@ function useNextPrayer() {
                 // If no coords in store yet, get from geolocation
                 if (lat == null || lng == null) {
                     try {
-                        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-                            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
-                        );
-                        lat = pos.coords.latitude;
-                        lng = pos.coords.longitude;
+                        const { resolveCoords } = await import('../lib/locationService');
+                        const coords = await resolveCoords();
+                        lat = coords.lat;
+                        lng = coords.lng;
                     } catch {
                         // Fallback: Paris
                         lat = 48.8566;

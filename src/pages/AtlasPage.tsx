@@ -6,7 +6,6 @@ import { ArrowLeft, MapPin, Layers, Clock, Compass, Target } from 'lucide-react'
 import { stories, STORY_CATEGORIES, type Story } from '../data/storiesData';
 import { prophets } from '../data/prophets';
 import { Capacitor } from '@capacitor/core';
-import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import 'leaflet/dist/leaflet.css';
 import './AtlasPage.css';
@@ -312,32 +311,11 @@ export function AtlasPage() {
     setIsLocating(true);
     
     try {
-      if (Capacitor.isNativePlatform()) {
-        const permission = await Geolocation.checkPermissions();
-        if (permission.location !== 'granted') {
-          const req = await Geolocation.requestPermissions();
-          if (req.location !== 'granted') throw new Error('PERMISSION_DENIED');
-        }
-        const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-        const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
-        setUserLocation(loc);
-        setFlyTo({ lat: loc[0], lng: loc[1], zoom: 4 });
-      } else {
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const loc: [number, number] = [position.coords.latitude, position.coords.longitude];
-              setUserLocation(loc);
-              setFlyTo({ lat: loc[0], lng: loc[1], zoom: 4 });
-            },
-            () => {
-              alert("Impossible de déterminer votre position. Veuillez autoriser la géolocalisation.");
-            }
-          );
-        } else {
-          alert("La géolocalisation n'est pas supportée par votre navigateur.");
-        }
-      }
+      const { resolveCoords } = await import('../lib/locationService');
+      const coords = await resolveCoords();
+      const loc: [number, number] = [coords.lat, coords.lng];
+      setUserLocation(loc);
+      setFlyTo({ lat: loc[0], lng: loc[1], zoom: 4 });
     } catch (e) {
       alert("Impossible de déterminer votre position. Veuillez autoriser la géolocalisation.");
     } finally {

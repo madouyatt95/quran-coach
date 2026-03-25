@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Compass, Navigation, AlertTriangle, Loader2, MapPin, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Capacitor } from '@capacitor/core';
-import { Geolocation } from '@capacitor/geolocation';
 import './QiblaPage.css';
 
 const KAABA_LAT = 21.4225;
@@ -40,30 +38,10 @@ export function QiblaPage() {
     useEffect(() => {
         const fetchLocation = async () => {
             try {
-                let latitude: number;
-                let longitude: number;
-
-                if (Capacitor.isNativePlatform()) {
-                    const permission = await Geolocation.checkPermissions();
-                    if (permission.location !== 'granted') {
-                        const req = await Geolocation.requestPermissions();
-                        if (req.location !== 'granted') throw new Error('PERMISSION_DENIED');
-                    }
-                    const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-                    latitude = position.coords.latitude;
-                    longitude = position.coords.longitude;
-                } else {
-                    if (!navigator.geolocation) {
-                        setLocationError(t('qibla.geoNotSupported', "La géolocalisation n'est pas supportée par votre navigateur."));
-                        setIsLoading(false);
-                        return;
-                    }
-                    const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-                        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
-                    });
-                    latitude = pos.coords.latitude;
-                    longitude = pos.coords.longitude;
-                }
+                const { resolveCoords } = await import('../lib/locationService');
+                const coords = await resolveCoords();
+                const latitude = coords.lat;
+                const longitude = coords.lng;
 
                 const angle = calculateQiblaDirection(latitude, longitude);
                 setQiblaAngle(angle);
