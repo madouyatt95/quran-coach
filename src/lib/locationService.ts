@@ -1,7 +1,9 @@
 import { usePrayerStore } from '../stores/prayerStore';
+import { Capacitor } from '@capacitor/core';
 
 /**
  * resolveCoords — standalone helper to get current position
+ * Uses native Capacitor Geolocation on iOS, browser geolocation on web.
  * Fallback to Paris if geolocation fails.
  */
 export async function resolveCoords(): Promise<{ lat: number; lng: number }> {
@@ -11,14 +13,29 @@ export async function resolveCoords(): Promise<{ lat: number; lng: number }> {
         return { lat: state.lat, lng: state.lng };
     }
 
-    // 2) Try browser geolocation (3s timeout — fast fail)
+    // 2) Try geolocation (native or web)
     try {
-        if (!navigator.geolocation) throw new Error('No geolocation');
+        let latitude: number;
+        let longitude: number;
 
-        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 })
-        );
-        const { latitude, longitude } = pos.coords;
+        if (Capacitor.isNativePlatform()) {
+            const { Geolocation } = await import('@capacitor/geolocation');
+            const permission = await Geolocation.checkPermissions();
+            if (permission.location !== 'granted') {
+                const req = await Geolocation.requestPermissions();
+                if (req.location !== 'granted') throw new Error('Permission denied');
+            }
+            const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 5000 });
+            latitude = pos.coords.latitude;
+            longitude = pos.coords.longitude;
+        } else {
+            if (!navigator.geolocation) throw new Error('No geolocation');
+            const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 })
+            );
+            latitude = pos.coords.latitude;
+            longitude = pos.coords.longitude;
+        }
 
         // Reverse geocode (non-blocking — don't await if slow)
         let city = `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
