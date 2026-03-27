@@ -181,15 +181,16 @@ function useDhikr() {
     }, []);
 
     const restoreDefaults = useCallback(() => {
-        if (window.confirm('Voulez-vous restaurer la liste de base ? Toutes vos personnalisations seront perdues.')) {
-            setCounts({});
-            localStorage.removeItem(todayKey);
+        if (window.confirm('Voulez-vous restaurer la liste de Dhikr par défaut ? Vos invocations personnelles seront supprimées.')) {
+            // Only reset Dhikr specific data
             localStorage.removeItem('user-dhikrs-order');
             setAllItems([...DHIKR_LIST]);
-            // Small hack to ensure UI refresh
-            setTimeout(() => window.location.reload(), 100);
+            // Force refresh of this specific state
+            setTimeout(() => {
+                setAllItems([...DHIKR_LIST]);
+            }, 10);
         }
-    }, [todayKey]);
+    }, []);
 
     const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
     const targetedCount = allItems.filter(d => d.target > 0).length;
@@ -637,11 +638,11 @@ export function HomePage() {
 
                 <div 
                     ref={dhikrSectionRef}
-                    className="home-dhikr__grid"
+                    className="home-dhikr__flex-container"
                     style={{ 
                         position: 'relative', 
-                        display: 'grid', 
-                        gridTemplateColumns: '1fr 1fr', 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
                         gap: '10px',
                         minHeight: '200px'
                     }}
@@ -657,7 +658,7 @@ export function HomePage() {
                             return (
                                 <motion.div 
                                     key={d.id} 
-                                    layout="position"
+                                    layout
                                     drag={isEditingDhikr}
                                     dragMomentum={false}
                                     onDragStart={() => setDraggedId(d.id)}
@@ -665,29 +666,38 @@ export function HomePage() {
                                     onDrag={(_, info) => {
                                         if (!isEditingDhikr) return;
                                         
-                                        // Throttle reorder updates to avoid layout glitches
                                         const now = Date.now();
-                                        if (now - lastReorderTime.current < 200) return;
+                                        if (now - lastReorderTime.current < 150) return;
 
                                         const items = dhikr.allItems;
                                         const currentIndex = items.findIndex(item => item.id === d.id);
                                         
-                                        // Detect element under pointer
-                                        const elementUnder = document.elementFromPoint(info.point.x, info.point.y);
-                                        const targetCard = elementUnder?.closest('.dhikr-draggable');
-                                        
-                                        if (targetCard) {
-                                            const targetId = targetCard.getAttribute('data-id');
-                                            if (targetId && targetId !== d.id) {
-                                                const targetIndex = items.findIndex(item => item.id === targetId);
-                                                if (targetIndex !== -1) {
-                                                    lastReorderTime.current = now;
-                                                    const newOrder = [...items];
-                                                    const [movedItem] = newOrder.splice(currentIndex, 1);
-                                                    newOrder.splice(targetIndex, 0, movedItem);
-                                                    dhikr.reorderDhikrs(newOrder);
-                                                }
+                                        // Manual collision detection with other dhikr-draggable elements
+                                        const targets = document.querySelectorAll('.dhikr-draggable');
+                                        let targetIndex = -1;
+
+                                        targets.forEach((target, index) => {
+                                            const tId = target.getAttribute('data-id');
+                                            if (tId === d.id) return;
+
+                                            const rect = target.getBoundingClientRect();
+                                            // Check if center of dragged item is within this rect
+                                            if (
+                                                info.point.x > rect.left && 
+                                                info.point.x < rect.right && 
+                                                info.point.y > rect.top && 
+                                                info.point.y < rect.bottom
+                                            ) {
+                                                targetIndex = index;
                                             }
+                                        });
+                                        
+                                        if (targetIndex !== -1 && targetIndex !== currentIndex) {
+                                            lastReorderTime.current = now;
+                                            const newOrder = [...items];
+                                            const [movedItem] = newOrder.splice(currentIndex, 1);
+                                            newOrder.splice(targetIndex, 0, movedItem);
+                                            dhikr.reorderDhikrs(newOrder);
                                         }
                                     }}
                                     dragConstraints={dhikrSectionRef}
@@ -697,8 +707,8 @@ export function HomePage() {
                                         position: 'relative', 
                                         display: 'flex', 
                                         zIndex: draggedId === d.id ? 100 : 1,
-                                        width: '100%',
-                                        pointerEvents: draggedId === d.id ? 'none' : 'auto' // Crucial for elementFromPoint to work
+                                        width: 'calc(50% - 5px)',
+                                        height: '110px' // Fixed height for homogeneity
                                     }}
                                 >
                                     <button
@@ -755,15 +765,17 @@ export function HomePage() {
                             );
                         })}
                     {/* Add Custom Duaa Button */}
-                    <button
-                        className="dhikr-card dhikr-card--add"
-                        onClick={() => setShowAddDuaa(true)}
-                        style={{ '--dhikr-color': '#666' } as React.CSSProperties}
-                    >
-                        <span className="dhikr-card__emoji"><Plus size={24} /></span>
-                        <span className="dhikr-card__fr">Ajouter une duaa</span>
-                        <span className="dhikr-card__desc">Invocation personnelle</span>
-                    </button>
+                    {!isEditingDhikr && (
+                        <button
+                            className="dhikr-card dhikr-card--add"
+                            onClick={() => setShowAddDuaa(true)}
+                            style={{ '--dhikr-color': '#666', width: 'calc(50% - 5px)', height: '110px' } as React.CSSProperties}
+                        >
+                            <span className="dhikr-card__emoji"><Plus size={24} /></span>
+                            <span className="dhikr-card__fr">Ajouter une duaa</span>
+                            <span className="dhikr-card__desc">Invocation personnelle</span>
+                        </button>
+                    )}
                 </div>
             </div>
 
