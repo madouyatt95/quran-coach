@@ -174,74 +174,81 @@ const ANNUAL_EVENTS = [
 ];
 
 export function getUpcomingIslamicEvent(hijri: HijriDate): IslamicEvent | null {
-    // 1. Custom Check for Jours Blancs (White Days: 13, 14, 15 of every month)
-    // We only show it if it's today or within 3 days, and not during Ramadan
-    if (hijri.month !== 9 && hijri.day >= 10 && hijri.day <= 15) {
-        if (hijri.day === 13 || hijri.day === 14 || hijri.day === 15) {
-            return {
-                title: 'Jours Blancs',
-                description: 'Ayyam al-Bidh (jeûne recommandé)',
-                emoji: '🌕',
-                remainingDays: 0,
-                isToday: true
-            };
-        } else {
-            const daysLeft = 13 - hijri.day;
-            return {
-                title: 'Jours Blancs',
-                description: `Ayyam al-Bidh dans ${daysLeft} jour${daysLeft > 1 ? 's' : ''}`,
-                emoji: '🌕',
-                remainingDays: daysLeft,
-                isToday: false
-            };
-        }
-    }
-
-    // 2. Prioritize Annual Events
-    let nextEvent = null;
-    let minDays = 999;
+    // 1. Calculer le prochain événement annuel
+    let nextAnnualEvent = null;
+    let minAnnualDays = 999;
 
     for (const ev of ANNUAL_EVENTS) {
-        // Approximate calculation: ~29.5 days per month -> 30 for safe sorting
+        // Approx ~30 jours par mois pour le tri
         const currentAbsolute = hijri.month * 30 + hijri.day;
         let eventAbsolute = ev.month * 30 + ev.day;
         
-        // If event has passed this year, look at next year
         if (eventAbsolute < currentAbsolute) {
-            eventAbsolute += 354; // Approx Hijri year length
+            eventAbsolute += 354;
         }
 
         const diff = eventAbsolute - currentAbsolute;
         
-        if (diff >= 0 && diff < minDays) {
-            minDays = diff;
-            nextEvent = ev;
+        if (diff >= 0 && diff < minAnnualDays) {
+            minAnnualDays = diff;
+            nextAnnualEvent = ev;
         }
     }
 
-    if (!nextEvent) return null;
-
-    if (minDays === 0) {
+    // RÈGLE : Un événement annuel prend la priorité UNIQUEMENT s'il est à 3 jours ou moins
+    if (nextAnnualEvent && minAnnualDays <= 3) {
+        if (minAnnualDays === 0) {
+            return {
+                title: nextAnnualEvent.title,
+                description: "C'est aujourd'hui !",
+                emoji: nextAnnualEvent.emoji,
+                remainingDays: 0,
+                isToday: true
+            };
+        }
         return {
-            title: nextEvent.title,
-            description: "C'est aujourd'hui !",
-            emoji: nextEvent.emoji,
+            title: nextAnnualEvent.title,
+            description: `Dans ${minAnnualDays} jour${minAnnualDays > 1 ? 's' : ''}`,
+            emoji: nextAnnualEvent.emoji,
+            remainingDays: minAnnualDays,
+            isToday: false
+        };
+    }
+
+    // 2. Sinon, afficher toujours les prochains Jours Blancs
+    let wbMonth = hijri.month;
+    let wbDaysLeft = 0;
+    
+    // C'est aujourd'hui un jour blanc ?
+    if ((hijri.day === 13 || hijri.day === 14 || hijri.day === 15) && hijri.month !== 9) {
+        return {
+            title: 'Jours Blancs',
+            description: 'Ayyam al-Bidh (jeûne recommandé)',
+            emoji: '🌕',
             remainingDays: 0,
             isToday: true
         };
     }
 
-    // Don't show annual events too early globally unless it's Ramadan or Eid (which are major)
-    const isMajor = [1, 9, 10, 12].includes(nextEvent.month);
-    if (!isMajor && minDays > 15) {
-        return null; // hide minor events if > 15 days away
+    // Calcul du prochain 13ème jour du mois
+    if (hijri.day < 13) {
+        wbDaysLeft = 13 - hijri.day;
+    } else {
+        // Le mois prochain (environ 30 jours/mois)
+        wbDaysLeft = (30 - hijri.day) + 13;
+        wbMonth = hijri.month === 12 ? 1 : hijri.month + 1;
+    }
+
+    // Pas de jours blancs pendant le Ramadan (Mois 9)
+    if (wbMonth === 9) {
+        wbDaysLeft += 30; // On saute au mois de Shawwal (Mois 10)
     }
 
     return {
-        title: nextEvent.title,
-        description: `Dans ${minDays} jour${minDays > 1 ? 's' : ''}`,
-        emoji: nextEvent.emoji,
-        remainingDays: minDays,
+        title: 'Jours Blancs',
+        description: `Dans ${wbDaysLeft} jour${wbDaysLeft > 1 ? 's' : ''}`,
+        emoji: '🌕',
+        remainingDays: wbDaysLeft,
         isToday: false
     };
 }
