@@ -792,8 +792,8 @@ export function HomePage() {
             <PrayerCalendarModal
                 isOpen={showCalendar}
                 onClose={() => setShowCalendar(false)}
-                lat={lat}
-                lng={lng}
+                lat={lat ?? 0}
+                lng={lng ?? 0}
                 settings={settings}
             />
         </div>
