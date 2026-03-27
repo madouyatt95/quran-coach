@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X } from 'lucide-react';
@@ -317,7 +317,24 @@ export function HomePage() {
 
     // Settings & Edit Modes
     const [isEditingDhikr, setIsEditingDhikr] = useState(false);
-    const longPressTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const dhikrSectionRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!isEditingDhikr) return;
+        const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+            if (dhikrSectionRef.current && !dhikrSectionRef.current.contains(e.target as Node)) {
+                setIsEditingDhikr(false);
+            }
+        };
+        // Use capture phase to ensure it runs before inner handlers might stop propagation
+        document.addEventListener('mousedown', handleClickOutside, true);
+        document.addEventListener('touchstart', handleClickOutside, true);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside, true);
+            document.removeEventListener('touchstart', handleClickOutside, true);
+        };
+    }, [isEditingDhikr]);
 
     // Custom Duaa Modal state
     const [showAddDuaa, setShowAddDuaa] = useState(false);
@@ -561,7 +578,7 @@ export function HomePage() {
             </div>
 
             {/* Dhikr Counters Grid */}
-            <div className="home-dhikr">
+            <div className="home-dhikr" ref={dhikrSectionRef}>
                 <div className="home-dhikr__header">
                     <div className="home-dhikr__title">📿 {t('home.dhikr')}</div>
                     {dhikr.allTargetedDone && !isEditingDhikr && (
