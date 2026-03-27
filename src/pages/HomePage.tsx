@@ -615,9 +615,14 @@ export function HomePage() {
                     )}
                 </div>
 
-                <div className="home-dhikr__grid">
-                    <Reorder.Group axis="y" values={dhikr.allItems} onReorder={dhikr.reorderDhikrs} style={{ display: 'grid', gap: '10px', width: '100%', listStyle: 'none', padding: 0, margin: 0 }}>
-                        {dhikr.allItems.map(d => {
+                <Reorder.Group 
+                    axis="y" 
+                    values={dhikr.allItems} 
+                    onReorder={dhikr.reorderDhikrs} 
+                    className="home-dhikr__grid"
+                    style={{ listStyle: 'none', padding: 0, margin: 0 }}
+                >
+                    {dhikr.allItems.map(d => {
                             const count = dhikr.getCount(d.id);
                             const isUnlimited = d.target === 0;
                             const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
@@ -686,8 +691,6 @@ export function HomePage() {
                                 </Reorder.Item>
                             );
                         })}
-                    </Reorder.Group>
-
                     {/* Add Custom Duaa Button */}
                     <button
                         className="dhikr-card dhikr-card--add"
@@ -698,7 +701,7 @@ export function HomePage() {
                         <span className="dhikr-card__fr">Ajouter une duaa</span>
                         <span className="dhikr-card__desc">Invocation personnelle</span>
                     </button>
-                </div>
+                </Reorder.Group>
             </div>
 
             {/* Add Custom Duaa Modal */}
