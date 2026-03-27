@@ -176,6 +176,13 @@ function useDhikr() {
         setAllItems(prev => prev.filter(d => d.id !== id));
     }, []);
 
+    const getCountInSeries = useCallback((id: string) => {
+        const item = allItems.find(d => d.id === id);
+        const count = counts[id] || 0;
+        if (!item || item.target === 0) return count;
+        return count % item.target;
+    }, [counts, allItems]);
+
     const reorderDhikrs = useCallback((newOrder: DhikrItem[]) => {
         setAllItems(newOrder);
     }, []);
@@ -196,7 +203,7 @@ function useDhikr() {
     const targetedCount = allItems.filter(d => d.target > 0).length;
     const allTargetedDone = completedCount > 0 && completedCount >= targetedCount;
 
-    return { counts, tap, reset, resetAll, getCount, completedCount, targetedCount, allTargetedDone, allItems, addCustom, removeDhikr, reorderDhikrs, restoreDefaults };
+    return { counts, tap, reset, resetAll, getCount, getCountInSeries, completedCount, targetedCount, allTargetedDone, allItems, addCustom, removeDhikr, reorderDhikrs, restoreDefaults };
 }
 // ─── Next Prayer Hook (uses local engine) ────────────────
 function useNextPrayer() {
@@ -640,7 +647,6 @@ export function HomePage() {
                     values={dhikr.allItems} 
                     onReorder={dhikr.reorderDhikrs} 
                     className="home-dhikr__flex-container"
-                    ref={dhikrSectionRef}
                     style={{ 
                         listStyle: 'none', 
                         padding: 0, 
