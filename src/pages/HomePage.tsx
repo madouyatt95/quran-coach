@@ -657,13 +657,16 @@ export function HomePage() {
                                         const items = dhikr.allItems;
                                         const currentIndex = items.findIndex(item => item.id === d.id);
                                         
-                                        // Find which item we are hovering over (only original dhikr cards)
+                                        // Find which item we are hovering over (only other dhikr cards)
                                         const targets = document.querySelectorAll('.home-dhikr__grid > .dhikr-draggable');
                                         let targetIndex = -1;
                                         
                                         targets.forEach((target, index) => {
+                                            const tId = (target as HTMLElement).getAttribute('data-id');
+                                            if (tId === d.id) return; // Skip self
+
                                             const rect = target.getBoundingClientRect();
-                                            // Check if pointer is near the center of the target
+                                            // Check if pointer is over this target
                                             if (
                                                 info.point.x > rect.left && 
                                                 info.point.x < rect.right && 
@@ -674,7 +677,7 @@ export function HomePage() {
                                             }
                                         });
 
-                                        if (targetIndex !== -1 && targetIndex !== currentIndex && targetIndex < items.length) {
+                                        if (targetIndex !== -1 && targetIndex !== currentIndex) {
                                             const newOrder = [...items];
                                             const [movedItem] = newOrder.splice(currentIndex, 1);
                                             newOrder.splice(targetIndex, 0, movedItem);
@@ -684,6 +687,7 @@ export function HomePage() {
                                     dragConstraints={dhikrSectionRef}
                                     dragElastic={0.1}
                                     className="dhikr-draggable"
+                                    data-id={d.id}
                                     style={{ position: 'relative', display: 'flex', zIndex: draggedId === d.id ? 100 : 1 }}
                                 >
                                     <button
