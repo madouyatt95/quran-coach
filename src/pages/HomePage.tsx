@@ -183,9 +183,13 @@ function useDhikr() {
     const restoreDefaults = useCallback(() => {
         if (window.confirm('Voulez-vous restaurer la liste de base ? Toutes vos personnalisations seront perdues.')) {
             localStorage.removeItem('user-dhikrs-order');
-            setAllItems([...DHIKR_LIST]);
+            // Force a hard state reset
+            setAllItems([]);
+            setTimeout(() => {
+                setAllItems([...DHIKR_LIST]);
+            }, 10);
         }
-    }, []);
+    }, [allItems]); // Add allItems to deps to be safe
 
     const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
     const targetedCount = allItems.filter(d => d.target > 0).length;
@@ -633,7 +637,7 @@ export function HomePage() {
                 <div 
                     ref={dhikrSectionRef}
                     className="home-dhikr__grid"
-                    style={{ position: 'relative' }}
+                    style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}
                 >
                     {dhikr.allItems.map(d => {
                             const count = dhikr.getCount(d.id);
@@ -649,7 +653,6 @@ export function HomePage() {
                                     layout
                                     drag={isEditingDhikr}
                                     dragMomentum={false}
-                                    dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
                                     onDragStart={() => setDraggedId(d.id)}
                                     onDragEnd={() => setDraggedId(null)}
                                     onDrag={(_, info) => {
@@ -657,38 +660,33 @@ export function HomePage() {
                                         const items = dhikr.allItems;
                                         const currentIndex = items.findIndex(item => item.id === d.id);
                                         
-                                        // Find which item we are hovering over (only other dhikr cards)
-                                        const targets = document.querySelectorAll('.home-dhikr__grid > .dhikr-draggable');
-                                        let targetIndex = -1;
+                                        // Simple target detection using elementFromPoint
+                                        // This is often more reliable than manual loop
+                                        const elementUnder = document.elementFromPoint(info.point.x, info.point.y);
+                                        const targetCard = elementUnder?.closest('.dhikr-draggable');
                                         
-                                        targets.forEach((target, index) => {
-                                            const tId = (target as HTMLElement).getAttribute('data-id');
-                                            if (tId === d.id) return; // Skip self
-
-                                            const rect = target.getBoundingClientRect();
-                                            // Check if pointer is over this target
-                                            if (
-                                                info.point.x > rect.left && 
-                                                info.point.x < rect.right && 
-                                                info.point.y > rect.top && 
-                                                info.point.y < rect.bottom
-                                            ) {
-                                                targetIndex = index;
+                                        if (targetCard) {
+                                            const targetId = targetCard.getAttribute('data-id');
+                                            if (targetId && targetId !== d.id) {
+                                                const targetIndex = items.findIndex(item => item.id === targetId);
+                                                if (targetIndex !== -1) {
+                                                    const newOrder = [...items];
+                                                    const [movedItem] = newOrder.splice(currentIndex, 1);
+                                                    newOrder.splice(targetIndex, 0, movedItem);
+                                                    dhikr.reorderDhikrs(newOrder);
+                                                }
                                             }
-                                        });
-
-                                        if (targetIndex !== -1 && targetIndex !== currentIndex) {
-                                            const newOrder = [...items];
-                                            const [movedItem] = newOrder.splice(currentIndex, 1);
-                                            newOrder.splice(targetIndex, 0, movedItem);
-                                            dhikr.reorderDhikrs(newOrder);
                                         }
                                     }}
                                     dragConstraints={dhikrSectionRef}
-                                    dragElastic={0.1}
                                     className="dhikr-draggable"
                                     data-id={d.id}
-                                    style={{ position: 'relative', display: 'flex', zIndex: draggedId === d.id ? 100 : 1 }}
+                                    style={{ 
+                                        position: 'relative', 
+                                        display: 'flex', 
+                                        zIndex: draggedId === d.id ? 100 : 1,
+                                        width: '100%' 
+                                    }}
                                 >
                                     <button
                                         className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`}
