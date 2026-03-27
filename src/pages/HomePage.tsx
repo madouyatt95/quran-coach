@@ -10,7 +10,6 @@ import { useFavoritesStore } from '../stores/favoritesStore';
 import { SmartSentinel } from '../components/Home/SmartSentinel';
 import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
 import { Reorder, motion, AnimatePresence } from 'framer-motion';
-import { usePrayerStore } from '../stores/prayerStore';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -305,7 +304,6 @@ export function HomePage() {
 
     const { currentPage, currentSurah, goToSurah, goToAyah, progress } = useQuranStore();
     const { readingStreak } = useStatsStore();
-    const { lat, lng, settings } = usePrayerStore();
     const navigate = useNavigate();
     const nextPrayer = useNextPrayer();
     const dhikr = useDhikr();
