@@ -114,7 +114,7 @@ export function schedulePrayerNotifications(
         const delay = notif.time.getTime() - now.getTime();
         if (delay > 0) {
             const timeout = setTimeout(() => {
-                showLocalNotification(notif.title, notif.body);
+                showLocalNotification(notif.title, notif.body, notif.type);
                 activeTimeouts.delete(notif.id);
             }, delay);
             activeTimeouts.set(notif.id, timeout);
@@ -138,23 +138,42 @@ export function cancelAllScheduled(): void {
 
 // ─── Local Notification ──────────────────────────────────
 
-async function showLocalNotification(title: string, body: string): Promise<void> {
-    if (!('Notification' in window)) return;
-    if (Notification.permission !== 'granted') return;
-
-    try {
-        if ('serviceWorker' in navigator) {
-            const registration = await navigator.serviceWorker.ready;
-            await registration.showNotification(title, {
-                body,
-                icon: '/icon-192.png',
-                badge: '/icon-192.png',
-                tag: `prayer-${Date.now()}`,
+async function showLocalNotification(title: string, body: string, type: string): Promise<void> {
+    import('@capacitor/core').then(({ Capacitor }) => {
+        if (Capacitor.isNativePlatform()) {
+            import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
+                LocalNotifications.schedule({
+                    notifications: [{
+                        id: Math.floor(Math.random() * 10000) + 50000, // Safe id range
+                        title,
+                        body,
+                        schedule: { at: new Date(Date.now() + 1000) }, // Schedule for +1s
+                        sound: 'default'
+                    }]
+                }).catch(err => console.error('[PrayerNotif] Native schedule failed:', err));
             });
-        } else {
-            new Notification(title, { body, icon: '/icon-192.png' });
+            return;
         }
-    } catch (err) {
-        console.error('[PrayerNotif] Failed to show notification:', err);
-    }
+
+        // Web PWA fallback
+        if (!('Notification' in window)) return;
+        if (Notification.permission !== 'granted') return;
+
+        try {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body,
+                        icon: '/icon-192.png',
+                        badge: '/icon-192.png',
+                        tag: `prayer-${type}-${Date.now()}`,
+                    });
+                });
+            } else {
+                new Notification(title, { body, icon: '/icon-192.png' });
+            }
+        } catch (err) {
+            console.error('[PrayerNotif] Failed to show web notification:', err);
+        }
+    }).catch(() => { /* ignore */ });
 }

@@ -165,6 +165,16 @@ export async function updatePushPreferences(prefs: {
                 }
             } catch (e) { console.error('Cancel failed', e); }
 
+            const PRAYER_NAMES_AR: Record<string, string> = {
+                fajr: 'الفجر', dhuhr: 'الظهر',
+                asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء',
+            };
+            
+            const PRAYER_EMOJIS: Record<string, string> = {
+                fajr: '🌅', dhuhr: '☀️',
+                asr: '🌤️', maghrib: '🌅', isha: '🌙',
+            };
+
             if (prefs.prayerEnabled === false || lat == null || lng == null) {
                 return true;
             }
@@ -189,13 +199,30 @@ export async function updatePushPreferences(prefs: {
                     prayerDate.setHours(h, m, 0, 0);
                     prayerDate.setMinutes(prayerDate.getMinutes() - offsetMin);
 
-                    // Ne pas programmer dans le passé
-                    if (prayerDate.getTime() <= Date.now()) continue;
+                    // Exactly matching PWA (Supabase push) format
+                    const SUNNAN_HINTS: Record<string, string> = {
+                        fajr: " — 2 rak'at Sunna avant ⭐",
+                        dhuhr: " — 4 Sunna avant + 2 après",
+                        asr: "",
+                        maghrib: " — 2 rak'at Sunna après",
+                        isha: " — 2 Sunna après + Witr",
+                    };
+
+                    const nameFr = PRAYER_NAMES_FR[p as keyof typeof PRAYER_NAMES_FR] || p;
+                    const nameAr = PRAYER_NAMES_AR ? PRAYER_NAMES_AR[p as keyof typeof PRAYER_NAMES_AR] : '';
+                    const emoji = PRAYER_EMOJIS ? PRAYER_EMOJIS[p as keyof typeof PRAYER_EMOJIS] : '🕌';
+
+                    const sunnaHint = SUNNAN_HINTS[p] || '';
+                    const body = offsetMin === 0 
+                        ? `C'est l'heure de ${nameFr} (${timeStr})${sunnaHint}` 
+                        : `${nameFr} dans ~${offsetMin} minutes (${timeStr})${sunnaHint}`;
+
+                    const title = nameAr ? `${emoji} ${nameFr} — ${nameAr}` : `${emoji} ${nameFr}`;
 
                     notificationsToSchedule.push({
                         id: notifId++,
-                        title: `Rappel : ${PRAYER_NAMES_FR[p as keyof typeof PRAYER_NAMES_FR] || p}`,
-                        body: offsetMin === 0 ? "C'est l'heure de la prière." : `La prière commence dans ${offsetMin} minutes.`,
+                        title,
+                        body,
                         schedule: { at: prayerDate },
                         sound: 'default'
                     });

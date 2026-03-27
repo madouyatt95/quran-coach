@@ -47,7 +47,7 @@ const HIJRI_MONTH_EVENTS: Record<number, { emoji: string; title: string; descrip
     7: { emoji: '✨', title: 'Mois de Rajab', description: 'Mois sacré — préparation spirituelle' },
     8: { emoji: '🌿', title: "Mois de Sha'ban", description: 'Préparation au mois de Ramadan' },
     9: { emoji: '🕌', title: 'Ramadan Mubarak', description: 'Mois béni du jeûne et de la prière' },
-    10: { emoji: '🎉', title: 'Mois de Shawwal', description: "Aïd al-Fitr — fête de la rupture du jeûne" },
+    10: { emoji: '🎉', title: 'Mois de Shawwal', description: "Mois qui suit le Ramadan" },
     12: { emoji: '🕋', title: 'Dhul Hijjah', description: 'Mois du pèlerinage — les 10 meilleurs jours' },
 };
 
@@ -297,7 +297,14 @@ export function HomePage() {
     const hijri = useMemo(() => getHijriDate(now), [now]);
     const greeting = useMemo(() => getGreeting(), []);
     const seasonalTags = useMemo(() => getSeasonalTags(now), [now]);
-    const seasonalEvent = HIJRI_MONTH_EVENTS[hijri.month];
+    const seasonalEvent = useMemo(() => {
+        const base = HIJRI_MONTH_EVENTS[hijri.month];
+        if (!base) return null;
+        if (hijri.month === 10 && hijri.day <= 3) {
+            return { ...base, title: 'Aïd al-Fitr Mubarak', description: 'Fête de la rupture du jeûne' };
+        }
+        return base;
+    }, [hijri.month, hijri.day]);
 
     const { currentPage, currentSurah, goToSurah, goToAyah, progress } = useQuranStore();
     const { readingStreak } = useStatsStore();

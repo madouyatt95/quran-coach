@@ -60,3 +60,4 @@ export async function updateSentinelWidget(wordAr: string, wordFr: string) {
         console.error('Error updating sentinel widget data', e);
     }
 }
+

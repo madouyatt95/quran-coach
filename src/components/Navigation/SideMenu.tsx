@@ -9,6 +9,7 @@ import {
     subscribeToPush,
     unsubscribeFromPush
 } from '../../lib/notificationService';
+import { Capacitor } from '@capacitor/core';
 import './SideMenu.css';
 
 interface SideMenuProps {
@@ -33,7 +34,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         try {
             setIsLoading(true);
 
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            if (!Capacitor.isNativePlatform() && (!('serviceWorker' in navigator) || !('PushManager' in window))) {
                 return;
             }
 
