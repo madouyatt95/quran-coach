@@ -636,7 +636,7 @@ export function HomePage() {
                                     value={d} 
                                     id={d.id}
                                     dragListener={isEditingDhikr}
-                                    style={{ position: 'relative' }}
+                                    style={{ position: 'relative', display: 'flex' }}
                                 >
                                     <button
                                         className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`}
