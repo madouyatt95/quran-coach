@@ -140,9 +140,9 @@ function isMondayOrThursday(date: Date): boolean {
 }
 
 // ─── Component ───────────────────────────────────────────
-export function IslamicCalendar() {
+export function IslamicCalendar({ initiallyExpanded = false }: { initiallyExpanded?: boolean }) {
     const navigate = useNavigate();
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(initiallyExpanded);
 
     const today = new Date();
     const hijri = useMemo(() => gregorianToHijri(today), []);
@@ -156,7 +156,7 @@ export function IslamicCalendar() {
     const todayName = today.toLocaleDateString('fr-FR', { weekday: 'long' });
 
     return (
-        <div className="islamic-calendar">
+        <div className="islamic-calendar" id="islamic-calendar">
             <button className="islamic-calendar__header" onClick={() => setExpanded(!expanded)}>
                 <div className="islamic-calendar__title">
                     <Calendar size={16} />

@@ -11,7 +11,6 @@ import { SmartSentinel } from '../components/Home/SmartSentinel';
 import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
 import { Reorder, motion, AnimatePresence } from 'framer-motion';
 import { usePrayerStore } from '../stores/prayerStore';
-import { PrayerCalendarModal } from '../components/Prayer/PrayerCalendarModal';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -343,9 +342,6 @@ export function HomePage() {
     const [showAddDuaa, setShowAddDuaa] = useState(false);
     const [newDuaa, setNewDuaa] = useState<{ text: string; textFr: string; descFr: string; target: number; emoji: string }>({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
 
-    // Calendar Modal State
-    const [showCalendar, setShowCalendar] = useState(false);
-
     const handleTouchStartDhikr = () => {
         if (isEditingDhikr) return;
         longPressTimer.current = setTimeout(() => {
@@ -449,9 +445,9 @@ export function HomePage() {
             {upcomingEvent && (
                 <div 
                     className="home-seasonal" 
-                    onClick={() => setShowCalendar(true)}
+                    onClick={() => navigate('/prayer', { state: { openIslamicCalendar: true } })}
                     style={{ cursor: 'pointer' }}
-                    title="Voir le calendrier des prières"
+                    title="Voir les événements islamiques"
                 >
                     <span className="home-seasonal__emoji">{upcomingEvent.emoji}</span>
                     <div className="home-seasonal__text">
@@ -787,15 +783,6 @@ export function HomePage() {
                     ))}
                 </div>
             </div>
-
-            {/* Calendar Modal */}
-            <PrayerCalendarModal
-                isOpen={showCalendar}
-                onClose={() => setShowCalendar(false)}
-                lat={lat ?? 0}
-                lng={lng ?? 0}
-                settings={settings}
-            />
         </div>
     );
 }

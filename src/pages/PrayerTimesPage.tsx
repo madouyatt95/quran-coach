@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Settings, ChevronLeft, ChevronRight, MapPin, Bell, Clock, Sun, Moon, AlertTriangle, Info, RefreshCw, Compass, Trophy, Navigation, Check } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
@@ -207,6 +207,7 @@ function ExpressQibla({ lat, lng }: { lat: number, lng: number }) {
 
 export function PrayerTimesPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
 
     // Subscribe only to the specific slices we display in JSX
@@ -237,6 +238,19 @@ export function PrayerTimesPage() {
     const [nextPrayerName, setNextPrayerName] = useState('');
     const [progressValue, setProgressValue] = useState(0);
     const [hijriDateLabel, setHijriDateLabel] = useState('');
+
+    const shouldOpenCalendar = location.state?.openIslamicCalendar;
+
+    useEffect(() => {
+        if (shouldOpenCalendar) {
+            setTimeout(() => {
+                const el = document.getElementById('islamic-calendar');
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 300); // Wait for render
+        }
+    }, [shouldOpenCalendar]);
 
     const themeClass = getThemeClass(nextPrayerName);
 
@@ -505,7 +519,7 @@ export function PrayerTimesPage() {
                 </div>
 
                 {/* Islamic Calendar */}
-                <IslamicCalendar />
+                <IslamicCalendar initiallyExpanded={shouldOpenCalendar} />
 
                 {/* Nawafil Section (collapsible) */}
                 {showNawafil && (
