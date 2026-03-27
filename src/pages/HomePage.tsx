@@ -787,6 +787,15 @@ export function HomePage() {
                     ))}
                 </div>
             </div>
+
+            {/* Calendar Modal */}
+            <PrayerCalendarModal
+                isOpen={showCalendar}
+                onClose={() => setShowCalendar(false)}
+                lat={lat}
+                lng={lng}
+                settings={settings}
+            />
         </div>
     );
 }
