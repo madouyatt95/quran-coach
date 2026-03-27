@@ -44,7 +44,6 @@ const SURAH_NAMES: Record<number, string> = {
 };
 
 // ─── Events / Seasonal data ─────────────────────────────
-// (Events are now dynamically computed via getUpcomingIslamicEvent)
 const SHORTCUTS = [
     { path: '/prophets', emoji: '📜', labelKey: 'nav.prophets', desc: 'Prophètes', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
     { path: '/qibla', emoji: '🧭', labelKey: 'sideMenu.qibla', desc: 'Direction', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
@@ -111,7 +110,6 @@ function loadUserDhikrs(): DhikrItem[] {
         if (saved) return JSON.parse(saved);
     } catch { /* ignore */ }
     
-    // Fallback/Migration: merge DHIKR_LIST and any legacy 'custom-dhikr'
     try {
         const legacyCustom = localStorage.getItem('custom-dhikr');
         if (legacyCustom) {
@@ -127,7 +125,7 @@ function saveUserDhikrs(items: DhikrItem[]) {
     localStorage.setItem('user-dhikrs-order', JSON.stringify(items));
 }
 
-// ─── Dhikr Hook (localStorage persisted, independent counters) ─
+// ─── Dhikr Hook ──────────────────────────────────────────
 function useDhikr() {
     const todayKey = `dhikr-v2-${new Date().toISOString().split('T')[0]}`;
     const [counts, setCounts] = useState<Record<string, number>>({});
@@ -189,10 +187,8 @@ function useDhikr() {
 
     const restoreDefaults = useCallback(() => {
         if (window.confirm('Voulez-vous restaurer la liste de Dhikr par défaut ? Vos invocations personnelles seront supprimées.')) {
-            // Only reset Dhikr specific data
             localStorage.removeItem('user-dhikrs-order');
             setAllItems([...DHIKR_LIST]);
-            // Force refresh of this specific state
             setTimeout(() => {
                 setAllItems([...DHIKR_LIST]);
             }, 10);
@@ -205,60 +201,36 @@ function useDhikr() {
 
     return { counts, tap, reset, resetAll, getCount, getCountInSeries, completedCount, targetedCount, allTargetedDone, allItems, addCustom, removeDhikr, reorderDhikrs, restoreDefaults };
 }
-// ─── Next Prayer Hook (uses local engine) ────────────────
+
+// ─── Next Prayer Hook ────────────────────────────────────
 function useNextPrayer() {
     const [data, setData] = useState<{ name: string; nameAr: string; time: string; countdown: string } | null>(null);
 
     useEffect(() => {
-        const PRAYER_NAMES: Record<string, string> = {
-            fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء'
-        };
-        const PRAYER_NAMES_FR: Record<string, string> = {
-            fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha'
-        };
+        const PRAYER_NAMES: Record<string, string> = { fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء' };
+        const PRAYER_NAMES_FR: Record<string, string> = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 
         const computeNextPrayer = async () => {
             try {
                 const { usePrayerStore } = await import('../stores/prayerStore');
                 const { computeDay, DEFAULT_PRAYER_SETTINGS } = await import('../lib/prayerEngine');
                 const store = usePrayerStore.getState();
-
-                let lat = store.lat;
-                let lng = store.lng;
-
-                // If no coords in store yet, get from geolocation
-                if (lat == null || lng == null) {
-                    try {
-                        const { resolveCoords } = await import('../lib/locationService');
-                        const coords = await resolveCoords();
-                        lat = coords.lat;
-                        lng = coords.lng;
-                    } catch {
-                        // Fallback: Paris
-                        lat = 48.8566;
-                        lng = 2.3522;
-                    }
-                }
-
+                let lat = store.lat ?? 48.8566;
+                let lng = store.lng ?? 2.3522;
                 const settings = store.settings || DEFAULT_PRAYER_SETTINGS;
                 const result = computeDay(new Date(), lat, lng, settings);
-                const timings = result.formattedTimes;
-                updateCountdown(timings, PRAYER_NAMES, PRAYER_NAMES_FR);
+                updateCountdown(result.formattedTimes, PRAYER_NAMES, PRAYER_NAMES_FR);
             } catch {
-                // Fallback: API as last resort
                 try {
                     const res = await fetch(`https://api.aladhan.com/v1/timings/${Date.now() / 1000}?latitude=48.8566&longitude=2.3522&method=2`);
                     const json = await res.json();
-                    if (json.code === 200) {
-                        updateCountdown(json.data.timings, PRAYER_NAMES, PRAYER_NAMES_FR);
-                    }
+                    if (json.code === 200) updateCountdown(json.data.timings, PRAYER_NAMES, PRAYER_NAMES_FR);
                 } catch { /* silent */ }
             }
         };
 
         const updateCountdown = (timings: Record<string, string>, namesAr: Record<string, string>, namesFr: Record<string, string>) => {
             const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-            // Also check original API keys if fallback
             const apiKeys: Record<string, string> = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
             const now = new Date();
             const currentMin = now.getHours() * 60 + now.getMinutes();
@@ -274,25 +246,16 @@ function useNextPrayer() {
                     const hrs = Math.floor(diff / 60);
                     const nameLoc = namesFr[p] || p;
                     const timeLoc = timeStr;
-                    setData({
-                        name: nameLoc,
-                        nameAr: namesAr[p] || '',
-                        time: timeLoc,
-                        countdown: hrs > 0 ? `${hrs}h ${diff % 60}min` : `${diff % 60} min`,
-                    });
+                    setData({ name: nameLoc, nameAr: namesAr[p] || '', time: timeLoc, countdown: hrs > 0 ? `${hrs}h ${diff % 60}min` : `${diff % 60} min` });
                     updateNextPrayerWidget(nameLoc, timeLoc).catch(() => {});
                     return;
                 }
             }
-            // All passed → Fajr tomorrow
             const fajrStr = timings.fajr || timings.Fajr || '05:00';
             const [fH, fM] = fajrStr.split(':').map(Number);
             const diff = (24 * 60 - currentMin) + (fH || 5) * 60 + (fM || 0);
             const nameLocFajr = namesFr.fajr || 'Fajr';
-            setData({
-                name: nameLocFajr, nameAr: namesAr.fajr || 'الفجر', time: fajrStr,
-                countdown: `${Math.floor(diff / 60)}h ${diff % 60}min`,
-            });
+            setData({ name: nameLocFajr, nameAr: namesAr.fajr || 'الفجر', time: fajrStr, countdown: `${Math.floor(diff / 60)}h ${diff % 60}min` });
             updateNextPrayerWidget(nameLocFajr, fajrStr).catch(() => {});
         };
 
@@ -303,8 +266,6 @@ function useNextPrayer() {
 
     return data;
 }
-
-
 
 // ═══════════════════════════════════════════════════════════
 // HomePage Component
@@ -324,17 +285,14 @@ export function HomePage() {
     const nextPrayer = useNextPrayer();
     const dhikr = useDhikr();
 
-    // Sync Hadith widget
     useEffect(() => {
-        if (hadith) {
-            updateHadithWidget(hadith.textFr, hadith.source).catch(() => {});
-        }
+        if (hadith) updateHadithWidget(hadith.textFr, hadith.source).catch(() => {});
     }, [hadith]);
 
-    // Settings & Edit Modes
     const [isEditingDhikr, setIsEditingDhikr] = useState(false);
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const dhikrSectionRef = useRef<HTMLDivElement>(null);
+    const dhikrGroupRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!isEditingDhikr) return;
@@ -343,7 +301,6 @@ export function HomePage() {
                 setIsEditingDhikr(false);
             }
         };
-        // Use capture phase to ensure it runs before inner handlers might stop propagation
         document.addEventListener('mousedown', handleClickOutside, true);
         document.addEventListener('touchstart', handleClickOutside, true);
         return () => {
@@ -352,14 +309,9 @@ export function HomePage() {
         };
     }, [isEditingDhikr]);
 
-    // Custom Duaa Modal state
     const [showAddDuaa, setShowAddDuaa] = useState(false);
-    const [newDuaa, setNewDuaa] = useState<{ text: string; textFr: string; descFr: string; target: number; emoji: string }>({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
-
-    // Islamic Calendar Modal State
+    const [newDuaa, setNewDuaa] = useState({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
     const [showIslamicCalendar, setShowIslamicCalendar] = useState(false);
-    
-    // Body scroll lock and z-index for dragging
     const [draggedId, setDraggedId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -385,7 +337,7 @@ export function HomePage() {
 
     const handleSurahClick = useCallback((surahNumber: number) => {
         sessionStorage.setItem('isSilentJump', 'true');
-        sessionStorage.setItem('scrollToPage', '0'); // Scroll to top of surah
+        sessionStorage.setItem('scrollToPage', '0');
         goToSurah(surahNumber, { silent: true });
         navigate('/read');
     }, [goToSurah, navigate]);
@@ -405,9 +357,7 @@ export function HomePage() {
     const handleShare = async () => {
         const text = `📜 Hadith du Jour\n\n${hadith.textAr}\n\n${hadith.textFr}\n\n— ${hadith.source} (${hadith.narrator})\n\nvia Quran Coach`;
         if (navigator.share) {
-            try {
-                await navigator.share({ title: 'Hadith du Jour', text });
-            } catch { /* user cancelled */ }
+            try { await navigator.share({ title: 'Hadith du Jour', text }); } catch { /* ignore */ }
         } else {
             await navigator.clipboard.writeText(text);
         }
@@ -415,7 +365,6 @@ export function HomePage() {
 
     return (
         <div className="home-page">
-            {/* Header */}
             <div className="home-header">
                 <div className="home-header__left">
                     <div className="home-header__greeting">
@@ -427,17 +376,12 @@ export function HomePage() {
                 </div>
             </div>
 
-            {/* Continue Reading + Streak */}
             <div className="home-continue-row">
                 <button className="home-continue" onClick={handleContinueReading}>
-                    <div className="home-continue__icon">
-                        <BookMarked size={20} />
-                    </div>
+                    <div className="home-continue__icon"><BookMarked size={20} /></div>
                     <div className="home-continue__text">
                         <span className="home-continue__title">{t('home.continueReading', 'Reprendre ma lecture')}</span>
-                        <span className="home-continue__page">
-                            {SURAH_NAMES[displaySurah] || `${t('mushaf.surah', 'Sourate')} ${displaySurah}`} — {t('mushaf.page', 'Page')} {displayPage}
-                        </span>
+                        <span className="home-continue__page">{SURAH_NAMES[displaySurah] || `Sourate ${displaySurah}`} — Page {displayPage}</span>
                     </div>
                     <span className="home-continue__arrow">→</span>
                 </button>
@@ -450,8 +394,6 @@ export function HomePage() {
                 )}
             </div>
 
-
-            {/* Next Prayer */}
             {nextPrayer && (
                 <Link to="/prayers" className="home-prayer-link">
                     <div className="home-prayer">
@@ -470,14 +412,8 @@ export function HomePage() {
                 </Link>
             )}
 
-            {/* Seasonal Banner */}
             {upcomingEvent && (
-                <div 
-                    className="home-seasonal" 
-                    onClick={() => setShowIslamicCalendar(true)}
-                    style={{ cursor: 'pointer' }}
-                    title="Ouvrir le calendrier islamique"
-                >
+                <div className="home-seasonal" onClick={() => setShowIslamicCalendar(true)} style={{ cursor: 'pointer' }}>
                     <span className="home-seasonal__emoji">{upcomingEvent.emoji}</span>
                     <div className="home-seasonal__text">
                         <strong>{upcomingEvent.title}</strong>
@@ -486,122 +422,37 @@ export function HomePage() {
                 </div>
             )}
 
-            {/* 🌙 Last 10 Nights of Ramadan Banner */}
-            {hijri.month === 9 && hijri.day >= 19 && (() => {
-                let nightNumber = hijri.day;
-                // In Islam, the new day starts at Maghrib. 
-                // If it's afternoon/evening and Maghrib has passed (next prayer is Isha or Fajr), it's the next Islamic night.
-                if (now.getHours() >= 12 && (nextPrayer?.name === 'Isha' || nextPrayer?.name === 'Fajr')) {
-                    nightNumber += 1;
-                }
-                if (nightNumber < 20 || nightNumber > 30) return null;
-
-                const isOddNight = nightNumber % 2 === 1;
-                return (
-                    <>
-                        <div className={`home-last-nights ${isOddNight ? 'home-last-nights--odd' : ''}`}>
-                            <div className="home-last-nights__stars">✦ ✧ ✦ ✧ ✦</div>
-                            <div className="home-last-nights__content">
-                                <div className="home-last-nights__night-number">
-                                    <span className="home-last-nights__number">{nightNumber}</span>
-                                    <span className="home-last-nights__suffix">ème nuit</span>
-                                </div>
-                                <div className="home-last-nights__info">
-                                    <strong>Les 10 Dernières Nuits</strong>
-                                    {isOddNight && (
-                                        <span className="home-last-nights__odd-badge">
-                                            ✨ Nuit impaire — Cherchez Laylatul Qadr !
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                            <Link to="/last-nights" className="home-last-nights__dashboard-btn">
-                                📋 Mon Suivi
-                            </Link>
-                        </div>
-
-                        {/* Doua de Laylatul Qadr */}
-                        <div className="home-qadr-dua">
-                            <div className="home-qadr-dua__label">
-                                <span>🤲</span> Doua de Laylatul Qadr
-                            </div>
-                            <div className="home-qadr-dua__arabic">
-                                اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي
-                            </div>
-                            <div className="home-qadr-dua__phonetic">
-                                Allâhoumma innaka 'afouwwoun touhibboul-'afwa fa'fou 'annî
-                            </div>
-                            <div className="home-qadr-dua__translation">
-                                Ô Allah, Tu es Pardonneur, Tu aimes le pardon, alors pardonne-moi.
-                            </div>
-                            <div className="home-qadr-dua__source">
-                                Rapporté par Tirmidhi (3513) — Doua enseignée à Aïcha رضي الله عنها
-                            </div>
-                        </div>
-                    </>
-                );
-            })()}
-
-            {/* Sentinelle Spirituelle (Météo, Voyage, Sahar, etc.) */}
             <SmartSentinel />
 
-            {/* Hadith Card */}
             <div className="hadith-card">
                 <div className="hadith-card__label">
                     <span className="hadith-card__label-dot" />
                     <span>{t('home.hadithOfDay', 'Hadith du Jour')}</span>
-                    {seasonalTags.length > 0 && (
-                        <span style={{ opacity: 0.5, fontSize: '0.65rem' }}>
-                            • {seasonalTags[0]}
-                        </span>
-                    )}
+                    {seasonalTags.length > 0 && <span style={{ opacity: 0.5, fontSize: '0.65rem' }}> • {seasonalTags[0]}</span>}
                 </div>
                 <div className="hadith-card__arabic">{formatDivineNames(hadith.textAr)}</div>
                 <div className="hadith-card__french">{formatDivineNames(hadith.textFr)}</div>
                 <div className="hadith-card__meta">
                     <div>
-                        <div className="hadith-card__source">
-                            <BookOpen size={12} />
-                            <strong>{hadith.source}</strong>
-                        </div>
+                        <div className="hadith-card__source"><BookOpen size={12} /> <strong>{hadith.source}</strong></div>
                         <div className="hadith-card__narrator">{t('home.narratedBy', 'Rapporté par')} {hadith.narrator}</div>
                     </div>
                     <div className="hadith-card__actions">
-                        <button
-                            className={`hadith-card__action-btn ${useFavoritesStore.getState().isFavoriteHadith(hadith.id) ? 'hadith-fav-active' : ''}`}
-                            onClick={() => {
-                                useFavoritesStore.getState().toggleFavoriteHadith({
-                                    id: hadith.id,
-                                    ar: hadith.textAr,
-                                    fr: hadith.textFr,
-                                    src: hadith.source,
-                                    nar: hadith.narrator,
-                                    cat: 'general',
-                                });
-                            }}
-                        >
+                        <button className={`hadith-card__action-btn ${useFavoritesStore.getState().isFavoriteHadith(hadith.id) ? 'hadith-fav-active' : ''}`} onClick={() => useFavoritesStore.getState().toggleFavoriteHadith({ id: hadith.id, ar: hadith.textAr, fr: hadith.textFr, src: hadith.source, nar: hadith.narrator, cat: 'general' })}>
                             <Heart size={14} fill={useFavoritesStore.getState().isFavoriteHadith(hadith.id) ? 'currentColor' : 'none'} /> {t('common.inFavs', 'Favoris')}
                         </button>
-                        <button className="hadith-card__action-btn" onClick={handleShare}>
-                            <Share2 size={14} /> {t('common.share', 'Partager')}
-                        </button>
+                        <button className="hadith-card__action-btn" onClick={handleShare}><Share2 size={14} /> {t('common.share', 'Partager')}</button>
                     </div>
                 </div>
             </div>
 
-            {/* Essential Surahs */}
             <div className="home-surahs">
                 <div className="home-surahs__header">
                     <div className="home-surahs__title"><Star size={14} /> {t('home.essentialSurahs')}</div>
                 </div>
                 <div className="home-surahs__scroll">
                     {ESSENTIAL_SURAHS.map((surah, i) => (
-                        <button
-                            key={surah.surahNumber}
-                            className="surah-card"
-                            onClick={() => handleSurahClick(surah.surahNumber)}
-                            style={{ animationDelay: `${0.4 + i * 0.06}s` }}
-                        >
+                        <button key={surah.surahNumber} className="surah-card" onClick={() => handleSurahClick(surah.surahNumber)} style={{ animationDelay: `${0.4 + i * 0.06}s` }}>
                             <div className="surah-card__gradient" style={{ background: surah.gradient }} />
                             <span className="surah-card__emoji">{surah.emoji}</span>
                             <div className="surah-card__name-ar">{surah.nameAr}</div>
@@ -613,121 +464,47 @@ export function HomePage() {
                 </div>
             </div>
 
-            {/* Dhikr Counters Grid */}
             <div className="home-dhikr" ref={dhikrSectionRef}>
                 <div className="home-dhikr__header">
                     <div className="home-dhikr__title">📿 {t('home.dhikr')}</div>
-                    {dhikr.allTargetedDone && !isEditingDhikr && (
-                        <span className="home-dhikr__badge">✅ {dhikr.completedCount}/{dhikr.targetedCount}</span>
-                    )}
-                    
+                    {dhikr.allTargetedDone && !isEditingDhikr && <span className="home-dhikr__badge">✅ {dhikr.completedCount}/{dhikr.targetedCount}</span>}
                     {isEditingDhikr ? (
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="home-dhikr__reset-all" onClick={dhikr.restoreDefaults} style={{ color: '#E91E63' }}>
-                                <RotateCcw size={12} /> Réinitialiser
-                            </button>
-                            <button className="home-dhikr__reset-all" onClick={() => setIsEditingDhikr(false)} style={{ color: '#4CAF50', fontWeight: 'bold' }}>
-                                Terminer
-                            </button>
+                            <button className="home-dhikr__reset-all" onClick={dhikr.restoreDefaults} style={{ color: '#E91E63' }}><RotateCcw size={12} /> Réinitialiser</button>
+                            <button className="home-dhikr__reset-all" onClick={() => setIsEditingDhikr(false)} style={{ color: '#4CAF50', fontWeight: 'bold' }}>Terminer</button>
                         </div>
                     ) : (
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="home-dhikr__reset-all" onClick={dhikr.resetAll}>
-                                <RotateCcw size={12} /> {t('common.resetAll', 'Remise à zéro')}
-                            </button>
-                            <button className="home-dhikr__reset-all" onClick={() => setIsEditingDhikr(true)}>
-                                ⚙️ Éditer
-                            </button>
+                            <button className="home-dhikr__reset-all" onClick={dhikr.resetAll}><RotateCcw size={12} /> {t('common.resetAll', 'Remise à zéro')}</button>
+                            <button className="home-dhikr__reset-all" onClick={() => setIsEditingDhikr(true)}>⚙️ Éditer</button>
                         </div>
                     )}
                 </div>
 
-                <Reorder.Group 
-                    axis="y" 
-                    values={dhikr.allItems} 
-                    onReorder={dhikr.reorderDhikrs} 
-                    className="home-dhikr__flex-container"
-                    style={{ 
-                        listStyle: 'none', 
-                        padding: 0, 
-                        margin: 0, 
-                        display: 'flex', 
-                        flexWrap: 'wrap', 
-                        gap: '10px' 
-                    }}
-                >
-                    {dhikr.allItems.map(d => {
+                <div ref={dhikrGroupRef} style={{ position: 'relative' }}>
+                    <Reorder.Group axis="y" values={dhikr.allItems} onReorder={dhikr.reorderDhikrs} className="home-dhikr__flex-container" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                        {dhikr.allItems.map(d => {
                             const count = dhikr.getCount(d.id);
                             const isUnlimited = d.target === 0;
                             const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
                             const countInSeries = dhikr.getCountInSeries(d.id);
                             const isDone = d.target > 0 && count >= d.target;
                             const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
-                            
                             return (
-                                <Reorder.Item 
-                                    key={d.id} 
-                                    value={d} 
-                                    id={d.id}
-                                    dragListener={isEditingDhikr}
-                                    onDragStart={() => setDraggedId(d.id)}
-                                    onDragEnd={() => setDraggedId(null)}
-                                    dragConstraints={dhikrSectionRef}
-                                    className="dhikr-draggable"
-                                    data-id={d.id}
-                                    style={{ 
-                                        position: 'relative', 
-                                        display: 'flex', 
-                                        zIndex: draggedId === d.id ? 100 : 1,
-                                        width: 'calc(50% - 5px)',
-                                        height: '110px' // Fixed height for homogeneity
-                                    }}
-                                >
-                                    <button
-                                        className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`}
-                                        onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }}
-                                        onTouchStart={handleTouchStartDhikr}
-                                        onTouchEnd={handleTouchEndDhikr}
-                                        onTouchMove={handleTouchEndDhikr}
-                                        onMouseDown={handleTouchStartDhikr}
-                                        onMouseUp={handleTouchEndDhikr}
-                                        onMouseLeave={handleTouchEndDhikr}
-                                        style={{ '--dhikr-color': d.color } as React.CSSProperties}
-                                    >
+                                <Reorder.Item key={d.id} value={d} id={d.id} dragListener={isEditingDhikr} onDragStart={() => setDraggedId(d.id)} onDragEnd={() => setDraggedId(null)} dragConstraints={dhikrGroupRef} dragElastic={0} className="dhikr-draggable" style={{ position: 'relative', display: 'flex', zIndex: draggedId === d.id ? 100 : 1, width: 'calc(50% - 5px)', height: '110px' }}>
+                                    <button className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`} onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }} onTouchStart={handleTouchStartDhikr} onTouchEnd={handleTouchEndDhikr} onTouchMove={handleTouchEndDhikr} onMouseDown={handleTouchStartDhikr} onMouseUp={handleTouchEndDhikr} onMouseLeave={handleTouchEndDhikr} style={{ '--dhikr-color': d.color } as React.CSSProperties}>
                                         {series > 0 && <span className="dhikr-card__series">{series}×</span>}
                                         <span className="dhikr-card__daily">{d.daily}</span>
                                         <span className="dhikr-card__emoji">{d.emoji}</span>
                                         <span className="dhikr-card__ar">{formatDivineNames(d.text)}</span>
                                         <span className="dhikr-card__fr">{formatDivineNames(d.textFr)}</span>
                                         <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
-                                        <span className="dhikr-card__count">
-                                            {isUnlimited ? count : `${countInSeries}/${d.target}`}
-                                        </span>
-                                        {!isUnlimited && (
-                                            <div className="dhikr-card__bar">
-                                                <div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} />
-                                            </div>
-                                        )}
-                                        {count > 0 && !isEditingDhikr && (
-                                            <button
-                                                className="dhikr-card__reset"
-                                                onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }}
-                                                title="Réinitialiser"
-                                            >
-                                                <RotateCcw size={10} />
-                                            </button>
-                                        )}
-                                        
+                                        <span className="dhikr-card__count">{isUnlimited ? count : `${countInSeries}/${d.target}`}</span>
+                                        {!isUnlimited && <div className="dhikr-card__bar"><div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} /></div>}
+                                        {count > 0 && !isEditingDhikr && <button className="dhikr-card__reset" onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }} title="Réinitialiser"><RotateCcw size={10} /></button>}
                                         <AnimatePresence>
                                             {isEditingDhikr && (
-                                                <motion.button
-                                                    initial={{ scale: 0, opacity: 0 }}
-                                                    animate={{ scale: 1, opacity: 1 }}
-                                                    exit={{ scale: 0, opacity: 0 }}
-                                                    className="dhikr-card__delete ios-delete-badge"
-                                                    onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }}
-                                                    title="Supprimer"
-                                                >
+                                                <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} className="dhikr-card__delete ios-delete-badge" onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }} title="Supprimer">
                                                     <X size={12} strokeWidth={3} />
                                                 </motion.button>
                                             )}
@@ -736,22 +513,17 @@ export function HomePage() {
                                 </Reorder.Item>
                             );
                         })}
-                    {/* Add Custom Duaa Button */}
-                    {!isEditingDhikr && (
-                        <button 
-                            className="dhikr-card dhikr-card--add"
-                            onClick={() => setShowAddDuaa(true)}
-                            style={{ width: 'calc(50% - 5px)', height: '110px', '--dhikr-color': '#666' } as React.CSSProperties}
-                        >
-                            <span className="dhikr-card__emoji"><Plus size={24} /></span>
-                            <span className="dhikr-card__fr">Ajouter une duaa</span>
-                            <span className="dhikr-card__desc">Invocation personnelle</span>
-                        </button>
-                    )}
-                </Reorder.Group>
+                        {!isEditingDhikr && (
+                            <button className="dhikr-card dhikr-card--add" onClick={() => setShowAddDuaa(true)} style={{ width: 'calc(50% - 5px)', height: '110px', '--dhikr-color': '#666' } as React.CSSProperties}>
+                                <span className="dhikr-card__emoji"><Plus size={24} /></span>
+                                <span className="dhikr-card__fr">Ajouter une duaa</span>
+                                <span className="dhikr-card__desc">Invocation personnelle</span>
+                            </button>
+                        )}
+                    </Reorder.Group>
+                </div>
             </div>
 
-            {/* Add Custom Duaa Modal */}
             {showAddDuaa && (
                 <div className="duaa-modal-overlay" onClick={() => setShowAddDuaa(false)}>
                     <div className="duaa-modal" onClick={e => e.stopPropagation()}>
@@ -761,68 +533,27 @@ export function HomePage() {
                         </div>
                         <div className="duaa-modal__body">
                             <label>Texte arabe (optionnel)</label>
-                            <input
-                                dir="rtl"
-                                placeholder="ادخل الدعاء بالعربية"
-                                value={newDuaa.text}
-                                onChange={e => setNewDuaa(p => ({ ...p, text: e.target.value }))}
-                            />
+                            <input dir="rtl" placeholder="ادخل الدعاء بالعربية" value={newDuaa.text} onChange={e => setNewDuaa(p => ({ ...p, text: e.target.value }))} />
                             <label>Texte français / phonétique</label>
-                            <input
-                                placeholder="Ex: Allahumma inni as'aluka..."
-                                value={newDuaa.textFr}
-                                onChange={e => setNewDuaa(p => ({ ...p, textFr: e.target.value }))}
-                            />
+                            <input placeholder="Ex: Allahumma inni as'aluka..." value={newDuaa.textFr} onChange={e => setNewDuaa(p => ({ ...p, textFr: e.target.value }))} />
                             <label>Description</label>
-                            <input
-                                placeholder="Ex: Doua pour la science"
-                                value={newDuaa.descFr}
-                                onChange={e => setNewDuaa(p => ({ ...p, descFr: e.target.value }))}
-                            />
+                            <input placeholder="Ex: Doua pour la science" value={newDuaa.descFr} onChange={e => setNewDuaa(p => ({ ...p, descFr: e.target.value }))} />
                             <label>Objectif quotidien (0 = illimité)</label>
-                            <input
-                                type="number"
-                                min="0"
-                                value={newDuaa.target}
-                                onChange={e => setNewDuaa(p => ({ ...p, target: parseInt(e.target.value) || 0 }))}
-                            />
+                            <input type="number" min="0" value={newDuaa.target} onChange={e => setNewDuaa(p => ({ ...p, target: parseInt(e.target.value) || 0 }))} />
                             <div className="duaa-modal__emojis">
-                                {CUSTOM_EMOJIS.map(e => (
-                                    <button
-                                        key={e}
-                                        className={newDuaa.emoji === e ? 'active' : ''}
-                                        onClick={() => setNewDuaa(p => ({ ...p, emoji: e }))}
-                                    >{e}</button>
-                                ))}
+                                {CUSTOM_EMOJIS.map(e => <button key={e} className={newDuaa.emoji === e ? 'active' : ''} onClick={() => setNewDuaa(p => ({ ...p, emoji: e }))}>{e}</button>)}
                             </div>
                         </div>
-                        <button
-                            className="duaa-modal__submit"
-                            disabled={!newDuaa.textFr.trim()}
-                            onClick={() => {
-                                const target = newDuaa.target;
-                                dhikr.addCustom({
-                                    id: `custom_${Date.now()}`,
-                                    text: newDuaa.text || newDuaa.textFr,
-                                    textFr: newDuaa.textFr,
-                                    descFr: newDuaa.descFr,
-                                    target,
-                                    daily: target > 0 ? `${target}×/jour` : '∞ illimité',
-                                    color: CUSTOM_COLORS[Math.floor(Math.random() * CUSTOM_COLORS.length)],
-                                    emoji: newDuaa.emoji,
-                                    isCustom: true,
-                                });
-                                setNewDuaa({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
-                                setShowAddDuaa(false);
-                            }}
-                        >
-                            Ajouter
-                        </button>
+                        <button className="duaa-modal__submit" disabled={!newDuaa.textFr.trim()} onClick={() => {
+                            const target = newDuaa.target;
+                            dhikr.addCustom({ id: `custom_${Date.now()}`, text: newDuaa.text || newDuaa.textFr, textFr: newDuaa.textFr, descFr: newDuaa.descFr, target, daily: target > 0 ? `${target}×/jour` : '∞ illimité', color: CUSTOM_COLORS[Math.floor(Math.random() * CUSTOM_COLORS.length)], emoji: newDuaa.emoji, isCustom: true });
+                            setNewDuaa({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
+                            setShowAddDuaa(false);
+                        }}>Ajouter</button>
                     </div>
                 </div>
             )}
 
-            {/* Quick Shortcuts */}
             <div className="home-shortcuts">
                 <div className="home-shortcuts__title">{t('sideMenu.quickAccess')}</div>
                 <div className="home-shortcuts__grid">
@@ -836,7 +567,6 @@ export function HomePage() {
                 </div>
             </div>
 
-            {/* Islamic Calendar Overlay */}
             {showIslamicCalendar && (
                 <div className="duaa-modal-overlay" onClick={() => setShowIslamicCalendar(false)} style={{ zIndex: 10000 }}>
                     <div className="duaa-modal duaa-modal--calendar" onClick={e => e.stopPropagation()} style={{ background: '#1a1a2e', boxShadow: 'none' }}>
