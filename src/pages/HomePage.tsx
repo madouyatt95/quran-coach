@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X } from 'lucide-react';
+import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X, Calendar } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags, getUpcomingIslamicEvent } from '../lib/hadithEngine';
 import { formatDivineNames } from '../lib/divineNames';
 import { useStatsStore } from '../stores/statsStore';
@@ -343,6 +343,18 @@ export function HomePage() {
 
     // Islamic Calendar Modal State
     const [showIslamicCalendar, setShowIslamicCalendar] = useState(false);
+    
+    // Body scroll lock for dragging
+    const [isDragging, setIsDragging] = useState(false);
+
+    useEffect(() => {
+        if (isDragging || showIslamicCalendar) {
+            document.body.classList.add('scroll-lock');
+        } else {
+            document.body.classList.remove('scroll-lock');
+        }
+        return () => document.body.classList.remove('scroll-lock');
+    }, [isDragging, showIslamicCalendar]);
 
     const handleTouchStartDhikr = () => {
         if (isEditingDhikr) return;
@@ -636,6 +648,8 @@ export function HomePage() {
                                     value={d} 
                                     id={d.id}
                                     dragListener={isEditingDhikr}
+                                    onDragStart={() => setIsDragging(true)}
+                                    onDragEnd={() => setIsDragging(false)}
                                     style={{ position: 'relative', display: 'flex' }}
                                 >
                                     <button
@@ -791,14 +805,20 @@ export function HomePage() {
 
             {/* Islamic Calendar Overlay */}
             {showIslamicCalendar && (
-                <div className="duaa-modal-overlay" onClick={() => setShowIslamicCalendar(false)} style={{ zIndex: 1000, padding: '15px' }}>
-                    <div className="duaa-modal" onClick={e => e.stopPropagation()} style={{ padding: '0', background: 'transparent', boxShadow: 'none' }}>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-                            <button onClick={() => setShowIslamicCalendar(false)} style={{ background: 'var(--surface)', borderRadius: '50%', padding: '8px', color: 'var(--text-main)', border: 'none', cursor: 'pointer', display: 'flex' }}>
+                <div className="duaa-modal-overlay" onClick={() => setShowIslamicCalendar(false)} style={{ zIndex: 10000 }}>
+                    <div className="duaa-modal duaa-modal--calendar" onClick={e => e.stopPropagation()} style={{ background: '#1a1a2e', boxShadow: 'none' }}>
+                        <div className="duaa-modal__header">
+                            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Calendar size={18} color="#c9a84c" />
+                                Calendrier Islamique
+                            </h3>
+                            <button onClick={() => setShowIslamicCalendar(false)} style={{ padding: '8px', color: 'var(--text-main)', display: 'flex' }}>
                                 <X size={20} />
                             </button>
                         </div>
-                        <IslamicCalendar initiallyExpanded={true} />
+                        <div className="duaa-modal__scrollable">
+                            <IslamicCalendar initiallyExpanded={true} />
+                        </div>
                     </div>
                 </div>
             )}

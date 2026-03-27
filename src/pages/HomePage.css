@@ -1459,6 +1459,27 @@
     to { transform: translateY(0); opacity: 1; }
 }
 
+.duaa-modal--calendar {
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.duaa-modal__scrollable {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 15px 20px;
+    -webkit-overflow-scrolling: touch;
+}
+
+body.scroll-lock {
+    overflow: hidden !important;
+    touch-action: none;
+}
+
 .duaa-modal__header {
     display: flex;
     align-items: center;
@@ -1578,8 +1599,10 @@
 
 .dhikr-card--editing:active {
     cursor: grabbing;
-    transform: scale(1.05) !important;
+    transform: scale(1.08) !important;
     animation: none;
+    z-index: 100 !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
 }
 
 .ios-delete-badge {
