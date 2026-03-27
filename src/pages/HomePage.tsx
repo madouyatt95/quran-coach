@@ -10,6 +10,8 @@ import { useFavoritesStore } from '../stores/favoritesStore';
 import { SmartSentinel } from '../components/Home/SmartSentinel';
 import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
 import { Reorder, motion, AnimatePresence } from 'framer-motion';
+import { usePrayerStore } from '../stores/prayerStore';
+import { PrayerCalendarModal } from '../components/Prayer/PrayerCalendarModal';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -304,6 +306,7 @@ export function HomePage() {
 
     const { currentPage, currentSurah, goToSurah, goToAyah, progress } = useQuranStore();
     const { readingStreak } = useStatsStore();
+    const { lat, lng, settings } = usePrayerStore();
     const navigate = useNavigate();
     const nextPrayer = useNextPrayer();
     const dhikr = useDhikr();
@@ -339,6 +342,9 @@ export function HomePage() {
     // Custom Duaa Modal state
     const [showAddDuaa, setShowAddDuaa] = useState(false);
     const [newDuaa, setNewDuaa] = useState<{ text: string; textFr: string; descFr: string; target: number; emoji: string }>({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
+
+    // Calendar Modal State
+    const [showCalendar, setShowCalendar] = useState(false);
 
     const handleTouchStartDhikr = () => {
         if (isEditingDhikr) return;
@@ -441,7 +447,12 @@ export function HomePage() {
 
             {/* Seasonal Banner */}
             {upcomingEvent && (
-                <div className="home-seasonal">
+                <div 
+                    className="home-seasonal" 
+                    onClick={() => setShowCalendar(true)}
+                    style={{ cursor: 'pointer' }}
+                    title="Voir le calendrier des prières"
+                >
                     <span className="home-seasonal__emoji">{upcomingEvent.emoji}</span>
                     <div className="home-seasonal__text">
                         <strong>{upcomingEvent.title}</strong>
