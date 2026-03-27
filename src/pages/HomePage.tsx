@@ -10,6 +10,7 @@ import { useFavoritesStore } from '../stores/favoritesStore';
 import { SmartSentinel } from '../components/Home/SmartSentinel';
 import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
 import { Reorder, motion, AnimatePresence } from 'framer-motion';
+import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -340,6 +341,9 @@ export function HomePage() {
     const [showAddDuaa, setShowAddDuaa] = useState(false);
     const [newDuaa, setNewDuaa] = useState<{ text: string; textFr: string; descFr: string; target: number; emoji: string }>({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
 
+    // Islamic Calendar Modal State
+    const [showIslamicCalendar, setShowIslamicCalendar] = useState(false);
+
     const handleTouchStartDhikr = () => {
         if (isEditingDhikr) return;
         longPressTimer.current = setTimeout(() => {
@@ -443,9 +447,9 @@ export function HomePage() {
             {upcomingEvent && (
                 <div 
                     className="home-seasonal" 
-                    onClick={() => navigate('/prayer', { state: { openIslamicCalendar: true } })}
+                    onClick={() => setShowIslamicCalendar(true)}
                     style={{ cursor: 'pointer' }}
-                    title="Voir les événements islamiques"
+                    title="Ouvrir le calendrier islamique"
                 >
                     <span className="home-seasonal__emoji">{upcomingEvent.emoji}</span>
                     <div className="home-seasonal__text">
@@ -781,6 +785,20 @@ export function HomePage() {
                     ))}
                 </div>
             </div>
+
+            {/* Islamic Calendar Overlay */}
+            {showIslamicCalendar && (
+                <div className="duaa-modal-overlay" onClick={() => setShowIslamicCalendar(false)} style={{ zIndex: 1000, padding: '15px' }}>
+                    <div className="duaa-modal" onClick={e => e.stopPropagation()} style={{ padding: '0', background: 'transparent', boxShadow: 'none' }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                            <button onClick={() => setShowIslamicCalendar(false)} style={{ background: 'var(--surface)', borderRadius: '50%', padding: '8px', color: 'var(--text-main)', border: 'none', cursor: 'pointer', display: 'flex' }}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <IslamicCalendar initiallyExpanded={true} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
