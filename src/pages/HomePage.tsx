@@ -9,7 +9,7 @@ import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { SmartSentinel } from '../components/Home/SmartSentinel';
 import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
-import { Reorder, motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import './HomePage.css';
 
@@ -181,7 +181,10 @@ function useDhikr() {
     }, []);
 
     const restoreDefaults = useCallback(() => {
-        setAllItems([...DHIKR_LIST]);
+        if (window.confirm('Voulez-vous restaurer la liste de base ? Toutes vos personnalisations seront perdues.')) {
+            localStorage.removeItem('user-dhikrs-order');
+            setAllItems([...DHIKR_LIST]);
+        }
     }, []);
 
     const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
@@ -344,17 +347,17 @@ export function HomePage() {
     // Islamic Calendar Modal State
     const [showIslamicCalendar, setShowIslamicCalendar] = useState(false);
     
-    // Body scroll lock for dragging
-    const [isDragging, setIsDragging] = useState(false);
+    // Body scroll lock and z-index for dragging
+    const [draggedId, setDraggedId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (isDragging || showIslamicCalendar) {
+        if (draggedId || showIslamicCalendar) {
             document.body.classList.add('scroll-lock');
         } else {
             document.body.classList.remove('scroll-lock');
         }
         return () => document.body.classList.remove('scroll-lock');
-    }, [isDragging, showIslamicCalendar]);
+    }, [draggedId, showIslamicCalendar]);
 
     const handleTouchStartDhikr = () => {
         if (isEditingDhikr) return;
@@ -627,12 +630,10 @@ export function HomePage() {
                     )}
                 </div>
 
-                <Reorder.Group 
-                    axis="y" 
-                    values={dhikr.allItems} 
-                    onReorder={dhikr.reorderDhikrs} 
+                <div 
+                    ref={dhikrSectionRef}
                     className="home-dhikr__grid"
-                    style={{ listStyle: 'none', padding: 0, margin: 0 }}
+                    style={{ position: 'relative' }}
                 >
                     {dhikr.allItems.map(d => {
                             const count = dhikr.getCount(d.id);
@@ -643,14 +644,47 @@ export function HomePage() {
                             const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
                             
                             return (
-                                <Reorder.Item 
+                                <motion.div 
                                     key={d.id} 
-                                    value={d} 
-                                    id={d.id}
-                                    dragListener={isEditingDhikr}
-                                    onDragStart={() => setIsDragging(true)}
-                                    onDragEnd={() => setIsDragging(false)}
-                                    style={{ position: 'relative', display: 'flex' }}
+                                    layout
+                                    drag={isEditingDhikr}
+                                    dragMomentum={false}
+                                    dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+                                    onDragStart={() => setDraggedId(d.id)}
+                                    onDragEnd={() => setDraggedId(null)}
+                                    onDrag={(_, info) => {
+                                        if (!isEditingDhikr) return;
+                                        const items = dhikr.allItems;
+                                        const currentIndex = items.findIndex(item => item.id === d.id);
+                                        
+                                        // Find which item we are hovering over (only original dhikr cards)
+                                        const targets = document.querySelectorAll('.home-dhikr__grid > .dhikr-draggable');
+                                        let targetIndex = -1;
+                                        
+                                        targets.forEach((target, index) => {
+                                            const rect = target.getBoundingClientRect();
+                                            // Check if pointer is near the center of the target
+                                            if (
+                                                info.point.x > rect.left && 
+                                                info.point.x < rect.right && 
+                                                info.point.y > rect.top && 
+                                                info.point.y < rect.bottom
+                                            ) {
+                                                targetIndex = index;
+                                            }
+                                        });
+
+                                        if (targetIndex !== -1 && targetIndex !== currentIndex && targetIndex < items.length) {
+                                            const newOrder = [...items];
+                                            const [movedItem] = newOrder.splice(currentIndex, 1);
+                                            newOrder.splice(targetIndex, 0, movedItem);
+                                            dhikr.reorderDhikrs(newOrder);
+                                        }
+                                    }}
+                                    dragConstraints={dhikrSectionRef}
+                                    dragElastic={0.1}
+                                    className="dhikr-draggable"
+                                    style={{ position: 'relative', display: 'flex', zIndex: draggedId === d.id ? 100 : 1 }}
                                 >
                                     <button
                                         className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`}
@@ -702,7 +736,7 @@ export function HomePage() {
                                             )}
                                         </AnimatePresence>
                                     </button>
-                                </Reorder.Item>
+                                </motion.div>
                             );
                         })}
                     {/* Add Custom Duaa Button */}
@@ -715,7 +749,7 @@ export function HomePage() {
                         <span className="dhikr-card__fr">Ajouter une duaa</span>
                         <span className="dhikr-card__desc">Invocation personnelle</span>
                     </button>
-                </Reorder.Group>
+                </div>
             </div>
 
             {/* Add Custom Duaa Modal */}
