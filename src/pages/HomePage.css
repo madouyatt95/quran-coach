@@ -1557,4 +1557,48 @@
 
 .duaa-modal__submit:not(:disabled):active {
     transform: scale(0.97);
+}
+
+/* ─── Dhikr Edit Mode (iOS Style) ─────────────────────── */
+@keyframes jiggle {
+    0% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(1.5deg); }
+    100% { transform: rotate(-1.5deg); }
+}
+
+.dhikr-card--editing {
+    animation: jiggle 0.35s infinite ease-in-out;
+    transform-origin: 50% 50%;
+    cursor: grab;
+    opacity: 0.95;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+.dhikr-card--editing:active {
+    cursor: grabbing;
+    transform: scale(1.05) !important;
+    animation: none;
+}
+
+.ios-delete-badge {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 26px;
+    height: 26px;
+    background: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 10;
+    border: 2px solid #1a1a2e;
+    cursor: pointer;
+    padding: 0;
+}
+
+.ios-delete-badge:active {
+    background: #d32f2f;
 }

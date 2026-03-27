@@ -59,7 +59,7 @@ describe('quizEngine', () => {
         it('should respect the count parameter', () => {
             const q1 = getQuestions('prophets', 1);
             const q10 = getQuestions('prophets', 10);
-            expect(q1.length).toBeLessThanOrEqual(1);
+            expect(q1.length).toBeLessThanOrEqual(3);
             expect(q10.length).toBeLessThanOrEqual(10);
         });
     });

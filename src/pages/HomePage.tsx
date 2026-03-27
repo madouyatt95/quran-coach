@@ -1,14 +1,15 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, Trash2, X } from 'lucide-react';
-import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags } from '../lib/hadithEngine';
+import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X } from 'lucide-react';
+import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags, getUpcomingIslamicEvent } from '../lib/hadithEngine';
 import { formatDivineNames } from '../lib/divineNames';
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { SmartSentinel } from '../components/Home/SmartSentinel';
 import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
+import { Reorder, motion, AnimatePresence } from 'framer-motion';
 import './HomePage.css';
 
 // ─── Surah names (compact subset for display) ────────────
@@ -42,15 +43,7 @@ const SURAH_NAMES: Record<number, string> = {
 };
 
 // ─── Events / Seasonal data ─────────────────────────────
-const HIJRI_MONTH_EVENTS: Record<number, { emoji: string; title: string; description: string }> = {
-    1: { emoji: '🌙', title: 'Mois de Muharram', description: 'Premier mois sacré du calendrier hégirien' },
-    7: { emoji: '✨', title: 'Mois de Rajab', description: 'Mois sacré — préparation spirituelle' },
-    8: { emoji: '🌿', title: "Mois de Sha'ban", description: 'Préparation au mois de Ramadan' },
-    9: { emoji: '🕌', title: 'Ramadan Mubarak', description: 'Mois béni du jeûne et de la prière' },
-    10: { emoji: '🎉', title: 'Mois de Shawwal', description: "Mois qui suit le Ramadan" },
-    12: { emoji: '🕋', title: 'Dhul Hijjah', description: 'Mois du pèlerinage — les 10 meilleurs jours' },
-};
-
+// (Events are now dynamically computed via getUpcomingIslamicEvent)
 const SHORTCUTS = [
     { path: '/prophets', emoji: '📜', labelKey: 'nav.prophets', desc: 'Prophètes', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
     { path: '/qibla', emoji: '🧭', labelKey: 'sideMenu.qibla', desc: 'Direction', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
@@ -111,25 +104,37 @@ const DHIKR_LIST: DhikrItem[] = [
 const CUSTOM_COLORS = ['#9C27B0', '#009688', '#FF5722', '#607D8B', '#E91E63', '#3F51B5', '#795548', '#00BCD4'];
 const CUSTOM_EMOJIS = ['🤲', '📿', '💚', '🌙', '⭐', '🕌', '📖', '🤍'];
 
-function loadCustomDhikr(): DhikrItem[] {
+function loadUserDhikrs(): DhikrItem[] {
     try {
-        const saved = localStorage.getItem('custom-dhikr');
+        const saved = localStorage.getItem('user-dhikrs-order');
         if (saved) return JSON.parse(saved);
     } catch { /* ignore */ }
-    return [];
+    
+    // Fallback/Migration: merge DHIKR_LIST and any legacy 'custom-dhikr'
+    try {
+        const legacyCustom = localStorage.getItem('custom-dhikr');
+        if (legacyCustom) {
+            const parsed = JSON.parse(legacyCustom);
+            return [...DHIKR_LIST, ...parsed];
+        }
+    } catch { /* ignore */ }
+    
+    return [...DHIKR_LIST];
 }
 
-function saveCustomDhikr(items: DhikrItem[]) {
-    localStorage.setItem('custom-dhikr', JSON.stringify(items));
+function saveUserDhikrs(items: DhikrItem[]) {
+    localStorage.setItem('user-dhikrs-order', JSON.stringify(items));
 }
 
 // ─── Dhikr Hook (localStorage persisted, independent counters) ─
 function useDhikr() {
     const todayKey = `dhikr-v2-${new Date().toISOString().split('T')[0]}`;
     const [counts, setCounts] = useState<Record<string, number>>({});
-    const [customDhikr, setCustomDhikr] = useState<DhikrItem[]>(loadCustomDhikr);
+    const [allItems, setAllItems] = useState<DhikrItem[]>(loadUserDhikrs);
 
-    const allItems = useMemo(() => [...DHIKR_LIST, ...customDhikr], [customDhikr]);
+    useEffect(() => {
+        saveUserDhikrs(allItems);
+    }, [allItems]);
 
     useEffect(() => {
         const saved = localStorage.getItem(todayKey);
@@ -140,14 +145,12 @@ function useDhikr() {
 
     const tap = useCallback((id: string) => {
         setCounts(prev => {
-            const dhikr = allItems.find(d => d.id === id);
-            if (!dhikr) return prev;
             const current = prev[id] || 0;
             const next = { ...prev, [id]: current + 1 };
             localStorage.setItem(todayKey, JSON.stringify(next));
             return next;
         });
-    }, [todayKey, allItems]);
+    }, [todayKey]);
 
     const reset = useCallback((id: string) => {
         setCounts(prev => {
@@ -165,26 +168,26 @@ function useDhikr() {
     const getCount = useCallback((id: string) => counts[id] || 0, [counts]);
 
     const addCustom = useCallback((item: DhikrItem) => {
-        setCustomDhikr(prev => {
-            const next = [...prev, { ...item, isCustom: true }];
-            saveCustomDhikr(next);
-            return next;
-        });
+        setAllItems(prev => [...prev, { ...item, isCustom: true }]);
     }, []);
 
-    const removeCustom = useCallback((id: string) => {
-        setCustomDhikr(prev => {
-            const next = prev.filter(d => d.id !== id);
-            saveCustomDhikr(next);
-            return next;
-        });
+    const removeDhikr = useCallback((id: string) => {
+        setAllItems(prev => prev.filter(d => d.id !== id));
+    }, []);
+
+    const reorderDhikrs = useCallback((newOrder: DhikrItem[]) => {
+        setAllItems(newOrder);
+    }, []);
+
+    const restoreDefaults = useCallback(() => {
+        setAllItems([...DHIKR_LIST]);
     }, []);
 
     const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
     const targetedCount = allItems.filter(d => d.target > 0).length;
-    const allTargetedDone = completedCount >= targetedCount;
+    const allTargetedDone = completedCount > 0 && completedCount >= targetedCount;
 
-    return { counts, tap, reset, resetAll, getCount, completedCount, targetedCount, allTargetedDone, allItems, addCustom, removeCustom };
+    return { counts, tap, reset, resetAll, getCount, completedCount, targetedCount, allTargetedDone, allItems, addCustom, removeDhikr, reorderDhikrs, restoreDefaults };
 }
 // ─── Next Prayer Hook (uses local engine) ────────────────
 function useNextPrayer() {
@@ -297,14 +300,7 @@ export function HomePage() {
     const hijri = useMemo(() => getHijriDate(now), [now]);
     const greeting = useMemo(() => getGreeting(), []);
     const seasonalTags = useMemo(() => getSeasonalTags(now), [now]);
-    const seasonalEvent = useMemo(() => {
-        const base = HIJRI_MONTH_EVENTS[hijri.month];
-        if (!base) return null;
-        if (hijri.month === 10 && hijri.day <= 3) {
-            return { ...base, title: 'Aïd al-Fitr Mubarak', description: 'Fête de la rupture du jeûne' };
-        }
-        return base;
-    }, [hijri.month, hijri.day]);
+    const upcomingEvent = useMemo(() => getUpcomingIslamicEvent(hijri), [hijri]);
 
     const { currentPage, currentSurah, goToSurah, goToAyah, progress } = useQuranStore();
     const { readingStreak } = useStatsStore();
@@ -319,9 +315,25 @@ export function HomePage() {
         }
     }, [hadith]);
 
+    // Settings & Edit Modes
+    const [isEditingDhikr, setIsEditingDhikr] = useState(false);
+    const longPressTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
     // Custom Duaa Modal state
     const [showAddDuaa, setShowAddDuaa] = useState(false);
     const [newDuaa, setNewDuaa] = useState<{ text: string; textFr: string; descFr: string; target: number; emoji: string }>({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
+
+    const handleTouchStartDhikr = () => {
+        if (isEditingDhikr) return;
+        longPressTimer.current = setTimeout(() => {
+            if ('vibrate' in navigator) navigator.vibrate(50);
+            setIsEditingDhikr(true);
+        }, 500);
+    };
+
+    const handleTouchEndDhikr = () => {
+        if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    };
 
     const handleSurahClick = useCallback((surahNumber: number) => {
         sessionStorage.setItem('isSilentJump', 'true');
@@ -411,12 +423,12 @@ export function HomePage() {
             )}
 
             {/* Seasonal Banner */}
-            {seasonalEvent && (
+            {upcomingEvent && (
                 <div className="home-seasonal">
-                    <span className="home-seasonal__emoji">{seasonalEvent.emoji}</span>
+                    <span className="home-seasonal__emoji">{upcomingEvent.emoji}</span>
                     <div className="home-seasonal__text">
-                        <strong>{seasonalEvent.title}</strong>
-                        <span>{seasonalEvent.description}</span>
+                        <strong>{upcomingEvent.title}</strong>
+                        <span>{upcomingEvent.description}</span>
                     </div>
                 </div>
             )}
@@ -552,64 +564,103 @@ export function HomePage() {
             <div className="home-dhikr">
                 <div className="home-dhikr__header">
                     <div className="home-dhikr__title">📿 {t('home.dhikr')}</div>
-                    {dhikr.allTargetedDone && (
+                    {dhikr.allTargetedDone && !isEditingDhikr && (
                         <span className="home-dhikr__badge">✅ {dhikr.completedCount}/{dhikr.targetedCount}</span>
                     )}
-                    <button className="home-dhikr__reset-all" onClick={dhikr.resetAll}>
-                        <RotateCcw size={12} /> {t('common.resetAll', 'Tout réinitialiser')}
-                    </button>
+                    
+                    {isEditingDhikr ? (
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button className="home-dhikr__reset-all" onClick={dhikr.restoreDefaults} style={{ color: '#E91E63' }}>
+                                <RotateCcw size={12} /> Réinitialiser
+                            </button>
+                            <button className="home-dhikr__reset-all" onClick={() => setIsEditingDhikr(false)} style={{ color: '#4CAF50', fontWeight: 'bold' }}>
+                                Terminer
+                            </button>
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button className="home-dhikr__reset-all" onClick={dhikr.resetAll}>
+                                <RotateCcw size={12} /> {t('common.resetAll', 'Remise à zéro')}
+                            </button>
+                            <button className="home-dhikr__reset-all" onClick={() => setIsEditingDhikr(true)}>
+                                ⚙️ Éditer
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="home-dhikr__grid">
-                    {dhikr.allItems.map(d => {
-                        const count = dhikr.getCount(d.id);
-                        const isUnlimited = d.target === 0;
-                        const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
-                        const countInSeries = !isUnlimited && d.target > 0 ? count % d.target : count;
-                        const isDone = series >= 1;
-                        const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
-                        return (
-                            <button
-                                key={d.id}
-                                className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${d.isCustom ? 'dhikr-card--custom' : ''}`}
-                                onClick={() => dhikr.tap(d.id)}
-                                style={{ '--dhikr-color': d.color } as React.CSSProperties}
-                            >
-                                {series > 0 && <span className="dhikr-card__series">{series}×</span>}
-                                <span className="dhikr-card__daily">{d.daily}</span>
-                                <span className="dhikr-card__emoji">{d.emoji}</span>
-                                <span className="dhikr-card__ar">{formatDivineNames(d.text)}</span>
-                                <span className="dhikr-card__fr">{formatDivineNames(d.textFr)}</span>
-                                <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
-                                <span className="dhikr-card__count">
-                                    {isUnlimited ? count : `${countInSeries}/${d.target}`}
-                                </span>
-                                {!isUnlimited && (
-                                    <div className="dhikr-card__bar">
-                                        <div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} />
-                                    </div>
-                                )}
-                                {(count > 0) && (
+                    <Reorder.Group axis="y" values={dhikr.allItems} onReorder={dhikr.reorderDhikrs} style={{ display: 'grid', gap: '10px', width: '100%', listStyle: 'none', padding: 0, margin: 0 }}>
+                        {dhikr.allItems.map(d => {
+                            const count = dhikr.getCount(d.id);
+                            const isUnlimited = d.target === 0;
+                            const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
+                            const countInSeries = !isUnlimited && d.target > 0 ? count % d.target : count;
+                            const isDone = series >= 1;
+                            const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
+                            
+                            return (
+                                <Reorder.Item 
+                                    key={d.id} 
+                                    value={d} 
+                                    id={d.id}
+                                    dragListener={isEditingDhikr}
+                                    style={{ position: 'relative' }}
+                                >
                                     <button
-                                        className="dhikr-card__reset"
-                                        onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }}
-                                        title="Réinitialiser"
+                                        className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`}
+                                        onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }}
+                                        onTouchStart={handleTouchStartDhikr}
+                                        onTouchEnd={handleTouchEndDhikr}
+                                        onTouchMove={handleTouchEndDhikr}
+                                        onMouseDown={handleTouchStartDhikr}
+                                        onMouseUp={handleTouchEndDhikr}
+                                        onMouseLeave={handleTouchEndDhikr}
+                                        style={{ '--dhikr-color': d.color } as React.CSSProperties}
                                     >
-                                        <RotateCcw size={10} />
+                                        {series > 0 && <span className="dhikr-card__series">{series}×</span>}
+                                        <span className="dhikr-card__daily">{d.daily}</span>
+                                        <span className="dhikr-card__emoji">{d.emoji}</span>
+                                        <span className="dhikr-card__ar">{formatDivineNames(d.text)}</span>
+                                        <span className="dhikr-card__fr">{formatDivineNames(d.textFr)}</span>
+                                        <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
+                                        <span className="dhikr-card__count">
+                                            {isUnlimited ? count : `${countInSeries}/${d.target}`}
+                                        </span>
+                                        {!isUnlimited && (
+                                            <div className="dhikr-card__bar">
+                                                <div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} />
+                                            </div>
+                                        )}
+                                        {count > 0 && !isEditingDhikr && (
+                                            <button
+                                                className="dhikr-card__reset"
+                                                onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }}
+                                                title="Réinitialiser"
+                                            >
+                                                <RotateCcw size={10} />
+                                            </button>
+                                        )}
+                                        
+                                        <AnimatePresence>
+                                            {isEditingDhikr && (
+                                                <motion.button
+                                                    initial={{ scale: 0, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    exit={{ scale: 0, opacity: 0 }}
+                                                    className="dhikr-card__delete ios-delete-badge"
+                                                    onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }}
+                                                    title="Supprimer"
+                                                >
+                                                    <X size={12} strokeWidth={3} />
+                                                </motion.button>
+                                            )}
+                                        </AnimatePresence>
                                     </button>
-                                )}
-                                {d.isCustom && (
-                                    <button
-                                        className="dhikr-card__delete"
-                                        onClick={(e) => { e.stopPropagation(); dhikr.removeCustom(d.id); }}
-                                        title="Supprimer"
-                                    >
-                                        <Trash2 size={10} />
-                                    </button>
-                                )}
-                            </button>
-                        );
-                    })}
+                                </Reorder.Item>
+                            );
+                        })}
+                    </Reorder.Group>
 
                     {/* Add Custom Duaa Button */}
                     <button
