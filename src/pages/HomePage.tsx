@@ -182,14 +182,14 @@ function useDhikr() {
 
     const restoreDefaults = useCallback(() => {
         if (window.confirm('Voulez-vous restaurer la liste de base ? Toutes vos personnalisations seront perdues.')) {
+            setCounts({});
+            localStorage.removeItem(todayKey);
             localStorage.removeItem('user-dhikrs-order');
-            // Force a hard state reset
-            setAllItems([]);
-            setTimeout(() => {
-                setAllItems([...DHIKR_LIST]);
-            }, 10);
+            setAllItems([...DHIKR_LIST]);
+            // Small hack to ensure UI refresh
+            setTimeout(() => window.location.reload(), 100);
         }
-    }, [allItems]); // Add allItems to deps to be safe
+    }, [todayKey]);
 
     const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
     const targetedCount = allItems.filter(d => d.target > 0).length;
@@ -327,6 +327,7 @@ export function HomePage() {
     const [isEditingDhikr, setIsEditingDhikr] = useState(false);
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const dhikrSectionRef = useRef<HTMLDivElement>(null);
+    const lastReorderTime = useRef<number>(0);
 
     useEffect(() => {
         if (!isEditingDhikr) return;
@@ -637,7 +638,13 @@ export function HomePage() {
                 <div 
                     ref={dhikrSectionRef}
                     className="home-dhikr__grid"
-                    style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}
+                    style={{ 
+                        position: 'relative', 
+                        display: 'grid', 
+                        gridTemplateColumns: '1fr 1fr', 
+                        gap: '10px',
+                        minHeight: '200px'
+                    }}
                 >
                     {dhikr.allItems.map(d => {
                             const count = dhikr.getCount(d.id);
@@ -650,18 +657,22 @@ export function HomePage() {
                             return (
                                 <motion.div 
                                     key={d.id} 
-                                    layout
+                                    layout="position"
                                     drag={isEditingDhikr}
                                     dragMomentum={false}
                                     onDragStart={() => setDraggedId(d.id)}
                                     onDragEnd={() => setDraggedId(null)}
                                     onDrag={(_, info) => {
                                         if (!isEditingDhikr) return;
+                                        
+                                        // Throttle reorder updates to avoid layout glitches
+                                        const now = Date.now();
+                                        if (now - lastReorderTime.current < 200) return;
+
                                         const items = dhikr.allItems;
                                         const currentIndex = items.findIndex(item => item.id === d.id);
                                         
-                                        // Simple target detection using elementFromPoint
-                                        // This is often more reliable than manual loop
+                                        // Detect element under pointer
                                         const elementUnder = document.elementFromPoint(info.point.x, info.point.y);
                                         const targetCard = elementUnder?.closest('.dhikr-draggable');
                                         
@@ -670,6 +681,7 @@ export function HomePage() {
                                             if (targetId && targetId !== d.id) {
                                                 const targetIndex = items.findIndex(item => item.id === targetId);
                                                 if (targetIndex !== -1) {
+                                                    lastReorderTime.current = now;
                                                     const newOrder = [...items];
                                                     const [movedItem] = newOrder.splice(currentIndex, 1);
                                                     newOrder.splice(targetIndex, 0, movedItem);
@@ -685,7 +697,8 @@ export function HomePage() {
                                         position: 'relative', 
                                         display: 'flex', 
                                         zIndex: draggedId === d.id ? 100 : 1,
-                                        width: '100%' 
+                                        width: '100%',
+                                        pointerEvents: draggedId === d.id ? 'none' : 'auto' // Crucial for elementFromPoint to work
                                     }}
                                 >
                                     <button
