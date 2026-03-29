@@ -299,6 +299,7 @@ export function HomePage() {
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const dhikrSectionRef = useRef<HTMLDivElement>(null);
     const dhikrGroupRef = useRef<HTMLDivElement>(null);
+    const lastSwapTime = useRef<number>(0);
 
     useEffect(() => {
         if (!isEditingDhikr) return;
@@ -318,6 +319,9 @@ export function HomePage() {
     const [showAddDuaa, setShowAddDuaa] = useState(false);
 
     const handleDhikrDrag = useCallback((info: any, currentId: string) => {
+        const now = Date.now();
+        if (now - lastSwapTime.current < 150) return; // Throttle swaps
+
         if (!dhikrGroupRef.current) return;
         const containerRect = dhikrGroupRef.current.getBoundingClientRect();
         const x = info.point.x - containerRect.left;
@@ -325,10 +329,11 @@ export function HomePage() {
 
         // Configuration de la grille (2 colonnes)
         const colWidth = containerRect.width / 2;
-        const rowHeight = 110 + 10; // Hauteur de la carte + gap
+        const rowHeight = 110 + 10;
 
-        const col = Math.max(0, Math.min(1, Math.floor(x / colWidth)));
-        const row = Math.max(0, Math.floor(y / rowHeight));
+        // Calculer l'index cible basé sur le centre des slots (plus stable)
+        const col = Math.round(x / colWidth - 0.5); 
+        const row = Math.round(y / rowHeight - 0.5);
         const targetIndex = Math.max(0, Math.min(dhikr.allItems.length - 1, row * 2 + col));
 
         const currentIndex = dhikr.allItems.findIndex(d => d.id === currentId);
@@ -337,6 +342,7 @@ export function HomePage() {
             const [movedItem] = newList.splice(currentIndex, 1);
             newList.splice(targetIndex, 0, movedItem);
             dhikr.reorderDhikrs(newList);
+            lastSwapTime.current = now;
         }
     }, [dhikr.allItems, dhikr.reorderDhikrs]);
     const [newDuaa, setNewDuaa] = useState({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
@@ -534,16 +540,17 @@ export function HomePage() {
                                         style={{
                                             position: 'relative',
                                             display: 'flex',
-                                            zIndex: draggedId === d.id ? 100 : 1,
-                                            width: 'calc(50% - 5px)',
+                                            zIndex: draggedId === d.id ? 1000 : 1,
+                                            width: 'calc(50% - 10px)',
                                             height: '110px'
                                         }}
                                         transition={{
                                             type: 'spring',
-                                            stiffness: 350,
-                                            damping: 30,
-                                            layout: { duration: 0.2 }
+                                            stiffness: 400,
+                                            damping: 40,
+                                            layout: { duration: 0.25 }
                                         }}
+                                        whileDrag={{ scale: 1.05, zIndex: 1000 }}
                                     >
                                         <button className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`} onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }} onTouchStart={handleTouchStartDhikr} onTouchEnd={handleTouchEndDhikr} onTouchMove={handleTouchEndDhikr} onMouseDown={handleTouchStartDhikr} onMouseUp={handleTouchEndDhikr} onMouseLeave={handleTouchEndDhikr} style={{ '--dhikr-color': d.color } as React.CSSProperties}>
                                             {series > 0 && <span className="dhikr-card__series">{series}×</span>}
