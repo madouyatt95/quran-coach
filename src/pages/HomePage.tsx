@@ -186,14 +186,20 @@ function useDhikr() {
     }, []);
 
     const restoreDefaults = useCallback(() => {
-        if (window.confirm('Voulez-vous restaurer la liste de Dhikr par défaut ? Vos invocations personnelles seront supprimées.')) {
+        if (window.confirm('Voulez-vous restaurer la liste de Dhikr par défaut ? Vos invocations personnelles et vos progressions seront supprimées.')) {
             localStorage.removeItem('user-dhikrs-order');
-            setAllItems([...DHIKR_LIST]);
-            setTimeout(() => {
-                setAllItems([...DHIKR_LIST]);
-            }, 10);
+            localStorage.removeItem('custom-dhikr');
+            // Supprimer toutes les clés de progression dhikr-v2-*
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('dhikr-v2-')) {
+                    localStorage.removeItem(key);
+                    i--; // Ajuster l'index après suppression
+                }
+            }
+            window.location.reload();
         }
-    }, []);
+    }, [allItems]);
 
     const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
     const targetedCount = allItems.filter(d => d.target > 0).length;
@@ -481,8 +487,8 @@ export function HomePage() {
                     )}
                 </div>
 
-                <div ref={dhikrGroupRef} style={{ position: 'relative' }}>
-                    <Reorder.Group axis="y" values={dhikr.allItems} onReorder={dhikr.reorderDhikrs} className="home-dhikr__flex-container" style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                <div ref={dhikrGroupRef} style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px' }}>
+                    <Reorder.Group values={dhikr.allItems} onReorder={dhikr.reorderDhikrs} className="home-dhikr__flex-container" style={{ listStyle: 'none', padding: '4px', margin: 0, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                         {dhikr.allItems.map(d => {
                             const count = dhikr.getCount(d.id);
                             const isUnlimited = d.target === 0;
@@ -491,7 +497,7 @@ export function HomePage() {
                             const isDone = d.target > 0 && count >= d.target;
                             const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
                             return (
-                                <Reorder.Item key={d.id} value={d} id={d.id} dragListener={isEditingDhikr} onDragStart={() => setDraggedId(d.id)} onDragEnd={() => setDraggedId(null)} dragConstraints={dhikrGroupRef} dragElastic={0} className="dhikr-draggable" style={{ position: 'relative', display: 'flex', zIndex: draggedId === d.id ? 100 : 1, width: 'calc(50% - 5px)', height: '110px' }}>
+                                <Reorder.Item key={d.id} value={d} id={d.id} layout dragListener={isEditingDhikr} onDragStart={() => setDraggedId(d.id)} onDragEnd={() => setDraggedId(null)} dragConstraints={dhikrGroupRef} dragElastic={0} className="dhikr-draggable" style={{ position: 'relative', display: 'flex', zIndex: draggedId === d.id ? 100 : 1, width: 'calc(50% - 5px)', height: '110px' }}>
                                     <button className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`} onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }} onTouchStart={handleTouchStartDhikr} onTouchEnd={handleTouchEndDhikr} onTouchMove={handleTouchEndDhikr} onMouseDown={handleTouchStartDhikr} onMouseUp={handleTouchEndDhikr} onMouseLeave={handleTouchEndDhikr} style={{ '--dhikr-color': d.color } as React.CSSProperties}>
                                         {series > 0 && <span className="dhikr-card__series">{series}×</span>}
                                         <span className="dhikr-card__daily">{d.daily}</span>
