@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useSmartStore } from '../stores/smartStore';
+import { useInvisibleCoachStore } from '../stores/invisibleCoachStore';
 import { useTranslation } from 'react-i18next';
 import {
     ShieldCheck, CloudRain, Sun, Map, History, Heart, Moon, Zap, BookOpen,
-    ArrowLeft, Info
+    ArrowLeft, Info, Eye, Bell, Brain, BookOpenCheck, Target, MessageCircle,
+    Clock, Award, Lightbulb, Swords
 } from 'lucide-react';
 import './SentinellePage.css';
 
@@ -11,6 +13,7 @@ export function SentinellePage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const smart = useSmartStore();
+    const coach = useInvisibleCoachStore();
 
 
     return (
@@ -192,6 +195,79 @@ export function SentinellePage() {
                     <span>{t('sentinel.gpsInfo', "Certains modes utilisent votre position GPS de manière respectueuse pour s'activer.")}</span>
                 </div>
             </footer>
+
+            {/* ── Coach Invisible Section ── */}
+            <section className="sentinel-hero" style={{ marginTop: '24px' }}>
+                <div className="sentinel-hero__icon">
+                    <Eye size={48} color="#4ecdc4" />
+                </div>
+                <h2>Coach Invisible</h2>
+                <p>Un compagnon discret qui intervient au bon moment selon ton comportement de lecture.</p>
+
+                <div className="sentinel-master-toggle">
+                    <span>Activer le Coach</span>
+                    <button
+                        className={`toggle ${coach.enabled ? 'active' : ''}`}
+                        onClick={() => coach.setEnabled(!coach.enabled)}
+                    >
+                        <span className="toggle__knob" />
+                    </button>
+                </div>
+
+                <div className="sentinel-master-toggle" style={{ marginTop: '8px' }}>
+                    <span><Bell size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />Notifications push</span>
+                    <button
+                        className={`toggle ${coach.notificationsEnabled ? 'active' : ''}`}
+                        onClick={() => coach.setNotificationsEnabled(!coach.notificationsEnabled)}
+                    >
+                        <span className="toggle__knob" />
+                    </button>
+                </div>
+
+                {coach.totalShown > 0 && (
+                    <div style={{ marginTop: '12px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
+                        {coach.totalShown} interventions · {coach.totalActioned} actions · Réceptivité : {coach.receptivityScore}%
+                    </div>
+                )}
+            </section>
+
+            {coach.enabled && (
+                <div className="sentinel-options-grid">
+                    {[
+                        { key: 'verse_emotion', icon: MessageCircle, label: 'Versets émotionnels', desc: 'Réflexions sur les versets de miséricorde, patience, etc.' },
+                        { key: 'hadith_link', icon: Swords, label: 'Liens Coran ↔ Sunna', desc: 'Hadith authentique lié au verset que tu lis.' },
+                        { key: 'surah_complete', icon: Award, label: 'Fin de sourate', desc: 'Célébration quand tu termines une sourate.' },
+                        { key: 'milestone', icon: Target, label: 'Milestones', desc: 'Célébrations pour les grandes étapes (50, 100 pages...).' },
+                        { key: 'streak_danger', icon: Clock, label: 'Série en danger', desc: 'Alerte quand ta série de lecture est menacée.' },
+                        { key: 'comeback', icon: Heart, label: 'Message de retour', desc: 'Message d\'encouragement après une absence.' },
+                        { key: 'prayer_prep', icon: Moon, label: 'Préparation prière', desc: 'Sourate recommandée avant chaque prière.' },
+                        { key: 'long_reading', icon: BookOpenCheck, label: 'Pause méditation', desc: 'Invitation à méditer après 15 min de lecture.' },
+                        { key: 'page_reread', icon: Brain, label: 'Suggestion mémorisation', desc: 'Propose le Hifdh si tu relis souvent la même page.' },
+                        { key: 'quiz_weak', icon: Lightbulb, label: 'Après un quiz', desc: 'Suggestions de révision après un score faible.' },
+                        { key: 'fahm_push', icon: Eye, label: 'Vers la compréhension', desc: 'Propose le panneau Fahm sur les versets riches.' },
+                    ].map(item => {
+                        const Icon = item.icon;
+                        const enabled = coach.enabledTriggers[item.key] !== false;
+                        return (
+                            <div className="sentinel-card" key={item.key}>
+                                <div className="sentinel-card__header">
+                                    <div className="sentinel-card__title">
+                                        <Icon size={20} />
+                                        <span>{item.label}</span>
+                                    </div>
+                                    <button
+                                        className={`toggle sm ${enabled ? 'active' : ''}`}
+                                        onClick={() => coach.setTriggerEnabled(item.key, !enabled)}
+                                    >
+                                        <span className="toggle__knob" />
+                                    </button>
+                                </div>
+                                <p>{item.desc}</p>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

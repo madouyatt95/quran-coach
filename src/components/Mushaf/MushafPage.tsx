@@ -37,6 +37,7 @@ import { MushafShareModal } from './MushafShareModal';
 
 import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, getJuzNumber, SURAH_NAMES_FR } from './mushafConstants';
 import type { MaskMode } from './mushafConstants';
+import { FahmPanel } from '../Fahm/FahmPanel';
 import './MushafPage.css';
 
 export function MushafPage() {
@@ -111,6 +112,7 @@ export function MushafPage() {
 
     // Share
     const [shareAyah, setShareAyah] = useState<Ayah | null>(null);
+    const [fahmAyah, setFahmAyah] = useState<{ surah: number; ayah: number; text: string; translation?: string; surahName?: string } | null>(null);
     const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const longPressTriggered = useRef(false);
 
@@ -653,6 +655,23 @@ export function MushafPage() {
                                                 <span className="mih-verse-num">
                                                     {toVerseGlyph(ayah.numberInSurah)}
                                                 </span>
+                                                <button
+                                                    className="mih-fahm-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const surahObj = surahs.find(s => s.number === ayah.surah);
+                                                        setFahmAyah({
+                                                            surah: ayah.surah,
+                                                            ayah: ayah.numberInSurah,
+                                                            text: ayah.text,
+                                                            translation: translationMap.get(ayah.number),
+                                                            surahName: surahObj ? (SURAH_NAMES_FR[ayah.surah] || surahObj.englishName) : undefined,
+                                                        });
+                                                    }}
+                                                    title="Comprendre ce verset"
+                                                >
+                                                    💡
+                                                </button>
 
                                                 {showTransliteration && transliterationMap.get(ayah.number) && (
                                                     <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
@@ -698,6 +717,18 @@ export function MushafPage() {
                     showTranslation={showTranslation}
                     showTransliteration={showTransliteration}
                     onClose={() => setShareAyah(null)}
+                />
+            )}
+
+            {/* Fahm Panel */}
+            {fahmAyah && (
+                <FahmPanel
+                    surah={fahmAyah.surah}
+                    ayah={fahmAyah.ayah}
+                    surahName={fahmAyah.surahName}
+                    verseTextAr={fahmAyah.text}
+                    verseTextFr={fahmAyah.translation}
+                    onClose={() => setFahmAyah(null)}
                 />
             )}
 

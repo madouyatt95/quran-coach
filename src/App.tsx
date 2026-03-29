@@ -12,6 +12,7 @@ import { useStatsStore } from './stores/statsStore';
 import { fetchSurahs } from './lib/quranApi';
 import { unlockAudio, isIOSPWA, isAudioUnlocked } from './lib/audioUnlock';
 import { InstallPrompt } from './components/InstallPrompt/InstallPrompt';
+import { InvisibleCoachLayer } from './components/InvisibleCoach/InvisibleCoachLayer';
 import { UpdateBanner } from './components/UpdateBanner';
 import { KhatmCelebration } from './components/KhatmCelebration';
 import { updateLastVisit } from './lib/notificationService';
@@ -45,6 +46,8 @@ const CirclePage = lazy(() => import('./pages/CirclePage').then(m => ({ default:
 const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const AtlasPage = lazy(() => import('./pages/AtlasPage').then(m => ({ default: m.AtlasPage })));
 const LastNightsDashboard = lazy(() => import('./components/Home/LastNightsDashboard').then(m => ({ default: m.LastNightsDashboard })));
+const FahmPage = lazy(() => import('./pages/FahmPage').then(m => ({ default: m.FahmPage })));
+const VocabPage = lazy(() => import('./pages/VocabPage').then(m => ({ default: m.VocabPage })));
 
 // Minimal loading fallback
 function PageLoader() {
@@ -207,6 +210,8 @@ function AppContent() {
             <Route path="/stories" element={<StoriesPage />} />
             <Route path="/atlas" element={<AtlasPage />} />
             <Route path="/last-nights" element={<LastNightsDashboard />} />
+            <Route path="/fahm" element={<FahmPage />} />
+            <Route path="/vocab" element={<VocabPage />} />
           </Routes>
         </Suspense>
       </main>
@@ -214,6 +219,7 @@ function AppContent() {
       <InstallPrompt />
       <UpdateBanner />
       <MiniPlayer />
+      <InvisibleCoachLayer />
       <BottomNav />
     </>
   );

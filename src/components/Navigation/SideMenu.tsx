@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings, ScrollText, Compass, Moon, BookOpen, HeartPulse, Headphones, Library, GraduationCap, Users, BookMarked, Map } from 'lucide-react';
+import { X, Stars, Bell, BellOff, ShieldCheck, Search, BarChart3, Settings, ScrollText, Compass, Moon, BookOpen, HeartPulse, Headphones, Library, GraduationCap, Users, BookMarked, Map, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { usePrayerStore } from '../../stores/prayerStore';
@@ -93,6 +93,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         { path: '/tafsir', emoji: <BookOpen size={24} color="#795548" />, label: t('sideMenu.tafsir'), color: 'rgba(121,85,72,0.2)' },
         { path: '/academy', emoji: <GraduationCap size={24} color="#4CAF50" />, label: t('sideMenu.academy'), color: 'rgba(76,175,80,0.2)', isNew: true },
         { path: '/circles', emoji: <Users size={24} color="#2196F3" />, label: 'Cercle de Lecture', color: 'rgba(33,150,243,0.2)' },
+        { path: '/fahm', emoji: <Lightbulb size={24} color="#4ecdc4" />, label: 'Comprendre (Fahm)', color: 'rgba(78,205,196,0.2)', isNew: true },
     ];
 
     const TOOLS = [

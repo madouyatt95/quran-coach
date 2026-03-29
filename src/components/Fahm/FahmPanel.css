@@ -1,0 +1,401 @@
+/* ─── Fahm Panel — Panneau de compréhension ───────────────── */
+
+.fahm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 940;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.fahm-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 941;
+    background: #1a1a1f;
+    border-radius: 20px 20px 0 0;
+    padding: 8px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    max-height: 80vh;
+    overflow-y: auto;
+    touch-action: pan-y;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.fahm-panel__handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    margin: 0 auto 12px;
+}
+
+.fahm-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.fahm-panel__label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #c9a84c;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.fahm-panel__close {
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Verse text */
+.fahm-panel__verse {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.3rem;
+    line-height: 2;
+    color: #e8e0c8;
+    text-align: center;
+    padding: 12px 8px;
+    background: rgba(201, 168, 76, 0.05);
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.fahm-panel__translation {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    margin-bottom: 16px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* Tabs */
+.fahm-panel__tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+}
+
+.fahm-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 6px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fahm-tab--active {
+    background: rgba(201, 168, 76, 0.15);
+    color: #c9a84c;
+}
+
+.fahm-panel__content {
+    min-height: 120px;
+}
+
+/* ── Words Tab ── */
+.fahm-words {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fahm-word {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fahm-word--learned {
+    border-color: rgba(78, 205, 196, 0.2);
+    background: rgba(78, 205, 196, 0.04);
+}
+
+.fahm-word__arabic {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.4rem;
+    color: #c9a84c;
+    min-width: 60px;
+    text-align: center;
+}
+
+.fahm-word__details {
+    flex: 1;
+    min-width: 0;
+}
+
+.fahm-word__meaning {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+}
+
+.fahm-word__root {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 2px;
+}
+
+.fahm-word__freq {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.25);
+    margin-top: 1px;
+}
+
+.fahm-word__learn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(78, 205, 196, 0.1);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    color: #4ecdc4;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.fahm-word__learn--done {
+    background: #4ecdc4;
+    color: #000;
+    border-color: #4ecdc4;
+}
+
+/* ── Structure Tab ── */
+.fahm-structure__intro {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 12px;
+}
+
+.fahm-structure__words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+
+.struct-word {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: default;
+}
+
+.struct-word--known {
+    background: rgba(78, 205, 196, 0.1);
+    color: #4ecdc4;
+    border: 1px solid rgba(78, 205, 196, 0.2);
+}
+
+.fahm-structure__translation {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.fahm-structure__tip {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.35);
+    line-height: 1.4;
+}
+
+/* ── Context Tab ── */
+.fahm-context__ref {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 12px;
+}
+
+.fahm-context__category {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background: rgba(201, 168, 76, 0.08);
+    border-radius: 8px;
+}
+
+.fahm-context__reflection {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.7;
+}
+
+.fahm-context__empty {
+    text-align: center;
+    padding: 24px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.fahm-context__empty p {
+    font-size: 0.82rem;
+    margin-top: 8px;
+}
+
+/* ── Pearl Tab ── */
+.fahm-pearl__reflection {
+    margin-bottom: 20px;
+}
+
+.fahm-pearl__reflection h4 {
+    color: #c9a84c;
+    font-size: 0.9rem;
+    margin: 0 0 8px;
+}
+
+.fahm-pearl__reflection p {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.fahm-pearl__hadith {
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fahm-pearl__hadith h4 {
+    color: #c9a84c;
+    font-size: 0.9rem;
+    margin: 0 0 10px;
+}
+
+.fahm-pearl__hadith-ar {
+    font-family: var(--font-arabic, 'Scheherazade New', serif);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #c9a84c;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.fahm-pearl__hadith-fr {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.fahm-pearl__source {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.fahm-pearl__connection {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+}
+
+/* ── Empty state ── */
+.fahm-empty {
+    text-align: center;
+    padding: 32px 16px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.fahm-empty p {
+    font-size: 0.85rem;
+    margin: 8px 0 0;
+}
+
+.fahm-empty__hint {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Light theme ── */
+[data-theme="light"] .fahm-panel {
+    background: #fff;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .fahm-panel__verse {
+    color: #2a2a2a;
+    background: rgba(201, 168, 76, 0.06);
+}
+
+[data-theme="light"] .fahm-panel__translation {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .fahm-tab {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] .fahm-tab--active {
+    background: rgba(201, 168, 76, 0.12);
+}
+
+[data-theme="light"] .fahm-word {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .fahm-word__meaning {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="light"] .fahm-word__root,
+[data-theme="light"] .fahm-word__freq {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] .struct-word {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] .fahm-pearl__reflection p,
+[data-theme="light"] .fahm-pearl__connection,
+[data-theme="light"] .fahm-context__reflection {
+    color: rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="light"] .fahm-pearl__hadith-fr {
+    color: rgba(0, 0, 0, 0.6);
+}

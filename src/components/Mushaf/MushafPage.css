@@ -361,6 +361,38 @@
     font-weight: normal;
 }
 
+/* Fahm button (💡) — after verse number */
+.mih-fahm-btn {
+    display: inline;
+    border: none;
+    background: none;
+    padding: 0 2px;
+    margin: 0;
+    font-size: 0.6em;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.35;
+    transition: opacity 0.2s, transform 0.2s;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mih-fahm-btn:hover,
+.mih-fahm-btn:active {
+    opacity: 0.85;
+    transform: scale(1.2);
+}
+
+[data-theme="dark"] .mih-fahm-btn,
+.mushaf-page[data-mushaf-dark="true"] .mih-fahm-btn {
+    opacity: 0.3;
+}
+
+[data-theme="dark"] .mih-fahm-btn:hover,
+[data-theme="dark"] .mih-fahm-btn:active {
+    opacity: 0.8;
+}
+
 /* Font sizes */
 [data-arabic-size="sm"] .mih-ayahs {
     font-size: 1.35rem;

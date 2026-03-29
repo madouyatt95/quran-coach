@@ -1,0 +1,163 @@
+.coach-nudge-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 950;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.coach-nudge {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 951;
+    background: #1a1a1f;
+    border-radius: 20px 20px 0 0;
+    padding: 8px 20px 24px;
+    max-height: 75vh;
+    overflow-y: auto;
+    touch-action: pan-y;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.coach-nudge__handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+}
+
+.coach-nudge__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.coach-nudge__badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.coach-nudge__emoji {
+    font-size: 1.5rem;
+}
+
+.coach-nudge__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #c9a84c;
+}
+
+.coach-nudge__close {
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 0;
+}
+
+.coach-nudge__arabic {
+    font-family: 'Scheherazade New', 'Amiri', serif;
+    font-size: 1.35rem;
+    line-height: 2;
+    color: #c9a84c;
+    text-align: center;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 12px;
+}
+
+.coach-nudge__message {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: pre-line;
+    margin-bottom: 8px;
+}
+
+.coach-nudge__source {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.35);
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.coach-nudge__actions {
+    display: flex;
+    gap: 10px;
+}
+
+.coach-nudge__btn {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.coach-nudge__btn--primary {
+    background: linear-gradient(135deg, #c9a84c 0%, #a8893e 100%);
+    color: #000;
+}
+
+.coach-nudge__btn--primary:active {
+    transform: scale(0.97);
+}
+
+.coach-nudge__btn--snooze {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Light theme */
+[data-theme="light"] .coach-nudge {
+    background: #fff;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .coach-nudge__message {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="light"] .coach-nudge__source {
+    color: rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"] .coach-nudge__arabic {
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .coach-nudge__close {
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] .coach-nudge__btn--snooze {
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/* Sepia */
+[data-theme="sepia"] .coach-nudge {
+    background: #f5edd0;
+}
+
+[data-theme="sepia"] .coach-nudge__message {
+    color: rgba(60, 40, 10, 0.8);
+}

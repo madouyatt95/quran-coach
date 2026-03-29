@@ -389,3 +389,79 @@ export async function sendTestNotification(): Promise<boolean> {
 export function updateLastVisit() {
     localStorage.setItem('notif_last_visit', Date.now().toString());
 }
+
+// ─── Coach Invisible Notifications ──────────────────
+// Programme des rappels de lecture locaux basés sur l'inactivité.
+// Appelé par le store du coach quand les notifications sont activées.
+export async function scheduleCoachNotification(options: {
+    type: 'streak_danger' | 'comeback' | 'daily_reminder';
+    title: string;
+    body: string;
+    delayMinutes: number;
+}): Promise<boolean> {
+    try {
+        if (Capacitor.isNativePlatform()) {
+            await LocalNotifications.schedule({
+                notifications: [{
+                    id: 9000 + Math.floor(Math.random() * 1000),
+                    title: options.title,
+                    body: options.body,
+                    schedule: { at: new Date(Date.now() + options.delayMinutes * 60 * 1000) },
+                    sound: 'default',
+                }]
+            });
+            return true;
+        }
+
+        // Web: use service worker notification
+        if (!('serviceWorker' in navigator)) return false;
+        const permission = getNotificationPermission();
+        if (permission !== 'granted') return false;
+
+        const registration = await navigator.serviceWorker.ready;
+
+        // Schedule via setTimeout (works only while app is open)
+        setTimeout(async () => {
+            try {
+                await registration.showNotification(options.title, {
+                    body: options.body,
+                    icon: '/icon-192.png',
+                    tag: `coach-${options.type}`,
+                    badge: '/icon-192.png',
+                });
+            } catch { /* silent */ }
+        }, options.delayMinutes * 60 * 1000);
+
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// Fonction utilitaire : programme les rappels du coach
+export function scheduleCoachReminders() {
+    const lastVisit = localStorage.getItem('notif_last_visit');
+    if (!lastVisit) return;
+
+    const hoursSinceLastVisit = (Date.now() - parseInt(lastVisit)) / (1000 * 60 * 60);
+
+    // Si l'utilisateur est actif depuis plus de 20h sans lire aujourd'hui
+    if (hoursSinceLastVisit > 20 && hoursSinceLastVisit < 48) {
+        scheduleCoachNotification({
+            type: 'streak_danger',
+            title: '📖 Ta série est en danger !',
+            body: 'Tu n\'as pas encore lu aujourd\'hui. Quelques versets suffisent pour maintenir ta série. بارك الله فيك',
+            delayMinutes: 30, // Dans 30 min
+        });
+    }
+
+    // Si l'utilisateur est absent depuis plus de 3 jours
+    if (hoursSinceLastVisit > 72) {
+        scheduleCoachNotification({
+            type: 'comeback',
+            title: '🤲 Tu nous manques...',
+            body: 'Le Coran attend ton retour. « Et quiconque s\'en remet à Allah, Il lui suffit » (65:3)',
+            delayMinutes: 60,
+        });
+    }
+}
