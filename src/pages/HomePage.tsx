@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X, Calendar } from 'lucide-react';
+import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X, Calendar, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags, getUpcomingIslamicEvent } from '../lib/hadithEngine';
 import { formatDivineNames } from '../lib/divineNames';
 import { useStatsStore } from '../stores/statsStore';
@@ -299,7 +299,6 @@ export function HomePage() {
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const dhikrSectionRef = useRef<HTMLDivElement>(null);
     const dhikrGroupRef = useRef<HTMLDivElement>(null);
-    const lastSwapTime = useRef<number>(0);
 
     useEffect(() => {
         if (!isEditingDhikr) return;
@@ -318,45 +317,26 @@ export function HomePage() {
 
     const [showAddDuaa, setShowAddDuaa] = useState(false);
 
-    const handleDhikrDrag = useCallback((info: any, currentId: string) => {
-        const now = Date.now();
-        if (now - lastSwapTime.current < 150) return; // Throttle swaps
-
-        if (!dhikrGroupRef.current) return;
-        const containerRect = dhikrGroupRef.current.getBoundingClientRect();
-        const x = info.point.x - containerRect.left;
-        const y = info.point.y - containerRect.top;
-
-        // Configuration de la grille (2 colonnes)
-        const colWidth = containerRect.width / 2;
-        const rowHeight = 110 + 10;
-
-        // Calculer l'index cible basé sur le centre des slots (plus stable)
-        const col = Math.round(x / colWidth - 0.5); 
-        const row = Math.round(y / rowHeight - 0.5);
-        const targetIndex = Math.max(0, Math.min(dhikr.allItems.length - 1, row * 2 + col));
-
-        const currentIndex = dhikr.allItems.findIndex(d => d.id === currentId);
-        if (currentIndex !== targetIndex && targetIndex !== -1) {
-            const newList = [...dhikr.allItems];
-            const [movedItem] = newList.splice(currentIndex, 1);
-            newList.splice(targetIndex, 0, movedItem);
-            dhikr.reorderDhikrs(newList);
-            lastSwapTime.current = now;
-        }
+    const moveDhikr = useCallback((id: string, delta: number) => {
+        const oldIndex = dhikr.allItems.findIndex(d => d.id === id);
+        const newIndex = Math.max(0, Math.min(dhikr.allItems.length - 1, oldIndex + delta));
+        if (oldIndex === newIndex) return;
+        const newList = [...dhikr.allItems];
+        const [item] = newList.splice(oldIndex, 1);
+        newList.splice(newIndex, 0, item);
+        dhikr.reorderDhikrs(newList);
     }, [dhikr.allItems, dhikr.reorderDhikrs]);
     const [newDuaa, setNewDuaa] = useState({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
     const [showIslamicCalendar, setShowIslamicCalendar] = useState(false);
-    const [draggedId, setDraggedId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (draggedId || showIslamicCalendar) {
+        if (showIslamicCalendar) {
             document.body.classList.add('scroll-lock');
         } else {
             document.body.classList.remove('scroll-lock');
         }
         return () => document.body.classList.remove('scroll-lock');
-    }, [draggedId, showIslamicCalendar]);
+    }, [showIslamicCalendar]);
 
     const handleTouchStartDhikr = () => {
         if (isEditingDhikr) return;
@@ -530,17 +510,11 @@ export function HomePage() {
                                     <motion.div
                                         key={d.id}
                                         layout
-                                        drag={isEditingDhikr}
-                                        onDragStart={() => setDraggedId(d.id)}
-                                        onDragEnd={() => setDraggedId(null)}
-                                        onDrag={(_, info) => handleDhikrDrag(info, d.id)}
-                                        dragConstraints={dhikrGroupRef}
-                                        dragElastic={0.1}
                                         className="dhikr-draggable"
                                         style={{
                                             position: 'relative',
                                             display: 'flex',
-                                            zIndex: draggedId === d.id ? 1000 : 1,
+                                            zIndex: 1,
                                             width: 'calc(50% - 10px)',
                                             height: '110px'
                                         }}
@@ -548,9 +522,8 @@ export function HomePage() {
                                             type: 'spring',
                                             stiffness: 400,
                                             damping: 40,
-                                            layout: { duration: 0.25 }
+                                            layout: { duration: 0.3 }
                                         }}
-                                        whileDrag={{ scale: 1.05, zIndex: 1000 }}
                                     >
                                         <button className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`} onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }} onTouchStart={handleTouchStartDhikr} onTouchEnd={handleTouchEndDhikr} onTouchMove={handleTouchEndDhikr} onMouseDown={handleTouchStartDhikr} onMouseUp={handleTouchEndDhikr} onMouseLeave={handleTouchEndDhikr} style={{ '--dhikr-color': d.color } as React.CSSProperties}>
                                             {series > 0 && <span className="dhikr-card__series">{series}×</span>}
@@ -564,9 +537,20 @@ export function HomePage() {
                                             {count > 0 && !isEditingDhikr && <button className="dhikr-card__reset" onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }} title="Réinitialiser"><RotateCcw size={10} /></button>}
                                             <AnimatePresence>
                                                 {isEditingDhikr && (
-                                                    <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} className="dhikr-card__delete ios-delete-badge" onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }} title="Supprimer">
-                                                        <X size={12} strokeWidth={3} />
-                                                    </motion.button>
+                                                    <>
+                                                        <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} className="dhikr-card__delete ios-delete-badge" onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }} title="Supprimer">
+                                                            <X size={12} strokeWidth={3} />
+                                                        </motion.button>
+                                                        
+                                                        <div className="dhikr-card__arrows" onClick={e => e.stopPropagation()}>
+                                                            <button onClick={() => moveDhikr(d.id, -2)} className="arrow-btn up"><ChevronUp size={16} /></button>
+                                                            <div className="horizontal-arrows">
+                                                                <button onClick={() => moveDhikr(d.id, -1)} className="arrow-btn left"><ChevronLeft size={16} /></button>
+                                                                <button onClick={() => moveDhikr(d.id, 1)} className="arrow-btn right"><ChevronRight size={16} /></button>
+                                                            </div>
+                                                            <button onClick={() => moveDhikr(d.id, 2)} className="arrow-btn down"><ChevronDown size={16} /></button>
+                                                        </div>
+                                                    </>
                                                 )}
                                             </AnimatePresence>
                                         </button>
