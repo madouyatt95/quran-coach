@@ -9,7 +9,7 @@ import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { SmartSentinel } from '../components/Home/SmartSentinel';
 import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
-import { Reorder, motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import './HomePage.css';
 
@@ -316,6 +316,29 @@ export function HomePage() {
     }, [isEditingDhikr]);
 
     const [showAddDuaa, setShowAddDuaa] = useState(false);
+
+    const handleDhikrDrag = useCallback((info: any, currentId: string) => {
+        if (!dhikrGroupRef.current) return;
+        const containerRect = dhikrGroupRef.current.getBoundingClientRect();
+        const x = info.point.x - containerRect.left;
+        const y = info.point.y - containerRect.top;
+
+        // Configuration de la grille (2 colonnes)
+        const colWidth = containerRect.width / 2;
+        const rowHeight = 110 + 10; // Hauteur de la carte + gap
+
+        const col = Math.max(0, Math.min(1, Math.floor(x / colWidth)));
+        const row = Math.max(0, Math.floor(y / rowHeight));
+        const targetIndex = Math.max(0, Math.min(dhikr.allItems.length - 1, row * 2 + col));
+
+        const currentIndex = dhikr.allItems.findIndex(d => d.id === currentId);
+        if (currentIndex !== targetIndex && targetIndex !== -1) {
+            const newList = [...dhikr.allItems];
+            const [movedItem] = newList.splice(currentIndex, 1);
+            newList.splice(targetIndex, 0, movedItem);
+            dhikr.reorderDhikrs(newList);
+        }
+    }, [dhikr.allItems, dhikr.reorderDhikrs]);
     const [newDuaa, setNewDuaa] = useState({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
     const [showIslamicCalendar, setShowIslamicCalendar] = useState(false);
     const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -488,45 +511,70 @@ export function HomePage() {
                 </div>
 
                 <div ref={dhikrGroupRef} style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px' }}>
-                    <Reorder.Group values={dhikr.allItems} onReorder={dhikr.reorderDhikrs} className="home-dhikr__flex-container" style={{ listStyle: 'none', padding: '4px', margin: 0, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                        {dhikr.allItems.map(d => {
-                            const count = dhikr.getCount(d.id);
-                            const isUnlimited = d.target === 0;
-                            const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
-                            const countInSeries = dhikr.getCountInSeries(d.id);
-                            const isDone = d.target > 0 && count >= d.target;
-                            const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
-                            return (
-                                <Reorder.Item key={d.id} value={d} id={d.id} layout dragListener={isEditingDhikr} onDragStart={() => setDraggedId(d.id)} onDragEnd={() => setDraggedId(null)} dragConstraints={dhikrGroupRef} dragElastic={0} className="dhikr-draggable" style={{ position: 'relative', display: 'flex', zIndex: draggedId === d.id ? 100 : 1, width: 'calc(50% - 5px)', height: '110px' }}>
-                                    <button className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`} onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }} onTouchStart={handleTouchStartDhikr} onTouchEnd={handleTouchEndDhikr} onTouchMove={handleTouchEndDhikr} onMouseDown={handleTouchStartDhikr} onMouseUp={handleTouchEndDhikr} onMouseLeave={handleTouchEndDhikr} style={{ '--dhikr-color': d.color } as React.CSSProperties}>
-                                        {series > 0 && <span className="dhikr-card__series">{series}×</span>}
-                                        <span className="dhikr-card__daily">{d.daily}</span>
-                                        <span className="dhikr-card__emoji">{d.emoji}</span>
-                                        <span className="dhikr-card__ar">{formatDivineNames(d.text)}</span>
-                                        <span className="dhikr-card__fr">{formatDivineNames(d.textFr)}</span>
-                                        <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
-                                        <span className="dhikr-card__count">{isUnlimited ? count : `${countInSeries}/${d.target}`}</span>
-                                        {!isUnlimited && <div className="dhikr-card__bar"><div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} /></div>}
-                                        {count > 0 && !isEditingDhikr && <button className="dhikr-card__reset" onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }} title="Réinitialiser"><RotateCcw size={10} /></button>}
-                                        <AnimatePresence>
-                                            {isEditingDhikr && (
-                                                <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} className="dhikr-card__delete ios-delete-badge" onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }} title="Supprimer">
-                                                    <X size={12} strokeWidth={3} />
-                                                </motion.button>
-                                            )}
-                                        </AnimatePresence>
-                                    </button>
-                                </Reorder.Item>
-                            );
-                        })}
-                        {!isEditingDhikr && (
-                            <button className="dhikr-card dhikr-card--add" onClick={() => setShowAddDuaa(true)} style={{ width: 'calc(50% - 5px)', height: '110px', '--dhikr-color': '#666' } as React.CSSProperties}>
-                                <span className="dhikr-card__emoji"><Plus size={24} /></span>
-                                <span className="dhikr-card__fr">Ajouter une duaa</span>
-                                <span className="dhikr-card__desc">Invocation personnelle</span>
-                            </button>
-                        )}
-                    </Reorder.Group>
+                    <LayoutGroup>
+                        <div className="home-dhikr__flex-container" style={{ listStyle: 'none', padding: '4px', margin: 0, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                            {dhikr.allItems.map(d => {
+                                const count = dhikr.getCount(d.id);
+                                const isUnlimited = d.target === 0;
+                                const series = !isUnlimited && d.target > 0 ? Math.floor(count / d.target) : 0;
+                                const countInSeries = dhikr.getCountInSeries(d.id);
+                                const isDone = d.target > 0 && count >= d.target;
+                                const progress = d.target > 0 ? ((countInSeries / d.target) * 100) : 0;
+                                return (
+                                    <motion.div
+                                        key={d.id}
+                                        layout
+                                        drag={isEditingDhikr}
+                                        onDragStart={() => setDraggedId(d.id)}
+                                        onDragEnd={() => setDraggedId(null)}
+                                        onDrag={(_, info) => handleDhikrDrag(info, d.id)}
+                                        dragConstraints={dhikrGroupRef}
+                                        dragElastic={0.1}
+                                        className="dhikr-draggable"
+                                        style={{
+                                            position: 'relative',
+                                            display: 'flex',
+                                            zIndex: draggedId === d.id ? 100 : 1,
+                                            width: 'calc(50% - 5px)',
+                                            height: '110px'
+                                        }}
+                                        transition={{
+                                            type: 'spring',
+                                            stiffness: 350,
+                                            damping: 30,
+                                            layout: { duration: 0.2 }
+                                        }}
+                                    >
+                                        <button className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`} onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }} onTouchStart={handleTouchStartDhikr} onTouchEnd={handleTouchEndDhikr} onTouchMove={handleTouchEndDhikr} onMouseDown={handleTouchStartDhikr} onMouseUp={handleTouchEndDhikr} onMouseLeave={handleTouchEndDhikr} style={{ '--dhikr-color': d.color } as React.CSSProperties}>
+                                            {series > 0 && <span className="dhikr-card__series">{series}×</span>}
+                                            <span className="dhikr-card__daily">{d.daily}</span>
+                                            <span className="dhikr-card__emoji">{d.emoji}</span>
+                                            <span className="dhikr-card__ar">{formatDivineNames(d.text)}</span>
+                                            <span className="dhikr-card__fr">{formatDivineNames(d.textFr)}</span>
+                                            <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
+                                            <span className="dhikr-card__count">{isUnlimited ? count : `${countInSeries}/${d.target}`}</span>
+                                            {!isUnlimited && <div className="dhikr-card__bar"><div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} /></div>}
+                                            {count > 0 && !isEditingDhikr && <button className="dhikr-card__reset" onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }} title="Réinitialiser"><RotateCcw size={10} /></button>}
+                                            <AnimatePresence>
+                                                {isEditingDhikr && (
+                                                    <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} className="dhikr-card__delete ios-delete-badge" onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }} title="Supprimer">
+                                                        <X size={12} strokeWidth={3} />
+                                                    </motion.button>
+                                                )}
+                                            </AnimatePresence>
+                                        </button>
+                                    </motion.div>
+                                );
+                            })}
+                            {!isEditingDhikr && (
+                                <button className="dhikr-card dhikr-card--add" onClick={() => setShowAddDuaa(true)} style={{ width: 'calc(50% - 5px)', height: '110px', '--dhikr-color': '#666' } as React.CSSProperties}>
+                                    <span className="dhikr-card__emoji"><Plus size={24} /></span>
+                                    <span className="dhikr-card__fr">Ajouter une duaa</span>
+                                    <span className="dhikr-card__desc">Invocation personnelle</span>
+                                </button>
+                            )}
+                        </div>
+                    </LayoutGroup>
                 </div>
             </div>
 
