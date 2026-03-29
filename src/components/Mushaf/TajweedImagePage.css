@@ -87,7 +87,7 @@
     touch-action: pan-y pinch-zoom;
     background: var(--bg-primary);
     /* ensure background blends with image borders */
-    padding-bottom: 24px;
+    padding-bottom: 100px;
     /* extra space at the bottom to prevent nav overlap */
 }
 
