@@ -18,6 +18,7 @@ import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useKhatmStore } from '../../stores/khatmStore';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
 import { formatDivineNames } from '../../lib/divineNames';
@@ -43,6 +44,7 @@ import './MushafPage.css';
 
 export function MushafPage() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const {
         currentPage, surahs, setSurahs,
         setCurrentPage, setCurrentAyah,
@@ -435,6 +437,11 @@ export function MushafPage() {
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
                 <div className="mih-header-left">
+                    {window.history.length > 2 && (
+                        <button onClick={() => navigate(-1)} className="mih-header__icon-btn" style={{ marginRight: '4px' }}>
+                            <ChevronLeft size={24} />
+                        </button>
+                    )}
                     <button onClick={() => setShowSideMenu(true)} className="mih-header__icon-btn">
                         <Menu size={20} />
                     </button>
