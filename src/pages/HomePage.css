@@ -491,7 +491,7 @@
 
 .dhikr-card__daily {
     position: absolute;
-    top: 7px;
+    bottom: 27px;
     left: 7px;
     font-size: 0.5rem;
     font-weight: 700;
@@ -559,22 +559,23 @@
 
 .dhikr-card__reset {
     position: absolute;
-    top: 5px;
-    left: 5px;
-    background: rgba(255, 255, 255, 0.08);
+    top: 2px;
+    left: 2px;
+    background: rgba(255, 255, 255, 0.12);
     border: none;
     border-radius: 6px;
-    color: rgba(255, 255, 255, 0.3);
-    padding: 3px 4px;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 5px;
     cursor: pointer;
     display: flex;
     align-items: center;
     transition: all 0.2s;
+    z-index: 10;
 }
 
 .dhikr-card__reset:active {
     transform: scale(0.85);
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* ─── Dhikr Card Edit Mode & Arrows ─────────────────── */
@@ -584,8 +585,7 @@
 .dhikr-card--editing .dhikr-card__count,
 .dhikr-card--editing .dhikr-card__desc,
 .dhikr-card--editing .dhikr-card__daily,
-.dhikr-card--editing .dhikr-card__bar,
-.dhikr-card--editing .dhikr-card__reset {
+.dhikr-card--editing .dhikr-card__bar {
     opacity: 0.2;
     pointer-events: none;
     transition: all 0.3s;
@@ -631,20 +631,20 @@
 
 .ios-delete-badge {
     position: absolute !important;
-    top: 6px !important;
-    right: 6px !important;
+    top: -8px !important;
+    right: -8px !important;
     left: auto !important;
-    z-index: 150 !important;
+    z-index: 200 !important;
     background: #FF3B30 !important;
     color: white !important;
-    width: 28px !important;
-    height: 28px !important;
+    width: 36px !important;
+    height: 36px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 2px 8px rgba(255, 59, 48, 0.4) !important;
-    border: 2px solid #1a1a2e !important;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.5) !important;
+    border: 3px solid #1a1a2e !important;
 }
 
 /* ─── Seasonal Banner ─────────────────────────────────── */

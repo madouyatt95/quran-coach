@@ -113,16 +113,19 @@ function loadUserDhikrs(): DhikrItem[] {
     try {
         const legacyCustom = localStorage.getItem('custom-dhikr');
         if (legacyCustom) {
-            const parsed = JSON.parse(legacyCustom);
-            return [...DHIKR_LIST, ...parsed];
+            try {
+                const parsedLegacy = JSON.parse(legacyCustom);
+                return [...DHIKR_LIST, ...parsedLegacy];
+            } catch (e) { /* ignore */ }
         }
-    } catch { /* ignore */ }
+    } catch (e) { console.error(e); }
     
     return [...DHIKR_LIST];
 }
 
 function saveUserDhikrs(items: DhikrItem[]) {
     localStorage.setItem('user-dhikrs-order', JSON.stringify(items));
+    localStorage.removeItem('custom-dhikr');
 }
 
 // ─── Dhikr Hook ──────────────────────────────────────────
@@ -550,26 +553,51 @@ export function HomePage() {
                                             <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
                                             <span className="dhikr-card__count">{isUnlimited ? count : `${countInSeries}/${d.target}`}</span>
                                             {!isUnlimited && <div className="dhikr-card__bar"><div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} /></div>}
-                                            {count > 0 && <button className="dhikr-card__reset" onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }} title="Réinitialiser"><RotateCcw size={14} /></button>}
-                                            <AnimatePresence>
-                                                {isEditingDhikr && (
-                                                    <>
-                                                        <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} className="dhikr-card__delete ios-delete-badge" onClick={(e) => { e.stopPropagation(); dhikr.removeDhikr(d.id); }} title="Supprimer">
-                                                            <X size={12} strokeWidth={3} />
-                                                        </motion.button>
-                                                        
-                                                        <div className="dhikr-card__arrows" onClick={e => e.stopPropagation()}>
-                                                            <button onClick={() => moveDhikr(d.id, -2)} className="arrow-btn up"><ChevronUp size={16} /></button>
-                                                            <div className="horizontal-arrows">
-                                                                <button onClick={() => moveDhikr(d.id, -1)} className="arrow-btn left"><ChevronLeft size={16} /></button>
-                                                                <button onClick={() => moveDhikr(d.id, 1)} className="arrow-btn right"><ChevronRight size={16} /></button>
-                                                            </div>
-                                                            <button onClick={() => moveDhikr(d.id, 2)} className="arrow-btn down"><ChevronDown size={16} /></button>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </AnimatePresence>
+                                            
+                                            {count > 0 && (
+                                                <div 
+                                                    className="dhikr-card__reset" 
+                                                    onPointerDown={(e) => { 
+                                                        e.stopPropagation(); 
+                                                        dhikr.reset(d.id); 
+                                                        if (navigator.vibrate) navigator.vibrate(10);
+                                                    }} 
+                                                    title="Réinitialiser"
+                                                >
+                                                    <RotateCcw size={14} />
+                                                </div>
+                                            )}
                                         </div>
+
+                                        <AnimatePresence>
+                                            {isEditingDhikr && (
+                                                <>
+                                                    <motion.div 
+                                                        initial={{ scale: 0, opacity: 0 }} 
+                                                        animate={{ scale: 1, opacity: 1 }} 
+                                                        exit={{ scale: 0, opacity: 0 }} 
+                                                        className="dhikr-card__delete ios-delete-badge" 
+                                                        onPointerDown={(e) => { 
+                                                            e.stopPropagation(); 
+                                                            if (navigator.vibrate) navigator.vibrate(50);
+                                                            dhikr.removeDhikr(d.id); 
+                                                        }} 
+                                                        title="Supprimer"
+                                                    >
+                                                        <X size={18} strokeWidth={3} />
+                                                    </motion.div>
+                                                    
+                                                    <div className="dhikr-card__arrows" onClick={e => e.stopPropagation()}>
+                                                        <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, -2); }} className="arrow-btn up"><ChevronUp size={16} /></button>
+                                                        <div className="horizontal-arrows">
+                                                            <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, -1); }} className="arrow-btn left"><ChevronLeft size={16} /></button>
+                                                            <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, 1); }} className="arrow-btn right"><ChevronRight size={16} /></button>
+                                                        </div>
+                                                        <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, 2); }} className="arrow-btn down"><ChevronDown size={16} /></button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </AnimatePresence>
                                     </motion.div>
                                 );
                             })}
