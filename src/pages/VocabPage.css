@@ -233,18 +233,23 @@
     align-items: center;
     justify-content: center;
     padding: 32px 24px;
-    background-color: var(--color-bg-primary, #0d1117);
+    background-color: #0d1117; /* Solid fallback */
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .vocab-flashcard__front {
-    background: linear-gradient(145deg, rgba(201, 168, 76, 0.12), rgba(201, 168, 76, 0.04));
-    border: 1px solid rgba(201, 168, 76, 0.2);
+    background: linear-gradient(145deg, rgba(201, 168, 76, 0.15), rgba(201, 168, 76, 0.05)), #0d1117;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    z-index: 2;
+    transform: rotateY(0deg) translateZ(1px);
 }
 
 .vocab-flashcard__back {
-    transform: rotateY(180deg);
-    background: linear-gradient(145deg, rgba(78, 205, 196, 0.08), rgba(78, 205, 196, 0.02));
-    border: 1px solid rgba(78, 205, 196, 0.2);
+    transform: rotateY(180deg) translateZ(1px);
+    background: linear-gradient(145deg, rgba(78, 205, 196, 0.1), rgba(78, 205, 196, 0.03)), #0d1117;
+    border: 1px solid rgba(78, 205, 196, 0.3);
 }
 
 .vocab-flashcard__level {
