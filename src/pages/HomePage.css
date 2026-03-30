@@ -584,9 +584,10 @@
 .dhikr-card--editing .dhikr-card__count,
 .dhikr-card--editing .dhikr-card__desc,
 .dhikr-card--editing .dhikr-card__daily,
-.dhikr-card--editing .dhikr-card__bar {
-    opacity: 0.1;
-    filter: blur(2px);
+.dhikr-card--editing .dhikr-card__bar,
+.dhikr-card--editing .dhikr-card__reset {
+    opacity: 0.2;
+    pointer-events: none;
     transition: all 0.3s;
 }
 
@@ -630,13 +631,14 @@
 
 .ios-delete-badge {
     position: absolute !important;
-    top: -6px !important;
-    left: -6px !important;
+    top: 6px !important;
+    right: 6px !important;
+    left: auto !important;
     z-index: 150 !important;
     background: #FF3B30 !important;
     color: white !important;
-    width: 24px !important;
-    height: 24px !important;
+    width: 28px !important;
+    height: 28px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
@@ -1660,7 +1662,6 @@ body.scroll-lock {
 }
 
 .dhikr-card--editing {
-    animation: jiggle 0.35s infinite ease-in-out;
     transform-origin: 50% 50%;
     cursor: grab;
     opacity: 0.95;
@@ -1677,23 +1678,25 @@ body.scroll-lock {
 
 .ios-delete-badge {
     position: absolute;
-    top: -8px;
-    left: -8px;
-    width: 26px;
-    height: 26px;
-    background: #ff3b30;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    z-index: 10;
-    border: 2px solid #1a1a2e;
-    cursor: pointer;
-    padding: 0;
+    top: 6px !important;
+    right: 6px !important;
+    left: auto !important;
+    width: 28px !important;
+    height: 28px !important;
+    background: #ff3b30 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+    z-index: 10 !important;
+    border: 2px solid #1a1a2e !important;
+    cursor: pointer !important;
+    padding: 0 !important;
 }
 
 .ios-delete-badge:active {
-    background: #d32f2f;
+    background: #d32f2f !important;
+    transform: scale(0.85) !important;
 }

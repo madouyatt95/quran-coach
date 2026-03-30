@@ -485,7 +485,7 @@ export function HomePage() {
                     {dhikr.allTargetedDone && !isEditingDhikr && <span className="home-dhikr__badge">✅ {dhikr.completedCount}/{dhikr.targetedCount}</span>}
                     {isEditingDhikr ? (
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button className="home-dhikr__reset-all" onClick={dhikr.restoreDefaults} style={{ color: '#E91E63' }}><RotateCcw size={12} /> Réinitialiser</button>
+                            <button className="home-dhikr__reset-all" onClick={dhikr.restoreDefaults} style={{ color: '#E91E63' }}><RotateCcw size={12} /> Restaurer défauts</button>
                             <button className="home-dhikr__reset-all" onClick={() => setIsEditingDhikr(false)} style={{ color: '#4CAF50', fontWeight: 'bold' }}>Terminer</button>
                         </div>
                     ) : (
@@ -534,7 +534,7 @@ export function HomePage() {
                                             <span className="dhikr-card__desc">{formatDivineNames(d.descFr)}</span>
                                             <span className="dhikr-card__count">{isUnlimited ? count : `${countInSeries}/${d.target}`}</span>
                                             {!isUnlimited && <div className="dhikr-card__bar"><div className="dhikr-card__bar-fill" style={{ width: `${progress}%` }} /></div>}
-                                            {count > 0 && !isEditingDhikr && <button className="dhikr-card__reset" onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }} title="Réinitialiser"><RotateCcw size={10} /></button>}
+                                            {count > 0 && <button className="dhikr-card__reset" onClick={(e) => { e.stopPropagation(); dhikr.reset(d.id); }} title="Réinitialiser"><RotateCcw size={14} /></button>}
                                             <AnimatePresence>
                                                 {isEditingDhikr && (
                                                     <>
