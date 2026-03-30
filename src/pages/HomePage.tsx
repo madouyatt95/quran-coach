@@ -525,7 +525,23 @@ export function HomePage() {
                                             layout: { duration: 0.3 }
                                         }}
                                     >
-                                        <button className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`} onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }} onTouchStart={handleTouchStartDhikr} onTouchEnd={handleTouchEndDhikr} onTouchMove={handleTouchEndDhikr} onMouseDown={handleTouchStartDhikr} onMouseUp={handleTouchEndDhikr} onMouseLeave={handleTouchEndDhikr} style={{ '--dhikr-color': d.color } as React.CSSProperties}>
+                                        <div
+                                            className={`dhikr-card ${isDone ? 'dhikr-card--done' : ''} ${isEditingDhikr ? 'dhikr-card--editing' : ''}`}
+                                            onClick={() => { if (!isEditingDhikr) dhikr.tap(d.id); }}
+                                            onTouchStart={handleTouchStartDhikr}
+                                            onTouchEnd={handleTouchEndDhikr}
+                                            onTouchMove={handleTouchEndDhikr}
+                                            onMouseDown={handleTouchStartDhikr}
+                                            onMouseUp={handleTouchEndDhikr}
+                                            onMouseLeave={handleTouchEndDhikr}
+                                            style={{
+                                                '--dhikr-color': d.color,
+                                                cursor: isEditingDhikr ? 'default' : 'pointer',
+                                                userSelect: 'none'
+                                            } as React.CSSProperties}
+                                            role="button"
+                                            tabIndex={0}
+                                        >
                                             {series > 0 && <span className="dhikr-card__series">{series}×</span>}
                                             <span className="dhikr-card__daily">{d.daily}</span>
                                             <span className="dhikr-card__emoji">{d.emoji}</span>
@@ -553,7 +569,7 @@ export function HomePage() {
                                                     </>
                                                 )}
                                             </AnimatePresence>
-                                        </button>
+                                        </div>
                                     </motion.div>
                                 );
                             })}
