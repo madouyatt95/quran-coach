@@ -150,7 +150,7 @@ export function FahmPanel({
 
 // ─── Sub-components ──────────────────────────────────────────
 
-function WordsTab({ words, fahmStore }: { words: QuranWord[]; fahmStore: { learnedWords: Record<number, { level: number }>; markWordReviewed: (id: number, correct: boolean) => void } }) {
+function WordsTab({ words, fahmStore }: { words: QuranWord[]; fahmStore: { learnedWords: Record<number, { level: number }>; markWordReviewed: (id: number, correct: boolean) => void; resetWord: (id: number) => void } }) {
     if (words.length === 0) {
         return (
             <div className="fahm-empty">
@@ -180,7 +180,13 @@ function WordsTab({ words, fahmStore }: { words: QuranWord[]; fahmStore: { learn
                         </div>
                         <button
                             className={`fahm-word__learn ${isLearned ? 'fahm-word__learn--done' : ''}`}
-                            onClick={() => fahmStore.markWordReviewed(word.id, true)}
+                            onClick={() => {
+                                if (isLearned) {
+                                    fahmStore.resetWord(word.id);
+                                } else {
+                                    fahmStore.markWordReviewed(word.id, true);
+                                }
+                            }}
                         >
                             {isLearned ? '✓' : '+'}
                         </button>
@@ -260,9 +266,12 @@ function ContextTab({ surah, ayah, emotion }: {
                     </div>
                 </>
             ) : (
-                <div className="fahm-context__empty">
-                    <MapPin size={24} />
-                    <p>Le contexte de révélation (Asbab an-Nuzul) sera ajouté prochainement pour ce verset.</p>
+                <div className="fahm-empty">
+                    <MapPin size={32} />
+                    <p>Le contexte détaillé de ce verset sera ajouté prochainement.</p>
+                    <p className="fahm-empty__hint" style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '8px' }}>
+                        Le Coran compte 6236 versets. Nous enrichissons cette base de données en continu.
+                    </p>
                 </div>
             )}
         </div>
@@ -279,7 +288,10 @@ function PearlTab({ emotion, hadithLink }: {
         return (
             <div className="fahm-empty">
                 <Sparkles size={32} />
-                <p>La perle de sagesse de ce verset sera ajoutée prochainement.</p>
+                <p>Aucune perle (hadith ou réflexion profonde) n'est encore liée à ce verset spécifique.</p>
+                <p className="fahm-empty__hint" style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '8px' }}>
+                    Nous ajoutons de nouvelles connexions chaque semaine pour approfondir votre compréhension.
+                </p>
             </div>
         );
     }
