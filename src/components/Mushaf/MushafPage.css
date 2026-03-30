@@ -12,7 +12,12 @@
     background: #faf8f2;
     overflow: hidden;
     position: relative;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Extend background behind the status bar and bottom bar */
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+    margin-bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+    height: calc(100dvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
 }
 
 /* ========================================

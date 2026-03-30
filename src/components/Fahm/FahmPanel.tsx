@@ -3,7 +3,7 @@
 // 4 onglets : Mots clés | Structure | Contexte | Perle
 
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { X, BookOpen, Hash, MapPin, Sparkles } from 'lucide-react';
 import { QURAN_VOCABULARY, type QuranWord } from '../../data/quranVocabulary';
 import { EMOTIONAL_VERSES } from '../../data/coachData';
@@ -55,9 +55,6 @@ export function FahmPanel({
         [surah, ayah]
     );
 
-    const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        if (info.offset.y > 100) onClose();
-    };
 
     const tabs = [
         { key: 'words' as const, icon: Hash, label: 'Mots' },
@@ -81,12 +78,23 @@ export function FahmPanel({
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                drag="y"
-                dragConstraints={{ top: 0, bottom: 300 }}
-                dragElastic={0.2}
-                onDragEnd={handleDragEnd}
             >
-                <div className="fahm-panel__handle" />
+                <div
+                    className="fahm-panel__drag-zone"
+                    onTouchStart={(e) => {
+                        const touch = e.touches[0];
+                        (e.currentTarget as any)._startY = touch.clientY;
+                    }}
+                    onTouchEnd={(e) => {
+                        const startY = (e.currentTarget as any)._startY;
+                        if (startY != null) {
+                            const endY = e.changedTouches[0].clientY;
+                            if (endY - startY > 80) onClose();
+                        }
+                    }}
+                >
+                    <div className="fahm-panel__handle" />
+                </div>
 
                 {/* Header */}
                 <div className="fahm-panel__header">
@@ -128,8 +136,8 @@ export function FahmPanel({
                     })}
                 </div>
 
-                {/* Tab content */}
-                <div className="fahm-panel__content" onPointerDownCapture={(e) => e.stopPropagation()}>
+                {/* Tab content — scrollable independently */}
+                <div className="fahm-panel__content">
                     {activeTab === 'words' && (
                         <WordsTab words={relevantWords} fahmStore={fahmStore} />
                     )}

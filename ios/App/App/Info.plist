@@ -51,5 +51,7 @@
 	<string>Quran Coach utilise le microphone pour écouter votre récitation et vous aider à mémoriser le Coran.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Quran Coach utilise la reconnaissance vocale pour vérifier votre récitation coranique en temps réel.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Quran Coach utilise votre position pour calculer précisément les heures de prières et la direction de la Qibla.</string>
 </dict>
 </plist>

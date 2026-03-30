@@ -15,11 +15,19 @@
     z-index: 941;
     background: #1a1a1f;
     border-radius: 20px 20px 0 0;
-    padding: 8px 16px calc(24px + env(safe-area-inset-bottom, 0px));
-    max-height: 80vh;
-    overflow-y: auto;
-    touch-action: pan-y;
+    padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    touch-action: none;
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.fahm-panel__drag-zone {
+    padding: 8px 0 4px;
+    cursor: grab;
+    touch-action: pan-y;
 }
 
 .fahm-panel__handle {
@@ -115,7 +123,11 @@
 }
 
 .fahm-panel__content {
-    min-height: 120px;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+    padding-bottom: 16px;
 }
 
 /* ── Words Tab ── */
