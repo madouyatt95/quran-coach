@@ -13,9 +13,10 @@ export interface ReadingPath {
     days: Array<{
         day: number;
         title: string;
-        surah: number;
-        startAyah: number;
-        endAyah: number;
+        surah?: number;
+        startAyah?: number;
+        endAyah?: number;
+        passages?: Array<{ surah: number; startAyah: number; endAyah: number; }>;
         fahmNote: string; // Note de compréhension pour ce passage
     }>;
 }
@@ -32,7 +33,16 @@ export const READING_PATHS: ReadingPath[] = [
         days: [
             { day: 1, title: 'L\'ouverture — Al-Fatiha', surah: 1, startAyah: 1, endAyah: 7, fahmNote: 'La Fatiha est le résumé de tout le Coran : louange, unicité, guidance et invocation.' },
             { day: 2, title: 'Le trône — Ayat Al-Kursi', surah: 2, startAyah: 255, endAyah: 257, fahmNote: 'Le plus grand verset du Coran. Il décrit la majesté absolue d\'Allah et Sa connaissance infinie.' },
-            { day: 3, title: 'La pureté — Al-Ikhlas, Al-Falaq, An-Nas', surah: 112, startAyah: 1, endAyah: 4, fahmNote: 'Ces 3 sourates courtes sont la base de la foi : unicité d\'Allah et protection divine.' },
+            { 
+                day: 3, 
+                title: 'La pureté — Al-Ikhlas, Al-Falaq, An-Nas', 
+                passages: [
+                    { surah: 112, startAyah: 1, endAyah: 4 },
+                    { surah: 113, startAyah: 1, endAyah: 5 },
+                    { surah: 114, startAyah: 1, endAyah: 6 }
+                ],
+                fahmNote: 'Ces 3 sourates courtes sont la base de la foi : unicité d\'Allah et protection divine.' 
+            },
             { day: 4, title: 'La guidance — Début d\'Al-Baqarah', surah: 2, startAyah: 1, endAyah: 20, fahmNote: 'Les 20 premiers versets classent l\'humanité en 3 groupes : croyants, mécréants, hypocrites.' },
             { day: 5, title: 'La miséricorde — Début d\'Ar-Rahman', surah: 55, startAyah: 1, endAyah: 30, fahmNote: 'Sourate de la miséricorde : catalogue des bienfaits d\'Allah, avec la question répétée "Lequel des bienfaits nierez-vous ?"' },
             { day: 6, title: 'La création de l\'homme', surah: 76, startAyah: 1, endAyah: 22, fahmNote: 'Sourate Al-Insan : de la goutte de sperme au Paradis, le parcours de l\'homme reconnaissant.' },

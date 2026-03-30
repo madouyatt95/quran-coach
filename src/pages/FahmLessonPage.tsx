@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { READING_PATHS } from '../data/readingPaths';
 import { QURAN_VOCABULARY } from '../data/quranVocabulary';
-import { fetchSurah, fetchSurahTranslation } from '../lib/quranApi';
+import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration } from '../lib/quranApi';
 import { useFahmStore } from '../stores/fahmStore';
 
 import './FahmLessonPage.css';
@@ -19,7 +19,8 @@ export function FahmLessonPage() {
 
     const [step, setStep] = useState(0);
     const [verses, setVerses] = useState<any[]>([]);
-    const [translations, setTranslations] = useState<any[]>([]);
+    const [translations, setTranslations] = useState<string[]>([]);
+    const [transliterations, setTransliterations] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     // Find Path and Day Data
@@ -32,16 +33,29 @@ export function FahmLessonPage() {
         const loadContent = async () => {
             setIsLoading(true);
             try {
-                // Fetch full surah and extract specific ayahs
-                const surahData = await fetchSurah(dayData.surah);
-                const translationData = await fetchSurahTranslation(dayData.surah, 'fr');
+                const passages = dayData.passages || (dayData.surah ? [{ surah: dayData.surah, startAyah: dayData.startAyah!, endAyah: dayData.endAyah! }] : []);
+                
+                let allVerses: any[] = [];
+                let allTrans: string[] = [];
+                let allPhonetics: string[] = [];
 
-                const startIdx = dayData.startAyah - 1;
-                const endIdx = dayData.endAyah;
+                for (const p of passages) {
+                    const surahData = await fetchSurah(p.surah);
+                    const translationData = await fetchSurahTranslation(p.surah, 'fr');
+                    const transliterationData = await fetchSurahTransliteration(p.surah);
 
-                const extractedVerses = surahData.ayahs.slice(startIdx, endIdx);
-                setVerses(extractedVerses);
-                setTranslations(extractedVerses.map(v => translationData.get(v.number) || ''));
+                    const startIdx = p.startAyah - 1;
+                    const endIdx = p.endAyah;
+
+                    const extractedVerses = surahData.ayahs.slice(startIdx, endIdx);
+                    allVerses = [...allVerses, ...extractedVerses];
+                    allTrans = [...allTrans, ...extractedVerses.map(v => translationData.get(v.number) || '')];
+                    allPhonetics = [...allPhonetics, ...extractedVerses.map(v => transliterationData.get(v.number) || '')];
+                }
+
+                setVerses(allVerses);
+                setTranslations(allTrans);
+                setTransliterations(allPhonetics);
             } catch (err) {
                 console.error("Erreur lors du chargement des versets", err);
             } finally {
@@ -136,8 +150,13 @@ export function FahmLessonPage() {
                                         {ayah.text} 
                                         <span className="ayah-number">{ayah.numberInSurah}</span>
                                     </div>
-                                    <div className="fahm-lesson-verse__fr">
-                                        {translations[i]?.text || 'Traduction non disponible'}
+                                    {transliterations[i] && (
+                                        <div className="fahm-lesson-verse__transliteration" style={{ color: 'var(--color-primary)', fontStyle: 'italic', marginBottom: '12px', fontSize: '1.05rem', lineHeight: 1.5 }}>
+                                            {transliterations[i]}
+                                        </div>
+                                    )}
+                                    <div className="fahm-lesson-verse__fr" style={{ paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                                        {translations[i] || 'Traduction non disponible'}
                                     </div>
                                 </div>
                             ))}
