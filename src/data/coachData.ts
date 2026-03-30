@@ -142,6 +142,14 @@ export const EMOTIONAL_VERSES: EmotionalVerse[] = [
 
     // ── Unité ──
     { surah: 3, ayah: 103, category: 'unity', textAr: 'وَاعْتَصِمُوا بِحَبْلِ اللَّهِ جَمِيعًا وَلَا تَفَرَّقُوا', textFr: 'Accrochez-vous tous au câble d\'Allah et ne vous divisez pas.', reflection: 'L\'unité est un commandement divin. La division est le piège de Shaytan.' },
+
+    // ── Sourate Al-Kahf (Les Gens de la Caverne et récits) ──
+    { surah: 18, ayah: 10, category: 'supplication', textAr: 'إِذْ أَوَى الْفِتْيَةُ إِلَى الْكَهْفِ فَقَالُوا رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا', textFr: 'Quand les jeunes gens se réfugièrent dans la caverne, ils dirent : Ô notre Seigneur, donne-nous de Ta part une miséricorde et assure-nous la droiture dans toute notre affaire.', reflection: 'Face au danger, leur première arme fut l\'invocation (Du\'a). La sécurité ne vient pas des murs de la caverne, mais de la miséricorde d\'Allah.' },
+    { surah: 18, ayah: 13, category: 'trust', textAr: 'إِنَّهُمْ فِتْيَةٌ آمَنُوا بِرَبِّهِمْ وَزِدْنَاهُمْ هُدًى', textFr: 'Ce sont des jeunes gens qui croyaient en leur Seigneur ; et Nous leur avons accordé de plus grands moyens de se diriger (dans la bonne voie).', reflection: 'La vraie force de la jeunesse réside dans la foi au Tawhid. Quand tu fais un pas vers Allah avec conviction, Il t\'augmente en guidée.' },
+    { surah: 18, ayah: 23, category: 'patience', textAr: 'وَلَا تَقُولَنَّ لِشَيْءٍ إِنِّي فَاعِلٌ ذَٰلِكَ غَدًا', textFr: 'Et ne dis jamais, à propos d\'une chose : "Je la ferai demain",', reflection: 'Une prodigieuse leçon d\'humilité accordée au Prophète ﷺ. L\'avenir n\'appartient qu\'à Allah. Personne ne peut s\'y projeter.' },
+    { surah: 18, ayah: 24, category: 'trust', textAr: 'إِلَّا أَن يَشَاءَ اللَّهُ ۚ وَاذْكُر رَّبَّكَ إِذَا نَسِيتَ', textFr: '... sans ajouter : "Si Allah le veut", et invoque ton Seigneur quand tu oublies.', reflection: 'L\'oubli est humain, mais le rattrapage est immédiat. "Incha\'Allah" n\'est pas un tic de langage, c\'est la clé de la bénédiction divine.' },
+    { surah: 18, ayah: 28, category: 'patience', textAr: 'وَاصْبِرْ نَفْسَكَ مَعَ الَّذِينَ يَدْعُونَ رَبَّهُم بِالْغَدَاةِ وَالْعَشِيِّ يُرِيدُونَ وَجْهَهُ', textFr: 'Fais preuve de patience avec ceux qui invoquent leur Seigneur matin et soir, désirant Sa Face.', reflection: 'L\'entourage spirituel est ton garde-fou. La compagnie des gens pieux demande de la patience, mais elle te préserve de la Fitna (tentation).' },
+    { surah: 18, ayah: 46, category: 'warning', textAr: 'الْمَالُ وَالْبَنُونَ زِينَةُ الْحَيَاةِ الدُّنْيَا ۖ وَالْبَاقِيَاتُ الصَّالِحَاتُ خَيْرٌ عِندَ رَبِّكَ ثَوَابًا وَخَيْرٌ أَمَلًا', textFr: 'Les biens et les enfants sont l\'ornement de la vie de ce monde. Cependant, les bonnes œuvres qui persistent ont auprès de ton Seigneur une meilleure récompense...', reflection: 'Rien de matériel ne te suivra dans l\'Au-delà. Seules "Al-Baqiyat as-Salihat" (les bonnes œuvres intemporelles comme le Dhikr) te sauveront.' },
 ];
 
 // ─── Liens Verset ↔ Hadith ───────────────────────────────────
@@ -183,6 +191,11 @@ export const VERSE_HADITH_LINKS: VerseHadithLink[] = [
 
     // Mort
     { surah: 3, ayah: 185, hadithAr: 'أَكْثِرُوا ذِكْرَ هَاذِمِ اللَّذَّاتِ', hadithFr: 'Rappelez-vous fréquemment celle qui détruit les plaisirs (la mort).', source: 'Tirmidhi 2307', connection: 'Le verset rappelle que toute âme goûtera la mort. Le hadith recommande d\'y penser souvent, non par morbidité mais pour mieux vivre.' },
+
+    // Al-Kahf (Gens de la Caverne et Fitna)
+    { surah: 18, ayah: 10, hadithAr: 'مَنْ حَفِظَ عَشْرَ آيَاتٍ مِنْ أَوَّلِ سُورَةِ الْكَهْفِ عُصِمَ مِنَ الدَّجَّالِ', hadithFr: 'Celui qui mémorise les dix premiers versets de la sourate Al-Kahf sera protégé de l\'Antéchrist (Ad-Dajjal).', source: 'Muslim 809', connection: 'L\'histoire des gens de la caverne est l\'antidote spirituel parfait contre les illusions (Fitna) de la fin des temps, car elle nous enseigne de fuir vers Allah.' },
+    { surah: 18, ayah: 28, hadithAr: 'الْمَرْءُ عَلَى دِينِ خَلِيلِهِ، فَلْيَنْظُرْ أَحَدُكُمْ مَنْ يُخَالِلُ', hadithFr: 'L\'homme a la religion de son ami intime. Que chacun de vous regarde donc qui il prend pour ami.', source: 'Abu Dawud 4833', connection: 'Le verset ordonne au Prophète ﷺ de patienter aux côtés des croyants modestes. Le hadith prouve que la compagnie pieuse préserve notre propre foi.' },
+    { surah: 18, ayah: 46, hadithAr: 'يَتْبَعُ الْمَيِّتَ ثَلَاثَةٌ... يَتْبَعُهُ أَهْلُهُ، وَمَالُهُ، وَعَمَلُهُ، فَيَرْجِعُ أَهْلُهُ وَمَالُهُ، وَيَبْقَى عَمَلُهُ', hadithFr: 'Le mort est suivi par trois choses : sa famille, ses biens et ses œuvres. Deux s\'en retournent (famille et biens), il ne reste que son œuvre.', source: 'Bukhari 6514', connection: 'La réalité frappante : ce que le verset nomme "les bonnes œuvres persistantes" est l\'unique chose qui restera avec toi lorsque tu seras seul dans ta tombe.' },
 ];
 
 // ─── Messages de Milestone ───────────────────────────────────
