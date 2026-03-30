@@ -30,8 +30,7 @@ export function FahmPage() {
         const completed = fahm.pathProgress[path.id] || [];
         const nextDay = path.days.find(d => !completed.includes(d.day));
         if (nextDay) {
-            goToAyah(nextDay.surah, nextDay.startAyah);
-            navigate('/read');
+            navigate(`/fahm/lesson/${path.id}/${nextDay.day}`);
         }
     };
 
@@ -39,14 +38,12 @@ export function FahmPage() {
         const completed = fahm.pathProgress[path.id] || [];
         const nextDay = path.days.find(d => !completed.includes(d.day));
         if (nextDay) {
-            goToAyah(nextDay.surah, nextDay.startAyah);
-            navigate('/read');
+            navigate(`/fahm/lesson/${path.id}/${nextDay.day}`);
         }
     };
 
     const handleDayClick = (path: ReadingPath, day: typeof path.days[0]) => {
-        goToAyah(day.surah, day.startAyah);
-        navigate('/read');
+        navigate(`/fahm/lesson/${path.id}/${day.day}`);
     };
 
     return (

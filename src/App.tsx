@@ -47,6 +47,7 @@ const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ defaul
 const AtlasPage = lazy(() => import('./pages/AtlasPage').then(m => ({ default: m.AtlasPage })));
 const LastNightsDashboard = lazy(() => import('./components/Home/LastNightsDashboard').then(m => ({ default: m.LastNightsDashboard })));
 const FahmPage = lazy(() => import('./pages/FahmPage').then(m => ({ default: m.FahmPage })));
+const FahmLessonPage = lazy(() => import('./pages/FahmLessonPage').then(m => ({ default: m.FahmLessonPage })));
 const VocabPage = lazy(() => import('./pages/VocabPage').then(m => ({ default: m.VocabPage })));
 
 // Minimal loading fallback
@@ -156,6 +157,7 @@ function AppContent() {
 
   const location = useLocation();
   const isLecturePage = location.pathname === '/read';
+  const isLessonPage = location.pathname.startsWith('/fahm/lesson');
 
   // Track page views on route changes
   useEffect(() => {
@@ -164,8 +166,8 @@ function AppContent() {
 
   return (
     <>
-      {/* Global burger menu button – hidden on Lecture (MushafPage has its own) */}
-      {!isLecturePage && (
+      {/* Global burger menu button – hidden on Lecture and Lesson pages */}
+      {!isLecturePage && !isLessonPage && (
         <button
           className="global-menu-btn"
           onClick={() => setShowSideMenu(true)}
@@ -211,6 +213,7 @@ function AppContent() {
             <Route path="/atlas" element={<AtlasPage />} />
             <Route path="/last-nights" element={<LastNightsDashboard />} />
             <Route path="/fahm" element={<FahmPage />} />
+            <Route path="/fahm/lesson/:pathId/:day" element={<FahmLessonPage />} />
             <Route path="/vocab" element={<VocabPage />} />
           </Routes>
         </Suspense>
