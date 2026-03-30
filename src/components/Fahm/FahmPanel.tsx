@@ -129,7 +129,7 @@ export function FahmPanel({
                 </div>
 
                 {/* Tab content */}
-                <div className="fahm-panel__content">
+                <div className="fahm-panel__content" onPointerDownCapture={(e) => e.stopPropagation()}>
                     {activeTab === 'words' && (
                         <WordsTab words={relevantWords} fahmStore={fahmStore} />
                     )}

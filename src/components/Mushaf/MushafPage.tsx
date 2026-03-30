@@ -26,6 +26,7 @@ import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import type { Ayah } from '../../types';
+import { EMOTIONAL_VERSES, VERSE_HADITH_LINKS } from '../../data/coachData';
 
 // Sub-components & hooks
 import { useMushafAudio } from './hooks/useMushafAudio';
@@ -120,7 +121,13 @@ export function MushafPage() {
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
     const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
 
-
+    // Context highlights
+    const fahmContextVerseKeys = useMemo(() => {
+        const keys = new Set<string>();
+        EMOTIONAL_VERSES.forEach(e => keys.add(`${e.surah}:${e.ayah}`));
+        VERSE_HADITH_LINKS.forEach(l => keys.add(`${l.surah}:${l.ayah}`));
+        return keys;
+    }, []);
 
     // ===== Hooks =====
     const audio = useMushafAudio({
@@ -591,6 +598,7 @@ export function MushafPage() {
                                     {ayahs.map((ayah: Ayah) => {
                                         const ayahIndex = getAyahIndex(ayah);
                                         const isCurrentlyPlaying = audio.currentPlayingAyah === ayah.number;
+                                        const hasContext = fahmContextVerseKeys.has(`${ayah.surah}:${ayah.numberInSurah}`);
                                         const vw = audio.verseWordsMap.get(`${ayah.surah}:${ayah.numberInSurah}`);
 
                                         const rawWords = ayah.text.split(/\s+/).filter((w: string) => w.length > 0);
@@ -629,7 +637,7 @@ export function MushafPage() {
                                         return (
                                             <span
                                                 key={ayah.number}
-                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''}`}
+                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''} ${hasContext ? 'mih-ayah--has-context' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
                                                 data-page={ayah.page}
@@ -656,7 +664,7 @@ export function MushafPage() {
                                                     {toVerseGlyph(ayah.numberInSurah)}
                                                 </span>
                                                 <button
-                                                    className="mih-fahm-btn"
+                                                    className={`mih-fahm-btn ${hasContext ? 'mih-fahm-btn--has-context' : ''}`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         const surahObj = surahs.find(s => s.number === ayah.surah);

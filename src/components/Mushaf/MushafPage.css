@@ -393,6 +393,33 @@
     opacity: 0.8;
 }
 
+/* Fahm highlights for context/hadiths */
+.mih-ayah--has-context {
+    border-bottom: 1px dashed rgba(201, 168, 76, 0.5);
+}
+
+.mih-fahm-btn--has-context {
+    opacity: 1;
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    box-shadow: 0 2px 6px rgba(201, 168, 76, 0.2);
+    border-radius: 6px;
+    padding: 2px 4px;
+    margin-left: 4px;
+}
+
+[data-theme="dark"] .mih-fahm-btn--has-context,
+.mushaf-page[data-mushaf-dark="true"] .mih-fahm-btn--has-context {
+    opacity: 1;
+    background: rgba(201, 168, 76, 0.2);
+    border-color: rgba(201, 168, 76, 0.5);
+}
+
+[data-theme="dark"] .mih-ayah--has-context,
+.mushaf-page[data-mushaf-dark="true"] .mih-ayah--has-context {
+    border-bottom-color: rgba(201, 168, 76, 0.7);
+}
+
 /* Font sizes */
 [data-arabic-size="sm"] .mih-ayahs {
     font-size: 1.35rem;
