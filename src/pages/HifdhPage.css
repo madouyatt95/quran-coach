@@ -2324,3 +2324,42 @@
     color: var(--color-text-muted);
     font-style: italic;
 }
+
+/* Recognition feedback and correction actions share touch-sized controls. */
+.coach-explanation {
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 0 0 14px;
+}
+.coach-feedback {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(201, 168, 76, 0.12);
+}
+.coach-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(201, 168, 76, 0.45);
+    border-radius: 10px;
+    background: rgba(201, 168, 76, 0.13);
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.coach-action:disabled { opacity: 0.6; cursor: default; }
+.coach-action--quiet { background: transparent; border-color: transparent; }
+.coach-action:focus-visible { outline: 2px solid #c9a84c; outline-offset: 2px; }
+.coach-correction-actions { display: grid; gap: 10px; padding: 0 20px 20px; }
+.mih-coach-session { width: min(280px, calc(100vw - 32px)); color: #f8fafc; max-height: 55dvh; overflow-y: auto; }
+.mih-coach-session__text, .mih-coach-session .mih-coach-stats { color: #f8fafc; }
+.mih-coach-session__close { width: 44px; height: 44px; }

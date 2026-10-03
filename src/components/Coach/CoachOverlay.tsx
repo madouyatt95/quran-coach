@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Volume2, X, GraduationCap, Users, Link2, Sparkles, Square, Loader2 } from 'lucide-react';
+import { Volume2, X, GraduationCap, Users, Link2, Sparkles, Square, Loader2, Mic, RotateCcw, BookmarkPlus } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
 import type { CoachState, CoachMode } from '../../hooks/useCoach';
 import { useDeepCoach } from '../../hooks/useDeepCoach';
@@ -11,6 +11,8 @@ interface CoachOverlayProps {
     stopAudio: () => void;
     playAyahAtIndex: (idx: number) => Promise<void> | void;
     pageAyahsLength: number;
+    onRetryAyah: (ayahIndex: number) => void;
+    onReviewAyah: (ayahIndex: number) => void;
     /** The full expected text of all currently loaded ayahs, for AI Exam comparison */
     expectedText: string;
 }
@@ -36,6 +38,9 @@ export function CoachOverlay({
     coach,
     audioPlaying,
     expectedText,
+    stopAudio,
+    onRetryAyah,
+    onReviewAyah,
 }: CoachOverlayProps) {
     const {
         isCoachMode,
@@ -56,6 +61,12 @@ export function CoachOverlay({
     } = coach;
 
     const [isCenterOpen, setIsCenterOpen] = useState(false);
+    const [reviewAddedFor, setReviewAddedFor] = useState<string | null>(null);
+    const openSummary = () => {
+        stopAudio();
+        void coach.stopCoachListening();
+        setShowMistakesSummary(true);
+    };
 
     // AI Exam Mode (completely independent of the real-time coach)
     const deepCoach = useDeepCoach();
@@ -131,12 +142,13 @@ export function CoachOverlay({
                         <GraduationCap size={20} />
                         Mode Coach
                     </span>
-                    <button className="mih-sheet__close" onClick={() => setIsCenterOpen(false)}>
+                    <button className="mih-sheet__close" onClick={() => setIsCenterOpen(false)} aria-label="Fermer le choix du mode">
                         <X size={20} />
                     </button>
                 </div>
 
                 <div className="mih-coach-center__content">
+                    <p className="coach-explanation">Le coach suit les mots reconnus. Ses signalements sont à vérifier ; ils ne constituent pas une note de tajwid. Selon votre appareil, une connexion peut être nécessaire.</p>
                     {COACH_MODES.map(group => (
                         <div key={group.category} className="mih-coach-group">
                             <h4 className="mih-coach-group-title">{group.category}</h4>
@@ -148,6 +160,7 @@ export function CoachOverlay({
                                             key={mode.id}
                                             className="mih-coach-card"
                                             onClick={() => {
+                                                stopAudio();
                                                 selectCoachMode(mode.id);
                                                 setIsCenterOpen(false);
                                             }}
@@ -198,6 +211,7 @@ export function CoachOverlay({
                     className="mih-coach-aura"
                     onClick={() => setIsCenterOpen(true)}
                     title="Ouvrir le Centre de Coaching"
+                    aria-label="Ouvrir le Centre de Coaching"
                 >
                     <GraduationCap size={24} />
                     <span className="mih-coach-aura-glow"></span>
@@ -218,7 +232,7 @@ export function CoachOverlay({
             {/* Active Session Floating Pill */}
             <div className={`mih-coach-session ${audioPlaying ? 'mih-coach-session--reciter' : ''}`}>
                 <div className="mih-coach-session__header">
-                    <button className="mih-coach-session__close" onClick={() => selectCoachMode(null)}>
+                    <button className="mih-coach-session__close" onClick={() => { stopAudio(); selectCoachMode(null); }} aria-label="Terminer la séance">
                         <X size={16} />
                     </button>
                     <div className="mih-coach-session__status">
@@ -226,7 +240,7 @@ export function CoachOverlay({
                         <span className="mih-coach-session__text">
                             {duoPhase === 'waiting' ? 'Sélectionnez un verset...' :
                                 duoPhase === 'reciter' ? 'Le Cheikh récite...' :
-                                    isListening ? 'À vous...' : 'Coach actif'}
+                                    coach.isStarting ? 'Ouverture du microphone…' : isListening ? 'À vous...' : 'Écoute en pause'}
                         </span>
                     </div>
                 </div>
@@ -237,18 +251,31 @@ export function CoachOverlay({
                     </div>
                     {coachTotalProcessed > 0 && (
                         <div className="mih-coach-stats">
-                            <span>{coachAccuracy}%</span>
+                            <span title="Correspondance du texte reconnu, pas une note de prononciation">{coachAccuracy}% reconnus</span>
                             <button
                                 className={`mih-coach-errors-btn ${coachMistakesCount > 0 ? 'has-errors' : ''}`}
-                                onClick={() => coachMistakesCount > 0 && setShowMistakesSummary(true)}
+                                onClick={openSummary}
                                 disabled={coachMistakesCount === 0}
                             >
-                                {coachMistakesCount} {coachMistakesCount > 1 ? 'erreurs' : 'erreur'}
+                                {coachMistakesCount} à vérifier
                             </button>
                         </div>
                     )}
                 </div>
 
+                {coach.coachError && <p className="coach-feedback" role="alert">{coach.coachError}</p>}
+                {coach.storageError && <p className="coach-feedback" role="status">Stockage indisponible : le bilan reste visible pendant cette séance.</p>}
+                {duoPhase === 'student' && (
+                    <button className="coach-action" disabled={coach.isStarting}
+                        onClick={() => {
+                            if (isListening) void coach.stopCoachListening();
+                            else { stopAudio(); void coach.resumeCoachListening(); }
+                        }}>
+                        {isListening ? <Square size={15} /> : <Mic size={15} />}
+                        {coach.isStarting ? 'Connexion…' : isListening ? 'Mettre en pause' : 'Reprendre l’écoute'}
+                    </button>
+                )}
+                {coachTotalProcessed > 0 && <button className="coach-action coach-action--quiet" onClick={openSummary}>Bilan de la séance · {coachTotalProcessed} mots</button>}
                 {isListening && (
                     <div className="mih-coach-waveform">
                         <div className="bar"></div>
@@ -287,11 +314,27 @@ export function CoachOverlay({
                                 </button>
                             </div>
                             <div className="mih-coach-error-row">
-                                <span className="mih-coach-error-label">Entendu :</span>
+                                <span className="mih-coach-error-label">Transcrit :</span>
                                 <span className="mih-coach-error-text mih-coach-error-text--spoken" dir="rtl">
                                     {coachMistakes[selectedError].spoken}
                                 </span>
                             </div>
+                        </div>
+                        <div className="coach-correction-actions">
+                            <p className="coach-explanation">La transcription peut se tromper. Vous pouvez reprendre le verset ou écarter ce signalement.</p>
+                            <button className="coach-action" onClick={() => {
+                                const index = Number(selectedError.split('-')[0]);
+                                setSelectedError(null);
+                                setShowMistakesSummary(false);
+                                onRetryAyah(index);
+                            }}><RotateCcw size={16} /> Réciter à nouveau ce verset</button>
+                            <button className="coach-action" onClick={() => {
+                                onReviewAyah(Number(selectedError.split('-')[0]));
+                                setReviewAddedFor(selectedError);
+                            }} disabled={reviewAddedFor === selectedError}>
+                                <BookmarkPlus size={16} /> {reviewAddedFor === selectedError ? 'Ajouté aux révisions' : 'Ajouter aux révisions'}
+                            </button>
+                            <button className="coach-action coach-action--quiet" onClick={() => coach.dismissCoachMistake(selectedError)}>Écarter ce signalement</button>
                         </div>
                     </div>
                 </>
@@ -305,7 +348,7 @@ export function CoachOverlay({
                         <div className="mih-sheet__handle" />
                         <div className="mih-sheet__header">
                             <span className="mih-sheet__title">
-                                Résumé des erreurs ({coachMistakesCount})
+                                Mots à vérifier ({coachMistakesCount})
                             </span>
                             <button className="mih-sheet__close" onClick={() => setShowMistakesSummary(false)}>
                                 <X size={18} />
@@ -314,14 +357,17 @@ export function CoachOverlay({
                         <div style={{ maxHeight: '60vh', overflowY: 'auto', padding: '0 16px 16px' }}>
                             {Object.keys(coachMistakes).length === 0 ? (
                                 <p style={{ textAlign: 'center', color: '#999', padding: 24 }}>
-                                    Aucune erreur. Mashallah ! 🌟
+                                    Aucun mot à vérifier parmi les mots reconnus. Ce bilan ne porte pas sur la prononciation.
                                 </p>
                             ) : (
                                 Object.entries(coachMistakes).map(([key, data]) => (
                                     <div
                                         key={key}
                                         className="mih-coach-summary-item"
-                                        onClick={() => { setSelectedError(key); setShowMistakesSummary(false); }}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedError(key); setShowMistakesSummary(false); setReviewAddedFor(null); } }}
+                                        onClick={() => { setSelectedError(key); setShowMistakesSummary(false); setReviewAddedFor(null); }}
                                     >
                                         <div className="mih-coach-summary-row">
                                             <span className="mih-coach-error-label">Attendu :</span>
@@ -334,7 +380,7 @@ export function CoachOverlay({
                                             </button>
                                         </div>
                                         <div className="mih-coach-summary-row">
-                                            <span className="mih-coach-error-label">Entendu :</span>
+                                            <span className="mih-coach-error-label">Transcrit :</span>
                                             <span className="mih-coach-error-text mih-coach-error-text--spoken" dir="rtl">{data.spoken}</span>
                                         </div>
                                     </div>

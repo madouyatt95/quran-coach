@@ -26,6 +26,8 @@ import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
 import { useSRSStore } from '../stores/srsStore';
 import { useCoach } from '../hooks/useCoach';
+import { recitationWords } from '../lib/recitationMatching';
+import { readCoachReviews, COACH_ERROR_KEY, COACH_REVIEW_EVENT } from '../lib/coachSession';
 import { CoachOverlay } from '../components/Coach/CoachOverlay';
 import { useTranslation } from 'react-i18next';
 import type { VerseWords } from '../lib/wordTimings';
@@ -42,7 +44,23 @@ export function HifdhPage() {
     const { surahs } = useQuranStore();
     const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
-    const { getDueCards, cards } = useSRSStore();
+    const { getDueCards, cards, addCard } = useSRSStore();
+    const [reviewLog, setReviewLog] = useState(() => {
+        try { return readCoachReviews(localStorage); } catch { return []; }
+    });
+    const [loadError, setLoadError] = useState<string | null>(null);
+    const [reloadPassage, setReloadPassage] = useState(0);
+    useEffect(() => {
+        const refresh = () => {
+            try { setReviewLog(readCoachReviews(localStorage)); } catch { /* Keep the current history. */ }
+        };
+        window.addEventListener(COACH_REVIEW_EVENT, refresh);
+        window.addEventListener("storage", refresh);
+        return () => {
+            window.removeEventListener(COACH_REVIEW_EVENT, refresh);
+            window.removeEventListener("storage", refresh);
+        };
+    }, []);
 
     // Selection state
     const [selectedSurah, setSelectedSurah] = useState(1);
@@ -129,16 +147,16 @@ export function HifdhPage() {
             if (currentIndex < ayahs.length - 1) {
                 setCurrentAyahIndex(currentIndex + 1);
                 currentCoach.setDuoPhase('student');
-                setTimeout(() => currentCoach.startCoachListening(currentIndex + 1), 300);
+                void currentCoach.startCoachListening(currentIndex + 1);
             } else {
                 currentCoach.setDuoPhase(null);
             }
         } else {
             // Duo Echo: Reciter played N -> Student repeats N
             currentCoach.setDuoPhase('student');
-            setTimeout(() => currentCoach.startCoachListening(currentIndex), 300);
+            void currentCoach.startCoachListening(currentIndex);
         }
-    }, [ayahs.length, allTimings]);
+    }, [ayahs.length]);
 
     // Handle incoming verse from navigation state (Deep link)
     useEffect(() => {
@@ -196,11 +214,19 @@ export function HifdhPage() {
             setEndAyah(fetchEnd);
         }
 
+        let cancelled = false;
+        setLoadError(null);
+        audioRef.current?.pause();
+        setIsPlaying(false);
+        setAyahs([]);
+        setWordTimings(null);
+        setAllTimings(new Map());
         Promise.all([
             fetchSurah(selectedSurah),
             fetchSurahTransliteration(selectedSurah),
             fetchSurahTranslation(selectedSurah)
         ]).then(([surahData, transData, translationData]) => {
+            if (cancelled) return;
             const filtered = surahData.ayahs.filter(
                 a => a.numberInSurah >= fetchStart && a.numberInSurah <= fetchEnd
             );
@@ -211,8 +237,11 @@ export function HifdhPage() {
             setCurrentRepeat(1);
             setSelectionStart(null);
             setSelectionEnd(null);
+        }).catch(() => {
+            if (!cancelled) setLoadError('Impossible de charger ce passage. Vérifiez votre connexion puis réessayez.');
         });
-    }, [selectedSurah, startAyah, endAyah, surahs]);
+        return () => { cancelled = true; };
+    }, [selectedSurah, startAyah, endAyah, surahs, reloadPassage]);
 
     // Load audio and fetch current timings
     useEffect(() => {
@@ -256,11 +285,14 @@ export function HifdhPage() {
             audio.playbackRate = playbackSpeed;
             setActiveWordIndex(-1);
 
+            let cancelled = false;
+            setWordTimings(null);
             fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).then(timings => {
-                if (timings) setWordTimings(timings);
-            });
+                if (!cancelled) setWordTimings(timings);
+            }).catch(() => { /* Plain text remains available without timings. */ });
 
             return () => {
+                cancelled = true;
                 audio.removeEventListener('loadedmetadata', handleMetadata);
             };
         }
@@ -268,11 +300,12 @@ export function HifdhPage() {
 
     // Pre-fetch all timings in the selected range for cross-verse loops
     useEffect(() => {
+        let cancelled = false;
         if (ayahs.length > 0) {
             const fetchAll = async () => {
                 const newMap = new Map<number, VerseWords>();
                 const results = await Promise.all(ayahs.map(async (ayah, idx) => {
-                    const timings = await fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID);
+                    const timings = await fetchWordTimings(selectedSurah, ayah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).catch(() => null);
                     return { idx, timings };
                 }));
 
@@ -280,10 +313,11 @@ export function HifdhPage() {
                     if (timings) newMap.set(idx, timings);
                 });
 
-                setAllTimings(newMap);
+                if (!cancelled) setAllTimings(newMap);
             };
-            fetchAll();
+            void fetchAll();
         }
+        return () => { cancelled = true; };
     }, [ayahs, selectedSurah]);
 
     // Handle Word Selection for Loop or Coach Initiation
@@ -298,13 +332,18 @@ export function HifdhPage() {
 
                 if (coach.coachMode === 'solo' || coach.coachMode === 'magic_reveal') {
                     coach.setDuoPhase('student');
-                    setTimeout(() => coach.startCoachListening(), 300);
+                    audioRef.current?.pause();
+                    setIsPlaying(false);
+                    void coach.startCoachListening(aIdx);
                 } else {
                     coach.setDuoPhase('reciter');
                 }
                 return;
             } else {
                 // During active session, clicking a word provides a hint/jump
+                audioRef.current?.pause();
+                setIsPlaying(false);
+                setCurrentAyahIndex(aIdx);
                 coach.coachJumpToWord(aIdx, wIdx);
                 return;
             }
@@ -315,6 +354,7 @@ export function HifdhPage() {
 
         const processClick = (timings: VerseWords) => {
             const word = timings.words[wIdx];
+            if (!word) return;
             const startTime = word.timestampFrom / 1000;
 
             if (!isWordSelectionMode) {
@@ -408,6 +448,7 @@ export function HifdhPage() {
     useEffect(() => {
         if (!coach.isCoachMode || coach.duoPhase !== 'reciter' || !audioRef.current || ayahs.length === 0) return;
 
+        void coachRef.current.stopCoachListening();
         resetSelection(); // Ensure no loop selection interferes
         setIsPlaying(true);
 
@@ -433,11 +474,11 @@ export function HifdhPage() {
         // Brief timeout allows React to update DOM elements and sync the new src if needed
         const timer = setTimeout(triggerPlayback, 100);
         return () => clearTimeout(timer);
-    }, [coach.isCoachMode, coach.duoPhase, currentAyahIndex, coach.coachMode, ayahs.length, allTimings]);
+    }, [coach.isCoachMode, coach.duoPhase, currentAyahIndex, coach.coachMode, ayahs.length]);
 
     // Auto-advance: when coach reaches 100% (student finishes)
     useEffect(() => {
-        if (!coach.isCoachMode || coach.coachProgress < 1.0 || coach.allCoachWords.length === 0) {
+        if (!coach.isCoachMode || !coach.coachAtEnd || coach.duoPhase !== 'student' || coach.showMistakesSummary || coach.selectedError || coach.allCoachWords.length === 0) {
             setAutoAdvanceCountdown(false);
             if (autoAdvanceTimerRef.current) {
                 clearTimeout(autoAdvanceTimerRef.current);
@@ -450,23 +491,26 @@ export function HifdhPage() {
         setAutoAdvanceCountdown(true);
         autoAdvanceTimerRef.current = setTimeout(() => {
             setAutoAdvanceCountdown(false);
+            void coach.stopCoachListening();
+            if (currentAyahIndex >= ayahs.length - 1) {
+                coach.setDuoPhase('waiting');
+                coach.setShowMistakesSummary(true);
+                return;
+            }
 
             if (coach.coachMode === 'solo' || coach.coachMode === 'magic_reveal') {
                 if (currentAyahIndex < ayahs.length - 1) {
                     setCurrentAyahIndex(prev => prev + 1);
-                    coach.resetCoach();
-                    setTimeout(() => coach.startCoachListening(currentAyahIndex + 1), 300);
+                    void coach.startCoachListening(currentAyahIndex + 1);
                 }
             } else if (coach.coachMode === 'link') {
                 if (currentAyahIndex < ayahs.length - 1) {
                     setCurrentAyahIndex(prev => prev + 1); // Student finished N+1 -> Reciter starts N+2
-                    coach.resetCoach();
                     coach.setDuoPhase('reciter');
                 }
             } else if (coach.coachMode === 'duo_echo') {
                 if (currentAyahIndex < ayahs.length - 1) {
                     setCurrentAyahIndex(prev => prev + 1); // Student finished N -> Reciter starts N+1
-                    coach.resetCoach();
                     coach.setDuoPhase('reciter');
                 }
             }
@@ -479,7 +523,7 @@ export function HifdhPage() {
                 autoAdvanceTimerRef.current = null;
             }
         };
-    }, [coach.coachProgress, coach.isCoachMode, coach.coachMode, coach.allCoachWords.length, currentAyahIndex, ayahs.length]);
+    }, [coach.coachAtEnd, coach.coachRevision, coach.isCoachMode, coach.coachMode, coach.duoPhase, coach.showMistakesSummary, coach.selectedError, coach.allCoachWords.length, currentAyahIndex, ayahs.length]);
 
     const selectedTimeRange = useMemo(() => {
         if (selectionStart === null || selectionEnd === null) return null;
@@ -553,7 +597,7 @@ export function HifdhPage() {
                 setTimeout(() => audioRef.current?.play(), 100);
             }
         }
-    }, [currentRepeat, maxRepeats, handleNext, isPlaying, selectedTimeRange]);
+    }, [currentRepeat, maxRepeats, handleNext, isPlaying, selectedTimeRange, handleCoachReciterFinished]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -662,7 +706,8 @@ export function HifdhPage() {
 
         audio.addEventListener('play', startRAF);
         audio.addEventListener('pause', stopRAF);
-        audio.addEventListener('ended', handleAudioEnded);
+        // React's onEnded owns this event. A second listener would advance twice
+        // and accumulate on every player effect refresh.
         audio.addEventListener('loadedmetadata', updateDuration);
 
         // Start RAF if already playing
@@ -676,7 +721,7 @@ export function HifdhPage() {
             audio.removeEventListener('pause', stopRAF);
             audio.removeEventListener('loadedmetadata', updateDuration);
         };
-    }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats]);
+    }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats, pokeEndTime, currentAyahIndex, seekOnLoad, handleCoachReciterFinished]);
 
     const formatTime = (time: number) => {
         const mins = Math.floor(time / 60);
@@ -689,6 +734,11 @@ export function HifdhPage() {
             <div className="hifdh-page__header-row">
                 <h1 className="hifdh-page__header">{t('hifdh.title', 'Studio Hifdh')}</h1>
             </div>
+
+            {loadError && <div className="coach-feedback" role="alert">
+                <p>{loadError}</p>
+                <button className="coach-action" onClick={() => setReloadPassage(value => value + 1)}>Réessayer le chargement</button>
+            </div>}
 
             {/* Due Cards Section */}
             {(dueCards.length > 0 || allCards.length > 0) && (
@@ -745,8 +795,7 @@ export function HifdhPage() {
             {/* Error Log — Mots à revoir */}
             {(() => {
                 try {
-                    const errors: Array<{ scoreKey: string; wordKey: string; expected: string; spoken: string; date: string }> =
-                        JSON.parse(localStorage.getItem('hifdh-error-log') || '[]');
+                    const errors = reviewLog;
                     if (errors.length === 0) return null;
 
                     // Group by scoreKey (surah:ayahStart-ayahEnd)
@@ -762,12 +811,16 @@ export function HifdhPage() {
                                 <span>📝 Mots à revoir ({errors.length})</span>
                                 <button
                                     className="hifdh-errors-clear-all"
+                                    disabled={coach.isCoachMode}
+                                    title={coach.isCoachMode ? "Terminez la séance avant d’effacer l’historique" : undefined}
                                     onClick={() => {
-                                        localStorage.removeItem('hifdh-error-log');
-                                        window.location.reload();
+                                        try {
+                                            localStorage.removeItem(COACH_ERROR_KEY);
+                                            window.dispatchEvent(new Event(COACH_REVIEW_EVENT));
+                                        } catch { /* Storage can be unavailable. */ }
                                     }}
                                 >
-                                    Tout effacer
+                                    Effacer l’historique
                                 </button>
                             </div>
                             <div className="hifdh-errors-list">
@@ -926,7 +979,7 @@ export function HifdhPage() {
                         <div className="hifdh-verses-list">
                             {(singleVerseMode ? [{ ayah: ayahs[currentAyahIndex], aIdx: currentAyahIndex }] : ayahs.map((ayah, aIdx) => ({ ayah, aIdx }))).map(({ ayah, aIdx }) => {
                                 const isActive = aIdx === currentAyahIndex;
-                                const wordsContent = isActive && wordTimings
+                                const wordsContent = isActive && wordTimings && (!coach.isCoachMode || wordTimings.words.length === recitationWords(ayah.text).length)
                                     ? wordTimings.words.map((word, wIdx) => {
                                         const isSelected = selectionStart !== null && selectionEnd !== null &&
                                             (aIdx * 1000 + wIdx) >= (selectionStart.ayahIndex * 1000 + selectionStart.wordIndex) &&
@@ -965,7 +1018,7 @@ export function HifdhPage() {
                                             </span>
                                         );
                                     })
-                                    : ayah.text.split(/\s+/).filter(w => w.length > 0).map((wordText, wIdx) => {
+                                    : recitationWords(ayah.text).map((wordText, wIdx) => {
                                         const isSelected = selectionStart !== null && selectionEnd !== null &&
                                             (aIdx * 1000 + wIdx) >= (selectionStart.ayahIndex * 1000 + selectionStart.wordIndex) &&
                                             (aIdx * 1000 + wIdx) <= (selectionEnd.ayahIndex * 1000 + selectionEnd.wordIndex);
@@ -1142,7 +1195,7 @@ export function HifdhPage() {
             {
                 autoAdvanceCountdown && (
                     <div className="hifdh-auto-advance-toast">
-                        {t('hifdh.nextVerseDelay', '✓ Verset suivant dans 2s…')}
+                        {currentAyahIndex < ayahs.length - 1 ? 'Verset suivant…' : 'Fin de la séance…'}
                     </div>
                 )
             }
@@ -1153,6 +1206,17 @@ export function HifdhPage() {
                 audioPlaying={isPlaying}
                 stopAudio={() => { if (audioRef.current) { audioRef.current.pause(); setIsPlaying(false); } }}
                 playAyahAtIndex={async () => { if (audioRef.current) { audioRef.current.currentTime = 0; audioRef.current.play(); setIsPlaying(true); } }}
+                onRetryAyah={(index) => {
+                    audioRef.current?.pause();
+                    setIsPlaying(false);
+                    setCurrentAyahIndex(index);
+                    coach.setDuoPhase('student');
+                    void coach.startCoachListening(index);
+                }}
+                onReviewAyah={(index) => {
+                    const ayah = ayahs[index];
+                    if (ayah) addCard(selectedSurah, ayah.numberInSurah);
+                }}
                 pageAyahsLength={ayahs.length}
                 expectedText={ayahs.map(a => a.text).join(' ')}
             />

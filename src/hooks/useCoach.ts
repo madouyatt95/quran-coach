@@ -1,348 +1,230 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { speechRecognitionService } from '../lib/speechRecognition';
-import { getSupportedMimeType } from '../lib/audioUnlock';
+import { speechRecognitionService, recognitionErrorMessage } from '../lib/speechRecognition';
+import { recitationWords } from '../lib/recitationMatching';
+import { coachTotals, persistCoachSession, COACH_REVIEW_EVENT, type CoachAssessments } from '../lib/coachSession';
 import type { Ayah } from '../types';
 
-export type WordState = 'correct' | 'error' | 'current' | 'unread';
+export type WordState = 'correct' | 'error' | 'current' | 'unread' | 'dismissed';
 export type CoachMode = 'solo' | 'duo_echo' | 'link' | 'magic_reveal';
 export type DuoPhase = 'reciter' | 'student' | 'waiting';
+interface UseCoachOptions { ayahs: Ayah[]; scoreKey: string; playingIndex: number }
 
-interface UseCoachOptions {
-    ayahs: Ayah[];
-    /** Identifier for score persistence (page number, surah:ayah, etc.) */
-    scoreKey: string;
-    playingIndex: number;
-}
-
-export interface CoachState {
-    isCoachMode: boolean;
-    coachMode: CoachMode | null;
-    duoPhase: DuoPhase | null;
-    blindMode: boolean;
-    wordStates: Map<string, WordState>;
-    isListening: boolean;
-    coachMistakes: Record<string, { expected: string; spoken: string }>;
-    coachMistakesCount: number;
-    coachTotalProcessed: number;
-    selectedError: string | null;
-    setSelectedError: React.Dispatch<React.SetStateAction<string | null>>;
-    showMistakesSummary: boolean;
-    setShowMistakesSummary: React.Dispatch<React.SetStateAction<boolean>>;
-    coachInterimText: string;
-    allCoachWords: Array<{ text: string; ayahIndex: number; wordIndex: number }>;
-    coachAccuracy: number;
-    coachProgress: number;
-    resetCoach: () => void;
-    coachJumpToWord: (ayahIndex: number, wordIndex: number) => void;
-    startCoachListening: (overrideAyahIndex?: number) => void;
-    stopCoachListening: () => void;
-    toggleCoachMode: () => void;
-    toggleBlindMode: () => void;
-    selectCoachMode: (mode: CoachMode | null) => void;
-    setDuoPhase: (phase: DuoPhase | null) => void;
-}
-
-export function useCoach({
-    ayahs,
-    scoreKey,
-    playingIndex,
-}: UseCoachOptions): CoachState {
+export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
     const [isCoachMode, setIsCoachMode] = useState(false);
     const [coachMode, setCoachMode] = useState<CoachMode | null>(null);
     const [duoPhase, setDuoPhase] = useState<DuoPhase | null>(null);
     const [blindMode, setBlindMode] = useState(false);
-    const [wordStates, setWordStates] = useState<Map<string, WordState>>(new Map());
+    const [assessments, setAssessments] = useState<CoachAssessments>({});
+    const [currentWord, setCurrentWord] = useState<string | null>(null);
     const [isListening, setIsListening] = useState(false);
-    const [coachMistakes, setCoachMistakes] = useState<Record<string, { expected: string; spoken: string }>>({});
-    const [coachMistakesCount, setCoachMistakesCount] = useState(0);
-    const [coachTotalProcessed, setCoachTotalProcessed] = useState(0);
+    const [isStarting, setIsStarting] = useState(false);
+    const [coachError, setCoachError] = useState<string | null>(null);
+    const [storageError, setStorageError] = useState(false);
     const [selectedError, setSelectedError] = useState<string | null>(null);
     const [showMistakesSummary, setShowMistakesSummary] = useState(false);
     const [coachInterimText, setCoachInterimText] = useState('');
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
+    const [coachAtEnd, setCoachAtEnd] = useState(false);
+    const [coachRevision, setCoachRevision] = useState(0);
+    const sessionRef = useRef<CoachAssessments>({});
+    const requestRef = useRef(0);
+    const activeRef = useRef(false);
+    const positionRef = useRef({ ayahIndex: 0, wordIndex: 0 });
+    const modeRef = useRef<CoachMode | null>(null);
 
-    // Build a flat word list for ASR matching
-    const allCoachWords = useMemo(() => {
-        const words: Array<{ text: string; ayahIndex: number; wordIndex: number }> = [];
-        ayahs.forEach((ayah, ayahIndex) => {
-            const w = ayah.text.split(/\s+/).filter(w => w.length > 0);
-            w.forEach((text, wordIndex) => {
-                words.push({ text, ayahIndex, wordIndex });
-            });
-        });
-        return words;
-    }, [ayahs]);
+    const allCoachWords = useMemo(() => ayahs.flatMap((ayah, ayahIndex) =>
+        recitationWords(ayah.text).map((text, wordIndex) => ({ text, ayahIndex, wordIndex }))), [ayahs]);
+    const passageKey = ayahs.map(ayah => `${ayah.number}:${ayah.text}`).join('|');
+    const totalWords = allCoachWords.length;
 
-    // Reset coach state
+    const updateAssessments = useCallback((next: CoachAssessments) => {
+        sessionRef.current = next;
+        setAssessments(next);
+    }, []);
+
+    const saveSession = useCallback(() => {
+        let saved = false;
+        try { saved = persistCoachSession(localStorage, scoreKey, sessionRef.current, totalWords); } catch { /* Storage denied. */ }
+        if (activeRef.current) setStorageError(!saved);
+        if (saved) window.dispatchEvent(new Event(COACH_REVIEW_EVENT));
+    }, [scoreKey, totalWords]);
+
+    const stopCoachListening = useCallback(() => {
+        ++requestRef.current;
+        setIsListening(false);
+        setIsStarting(false);
+        setCoachAtEnd(false);
+        saveSession();
+        return speechRecognitionService.stop();
+    }, [saveSession]);
+
     const resetCoach = useCallback(() => {
-        setWordStates(new Map());
-        setCoachMistakes({});
-        setCoachMistakesCount(0);
-        setCoachTotalProcessed(0);
+        saveSession();
+        updateAssessments({});
+        setCurrentWord(null);
+        setCoachAtEnd(false);
         setCoachInterimText('');
+        setCoachError(null);
         setSelectedError(null);
         setShowMistakesSummary(false);
-    }, []);
+    }, [saveSession, updateAssessments]);
 
-    // Coach jump to word
-    const coachJumpToWord = useCallback((ayahIndex: number, wordIndex: number) => {
-        if (!isCoachMode) return;
-        const wordKeyIndex = allCoachWords.findIndex(w => w.ayahIndex === ayahIndex && w.wordIndex === wordIndex);
-        if (wordKeyIndex !== -1) {
-            speechRecognitionService.setCurrentWordIndex(wordKeyIndex);
-
-            setWordStates(prev => {
-                const next = new Map(prev);
-
-                // Mark skipped words as 'correct' for progress tracking if we are jumping forward
-                allCoachWords.forEach((word, i) => {
-                    if (i < wordKeyIndex) {
-                        const state = next.get(`${word.ayahIndex}-${word.wordIndex}`);
-                        if (state !== 'correct' && state !== 'error') {
-                            next.set(`${word.ayahIndex}-${word.wordIndex}`, 'correct');
-                        }
-                    } else if (i > wordKeyIndex) {
-                        next.delete(`${word.ayahIndex}-${word.wordIndex}`);
-                    }
-                });
-                next.set(`${ayahIndex}-${wordIndex}`, 'current');
-                return next;
-            });
-
-            // Sync the processed count to reflect the jumped words
-            setCoachTotalProcessed(prev => Math.max(prev, wordKeyIndex));
-        }
-    }, [isCoachMode, allCoachWords]);
-
-    // Whisper backup recording
-    const startWhisperBackup = useCallback(async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeType = getSupportedMimeType();
-            const mediaRecorder = new MediaRecorder(stream, { mimeType });
-            audioChunksRef.current = [];
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) audioChunksRef.current.push(event.data);
-            };
-            mediaRecorderRef.current = mediaRecorder;
-            mediaRecorder.start();
-            setIsListening(true);
-        } catch (err) {
-            console.error('Microphone error:', err);
-        }
-    }, []);
-
-    // Start listening (ASR)
-    const startCoachListening = useCallback(async (overrideAyahIndex?: number) => {
-        if (ayahs.length === 0) return;
-        resetCoach();
-
-        const expectedText = ayahs.map(a => a.text).join(' ');
-
-        const currentAyahIdx = overrideAyahIndex !== undefined ? overrideAyahIndex : (playingIndex >= 0 ? playingIndex : 0);
-        const startWordIndex = allCoachWords.findIndex(w => w.ayahIndex === currentAyahIdx);
-        const safeStartIndex = startWordIndex >= 0 ? startWordIndex : 0;
-
-        const success = await speechRecognitionService.start(expectedText, {
-            onWordMatch: (wordIndex, isCorrect, spokenWord) => {
-                const word = allCoachWords[wordIndex];
-                if (!word) return;
-                const key = `${word.ayahIndex}-${word.wordIndex}`;
-
-                setWordStates(prev => {
-                    const n = new Map(prev);
-                    n.set(key, isCorrect ? 'correct' : 'error');
-                    return n;
-                });
-                setCoachTotalProcessed(prev => prev + 1);
-
-                if (!isCorrect) {
-                    setCoachMistakesCount(prev => prev + 1);
-                    setCoachMistakes(prev => ({
-                        ...prev,
-                        [key]: { expected: word.text, spoken: spokenWord || '(non entendu)' }
-                    }));
-                    if ('vibrate' in navigator) navigator.vibrate(200);
-                }
-            },
-            onCurrentWord: (wordIndex) => {
-                const word = allCoachWords[wordIndex];
-                if (!word) return;
-                const key = `${word.ayahIndex}-${word.wordIndex}`;
-                setWordStates(prev => {
-                    const n = new Map(prev);
-                    n.set(key, 'current');
-                    return n;
-                });
-            },
-            onInterimResult: (text) => setCoachInterimText(text),
-            onError: (error) => {
-                console.warn('Speech recognition error:', error);
-                if (error !== 'no-speech') startWhisperBackup();
-            },
-            onEnd: () => setIsListening(false)
-        }, safeStartIndex);
-
-        if (success) {
-            setIsListening(true);
-            startWhisperBackup();
-        } else {
-            startWhisperBackup();
-        }
-    }, [ayahs, allCoachWords, resetCoach, playingIndex, startWhisperBackup]);
-
-    // Stop listening
-    const stopCoachListening = useCallback(async () => {
-        await speechRecognitionService.stop();
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-            mediaRecorderRef.current.stop();
-            mediaRecorderRef.current.stream.getTracks().forEach(t => t.stop());
-        }
-        setIsListening(false);
-    }, []);
-
-    // Toggle coach mode on/off
-    const toggleCoachMode = useCallback(() => {
-        if (isCoachMode) {
-            stopCoachListening();
-            resetCoach();
-            setIsCoachMode(false);
-            setCoachMode(null);
-            setDuoPhase(null);
-        } else {
-            setIsCoachMode(true);
-            setCoachMode('solo');
-        }
-    }, [isCoachMode, stopCoachListening, resetCoach]);
-
-    // Select a specific coach mode from the menu
-    const selectCoachMode = useCallback((mode: CoachMode | null) => {
-        stopCoachListening();
-        resetCoach();
-        if (!mode) {
-            setIsCoachMode(false);
-            setCoachMode(null);
-            setDuoPhase(null);
-            setBlindMode(false);
-            return;
-        }
-
-        setIsCoachMode(true);
-        setCoachMode(mode);
-
-        if (mode === 'magic_reveal') {
-            setBlindMode(true);
-            setDuoPhase('waiting');
-        } else if (mode === 'solo') {
-            setBlindMode(false);
-            setDuoPhase('waiting');
-        } else if (mode === 'duo_echo' || mode === 'link') {
-            setBlindMode(false);
-            setDuoPhase('waiting');
-        }
-    }, [stopCoachListening, resetCoach, startCoachListening]);
-
-    // Toggle blind mode
-    const toggleBlindMode = useCallback(() => {
-        setBlindMode(prev => !prev);
-    }, []);
-
-    // Coach accuracy
-    const coachAccuracy = useMemo(() => {
-        if (coachTotalProcessed === 0) return 0;
-        return Math.round(((coachTotalProcessed - coachMistakesCount) / coachTotalProcessed) * 100);
-    }, [coachTotalProcessed, coachMistakesCount]);
-
-    // Coach progress fraction for the CURRENT verse
-    const coachProgress = useMemo(() => {
-        if (allCoachWords.length === 0 || playingIndex < 0) return 0;
-
-        // Filter words belonging to the actively playing/recited verse
-        const activeAyahWords = allCoachWords.filter(w => w.ayahIndex === playingIndex);
-        if (activeAyahWords.length === 0) return 0;
-
-        // Count how many words in this verse have been processed (correct or error)
-        let processedInAyah = 0;
-        activeAyahWords.forEach(w => {
-            const state = wordStates.get(`${w.ayahIndex}-${w.wordIndex}`);
-            if (state === 'correct' || state === 'error') {
-                processedInAyah++;
-            }
-        });
-
-        return Math.min(1, processedInAyah / activeAyahWords.length);
-    }, [wordStates, allCoachWords, playingIndex]);
-
-    // Save score and persist errors when coach finishes
+    // End the old passage before accepting results for a new selection. Cleanup also
+    // invalidates pending permission dialogs, so they cannot reopen a departed screen.
     useEffect(() => {
-        if (isCoachMode && coachTotalProcessed > 0 && coachTotalProcessed >= allCoachWords.length) {
-            try {
-                const saved = JSON.parse(localStorage.getItem('quran-coach-scores') || '{}');
-                saved[scoreKey] = { accuracy: coachAccuracy, date: new Date().toISOString() };
-                localStorage.setItem('quran-coach-scores', JSON.stringify(saved));
-            } catch { /* ignore */ }
+        activeRef.current = true;
+        const pendingRequest = requestRef;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset the UI when the externally owned recognition passage changes.
+        updateAssessments({});
+        setCurrentWord(null);
+        setCoachAtEnd(false);
+        setCoachInterimText('');
+        setCoachError(null);
+        setSelectedError(null);
+        setShowMistakesSummary(false);
+        setDuoPhase(modeRef.current ? 'waiting' : null);
+        setIsListening(false);
+        setIsStarting(false);
+        positionRef.current = { ayahIndex: 0, wordIndex: 0 };
+        const suspend = () => {
+            if (document.hidden) { setCoachAtEnd(false); void stopCoachListening(); }
+        };
+        document.addEventListener('visibilitychange', suspend);
+        return () => {
+            activeRef.current = false;
+            ++pendingRequest.current;
+            saveSession();
+            void speechRecognitionService.stop();
+            document.removeEventListener('visibilitychange', suspend);
+        };
+    }, [scoreKey, passageKey, updateAssessments, saveSession, stopCoachListening]);
 
-            // Persist errors for review
-            if (Object.keys(coachMistakes).length > 0) {
-                try {
-                    const existing: Array<{
-                        scoreKey: string;
-                        wordKey: string;
-                        expected: string;
-                        spoken: string;
-                        date: string;
-                    }> = JSON.parse(localStorage.getItem('hifdh-error-log') || '[]');
+    const startCoachListening = useCallback(async (overrideAyahIndex?: number, wordIndex = 0) => {
+        const ayahIndex = overrideAyahIndex ?? Math.max(0, playingIndex);
+        const ayah = ayahs[ayahIndex];
+        if (!ayah || !modeRef.current || !activeRef.current) return;
+        const words = recitationWords(ayah.text);
+        if (!words.length) return;
+        const start = Math.max(0, Math.min(wordIndex, words.length - 1));
+        const request = ++requestRef.current;
+        setIsListening(false);
+        setIsStarting(true);
+        setCoachError(null);
+        setCoachAtEnd(false);
+        setCoachInterimText('');
+        saveSession();
+        await speechRecognitionService.stop();
+        const current = () => activeRef.current && request === requestRef.current;
+        if (!current()) return;
+        // Only clear the retried part. Earlier verses remain in the session summary.
+        const retained = { ...sessionRef.current };
+        words.forEach((_, index) => { if (index >= start) delete retained[`${ayahIndex}-${index}`]; });
+        updateAssessments(retained);
+        positionRef.current = { ayahIndex, wordIndex: start };
+        setCurrentWord(`${ayahIndex}-${start}`);
+        const success = await speechRecognitionService.start(ayah.text, {
+            onWordMatch: (index, isCorrect, spoken) => {
+                if (!current() || !words[index]) return;
+                updateAssessments({ ...sessionRef.current, [`${ayahIndex}-${index}`]: {
+                    state: isCorrect ? 'correct' : 'error', expected: words[index], spoken: spoken || '(non reconnu)',
+                } });
+            },
+            onWordReset: index => {
+                if (!current()) return;
+                const next = { ...sessionRef.current };
+                next[`${ayahIndex}-${index}`] = { state: 'unread', expected: words[index], spoken: '' };
+                updateAssessments(next);
+            },
+            onCurrentWord: index => {
+                if (!current()) return;
+                positionRef.current = { ayahIndex, wordIndex: index };
+                setCurrentWord(index < words.length ? `${ayahIndex}-${index}` : null);
+                setCoachAtEnd(index >= words.length);
+                setCoachRevision(revision => revision + 1);
+            },
+            onInterimResult: text => { if (current()) setCoachInterimText(text); },
+            onError: error => {
+                if (!current()) return;
+                setCoachError(recognitionErrorMessage(error));
+                setIsListening(false);
+                setIsStarting(false);
+                setCoachAtEnd(false);
+            },
+            onEnd: () => {
+                if (!current()) return;
+                setIsListening(false);
+                setIsStarting(false);
+                saveSession();
+            },
+        }, start);
+        if (!current()) return;
+        setIsStarting(false);
+        setIsListening(success);
+        if (!success) setCoachError(previous => previous || recognitionErrorMessage('unavailable'));
+    }, [ayahs, playingIndex, saveSession, updateAssessments]);
 
-                    const newErrors = Object.entries(coachMistakes).map(([wordKey, err]) => ({
-                        scoreKey,
-                        wordKey,
-                        expected: err.expected,
-                        spoken: err.spoken,
-                        date: new Date().toISOString(),
-                    }));
+    const resumeCoachListening = useCallback(() => {
+        const position = positionRef.current;
+        const words = recitationWords(ayahs[position.ayahIndex]?.text || '');
+        return startCoachListening(position.ayahIndex, position.wordIndex < words.length ? position.wordIndex : 0);
+    }, [ayahs, startCoachListening]);
 
-                    // Deduplicate by scoreKey+wordKey, keep latest
-                    const merged = [...existing];
-                    for (const ne of newErrors) {
-                        const idx = merged.findIndex(e => e.scoreKey === ne.scoreKey && e.wordKey === ne.wordKey);
-                        if (idx >= 0) merged[idx] = ne;
-                        else merged.push(ne);
-                    }
+    const coachJumpToWord = useCallback((ayahIndex: number, wordIndex: number) => {
+        if (!modeRef.current) return;
+        // Restart recognition at the new position; buffered old hypotheses are invalid.
+        // No skipped word is counted as recognized.
+        setDuoPhase('student');
+        void startCoachListening(ayahIndex, wordIndex);
+    }, [startCoachListening]);
 
-                    // Keep max 200 entries
-                    const trimmed = merged.slice(-200);
-                    localStorage.setItem('hifdh-error-log', JSON.stringify(trimmed));
-                } catch { /* ignore */ }
-            }
-        }
-    }, [isCoachMode, coachTotalProcessed, allCoachWords.length, coachAccuracy, scoreKey, coachMistakes]);
+    const selectCoachMode = useCallback((mode: CoachMode | null) => {
+        void stopCoachListening();
+        resetCoach();
+        modeRef.current = mode;
+        setIsCoachMode(mode !== null);
+        setCoachMode(mode);
+        setDuoPhase(mode ? 'waiting' : null);
+        setBlindMode(mode === 'magic_reveal');
+    }, [stopCoachListening, resetCoach]);
+
+    const dismissCoachMistake = useCallback((key: string) => {
+        const assessment = sessionRef.current[key];
+        if (!assessment) return;
+        updateAssessments({ ...sessionRef.current, [key]: { ...assessment, state: 'dismissed' } });
+        saveSession();
+        setSelectedError(null);
+    }, [saveSession, updateAssessments]);
+
+    // Persist partial sessions too, without requiring the entire selection to be recited.
+    useEffect(() => {
+        const timer = window.setTimeout(saveSession, 500);
+        return () => window.clearTimeout(timer);
+    }, [assessments, saveSession]);
+
+    const wordStates = useMemo(() => {
+        const states = new Map<string, WordState>(Object.entries(assessments).map(([key, result]) => [key, result.state]));
+        if (currentWord && (!states.has(currentWord) || states.get(currentWord) === 'unread')) states.set(currentWord, 'current');
+        return states;
+    }, [assessments, currentWord]);
+    const coachMistakes = useMemo(() => Object.fromEntries(Object.entries(assessments)
+        .filter(([, result]) => result.state === 'error').map(([key, result]) => [key, { expected: result.expected, spoken: result.spoken }])), [assessments]);
+    const totals = coachTotals(assessments);
+    const verseWords = allCoachWords.filter(word => word.ayahIndex === playingIndex);
+    const processedInVerse = verseWords.filter(word => {
+        const state = assessments[`${word.ayahIndex}-${word.wordIndex}`]?.state;
+        return state === 'correct' || state === 'error';
+    }).length;
 
     return {
-        isCoachMode,
-        coachMode,
-        duoPhase,
-        blindMode,
-        wordStates,
-        isListening,
-        coachMistakes,
-        coachMistakesCount,
-        coachTotalProcessed,
-        selectedError,
-        setSelectedError,
-        showMistakesSummary,
-        setShowMistakesSummary,
-        coachInterimText,
-        allCoachWords,
-        coachAccuracy,
-        coachProgress,
-        resetCoach,
-        coachJumpToWord,
-        startCoachListening,
-        stopCoachListening,
-        toggleCoachMode,
-        toggleBlindMode,
-        selectCoachMode,
-        setDuoPhase,
+        isCoachMode, coachMode, duoPhase, blindMode, wordStates, isListening, isStarting,
+        coachError, storageError, coachAtEnd, coachRevision,
+        coachMistakes, coachMistakesCount: totals.mistakes, coachTotalProcessed: totals.processed,
+        selectedError, setSelectedError, showMistakesSummary, setShowMistakesSummary,
+        coachInterimText, allCoachWords, coachAccuracy: totals.accuracy,
+        coachProgress: verseWords.length ? processedInVerse / verseWords.length : 0,
+        resetCoach, coachJumpToWord, startCoachListening, resumeCoachListening, stopCoachListening,
+        toggleCoachMode: () => selectCoachMode(isCoachMode ? null : 'solo'),
+        toggleBlindMode: () => setBlindMode(previous => !previous),
+        selectCoachMode, setDuoPhase, dismissCoachMistake,
     };
 }
+export type CoachState = ReturnType<typeof useCoach>;
