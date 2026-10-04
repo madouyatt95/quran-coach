@@ -22,6 +22,7 @@ import { LiveFollowWords } from './LiveFollowWords';
 import { useLiveFollowStore } from '../../stores/liveFollowStore';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { useVisibleReadingPosition } from './hooks/useVisibleReadingPosition';
 import { useKhatmReading } from './hooks/useKhatmReading';
 import { useTranslation } from 'react-i18next';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
@@ -52,11 +53,10 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     const { t } = useTranslation();
     const {
         currentPage, surahs, setSurahs,
-        setCurrentPage, setCurrentAyah,
         currentSurah, currentAyah,
         setSurahAyahs, currentSurahAyahs,
         goToSurah, goToPage, goToAyah,
-        nextSurah, updateProgress,
+        nextSurah,
         jumpSignal,
     } = useQuranStore();
 
@@ -129,60 +129,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
 
     const juzNumber = getJuzForPage(currentPage)?.number ?? 1;
 
-    const currentSurahRef = useRef(currentSurah);
-    useEffect(() => { currentSurahRef.current = currentSurah; }, [currentSurah]);
-
-    // Track visible ayah/page for Header sync
-    useEffect(() => {
-        const container = document.querySelector('.mih-mushaf');
-        if (!container) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting && !useLiveFollowStore.getState().active) {
-                        const target = entry.target as HTMLElement;
-                        const pageNum = parseInt(target.getAttribute('data-page') || '1');
-                        const ayahNum = parseInt(target.getAttribute('data-ayah') || '1');
-
-                        const elementSurah = parseInt(target.getAttribute('data-surah') || '0');
-
-                        // CRITICAL: Only process elements that belong to THE LATEST current surah.
-                        // We use currentSurahRef.current because the currentSurah closure value
-                        // might be stale during a transition (e.g. going Mulk -> Baqarah).
-                        if (elementSurah !== currentSurahRef.current) {
-                            return;
-                        }
-
-                        // Update store only if changed to avoid loops
-                        if (pageNum !== currentPage || ayahNum !== currentAyah) {
-                            // Only update store/bookmark if we are NOT in a silent jump
-                            const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump');
-
-                            if (!isSilent) {
-                                setCurrentPage(pageNum, {reading:true});
-                                setCurrentAyah(ayahNum);
-
-                                // Always update general reading progress (independent from Khatm)
-                                updateProgress();
-                            }
-                        }
-                    }
-                });
-            },
-            { root: container, threshold: 0.1 }
-        );
-
-        const updateObservedElements = () => {
-            document.querySelectorAll('.mih-ayah').forEach(el => observer.observe(el));
-        };
-
-        const timeout = setTimeout(updateObservedElements, 1000);
-        return () => {
-            clearTimeout(timeout);
-            observer.disconnect();
-        };
-    }, [currentSurah, currentSurahAyahs, currentPage, currentAyah, setCurrentPage, setCurrentAyah, updateProgress]);
+    useVisibleReadingPosition(navigation.containerRef, currentSurah, renderedCount, isLoading, isSilentJumpRef);
 
     // Infinite rendering trigger
     useEffect(() => {

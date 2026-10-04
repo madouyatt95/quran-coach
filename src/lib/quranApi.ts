@@ -66,8 +66,8 @@ export async function fetchAyah(surahNumber: number, ayahNumber: number): Promis
     };
 }
 
-export async function searchQuran(query: string): Promise<Ayah[]> {
-    const data = await fetchWithCache<any>(`${API_BASE}/search/${encodeURIComponent(query)}/all/ar.quran-uthmani`);
+export async function searchQuran(query: string, edition: 'ar.quran-uthmani' | 'fr.hamidullah' = 'ar.quran-uthmani'): Promise<Ayah[]> {
+    const data = await fetchWithCache<any>(`${API_BASE}/search/${encodeURIComponent(query)}/all/${edition}`);
 
     if (data.code !== 200 || !data.data.matches) {
         return [];

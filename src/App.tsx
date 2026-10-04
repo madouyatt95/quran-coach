@@ -186,7 +186,7 @@ function AppContent() {
       )}
 
       <KhatmCelebration />
-      <main style={{ flex: 1, paddingBottom: '80px' }}>
+      <main style={{ flex: 1, paddingBottom: 'var(--bottom-nav-height)' }}>
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
         <Suspense fallback={<PageLoader />}>

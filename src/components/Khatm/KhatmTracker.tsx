@@ -167,7 +167,7 @@ export function KhatmTracker() {
                     </div>
                 ) : (
                     <div className="khatm-trigger-active">
-                        <div className="khatm-trigger-pct">{store.completedAt ? "Terminé" : hasCompleteKhatm(store.validatedPages) ? "Confirmer" : `${progress.pct}%`}</div>
+                        <div className="khatm-trigger-pct">{store.completedAt ? "Terminé" : hasCompleteKhatm(store.validatedPages) ? "Confirmer" : `${progress.pct.toLocaleString('fr-FR')}%`}</div>
                         <div className="khatm-trigger-pages">{store.validatedPages.length}/604</div>
                     </div>
                 )}
@@ -185,7 +185,7 @@ export function KhatmTracker() {
 
                         <div className="khatm-stats">
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">{progress.pct}%</span>
+                                <span className="khatm-stat-value">{progress.pct.toLocaleString('fr-FR')}%</span>
                                 <span className="khatm-stat-label">Total</span>
                             </div>
                             <div className="khatm-stat">

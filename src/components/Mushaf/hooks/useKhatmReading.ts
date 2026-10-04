@@ -25,7 +25,7 @@ export function useKhatmReading({page, ready, surah, ayah}: {page:number;ready:b
     },[]);
     useEffect(()=>{
         const update = () => {
-            const blocked = !!document.querySelector('.khatm-popup, .mushaf-page-strip, .reading-bookmark-dialog[open], [aria-modal="true"]');
+            const blocked = !!document.querySelector('.khatm-popup, .mushaf-page-strip, .reading-bookmark-dialog[open], dialog[open], [aria-modal="true"]');
             if (blocked) tracker.current.reset();
             setObscured(blocked);
         };

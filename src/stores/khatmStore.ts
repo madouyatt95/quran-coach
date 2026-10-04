@@ -165,7 +165,7 @@ export const useKhatmStore = create<KhatmState>()(
 
             getOverallProgress: () => {
                 const read = new Set(get().validatedPages.filter(p => Number.isInteger(p) && p >= 1 && p <= 604)).size;
-                return {read, total:604, pct:read === 604 ? 100 : Math.floor(read / 604 * 100)};
+                return {read, total:604, pct:read === 604 ? 100 : Math.round(read / 604 * 1000) / 10};
             },
 
             getTotalDays: () => {

@@ -41,3 +41,14 @@
 
 :is(.mih-header,.madinah-header,.tajweed-header) .khatm-page-badge{position:static;width:36px;height:36px;flex-shrink:0;box-shadow:none;border-width:1px;animation:none;transform:none;z-index:auto;background:transparent}
 :is(.mih-header,.madinah-header,.tajweed-header) .khatm-page-badge:disabled{opacity:.3;cursor:default}
+
+/* Keep the reader and its own controls above the app navigation. */
+:is(.mushaf-page.mushaf-page,.madinah-page,.tajweed-page){bottom:var(--bottom-nav-height);height:calc(100dvh - var(--bottom-nav-height))}
+:is(.madinah-page,.tajweed-page) :is(.madinah-viewer,.tajweed-viewer){min-height:0;padding-bottom:8px}
+:is(.madinah-page,.tajweed-page) :is(.madinah-nav,.tajweed-nav){flex-shrink:0;min-height:52px;box-sizing:border-box;padding:4px 10px;gap:8px}
+:is(.madinah-page,.tajweed-page) :is(.madinah-nav__btn,.tajweed-nav__btn){min-height:44px;font-size:11px;padding:6px 8px;white-space:nowrap}
+.mushaf-page .mih-mushaf{min-height:0;padding-bottom:16px}
+
+:is(.madinah-nav__page-input,.tajweed-nav__page-input){flex-shrink:0;white-space:nowrap}
+:is(.madinah-page,.tajweed-page) :is(.madinah-nav__btn,.tajweed-nav__btn){flex:1;min-width:0;justify-content:center;white-space:normal;line-height:1.25}
+:is(.madinah-nav__btn,.tajweed-nav__btn) svg{flex-shrink:0;width:16px}

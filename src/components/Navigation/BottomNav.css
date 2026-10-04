@@ -119,3 +119,11 @@
 .bottom-nav__item--voice .bottom-nav__icon { opacity: 1; color: #e8d48b; }
 .bottom-nav__item--voice .bottom-nav__label { color: #e8d48b; }
 .bottom-nav__item:focus-visible { outline: 2px solid #e8d48b; outline-offset: -2px; }
+
+/* Shared height reserves exactly the space occupied by the navigation. */
+:root{--bottom-nav-height:calc(56px + env(safe-area-inset-bottom,0px))}
+.bottom-nav{box-sizing:border-box;height:var(--bottom-nav-height);padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px));gap:4px}
+.bottom-nav__item{height:48px;box-sizing:border-box;padding:5px 2px;gap:3px;justify-content:center;border-radius:12px}
+.bottom-nav__icon{font-size:21px;line-height:22px;height:22px}.bottom-nav__label{font-size:10px;line-height:13px}
+.bottom-nav__dot{position:absolute;bottom:0;margin:0;height:2px!important;width:12px!important;border-radius:2px}
+.bottom-nav__item.active .bottom-nav__icon{transform:none;filter:none}.bottom-nav__item.active::before{display:none}

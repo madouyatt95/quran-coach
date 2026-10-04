@@ -1,18 +1,14 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { searchQuran } from '../../lib/quranApi';
-import { SURAH_NAMES_FR, JUZ_START_PAGES } from './mushafConstants';
-import type { Ayah } from '../../types';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { Search, X, ArrowUpRight, Loader2 } from 'lucide-react';
+import { fetchSurah, searchQuran } from '../../lib/quranApi';
+import { SURAH_NAMES_FR, SURAH_START_PAGES } from './mushafConstants';
+import type { Ayah, Surah } from '../../types';
 import { formatDivineNames } from '../../lib/divineNames';
+import './MushafSearchOverlay.css';
 
-interface SearchResult extends Ayah {
-    translation?: string;
-    page: number;
-}
-
-interface MushafSearchOverlayProps {
-    surahs: Array<{ number: number; name: string; englishName: string; englishNameTranslation: string; numberOfAyahs: number; revelationType: string }>;
+interface Props {
+    surahs: Surah[];
     currentPage: number;
     goToSurah: (surah: number, options?: { silent?: boolean }) => void;
     goToPage: (page: number, options?: { silent?: boolean }) => void;
@@ -20,272 +16,93 @@ interface MushafSearchOverlayProps {
     onClose: () => void;
 }
 
-export function MushafSearchOverlay({
-    surahs,
-    currentPage,
-    goToSurah,
-    goToPage,
-    goToAyah,
-    onClose,
-}: MushafSearchOverlayProps) {
-    const { t } = useTranslation();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [verseResults, setVerseResults] = useState<SearchResult[]>([]);
-    const [isSearchingVerses, setIsSearchingVerses] = useState(false);
-    const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+export const normalizeMushafSearch = (value: string) => value.normalize('NFD')
+    .replace(/[\u0300-\u036f\u064b-\u065f\u0670\u0640]/g, '').replace(/[أإآٱ]/g, 'ا')
+    .toLowerCase().replace(/([a-z])\1+/g, '$1').replace(/[\s'’\-]/g, '');
 
-    // Filter surahs based on query
-    const filteredSurahs = searchQuery
-        ? surahs.filter(s => {
-            const q = searchQuery.toLowerCase();
-            return (
-                s.englishName.toLowerCase().includes(q) ||
-                s.name.includes(searchQuery) ||
-                (s.englishNameTranslation && s.englishNameTranslation.toLowerCase().includes(q)) ||
-                (SURAH_NAMES_FR[s.number] && SURAH_NAMES_FR[s.number].toLowerCase().includes(q)) ||
-                s.number.toString() === searchQuery
-            );
-        })
-        : surahs;
+export function MushafSearchOverlay({surahs,currentPage,goToSurah,goToPage,goToAyah,onClose}: Props) {
+    const dialog = useRef<HTMLDialogElement>(null);
+    const [query,setQuery] = useState('');
+    const [results,setResults] = useState<Ayah[]>([]);
+    const [searching,setSearching] = useState(false);
+    const [error,setError] = useState('');
+    const [opening,setOpening] = useState(false);
+    const [retry,setRetry] = useState(0);
+    const alive = useRef(true);
+    const clean = query.trim();
+    const arabic = /[\u0600-\u06ff]/.test(clean);
+    const page = /^\d+$/.test(clean) ? Number(clean) : 0;
+    const reference = clean.match(/^(\d+)\s*[:\s-]\s*(\d+)$/);
+    const referenceSurah = reference ? surahs.find(s=>s.number===Number(reference[1])) : undefined;
+    const validReference = !!referenceSurah && Number(reference?.[2]) >= 1 && Number(reference?.[2]) <= referenceSurah.numberOfAyahs;
+    const textSearch = clean.length >= 3 && !page && !reference;
+    const filtered = surahs.filter(s=>!clean || (page ? s.number === page : [s.name,s.englishName,s.englishNameTranslation,SURAH_NAMES_FR[s.number],String(s.number)].some(name=>name && normalizeMushafSearch(name).includes(normalizeMushafSearch(clean)))));
+    const currentSurah = SURAH_START_PAGES.reduce((found,p,i)=>p<=currentPage?i+1:found,1);
 
-    // Verse search with debounce
-    useEffect(() => {
-        if (searchQuery.length >= 3 && !/^\d+$/.test(searchQuery)) {
-            setIsSearchingVerses(true);
-            if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-            searchTimerRef.current = setTimeout(async () => {
-                try {
-                    const arRes = await searchQuran(searchQuery);
+    useEffect(()=>{
+        alive.current = true;
+        const element = dialog.current!;
+        element.showModal();
+        const fit = () => {
+            element.style.height = `${window.visualViewport?.height ?? window.innerHeight}px`;
+            element.style.top = `${window.visualViewport?.offsetTop ?? 0}px`;
+        };
+        fit();window.visualViewport?.addEventListener('resize',fit);window.visualViewport?.addEventListener('scroll',fit);
+        return ()=>{alive.current=false;window.visualViewport?.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('scroll',fit);element.close();};
+    },[]);
 
-                    // Also search French via alquran.cloud
-                    let frenchResults: Array<{ number: number; text: string }> = [];
-                    try {
-                        const frResponse = await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(searchQuery)}/all/fr.hamidullah`);
-                        const frData = await frResponse.json();
-                        if (frData.code === 200 && frData.data?.matches) {
-                            frenchResults = frData.data.matches.map((m: any) => ({
-                                number: m.number,
-                                text: m.text,
-                            }));
-                        }
-                    } catch { /* ignore French search errors */ }
+    useEffect(()=>{
+        let cancelled=false;
+        setResults([]);setError('');setSearching(textSearch);
+        if (!textSearch) return;
+        const timer=setTimeout(async()=>{
+            try {
+                const matches=await searchQuran(clean,arabic?'ar.quran-uthmani':'fr.hamidullah');
+                if (!cancelled) setResults(matches.slice(0,20));
+            } catch {if(!cancelled)setError('La recherche de versets est indisponible. Les sourates restent accessibles.');}
+            finally {if(!cancelled)setSearching(false);}
+        },350);
+        return ()=>{cancelled=true;clearTimeout(timer);};
+    },[clean,arabic,textSearch,retry]);
 
-                    const merged = new Map<number, SearchResult>();
-                    for (const m of arRes) {
-                        merged.set(m.number, { ...m, page: m.page || 0 });
-                    }
-                    for (const f of frenchResults) {
-                        if (merged.has(f.number)) {
-                            const existing = merged.get(f.number)!;
-                            merged.set(f.number, { ...existing, translation: f.text });
-                        }
-                    }
+    const openPage=(target:number)=>{
+        sessionStorage.removeItem('scrollToAyah');sessionStorage.setItem('isSilentJump','true');sessionStorage.setItem('scrollToPage',String(target));
+        goToPage(target,{silent:true});onClose();
+    };
+    const openVerse=async(surah:number,ayah:number)=>{
+        if(opening)return;
+        setOpening(true);setError('');
+        try {
+            const data=await fetchSurah(surah);
+            const verse=data.ayahs.find(a=>a.numberInSurah===ayah);
+            if(!verse)throw new Error('Verse unavailable');
+            if(!alive.current)return;
+            sessionStorage.removeItem('scrollToPage');sessionStorage.setItem('isSilentJump','true');sessionStorage.setItem('scrollToAyah',JSON.stringify({surah,ayah}));
+            goToAyah(surah,ayah,verse.page,{silent:true});onClose();
+        } catch {if(alive.current)setError('Impossible d’ouvrir ce verset. Vérifiez votre connexion et réessayez.');}
+        finally {if(alive.current)setOpening(false);}
+    };
 
-                    const results = Array.from(merged.values()).slice(0, 20);
-                    const needsPage = results.filter(r => !r.page || r.page <= 0);
-                    if (needsPage.length > 0) {
-                        const pagePromises = needsPage.map(async r => {
-                            try {
-                                const res = await fetch(`https://api.alquran.cloud/v1/ayah/${r.number}`);
-                                const data = await res.json();
-                                if (data.code === 200 && data.data?.page) {
-                                    r.page = data.data.page;
-                                }
-                            } catch { /* ignore */ }
-                        });
-                        await Promise.all(pagePromises);
-                    }
-
-                    setVerseResults(results);
-                } catch {
-                    setVerseResults([]);
-                }
-                setIsSearchingVerses(false);
-            }, 400);
-        } else {
-            setVerseResults([]);
-            setIsSearchingVerses(false);
-        }
-
-        return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
-    }, [searchQuery]);
-
-    const handleClose = useCallback(() => {
-        setSearchQuery('');
-        onClose();
-    }, [onClose]);
-
-    return (
-        <div className="mih-search-overlay">
-            <div className="mih-search-header">
-                <input
-                    className="mih-search-input"
-                    placeholder={t('mushaf.searchPlaceholder', 'Nom arabe, français, anglais ou n° de page...')}
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    autoFocus
-                />
-                <button className="mih-search-cancel" onClick={handleClose}>
-                    {t('common.cancel', 'Annuler')}
-                </button>
-            </div>
-
-            {/* Direct page input */}
-            {/^\d+$/.test(searchQuery) && parseInt(searchQuery) >= 1 && parseInt(searchQuery) <= 604 && (
-                <div
-                    className="mih-search-item"
-                    onClick={() => {
-                        const page = parseInt(searchQuery);
-                        sessionStorage.setItem('isSilentJump', 'true');
-                        sessionStorage.setItem('scrollToPage', page.toString());
-                        goToPage(page, { silent: true });
-                        handleClose();
-                    }}
-                >
-                    <div className="mih-search-item__icon"><Search size={18} /></div>
-                    <div className="mih-search-item__info">
-                        <div className="mih-search-item__name">{t('mushaf.goToPage', 'Aller à la page {{page}}', { page: searchQuery })}</div>
-                    </div>
-                </div>
-            )}
-
-            {/* Direct Verse Jump (Surah:Verse) */}
-            {/^(\d+)\s*[:\s-]\s*(\d+)$/.test(searchQuery) && (
-                (() => {
-                    const match = searchQuery.match(/^(\d+)\s*[:\s-]\s*(\d+)$/);
-                    if (!match) return null;
-                    const surahNum = parseInt(match[1]);
-                    const ayahNum = parseInt(match[2]);
-                    const surah = surahs.find(s => s.number === surahNum);
-
-                    if (surah && ayahNum >= 1 && ayahNum <= surah.numberOfAyahs) {
-                        return (
-                            <div
-                                className="mih-search-item"
-                                style={{ background: 'rgba(201, 168, 76, 0.12)' }}
-                                onClick={async () => {
-                                    try {
-                                        // Fetch the ayah to find its page
-                                        const response = await fetch(`https://api.alquran.cloud/v1/ayah/${surahNum}:${ayahNum}`);
-                                        const data = await response.json();
-                                        if (data.code === 200 && data.data.page) {
-                                            sessionStorage.setItem('isSilentJump', 'true');
-                                            sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: surahNum, ayah: ayahNum }));
-                                            goToAyah(surahNum, ayahNum, data.data.page, { silent: true });
-                                            handleClose();
-                                        }
-                                    } catch (e) { console.error('Verse jump failed', e); }
-                                }}
-                            >
-                                <div className="mih-search-item__icon"><Search size={18} /></div>
-                                <div className="mih-search-item__info">
-                                    <div className="mih-search-item__name">{t('mushaf.goToVerse', 'Aller au verset {{surah}}:{{ayah}}', { surah: surahNum, ayah: ayahNum })}</div>
-                                    <div className="mih-search-item__detail">{surah.englishName} • {SURAH_NAMES_FR[surahNum]}</div>
-                                </div>
-                            </div>
-                        );
-                    }
-                    return null;
-                })()
-            )}
-
-            {/* Juz Quick Navigation */}
-            {!searchQuery && (
-                <>
-                    <div className="mih-search-label">{t('mushaf.navigateByJuz', 'Naviguer par Juz')}</div>
-                    <div className="mih-juz-scroll">
-                        {JUZ_START_PAGES.map((page, idx) => (
-                            <div
-                                key={idx}
-                                className={`mih-juz-pill ${currentPage >= page && (idx === 29 || currentPage < JUZ_START_PAGES[idx + 1]) ? 'active' : ''}`}
-                                onClick={() => {
-                                    sessionStorage.setItem('isSilentJump', 'true');
-                                    sessionStorage.setItem('scrollToPage', page.toString());
-                                    goToPage(page, { silent: true });
-                                    handleClose();
-                                }}
-                            >
-                                {idx + 1}
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
-
-            <div className="mih-search-label">
-                {searchQuery ? t('mushaf.surahsFound', '{{count}} sourate(s)', { count: filteredSurahs.length }) : t('mushaf.totalSurahs', '114 sourates')}
-            </div>
-
-            <div className="mih-search-list">
-                {filteredSurahs.map(s => (
-                    <div
-                        key={s.number}
-                        className="mih-search-item"
-                        onClick={() => {
-                            sessionStorage.setItem('isSilentJump', 'true');
-                            sessionStorage.setItem('scrollToPage', '0'); // Signals scroll to top of surah
-                            goToSurah(s.number, { silent: true });
-                            handleClose();
-                        }}
-                    >
-                        <div className="mih-search-item__icon">{s.number}</div>
-                        <div className="mih-search-item__info">
-                            <div className="mih-search-item__name">{s.englishName} — {SURAH_NAMES_FR[s.number] || s.englishNameTranslation}</div>
-                            <div className="mih-search-item__detail">
-                                {s.englishNameTranslation && <>{s.englishNameTranslation} • </>}{s.numberOfAyahs} {t('mushaf.verses', 'versets')} • {s.revelationType === 'Meccan' ? t('mushaf.meccan', 'Mecquoise') : t('mushaf.medinan', 'Médinoise')}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Verse text search results */}
-            {searchQuery.length >= 3 && !/^\d+$/.test(searchQuery) && (
-                <>
-                    <div className="mih-search-label" style={{ marginTop: 12 }}>
-                        {isSearchingVerses
-                            ? t('mushaf.searchingVerses', 'Recherche dans les versets...')
-                            : t('mushaf.versesFound', '{{count}} verset(s) trouvé(s)', { count: verseResults.length })
-                        }
-                    </div>
-                    <div className="mih-search-list">
-                        {verseResults.map(v => {
-                            const surah = surahs.find(s => s.number === v.surah);
-                            return (
-                                <div
-                                    key={v.number}
-                                    className="mih-search-item"
-                                    onClick={() => {
-                                        sessionStorage.setItem('isSilentJump', 'true');
-                                        sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: v.surah, ayah: v.numberInSurah }));
-                                        goToAyah(v.surah, v.numberInSurah, v.page, { silent: true });
-                                        handleClose();
-                                    }}
-                                >
-                                    <div className="mih-search-item__icon" style={{ fontSize: '0.7rem' }}>
-                                        {v.surah}:{v.numberInSurah}
-                                    </div>
-                                    <div className="mih-search-item__info">
-                                        {v.text && (
-                                            <div className="mih-search-item__name" dir="rtl" style={{ fontFamily: 'var(--font-arabic)', fontSize: '0.95rem' }}>
-                                                {v.text.length > 80 ? v.text.slice(0, 80) + '…' : v.text}
-                                            </div>
-                                        )}
-                                        {v.translation && (
-                                            <div className="mih-search-item__detail" style={{ fontStyle: 'italic' }}>
-                                                {formatDivineNames(v.translation.length > 100 ? v.translation.slice(0, 100) + '…' : v.translation)}
-                                            </div>
-                                        )}
-                                        <div className="mih-search-item__detail" style={{ marginTop: 2 }}>
-                                            {surah?.englishName} • {t('mushaf.page', 'Page')} {v.page}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </>
-            )}
+    return createPortal(<dialog ref={dialog} className="reader-search" aria-labelledby="reader-search-title" onCancel={e=>{e.preventDefault();onClose();}}>
+        <header className="reader-search__header">
+            <div><h2 id="reader-search-title">Ouvrir un passage</h2><p>Sourate, page ou verset</p></div>
+            <button autoFocus className="reader-search__close" aria-label="Fermer la recherche" onClick={onClose}><X size={21}/></button>
+        </header>
+        <div className="reader-search__field"><Search size={19} aria-hidden="true"/>
+            <input aria-label="Rechercher une sourate, une page ou un verset" placeholder="Al-Kahf, 293, 18:10…" value={query} onChange={e=>setQuery(e.target.value)} type="search" autoComplete="off"/>
         </div>
-    );
+        <p className="reader-search__hint">Nom ou texte en arabe / français · Référence : 18:10</p>
+        <div className="reader-search__results" aria-busy={searching || opening}>
+            {page>=1 && page<=604 && <button className="reader-search__row reader-search__direct" onClick={()=>openPage(page)}><span>Ouvrir la page {page}</span><ArrowUpRight size={19}/></button>}
+            {validReference && <button disabled={opening} className="reader-search__row reader-search__direct" onClick={()=>void openVerse(Number(reference![1]),Number(reference![2]))}><span>{referenceSurah?.englishName} · verset {reference![2]}</span>{opening?<Loader2 size={19}/>:<ArrowUpRight size={19}/>}</button>}
+            {!!reference && !validReference && <p className="reader-search__empty">Référence invalide. Exemple : 18:10.</p>}
+            {!!page && page>604 && <p className="reader-search__empty">Choisissez une page entre 1 et 604.</p>}
+            {filtered.length>0 && <><h3>{clean?'Sourates trouvées':`${surahs.length} sourates`}</h3>{filtered.map(s=><button key={s.number} className={`reader-search__row ${s.number===currentSurah?'is-current':''}`} onClick={()=>{
+                sessionStorage.removeItem('scrollToAyah');sessionStorage.setItem('isSilentJump','true');sessionStorage.setItem('scrollToPage','0');goToSurah(s.number,{silent:true});onClose();
+            }}><span className="reader-search__number">{s.number}</span><span className="reader-search__info"><strong>{s.englishName}</strong><small>{SURAH_NAMES_FR[s.number]} · {s.numberOfAyahs} versets</small></span><span className="reader-search__arabic" lang="ar" dir="rtl">{s.name}</span></button>)}</>}
+            {textSearch && <><h3>Dans les versets</h3>{searching?<p className="reader-search__empty" role="status">Recherche en cours…</p>:results.map(v=><button key={v.number} disabled={opening} className="reader-search__verse" onClick={()=>void openVerse(v.surah,v.numberInSurah)}><strong>{surahs.find(s=>s.number===v.surah)?.englishName} · {v.surah}:{v.numberInSurah}</strong><span lang={arabic?'ar':'fr'} dir={arabic?'rtl':'ltr'}>{formatDivineNames(v.text)}</span></button>)}{!searching && !error && !results.length && <p className="reader-search__empty">Aucun verset trouvé. Essayez un autre mot.</p>}{results.length===20 && <p className="reader-search__hint">20 premiers résultats · Précisez votre recherche pour affiner.</p>}</>}
+            {!textSearch && !filtered.length && !reference && !page && <p className="reader-search__empty">Aucune sourate trouvée. Saisissez au moins trois caractères pour rechercher dans les versets.</p>}
+            {error && <div role="alert" className="reader-search__error">{error}{textSearch && <button onClick={()=>setRetry(v=>v+1)}>Réessayer</button>}</div>}
+        </div>
+    </dialog>,document.body);
 }

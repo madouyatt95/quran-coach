@@ -120,6 +120,7 @@ export function TajweedImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
     // Keyboard navigation
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
+            if (document.querySelector('dialog[open]') || (e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable]'))) return;
             if (e.key === 'ArrowLeft') nextPage();
             else if (e.key === 'ArrowRight') prevPage();
         };

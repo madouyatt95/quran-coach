@@ -132,7 +132,7 @@ export function useMushafNavigation({
     // Keyboard navigation (← →)
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (document.querySelector('dialog[open]') || (e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable]'))) return;
             if (e.key === 'ArrowLeft' && currentPage < 604) {
                 animatePageTurn('next');
                 nextPage();

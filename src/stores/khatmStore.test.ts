@@ -40,7 +40,7 @@ it('preserves existing reading data on upgrading persisted state',async()=>{
 
 it('uses exact pages for progress and daily targets',()=>{
  useKhatmStore.setState({validatedPages:allPages.slice(0,603)});
- expect(useKhatmStore.getState().getOverallProgress()).toEqual({read:603,total:604,pct:99});
+ expect(useKhatmStore.getState().getOverallProgress()).toEqual({read:603,total:604,pct:99.8});
  useKhatmStore.setState({validatedPages:allPages});
  expect(useKhatmStore.getState().getOverallProgress()).toEqual({read:604,total:604,pct:100});
  expect(useKhatmStore.getState().getDailyGoal()).toBe(0);
@@ -51,4 +51,11 @@ it('automatic validation is idempotent and respects a manually unchecked page',(
  expect(useKhatmStore.getState().validatedPages).toEqual([42]);expect(useKhatmStore.getState().dailyReadCount).toBe(1);
  store.togglePage(42);store.validatePage(42);expect(useKhatmStore.getState().validatedPages).toEqual([]);
  store.togglePage(42);expect(useKhatmStore.getState().validatedPages).toEqual([42]);expect(useKhatmStore.getState().autoExcludedPages).toEqual([]);
+});
+
+it('shows each newly validated page even around eight percent',()=>{
+ useKhatmStore.setState({validatedPages:allPages.slice(0,49)});
+ expect(useKhatmStore.getState().getOverallProgress().pct).toBe(8.1);
+ useKhatmStore.getState().validatePage(50);
+ expect(useKhatmStore.getState().getOverallProgress().pct).toBe(8.3);
 });
