@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Mic, Square } from 'lucide-react';
 import { tilawaService } from '../lib/tilawa/service';
 import { downloadTilawaPack, tilawaPackStatus } from '../lib/tilawa/assets';
-import { passageUrl, type Passage } from '../lib/learning';
+import { type Passage } from '../lib/learning';
 import { fetchSurah, fetchSurahTranslation } from '../lib/quranApi';
 import { useQuranStore } from '../stores/quranStore';
+import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import '../components/Learning/Learning.css';
 
 type Phase = 'idle' | 'preparing' | 'listening' | 'finishing' | 'result' | 'error';
 export function VoiceSearchPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [returnTo] = useState(() => location.state?.returnTo || '/learning');
   const [phase, setPhase] = useState<Phase>('idle');
   const [message, setMessage] = useState('');
   const [progress, setProgress] = useState<number | null>(null);
@@ -53,9 +57,11 @@ export function VoiceSearchPage() {
     };
   }, []);
 
-  async function start() {
+  const start = useCallback(async () => {
     if (active.current) return;
     active.current = true;
+    const player = useAudioPlayerStore.getState();
+    if (player.isPlaying) player.togglePlay();
     const id = ++request.current;
     const current = () => id === request.current;
     const controller = new AbortController();
@@ -98,19 +104,30 @@ export function VoiceSearchPage() {
         },
       });
       if (!current() || found || failed) return;
-      if (ok) { setPhase('listening'); setMessage('Récitez quelques mots. Je m’arrête automatiquement.'); }
+      if (ok) { setPhase('listening'); setMessage('Récitez ou faites écouter quelques mots. Je m’arrête automatiquement.'); }
       else { active.current = false; setPhase('idle'); }
     } catch (e) {
       if (!current()) return;
       active.current = false; setProgress(null); setPhase('error');
       setMessage(e instanceof Error ? e.message : 'Recherche indisponible. Réessayez avec une connexion.');
     }
-  }
+  }, []);
+
+  // Only a deliberate tap on the global microphone starts listening.
+  // Defer one tick so React StrictMode's effect replay cannot start two captures.
+  useEffect(() => {
+    if (!location.state?.startVoiceSearch) return;
+    const timer = setTimeout(() => {
+      navigate('/voice-search', { replace: true, state: { returnTo } });
+      void start();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [location.key, location.state, navigate, returnTo, start]);
 
   return <div className="learning-page">
-    <Link className="learning-btn" to="/learning">← Ma séance</Link>
+    <Link className="learning-btn" to={returnTo}>← Retour</Link>
     <h1>Quel est ce verset ?</h1>
-    <p className="learning-muted">Appuyez et récitez. Le passage apparaît ici automatiquement.</p>
+    <p className="learning-muted">Récitez ou faites écouter un début de verset, puis choisissez où l’ouvrir.</p>
     <section className="learning-card voice-search-card">
       <button className={`voice-search-trigger ${busy ? 'is-active' : ''}`} onClick={busy ? cancel : () => void start()}>
         {busy ? <Square size={30} aria-hidden="true"/> : <Mic size={34} aria-hidden="true"/>}
@@ -123,7 +140,11 @@ export function VoiceSearchPage() {
     {result && <section className="learning-card" aria-label="Passage reconnu">
       <h2>{surahs.find(s => s.number === result.surah)?.englishName || `Sourate ${result.surah}`} · {result.ayah}</h2>
       <RecognizedPassage key={`${result.surah}:${result.ayah}`} passage={result}/>
-      <Link className="learning-btn" to={passageUrl(result)}>Lire et travailler ce passage</Link>
+      <p>Où souhaitez-vous ouvrir ce verset ?</p>
+      <div className="learning-actions">
+        <Link className="learning-btn primary" to={`/read?surah=${result.surah}&ayah=${result.ayah}`}>Ouvrir dans le Mushaf</Link>
+        <Link className="learning-btn" to={`/hifdh?surah=${result.surah}&ayah=${result.ayah}`}>Mémoriser ce verset</Link>
+      </div>
     </section>}
   </div>;
 }

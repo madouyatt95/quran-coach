@@ -1,11 +1,14 @@
 // @vitest-environment jsdom
-import { act } from 'react';
+import { act, StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { VoiceSearchPage } from './VoiceSearchPage';
+import { BottomNav } from '../components/Navigation/BottomNav';
 import type { SearchCallbacks } from '../lib/tilawa/service';
-const mocks = vi.hoisted(() => ({status:vi.fn(),download:vi.fn(),start:vi.fn(),stop:vi.fn()}));
+const mocks = vi.hoisted(() => ({status:vi.fn(),download:vi.fn(),start:vi.fn(),stop:vi.fn(),pause:vi.fn()}));
+vi.mock('react-i18next', () => ({useTranslation:() => ({t:(s:string)=>s})}));
+vi.mock('../stores/audioPlayerStore', () => ({useAudioPlayerStore:{getState:() => ({isPlaying:true,togglePlay:mocks.pause})}}));
 vi.mock('../lib/tilawa/assets', () => ({tilawaPackStatus:mocks.status,downloadTilawaPack:mocks.download}));
 vi.mock('../lib/tilawa/service', () => ({tilawaService:{startSearch:mocks.start,stop:mocks.stop}}));
 vi.mock('../stores/quranStore', () => ({useQuranStore:() => [{number:112,englishName:'Al-Ikhlas'}]}));
@@ -20,6 +23,17 @@ beforeEach(async()=>{
 });
 afterEach(async()=>{await act(async()=>root.unmount());container.remove();});
 describe('one-button voice search',()=>{
+ it('starts once from the global mic, including StrictMode, with no second tap',async()=>{
+ await act(async()=>root.render(<StrictMode><MemoryRouter initialEntries={['/quiz']}><Routes><Route path="/quiz" element={<div>Quiz</div>}/><Route path="/voice-search" element={<VoiceSearchPage/>}/></Routes><BottomNav/></MemoryRouter></StrictMode>));
+ expect(mocks.start).not.toHaveBeenCalled();
+ await act(async()=>{(container.querySelector('[aria-label="Identifier un verset avec le micro"]') as HTMLAnchorElement).click();});
+ await act(async()=>{await new Promise(resolve=>setTimeout(resolve,20));});
+ expect(mocks.start).toHaveBeenCalledOnce();expect(button().textContent).toBe('Annuler');
+ expect(container.querySelector('a[href="/quiz"]')?.textContent).toContain('Retour');
+ await act(async()=>button().click());
+ await act(async()=>{await new Promise(resolve=>setTimeout(resolve,20));});
+ expect(mocks.start).toHaveBeenCalledOnce();
+ });
  it('does not activate microphone or download just by opening the page',()=>{
  expect(mocks.start).not.toHaveBeenCalled();expect(mocks.download).not.toHaveBeenCalled();expect(button().textContent).toBe('Réciter');
  expect(container.querySelectorAll('button')).toHaveLength(1);
@@ -35,6 +49,9 @@ describe('one-button voice search',()=>{
  await act(async()=>{callbacks.onVerse({surah:112,ayah:1});callbacks.onEnd();});
  expect(container.textContent).toContain('قل هو الله أحد');expect(container.textContent).toContain('Dis : Il est Allah, Unique.');
  expect(button().textContent).toBe('Réciter un autre passage');
+ expect(Array.from(container.querySelectorAll('a')).find(a => a.textContent === 'Ouvrir dans le Mushaf')?.getAttribute('href')).toBe('/read?surah=112&ayah=1');
+ expect(Array.from(container.querySelectorAll('a')).find(a => a.textContent === 'Mémoriser ce verset')?.getAttribute('href')).toBe('/hifdh?surah=112&ayah=1');
+ expect(mocks.pause).toHaveBeenCalledOnce();
  });
  it('cancel during download prevents delayed microphone activation',async()=>{
  let complete!:()=>void;mocks.status.mockResolvedValue({ready:false});mocks.download.mockImplementation(()=>new Promise<void>(resolve=>{complete=resolve;}));
