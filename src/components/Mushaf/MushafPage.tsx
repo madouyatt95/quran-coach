@@ -1,3 +1,4 @@
+import { ReadingBookmarkControl } from './ReadingBookmarkControl';
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import DOMPurify from 'dompurify';
 import {
@@ -509,6 +510,7 @@ export function MushafPage() {
                 </div>
 
                 <div className="mih-header-right">
+                    <ReadingBookmarkControl view="mushaf" page={currentPage} ayahs={currentSurahAyahs}/>
                     <MushafToolbar
                         showToolbar={showToolbar}
                         isMobile={isMobile}

@@ -1,3 +1,4 @@
+import { useReadingBookmarkStore, resumeReadingBookmark } from '../stores/readingBookmarkStore';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -281,6 +282,7 @@ function useNextPrayer() {
 // HomePage Component
 // ═══════════════════════════════════════════════════════════
 export function HomePage() {
+    const bookmark = useReadingBookmarkStore(s => s.bookmark);
     const { t } = useTranslation();
     const now = useMemo(() => new Date(), []);
     const hadith = useMemo(() => getHadithOfDay(now), [now]);
@@ -362,16 +364,17 @@ export function HomePage() {
     }, [goToSurah, navigate]);
 
     const handleContinueReading = useCallback(() => {
+        if (bookmark) { resumeReadingBookmark(bookmark); navigate('/read'); return; }
         if (progress) {
             sessionStorage.setItem('isSilentJump', 'true');
             sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: progress.lastSurah, ayah: progress.lastAyah }));
             goToAyah(progress.lastSurah, progress.lastAyah, progress.lastPage, { silent: false });
         }
         navigate('/read');
-    }, [navigate, progress, goToAyah]);
+    }, [navigate, progress, goToAyah, bookmark]);
 
-    const displaySurah = progress?.lastSurah ?? currentSurah;
-    const displayPage = progress?.lastPage ?? currentPage;
+    const displaySurah = bookmark?.surah ?? progress?.lastSurah ?? currentSurah;
+    const displayPage = bookmark?.page ?? progress?.lastPage ?? currentPage;
 
     const handleShare = async () => {
         const text = `📜 Hadith du Jour\n\n${hadith.textAr}\n\n${hadith.textFr}\n\n— ${hadith.source} (${hadith.narrator})\n\nvia Quran Coach`;
@@ -400,8 +403,8 @@ export function HomePage() {
                 <button className="home-continue" onClick={handleContinueReading}>
                     <div className="home-continue__icon"><BookMarked size={20} /></div>
                     <div className="home-continue__text">
-                        <span className="home-continue__title">{t('home.continueReading', 'Reprendre ma lecture')}</span>
-                        <span className="home-continue__page">{SURAH_NAMES[displaySurah] || `Sourate ${displaySurah}`} — Page {displayPage}</span>
+                        <span className="home-continue__title">{bookmark ? 'Reprendre mon signet' : t('home.continueReading', 'Reprendre ma lecture')}</span>
+                        <span className="home-continue__page">{bookmark?.precision === 'page' ? '' : `${SURAH_NAMES[displaySurah] || `Sourate ${displaySurah}`} — `}Page {displayPage}{bookmark?.precision === 'verse' ? ` · verset ${bookmark.ayah}` : ''}</span>
                     </div>
                     <span className="home-continue__arrow">→</span>
                 </button>

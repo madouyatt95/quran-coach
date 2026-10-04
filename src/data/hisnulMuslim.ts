@@ -5,6 +5,12 @@ export interface HisnDua {
     translation: string;
     count: number;
     source: string;
+    sourceUrl?: string;
+    hisnReference?: number;
+    title?: string;
+    note?: string;
+    period?: 'morning' | 'evening' | 'both';
+    daily?: boolean;
 }
 
 export interface HisnChapter {
@@ -195,145 +201,297 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
             {
                 "id": "chap_27",
                 "title": "Du matin et du soir ",
-                "titleAr": "",
+                "titleAr": "أذكار الصباح والمساء",
                 "icon": "BookOpen",
                 "color": "#FFD54F",
                 "duas": [
                     {
                         "id": 93,
-                        "arabic": "«الْحَمْدُ للهِ وَحْدَهُ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى مَنْ لَا نَبِيَّ بَعْدَهُ».",
+                        "arabic": "الْحَمْدُ للهِ وَحْدَهُ، وَالصَّلَاةُ وَالسَّلَامُ عَلَى مَنْ لَا نَبِيَّ بَعْدَهُ",
                         "phonetic": "Al-ḥamdu lillāhi waḥdahu, waṣ-ṣalātu was-salāmu 'alā man lā nabiyya ba'dahu.",
                         "translation": "Louange à Allah Seul, et que la prière et le salut soient sur celui après qui il n'y a plus de prophète.",
                         "count": 1,
-                        "source": "أبو داود برقم 3667"
+                        "source": "أبو داود برقم 3667",
+                        "period": "both"
                     },
                     {
                         "id": 94,
-                        "arabic": "﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ﴾ [آية الكرسي].",
-                        "phonetic": "Allāhu lā ilāha illā Huwa al-Ḥayyu al-Qayyūm",
-                        "translation": "Le Verset du Trône (Ayat al-Kursi).",
+                        "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+                        "phonetic": "Allāhu lā ilāha illā huwa al-Ḥayyu al-Qayyūm. Lā ta'khudhuhu sinatun wa lā nawm. Lahu mā fī as-samāwāti wa mā fī al-arḍ. Man dhā alladhī yashfa'u 'indahu illā bi-idhnih. Ya'lamu mā bayna aydīhim wa mā khalfahum. Wa lā yuḥīṭūna bi-shay'in min 'ilmihi illā bi-mā shā'. Wasi'a kursiyyuhu as-samāwāti wal-arḍ. Wa lā ya'ūduhu ḥifẓuhumā wa huwa al-'Aliyyu al-'Aẓīm.",
+                        "translation": "Allah ! Nulle divinité n'est digne d'adoration en dehors de Lui, le Vivant, Celui qui subsiste par Lui-même. Ni somnolence ni sommeil ne Le saisissent. À Lui appartient ce qui est dans les cieux et sur la terre. Qui peut intercéder auprès de Lui sans Sa permission ? Il connaît ce qui est devant eux et ce qui est derrière eux. Ils n'embrassent de Sa science que ce qu'Il veut. Son Trône s'étend aux cieux et à la terre, dont la préservation ne Lui pèse pas. Il est le Très-Haut, l'Immense.",
                         "count": 1,
-                        "source": "سورة البقرة، آية 255"
+                        "source": "Coran 2:255 · Hisn al-Muslim 75",
+                        "sourceUrl": "https://sunnah.com/hisn:75",
+                        "hisnReference": 75,
+                        "title": "Ayat al-Kursi — le verset du Trône",
+                        "period": "both"
                     },
                     {
                         "id": 95,
-                        "arabic": "«قُلْ هُوَ اللهُ أَحَدٌ»، «قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ»، «قُلْ أَعُوذُ بِرَبِّ النَّاسِ» (ثَلَاثَ مَرَّاتٍ).",
-                        "phonetic": "Qul Huwa Allāhu Aḥad, Qul a'ūdhu bi-Rabbi al-Falaq, Qul a'ūdhu bi-Rabbi an-Nās.",
-                        "translation": "Sourates Al-Ikhlas, Al-Falaq et An-Nas (trois fois).",
-                        "count": 1,
-                        "source": "أبو داود 4/ 322، الترمذي 5/ 567"
+                        "arabic": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ\n\nبِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ\n\nبِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nقُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ",
+                        "phonetic": "Bismi-Llāhi ar-Raḥmāni ar-Raḥīm. Qul huwa Allāhu aḥad. Allāhu aṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakun lahu kufuwan aḥad.\n\nBismi-Llāhi ar-Raḥmāni ar-Raḥīm. Qul a'ūdhu bi-Rabbi al-falaq. Min sharri mā khalaq. Wa min sharri ghāsiqin idhā waqab. Wa min sharri an-naffāthāti fī al-'uqad. Wa min sharri ḥāsidin idhā ḥasad.\n\nBismi-Llāhi ar-Raḥmāni ar-Raḥīm. Qul a'ūdhu bi-Rabbi an-nās. Maliki an-nās. Ilāhi an-nās. Min sharri al-waswāsi al-khannās. Alladhī yuwaswisu fī ṣudūri an-nās. Mina al-jinnati wan-nās.",
+                        "translation": "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\nDis : Il est Allah, l'Unique. Allah, Celui dont tous dépendent. Il n'a pas engendré et n'a pas été engendré. Nul n'est égal à Lui.\n\nAu nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\nDis : Je cherche refuge auprès du Seigneur de l'aube, contre le mal de ce qu'Il a créé, contre le mal de la nuit lorsqu'elle s'étend, contre le mal de celles qui soufflent sur les nœuds, et contre le mal de l'envieux lorsqu'il envie.\n\nAu nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\nDis : Je cherche refuge auprès du Seigneur des hommes, du Souverain des hommes, du Dieu des hommes, contre le mal du tentateur qui se dérobe, qui souffle dans les poitrines des hommes, qu'il soit parmi les djinns ou parmi les hommes.",
+                        "count": 3,
+                        "source": "Coran 112, 113 et 114 · Abou Dawoud et at-Tirmidhi · Hisn al-Muslim 76",
+                        "sourceUrl": "https://sunnah.com/hisn:76",
+                        "hisnReference": 76,
+                        "title": "Al-Ikhlas, Al-Falaq et An-Nas",
+                        "note": "Réciter chacune des trois sourates 3 fois. Un tour du compteur correspond aux trois sourates.",
+                        "period": "both"
                     },
                     {
                         "id": 96,
-                        "arabic": "«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ، وَالْحَمْدُ للهِ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ».",
+                        "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ، وَالْحَمْدُ للهِ، لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ",
                         "phonetic": "Aṣbaḥnā wa aṣbaḥa al-mulku lillāh, wal-ḥamdu lillāh, lā ilāha illā Allāhu waḥdahu lā sharīka lahu, lahu al-mulku wa lahu al-ḥamdu wa huwa 'alā kulli shay'in qadīr. Rabbi as'aluka khayra mā fī hādhā al-yawmi wa khayra mā ba'dahu, wa a'ūdhu bika min sharri mā fī hādhā al-yawmi wa sharri mā ba'dahu, Rabbi a'ūdhu bika mina al-kasali wa sū'i al-kibari, Rabbi a'ūdhu bika min 'adhābin fī an-nāri wa 'adhābin fī al-qabri.",
                         "translation": "Nous voici au matin et la royauté appartient à Allah. Louange à Allah. Il n'y a de divinité digne d'adoration qu'Allah, Seul et sans associé. À Lui la royauté et la louange, et Il est Capable de toute chose. Seigneur, je Te demande le bien de ce jour et le bien de ce qui suit, et je cherche protection auprès de Toi contre le mal de ce jour et le mal de ce qui suit. Seigneur, je cherche protection auprès de Toi contre la paresse et les maux de la vieillesse. Seigneur, je cherche protection auprès de Toi contre le châtiment du Feu et celui de la tombe.",
                         "count": 1,
-                        "source": "مسلم 4/ 2088"
+                        "source": "Hisn al-Muslim 77 · مسلم 4/ 2088",
+                        "sourceUrl": "https://sunnah.com/hisn:77",
+                        "hisnReference": 77,
+                        "period": "both"
                     },
                     {
                         "id": 97,
-                        "arabic": "«اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ».",
+                        "arabic": "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ",
                         "phonetic": "Allāhumma bika aṣbaḥnā, wa bika amsaynā, wa bika naḥyā, wa bika namūtu wa ilayka an-nushūr.",
                         "translation": "Ô Allah, c'est par Toi que nous sommes au matin et par Toi que nous sommes au soir. C'est par Toi que nous vivons et par Toi que nous mourons, et vers Toi est la résurrection.",
                         "count": 1,
-                        "source": "الترمذي 5/ 466"
+                        "source": "Hisn al-Muslim 78 · الترمذي 5/ 466",
+                        "sourceUrl": "https://sunnah.com/hisn:78",
+                        "hisnReference": 78,
+                        "period": "both"
                     },
                     {
                         "id": 98,
-                        "arabic": "«اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ».",
+                        "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
                         "phonetic": "Allāhumma Anta Rabbī lā ilāha illā Anta, khalaqtanī wa ana 'abduka, wa ana 'alā 'ahdika wa wa'dika mā staṭa'tu, a'ūdhu bika min sharri mā ṣana'tu, abū'u laka bi-ni'matika 'alayya, wa abū'u bi-dhanbī fa-ghfir lī fa-innahu lā yaghfiru adh-dhunūba illā Anta.",
                         "translation": "Ô Allah, Tu es mon Seigneur, nul n'est digne d'adoration si ce n'est Toi. Tu m'as créé et je suis Ton serviteur. Je suis fidèle à Ton pacte et à Ta promesse autant que je le puis. Je cherche protection auprès de Toi contre le mal que j'ai commis. Je reconnais Tes bienfaits envers moi et je reconnais mon péché. Pardonne-moi donc, car nul ne pardonne les péchés si ce n'est Toi.",
                         "count": 1,
-                        "source": "البخاري 7/ 150"
+                        "source": "Hisn al-Muslim 79 · البخاري 7/ 150",
+                        "sourceUrl": "https://sunnah.com/hisn:79",
+                        "hisnReference": 79,
+                        "period": "both"
                     },
                     {
                         "id": 99,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ» (أَرْبَعَ مَرَّاتٍ).",
+                        "arabic": "اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ",
                         "phonetic": "Allāhumma innī aṣbaḥtu ush-hiduka, wa ush-hidu ḥamalata 'arshika, wa malā'ikataka, wa jamī'a khalqika, annaka Anta Allāhu lā ilāha illā Anta waḥdaka lā sharīka laka, wa anna Muḥammadan 'abduka wa rasūluka.",
-                        "translation": "Ô Allah, me voici au matin, je Te prends à témoin, ainsi que les porteurs de Ton Trône, Tes anges et toute Ta création, pour témoigner que Tu es Allah, nulle divinité n'est digne d'adoration sauf Toi, Seul et sans associé, et que Muhammad est Ton serviteur et Ton messager (4 fois).",
-                        "count": 1,
-                        "source": "أبو داود 4/317، البخاري في الأدب المفرد رقم 1201"
+                        "translation": "Ô Allah, me voici au matin, je Te prends à témoin, ainsi que les porteurs de Ton Trône, Tes anges et toute Ta création, pour témoigner que Tu es Allah, nulle divinité n'est digne d'adoration sauf Toi, Seul et sans associé, et que Muhammad est Ton serviteur et Ton messager.",
+                        "count": 4,
+                        "source": "Hisn al-Muslim 80 · أبو داود 4/317، البخاري في الأدب المفرد رقم 1201",
+                        "sourceUrl": "https://sunnah.com/hisn:80",
+                        "hisnReference": 80,
+                        "period": "both"
                     },
                     {
                         "id": 100,
-                        "arabic": "«اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ».",
+                        "arabic": "اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ",
                         "phonetic": "Allāhumma mā aṣbaḥa bī min ni'matin aw bi-aḥadin min khalqika fa-minka waḥdaka lā sharīka laka, fa-laka al-ḥamdu wa laka ash-shukru.",
                         "translation": "Ô Allah, tout bienfait qui m'arrive en ce matin ou arrive à l'une de Tes créatures provient de Toi Seul, sans associé. À Toi la louange et à Toi la gratitude.",
                         "count": 1,
-                        "source": "أبو داود 4/318، النسائي في عمل اليوم والليلة رقم 7"
+                        "source": "Hisn al-Muslim 81 · أبو داود 4/318، النسائي في عمل اليوم والليلة رقم 7",
+                        "sourceUrl": "https://sunnah.com/hisn:81",
+                        "hisnReference": 81,
+                        "period": "both"
+                    },
+                    {
+                        "id": 10082,
+                        "hisnReference": 82,
+                        "title": "La santé et la protection",
+                        "count": 3,
+                        "arabic": "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَٰهَ إِلَّا أَنْتَ",
+                        "translation": "Ô Allah, préserve la santé de mon corps, de mon ouïe et de ma vue. Nulle divinité n'est digne d'adoration sauf Toi. Ô Allah, je cherche refuge auprès de Toi contre la mécréance et la pauvreté, et contre le châtiment de la tombe. Nulle divinité n'est digne d'adoration sauf Toi.",
+                        "phonetic": "Allāhumma 'āfinī fī badanī, Allāhumma 'āfinī fī sam'ī, Allāhumma 'āfinī fī baṣarī, lā ilāha illā Anta. Allāhumma innī a'ūdhu bika mina al-kufri wal-faqri, wa a'ūdhu bika min 'adhābi al-qabri, lā ilāha illā Anta.",
+                        "source": "Hisn al-Muslim 82 · Abou Dawoud 4/324",
+                        "sourceUrl": "https://sunnah.com/hisn:82",
+                        "period": "both"
+                    },
+                    {
+                        "id": 10083,
+                        "hisnReference": 83,
+                        "title": "Placer sa confiance en Allah",
+                        "count": 7,
+                        "arabic": "حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ",
+                        "translation": "Allah me suffit. Nulle divinité n'est digne d'adoration en dehors de Lui. En Lui je place ma confiance ; Il est le Seigneur du Trône immense.",
+                        "phonetic": "Ḥasbiya Allāhu lā ilāha illā Huwa, 'alayhi tawakkaltu wa Huwa Rabbu al-'arshi al-'aẓīm.",
+                        "source": "Hisn al-Muslim 83 · Ibn as-Sunni 71 ; Abou Dawoud 4/321",
+                        "sourceUrl": "https://sunnah.com/hisn:83",
+                        "period": "both"
                     },
                     {
                         "id": 101,
-                        "arabic": "«اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي».",
+                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي",
                         "phonetic": "Allāhumma innī as'aluka al-'afwa wal-'āfiyata fīd-dunyā wal-ākhirah. Allāhumma innī as'aluka al-'afwa wal-'āfiyata fī dīnī wa dunyāya wa ahlī wa mālī. Allāhumma-stur 'awrātī wa āmin raw'ātī. Allāhumma-ḥfaẓnī min bayni yadayya wa min khalfī wa 'an yamīnī wa 'an shimālī wa min fawqī, wa a'ūdhu bi-'aẓamatika an ughtāla min taḥtī.",
                         "translation": "Ô Allah, je Te demande le pardon et le salut dans ce monde et dans l'au-delà. Ô Allah, je Te demande le pardon et le salut pour ma religion, ma vie, ma famille et mes biens. Ô Allah, dissimule mes faiblesses et rassure-moi contre mes craintes. Ô Allah, protège-moi par devant, par derrière, sur ma droite, sur ma gauche et au-dessus de moi. Et je cherche protection auprès de Ta grandeur contre le fait d'être englouti par en dessous.",
                         "count": 1,
-                        "source": "أبو داود وابن ماجه"
+                        "source": "Hisn al-Muslim 84 · أبو داود وابن ماجه",
+                        "sourceUrl": "https://sunnah.com/hisn:84",
+                        "hisnReference": 84,
+                        "period": "both"
                     },
                     {
                         "id": 102,
-                        "arabic": "«اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ».",
+                        "arabic": "اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ",
                         "phonetic": "Allāhumma 'ālima al-ghaybi wash-shahādati fāṭira as-samāwāti wal-arḍi, Rabba kulli shay'in wa malīkahu, ash-hadu an lā ilāha illā Anta, a'ūdhu bika min sharri nafsī, wa min sharri ash-shayṭāni wa shirkihi, wa an aqtarifa 'alā nafsī sū'an, aw ajurrahu ilā muslim.",
                         "translation": "Ô Allah, Connaisseur de l'invisible et du visible, Créateur des cieux et de la terre, Seigneur et Maître de toute chose. J'atteste qu'il n'y a de divinité digne d'adoration que Toi. Je cherche protection auprès de Toi contre le mal de mon âme, contre le mal du Diable et de son polythéisme, et contre le fait de commettre un mal contre moi-même ou d'en causer un à un musulman.",
                         "count": 1,
-                        "source": "الترمذي وأبو داود"
+                        "source": "Hisn al-Muslim 85 · الترمذي وأبو داود",
+                        "sourceUrl": "https://sunnah.com/hisn:85",
+                        "hisnReference": 85,
+                        "period": "both"
                     },
                     {
                         "id": 103,
-                        "arabic": "«بِسْمِ اللهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ» (ثَلَاثَ مَرَّاتٍ).",
+                        "arabic": "بِسْمِ اللهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
                         "phonetic": "Bismi-Llāhi alladhī lā yaḍurru ma'a ismihi shay'un fīl-arḍi wa lā fīs-samā'i wa Huwa as-Samī'u al-'Alīm.",
-                        "translation": "Au nom d'Allah, tel qu'en compagnie de Son Nom rien ne peut nuire sur terre ni dans le ciel, et Il est l'Audient, l'Omniscient (3 fois).",
-                        "count": 1,
-                        "source": "أبو داود والترمذي"
+                        "translation": "Au nom d'Allah, tel qu'en compagnie de Son Nom rien ne peut nuire sur terre ni dans le ciel, et Il est l'Audient, l'Omniscient.",
+                        "count": 3,
+                        "source": "Hisn al-Muslim 86 · أبو داود والترمذي",
+                        "sourceUrl": "https://sunnah.com/hisn:86",
+                        "hisnReference": 86,
+                        "period": "both"
                     },
                     {
                         "id": 104,
-                        "arabic": "«رَضِيتُ بِاللهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا» (ثَلَاثَ مَرَّاتٍ).",
+                        "arabic": "رَضِيتُ بِاللهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا",
                         "phonetic": "Raḍītu bi-Llāhi Rabban wa bil-Islāmi dīnan wa bi-Muḥammadin ﷺ nabiyyan.",
-                        "translation": "J'agrée Allah comme Seigneur, l'Islam comme religion et Muhammad ﷺ comme Prophète (3 fois).",
-                        "count": 1,
-                        "source": "أحمد والترمذي"
+                        "translation": "J'agrée Allah comme Seigneur, l'Islam comme religion et Muhammad ﷺ comme Prophète.",
+                        "count": 3,
+                        "source": "Hisn al-Muslim 87 · أحمد والترمذي",
+                        "sourceUrl": "https://sunnah.com/hisn:87",
+                        "hisnReference": 87,
+                        "period": "both"
                     },
                     {
                         "id": 105,
-                        "arabic": "«يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ».",
+                        "arabic": "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ",
                         "phonetic": "Yā Ḥayyu yā Qayyūmu bi-raḥmatika astaghīthu aṣliḥ lī sha'nī kullahu wa lā takilnī ilā nafsī ṭarfata 'ayn.",
                         "translation": "Ô Vivant, ô Celui qui subsiste par Lui-même, par Ta miséricorde j'appelle au secours. Améliore ma situation dans sa totalité et ne me confie pas à moi-même, ne serait-ce que le temps d'un clin d'œil.",
                         "count": 1,
-                        "source": "الحاكم وصححه الذهبي"
+                        "source": "Hisn al-Muslim 88 · الحاكم وصححه الذهبي",
+                        "sourceUrl": "https://sunnah.com/hisn:88",
+                        "hisnReference": 88,
+                        "period": "both"
                     },
                     {
                         "id": 106,
-                        "arabic": "«أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ: فَتْحَهُ، وَنَصْرَهُ، وَنُورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ».",
+                        "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ للهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ: فَتْحَهُ، وَنَصْرَهُ، وَنُورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ",
                         "phonetic": "Aṣbaḥnā wa aṣbaḥa al-mulku lillāhi Rabbi al-'ālamīn. Allāhumma innī as'aluka khayra hādhā al-yawm: fatḥahu, wa naṣrahu, wa nūrahu, wa barakatahu, wa hudāhu, wa a'ūdhu bika min sharri mā fīhi wa sharri mā ba'dahu.",
                         "translation": "Nous sommes au matin et la royauté appartient à Allah, Seigneur des mondes. Ô Allah, je Te demande le bien de ce jour : son succès, son secours, sa lumière, sa bénédiction et sa guidée. Et je cherche protection auprès de Toi contre le mal qu'il contient et le mal qui suit.",
                         "count": 1,
-                        "source": "أبو داود"
+                        "source": "Hisn al-Muslim 89 · أبو داود",
+                        "sourceUrl": "https://sunnah.com/hisn:89",
+                        "hisnReference": 89,
+                        "period": "both"
                     },
                     {
                         "id": 107,
-                        "arabic": "«أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ».",
+                        "arabic": "أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ",
                         "phonetic": "Aṣbaḥnā 'alā fiṭrati al-islāmi wa 'alā kalimati al-ikhlāṣ, wa 'alā dīni nabiyyinā Muḥammadin ﷺ wa 'alā millati abīnā Ibrāhīma, ḥanīfan musliman wa mā kāna mina al-mushrikīn.",
                         "translation": "Nous voici au matin sur la saine nature de l'Islam, sur la parole de la sincérité, sur la religion de notre Prophète Muhammad ﷺ et sur la religion de notre père Ibrahim, qui était un pur monothéiste musulman et n'était point du nombre des polythéistes.",
                         "count": 1,
-                        "source": "أحمد"
+                        "source": "Hisn al-Muslim 90 · أحمد",
+                        "sourceUrl": "https://sunnah.com/hisn:90",
+                        "hisnReference": 90,
+                        "period": "both"
+                    },
+                    {
+                        "id": 10091,
+                        "hisnReference": 91,
+                        "title": "Glorifier Allah",
+                        "count": 100,
+                        "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+                        "translation": "Gloire à Allah et louange à Lui.",
+                        "phonetic": "Subḥāna Allāhi wa bi-ḥamdih.",
+                        "source": "Hisn al-Muslim 91 · Muslim 2692",
+                        "sourceUrl": "https://sunnah.com/hisn:91",
+                        "period": "both"
+                    },
+                    {
+                        "id": 10092,
+                        "hisnReference": 92,
+                        "title": "Proclamer Son unicité",
+                        "count": 10,
+                        "arabic": "لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+                        "translation": "Nulle divinité n'est digne d'adoration sauf Allah, seul, sans associé. À Lui la royauté et la louange. Il est capable de toute chose.",
+                        "phonetic": "Lā ilāha illā Allāhu waḥdahu lā sharīka lah, lahu al-mulku wa lahu al-ḥamdu wa Huwa 'alā kulli shay'in qadīr.",
+                        "source": "Hisn al-Muslim 92 · An-Nasa'i, 'Amal al-yawm wa al-layla 24",
+                        "sourceUrl": "https://sunnah.com/hisn:92",
+                        "period": "both",
+                        "note": "10 fois ; le recueil mentionne aussi une variante à 1 répétition."
+                    },
+                    {
+                        "id": 10093,
+                        "hisnReference": 93,
+                        "title": "Proclamer Son unicité — cent fois",
+                        "count": 100,
+                        "arabic": "لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+                        "translation": "Nulle divinité n'est digne d'adoration sauf Allah, seul, sans associé. À Lui la royauté et la louange. Il est capable de toute chose.",
+                        "phonetic": "Lā ilāha illā Allāhu waḥdahu lā sharīka lah, lahu al-mulku wa lahu al-ḥamdu wa Huwa 'alā kulli shay'in qadīr.",
+                        "source": "Hisn al-Muslim 93 · Al-Bukhari 3293 ; Muslim 2691",
+                        "sourceUrl": "https://sunnah.com/hisn:93",
+                        "period": "morning"
+                    },
+                    {
+                        "id": 10094,
+                        "hisnReference": 94,
+                        "title": "Une louange immense",
+                        "count": 3,
+                        "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ",
+                        "translation": "Gloire à Allah et louange à Lui, autant que Ses créatures, à la mesure de Sa satisfaction, du poids de Son Trône et de l'encre de Ses paroles.",
+                        "phonetic": "Subḥāna Allāhi wa bi-ḥamdihi 'adada khalqihi, wa riḍā nafsihi, wa zinata 'arshihi, wa midāda kalimātih.",
+                        "source": "Hisn al-Muslim 94 · Muslim 2726",
+                        "sourceUrl": "https://sunnah.com/hisn:94",
+                        "period": "morning"
+                    },
+                    {
+                        "id": 10095,
+                        "hisnReference": 95,
+                        "title": "Un savoir utile et des œuvres acceptées",
+                        "count": 1,
+                        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا",
+                        "translation": "Ô Allah, je Te demande un savoir utile, une subsistance bonne et une œuvre acceptée.",
+                        "phonetic": "Allāhumma innī as'aluka 'ilman nāfi'an, wa rizqan ṭayyiban, wa 'amalan mutaqabbalan.",
+                        "source": "Hisn al-Muslim 95 · Ibn Majah 925",
+                        "sourceUrl": "https://sunnah.com/hisn:95",
+                        "period": "morning",
+                        "note": "À dire le matin après la prière du Fajr."
+                    },
+                    {
+                        "id": 10096,
+                        "hisnReference": 96,
+                        "title": "Demander pardon dans la journée",
+                        "count": 100,
+                        "arabic": "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ",
+                        "translation": "Je demande pardon à Allah et je reviens à Lui repentant.",
+                        "phonetic": "Astaghfiru Allāha wa atūbu ilayh.",
+                        "source": "Hisn al-Muslim 96 · Muslim 2702",
+                        "sourceUrl": "https://sunnah.com/hisn:96",
+                        "period": "both",
+                        "note": "100 fois au total dans la journée. Le compteur est commun aux parcours Matin et Soir.",
+                        "daily": true
                     },
                     {
                         "id": 108,
-                        "arabic": "«أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ» (ثَلَاثَ مَرَّاتٍ إِذَا أَمْسَى).",
+                        "arabic": "أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
                         "phonetic": "A'ūdhu bi-kalimāti Llāhi at-tāmmāti min sharri mā khalaq.",
-                        "translation": "Je cherche protection auprès des paroles parfaites d'Allah contre le mal de ce qu'Il a créé (3 fois le soir).",
-                        "count": 1,
-                        "source": "مسلم 4/ 2080"
+                        "translation": "Je cherche protection auprès des paroles parfaites d'Allah contre le mal de ce qu'Il a créé.",
+                        "count": 3,
+                        "source": "Hisn al-Muslim 97 · مسلم 4/ 2080",
+                        "sourceUrl": "https://sunnah.com/hisn:97",
+                        "hisnReference": 97,
+                        "period": "evening"
                     },
                     {
                         "id": 109,
-                        "arabic": "«اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ» (عَشْرَ مَرَّاتٍ).",
+                        "arabic": "اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ",
                         "phonetic": "Allāhumma ṣalli wa sallim 'alā nabiyyinā Muḥammad.",
-                        "translation": "Ô Allah, prie sur notre Prophète Muhammad et accorde-lui Ton salut (10 fois).",
-                        "count": 1,
-                        "source": "الطبراني، صحيح الترغيب والترهيب 1/ 273"
+                        "translation": "Ô Allah, prie sur notre Prophète Muhammad et accorde-lui Ton salut.",
+                        "count": 10,
+                        "source": "Hisn al-Muslim 98 · الطبراني، صحيح الترغيب والترهيب 1/ 273",
+                        "sourceUrl": "https://sunnah.com/hisn:98",
+                        "hisnReference": 98,
+                        "period": "both"
                     }
                 ]
             },

@@ -1,3 +1,4 @@
+import { ReadingBookmarkControl } from './ReadingBookmarkControl';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
     ChevronLeft,
@@ -195,6 +196,7 @@ export function TajweedImagePage() {
                 </div>
 
                 <div className="tajweed-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <ReadingBookmarkControl view="tajweed" page={page}/>
                     <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
                         <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
                         <select

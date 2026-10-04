@@ -74,7 +74,7 @@ function playHisnMP3(duaId: number, options?: { rate?: number; onEnd?: () => voi
  * Utilisé pour le système de téléchargement Offline-First.
  */
 export function getAdhkarAudioUrl(categoryId: string, duaId: number): string | null {
-    if (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_')) {
+    if (categoryId !== 'hisn_chap_27' && categoryId !== 'chap_27' && (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_'))) {
         return `${import.meta.env.BASE_URL}audio/hisn/dua_${duaId}.mp3`;
     }
     return null; // Les autres (comme Rabanna) nécessitent un appel asynchrone à l'API Quran.com
@@ -201,7 +201,7 @@ export async function playAdhkarAudio(
     }
 
     // 2. Hisnul Muslim — play pre-generated MP3
-    if (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_')) {
+    if (categoryId !== 'hisn_chap_27' && categoryId !== 'chap_27' && (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_'))) {
         const played = await playHisnMP3(_duaId, options);
         if (played) return;
         // If MP3 not found, fall through to TTS

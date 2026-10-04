@@ -1,4 +1,6 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useDailyAdhkarStore, localAdhkarDay } from '../stores/dailyAdhkarStore';
+import { dailyAdhkar } from '../data/dailyAdhkar';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, BookOpen, ChevronRight, Heart, Play, Pause, Square, Repeat, Minus, Plus, Mic, Volume2, Loader2, Search, X, Gauge, Share2 } from 'lucide-react';
@@ -16,6 +18,10 @@ interface Dhikr {
     transliteration?: string;
     count: number;
     source?: string;
+    title?: string;
+    sourceUrl?: string;
+    note?: string;
+    daily?: boolean;
 }
 
 interface AdhkarCategory {
@@ -28,6 +34,13 @@ interface AdhkarCategory {
 }
 
 const ADHKAR_DATA: AdhkarCategory[] = [
+    ...(['morning', 'evening'] as const).map(period => ({
+        id: period, name: period === 'morning' ? 'Invocations du matin' : 'Invocations du soir',
+        nameAr: period === 'morning' ? 'أذكار الصباح' : 'أذكار المساء',
+        icon: <span aria-hidden="true">{period === 'morning' ? '🌅' : '🌙'}</span>,
+        color: period === 'morning' ? '#D4A548' : '#9299EF',
+        adhkar: dailyAdhkar(period).map(d => ({...d,transliteration:d.phonetic})),
+    })),
     {
         id: 'rabanna',
         name: 'Invocations Rabbanā',
@@ -277,7 +290,7 @@ export function AdhkarPage() {
     const { t } = useTranslation();
     const { toggleFavoriteDua, isFavoriteDua } = useFavoritesStore();
 
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const handleShare = async (dhikr: Dhikr, categoryName: string) => {
         if (navigator.share) {
@@ -341,7 +354,7 @@ export function AdhkarPage() {
             transliteration: d.phonetic,
             translation: d.translation,
             count: d.count,
-            source: d.source
+            source: d.source, title:d.title, sourceUrl:d.sourceUrl, note:d.note, daily:d.daily
         })),
     });
 
@@ -381,16 +394,19 @@ export function AdhkarPage() {
 
     const [currentDhikrIndex, setCurrentDhikrIndex] = useState(() => {
         const savedIndex = localStorage.getItem('adhkar_dhikr_index');
-        return savedIndex ? parseInt(savedIndex, 10) : 0;
+        const index = Number(savedIndex);
+        return !searchParams.has('cat') && Number.isInteger(index) && index >= 0 && index < (selectedCategory?.adhkar.length || 0) ? index : 0;
     });
 
+    const dailyProgress = useDailyAdhkarStore();
+    const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [repetitions, setRepetitions] = useState<Record<string, number>>({});
 
     // Default to list view when a category is selected, unless a specific dhikr was active
     const [showList, setShowList] = useState(() => {
         const savedView = localStorage.getItem('adhkar_view_state');
         // If we have a category but no specific view saved, default to list
-        return savedView === 'list' || !savedView;
+        return searchParams.has('cat') || savedView === 'list' || !savedView;
     });
 
     // Persist state changes
@@ -411,9 +427,9 @@ export function AdhkarPage() {
     }, [showList]);
 
     const handleCategoryClick = (category: AdhkarCategory) => {
+        setSearchParams({cat:category.id}, {replace:true});
         setSelectedCategory(category);
         setCurrentDhikrIndex(0);
-        setRepetitions({});
         stopAudioLoop();
         setShowList(true); // Always start with List View
         setViewLevel('category');
@@ -433,6 +449,7 @@ export function AdhkarPage() {
             } else {
                 // If in List, go back to previous level
                 stopAudioLoop();
+                setSearchParams(selectedMega ? {mega:selectedMega.id} : {}, {replace:true});
                 setSelectedCategory(null);
                 setShowList(true);
                 setCurrentDhikrIndex(0);
@@ -444,6 +461,7 @@ export function AdhkarPage() {
                 }
             }
         } else if (viewLevel === 'chapters') {
+            setSearchParams({}, {replace:true});
             setSelectedMega(null);
             setViewLevel('mega');
         } else {
@@ -464,34 +482,27 @@ export function AdhkarPage() {
         setPlaybackSpeed(speeds[nextIndex] || 1.0);
     };
 
-    const incrementCount = useCallback((dhikrId: number, maxCount: number) => {
-        const key = `${selectedCategory?.id}-${dhikrId}`;
-        const current = repetitions[key] || 0;
-
-        if (current < maxCount) {
-            setRepetitions(prev => ({ ...prev, [key]: (prev[key] || 0) + 1 }));
-
-            // Auto-advance to next dhikr when complete
-            if (current + 1 >= maxCount && selectedCategory) {
-                setTimeout(() => {
-                    if (currentDhikrIndex < selectedCategory.adhkar.length - 1) {
-                        setCurrentDhikrIndex(prev => prev + 1);
-                    }
-                }, 500);
-            }
-        }
-    }, [selectedCategory, repetitions, currentDhikrIndex]);
-
-    const getProgress = (dhikrId: number, maxCount: number) => {
-        const key = `${selectedCategory?.id}-${dhikrId}`;
-        const current = repetitions[key] || 0;
-        return (current / maxCount) * 100;
-    };
-
+    const dailyCategory = selectedCategory?.id === 'morning' || selectedCategory?.id === 'evening' || selectedCategory?.id === 'hisn_chap_27';
+    const countKey = (dhikrId: number) => selectedCategory?.adhkar.find(d => d.id === dhikrId)?.daily
+        ? `daily-${dhikrId}` : `${selectedCategory?.id}-${dhikrId}`;
     const getCurrentCount = (dhikrId: number) => {
-        const key = `${selectedCategory?.id}-${dhikrId}`;
-        return repetitions[key] || 0;
+        const key = countKey(dhikrId);
+        return dailyCategory ? (dailyProgress.day === localAdhkarDay() ? dailyProgress.counts[key] || 0 : 0) : repetitions[key] || 0;
     };
+    const incrementCount = (dhikrId: number, maxCount: number) => {
+        const key = countKey(dhikrId);
+        const state = useDailyAdhkarStore.getState();
+        const current = dailyCategory ? (state.day === localAdhkarDay() ? state.counts[key] || 0 : 0) : repetitions[key] || 0;
+        if (current >= maxCount) return;
+        if (dailyCategory) state.increment(key, maxCount);
+        else setRepetitions(prev => ({...prev,[key]:Math.min(maxCount,(prev[key] || 0) + 1)}));
+        if (current + 1 >= maxCount && selectedCategory && currentDhikrIndex < selectedCategory.adhkar.length - 1) {
+            if (advanceTimer.current) clearTimeout(advanceTimer.current);
+            advanceTimer.current = setTimeout(() => setCurrentDhikrIndex(currentDhikrIndex + 1), 500);
+        }
+    };
+    const getProgress = (dhikrId: number, maxCount: number) => getCurrentCount(dhikrId) / maxCount * 100;
+    useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, [selectedCategory?.id, currentDhikrIndex, showList]);
 
     const playDhikrOnce = useCallback(async (text: string, dhikrId: number, categoryId: string, source?: string) => {
         setIsAudioLoading(true);
@@ -521,7 +532,7 @@ export function AdhkarPage() {
                 onLoop: (i) => setCurrentLoop(i),
                 onEnd: () => {
                     // Auto-increment counter when loop finishes
-                    incrementCount(dhikr.id, dhikr.count);
+                    if (!['morning','evening','hisn_chap_27'].includes(selectedCategory.id)) incrementCount(dhikr.id, dhikr.count);
                 }
             });
         } catch (e) {
@@ -551,7 +562,8 @@ export function AdhkarPage() {
     // Stop audio when dhikr changes
     useEffect(() => {
         stopAudioLoop();
-    }, [currentDhikrIndex, stopAudioLoop]);
+        return () => { void stopAudioLoop(); };
+    }, [selectedCategory?.id, currentDhikrIndex, stopAudioLoop]);
 
     // ═══════════════════════════════════════
     // VIEW: Mega Categories (home)
@@ -618,6 +630,11 @@ export function AdhkarPage() {
                     </div>
                 ) : (
                     <>
+                        <div className="adhkar-daily-shortcuts">
+                            {ADHKAR_DATA.slice(0,2).map(category => <button key={category.id} onClick={() => handleCategoryClick(category)}>
+                                <span>{category.icon}</span><strong>{category.name}</strong><small>{category.adhkar.length} invocations</small>
+                            </button>)}
+                        </div>
                         {/* Mega categories grid (Hisnul Muslim) */}
                         <div className="adhkar-mega-grid">
                             {HISNUL_MUSLIM_DATA.map(mega => (
@@ -632,7 +649,7 @@ export function AdhkarPage() {
                         {/* Original categories (including Rabbanā — untouched) */}
                         <div className="adhkar-section-label">{t('adhkar.collections', 'Collections')}</div>
                         <div className="adhkar-categories">
-                            {ADHKAR_DATA.map((category) => (
+                            {ADHKAR_DATA.slice(2).map((category) => (
                                 <button
                                     key={category.id}
                                     className={`adhkar-category-card ${category.id === 'rabanna' ? 'rabbana-card' : ''}`}
@@ -724,6 +741,11 @@ export function AdhkarPage() {
                 </div>
             </div>
 
+            {['morning','evening','hisn_chap_27'].includes(selectedCategory.id) && <div className="adhkar-daily-nav">
+                <button className={selectedCategory.id === 'morning' ? 'active' : ''} onClick={() => handleCategoryClick(ADHKAR_DATA[0])}>🌅 Matin</button>
+                <button className={selectedCategory.id === 'evening' ? 'active' : ''} onClick={() => handleCategoryClick(ADHKAR_DATA[1])}>🌙 Soir</button>
+                <p>Textes du chapitre Matin et Soir de la Citadelle du musulman. Traduction du sens en français. Audio : lecture synthétique.</p>
+            </div>}
             {showList ? (
                 <div className="adhkar-list-view">
                     {selectedCategory.adhkar.map((dhikr, index) => (
@@ -773,6 +795,10 @@ export function AdhkarPage() {
                                 </button>
                                 {dhikr.source && <span className="item-source">{dhikr.source}</span>}
                             </div>
+                            {dhikr.title && <h2 className="adhkar-dua-title">{dhikr.title}</h2>}
+                            <span className="adhkar-repeat-label">{dhikr.count} fois{dhikr.daily ? ' dans la journée' : ''}</span>
+                            {dhikr.note && <p className="adhkar-dua-note">{dhikr.note}</p>}
+                            {dhikr.sourceUrl && <a className="adhkar-source-link" href={dhikr.sourceUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>Consulter la référence ↗</a>}
                             <p className="item-arabic">{formatDivineNames(dhikr.arabic)}</p>
                             {dhikr.transliteration && (
                                 <p className="item-phonetic" style={{ fontStyle: 'italic', opacity: 0.8, marginBottom: '6px' }}>
@@ -788,6 +814,9 @@ export function AdhkarPage() {
                     {/* Dhikr Card */}
                     <div className="dhikr-container">
                         <div className="dhikr-card">
+                            {currentDhikr.title && <h2 className="adhkar-dua-title">{currentDhikr.title}</h2>}
+                            {currentDhikr.note && <p className="adhkar-dua-note">{currentDhikr.note}</p>}
+                            {currentDhikr.sourceUrl && <a className="adhkar-source-link" href={currentDhikr.sourceUrl} target="_blank" rel="noopener noreferrer">Consulter la référence ↗</a>}
                             <div className="dhikr-arabic">
                                 {formatDivineNames(currentDhikr.arabic)}
                             </div>
@@ -862,7 +891,7 @@ export function AdhkarPage() {
                                 </span>
                                 <button
                                     className="dhikr-audio-player__loop-btn"
-                                    onClick={() => setAudioLoopCount(Math.min(20, audioLoopCount + 1))}
+                                    onClick={() => setAudioLoopCount(Math.min(100, audioLoopCount + 1))}
                                 >
                                     <Plus size={14} />
                                 </button>
