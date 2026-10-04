@@ -1,3 +1,4 @@
+import { getJuzForPage } from '../../data/juzData';
 import { VerseActionBar } from './VerseActionBar';
 import { useVersePress, type VerseSelection } from './hooks/useVersePress';
 import { ReadingBookmarkControl } from './ReadingBookmarkControl';
@@ -42,7 +43,7 @@ import { MushafToolbar } from './MushafToolbar';
 import { MushafSearchOverlay } from './MushafSearchOverlay';
 import { MushafShareModal } from './MushafShareModal';
 
-import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, getJuzNumber, SURAH_NAMES_FR } from './mushafConstants';
+import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, SURAH_NAMES_FR } from './mushafConstants';
 import type { MaskMode } from './mushafConstants';
 import { FahmPanel } from '../Fahm/FahmPanel';
 import './MushafPage.css';
@@ -156,7 +157,7 @@ export function MushafPage() {
         prevPage: () => goToPage(currentPage - 1),
     });
 
-    const juzNumber = useMemo(() => currentSurahAyahs.length > 0 ? getJuzNumber(currentSurahAyahs) : 1, [currentSurahAyahs]);
+    const juzNumber = getJuzForPage(currentPage)?.number ?? 1;
 
     const currentSurahRef = useRef(currentSurah);
     useEffect(() => { currentSurahRef.current = currentSurah; }, [currentSurah]);
@@ -260,7 +261,8 @@ export function MushafPage() {
         const tryScroll = () => {
             const el = document.querySelector(`[data-page="${page}"]`);
             if (el) {
-                el.scrollIntoView({ behavior: 'auto', block: 'start' });
+                const container = el.closest('.mih-mushaf');
+                if (container) container.scrollTo({top:container.scrollTop + el.getBoundingClientRect().top - container.getBoundingClientRect().top,behavior:'auto'});
             } else if (attempts < 30) {
                 attempts++;
                 setTimeout(tryScroll, 100);
@@ -367,7 +369,8 @@ export function MushafPage() {
             // Clear only the observer-blocking flag after a shorter delay
             // to ensure automatic scrolling has fully stabilized without blocking progress.
             setTimeout(() => {
-                isSilentJumpRef.current = false;
+                // Keep the selected page stable until the user scrolls, rather than
+                // letting an adjacent partially visible verse replace the destination.
                 sessionStorage.removeItem('isSilentJump');
             }, 800);
         }
@@ -571,6 +574,9 @@ export function MushafPage() {
             {/* ===== Mushaf Content ===== */}
             <div
                 className="mih-mushaf"
+                onWheelCapture={() => {isSilentJumpRef.current = false;}}
+                onTouchMoveCapture={() => {isSilentJumpRef.current = false;}}
+                onKeyDownCapture={e => {if (['PageUp','PageDown','Home','End','ArrowUp','ArrowDown'].includes(e.key)) isSilentJumpRef.current = false;}}
                 ref={navigation.containerRef}
                 onTouchStart={navigation.handleTouchStart}
                 onTouchMove={navigation.handleTouchMove}
