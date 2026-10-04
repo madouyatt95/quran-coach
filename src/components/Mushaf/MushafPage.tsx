@@ -24,7 +24,6 @@ import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useKhatmStore } from '../../stores/khatmStore';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
 import { formatDivineNames } from '../../lib/divineNames';
@@ -48,10 +47,9 @@ import type { MaskMode } from './mushafConstants';
 import { FahmPanel } from '../Fahm/FahmPanel';
 import './MushafPage.css';
 
-export function MushafPage() {
+export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElement | null) => void } = {}) {
     const livePassage = useLiveFollowStore(s => s.passage);
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const {
         currentPage, surahs, setSurahs,
         setCurrentPage, setCurrentAyah,
@@ -452,12 +450,7 @@ export function MushafPage() {
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
                 <div className="mih-header-left">
-                    {window.history.length > 2 && (
-                        <button onClick={() => navigate(-1)} className="mih-header__icon-btn" style={{ marginRight: '4px' }}>
-                            <ChevronLeft size={24} />
-                        </button>
-                    )}
-                    <button onClick={() => setShowSideMenu(true)} className="mih-header__icon-btn">
+                    <button aria-label="Menu" onClick={() => setShowSideMenu(true)} className="mih-header__icon-btn">
                         <Menu size={20} />
                     </button>
                     <div className="mih-header__info" onClick={() => setShowSearch(true)}>
@@ -497,7 +490,7 @@ export function MushafPage() {
                     <KhatmTracker />
                     <div className="view-mode-selector" style={{ marginLeft: '12px', display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
                         <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
-                        <select
+                        <select aria-label="Type de Mushaf"
                             value="mushaf"
                             onChange={(e) => {
                                 const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah';
@@ -521,6 +514,7 @@ export function MushafPage() {
                 </div>
 
                 <div className="mih-header-right">
+                    <div className="reader-voice-host" ref={onVoiceHost} />
                     <ReadingBookmarkControl view="mushaf" page={currentPage} ayahs={currentSurahAyahs}/>
                     <MushafToolbar
                         showToolbar={showToolbar}
@@ -548,7 +542,7 @@ export function MushafPage() {
 
                     />
                     <button
-                        className={`mih-toolbar__btn ${showToolbar ? 'active' : ''}`}
+                        aria-label="Réglages de lecture" className={`mih-toolbar__btn ${showToolbar ? 'active' : ''}`}
                         style={{ marginLeft: 4 }}
                         onClick={() => setShowToolbar(!showToolbar)}
                     >

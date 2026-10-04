@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Mic, Square } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Mic, Square, X } from 'lucide-react';
 import { tilawaService } from '../../lib/tilawa/service';
 import { tilawaPackStatus, downloadTilawaPack } from '../../lib/tilawa/assets';
 import { fetchSurah } from '../../lib/quranApi';
@@ -9,7 +10,8 @@ import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
 import { useLiveFollowStore } from '../../stores/liveFollowStore';
 import './LiveFollow.css';
 
-export function LiveFollowPanel() {
+export function LiveFollowPanel({ host }: { host?: HTMLElement | null }) {
+  const [showStatus, setShowStatus] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const active = useLiveFollowStore(s => s.active);
@@ -31,6 +33,7 @@ export function LiveFollowPanel() {
   }, [stop]);
   const start = useCallback(async () => {
     if (useLiveFollowStore.getState().active) return;
+    setShowStatus(true);
     const id = ++sequence.current;
     const current = () => id === sequence.current;
     const abort = new AbortController(); controller.current = abort;
@@ -99,8 +102,18 @@ export function LiveFollowPanel() {
     }, 0);
     return () => clearTimeout(timer);
   }, [location.key, location.pathname, location.search, location.state, navigate, start]);
-  return <section className="live-follow-panel" aria-label="Suivi de récitation">
-    <button onClick={active ? () => {stop();setMessage('Suivi arrêté.');} : () => void start()} aria-label={active ? 'Arrêter le suivi en direct' : 'Suivre une récitation en direct'}>{active ? <Square size={18}/> : <Mic size={18}/>}<span>{active ? 'Arrêter' : 'Suivre la voix'}</span></button>
-    <span role="status">{message}{progress !== null && ` · ${Math.floor(progress)} %`}</span>
+  const control = <section className={`live-follow-panel ${active ? 'is-active' : ''} ${host ? '' : 'live-follow-panel--fallback'}`} aria-label="Suivi de récitation">
+    <button className="live-follow-toggle" title={active ? 'Arrêter le suivi' : 'Suivre la voix'} aria-pressed={active}
+      onClick={active ? () => {stop();setMessage('Suivi arrêté.');setShowStatus(false);} : () => void start()}
+      aria-label={active ? 'Arrêter le suivi en direct' : 'Suivre une récitation en direct'}>
+      {active ? <Square size={18}/> : <Mic size={19}/>}
+    </button>
+    {showStatus && <div className="live-follow-status">
+      <span className="live-follow-status__dot" aria-hidden="true"/>
+      <span role="status">{message}{progress !== null && ` · ${Math.floor(progress)} %`}</span>
+      {!active && <button aria-label="Masquer le message du suivi" onClick={()=>setShowStatus(false)}><X size={16}/></button>}
+    </div>}
   </section>;
+  // Keep the engine mounted while switching from an image reader to the text reader.
+  return host ? createPortal(control, host) : control;
 }

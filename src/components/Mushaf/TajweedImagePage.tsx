@@ -42,7 +42,7 @@ function getSurahForPage(page: number): { number: number; name: string } {
 
 const isMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) || new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(navigator.userAgent);
 
-export function TajweedImagePage() {
+export function TajweedImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElement | null) => void } = {}) {
     const { t } = useTranslation();
     const { currentPage, setCurrentPage, goToPage, goToSurah, goToAyah, surahs } = useQuranStore();
     const {
@@ -180,7 +180,7 @@ export function TajweedImagePage() {
             {/* ===== Header ===== */}
             <div className="tajweed-header">
                 <div className="tajweed-header__left">
-                    <button className="tajweed-header__icon-btn" onClick={() => setShowSideMenu(true)}>
+                    <button className="tajweed-header__icon-btn" aria-label="Menu" onClick={() => setShowSideMenu(true)}>
                         <Menu size={20} />
                     </button>
                     <div className="tajweed-header__info" onClick={() => setShowSearch(true)} style={{ cursor: 'pointer' }}>
@@ -193,13 +193,9 @@ export function TajweedImagePage() {
 
                 <div className="tajweed-header__center">
                     <KhatmTracker />
-                </div>
-
-                <div className="tajweed-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <ReadingBookmarkControl view="tajweed" page={page}/>
                     <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
                         <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
-                        <select
+                        <select aria-label="Type de Mushaf"
                             value="tajweed"
                             onChange={handleViewModeChange}
                             style={{
@@ -217,6 +213,12 @@ export function TajweedImagePage() {
                             <option value="madinah">Madinah (Vectoriel)</option>
                         </select>
                     </div>
+                </div>
+
+                <div className="tajweed-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div className="reader-voice-host" ref={onVoiceHost} />
+                    <ReadingBookmarkControl view="tajweed" page={page}/>
+
                 </div>
             </div>
 

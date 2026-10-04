@@ -49,7 +49,7 @@ function getSurahForPage(page: number): { number: number; name: string } {
 
 const isMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) || new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(navigator.userAgent);
 
-export function MadinahImagePage() {
+export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElement | null) => void } = {}) {
     const { t } = useTranslation();
     const { currentPage, setCurrentPage, goToPage, goToSurah, goToAyah, surahs } = useQuranStore();
     const {
@@ -214,7 +214,7 @@ export function MadinahImagePage() {
             {/* ===== Header ===== */}
             <div className="madinah-header">
                 <div className="madinah-header__left">
-                    <button className="madinah-header__icon-btn" onClick={() => setShowSideMenu(true)}>
+                    <button className="madinah-header__icon-btn" aria-label="Menu" onClick={() => setShowSideMenu(true)}>
                         <Menu size={20} />
                     </button>
                     <div className="madinah-header__info" onClick={() => setShowSearch(true)} style={{ cursor: 'pointer' }}>
@@ -227,13 +227,9 @@ export function MadinahImagePage() {
 
                 <div className="madinah-header__center">
                     <KhatmTracker />
-                </div>
-
-                <div className="madinah-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <ReadingBookmarkControl view="madinah" page={page} ayahs={pageAyahs}/>
                     <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
                         <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
-                        <select
+                        <select aria-label="Type de Mushaf"
                             value="madinah"
                             onChange={handleViewModeChange}
                             style={{
@@ -251,6 +247,12 @@ export function MadinahImagePage() {
                             <option value="madinah">Madinah (Vectoriel)</option>
                         </select>
                     </div>
+                </div>
+
+                <div className="madinah-header__right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div className="reader-voice-host" ref={onVoiceHost} />
+                    <ReadingBookmarkControl view="madinah" page={page} ayahs={pageAyahs}/>
+
                 </div>
             </div>
 

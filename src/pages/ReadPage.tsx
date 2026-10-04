@@ -11,12 +11,14 @@ import { parsePassage } from '../lib/learning';
 import { LiveFollowPanel } from '../components/Mushaf/LiveFollowPanel';
 import { useLiveFollowStore } from '../stores/liveFollowStore';
 import { MushafGestureNavigator } from '../components/Mushaf/MushafGestureNavigator';
+import '../components/Mushaf/ReaderHeader.css';
 import { Loader2 } from 'lucide-react';
 
 const TajweedImagePage = lazy(() => import('../components/Mushaf/TajweedImagePage').then(m => ({ default: m.TajweedImagePage })));
 const MadinahImagePage = lazy(() => import('../components/Mushaf/MadinahImagePage').then(m => ({ default: m.MadinahImagePage })));
 
 export function ReadPage() {
+    const [voiceHost, setVoiceHost] = useState<HTMLDivElement | null>(null);
     const [showSearch, setShowSearch] = useState(false);
     const [showVoiceSearch, setShowVoiceSearch] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
@@ -51,17 +53,17 @@ export function ReadPage() {
         <>
             {viewMode === 'tajweed' ? (
                 <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><Loader2 size={32} className="animate-spin" /></div>}>
-                    <TajweedImagePage />
+                    <TajweedImagePage onVoiceHost={setVoiceHost} />
                 </Suspense>
             ) : viewMode === 'madinah' ? (
                 <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><Loader2 size={32} className="animate-spin" /></div>}>
-                    <MadinahImagePage />
+                    <MadinahImagePage onVoiceHost={setVoiceHost} />
                 </Suspense>
             ) : (
-                <MushafPage />
+                <MushafPage onVoiceHost={setVoiceHost} />
             )}
 
-            {location.pathname === '/read' && <LiveFollowPanel />}
+            {location.pathname === '/read' && <LiveFollowPanel host={voiceHost} />}
             {location.pathname === '/read' && !liveActive && <MushafGestureNavigator key={viewMode}/>}
             <SideMenu isOpen={showMenu} onClose={() => setShowMenu(false)} />
 

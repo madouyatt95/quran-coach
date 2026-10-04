@@ -1,3 +1,5 @@
+import { createPortal } from 'react-dom';
+import { useDialogFocus } from '../hooks/useDialogFocus';
 import { useState, useEffect, useMemo } from 'react';
 import { useQuranStore } from '../stores/quranStore';
 import { RotateCcw, X } from 'lucide-react';
@@ -63,10 +65,12 @@ export function KhatmCelebration() {
         }));
     }, []);
 
+    const dialogRef = useDialogFocus(handleDismiss, currentPage === 604 && !dismissed);
+
     // Only show on page 604 and not dismissed
     if (currentPage !== 604 || dismissed) return null;
 
-    return (
+    return createPortal(
         <div className="khatm-overlay" onClick={handleDismiss}>
             {/* Confetti */}
             <div className="khatm-confetti">
@@ -87,7 +91,7 @@ export function KhatmCelebration() {
             </div>
 
             {/* Card */}
-            <div className="khatm-card" onClick={e => e.stopPropagation()}>
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Félicitations pour votre Khatm" tabIndex={-1} className="khatm-card" onClick={e => e.stopPropagation()}>
                 <div className="khatm-calligraphy">
                     ختم القرآن الكريم
                 </div>
@@ -118,6 +122,6 @@ export function KhatmCelebration() {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>, document.body
     );
 }

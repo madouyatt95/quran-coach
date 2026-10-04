@@ -40,3 +40,16 @@ it('paints words immediately and navigates loaded text without a network request
  await act(async()=>cb.onProgress?.({surah:2,ayah:255,wordIndex:2,words:['الله','لا']}));
  expect(useLiveFollowStore.getState().position).toBeNull();
 });
+
+it('keeps the listening session alive when the header host changes',async()=>{
+ const first=document.createElement('div'),second=document.createElement('div');document.body.append(first,second);
+ const render=(host:HTMLElement|null)=>root.render(<MemoryRouter initialEntries={['/read']}><LiveFollowPanel host={host}/></MemoryRouter>);
+ await act(async()=>render(first));
+ await act(async()=>first.querySelector('button')!.click());
+ expect(mocks.start).toHaveBeenCalledOnce();const stopped=mocks.stop.mock.calls.length;
+ await act(async()=>render(null));await act(async()=>render(second));
+ expect(mocks.stop).toHaveBeenCalledTimes(stopped);expect(useLiveFollowStore.getState().active).toBe(true);
+ expect(second.querySelector('button')?.getAttribute('aria-pressed')).toBe('true');
+ await act(async()=>second.querySelector('button')!.click());expect(useLiveFollowStore.getState().active).toBe(false);
+ first.remove();second.remove();
+});

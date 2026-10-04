@@ -3,21 +3,28 @@
     inset: 0;
     z-index: 960;
     background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    backdrop-filter: blur(8px);
+    overscroll-behavior: contain;
 }
 
 .coach-celebration {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    box-sizing: border-box;
     z-index: 961;
     background: #1a1a1f;
     border: 1px solid rgba(201, 168, 76, 0.2);
     border-radius: 24px;
     padding: 32px 24px 24px;
-    width: min(360px, calc(100vw - 40px));
+    width: min(380px, 100%);
     text-align: center;
-    max-height: 85vh;
+    max-height: 100%;
+    overscroll-behavior: contain;
+    box-shadow: 0 24px 80px #0005;
     overflow-y: auto;
 }
 
@@ -195,3 +202,5 @@
     background: rgba(0, 0, 0, 0.04);
     color: rgba(0, 0, 0, 0.4);
 }
+
+@media(prefers-reduced-motion:reduce){.confetti-particle,.coach-celebration__star{animation:none}.coach-celebration__confetti{display:none}}
