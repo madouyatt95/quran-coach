@@ -1,0 +1,6 @@
+.verse-action-bar{position:fixed;z-index:1500;width:320px;max-width:calc(100vw - 24px);background:var(--bg-secondary,#17202b);color:var(--text-primary,#eee);border:1px solid #c9a84c88;border-radius:16px;box-shadow:0 8px 32px #0007;direction:ltr;padding:8px}
+.verse-action-bar header{display:flex;align-items:center;justify-content:space-between;padding-left:8px;font:500 12px system-ui;color:var(--text-secondary,#aaa)}
+.verse-action-bar button{background:transparent;border:0;color:inherit;cursor:pointer;font:500 12px system-ui;min-height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px}
+.verse-action-bar header button{width:44px}.verse-action-bar__actions{display:flex}.verse-action-bar__actions button{flex:1;flex-direction:column;padding:9px 4px}.verse-action-bar__actions .verse-action-bar__more{flex:0 0 36px}.verse-action-bar button:hover,.verse-action-bar button:focus-visible{background:#c9a84c22;outline:2px solid #c9a84c}.verse-action-bar__saved{display:block;text-align:center;font:12px system-ui;padding:8px;color:#b9dca6}
+.mih-ayah--selected{background:#c9a84c33!important;box-shadow:0 0 0 2px #c9a84c77;border-radius:5px}
+.mih-ayah,.madinah-box{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}

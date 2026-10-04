@@ -1,3 +1,5 @@
+import { VerseActionBar } from './VerseActionBar';
+import { useVersePress, type VerseSelection } from './hooks/useVersePress';
 import { ReadingBookmarkControl } from './ReadingBookmarkControl';
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import DOMPurify from 'dompurify';
@@ -120,8 +122,10 @@ export function MushafPage() {
     // Share
     const [shareAyah, setShareAyah] = useState<Ayah | null>(null);
     const [fahmAyah, setFahmAyah] = useState<{ surah: number; ayah: number; text: string; translation?: string; surahName?: string } | null>(null);
-    const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const longPressTriggered = useRef(false);
+    const [verseSelection,setVerseSelection] = useState<VerseSelection|null>(null);
+    const closeVerseActions = useCallback(()=>setVerseSelection(null),[]);
+    const versePress = useVersePress(setVerseSelection,currentSurah);
+    useEffect(closeVerseActions,[currentSurah,jumpSignal,closeVerseActions]);
 
     // Masking
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
@@ -266,6 +270,7 @@ export function MushafPage() {
     }, []);
 
     useEffect(() => {
+        let cancelled = false;
         setIsLoading(true);
         setError(null);
         setRenderedCount(20); // Reset progressive render
@@ -275,6 +280,7 @@ export function MushafPage() {
             showTranslation ? fetchSurahTranslation(currentSurah) : Promise.resolve(new Map<number, string>()),
             showTransliteration ? fetchSurahTransliteration(currentSurah) : Promise.resolve(new Map<number, string>())
         ]).then(async ([surahData, translations, transliterations]) => {
+            if (cancelled) return;
             const { ayahs } = surahData;
             setSurahAyahs(ayahs);
             audio.pageAyahsRef.current = ayahs;
@@ -285,11 +291,11 @@ export function MushafPage() {
             // Fetch word timings (limited to visible range or first 50 for start)
             const wordsMap = new Map<string, VerseWords>();
             const initialTimingAyahs = ayahs.slice(0, 50);
-            await Promise.all(initialTimingAyahs.map(async (a) => {
+            // Navigation must not wait for audio word timings.
+            void Promise.all(initialTimingAyahs.map(async (a) => {
                 const vw = await fetchWordTimings(a.surah, a.numberInSurah);
                 if (vw) wordsMap.set(`${a.surah}:${a.numberInSurah}`, vw);
-            }));
-            audio.setVerseWordsMap(wordsMap);
+            })).then(() => { if (!cancelled) audio.setVerseWordsMap(wordsMap); }).catch(() => {});
 
             if (maskMode === 'partial') generatePartialMask(ayahs);
 
@@ -321,9 +327,11 @@ export function MushafPage() {
             }
 
         }).catch(() => {
+            if (cancelled) return;
             setError(t('error.fetchSurah', 'Impossible de charger la sourate. Vérifiez votre connexion.'));
             setIsLoading(false);
         });
+        return () => { cancelled = true; };
     }, [currentSurah, showTranslation, showTransliteration]);
 
     // Dedicated Jump Handling Effect - react to signal even if surah stays the same
@@ -649,19 +657,15 @@ export function MushafPage() {
                                         return (
                                             <span
                                                 key={ayah.number}
-                                                className={`mih-ayah ${livePassage?.surah === ayah.surah && livePassage?.ayah === ayah.numberInSurah ? 'live-follow-current' : ''}${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''} ${hasContext ? 'mih-ayah--has-context' : ''}`}
+                                                className={`mih-ayah ${verseSelection?.ayah.number === ayah.number ? 'mih-ayah--selected' : ''} ${livePassage?.surah === ayah.surah && livePassage?.ayah === ayah.numberInSurah ? 'live-follow-current' : ''}${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''} ${hasContext ? 'mih-ayah--has-context' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
                                                 data-page={ayah.page}
                                                 style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
-                                                onClick={() => {
-                                                    if (!longPressTriggered.current) {
-                                                        audio.playAyahAtIndex(ayahIndex);
-                                                    }
-                                                }}
-                                                onTouchStart={() => { longPressTriggered.current = false; longPressTimerRef.current = setTimeout(() => { longPressTriggered.current = true; setShareAyah(ayah); }, 600); }}
-                                                onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
-                                                onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
+                                                {...versePress(ayah)}
+                                                tabIndex={0}
+                                                aria-label={`Verset ${ayah.surah}:${ayah.numberInSurah}`}
+                                                onClick={() => audio.playAyahAtIndex(ayahIndex)}
                                             >
                                                 <button
                                                     className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
@@ -729,6 +733,10 @@ export function MushafPage() {
                     onClose={() => setShowSearch(false)}
                 />
             )}
+
+            {verseSelection && <VerseActionBar key={verseSelection.ayah.number} selection={verseSelection} view="mushaf"
+                onClose={closeVerseActions} onPlay={()=>audio.playAyahAtIndex(getAyahIndex(verseSelection.ayah))}
+                onMore={()=>setShareAyah(verseSelection.ayah)}/>}
 
             {/* Share Modal */}
             {shareAyah && (

@@ -10,6 +10,7 @@ import { fetchSurah } from '../lib/quranApi';
 import { parsePassage } from '../lib/learning';
 import { LiveFollowPanel } from '../components/Mushaf/LiveFollowPanel';
 import { useLiveFollowStore } from '../stores/liveFollowStore';
+import { MushafGestureNavigator } from '../components/Mushaf/MushafGestureNavigator';
 import { Loader2 } from 'lucide-react';
 
 const TajweedImagePage = lazy(() => import('../components/Mushaf/TajweedImagePage').then(m => ({ default: m.TajweedImagePage })));
@@ -61,6 +62,7 @@ export function ReadPage() {
             )}
 
             {location.pathname === '/read' && <LiveFollowPanel />}
+            {location.pathname === '/read' && !liveActive && <MushafGestureNavigator key={viewMode}/>}
             <SideMenu isOpen={showMenu} onClose={() => setShowMenu(false)} />
 
             <SearchModal

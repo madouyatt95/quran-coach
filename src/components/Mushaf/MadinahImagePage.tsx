@@ -1,3 +1,5 @@
+import { VerseActionBar } from './VerseActionBar';
+import { useVersePress, type VerseSelection } from './hooks/useVersePress';
 import { ReadingBookmarkControl } from './ReadingBookmarkControl';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
@@ -73,8 +75,10 @@ export function MadinahImagePage() {
     const { selectedReciter } = useSettingsStore();
     const navigate = useNavigate();
 
-    const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const longPressTriggered = useRef(false);
+    const [verseSelection,setVerseSelection] = useState<VerseSelection|null>(null);
+    const closeVerseActions = useCallback(()=>setVerseSelection(null),[]);
+    const versePress = useVersePress(selection=>{setSelectedVerse(`${selection.ayah.surah}:${selection.ayah.numberInSurah}`);setVerseSelection(selection);},page);
+    useEffect(()=>{setVerseSelection(null);setContextMenuState(null);setSelectedVerse(null);},[page]);
     const lastClickTime = useRef(0);
 
     const audio = useMushafAudio({
@@ -112,9 +116,12 @@ export function MadinahImagePage() {
             next.src = getPageImageUrl(page + 1);
         }
 
-        // Fetch interactive map and page ayahs
-        fetchMadinahBoxes(page).then(setBoxes);
-        fetchPage(page).then(setPageAyahs);
+        let cancelled = false;
+        setBoxes([]);setPageAyahs([]);
+        void Promise.all([fetchMadinahBoxes(page),fetchPage(page)]).then(([nextBoxes,nextAyahs])=>{
+            if(!cancelled){setBoxes(nextBoxes);setPageAyahs(nextAyahs);}
+        }).catch(()=>{ /* The image remains readable when verse data is unavailable. */ });
+        return ()=>{cancelled=true;};
     }, [page]);
 
     // Show swipe hint on first visit
@@ -318,35 +325,9 @@ export function MadinahImagePage() {
                                     backgroundColor: isSelected ? 'rgba(200, 168, 76, 0.3)' : 'transparent',
                                     transition: 'background-color 0.2s ease',
                                 }}
-                                onContextMenu={(e) => {
-                                    e.preventDefault();
-                                    const aIdx = pageAyahs.findIndex(a => a.surah === box.surah && a.numberInSurah === box.ayah);
-                                    if (aIdx !== -1) {
-                                        setContextMenuState({
-                                            ayah: pageAyahs[aIdx],
-                                            x: e.clientX,
-                                            y: e.clientY
-                                        });
-                                    }
-                                }}
-                                onTouchStart={(e) => {
-                                    longPressTriggered.current = false;
-                                    const touch = e.touches[0];
-                                    const x = touch.clientX;
-                                    const y = touch.clientY;
-                                    longPressTimerRef.current = setTimeout(() => {
-                                        longPressTriggered.current = true;
-                                        const aIdx = pageAyahs.findIndex(a => a.surah === box.surah && a.numberInSurah === box.ayah);
-                                        if (aIdx !== -1) {
-                                            setContextMenuState({
-                                                ayah: pageAyahs[aIdx],
-                                                x, y
-                                            });
-                                        }
-                                    }, 500);
-                                }}
-                                onTouchEnd={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
-                                onTouchMove={() => { if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current); }}
+                                {...(aIdx !== -1 ? versePress(pageAyahs[aIdx]) : {})}
+                                tabIndex={0}
+                                aria-label={`Verset ${box.surah}:${box.ayah}`}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -355,9 +336,6 @@ export function MadinahImagePage() {
                                     if (now - lastClickTime.current < 400) return; // Debounce ghost clicks on mobile
                                     lastClickTime.current = now;
 
-                                    if (longPressTriggered.current) {
-                                        return;
-                                    }
                                     setSelectedVerse(box.verseKey);
                                     // Find ayah index in pageAyahs to play it
                                     const aIdx = pageAyahs.findIndex(a => a.surah === box.surah && a.numberInSurah === box.ayah);
@@ -443,11 +421,14 @@ export function MadinahImagePage() {
                 />
             )}
 
+            {verseSelection && <VerseActionBar key={verseSelection.ayah.number} selection={verseSelection} view="madinah"
+                onClose={closeVerseActions} onPlay={()=>{const index=pageAyahs.findIndex(a=>a.number===verseSelection.ayah.number);if(index!==-1) audio.playAyahAtIndex(index);}}
+                onMore={()=>setContextMenuState(verseSelection)}/>}
             {contextMenuState && (
                 <MadinahContextMenu
                     ayah={contextMenuState.ayah}
                     position={{ x: contextMenuState.x, y: contextMenuState.y }}
-                    isPlaying={audio.currentPlayingAyah === contextMenuState.ayah.numberInSurah && audio.audioPlaying}
+                    isPlaying={audio.currentPlayingAyah === contextMenuState.ayah.number && audio.audioPlaying}
                     onClose={() => setContextMenuState(null)}
                     onPlay={() => {
                         const aIdx = pageAyahs.findIndex(a => a.number === contextMenuState.ayah.number);
