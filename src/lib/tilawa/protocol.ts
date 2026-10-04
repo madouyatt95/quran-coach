@@ -9,5 +9,6 @@ export interface EngineResult {
   events: WorkerOutbound[];
   verdicts: WordVerdict[];
   words?: string[];
+  cursorWords?: string[];
   error?: string;
 }

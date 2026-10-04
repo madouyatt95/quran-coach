@@ -14,6 +14,7 @@ import {
     Heart,
     BookOpen,
 } from 'lucide-react';
+import { LiveFollowWords } from './LiveFollowWords';
 import { useLiveFollowStore } from '../../stores/liveFollowStore';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -163,7 +164,7 @@ export function MushafPage() {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
+                    if (entry.isIntersecting && !useLiveFollowStore.getState().active) {
                         const target = entry.target as HTMLElement;
                         const pageNum = parseInt(target.getAttribute('data-page') || '1');
                         const ayahNum = parseInt(target.getAttribute('data-ayah') || '1');
@@ -667,7 +668,10 @@ export function MushafPage() {
                                                     <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
                                                 </button>
 
-                                                {wordElements}
+                                                <LiveFollowWords surah={ayah.surah} ayah={ayah.numberInSurah}
+                                                    words={vw ? vw.words.map(word => word.text) : rawWords}>
+                                                    {wordElements}
+                                                </LiveFollowWords>
 
                                                 <span className="mih-verse-num">
                                                     {toVerseGlyph(ayah.numberInSurah)}

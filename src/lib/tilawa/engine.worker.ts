@@ -11,6 +11,7 @@ import type { EngineCommand, EngineResult } from "./protocol";
 const worker = self as unknown as DedicatedWorkerGlobalScope;
 let session: ZipformerSession | null = null;
 let corpus: QuranCorpus | null = null;
+let correction = false;
 let queue: Promise<unknown> = Promise.resolve();
 ort.env.wasm.numThreads = 1;
 ort.env.wasm.initTimeout = 60000;
@@ -47,12 +48,16 @@ worker.onmessage = ({ data }: { data: EngineCommand & { id: number } }) => {
               corpus: raw,
               executionProviders: ["wasm"],
             });
+            // Run the first inference before capturing speech: WASM graph compilation
+            // must not build an audio backlog while the UI says it is listening.
+            await session.feed(new Float32Array(15360));
           } finally {
             URL.revokeObjectURL(runtime);
             URL.revokeObjectURL(wasm);
           }
         }
         session.reset();
+        correction = !!data.expected;
         session.setMode(data.expected ? "correction" : "tracking");
         session.setExpected(data.expected || null);
         if (data.expected && corpus) {
@@ -72,10 +77,16 @@ worker.onmessage = ({ data }: { data: EngineCommand & { id: number } }) => {
             ? await session.feed(data.samples)
             : await session.stop();
       }
+      const cursor = [...events].reverse().find(e => e.type === "word_progress");
+      const cursorWords = cursor?.type === "word_progress" && corpus
+        ? corpus.plain.slice(corpus.ayahFirstWord(cursor.surah, cursor.ayah),
+          corpus.ayahFirstWord(cursor.surah, cursor.ayah) + corpus.ayahWordCount(cursor.surah, cursor.ayah))
+        : undefined;
       const result: EngineResult = {
         id: data.id,
         events,
-        verdicts: session?.verdicts() || [],
+        verdicts: correction ? session?.verdicts() || [] : [],
+        cursorWords,
         words,
       };
       worker.postMessage(result);

@@ -72,11 +72,23 @@ describe('local recognition lifecycle',()=>{
  await feed([{type:'verse_candidate',candidates:[{surah:2,ayah:10,confidence:0.9,rank:1,source:'discovery'}],stable:false,final_flush:false}]);
  expect(search.onVerse).not.toHaveBeenCalled();
  await feed([{type:'verse_match',surah:2,ayah:10},{type:'word_progress',surah:2,ayah:10},{type:'word_progress',surah:2,ayah:11}] as EngineResult['events']);
- expect(search.onVerse.mock.calls.map(c=>c[0])).toEqual([{surah:2,ayah:10},{surah:2,ayah:11}]);
+ expect(search.onVerse.mock.calls.map(c=>c[0])).toEqual([{surah:2,ayah:11}]);
  expect(stopTrack).not.toHaveBeenCalled();expect(search.onEnd).not.toHaveBeenCalled();
  await service.stop();
  await feed([{type:'word_progress',surah:2,ayah:12}] as EngineResult['events']);
- expect(search.onVerse).toHaveBeenCalledTimes(2);
+ expect(search.onVerse).toHaveBeenCalledTimes(1);
  });
 
+});
+
+it('delivers each current word and never jumps back on a late verse confirmation',async()=>{
+ const tracking={onVerse:vi.fn(),onProgress:vi.fn(),onStatus:vi.fn(),onError:vi.fn(),onEnd:vi.fn()};
+ await service.startTracking(tracking);const worker=FakeWorker.all[0],capture=FakeCapture.all[0];
+ const feed=async(events:EngineResult['events'])=>{capture.port.onmessage!({data:new Float32Array(7680)});worker.reply(worker.commands.at(-1)!.id,{events,cursorWords:['قل','هو']});await drain();};
+ await feed([{type:'word_progress',surah:112,ayah:1,word_index:0}] as EngineResult['events']);
+ await feed([{type:'word_progress',surah:112,ayah:1,word_index:1}] as EngineResult['events']);
+ expect(tracking.onVerse).toHaveBeenCalledOnce();expect(tracking.onProgress.mock.calls.map(c=>c[0].wordIndex)).toEqual([0,1]);
+ await feed([{type:'word_progress',surah:112,ayah:2,word_index:0},{type:'verse_match',surah:112,ayah:1}] as EngineResult['events']);
+ await feed([{type:'verse_match',surah:112,ayah:1}] as EngineResult['events']);
+ expect(tracking.onVerse.mock.calls.map(c=>c[0].ayah)).toEqual([1,2]);
 });

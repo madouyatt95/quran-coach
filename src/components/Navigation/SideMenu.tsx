@@ -81,7 +81,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     }
 
     const SHORTCUTS: ShortcutItem[] = [
-        { path: '/explore', emoji: <Compass size={24}/>, label: 'Explorer', color: 'rgba(201,168,76,0.2)' },
+        { path: '/quiz', emoji: '🧠', label: 'Quiz', color: 'rgba(201,168,76,0.2)' },
         { path: '/test-memorization', emoji: <GraduationCap size={24}/>, label: 'Teste-moi', color: 'rgba(78,205,196,0.2)' },
         { path: "/learning", emoji: <GraduationCap size={24} />, label: "Ma séance du jour", color: "rgba(201,168,76,0.2)" },
         { path: "/voice-search", emoji: <Search size={24} />, label: "Recherche vocale", color: "rgba(78,205,196,0.2)" },

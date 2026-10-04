@@ -21,7 +21,7 @@ export function LiveFollowPanel() {
     ++sequence.current;
     controller.current?.abort();
     void tilawaService.stop();
-    useLiveFollowStore.setState({active:false,passage:null});
+    useLiveFollowStore.setState({active:false,passage:null,position:null});
     setProgress(null);
   }, []);
   useEffect(() => {
@@ -34,7 +34,7 @@ export function LiveFollowPanel() {
     const id = ++sequence.current;
     const current = () => id === sequence.current;
     const abort = new AbortController(); controller.current = abort;
-    useLiveFollowStore.setState({active:true,passage:null});
+    useLiveFollowStore.setState({active:true,passage:null,position:null});
     navigate('/read', {replace:true,state:null});
     const player = useAudioPlayerStore.getState();
     if (player.isPlaying) player.togglePlay();
@@ -42,6 +42,7 @@ export function LiveFollowPanel() {
     setMessage('Préparation de l’écoute…');
     let failed = false;
     let latest = 0;
+    const surahLoads = new Map<number, ReturnType<typeof fetchSurah>>();
     try {
       if (!(await tilawaPackStatus()).ready) {
         if (!current()) return;
@@ -54,13 +55,32 @@ export function LiveFollowPanel() {
           const update = ++latest;
           if (!current()) return;
           setMessage(`Sourate ${passage.surah} · verset ${passage.ayah}`);
-          void fetchSurah(passage.surah).then(data => {
+          // Paint first. Already displayed text must never wait on IndexedDB or the network.
+          useLiveFollowStore.setState({passage,position:null});
+          const quran = useQuranStore.getState();
+          const loaded = [...quran.currentSurahAyahs, ...quran.pageAyahs]
+            .find(a => a.surah === passage.surah && a.numberInSurah === passage.ayah);
+          if (loaded) {
+            quran.goToAyah(passage.surah, passage.ayah, loaded.page, {silent:true});
+            return;
+          }
+          let load = surahLoads.get(passage.surah);
+          if (!load) {
+            load = fetchSurah(passage.surah);
+            surahLoads.set(passage.surah, load);
+            void load.catch(() => surahLoads.delete(passage.surah));
+          }
+          void load.then(data => {
             if (!current() || update !== latest) return;
             const verse = data.ayahs.find(a => a.numberInSurah === passage.ayah);
             if (!verse) throw new Error('Verset indisponible');
-            useLiveFollowStore.setState({passage});
             useQuranStore.getState().goToAyah(passage.surah, passage.ayah, verse.page, {silent:true});
           }).catch(() => { if (current() && update === latest) setMessage(`Passage ${passage.surah}:${passage.ayah} reconnu. Connectez-vous pour charger son texte.`); });
+        },
+        onProgress: position => {
+          if (!current()) return;
+          useLiveFollowStore.setState({position});
+          setMessage(`Sourate ${position.surah} · verset ${position.ayah} · mot ${Math.min(position.wordIndex + 1, position.words.length)}/${position.words.length}`);
         },
         onStatus: m => { if (current()) setMessage(m); },
         onError: m => { if (current()) { failed = true; setMessage(m); } },

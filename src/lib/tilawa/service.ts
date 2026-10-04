@@ -11,6 +11,13 @@ export interface SearchCallbacks {
   onError: (message: string) => void;
   onEnd: () => void;
 }
+export interface TrackingPosition extends Passage {
+  wordIndex: number;
+  words: string[];
+}
+export interface TrackingCallbacks extends SearchCallbacks {
+  onProgress?: (position: TrackingPosition) => void;
+}
 export class TilawaService {
   private flushDone: (() => void) | null = null;
   private finishing = false;
@@ -344,16 +351,27 @@ export class TilawaService {
       callbacks.onEnd,
     );
   }
-  startTracking(callbacks: SearchCallbacks) {
+  startTracking(callbacks: TrackingCallbacks) {
     let previous = '';
+    let hasCursor = false;
+    let lastPosition = '';
     return this.begin(undefined, () => result => {
-      for (const event of result.events) {
-        // Candidate events are tentative; never turn a page on a candidate alone.
-        if (event.type !== 'verse_match' && event.type !== 'word_progress') continue;
-        const key = `${event.surah}:${event.ayah}`;
-        if (key === previous) continue;
+      // A verse_match can arrive after the cursor has moved on. Never move back
+      // to a completed verse, or repaint every intermediate word in one batch.
+      const cursor = [...result.events].reverse().find(e => e.type === 'word_progress');
+      if (cursor) hasCursor = true;
+      const event = cursor ?? (!hasCursor ? [...result.events].reverse().find(e => e.type === 'verse_match') : undefined);
+      if (!event || (event.type !== 'word_progress' && event.type !== 'verse_match')) return;
+      const key = `${event.surah}:${event.ayah}`;
+      if (key !== previous) {
         previous = key;
         callbacks.onVerse({surah:event.surah, ayah:event.ayah});
+      }
+      const positionKey = event.type === 'word_progress' ? `${key}:${event.word_index}` : '';
+      if (event.type === 'word_progress' && result.cursorWords?.length && positionKey !== lastPosition) {
+        lastPosition = positionKey;
+        callbacks.onProgress?.({surah:event.surah, ayah:event.ayah,
+          wordIndex:event.word_index, words:result.cursorWords});
       }
     }, callbacks.onError, callbacks.onEnd);
   }
