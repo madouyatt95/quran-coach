@@ -1,146 +1,149 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { tilawaService } from "../lib/tilawa/service";
-import { passageUrl, type Passage } from "../lib/learning";
-import { useQuranStore } from "../stores/quranStore";
-import "../components/Learning/Learning.css";
+import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Mic, Square } from 'lucide-react';
+import { tilawaService } from '../lib/tilawa/service';
+import { downloadTilawaPack, tilawaPackStatus } from '../lib/tilawa/assets';
+import { passageUrl, type Passage } from '../lib/learning';
+import { fetchSurah, fetchSurahTranslation } from '../lib/quranApi';
+import { useQuranStore } from '../stores/quranStore';
+import '../components/Learning/Learning.css';
+
+type Phase = 'idle' | 'preparing' | 'listening' | 'finishing' | 'result' | 'error';
 export function VoiceSearchPage() {
-  const [listening, setListening] = useState(false);
-  const [starting, setStarting] = useState(false);
-  const [message, setMessage] = useState("");
-  const [results, setResults] = useState<Passage[]>([]);
+  const [phase, setPhase] = useState<Phase>('idle');
+  const [message, setMessage] = useState('');
+  const [progress, setProgress] = useState<number | null>(null);
+  const [result, setResult] = useState<Passage | null>(null);
   const request = useRef(0);
-  const { surahs } = useQuranStore();
+  const active = useRef(false);
+  const download = useRef<AbortController | null>(null);
+  const surahs = useQuranStore(s => s.surahs);
+  const busy = phase === 'preparing' || phase === 'listening' || phase === 'finishing';
+
+  function cancel() {
+    request.current++;
+    active.current = false;
+    download.current?.abort();
+    void tilawaService.stop();
+    setProgress(null);
+    setPhase('idle');
+    setMessage('Écoute arrêtée.');
+  }
   useEffect(() => {
+    const sequence = request;
+    const running = active;
+    const controller = download;
     const suspend = () => {
-      if (document.hidden) {
-        request.current++;
-        void tilawaService.stop();
-        setListening(false);
-        setStarting(false);
-      }
-    };
-    document.addEventListener("visibilitychange", suspend);
-    return () => {
-      // This counter invalidates asynchronous callbacks; it is not a DOM ref.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      request.current++;
+      if (!document.hidden || !running.current) return;
+      sequence.current++;
+      running.current = false;
+      controller.current?.abort();
       void tilawaService.stop();
-      document.removeEventListener("visibilitychange", suspend);
+      setProgress(null);
+      setPhase('idle');
+      setMessage('Recherche interrompue. Appuyez sur Réciter pour reprendre.');
+    };
+    document.addEventListener('visibilitychange', suspend);
+    return () => {
+      sequence.current++;
+      running.current = false;
+      controller.current?.abort();
+      void tilawaService.stop();
+      document.removeEventListener('visibilitychange', suspend);
     };
   }, []);
+
   async function start() {
+    if (active.current) return;
+    active.current = true;
     const id = ++request.current;
-    setStarting(true);
-    setMessage("Préparation du moteur local…");
-    setResults([]);
-    const ok = await tilawaService.startSearch({
-      onVerse: (p) => {
-        if (id === request.current)
-          setResults((rows) =>
-            rows.some((r) => r.surah === p.surah && r.ayah === p.ayah)
-              ? rows
-              : [...rows, p],
-          );
-      },
-      onStatus: (m) => {
-        if (id === request.current) setMessage(m);
-      },
-      onError: (m) => {
-        if (id === request.current) setMessage(m);
-      },
-      onEnd: () => {
-        if (id === request.current) {
-          setListening(false);
-          setStarting(false);
-        }
-      },
-    });
-    if (id === request.current) {
-      setStarting(false);
-      setListening(ok);
-      if (ok) setMessage("Récitez quelques mots, puis terminez l’écoute.");
+    const current = () => id === request.current;
+    const controller = new AbortController();
+    download.current = controller;
+    setPhase('preparing'); setMessage('Préparation de l’écoute…'); setResult(null); setProgress(null);
+    let found = false; let failed = false;
+    try {
+      const pack = await tilawaPackStatus();
+      if (!current()) return;
+      if (!pack.ready) {
+        setMessage('Première utilisation : préparation de la recherche vocale…');
+        setProgress(0);
+        await downloadTilawaPack(n => { if (current()) setProgress(n); }, controller.signal);
+        if (!current()) return;
+        setProgress(null);
+      }
+      setMessage('Préparation du microphone…');
+      const ok = await tilawaService.startSearch({
+        onVerse: p => {
+          if (!current() || found) return;
+          found = true; active.current = false;
+          setResult(p); setPhase('result'); setMessage('Voici le passage reconnu.');
+        },
+        onStatus: m => {
+          if (!current() || found || failed) return;
+          setMessage(m);
+          if (m === 'Recherche du verset…') setPhase('finishing');
+        },
+        onError: m => {
+          if (!current()) return;
+          failed = true; active.current = false; setPhase('error'); setMessage(m);
+        },
+        onEnd: () => {
+          if (!current()) return;
+          active.current = false;
+          if (!found && !failed) {
+            setPhase('idle');
+            setMessage('Je n’ai pas identifié le passage. Réessayez avec quelques mots de plus.');
+          }
+        },
+      });
+      if (!current() || found || failed) return;
+      if (ok) { setPhase('listening'); setMessage('Récitez quelques mots. Je m’arrête automatiquement.'); }
+      else { active.current = false; setPhase('idle'); }
+    } catch (e) {
+      if (!current()) return;
+      active.current = false; setProgress(null); setPhase('error');
+      setMessage(e instanceof Error ? e.message : 'Recherche indisponible. Réessayez avec une connexion.');
     }
   }
-  return (
-    <div className="learning-page">
-      <Link className="learning-btn" to="/learning">
-        ← Ma séance
-      </Link>
-      <h1>Retrouver un verset à la voix</h1>
-      <p className="learning-muted">
-        Tilawa recherche localement le passage que vous récitez. Confirmez le
-        résultat avant de l’ouvrir. Le pack vocal doit être téléchargé une
-        première fois.
-      </p>
-      <Link className="learning-btn" to="/storage">
-        Préparer le pack Tilawa
-      </Link>
-      <section className="learning-card">
-        <div className="learning-actions">
-          {listening ? (
-            <button
-              className="learning-btn primary"
-              onClick={() => {
-                setListening(false);
-                setStarting(true);
-                setMessage("Analyse de la fin du passage…");
-                void tilawaService.finish();
-              }}
-            >
-              Terminer et analyser
-            </button>
-          ) : (
-            <button
-              className="learning-btn primary"
-              disabled={starting}
-              onClick={() => void start()}
-            >
-              {starting ? "Préparation…" : "Commencer l’écoute locale"}
-            </button>
-          )}
-          {(starting || listening) && (
-            <button
-              className="learning-btn"
-              onClick={() => {
-                request.current++;
-                void tilawaService.stop();
-                setStarting(false);
-                setListening(false);
-                setMessage("Écoute arrêtée.");
-              }}
-            >
-              Annuler
-            </button>
-          )}
-        </div>
-        <p role="status">{message}</p>
-      </section>
-      {results.map((p) => (
-        <section className="learning-card" key={`${p.surah}:${p.ayah}`}>
-          <h2>
-            {surahs.find((s) => s.number === p.surah)?.englishName ||
-              `Sourate ${p.surah}`}{" "}
-            · {p.ayah}
-          </h2>
-          <p className="learning-muted">
-            Passage proposé par le moteur. Vérifiez-le à la lecture.
-          </p>
-          <Link
-            className="learning-btn"
-            onClick={() => void tilawaService.stop()}
-            to={passageUrl(p)}
-          >
-            Ouvrir et vérifier ce passage
-          </Link>
-        </section>
-      ))}
-      {!listening && !starting && message && !results.length && (
-        <p className="learning-muted">
-          Aucun passage confirmé pour le moment. Vous pouvez réessayer avec un
-          extrait plus long et moins de bruit.
-        </p>
-      )}
-    </div>
-  );
+
+  return <div className="learning-page">
+    <Link className="learning-btn" to="/learning">← Ma séance</Link>
+    <h1>Quel est ce verset ?</h1>
+    <p className="learning-muted">Appuyez et récitez. Le passage apparaît ici automatiquement.</p>
+    <section className="learning-card voice-search-card">
+      <button className={`voice-search-trigger ${busy ? 'is-active' : ''}`} onClick={busy ? cancel : () => void start()}>
+        {busy ? <Square size={30} aria-hidden="true"/> : <Mic size={34} aria-hidden="true"/>}
+        <span>{busy ? 'Annuler' : result ? 'Réciter un autre passage' : 'Réciter'}</span>
+      </button>
+      <p role={phase === 'error' ? 'alert' : 'status'} aria-live="polite">{message || 'Votre voix reste sur cet appareil.'}</p>
+      {progress !== null && <><progress className="learning-progress" aria-label="Préparation de la recherche vocale" max={100} value={progress}/><p>{Math.floor(progress)} %</p></>}
+      {!result && <p className="learning-muted">Au premier usage, environ 83 Mo sont téléchargés automatiquement. Autorisez le microphone si le navigateur le demande.</p>}
+    </section>
+    {result && <section className="learning-card" aria-label="Passage reconnu">
+      <h2>{surahs.find(s => s.number === result.surah)?.englishName || `Sourate ${result.surah}`} · {result.ayah}</h2>
+      <RecognizedPassage key={`${result.surah}:${result.ayah}`} passage={result}/>
+      <Link className="learning-btn" to={passageUrl(result)}>Lire et travailler ce passage</Link>
+    </section>}
+  </div>;
+}
+function RecognizedPassage({passage}: {passage: Passage}) {
+  const [text, setText] = useState('');
+  const [translation, setTranslation] = useState('');
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    void fetchSurah(passage.surah).then(async data => {
+      const verse = data.ayahs.find(a => a.numberInSurah === passage.ayah);
+      if (!verse) throw new Error('Verset absent');
+      if (cancelled) return;
+      setText(verse.text);
+      try {
+        const translations = await fetchSurahTranslation(passage.surah, 'fr');
+        if (!cancelled) setTranslation(translations.get(verse.number) || '');
+      } catch { /* The recognized Arabic passage stays available without its translation. */ }
+    }).catch(() => { if (!cancelled) setError(true); });
+    return () => { cancelled = true; };
+  }, [passage.surah, passage.ayah]);
+  return <>{text ? <p className="learning-arabic" lang="ar">{text}</p> : <p role="status">{error ? 'Passage identifié. Le texte est indisponible hors ligne sans son pack.' : 'Chargement du texte…'}</p>}{translation && <p className="learning-muted">{translation}</p>}<p className="learning-muted">Vérifiez que le passage correspond à votre récitation.</p></>;
 }

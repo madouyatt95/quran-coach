@@ -46,4 +46,23 @@ describe('local recognition lifecycle',()=>{
  it('discards late words after an explicit stop',async()=>{
  await service.start('قل هو',callbacks,0,{surah:112,ayah:1});FakeCapture.all[0].port.onmessage!({data:new Float32Array(7680)});const worker=FakeWorker.all[0],id=worker.commands.at(-1)!.id;await service.stop();worker.reply(id,{verdicts:[{surah:112,ayah:1,word:0,state:'ok'}] as WordVerdict[]});await drain();expect(callbacks.onWordMatch).not.toHaveBeenCalled();
  });
+ it('automatically flushes voice searches after silence',async()=>{
+ const search={onVerse:vi.fn(),onStatus:vi.fn(),onError:vi.fn(),onEnd:vi.fn()};
+ await service.startSearch(search);const capture=FakeCapture.all[0];
+ capture.port.onmessage!({data:new Float32Array(16000).fill(0.08)});
+ capture.port.onmessage!({data:new Float32Array(41600)});
+ await drain();expect(FakeWorker.all[0].commands.map(c=>c.type)).toContain('finish');expect(stopTrack).toHaveBeenCalled();expect(search.onEnd).toHaveBeenCalledOnce();
+ });
+ it('stops the microphone on the first confirmed match and emits no duplicate result',async()=>{
+ const search={onVerse:vi.fn(),onStatus:vi.fn(),onError:vi.fn(),onEnd:vi.fn()};
+ await service.startSearch(search);const worker=FakeWorker.all[0];FakeCapture.all[0].port.onmessage!({data:new Float32Array(7680)});
+ const match={type:'verse_match',surah:112,ayah:1} as EngineResult['events'][number];
+ worker.reply(worker.commands.at(-1)!.id,{events:[match,match]});await drain();
+ expect(search.onVerse).toHaveBeenCalledExactlyOnceWith({surah:112,ayah:1});expect(stopTrack).toHaveBeenCalledOnce();expect(search.onEnd).toHaveBeenCalledOnce();
+ });
+ it('does not auto-finish the continuous memorization coach',async()=>{
+ await service.start('قل هو',callbacks,0,{surah:112,ayah:1});const capture=FakeCapture.all[0];
+ capture.port.onmessage!({data:new Float32Array(16000).fill(0.08)});capture.port.onmessage!({data:new Float32Array(41600)});await drain();
+ expect(FakeWorker.all[0].commands.map(c=>c.type)).not.toContain('finish');expect(stopTrack).not.toHaveBeenCalled();
+ });
 });

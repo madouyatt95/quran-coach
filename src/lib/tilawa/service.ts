@@ -4,6 +4,7 @@ import { recitationWords } from "../recitationMatching";
 import { cachedTilawaFile, tilawaPackStatus } from "./assets";
 import { corpusWordOffset, issueLabels, recognizedIndices } from "./feedback";
 import type { EngineCommand, EngineResult } from "./protocol";
+import { SearchEndpoint } from "./searchEndpoint";
 export interface SearchCallbacks {
   onVerse: (p: Passage) => void;
   onStatus: (message: string) => void;
@@ -13,6 +14,7 @@ export interface SearchCallbacks {
 export class TilawaService {
   private flushDone: (() => void) | null = null;
   private finishing = false;
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
   private worker: Worker | null = null;
   private requests = new Map<
     number,
@@ -91,6 +93,8 @@ export class TilawaService {
   }
   async stop() {
     ++this.generation;
+    if(this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = null;
     this.finishing = false;
     this.consume = null;
     this.onEnd = null;
@@ -117,6 +121,8 @@ export class TilawaService {
   async finish() {
     if (this.finishing || !this.consume) return;
     this.finishing = true;
+    if(this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = null;
     const generation = this.generation;
     try {
       await this.flushCapture();
@@ -140,6 +146,7 @@ export class TilawaService {
     makeConsumer: (init: EngineResult) => (r: EngineResult) => void,
     onError: (error: string) => void,
     onEnd: () => void,
+    onAutoFinish?: () => void,
   ): Promise<boolean> {
     const releasing = this.stop();
     const generation = this.generation;
@@ -200,6 +207,13 @@ export class TilawaService {
       capture.connect(muted);
       muted.connect(context.destination);
       let frames = 0;
+      const endpoint = onAutoFinish ? new SearchEndpoint() : null;
+      const finishSearch = () => {
+        if (!current() || this.finishing) return;
+        onAutoFinish?.();
+        void this.finish();
+      };
+      if(onAutoFinish) this.searchTimer = setTimeout(finishSearch, 30000);
       capture.port.onmessage = ({
         data,
       }: {
@@ -237,6 +251,7 @@ export class TilawaService {
           .finally(() => {
             this.inFlight--;
           });
+        if(endpoint?.push(data)) finishSearch();
       };
       return true;
     } catch (error) {
@@ -330,20 +345,28 @@ export class TilawaService {
     );
   }
   startSearch(callbacks: SearchCallbacks) {
+    let found = false;
     return this.begin(
       undefined,
       () => (result) => {
+        if(found) return;
         for (const event of result.events) {
-          if (event.type === "verse_match")
-            callbacks.onVerse({ surah: event.surah, ayah: event.ayah });
-          if (event.type === "final_sequence")
-            for (const verse of event.verses) callbacks.onVerse(verse);
+          const verse = event.type === "verse_match" ? event
+            : event.type === "final_sequence" ? event.verses[0] : undefined;
+          if(verse) {
+            found = true;
+            callbacks.onVerse({surah:verse.surah,ayah:verse.ayah});
+            void this.stop();
+            callbacks.onEnd();
+            return;
+          }
           if (event.type === "verse_candidate" && event.candidates.length)
-            callbacks.onStatus("Passage en cours d’identification…");
+            callbacks.onStatus("Je recherche votre passage…");
         }
       },
       callbacks.onError,
       callbacks.onEnd,
+      () => callbacks.onStatus("Recherche du verset…"),
     );
   }
 }
