@@ -45,3 +45,10 @@ it('uses exact pages for progress and daily targets',()=>{
  expect(useKhatmStore.getState().getOverallProgress()).toEqual({read:604,total:604,pct:100});
  expect(useKhatmStore.getState().getDailyGoal()).toBe(0);
 });
+
+it('automatic validation is idempotent and respects a manually unchecked page',()=>{
+ const store=useKhatmStore.getState();store.validatePage(42);store.validatePage(42);
+ expect(useKhatmStore.getState().validatedPages).toEqual([42]);expect(useKhatmStore.getState().dailyReadCount).toBe(1);
+ store.togglePage(42);store.validatePage(42);expect(useKhatmStore.getState().validatedPages).toEqual([]);
+ store.togglePage(42);expect(useKhatmStore.getState().validatedPages).toEqual([42]);expect(useKhatmStore.getState().autoExcludedPages).toEqual([]);
+});

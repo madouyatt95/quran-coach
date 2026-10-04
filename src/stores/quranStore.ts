@@ -5,6 +5,8 @@ import { SURAH_START_PAGES } from '../components/Mushaf/mushafConstants';
 
 interface NavigationOptions {
     silent?: boolean;
+    reading?: boolean;
+    khatm?: boolean;
 }
 
 interface QuranState {
@@ -25,11 +27,12 @@ interface QuranState {
     isExploring: boolean; // Flag for search/manual jumps (resumes tracking after 10 verses)
     explorationOrigin: { surah: number, ayah: number } | null;
     isKhatmMode: boolean; // Flag for Khatm sessions (strictly freezes general bookmark)
+    khatmJumpSignal: number; // Explicit jumps invalidate automatic Khatm evidence.
     jumpSignal: number;  // Counter to trigger scroll effects on the same surah
 
     // Actions
     setSurahs: (surahs: Surah[]) => void;
-    setCurrentPage: (page: number) => void;
+    setCurrentPage: (page: number, options?: NavigationOptions) => void;
     setCurrentSurah: (surah: number) => void;
     setCurrentAyah: (ayah: number) => void;
     setPageAyahs: (ayahs: Ayah[]) => void;
@@ -63,11 +66,12 @@ export const useQuranStore = create<QuranState>()(
             explorationOrigin: null,
             isKhatmMode: false,
             jumpSignal: 0,
+            khatmJumpSignal: 0,
             version: '1.2.9', // Diagnostic internal version
 
             setSurahs: (surahs) => set({ surahs }),
-            setCurrentPage: (currentPage) => set({ currentPage }),
-            setCurrentSurah: (currentSurah) => set({ currentSurah }),
+            setCurrentPage: (currentPage, options = {}) => set(state => ({ currentPage, khatmJumpSignal: state.khatmJumpSignal + (options.reading ? 0 : 1) })),
+            setCurrentSurah: (currentSurah) => set(state => ({ currentSurah, khatmJumpSignal: state.khatmJumpSignal + 1 })),
             setCurrentAyah: (currentAyah) => set({ currentAyah }),
             setPageAyahs: (pageAyahs) => set({ pageAyahs }),
             setSurahAyahs: (currentSurahAyahs) => set({ currentSurahAyahs }),
@@ -158,6 +162,7 @@ export const useQuranStore = create<QuranState>()(
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
                         explorationOrigin: options.silent ? { surah, ayah: 1 } : state.explorationOrigin,
                         isKhatmMode: (options as any).khatm || false,
+                        khatmJumpSignal: state.khatmJumpSignal + (options.reading && !options.silent ? 0 : 1),
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -183,6 +188,7 @@ export const useQuranStore = create<QuranState>()(
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
                         explorationOrigin: options.silent ? { surah, ayah: 1 } : state.explorationOrigin,
                         isKhatmMode: (options as any).khatm || false,
+                        khatmJumpSignal: state.khatmJumpSignal + (options.reading && !options.silent ? 0 : 1),
                         jumpSignal: state.jumpSignal + 1
                     }));
                     if (!options.silent) {
@@ -210,6 +216,7 @@ export const useQuranStore = create<QuranState>()(
                         isExploring: options.silent !== undefined ? !!options.silent : state.isExploring,
                         explorationOrigin: options.silent ? { surah, ayah } : state.explorationOrigin,
                         isKhatmMode: (options as any).khatm || false,
+                        khatmJumpSignal: state.khatmJumpSignal + (options.reading && !options.silent ? 0 : 1),
                         jumpSignal: state.jumpSignal + 1
                     };
                 });

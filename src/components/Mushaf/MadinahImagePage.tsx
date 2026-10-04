@@ -1,3 +1,4 @@
+import { useKhatmReading } from './hooks/useKhatmReading';
 import { VerseActionBar } from './VerseActionBar';
 import { useVersePress, type VerseSelection } from './hooks/useVersePress';
 import { ReadingBookmarkControl } from './ReadingBookmarkControl';
@@ -14,7 +15,7 @@ import { useQuranStore } from '../../stores/quranStore';
 import { useKhatmStore } from '../../stores/khatmStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useTranslation } from 'react-i18next';
-import { KhatmTracker } from '../Khatm/KhatmTracker';
+import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { fetchPage } from '../../lib/quranApi';
 import type { Ayah } from '../../types';
 import { useMushafAudio } from './hooks/useMushafAudio';
@@ -51,17 +52,15 @@ const isMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) || new RegExp(['A
 
 export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElement | null) => void } = {}) {
     const { t } = useTranslation();
-    const { currentPage, setCurrentPage, goToPage, goToSurah, goToAyah, surahs } = useQuranStore();
+    const { currentPage, goToPage, goToSurah, goToAyah, surahs } = useQuranStore();
     const {
         isActive: khatmActive,
         isPageValidated,
-        togglePage: khatmTogglePage,
-        updateLastRead: khatmUpdateLastRead,
     } = useKhatmStore();
-    const lastKhatmPage = useKhatmStore(state => state.lastKhatmPage);
     const { setViewMode } = useSettingsStore();
 
     const [page, setPage] = useState(currentPage || 1);
+    const [loadedPage,setLoadedPage] = useState<number | null>(null);
     const [imgLoading, setImgLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
@@ -132,25 +131,10 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
         }
     }, []);
 
-    // ===== KHATM INTEGRATION (same logic as MushafPage) =====
-    // Update Khatm reading position
-    useEffect(() => {
-        if (!khatmActive) return;
-        // updateLastRead needs surah + ayah + page; for image mode we use page's first surah + ayah=1
-        khatmUpdateLastRead(surahInfo.number, 1, page);
-    }, [page, khatmActive]);
-
-    // Auto-validate page (sequential ±1 only, same as MushafPage)
-    useEffect(() => {
-        if (!khatmActive || isPageValidated(page)) return;
-        const pageDiff = Math.abs(page - lastKhatmPage);
-        if (pageDiff > 1) return;
-        console.log(`[Khatm-Tajweed] Auto-validating page ${page}`);
-        khatmTogglePage(page);
-    }, [page, khatmActive, isPageValidated, lastKhatmPage]);
+    useKhatmReading({page,surah:surahInfo.number,ayah:0,ready:!imgLoading && !imgError && loadedPage === page && !showSearch && !showSideMenu && !verseSelection && !contextMenuState});
 
     // ===== NAVIGATION =====
-    const goTo = useCallback((newPage: number) => {
+    const goTo = useCallback((newPage: number, reading = false) => {
         if (newPage < 1 || newPage > 604) return;
 
         // Determine turning direction for 3D flip CSS animation
@@ -161,11 +145,11 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
         setPage(newPage);
         setImgLoading(true);
         setImgError(false);
-        setCurrentPage(newPage);
-    }, [page, setCurrentPage]);
+        goToPage(newPage, {reading});
+    }, [page, goToPage]);
 
-    const prevPage = useCallback(() => goTo(page - 1), [page, goTo]);
-    const nextPage = useCallback(() => goTo(page + 1), [page, goTo]);
+    const prevPage = useCallback(() => goTo(page - 1, true), [page, goTo]);
+    const nextPage = useCallback(() => goTo(page + 1, true), [page, goTo]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -227,6 +211,7 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
 
                 <div className="madinah-header__center">
                     <KhatmTracker />
+                    <KhatmPageBadge currentPage={page} pageOnly disabled={loadedPage !== page || imgLoading || imgError}/>
                     <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
                         <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
                         <select aria-label="Type de Mushaf"
@@ -255,6 +240,8 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
 
                 </div>
             </div>
+
+
 
             {/* ===== Progress Bar ===== */}
             <div className="madinah-progress">
@@ -298,7 +285,7 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
                         src={getPageImageUrl(page)}
                         alt={`Mushaf Madinah - Page ${page}`}
                         className={`madinah-viewer__img ${imgLoading ? 'loading' : ''} ${turnDirection ? `madinah-turn-${turnDirection}` : ''}`}
-                        onLoad={() => setImgLoading(false)}
+                        onLoad={() => {setLoadedPage(page);setImgLoading(false);}}
                         onError={() => { setImgLoading(false); setImgError(true); }}
                         draggable={false}
                         style={{ width: '100%', height: 'auto', display: imgError ? 'none' : 'block' }}

@@ -22,7 +22,7 @@ import { LiveFollowWords } from './LiveFollowWords';
 import { useLiveFollowStore } from '../../stores/liveFollowStore';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { useKhatmStore } from '../../stores/khatmStore';
+import { useKhatmReading } from './hooks/useKhatmReading';
 import { useTranslation } from 'react-i18next';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
@@ -69,9 +69,6 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     } = useSettingsStore();
 
     const { toggleFavorite, isFavorite } = useFavoritesStore();
-    const { isActive: khatmActive, isPageValidated, togglePage: khatmTogglePage, updateLastRead: khatmUpdateLastRead } = useKhatmStore();
-    // isExploring is used by quranStore for general reading progress, not needed for Khatm
-
     // ===== Local state =====
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -82,33 +79,6 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     const [renderedCount, setRenderedCount] = useState(20);
     const observerTargetRef = useRef<HTMLDivElement | null>(null);
     const isSilentJumpRef = useRef(false);
-
-    // Diagnostic version log
-    useEffect(() => {
-        console.log('[Quran Coach] v1.3.0 - Natural Khatm Logic Active');
-    }, []);
-
-    // Immediate Khatm Reading Position Update
-    // Note: updateLastRead has its own page ±1 sequential check, so no need for isExploring guard
-    useEffect(() => {
-        if (!khatmActive) return;
-
-        // Update Khatm position — updateLastRead rejects non-sequential jumps
-        khatmUpdateLastRead(currentSurah, currentAyah, currentPage);
-    }, [currentPage, currentSurah, currentAyah, khatmActive]);
-
-    // Immediate Khatm Page Validation (Sequential reading only)
-    const lastKhatmPage = useKhatmStore(state => state.lastKhatmPage);
-    useEffect(() => {
-        if (!khatmActive || isPageValidated(currentPage)) return;
-
-        // Only auto-validate if reading sequentially (same page or ±1)
-        const pageDiff = Math.abs(currentPage - lastKhatmPage);
-        if (pageDiff > 1) return;
-
-        console.log(`[Khatm] Auto-validating page ${currentPage}`);
-        khatmTogglePage(currentPage);
-    }, [currentPage, khatmActive, isPageValidated, lastKhatmPage]);
 
     // Panels
     const [showTajweedSheet, setShowTajweedSheet] = useState(false);
@@ -122,6 +92,8 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     const [shareAyah, setShareAyah] = useState<Ayah | null>(null);
     const [fahmAyah, setFahmAyah] = useState<{ surah: number; ayah: number; text: string; translation?: string; surahName?: string } | null>(null);
     const [verseSelection,setVerseSelection] = useState<VerseSelection|null>(null);
+    useKhatmReading({page:currentPage, surah:currentSurah, ayah:currentAyah,
+        ready:!isLoading && !error && currentSurahAyahs.some(a=>a.page === currentPage && a.surah === currentSurah) && !showSearch && !showSideMenu && !showToolbar && !verseSelection && !shareAyah && !fahmAyah});
     const closeVerseActions = useCallback(()=>setVerseSelection(null),[]);
     const versePress = useVersePress(setVerseSelection,currentSurah);
     useEffect(closeVerseActions,[currentSurah,jumpSignal,closeVerseActions]);
@@ -143,7 +115,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
         selectedReciter,
         pageAyahs: currentSurahAyahs,
         currentPage,
-        nextPage: () => goToPage(currentPage + 1),
+        nextPage: () => goToPage(currentPage + 1, {reading:true}),
         nextSurah,
     });
 
@@ -151,8 +123,8 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
 
     const navigation = useMushafNavigation({
         currentPage,
-        nextPage: () => goToPage(currentPage + 1),
-        prevPage: () => goToPage(currentPage - 1),
+        nextPage: () => goToPage(currentPage + 1, {reading:true}),
+        prevPage: () => goToPage(currentPage - 1, {reading:true}),
     });
 
     const juzNumber = getJuzForPage(currentPage)?.number ?? 1;
@@ -188,7 +160,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                             const isSilent = isSilentJumpRef.current || !!sessionStorage.getItem('isSilentJump');
 
                             if (!isSilent) {
-                                setCurrentPage(pageNum);
+                                setCurrentPage(pageNum, {reading:true});
                                 setCurrentAyah(ayahNum);
 
                                 // Always update general reading progress (independent from Khatm)
@@ -488,6 +460,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                 {/* Center: Khatm Tracker (Compact) */}
                 <div className="mih-header-center">
                     <KhatmTracker />
+                    <KhatmPageBadge currentPage={currentPage} />
                     <div className="view-mode-selector" style={{ marginLeft: '12px', display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
                         <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
                         <select aria-label="Type de Mushaf"
@@ -551,15 +524,15 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                 </div>
             </div>
 
-            <KhatmPageBadge currentPage={currentPage} />
+
 
             {/* Floating Navigation (desktop) */}
             {!isMobile && (
                 <>
-                    <button className="mih-float-nav mih-float-nav--left" onClick={() => goToPage(currentPage - 1)} disabled={currentPage <= 1}>
+                    <button className="mih-float-nav mih-float-nav--left" onClick={() => goToPage(currentPage - 1, {reading:true})} disabled={currentPage <= 1}>
                         <ChevronRight size={24} />
                     </button>
-                    <button className="mih-float-nav mih-float-nav--right" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= 604}>
+                    <button className="mih-float-nav mih-float-nav--right" onClick={() => goToPage(currentPage + 1, {reading:true})} disabled={currentPage >= 604}>
                         <ChevronLeft size={24} />
                     </button>
                 </>

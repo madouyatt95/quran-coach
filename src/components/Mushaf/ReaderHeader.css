@@ -38,3 +38,6 @@
 @keyframes reader-page-reveal{from{opacity:.25;filter:brightness(.96)}to{opacity:1;filter:none}}
 @keyframes reader-text-reveal{from{opacity:.4;translate:0 8px}to{opacity:1;translate:0 0}}
 @media(prefers-reduced-motion:reduce){.madinah-viewer__img,.tajweed-viewer__img,.mih-mushaf__content{animation:none!important;transition:none!important}}
+
+:is(.mih-header,.madinah-header,.tajweed-header) .khatm-page-badge{position:static;width:36px;height:36px;flex-shrink:0;box-shadow:none;border-width:1px;animation:none;transform:none;z-index:auto;background:transparent}
+:is(.mih-header,.madinah-header,.tajweed-header) .khatm-page-badge:disabled{opacity:.3;cursor:default}

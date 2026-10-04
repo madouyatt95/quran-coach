@@ -119,7 +119,7 @@ function SetupModal({ onClose }: { onClose: () => void }) {
 
 export function KhatmTracker() {
     const store = useKhatmStore();
-    const { goToAyah } = useQuranStore();
+    const { goToAyah, goToPage } = useQuranStore();
     const [showDetails, setShowDetails] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
 
@@ -135,6 +135,12 @@ export function KhatmTracker() {
         const { lastKhatmSurah, lastKhatmAyah, lastKhatmPage } = store;
         console.log(`[Khatm] handleResumeKhatm CLICKED. Target: S${lastKhatmSurah}:A${lastKhatmAyah} (Page ${lastKhatmPage})`);
 
+        if (lastKhatmAyah === 0) {
+            sessionStorage.setItem('scrollToPage', String(lastKhatmPage));
+            goToPage(lastKhatmPage, {silent:true,khatm:true});
+            setShowDetails(false);
+            return;
+        }
         sessionStorage.setItem('isSilentJump', 'true');
         sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: lastKhatmSurah, ayah: lastKhatmAyah }));
         // Use silent: true to preserve general reading progress (Reprendre ma lecture)
@@ -205,6 +211,7 @@ export function KhatmTracker() {
                             </div>
                         </div>
 
+                        <p style={{fontSize:12,lineHeight:1.5,opacity:.75}}>Validation automatique après 15 secondes de consultation au premier plan et passage à la page suivante. Le bouton ✓ permet de corriger ou valider une page, notamment la dernière.</p>
                         <div className="khatm-actions-stack">
                             {hasCompleteKhatm(store.validatedPages) && !store.completedAt && <>
                                 <p>Les 604 pages sont validées. Confirmez lorsque vous avez terminé votre lecture.</p>
@@ -256,11 +263,11 @@ export function KhatmTracker() {
 }
 
 // Exported page validation button for MushafPage
-export function KhatmPageBadge({ currentPage }: { currentPage: number }) {
-    const { isActive, isPageValidated, togglePage } = useKhatmStore();
+export function KhatmPageBadge({ currentPage, pageOnly = false, disabled = false }: { currentPage: number; pageOnly?: boolean; disabled?: boolean }) {
+    const { isActive, completedAt, isPageValidated, togglePage } = useKhatmStore();
     const { currentAyah, currentSurahAyahs } = useQuranStore();
 
-    if (!isActive) return null;
+    if (!isActive || completedAt) return null;
 
     const validated = isPageValidated(currentPage);
 
@@ -269,15 +276,17 @@ export function KhatmPageBadge({ currentPage }: { currentPage: number }) {
 
     // Pulse only if not validated and we are near the start of this page (within first 3 verses)
     // This gives a visual "New Page" hint without being persistent throughout the whole page.
-    const shouldPulse = !validated && (
+    const shouldPulse = !validated && (pageOnly || (
         pageStartAyah !== undefined &&
         currentAyah >= pageStartAyah &&
         currentAyah < pageStartAyah + 3
-    );
+    ));
 
     return (
         <button
             className={`khatm-page-badge ${validated ? 'validated' : ''} ${shouldPulse ? 'pulse' : ''}`}
+            disabled={disabled}
+            aria-label={validated ? `Retirer la validation de la page ${currentPage}` : `Valider la page ${currentPage}`}
             onClick={() => togglePage(currentPage)}
             title={validated ? 'Page validée – cliquez pour décocher' : 'Valider cette page'}
         >

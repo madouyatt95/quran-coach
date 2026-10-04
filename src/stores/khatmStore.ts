@@ -24,6 +24,7 @@ interface KhatmState {
 
     // Progress - stored as sorted array for persistence
     validatedPages: number[];
+    autoExcludedPages: number[];
 
     // Last reading position (dedicated to khatm, independent from quranStore)
     lastKhatmSurah: number;
@@ -38,6 +39,7 @@ interface KhatmState {
     activate: (start: string, end: string) => void;
     deactivate: () => void;
     togglePage: (page: number) => void;
+    validatePage: (page: number) => void;
     updateLastRead: (surah: number, ayah: number, page: number) => void;
     reset: () => void;
 
@@ -81,6 +83,7 @@ export const useKhatmStore = create<KhatmState>()(
             startDate: '',
             endDate: '',
             validatedPages: [],
+            autoExcludedPages: [],
             lastKhatmSurah: 1,
             lastKhatmAyah: 1,
             lastKhatmPage: 1,
@@ -92,6 +95,7 @@ export const useKhatmStore = create<KhatmState>()(
                 startDate: start,
                 endDate: end,
                 validatedPages: [],
+                autoExcludedPages: [],
                 lastKhatmSurah: 1,
                 lastKhatmAyah: 1,
                 lastKhatmPage: 1,
@@ -103,17 +107,8 @@ export const useKhatmStore = create<KhatmState>()(
                 const { lastKhatmPage, lastKhatmSurah, lastKhatmAyah, isActive } = get();
                 if (!isActive) return;
 
-                // STRICT SEQUENTIAL CHECK:
-                // Page ±1 = sequential reading (scroll/swipe) → accept if forward
-                // Page diff > 1 = distant jump → reject
-                const pageDiff = page - lastKhatmPage;
-
-                if (pageDiff < 0 || pageDiff > 1) {
-                    console.log(`[Khatm] Rejected: page jump P${lastKhatmPage} → P${page} (diff=${pageDiff})`);
-                    return;
-                }
-
-                // Within sequential range: accept any forward progress
+                // Called only after foreground consultation, never on navigation alone.
+                if (!Number.isInteger(page) || page < 1 || page > 604 || get().completedAt) return;
                 const isForward =
                     page > lastKhatmPage ||
                     (page === lastKhatmPage && (
@@ -129,6 +124,13 @@ export const useKhatmStore = create<KhatmState>()(
 
             deactivate: () => set({ isActive: false }),
 
+            validatePage: (page) => {
+                const state = get();
+                if (!state.isActive || state.completedAt || !Number.isInteger(page) || page < 1 || page > 604 || (state.validatedPages.includes(page) || state.autoExcludedPages.includes(page))) return;
+                const today = todayStr();
+                set({validatedPages:[...state.validatedPages,page].sort((a,b)=>a-b),dailyReadCount:(state.lastActiveDate === today ? state.dailyReadCount || 0 : 0)+1,lastActiveDate:today});
+            },
+
             togglePage: (page) => set((state) => {
                 if (!Number.isInteger(page) || page < 1 || page > 604 || state.completedAt) return state;
                 const today = todayStr();
@@ -141,20 +143,23 @@ export const useKhatmStore = create<KhatmState>()(
                     lastActiveDate = today;
                 }
 
+                const excluded = new Set(state.autoExcludedPages);
                 const pages = [...state.validatedPages];
                 const idx = pages.indexOf(page);
                 if (idx >= 0) {
+                    excluded.add(page);
                     pages.splice(idx, 1);
                     dailyReadCount = Math.max(0, dailyReadCount - 1);
                 } else {
+                    excluded.delete(page);
                     pages.push(page);
                     pages.sort((a, b) => a - b);
                     dailyReadCount += 1;
                 }
-                return { validatedPages: pages, dailyReadCount, lastActiveDate };
+                return { validatedPages: pages, autoExcludedPages:[...excluded], dailyReadCount, lastActiveDate };
             }),
 
-            reset: () => set({ completedAt: null, celebrationPending: false, validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1, dailyReadCount: 0, lastActiveDate: '' }),
+            reset: () => set({ autoExcludedPages: [], completedAt: null, celebrationPending: false, validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1, dailyReadCount: 0, lastActiveDate: '' }),
 
             isPageValidated: (page) => get().validatedPages.includes(page),
 
