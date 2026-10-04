@@ -30,7 +30,7 @@ export function UpdateBanner() {
     }, []);
 
     if (!available || protectedSession) return null;
-    return <aside role="status" style={{position:'fixed',bottom:'calc(82px + env(safe-area-inset-bottom))',left:16,right:16,maxWidth:480,margin:'auto',zIndex:10000,
+    return <aside className="app-update-banner" role="status" style={{position:'fixed',bottom:'calc(var(--bottom-nav-height, 72px) + 12px)',left:16,right:16,maxWidth:480,margin:'auto',zIndex:10000,
         background:'var(--color-bg-secondary)',border:'1px solid #c9a84c66',color:'var(--color-text-primary)',padding:'12px 16px',borderRadius:16,
         display:'flex',alignItems:'center',justifyContent:'space-between',gap:12,boxShadow:'0 8px 30px #0003',fontSize:13}}>
         <span>Une nouvelle version est prête.</span>

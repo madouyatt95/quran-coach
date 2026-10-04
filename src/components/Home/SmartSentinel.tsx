@@ -57,6 +57,7 @@ function SmartCard({ data }: { data: SmartCardData }) {
 
             <div className="smart-card__footer">
                 <button
+                    aria-label={`Favori : ${data.title}`}
                     className={`smart-card__fav ${isFav ? 'active' : ''}`}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -72,10 +73,10 @@ function SmartCard({ data }: { data: SmartCardData }) {
                 >
                     <Heart size={16} fill={isFav ? 'currentColor' : 'none'} />
                 </button>
-                <div className="smart-card__action" onClick={handleAction}>
+                <button className="smart-card__action" onClick={handleAction}>
                     <span>Voir plus</span>
                     <ChevronRight size={14} />
-                </div>
+                </button>
             </div>
 
             {data.progress !== undefined && (

@@ -97,6 +97,7 @@ export function InstallPrompt() {
                     </div>
                     <button
                         className="install-banner-close"
+                        aria-label="Masquer la proposition d’installation"
                         onClick={(e) => { e.stopPropagation(); dismiss(); }}
                     >
                         <X size={16} />
@@ -111,7 +112,7 @@ export function InstallPrompt() {
                     <div className="install-modal">
                         <div className="install-header">
                             <h2>Installer Quran Coach</h2>
-                            <button className="install-close" onClick={() => setShowModal(false)}>
+                            <button className="install-close" aria-label="Fermer les instructions d’installation" onClick={() => setShowModal(false)}>
                                 <X size={18} />
                             </button>
                         </div>

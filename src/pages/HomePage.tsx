@@ -2,7 +2,7 @@ import { useReadingBookmarkStore, resumeReadingBookmark } from '../stores/readin
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X, Calendar, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Share2, BookOpen, Star, BookMarked, Flame, RotateCcw, Heart, Plus, X, Calendar, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, ScrollText, Compass, Landmark, Library, HandHeart, Headphones, BookText } from 'lucide-react';
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags, getUpcomingIslamicEvent } from '../lib/hadithEngine';
 import { formatDivineNames } from '../lib/divineNames';
 import { useStatsStore } from '../stores/statsStore';
@@ -14,6 +14,7 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import './HomePage.css';
 import '../components/Learning/Learning.css';
+import './HomeRefresh.css';
 
 // ─── Surah names (compact subset for display) ────────────
 const SURAH_NAMES: Record<number, string> = {
@@ -47,14 +48,14 @@ const SURAH_NAMES: Record<number, string> = {
 
 // ─── Events / Seasonal data ─────────────────────────────
 const SHORTCUTS = [
-    { path: '/prophets', emoji: '📜', labelKey: 'nav.prophets', desc: 'Prophètes', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
-    { path: '/qibla', emoji: '🧭', labelKey: 'sideMenu.qibla', desc: 'Direction', gradient: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))' },
-    { path: '/prayers', emoji: '🕌', labelKey: 'sideMenu.prayers', desc: 'Horaires', gradient: 'linear-gradient(135deg, rgba(255,152,0,0.2), rgba(255,152,0,0.05))' },
-    { path: '/themes', emoji: '📚', labelKey: 'sideMenu.themes', desc: 'Coraniques', gradient: 'linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.05))' },
-    { path: '/adhkar', emoji: '🤲', labelKey: 'sideMenu.adhkar', desc: 'Invocations', gradient: 'linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.05))' },
-    { path: '/listen', emoji: '🎧', labelKey: 'sideMenu.listen', desc: 'Récitations', gradient: 'linear-gradient(135deg, rgba(76,175,80,0.2), rgba(76,175,80,0.05))' },
-    { path: '/hadiths', emoji: '📜', labelKey: 'sideMenu.hadiths', desc: 'Prophétiques', gradient: 'linear-gradient(135deg, rgba(156,39,176,0.2), rgba(156,39,176,0.05))' },
-    { path: '/tafsir', emoji: '📖', labelKey: 'sideMenu.tafsir', desc: 'Exégèse', gradient: 'linear-gradient(135deg, rgba(121,85,72,0.2), rgba(121,85,72,0.05))' },
+    { path: '/prophets', icon: ScrollText, labelKey: 'nav.prophets', desc: 'Prophètes' },
+    { path: '/qibla', icon: Compass, labelKey: 'sideMenu.qibla', desc: 'Direction' },
+    { path: '/prayers', icon: Landmark, labelKey: 'sideMenu.prayers', desc: 'Horaires' },
+    { path: '/themes', icon: Library, labelKey: 'sideMenu.themes', desc: 'Coraniques' },
+    { path: '/adhkar', icon: HandHeart, labelKey: 'sideMenu.adhkar', desc: 'Invocations' },
+    { path: '/listen', icon: Headphones, labelKey: 'sideMenu.listen', desc: 'Récitations' },
+    { path: '/hadiths', icon: ScrollText, labelKey: 'sideMenu.hadiths', desc: 'Prophétiques' },
+    { path: '/tafsir', icon: BookText, labelKey: 'sideMenu.tafsir', desc: 'Exégèse' },
 ];
 
 interface EssentialSurah {
@@ -387,15 +388,14 @@ export function HomePage() {
 
     return (
         <div className="home-page">
-            <Link className="learning-home" to="/learning"><span className="learning-kicker">Votre rendez-vous quotidien</span><strong>Ma séance du jour →</strong><span>Réviser · Comprendre · Réciter, en 5 à 20 minutes</span></Link>
             <div className="home-header">
                 <div className="home-header__left">
                     <div className="home-header__greeting">
                         <span className="home-header__greeting-emoji">{greeting.emoji}</span>
                         <span>{greeting.text}</span>
                     </div>
-                    <div className="home-header__hijri">{formatHijriDate(hijri)}</div>
-                    <div className="home-header__hijri-ar">{formatHijriDateAr(hijri)}</div>
+                    <div className="home-header__dates"><div className="home-header__hijri">{formatHijriDate(hijri)}</div>
+                    <div className="home-header__hijri-ar">{formatHijriDateAr(hijri)}</div></div>
                 </div>
             </div>
 
@@ -417,11 +417,14 @@ export function HomePage() {
                 )}
             </div>
 
+            <Link className="learning-home" to="/learning"><span className="learning-kicker">Votre rendez-vous quotidien</span><strong>Ma séance du jour →</strong><span>Réviser · Comprendre · Réciter, en 5 à 20 minutes</span></Link>
+
+            <section className="home-day-context" aria-label="Prières et calendrier">
             {nextPrayer && (
                 <Link to="/prayers" className="home-prayer-link">
                     <div className="home-prayer">
                         <div className="home-prayer__left">
-                            <span className="home-prayer__emoji">🕌</span>
+                            <Landmark className="home-prayer__emoji" size={19} aria-hidden="true" />
                             <div>
                                 <span className="home-prayer__name">{t(`prayer.${nextPrayer.name.toLowerCase()}`, nextPrayer.name)}</span>
                                 <span className="home-prayer__name-ar">{nextPrayer.nameAr}</span>
@@ -436,14 +439,15 @@ export function HomePage() {
             )}
 
             {upcomingEvent && (
-                <div className="home-seasonal" onClick={() => setShowIslamicCalendar(true)} style={{ cursor: 'pointer' }}>
-                    <span className="home-seasonal__emoji">{upcomingEvent.emoji}</span>
+                <button className="home-seasonal" onClick={() => setShowIslamicCalendar(true)} aria-label={`Calendrier : ${upcomingEvent.title}`}>
+                    <Calendar className="home-seasonal__emoji" size={19} aria-hidden="true" />
                     <div className="home-seasonal__text">
                         <strong>{upcomingEvent.title}</strong>
                         <span>{upcomingEvent.description}</span>
                     </div>
-                </div>
+                </button>
             )}
+            </section>
 
             <SmartSentinel />
 
@@ -471,7 +475,7 @@ export function HomePage() {
 
             <div className="home-surahs">
                 <div className="home-surahs__header">
-                    <div className="home-surahs__title"><Star size={14} /> {t('home.essentialSurahs')}</div>
+                    <div className="home-surahs__title"><Star size={14} /> {t('home.essentialSurahs')}</div><span className="home-scroll-hint">Défiler <ChevronRight size={13}/></span>
                 </div>
                 <div className="home-surahs__scroll">
                     {ESSENTIAL_SURAHS.map((surah, i) => (
@@ -481,7 +485,7 @@ export function HomePage() {
                             <div className="surah-card__name-ar">{surah.nameAr}</div>
                             <div className="surah-card__name-fr">{surah.nameFr}</div>
                             <div className="surah-card__benefit">{surah.benefit}</div>
-                            <div className="surah-card__verses">{surah.verseCount} {t('common.verses')}</div>
+                            <div className="surah-card__verses">{surah.verseCount} {t('common.verses', 'versets')}</div>
                         </button>
                     ))}
                 </div>
@@ -518,13 +522,11 @@ export function HomePage() {
                                     <motion.div
                                         key={d.id}
                                         layout
-                                        className="dhikr-draggable"
+                                        className={`dhikr-draggable ${d.text.length > 55 || d.textFr.length > 85 ? 'dhikr-draggable--wide' : ''}`}
                                         style={{
                                             position: 'relative',
                                             display: 'flex',
-                                            zIndex: 1,
-                                            width: 'calc(50% - 10px)',
-                                            height: '110px'
+                                            zIndex: 1
                                         }}
                                         transition={{
                                             type: 'spring',
@@ -548,6 +550,7 @@ export function HomePage() {
                                                 userSelect: 'none'
                                             } as React.CSSProperties}
                                             role="button"
+                                            onKeyDown={e=>{if(e.target===e.currentTarget && (e.key==='Enter'||e.key===' ')){e.preventDefault();if(!isEditingDhikr)dhikr.tap(d.id);}}}
                                             tabIndex={0}
                                         >
                                             {series > 0 && <span className="dhikr-card__series">{series}×</span>}
@@ -593,12 +596,12 @@ export function HomePage() {
                                                     </motion.div>
 
                                                     <div className="dhikr-card__arrows" onClick={e => e.stopPropagation()}>
-                                                        <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, -2); }} className="arrow-btn up"><ChevronUp size={16} /></button>
+                                                        <button aria-label={`Monter ${d.textFr}`} onClick={(e) => { e.stopPropagation(); moveDhikr(d.id, -2); }} className="arrow-btn up"><ChevronUp size={16} /></button>
                                                         <div className="horizontal-arrows">
-                                                            <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, -1); }} className="arrow-btn left"><ChevronLeft size={16} /></button>
-                                                            <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, 1); }} className="arrow-btn right"><ChevronRight size={16} /></button>
+                                                            <button aria-label={`Déplacer avant ${d.textFr}`} onClick={(e) => { e.stopPropagation(); moveDhikr(d.id, -1); }} className="arrow-btn left"><ChevronLeft size={16} /></button>
+                                                            <button aria-label={`Déplacer après ${d.textFr}`} onClick={(e) => { e.stopPropagation(); moveDhikr(d.id, 1); }} className="arrow-btn right"><ChevronRight size={16} /></button>
                                                         </div>
-                                                        <button onPointerDown={(e) => { e.stopPropagation(); moveDhikr(d.id, 2); }} className="arrow-btn down"><ChevronDown size={16} /></button>
+                                                        <button aria-label={`Descendre ${d.textFr}`} onClick={(e) => { e.stopPropagation(); moveDhikr(d.id, 2); }} className="arrow-btn down"><ChevronDown size={16} /></button>
                                                     </div>
                                                 </>
                                             )}
@@ -607,7 +610,7 @@ export function HomePage() {
                                 );
                             })}
                             {!isEditingDhikr && (
-                                <button className="dhikr-card dhikr-card--add" onClick={() => setShowAddDuaa(true)} style={{ width: 'calc(50% - 5px)', height: '110px', '--dhikr-color': '#666' } as React.CSSProperties}>
+                                <button className="dhikr-card dhikr-card--add" onClick={() => setShowAddDuaa(true)} style={{ '--dhikr-color': '#c9b477' } as React.CSSProperties}>
                                     <span className="dhikr-card__emoji"><Plus size={24} /></span>
                                     <span className="dhikr-card__fr">Ajouter une duaa</span>
                                     <span className="dhikr-card__desc">Invocation personnelle</span>
@@ -652,8 +655,8 @@ export function HomePage() {
                 <div className="home-shortcuts__title">{t('sideMenu.quickAccess')}</div>
                 <div className="home-shortcuts__grid">
                     {SHORTCUTS.map(s => (
-                        <Link key={s.path} to={s.path} className="home-shortcut" style={{ background: s.gradient }}>
-                            <span className="home-shortcut__emoji">{s.emoji}</span>
+                        <Link key={s.path} to={s.path} className="home-shortcut">
+                            <span className="home-shortcut__icon"><s.icon size={22} strokeWidth={1.6} aria-hidden="true"/></span>
                             <span className="home-shortcut__label">{t(s.labelKey)}</span>
                             <span className="home-shortcut__desc">{s.desc}</span>
                         </Link>

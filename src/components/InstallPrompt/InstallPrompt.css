@@ -225,3 +225,21 @@
     color: #fff;
     flex-shrink: 0;
 }
+/* Only one notice occupies the space above the navigation. */
+body:has(.app-update-banner) .install-banner { display: none; }
+body:has(.install-modal) .app-update-banner { display: none!important; }
+.install-banner {
+    bottom: calc(var(--bottom-nav-height, 72px) + 12px);
+    max-width: 480px;
+    margin: auto;
+    background: #202b3b;
+    border: 1px solid #deca9338;
+    color: #eee9db;
+    box-shadow: 0 8px 24px #0003;
+    gap: 12px;
+}
+.install-banner-text { font-size: 13px; line-height: 1.5; }
+.install-banner-text svg { color: #deca93; flex-shrink: 0; }
+.install-banner-close { width: 36px; height: 36px; background: #ffffff0c; }
+.app-update-banner { box-sizing: border-box; }
+@media(max-width:360px) { .app-update-banner { flex-wrap: wrap; } .app-update-banner button { margin-left: auto; } }
