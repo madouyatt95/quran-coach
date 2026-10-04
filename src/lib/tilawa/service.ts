@@ -344,6 +344,19 @@ export class TilawaService {
       callbacks.onEnd,
     );
   }
+  startTracking(callbacks: SearchCallbacks) {
+    let previous = '';
+    return this.begin(undefined, () => result => {
+      for (const event of result.events) {
+        // Candidate events are tentative; never turn a page on a candidate alone.
+        if (event.type !== 'verse_match' && event.type !== 'word_progress') continue;
+        const key = `${event.surah}:${event.ayah}`;
+        if (key === previous) continue;
+        previous = key;
+        callbacks.onVerse({surah:event.surah, ayah:event.ayah});
+      }
+    }, callbacks.onError, callbacks.onEnd);
+  }
   startSearch(callbacks: SearchCallbacks) {
     let found = false;
     return this.begin(

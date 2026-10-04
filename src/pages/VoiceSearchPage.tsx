@@ -143,6 +143,7 @@ export function VoiceSearchPage() {
       <p>Où souhaitez-vous ouvrir ce verset ?</p>
       <div className="learning-actions">
         <Link className="learning-btn primary" to={`/read?surah=${result.surah}&ayah=${result.ayah}`}>Ouvrir dans le Mushaf</Link>
+        <Link className="learning-btn" to={`/read?surah=${result.surah}&ayah=${result.ayah}`} state={{startLiveFollow:true}}>Suivre la récitation en direct</Link>
         <Link className="learning-btn" to={`/hifdh?surah=${result.surah}&ayah=${result.ayah}`}>Mémoriser ce verset</Link>
       </div>
     </section>}

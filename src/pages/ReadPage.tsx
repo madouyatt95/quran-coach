@@ -8,6 +8,8 @@ import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore } from '../stores/settingsStore';
 import { fetchSurah } from '../lib/quranApi';
 import { parsePassage } from '../lib/learning';
+import { LiveFollowPanel } from '../components/Mushaf/LiveFollowPanel';
+import { useLiveFollowStore } from '../stores/liveFollowStore';
 import { Loader2 } from 'lucide-react';
 
 const TajweedImagePage = lazy(() => import('../components/Mushaf/TajweedImagePage').then(m => ({ default: m.TajweedImagePage })));
@@ -19,13 +21,15 @@ export function ReadPage() {
     const [showMenu, setShowMenu] = useState(false);
     const [searchParams] = useSearchParams();
     const location = useLocation();
-    const { viewMode } = useSettingsStore();
+    const { viewMode: preferredView } = useSettingsStore();
+    const liveActive = useLiveFollowStore(s => s.active);
+    const viewMode = liveActive ? 'mushaf' : preferredView;
 
     const { setCurrentSurah, setCurrentAyah, goToAyah } = useQuranStore();
 
     useEffect(() => {
         // This page stays mounted on other routes: only apply an actual reading link.
-        if (location.pathname !== '/read' || !searchParams.has('surah')) return;
+        if (liveActive || location.pathname !== '/read' || !searchParams.has('surah')) return;
         const passage = parsePassage(searchParams);
         let cancelled = false;
         goToAyah(passage.surah, passage.ayah, undefined, { silent: true });
@@ -34,7 +38,7 @@ export function ReadPage() {
             if (!cancelled && verse) goToAyah(passage.surah, passage.ayah, verse.page, { silent: true });
         }).catch(() => { /* Keep the verse reference when its page is unavailable offline. */ });
         return () => { cancelled = true; };
-    }, [location.pathname, searchParams, goToAyah]);
+    }, [location.pathname, searchParams, goToAyah, liveActive]);
 
     const handleVoiceSearchResult = (surah: number, ayah: number) => {
         setCurrentSurah(surah);
@@ -56,6 +60,7 @@ export function ReadPage() {
                 <MushafPage />
             )}
 
+            {location.pathname === '/read' && <LiveFollowPanel />}
             <SideMenu isOpen={showMenu} onClose={() => setShowMenu(false)} />
 
             <SearchModal

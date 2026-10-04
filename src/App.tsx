@@ -55,6 +55,9 @@ const PassagePage = lazy(() => import('./pages/PassagePage').then(m => ({ defaul
 const SimilarPassagesPage = lazy(() => import('./pages/SimilarPassagesPage').then(m => ({ default: m.SimilarPassagesPage })));
 const VoiceSearchPage = lazy(() => import('./pages/VoiceSearchPage').then(m => ({ default: m.VoiceSearchPage })));
 
+const ExplorePage = lazy(() => import('./pages/ExplorePage').then(m => ({ default: m.ExplorePage })));
+const MemorizationTestPage = lazy(() => import('./pages/MemorizationTestPage').then(m => ({ default: m.MemorizationTestPage })));
+
 // Minimal loading fallback
 function PageLoader() {
   return (
@@ -190,6 +193,8 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/read" element={null} />
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/test-memorization" element={<MemorizationTestPage />} />
             <Route path="/learning" element={<LearningPage />} />
             <Route path="/passage" element={<PassagePage />} />
             <Route path="/similar-passages" element={<SimilarPassagesPage />} />

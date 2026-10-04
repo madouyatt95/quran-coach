@@ -150,6 +150,9 @@ export function useMushafAudio({
 
     // Stop audio
     const stopAudio = useCallback(() => {
+        wasPlayingRef.current = false;
+        shouldAutoPlay.current = false;
+        pendingAutoAdvance.current = false;
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
@@ -159,6 +162,11 @@ export function useMushafAudio({
         setPlayingIndex(-1);
         setCurrentPlayingAyah(0);
     }, []);
+
+    useEffect(() => {
+        window.addEventListener('quran-stop-playback', stopAudio);
+        return () => window.removeEventListener('quran-stop-playback', stopAudio);
+    }, [stopAudio]);
 
     // Toggle play/pause
     const toggleAudio = useCallback(() => {

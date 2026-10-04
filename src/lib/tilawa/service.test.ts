@@ -65,4 +65,18 @@ describe('local recognition lifecycle',()=>{
  capture.port.onmessage!({data:new Float32Array(16000).fill(0.08)});capture.port.onmessage!({data:new Float32Array(41600)});await drain();
  expect(FakeWorker.all[0].commands.map(c=>c.type)).not.toContain('finish');expect(stopTrack).not.toHaveBeenCalled();
  });
+ it('tracks consecutive verses without stopping and ignores tentative candidates',async()=>{
+ const search={onVerse:vi.fn(),onStatus:vi.fn(),onError:vi.fn(),onEnd:vi.fn()};
+ await service.startTracking(search);const worker=FakeWorker.all[0],capture=FakeCapture.all[0];
+ const feed=async(events:EngineResult['events'])=>{capture.port.onmessage!({data:new Float32Array(7680)});worker.reply(worker.commands.at(-1)!.id,{events});await drain();};
+ await feed([{type:'verse_candidate',candidates:[{surah:2,ayah:10,confidence:0.9,rank:1,source:'discovery'}],stable:false,final_flush:false}]);
+ expect(search.onVerse).not.toHaveBeenCalled();
+ await feed([{type:'verse_match',surah:2,ayah:10},{type:'word_progress',surah:2,ayah:10},{type:'word_progress',surah:2,ayah:11}] as EngineResult['events']);
+ expect(search.onVerse.mock.calls.map(c=>c[0])).toEqual([{surah:2,ayah:10},{surah:2,ayah:11}]);
+ expect(stopTrack).not.toHaveBeenCalled();expect(search.onEnd).not.toHaveBeenCalled();
+ await service.stop();
+ await feed([{type:'word_progress',surah:2,ayah:12}] as EngineResult['events']);
+ expect(search.onVerse).toHaveBeenCalledTimes(2);
+ });
+
 });

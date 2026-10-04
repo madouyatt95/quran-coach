@@ -1,0 +1,13 @@
+<!doctype html><html lang="fr"><meta charset="utf-8"><title>Suivi continu — test acoustique</title><style>body{font:18px system-ui;padding:2rem}pre{white-space:pre-wrap}button{padding:1rem}</style><h1>Suivi continu — test acoustique</h1><p>Trois extraits publics Al-Afasy 2:255 à 2:257. Aucun microphone. Inférence locale sans accès réseau HTTP.</p><button id="run">Tester les trois versets</button><pre id="output">Prêt.</pre><script type="module">
+import Engine from '/scripts/tilawa-offline-worker.ts?worker';
+import {downloadTilawaPack} from '/src/lib/tilawa/assets.ts';
+const button=document.querySelector('#run'),output=document.querySelector('#output');
+button.onclick=async()=>{button.disabled=true;let worker;const log=x=>output.textContent+='\n'+x;try{
+ await downloadTilawaPack(()=>{});const ctx=new OfflineAudioContext(1,16000,16000);
+ const clips=await Promise.all(['002255','002256','002257'].map(async id=>(await ctx.decodeAudioData(await(await fetch(`/scripts/fixtures/${id}.mp3`)).arrayBuffer())).getChannelData(0)));
+ worker=new Engine();let id=0;const command=data=>new Promise((resolve,reject)=>{const current=++id;const timeout=setTimeout(()=>reject(Error('Timeout')),120000);worker.onmessage=({data:r})=>{if(r.id!==current)return;clearTimeout(timeout);r.error?reject(Error(r.error)):resolve(r);};worker.onerror=e=>reject(Error(e.message));worker.postMessage({...data,id:current});});
+ await command({type:'begin'});const refs=[];const started=performance.now();
+ for(let i=0;i<clips.length;i++){log(`Analyse du verset 2:${255+i}…`);for(let offset=0;offset<clips[i].length;offset+=7680){const r=await command({type:'audio',samples:clips[i].slice(offset,offset+7680)});for(const e of r.events){if(e.type==='verse_match'||e.type==='word_progress'){const ref=`${e.surah}:${e.ayah}`;if(refs.at(-1)!==ref){refs.push(ref);log('Suivi : '+ref);}}}}}
+ await command({type:'finish'});const expected=['2:255','2:256','2:257'];log(JSON.stringify({expected,recognized:refs,seconds:(performance.now()-started)/1000}));if(expected.some(ref=>!refs.includes(ref)))throw Error('Transition manquante');log('RÉUSSI : suivi de trois versets sans redémarrage du moteur.');
+ }catch(e){log('ERREUR : '+e.message);}finally{worker?.terminate();button.disabled=false;}};
+</script></html>

@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({go:vi.fn(),fetch:vi.fn()}));
 vi.mock('../stores/quranStore', () => ({useQuranStore:()=>({goToAyah:mocks.go})}));
 vi.mock('../stores/settingsStore', () => ({useSettingsStore:()=>({viewMode:'mushaf'})}));
 vi.mock('../lib/quranApi', () => ({fetchSurah:mocks.fetch}));
+vi.mock('../components/Mushaf/LiveFollowPanel', () => ({LiveFollowPanel:()=>null}));
 vi.mock('../components/Mushaf/MushafPage', () => ({MushafPage:()=>null}));
 vi.mock('../components/Navigation/SideMenu', () => ({SideMenu:()=>null}));
 vi.mock('../components/Navigation/SearchModal', () => ({SearchModal:()=>null}));

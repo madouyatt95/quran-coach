@@ -14,6 +14,7 @@ import {
     Heart,
     BookOpen,
 } from 'lucide-react';
+import { useLiveFollowStore } from '../../stores/liveFollowStore';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useKhatmStore } from '../../stores/khatmStore';
@@ -43,6 +44,7 @@ import { FahmPanel } from '../Fahm/FahmPanel';
 import './MushafPage.css';
 
 export function MushafPage() {
+    const livePassage = useLiveFollowStore(s => s.passage);
     const { t } = useTranslation();
     const navigate = useNavigate();
     const {
@@ -644,7 +646,7 @@ export function MushafPage() {
                                         return (
                                             <span
                                                 key={ayah.number}
-                                                className={`mih-ayah${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''} ${hasContext ? 'mih-ayah--has-context' : ''}`}
+                                                className={`mih-ayah ${livePassage?.surah === ayah.surah && livePassage?.ayah === ayah.numberInSurah ? 'live-follow-current' : ''}${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''} ${hasContext ? 'mih-ayah--has-context' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
                                                 data-page={ayah.page}
