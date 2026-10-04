@@ -18,6 +18,7 @@ export function MushafGestureNavigator() {
         const target = pending.current;
         pending.current = null;
         if (target !== null) {
+            window.scrollTo({top:0,behavior:'auto'});
             sessionStorage.removeItem('scrollToAyah');
             sessionStorage.setItem('scrollToPage',String(target));
             sessionStorage.setItem('isSilentJump','true');

@@ -15,6 +15,7 @@ Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 const ayah = {number:262,surah:2,numberInSurah:255,page:42,text:'اللَّهُ'} as Ayah;
 let div:HTMLDivElement;let root:Root;
 beforeEach(()=>{
+ vi.spyOn(window,'scrollTo').mockImplementation(()=>{});
  vi.useFakeTimers();vi.stubGlobal('localStorage',createMemoryStorage());vi.stubGlobal('sessionStorage',createMemoryStorage());
  useReadingBookmarkStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
  useQuranStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
