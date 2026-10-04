@@ -1,275 +1,68 @@
-/**
- * Adhkar Audio Service
- * Handles playback of Adhkar audio, routing to either:
- * 1. Quranic audio (Mishary) for Rabbana invocations
- * 2. Pre-recorded MP3s for Hisnul Muslim
- * 3. Fallback to Google TTS or local Web Speech API
- */
-
 import { fetchAyahAudioUrl, fetchRabbanaTimings } from './quranApi';
 import { playTts, stopTts } from './ttsService';
+import { playMediaClip, playbackPause } from './mediaPlayback';
 
-let adhkarAudio: HTMLAudioElement | null = null;
-let currentLoopTimeout: ReturnType<typeof setTimeout> | null = null;
-let isPlayingLoop = false;
-let autoStoptimer: ReturnType<typeof setTimeout> | null = null;
+let audio: HTMLAudioElement | null = null;
+let session: AbortController | null = null;
+const getAudio = () => { if (!audio) { audio = new Audio(); audio.preload = 'none'; } return audio; };
+type Options = { rate?: number; onEnd?: () => void };
 
-function getAdhkarAudio(): HTMLAudioElement {
-    if (!adhkarAudio) {
-        adhkarAudio = new Audio();
-        adhkarAudio.preload = 'none';
-    }
-    return adhkarAudio;
-}
-
-/**
- * Parses a source string like "2:127" into surah and ayah numbers.
- */
-function parseQuranicSource(source?: string): { surah: number; ayah: number; isRange: boolean } | null {
-    if (!source) return null;
-    const match = source.match(/^(\d+):(\d+)(?:-(\d+))?$/);
-    if (match) {
-        return {
-            surah: parseInt(match[1], 10),
-            ayah: parseInt(match[2], 10),
-            isRange: !!match[3]
-        };
-    }
-    return null;
-}
-
-/**
- * Plays a pre-generated Hisnul Muslim MP3 file.
- * Files are stored at /audio/hisn/dua_{id}.mp3
- */
-function playHisnMP3(duaId: number, options?: { rate?: number; onEnd?: () => void }): Promise<boolean> {
-    return new Promise((resolve) => {
-        const audio = getAdhkarAudio();
-        const mp3Url = getAdhkarAudioUrl('hisn_', duaId);
-        if (!mp3Url) {
-            resolve(false);
-            return;
-        }
-
-        audio.src = mp3Url;
-        audio.playbackRate = options?.rate || 1.0;
-
-        audio.onended = () => {
-            options?.onEnd?.();
-            resolve(true);
-        };
-        audio.onerror = () => {
-            console.warn(`Hisnul Muslim MP3 not found: dua_${duaId}.mp3`);
-            resolve(false);
-        };
-        audio.play().catch(() => {
-            console.warn(`Play rejected for Hisnul Muslim dua_${duaId}.mp3`);
-            resolve(false);
-        });
-    });
-}
-
-/**
- * Retourne l'URL du fichier MP3 si la catégorie correspond à Hisnul Muslim.
- * Utilisé pour le système de téléchargement Offline-First.
- */
 export function getAdhkarAudioUrl(categoryId: string, duaId: number): string | null {
     if (categoryId !== 'hisn_chap_27' && categoryId !== 'chap_27' && (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_'))) {
         return `${import.meta.env.BASE_URL}audio/hisn/dua_${duaId}.mp3`;
     }
-    return null; // Les autres (comme Rabanna) nécessitent un appel asynchrone à l'API Quran.com
+    return null;
 }
 
-/**
- * Plays a single Adhkar audio
- */
-export async function playAdhkarAudio(
-    text: string,
-    _duaId: number,
-    categoryId: string,
-    source?: string,
-    options?: { rate?: number; onEnd?: () => void }
-): Promise<void> {
-    stopAdhkarAudio();
-    // 1. Check if it's a Quranic Dua (e.g. Rabbana). 
-    const quranicSource = parseQuranicSource(source);
-    if (quranicSource && categoryId === 'rabanna') {
+async function playOnce(text: string, duaId: number, categoryId: string, source: string | undefined, rate: number | undefined, signal: AbortSignal): Promise<void> {
+    const quran = categoryId === 'rabanna' && source?.match(/^(\d+):(\d+)(?:-(\d+))?$/);
+    if (quran) {
+        const surah = Number(quran[1]), first = Number(quran[2]), last = Number(quran[3] || first);
+        let complete = true;
         try {
-            if (quranicSource.isRange) {
-                // Play range sequentially with slicing on the first ayah
-                const endAyah = Number(source!.split('-')[1]);
-
-                // Fetch timings for the first ayah using the text to find the start point
-                const startTimings = await fetchRabbanaTimings(quranicSource.surah, quranicSource.ayah, text);
-
-                for (let a = quranicSource.ayah; a <= endAyah; a++) {
-                    const url = await fetchAyahAudioUrl(quranicSource.surah, a);
-                    if (!url) break;
-
-                    if (!isPlayingLoop && a > quranicSource.ayah) {
-                        return; // Stopped manually
-                    }
-
-                    const played = await new Promise<boolean>((resolve) => {
-                        const audio = getAdhkarAudio();
-                        audio.src = url;
-                        audio.playbackRate = options?.rate || 1.0;
-
-                        const clearTimeupdate = () => { audio.ontimeupdate = null; };
-
-                        // If it's the first ayah, slice it to start exactly at the Rabbana
-                        if (a === quranicSource.ayah && startTimings) {
-                            audio.currentTime = startTimings[0] / 1000;
-                        }
-
-                        // For the last ayah we usually play to the end, but could slice if needed.
-                        // Currently Rabbanas end at the end of the ayah.
-
-                        audio.onended = () => resolve(true);
-                        audio.onerror = () => {
-                            clearTimeupdate();
-                            resolve(false);
-                        };
-                        audio.play().catch(() => {
-                            clearTimeupdate();
-                            resolve(false);
-                        });
-                    });
-                    if (!played) break;
-                }
-                options?.onEnd?.();
-                return;
-            } else {
-                // Single Ayah playback with precise slicing
-                const timings = await fetchRabbanaTimings(quranicSource.surah, quranicSource.ayah, text);
-                const url = await fetchAyahAudioUrl(quranicSource.surah, quranicSource.ayah);
-
-                if (url && timings) {
-                    const [startMs, endMs] = timings;
-                    const played = await new Promise<boolean>((resolve) => {
-                        const audio = getAdhkarAudio();
-                        audio.src = url;
-                        audio.playbackRate = options?.rate || 1.0;
-
-                        const durationMs = (endMs - startMs) / audio.playbackRate;
-
-                        // Prepare time slicing
-                        audio.currentTime = startMs / 1000;
-
-                        const clearTimeupdate = () => { audio.ontimeupdate = null; };
-
-                        // We ensure exact isolation
-                        audio.ontimeupdate = () => {
-                            if (audio.currentTime >= endMs / 1000) {
-                                audio.pause();
-                                clearTimeupdate();
-                                options?.onEnd?.();
-                                resolve(true);
-                            }
-                        };
-
-                        // Backup safety timeout incase timeupdate misses
-                        if (autoStoptimer) clearTimeout(autoStoptimer);
-                        autoStoptimer = setTimeout(() => {
-                            audio.pause();
-                            clearTimeupdate();
-                            options?.onEnd?.();
-                            resolve(true);
-                        }, durationMs + 300); // 300ms buffer
-
-                        audio.onerror = () => {
-                            console.error('Failed to play sliced Quranic audio for Adhkar');
-                            clearTimeupdate();
-                            if (autoStoptimer) clearTimeout(autoStoptimer);
-                            resolve(false);
-                        };
-
-                        audio.play().catch(() => {
-                            console.error('Play promise rejected for Quranic audio slice');
-                            clearTimeupdate();
-                            if (autoStoptimer) clearTimeout(autoStoptimer);
-                            resolve(false);
-                        });
-                    });
-
-                    if (played) return; // Exist if played successfully. Otherwise, fallback TTS.
-                }
+            const timings = await fetchRabbanaTimings(surah, first, text);
+            if (signal.aborted) return;
+            for (let verse = first; verse <= last; verse++) {
+                const url = await fetchAyahAudioUrl(surah, verse);
+                if (signal.aborted) return;
+                if (!url || !await playMediaClip(getAudio(), url, {signal, rate,
+                    start:verse === first && timings ? timings[0]/1000 : 0,
+                    end:first === last && timings ? timings[1]/1000 : undefined})) {complete = false;break;}
             }
-        } catch (e) {
-            console.error('Error fetching/playing Quranic audio', e);
-        }
+            if (complete || signal.aborted) return;
+        } catch { if (signal.aborted) return; }
     }
-
-    // 2. Hisnul Muslim — play pre-generated MP3
-    if (categoryId !== 'hisn_chap_27' && categoryId !== 'chap_27' && (categoryId.startsWith('hisn_') || categoryId.startsWith('chap_'))) {
-        const played = await playHisnMP3(_duaId, options);
-        if (played) return;
-        // If MP3 not found, fall through to TTS
-    }
-
-    // 3. Fallback to TTS for other standard Adhkar (if any remain)
-    await playTts(text, options);
+    const url = getAdhkarAudioUrl(categoryId, duaId);
+    if (url && await playMediaClip(getAudio(), url, {signal, rate})) return;
+    if (!signal.aborted) await playTts(text, {rate, signal});
 }
 
-/**
- * Plays Adhkar audio in a loop
- */
-export async function playAdhkarAudioLoop(
-    text: string,
-    duaId: number,
-    categoryId: string,
-    count: number,
-    source?: string,
-    options?: { rate?: number; pauseMs?: number; onLoop?: (current: number) => void; onEnd?: () => void }
-): Promise<void> {
-    const pauseMs = options?.pauseMs ?? 600;
-    isPlayingLoop = true;
-
-    for (let i = 0; i < count; i++) {
-        if (!isPlayingLoop) break;
-
-        options?.onLoop?.(i);
-
-        await new Promise<void>((resolve) => {
-            playAdhkarAudio(text, duaId, categoryId, source, {
-                rate: options?.rate,
-                onEnd: resolve
-            });
-        });
-
-        if (!isPlayingLoop) break;
-
-        // Pause between repetitions
-        if (i < count - 1) {
-            await new Promise<void>(resolve => {
-                currentLoopTimeout = setTimeout(resolve, pauseMs);
-            });
-        }
-    }
-
-    isPlayingLoop = false;
-    options?.onEnd?.();
-}
-
-/**
- * Stops all Adhkar audio
- */
 export function stopAdhkarAudio() {
-    isPlayingLoop = false;
-    if (currentLoopTimeout) {
-        clearTimeout(currentLoopTimeout);
-        currentLoopTimeout = null;
-    }
-    if (autoStoptimer) {
-        clearTimeout(autoStoptimer);
-        autoStoptimer = null;
-    }
-
-    if (adhkarAudio) {
-        adhkarAudio.pause();
-        adhkarAudio.ontimeupdate = null;
-        adhkarAudio.currentTime = 0;
-    }
-
+    session?.abort();
+    session = null;
+    audio?.pause();
     stopTts();
+}
+
+export async function playAdhkarAudio(text: string, duaId: number, categoryId: string, source?: string, options?: Options): Promise<void> {
+    await playAdhkarAudioLoop(text, duaId, categoryId, 1, source, options);
+}
+
+export async function playAdhkarAudioLoop(text: string, duaId: number, categoryId: string, count: number, source?: string,
+    options?: Options & {pauseMs?: number; onLoop?: (current: number) => void}): Promise<void> {
+    stopAdhkarAudio();
+    const controller = new AbortController();
+    session = controller;
+    const {signal} = controller;
+    const repeats = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
+    try {
+        for (let i = 0; i < repeats; i++) {
+            if (signal.aborted) return;
+            options?.onLoop?.(i);
+            await playOnce(text, duaId, categoryId, source, options?.rate, signal);
+            if (signal.aborted) return;
+            if (i < repeats - 1) await playbackPause(options?.pauseMs ?? 600, signal);
+        }
+        if (!signal.aborted && repeats > 0) options?.onEnd?.();
+    } finally { if (session === controller) session = null; }
 }

@@ -1,8 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { getAyahCountForPage, TOTAL_VERSES } from '../components/Mushaf/pageVerseData';
+
+export function hasCompleteKhatm(pages: number[]): boolean {
+    const valid = new Set(pages.filter(p => Number.isInteger(p) && p >= 1 && p <= 604));
+    return valid.size === 604;
+}
+
+function legacyCompletionCount(): number {
+    try { const count = Number(localStorage.getItem('quran-coach-khatm-count')); return Number.isSafeInteger(count) && count > 0 ? count : 0; }
+    catch { return 0; }
+}
 
 interface KhatmState {
+    completedAt: string | null;
+    completionCount: number;
+    celebrationPending: boolean;
+    confirmCompletion: () => boolean;
+    dismissCelebration: () => void;
     // Config
     isActive: boolean;
     startDate: string; // YYYY-MM-DD
@@ -53,6 +67,16 @@ function daysBetween(a: string, b: string): number {
 export const useKhatmStore = create<KhatmState>()(
     persist(
         (set, get) => ({
+            completedAt: null,
+            completionCount: legacyCompletionCount(),
+            celebrationPending: false,
+            confirmCompletion: () => {
+                const state = get();
+                if (!state.isActive || state.completedAt || !hasCompleteKhatm(state.validatedPages)) return false;
+                set({completedAt: new Date().toISOString(), completionCount: state.completionCount + 1, celebrationPending: true});
+                return true;
+            },
+            dismissCelebration: () => set({celebrationPending: false}),
             isActive: false,
             startDate: '',
             endDate: '',
@@ -63,6 +87,8 @@ export const useKhatmStore = create<KhatmState>()(
 
             activate: (start, end) => set({
                 isActive: true,
+                completedAt: null,
+                celebrationPending: false,
                 startDate: start,
                 endDate: end,
                 validatedPages: [],
@@ -104,6 +130,7 @@ export const useKhatmStore = create<KhatmState>()(
             deactivate: () => set({ isActive: false }),
 
             togglePage: (page) => set((state) => {
+                if (!Number.isInteger(page) || page < 1 || page > 604 || state.completedAt) return state;
                 const today = todayStr();
                 let dailyReadCount = state.dailyReadCount || 0;
                 let lastActiveDate = state.lastActiveDate || today;
@@ -127,15 +154,13 @@ export const useKhatmStore = create<KhatmState>()(
                 return { validatedPages: pages, dailyReadCount, lastActiveDate };
             }),
 
-            reset: () => set({ validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1, dailyReadCount: 0, lastActiveDate: '' }),
+            reset: () => set({ completedAt: null, celebrationPending: false, validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1, dailyReadCount: 0, lastActiveDate: '' }),
 
             isPageValidated: (page) => get().validatedPages.includes(page),
 
             getOverallProgress: () => {
-                const validated = get().validatedPages;
-                const read = validated.reduce((sum, p) => sum + getAyahCountForPage(p), 0);
-                const total = TOTAL_VERSES;
-                return { read, total, pct: Math.round((read / total) * 100) };
+                const read = new Set(get().validatedPages.filter(p => Number.isInteger(p) && p >= 1 && p <= 604)).size;
+                return {read, total:604, pct:read === 604 ? 100 : Math.floor(read / 604 * 100)};
             },
 
             getTotalDays: () => {
@@ -160,15 +185,7 @@ export const useKhatmStore = create<KhatmState>()(
                 return Math.max(1, rem);
             },
 
-            getDailyGoal: () => {
-                const validated = get().validatedPages;
-                const read = validated.reduce((sum, p) => sum + getAyahCountForPage(p), 0);
-                const remaining = TOTAL_VERSES - read;
-                const daysLeft = get().getDaysRemaining();
-                const versesPerDay = Math.ceil(remaining / daysLeft);
-                // We return "equivalent pages" for the UI, but calculated from verses
-                return Math.ceil(versesPerDay / 10.3);
-            },
+            getDailyGoal: () => Math.ceil((604 - get().getOverallProgress().read) / get().getDaysRemaining()),
 
             getTodayRange: () => {
                 const totalDays = get().getTotalDays();

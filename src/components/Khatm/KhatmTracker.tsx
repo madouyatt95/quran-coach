@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
-import { useKhatmStore } from '../../stores/khatmStore';
+import { hasCompleteKhatm, useKhatmStore } from '../../stores/khatmStore';
 import { useQuranStore } from '../../stores/quranStore';
 import type { Ayah } from '../../types';
 import './KhatmTracker.css';
@@ -153,7 +153,7 @@ export function KhatmTracker() {
 
     return (
         <>
-            <div className="khatm-header-trigger" onClick={handleClick}>
+            <button type="button" aria-label="Objectif Khatm" className="khatm-header-trigger" onClick={handleClick}>
                 {!store.isActive ? (
                     <div className="khatm-trigger-inactive" title="Configurer l'objectif Khatm">
                         <span className="khatm-trigger-emoji">🌙</span>
@@ -161,11 +161,11 @@ export function KhatmTracker() {
                     </div>
                 ) : (
                     <div className="khatm-trigger-active">
-                        <div className="khatm-trigger-pct">{progress.pct}%</div>
-                        <div className="khatm-trigger-pages">{progress.read}/604</div>
+                        <div className="khatm-trigger-pct">{store.completedAt ? "Terminé" : hasCompleteKhatm(store.validatedPages) ? "Confirmer" : `${progress.pct}%`}</div>
+                        <div className="khatm-trigger-pages">{store.validatedPages.length}/604</div>
                     </div>
                 )}
-            </div>
+            </button>
 
             {/* Details Popup */}
             {showDetails && (
@@ -183,7 +183,7 @@ export function KhatmTracker() {
                                 <span className="khatm-stat-label">Total</span>
                             </div>
                             <div className="khatm-stat">
-                                <span className="khatm-stat-value">{todayRead}/{adaptiveGoal}</span>
+                                <span className="khatm-stat-value">{adaptiveGoal === 0 ? 'Atteint' : `${todayRead}/${adaptiveGoal}`}</span>
                                 <span className="khatm-stat-label">Aujourd'hui</span>
                             </div>
                             <div className="khatm-stat">
@@ -206,6 +206,11 @@ export function KhatmTracker() {
                         </div>
 
                         <div className="khatm-actions-stack">
+                            {hasCompleteKhatm(store.validatedPages) && !store.completedAt && <>
+                                <p>Les 604 pages sont validées. Confirmez lorsque vous avez terminé votre lecture.</p>
+                                <button className="khatm-btn khatm-btn-primary" onClick={()=>{if(store.confirmCompletion())setShowDetails(false);}}>J’ai terminé mon Khatm</button>
+                            </>}
+                            {store.completedAt && <p role="status">Khatm terminé et enregistré.</p>}
                             <button
                                 className="khatm-btn khatm-btn-primary"
                                 onClick={handleResumeKhatm}

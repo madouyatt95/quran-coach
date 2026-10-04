@@ -8,7 +8,7 @@ import { HISNUL_MUSLIM_DATA, type HisnMegaCategory, type HisnChapter } from '../
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { formatDivineNames } from '../lib/divineNames';
 import { DownloadButton } from '../components/DownloadButton';
-import { getAdhkarAudioUrl } from '../lib/adhkarAudioService';
+import { getAdhkarAudioUrl, playAdhkarAudio, playAdhkarAudioLoop, stopAdhkarAudio } from '../lib/adhkarAudioService';
 import './AdhkarPage.css';
 
 interface Dhikr {
@@ -470,6 +470,8 @@ export function AdhkarPage() {
     };
 
     // ===== Audio Loop Player (via ttsService) =====
+    const audioSequence = useRef(0);
+    const [audioError, setAudioError] = useState('');
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
     const [isAudioLoading, setIsAudioLoading] = useState(false);
     const [audioLoopCount, setAudioLoopCount] = useState(3);
@@ -505,59 +507,38 @@ export function AdhkarPage() {
     useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, [selectedCategory?.id, currentDhikrIndex, showList]);
 
     const playDhikrOnce = useCallback(async (text: string, dhikrId: number, categoryId: string, source?: string) => {
-        setIsAudioLoading(true);
-        try {
-            const { playAdhkarAudio } = await import('../lib/adhkarAudioService');
-            await playAdhkarAudio(text, dhikrId, categoryId, source, { rate: playbackSpeed });
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setIsAudioLoading(false);
-        }
+        const id = ++audioSequence.current;
+        setAudioError('');setIsAudioLoading(true);setIsAudioPlaying(false);
+        try { await playAdhkarAudio(text, dhikrId, categoryId, source, {rate:playbackSpeed}); }
+        catch { if (id === audioSequence.current) setAudioError('Lecture indisponible. Réessayez.'); }
+        finally { if (id === audioSequence.current) setIsAudioLoading(false); }
     }, [playbackSpeed]);
 
     const playAudioLoop = useCallback(async () => {
         if (!selectedCategory) return;
         const dhikr = selectedCategory.adhkar[currentDhikrIndex];
         if (!dhikr) return;
-
-        setIsAudioPlaying(true);
-        setIsAudioLoading(true);
-        setCurrentLoop(0);
-
+        const id = ++audioSequence.current;
+        setAudioError('');setIsAudioPlaying(true);setIsAudioLoading(true);setCurrentLoop(0);
         try {
-            const { playAdhkarAudioLoop } = await import('../lib/adhkarAudioService');
             await playAdhkarAudioLoop(dhikr.arabic, dhikr.id, selectedCategory.id, audioLoopCount, dhikr.source, {
-                rate: playbackSpeed,
-                onLoop: (i) => setCurrentLoop(i),
-                onEnd: () => {
-                    // Auto-increment counter when loop finishes
-                    if (!['morning','evening','hisn_chap_27'].includes(selectedCategory.id)) incrementCount(dhikr.id, dhikr.count);
-                }
+                rate:playbackSpeed,
+                onLoop:i => {if(id === audioSequence.current)setCurrentLoop(i);},
+                onEnd:() => {
+                    if (id === audioSequence.current && !['morning','evening','hisn_chap_27'].includes(selectedCategory.id)) incrementCount(dhikr.id, dhikr.count);
+                },
             });
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setIsAudioPlaying(false);
-            setIsAudioLoading(false);
-            setCurrentLoop(0);
+        } catch { if (id === audioSequence.current) setAudioError('Lecture indisponible. Réessayez.'); }
+        finally {
+            if (id === audioSequence.current) {setIsAudioPlaying(false);setIsAudioLoading(false);setCurrentLoop(0);}
         }
-    }, [selectedCategory, currentDhikrIndex, audioLoopCount, incrementCount, playbackSpeed]);
+    }, [selectedCategory,currentDhikrIndex,audioLoopCount,incrementCount,playbackSpeed]);
 
-    const pauseAudioLoop = useCallback(async () => {
-        const { stopAdhkarAudio } = await import('../lib/adhkarAudioService');
-        stopAdhkarAudio();
-        setIsAudioPlaying(false);
-        setIsAudioLoading(false);
+    const stopAudioLoop = useCallback(() => {
+        ++audioSequence.current;
+        stopAdhkarAudio();setIsAudioPlaying(false);setIsAudioLoading(false);setCurrentLoop(0);
     }, []);
-
-    const stopAudioLoop = useCallback(async () => {
-        const { stopAdhkarAudio } = await import('../lib/adhkarAudioService');
-        stopAdhkarAudio();
-        setIsAudioPlaying(false);
-        setIsAudioLoading(false);
-        setCurrentLoop(0);
-    }, []);
+    const pauseAudioLoop = stopAudioLoop;
 
     // Stop audio when dhikr changes
     useEffect(() => {
@@ -888,6 +869,7 @@ export function AdhkarPage() {
                                 </button>
                                 <span className="dhikr-audio-player__loop-count">
                                     {isAudioPlaying ? `${currentLoop + 1}/${audioLoopCount}` : `${audioLoopCount}×`}
+                                    {audioError && <span role="alert" style={{display:"block",fontSize:12}}>{audioError}</span>}
                                 </span>
                                 <button
                                     className="dhikr-audio-player__loop-btn"

@@ -1,12 +1,10 @@
 import { createPortal } from 'react-dom';
 import { useDialogFocus } from '../hooks/useDialogFocus';
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useKhatmStore } from '../stores/khatmStore';
 import { useQuranStore } from '../stores/quranStore';
 import { RotateCcw, X } from 'lucide-react';
 import './KhatmCelebration.css';
-
-const STORAGE_KEY = 'quran-coach-khatm-count';
-const DISMISSED_KEY = 'quran-coach-khatm-dismissed';
 
 const PARTICLE_COLORS = [
     '#d4af37', '#c9a84c', '#e8c84a', '#b8943e',
@@ -14,39 +12,10 @@ const PARTICLE_COLORS = [
 ];
 
 export function KhatmCelebration() {
-    const currentPage = useQuranStore(s => s.currentPage);
+    const khatmCount = useKhatmStore(s => s.completionCount);
+    const pending = useKhatmStore(s => s.celebrationPending);
+    const handleDismiss = useKhatmStore(s => s.dismissCelebration);
     const goToPage = useQuranStore(s => s.goToPage);
-
-    const [khatmCount, setKhatmCount] = useState(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? parseInt(saved, 10) : 0;
-    });
-    const [dismissed, setDismissed] = useState(() => {
-        return localStorage.getItem(DISMISSED_KEY) === 'true';
-    });
-    const [hasTriggered, setHasTriggered] = useState(false);
-
-    // Detect khatm completion
-    useEffect(() => {
-        if (currentPage === 604 && !hasTriggered && !dismissed) {
-            const newCount = khatmCount + 1;
-            setKhatmCount(newCount);
-            localStorage.setItem(STORAGE_KEY, String(newCount));
-            setHasTriggered(true);
-            localStorage.removeItem(DISMISSED_KEY);
-        }
-        // Reset trigger when leaving page 604
-        if (currentPage !== 604) {
-            setHasTriggered(false);
-            setDismissed(false);
-            localStorage.removeItem(DISMISSED_KEY);
-        }
-    }, [currentPage, hasTriggered, dismissed, khatmCount]);
-
-    const handleDismiss = () => {
-        setDismissed(true);
-        localStorage.setItem(DISMISSED_KEY, 'true');
-    };
 
     const handleRestart = () => {
         handleDismiss();
@@ -65,10 +34,9 @@ export function KhatmCelebration() {
         }));
     }, []);
 
-    const dialogRef = useDialogFocus(handleDismiss, currentPage === 604 && !dismissed);
+    const dialogRef = useDialogFocus(handleDismiss, pending);
 
-    // Only show on page 604 and not dismissed
-    if (currentPage !== 604 || dismissed) return null;
+    if (!pending) return null;
 
     return createPortal(
         <div className="khatm-overlay" onClick={handleDismiss}>
@@ -114,7 +82,7 @@ export function KhatmCelebration() {
                 <div className="khatm-actions">
                     <button className="khatm-btn-primary" onClick={handleRestart}>
                         <RotateCcw size={16} />
-                        Recommencer depuis Al-Fatiha
+                        Relire Al-Fatiha
                     </button>
                     <button className="khatm-btn-secondary" onClick={handleDismiss}>
                         <X size={14} />

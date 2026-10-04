@@ -11,6 +11,10 @@
  */
 
 
+import { playMediaClip } from './mediaPlayback';
+
+let ttsSession: AbortController | null = null;
+
 // In-memory audio cache (text → ObjectURL)
 const audioCache = new Map<string, string>();
 
@@ -59,6 +63,8 @@ export function isTtsLoading(): boolean {
  * Stop any currently playing TTS audio
  */
 export function stopTts() {
+    ttsSession?.abort();
+    ttsSession = null;
     const audio = getTtsAudio();
     audio.pause();
     // Do not reset src to '' because it sometimes resets the iOS unlock state
@@ -112,11 +118,11 @@ function getGoogleTtsUrl(text: string, lang: string = 'ar'): string {
 /**
  * Fallback: use Web Speech API (SpeechSynthesisUtterance)
  */
-function speakWithWebSpeech(text: string, rate: number = 0.85, lang: string = 'ar'): Promise<void> {
-    return new Promise((resolve) => {
+function speakWithWebSpeech(text: string, rate: number, lang: string, signal: AbortSignal): Promise<void> {
+    if (signal.aborted) return Promise.resolve();
+    return new Promise((resolve, reject) => {
         if (!window.speechSynthesis) {
-            console.warn('Speech synthesis not supported');
-            resolve();
+            reject(new Error('Lecture audio indisponible sur cet appareil.'));
             return;
         }
 
@@ -150,17 +156,16 @@ function speakWithWebSpeech(text: string, rate: number = 0.85, lang: string = 'a
             if (langVoices.length > 0) utterance.voice = langVoices[0];
         }
 
-        utterance.onend = () => {
-            _isPlaying = false;
-            notifyChange();
-            resolve();
+        const finish = (error?: Error) => {
+            signal.removeEventListener('abort', abort);
+            utterance.onend = null;
+            utterance.onerror = null;
+            if (error && !signal.aborted) reject(error); else resolve();
         };
-        utterance.onerror = (e) => {
-            console.warn('Web Speech API error:', e);
-            _isPlaying = false;
-            notifyChange();
-            resolve();
-        };
+        const abort = () => { finish(); window.speechSynthesis.cancel(); };
+        signal.addEventListener('abort', abort, {once:true});
+        utterance.onend = () => finish();
+        utterance.onerror = () => finish(new Error('La lecture vocale a échoué. Réessayez.'));
 
         _isPlaying = true;
         notifyChange();
@@ -200,110 +205,60 @@ function chunkText(text: string, maxLength: number = 180): string[] {
  */
 export async function playTts(
     text: string,
-    options?: { rate?: number; lang?: string; onEnd?: () => void }
+    options?: { rate?: number; lang?: string; onEnd?: () => void; signal?: AbortSignal }
 ): Promise<void> {
-    const rate = options?.rate ?? 1.0;
-    const lang = options?.lang ?? 'ar';
-
-    // Stop any current playback
     stopTts();
-
+    if (options?.signal?.aborted) return;
+    const controller = new AbortController();
+    ttsSession = controller;
+    const {signal} = controller;
+    const abort = () => controller.abort();
+    options?.signal?.addEventListener('abort', abort, {once:true});
+    const rate = options?.rate ?? 1, lang = options?.lang ?? 'ar';
+    const chunks = chunkText(text);
     _isLoading = true;
     notifyChange();
-
-    const textChunks = chunkText(text);
-    const audioUrls: string[] = [];
-
-    // Fetch URLs (serving from cache if available)
     try {
-        const fetchPromises = textChunks.map(async (chunk) => {
-            let url = audioCache.get(`${lang}:${chunk}`);
-            if (!url) {
-                const reqUrl = getGoogleTtsUrl(chunk, lang);
-                // Fetch as blob with no-referrer to bypass Google preventing direct audio playback from non-Google origins
-                const res = await fetch(reqUrl, { referrerPolicy: 'no-referrer' });
-                if (!res.ok) throw new Error(`Google TTS request failed: ${res.status}`);
+        let urls: string[] = [];
+        try {
+            urls = await Promise.all(chunks.map(async chunk => {
+                const key = `${lang}:${chunk}`;
+                const cached = audioCache.get(key);
+                if (cached) return cached;
+                const res = await fetch(getGoogleTtsUrl(chunk, lang), {referrerPolicy:'no-referrer', signal});
+                if (!res.ok) throw new Error(`TTS ${res.status}`);
                 const blob = await res.blob();
-
-                // Convert blob to Base64 Data URI for robust cross-platform mobile playback (Capacitor/iOS)
-                url = await new Promise<string>((resolve, reject) => {
+                const url = await new Promise<string>((resolve,reject) => {
                     const reader = new FileReader();
                     reader.onloadend = () => resolve(reader.result as string);
                     reader.onerror = reject;
                     reader.readAsDataURL(blob);
                 });
-
-                audioCache.set(`${lang}:${chunk}`, url);
-            }
-            return url;
-        });
-
-        const resolvedUrls = await Promise.all(fetchPromises);
-        audioUrls.push(...resolvedUrls);
-    } catch (e) {
-        console.warn('[TTS] Failed to pre-fetch TTS blobs', e);
-        // Do not add anything to audioUrls so it triggers the seamless Web Speech fallback
-    }
-
-    _isLoading = false;
-    notifyChange();
-
-    if (audioUrls.length > 0) {
+                if (!signal.aborted) audioCache.set(key,url);
+                return url;
+            }));
+        } catch { /* Use device speech when the online voice is unavailable. */ }
+        if (signal.aborted) return;
+        _isLoading = false;
         _isPlaying = true;
         notifyChange();
-
-        for (let i = 0; i < audioUrls.length; i++) {
-            if (!_isPlaying) break; // Interrupted
-
-            const success = await new Promise<boolean>((resolve) => {
-                const audio = getTtsAudio();
-
-                audio.onended = () => resolve(true);
-                audio.onerror = (e) => {
-                    console.warn(`[TTS] Error loading chunk ${i}:`, e);
-                    resolve(false);
-                };
-
-                // Add an external abort timeout in case 'play()' gets stuck indefinitely 
-                // without firing onended or onerror
-                const safeTimeout = setTimeout(() => {
-                    console.warn(`[TTS] Timeout waiting for playback chunk ${i}`);
-                    resolve(false);
-                }, 15000);
-
-                audio.src = audioUrls[i];
-                audio.playbackRate = rate;
-
-                audio.play().then(() => {
-                    clearTimeout(safeTimeout);
-                }).catch((e) => {
-                    clearTimeout(safeTimeout);
-                    console.warn(`[TTS] Play failed for chunk ${i}:`, e);
-                    resolve(false);
-                });
-            });
-
-            if (!success) {
-                // If Google TTS fails mid-chunk, fallback to Web Speech for the FULL REMAINING text
-                _isPlaying = false; // reset flag before fallback
-                const remainingText = textChunks.slice(i).join(' ');
-                console.log(`[TTS] Falling back to Web Speech for remaining ${textChunks.length - i} chunks.`);
-                await speakWithWebSpeech(remainingText, rate, lang);
-                break; // Stop loop, fallback handles the rest
+        if (urls.length) {
+            for (let i = 0; i < urls.length; i++) {
+                if (signal.aborted) return;
+                const played = await playMediaClip(getTtsAudio(),urls[i],{signal,rate});
+                if (signal.aborted) return;
+                if (!played) { await speakWithWebSpeech(chunks.slice(i).join(' '),rate,lang,signal); break; }
             }
+        } else { await speakWithWebSpeech(text,rate,lang,signal); }
+        if (!signal.aborted) options?.onEnd?.();
+    } finally {
+        options?.signal?.removeEventListener('abort',abort);
+        if (ttsSession === controller) {
+            ttsSession = null;
+            _isLoading = false;
+            _isPlaying = false;
+            notifyChange();
         }
-        _isPlaying = false;
-        notifyChange();
-        options?.onEnd?.();
-        return;
-    }
-
-    // Direct Web Speech fallback if no URLs were generated
-    try {
-        await speakWithWebSpeech(text, rate, lang);
-        options?.onEnd?.();
-    } catch {
-        options?.onEnd?.();
     }
 }
 
