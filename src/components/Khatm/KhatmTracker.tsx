@@ -211,7 +211,7 @@ export function KhatmTracker() {
                             </div>
                         </div>
 
-                        <p style={{fontSize:12,lineHeight:1.5,opacity:.75}}>Validation automatique après 15 secondes de consultation au premier plan et passage à la page suivante. Le bouton ✓ permet de corriger ou valider une page, notamment la dernière.</p>
+                        <p style={{fontSize:12,lineHeight:1.5,opacity:.75}}>Dans le lecteur texte, le défilement vers la page suivante valide la page parcourue. Dans les lecteurs image, consultez la page 15 secondes avant de passer à la suivante. Les recherches et sauts de navigation ne comptent pas. Le bouton ✓ permet de corriger ou valider une page, notamment la dernière.</p>
                         <div className="khatm-actions-stack">
                             {hasCompleteKhatm(store.validatedPages) && !store.completedAt && <>
                                 <p>Les 604 pages sont validées. Confirmez lorsque vous avez terminé votre lecture.</p>

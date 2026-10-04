@@ -2363,3 +2363,31 @@
 .mih-coach-session { width: min(280px, calc(100vw - 32px)); color: #f8fafc; max-height: 55dvh; overflow-y: auto; }
 .mih-coach-session__text, .mih-coach-session .mih-coach-stats { color: #f8fafc; }
 .mih-coach-session__close { width: 44px; height: 44px; }
+
+/* Guided practice: keep actions in the document, with one primary action per step. */
+.hifdh-page{max-width:760px;margin:auto;padding-bottom:24px}
+.hifdh-page__header-row{padding-top:calc(18px + env(safe-area-inset-top));padding-bottom:16px;margin-bottom:16px}
+.hifdh-session-home{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.hifdh-session-home button,.hifdh-review-list button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;text-align:left;border:1px solid var(--color-bg-tertiary);border-radius:14px;background:var(--color-bg-secondary);color:var(--color-text-primary);font-size:14px}
+.hifdh-session-home small,.hifdh-review-list small{font-size:11px;color:var(--color-text-secondary);line-height:1.5}
+.hifdh-steps{display:flex;border-bottom:1px solid var(--color-bg-tertiary);margin:20px 0 12px}
+.hifdh-steps button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border:0;background:transparent;color:var(--color-text-secondary);font-size:13px}
+.hifdh-steps button[aria-current]{border-bottom:2px solid #c9a84c;color:#c9a84c}.hifdh-steps span{font-size:11px;opacity:.7}
+.hifdh-guided-action{padding:12px 0 18px}.hifdh-guided-action p{font-size:13px;line-height:1.6;color:var(--color-text-secondary);margin:0 0 12px}
+.hifdh-primary{width:100%;min-height:48px;padding:12px 16px;border:0;border-radius:14px;background:#c9a84c;color:#171717;font-size:14px;font-weight:650;cursor:pointer}.hifdh-primary:disabled{opacity:.45}
+.hifdh-text-action{display:block;margin:10px auto 0;padding:8px;background:transparent;border:0;color:var(--color-text-secondary);font-size:12px}
+.hifdh-passage-settings,.hifdh-extra-settings{border:1px solid var(--color-bg-tertiary);border-radius:14px;margin:0 0 18px;background:var(--color-bg-secondary)}
+.hifdh-passage-settings>summary,.hifdh-extra-settings>summary{padding:16px;font-size:13px;cursor:pointer}.hifdh-passage-settings summary span{float:right;color:#c9a84c;font-size:11px}
+.hifdh-passage-settings .hifdh-selection{border:0;padding:12px;margin:0;box-shadow:none;background:transparent}
+.hifdh-page .hifdh-player-ui{position:static;transform:none;width:100%;max-width:none;border-radius:16px;margin:12px 0;padding:12px;background:var(--color-bg-secondary);box-shadow:none;box-sizing:border-box}
+.hifdh-page .hifdh-ayah-container{padding-bottom:0}.hifdh-page .hifdh-player__controls{gap:14px}.hifdh-page .hifdh-footer-controls{padding:12px;flex-wrap:wrap;gap:14px}
+.hifdh-summary,.hifdh-review-library{background:var(--color-bg-secondary);border:1px solid var(--color-bg-tertiary);border-radius:16px;padding:16px;margin:16px 0;scroll-margin-top:20px}
+.hifdh-summary h2,.hifdh-review-library h2{font-size:18px;margin:0 0 12px}.hifdh-summary p,.hifdh-summary small,.hifdh-summary summary,.hifdh-review-library p{font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
+.hifdh-summary .hifdh-primary{margin:14px 0}.hifdh-review-list{display:grid;gap:8px;max-height:340px;overflow-y:auto;margin-top:12px}.hifdh-review-list button{width:100%}.hifdh-review-list span[lang=ar]{font-family:var(--font-arabic);font-size:21px;align-self:stretch}
+.hifdh-queue-status{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;font-size:12px;background:#c9a84c14;border-radius:12px}.hifdh-queue-status button{padding:8px;border:0;background:transparent;color:#c9a84c}
+.hifdh-audio-error{font-size:13px;padding:14px;border:1px solid #e89b5755;border-radius:12px;line-height:1.5}
+.hifdh-page .mih-coach-aura{position:static;width:100%;height:44px;border-radius:12px;background:var(--color-bg-secondary);color:#c9a84c;box-shadow:none;margin:12px 0;gap:8px;font-size:13px}
+.hifdh-page .mih-coach-aura::after{content:'Modes de récitation et examen'}.hifdh-page .mih-coach-aura-glow{display:none}
+.hifdh-page .mih-coach-controls{bottom:calc(var(--bottom-nav-height) + 10px)}
+.hifdh-page button:focus-visible,.hifdh-page summary:focus-visible{outline:2px solid #c9a84c;outline-offset:2px}
+@media(max-width:360px){.hifdh-session-home{grid-template-columns:1fr}.hifdh-steps button{font-size:12px}.hifdh-passage-settings summary span{float:none;margin-left:8px}}

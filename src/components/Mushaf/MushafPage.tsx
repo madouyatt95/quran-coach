@@ -92,7 +92,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     const [shareAyah, setShareAyah] = useState<Ayah | null>(null);
     const [fahmAyah, setFahmAyah] = useState<{ surah: number; ayah: number; text: string; translation?: string; surahName?: string } | null>(null);
     const [verseSelection,setVerseSelection] = useState<VerseSelection|null>(null);
-    useKhatmReading({page:currentPage, surah:currentSurah, ayah:currentAyah,
+    useKhatmReading({continuousText:true,page:currentPage, surah:currentSurah, ayah:currentAyah,
         ready:!isLoading && !error && currentSurahAyahs.some(a=>a.page === currentPage && a.surah === currentSurah) && !showSearch && !showSideMenu && !showToolbar && !verseSelection && !shareAyah && !fahmAyah});
     const closeVerseActions = useCallback(()=>setVerseSelection(null),[]);
     const versePress = useVersePress(setVerseSelection,currentSurah);

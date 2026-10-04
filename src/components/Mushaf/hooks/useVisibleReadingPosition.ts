@@ -1,4 +1,4 @@
-import {useEffect, type RefObject} from 'react';
+import {useEffect, useRef, type RefObject} from 'react';
 import {useQuranStore} from '../../../stores/quranStore';
 import {useLiveFollowStore} from '../../../stores/liveFollowStore';
 
@@ -17,14 +17,20 @@ export function verseAtReadingLine(elements: Iterable<HTMLElement>, top: number,
 }
 
 export function useVisibleReadingPosition(containerRef:RefObject<HTMLDivElement|null>, surah:number, renderedCount:number, loading:boolean, silent:RefObject<boolean>) {
+    const scrolled = useRef(false);
+    useEffect(()=>{scrolled.current=false;},[surah,loading]);
     useEffect(()=>{
         const container=containerRef.current;
         if(!container || loading)return;
         let frame=0;
+        const intent=(event:Event)=>{
+            if(event instanceof KeyboardEvent && !["ArrowDown","ArrowUp","PageDown","PageUp","Home","End"," "].includes(event.key))return;
+            scrolled.current=true;silent.current=false;
+        };
         const visible=new Set<HTMLElement>();
         const update=()=>{
             frame=0;
-            if(silent.current || sessionStorage.getItem('isSilentJump') || useLiveFollowStore.getState().active)return;
+            if(!scrolled.current || silent.current || sessionStorage.getItem('isSilentJump') || useLiveFollowStore.getState().active)return;
             const bounds=container.getBoundingClientRect();
             // DOM order resolves verses sharing one line consistently, independent of observer delivery order.
             const candidates=Array.from(container.querySelectorAll<HTMLElement>('.mih-ayah')).filter(el=>visible.has(el) && Number(el.dataset.surah)===surah);
@@ -45,7 +51,8 @@ export function useVisibleReadingPosition(containerRef:RefObject<HTMLDivElement|
         },{root:container,threshold:0});
         container.querySelectorAll<HTMLElement>('.mih-ayah').forEach(el=>observer.observe(el));
         container.addEventListener('scroll',schedule,{passive:true});
+        for(const name of ['wheel','touchmove','keydown'])container.addEventListener(name,intent,{passive:true});
         window.addEventListener('resize',schedule);
-        return ()=>{observer.disconnect();cancelAnimationFrame(frame);container.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);};
+        return ()=>{for(const name of ['wheel','touchmove','keydown'])container.removeEventListener(name,intent);observer.disconnect();cancelAnimationFrame(frame);container.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);};
     },[containerRef,surah,renderedCount,loading,silent]);
 }

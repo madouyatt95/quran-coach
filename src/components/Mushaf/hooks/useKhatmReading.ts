@@ -5,23 +5,23 @@ import {useQuranStore} from '../../../stores/quranStore';
 import {useLiveFollowStore} from '../../../stores/liveFollowStore';
 import {KhatmReadingTracker, MIN_KHATM_READING_MS} from '../../../lib/khatmReading';
 
-export function useKhatmReading({page, ready, surah, ayah}: {page:number;ready:boolean;surah:number;ayah:number}) {
+export function useKhatmReading({page, ready, surah, ayah, continuousText = false}: {page:number;ready:boolean;surah:number;ayah:number;continuousText?:boolean}) {
     const {pathname} = useLocation();
     const enabled = useKhatmStore(s => s.isActive && !s.completedAt);
     const jump = useQuranStore(s => s.khatmJumpSignal);
     const following = useLiveFollowStore(s => s.active);
-    const [foreground,setForeground] = useState(()=>!document.hidden && document.hasFocus());
+    const [foreground,setForeground] = useState(()=>!document.hidden);
     const [obscured,setObscured] = useState(false);
     const tracker = useRef(new KhatmReadingTracker());
     useEffect(()=>{
         const update = () => {
             // Discard a partial visit whenever the app loses foreground, even before React renders.
             tracker.current.reset();
-            setForeground(!document.hidden && document.hasFocus());
+            setForeground(!document.hidden);
         };
         document.addEventListener('visibilitychange',update);
-        window.addEventListener('blur',update);window.addEventListener('focus',update);
-        return ()=>{document.removeEventListener('visibilitychange',update);window.removeEventListener('blur',update);window.removeEventListener('focus',update);tracker.current.reset();};
+
+        return ()=>{document.removeEventListener('visibilitychange',update);tracker.current.reset();};
     },[]);
     useEffect(()=>{
         const update = () => {
@@ -35,16 +35,16 @@ export function useKhatmReading({page, ready, surah, ayah}: {page:number;ready:b
         return ()=>observer.disconnect();
     },[]);
     useEffect(()=>{
-        const observation = {page,ready,surah,ayah,jump,active:enabled && pathname === '/read' && foreground && !following && !obscured};
+        const observation = {page,ready,surah,ayah,jump,minimumMs:continuousText ? 0 : MIN_KHATM_READING_MS,active:enabled && pathname === '/read' && foreground && !following && !obscured};
         const completed = tracker.current.observe(observation,performance.now());
         if (completed !== null) useKhatmStore.getState().validatePage(completed);
         const checkpoint = () => {
-            if (!document.hidden && document.hasFocus() && tracker.current.qualified(observation,performance.now())) {
+            if (!document.hidden && tracker.current.qualified(observation,performance.now())) {
                 useKhatmStore.getState().updateLastRead(surah,ayah,page);
             }
         };
         checkpoint();
         const timer = setTimeout(checkpoint,MIN_KHATM_READING_MS);
         return ()=>clearTimeout(timer);
-    },[page,ready,surah,ayah,jump,enabled,pathname,foreground,following,obscured]);
+    },[page,ready,surah,ayah,jump,enabled,pathname,foreground,following,obscured,continuousText]);
 }

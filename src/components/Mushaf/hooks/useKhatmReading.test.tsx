@@ -24,7 +24,7 @@ beforeEach(async()=>{
  container=document.createElement('div');document.body.append(container);root=createRoot(container);
  await act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Harness/></MemoryRouter>));
 });
-afterEach(async()=>{await act(async()=>root.unmount());container.remove();vi.restoreAllMocks();vi.useRealTimers();vi.unstubAllGlobals();});
+afterEach(async()=>{await vi.dynamicImportSettled();await act(async()=>root.unmount());container.remove();vi.restoreAllMocks();vi.useRealTimers();vi.unstubAllGlobals();});
 it('does not validate the displayed page; validates it once on a normal next-page transition',async()=>{
  expect(useKhatmStore.getState().validatedPages).toEqual([]);await tick(15000);
  expect(useKhatmStore.getState().validatedPages).toEqual([]);expect(useKhatmStore.getState().lastKhatmPage).toBe(42);
@@ -48,4 +48,14 @@ it('excludes a loading image and an open Khatm dialog',async()=>{
 });
 it('never credits voice-recognition jumps',async()=>{
  await tick(15000);await act(async()=>useLiveFollowStore.setState({active:true}));await move(43);expect(useKhatmStore.getState().validatedPages).toEqual([]);
+});
+it('credits a fresh text Khatm through page 12 without a 15-second dwell, even when hasFocus is false',async()=>{
+ await act(async()=>root.unmount());vi.spyOn(document,'hasFocus').mockReturnValue(false);
+ useKhatmStore.getState().activate('2026-10-04','2026-11-04');useQuranStore.setState({currentPage:1,currentSurah:1,currentAyah:1,khatmJumpSignal:0});
+ function Text(){const q=useQuranStore();useKhatmReading({continuousText:true,page:q.currentPage,surah:q.currentSurah,ayah:q.currentAyah,ready:true});return null;}
+ root=createRoot(container);await act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Text/></MemoryRouter>));
+ for(let page=2;page<=12;page++){await tick(700);await move(page);}
+ expect(useKhatmStore.getState().validatedPages).toEqual(Array.from({length:11},(_,i)=>i+1));
+ expect(useKhatmStore.getState().getOverallProgress()).toEqual({read:11,total:604,pct:1.8});
+ await move(50,false);expect(useKhatmStore.getState().validatedPages).toHaveLength(11);
 });

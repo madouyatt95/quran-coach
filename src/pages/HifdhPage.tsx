@@ -9,7 +9,6 @@ import {
     Plus,
     RotateCcw,
     Square,
-    BookmarkCheck,
     Languages,
     AlignJustify,
     BookOpen,
@@ -21,14 +20,14 @@ import {
 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
 import { useSettingsStore, PLAYBACK_SPEEDS } from '../stores/settingsStore';
-import { useStatsStore } from '../stores/statsStore';
+import {readHifdhSession,HIFDH_SESSION_KEY,difficultPassages,type HifdhStep,type ReviewPassage} from '../lib/hifdhSession';
 import { fetchSurah, fetchSurahTransliteration, fetchSurahTranslation, getAudioUrl } from '../lib/quranApi';
 import { fetchWordTimings, getCurrentWordIndex } from '../lib/wordTimings';
 import { SRSControls } from '../components/SRS/SRSControls';
 import { useSRSStore } from '../stores/srsStore';
 import { useCoach } from '../hooks/useCoach';
 import { recitationWords } from '../lib/recitationMatching';
-import { readCoachReviews, COACH_ERROR_KEY, COACH_REVIEW_EVENT } from '../lib/coachSession';
+import { readCoachReviews, COACH_REVIEW_EVENT } from '../lib/coachSession';
 import { CoachOverlay } from '../components/Coach/CoachOverlay';
 import { useTranslation } from 'react-i18next';
 import type { VerseWords } from '../lib/wordTimings';
@@ -45,7 +44,20 @@ export function HifdhPage() {
     const incoming = parsePassage(new URLSearchParams(location.search));
     const { surahs } = useQuranStore();
     const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
-    const { recordPageRead } = useStatsStore();
+    const [savedSession,setSavedSession] = useState(()=>readHifdhSession(localStorage));
+    const [step,setStep] = useState<HifdhStep>('listen');
+    const [settingsOpen,setSettingsOpen] = useState(false);
+    const [libraryOpen,setLibraryOpen] = useState(false);
+    const [queue,setQueue] = useState<ReviewPassage[]>([]);
+    const [queueIndex,setQueueIndex] = useState(0);
+    const queueStep = useRef<HifdhStep>('review');
+    const resumeAyah = useRef<number|null>(null);
+    const sessionTouched = useRef(false);
+    const [audioError,setAudioError] = useState('');
+    const playIntent = useRef(false);
+    const playbackRequest = useRef(0);
+    const passageGeneration = useRef(0);
+    const [sessionSaved,setSessionSaved] = useState(true);
     const { getDueCards, cards, addCard } = useSRSStore();
     const [reviewLog, setReviewLog] = useState(() => {
         try { return readCoachReviews(localStorage); } catch { return []; }
@@ -100,7 +112,7 @@ export function HifdhPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [isLooping, setIsLooping] = useState(true);
+    const [isLooping, setIsLooping] = useState(false);
     const [currentRepeat, setCurrentRepeat] = useState(1);
     const [maxRepeats, setMaxRepeats] = useState(1);
 
@@ -135,6 +147,7 @@ export function HifdhPage() {
     const autoAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleCoachReciterFinished = useCallback((currentCoach: typeof coach) => {
+        playIntent.current=false;++playbackRequest.current;
         const audio = audioRef.current;
         if (audio) {
             audio.pause();
@@ -167,8 +180,7 @@ export function HifdhPage() {
             setSelectedSurah(state.surah);
             setStartAyah(state.ayah);
             setEndAyah(state.ayah);
-            // Clear state so it doesn't re-trigger on every render
-            window.history.replaceState({}, document.title);
+
         }
     }, [location.state, location.search]);
 
@@ -177,12 +189,35 @@ export function HifdhPage() {
     const dueCards = getDueCards();
     const allCards = Object.values(cards);
 
-    // Load a verse from SRS card
-    const loadFromSRS = (surah: number, ayah: number) => {
-        setSelectedSurah(surah);
-        setStartAyah(ayah);
-        setEndAyah(ayah);
+    const openPassage = (passage:ReviewPassage, nextStep:HifdhStep='listen') => {
+        playIntent.current=false;++playbackRequest.current;audioRef.current?.pause();setIsPlaying(false);
+        coach.selectCoachMode(null);setStep(nextStep);sessionTouched.current=true;
+        setSelectedSurah(passage.surah);setStartAyah(passage.start);setEndAyah(passage.end);
+        setCurrentAyahIndex(0);setLibraryOpen(false);setSettingsOpen(false);setReloadPassage(n=>n+1);
     };
+    const startQueue = (passages:ReviewPassage[], nextStep:HifdhStep='review') => {
+        if(!passages.length)return;
+        queueStep.current=nextStep;
+        setQueue(passages);setQueueIndex(0);openPassage(passages[0],nextStep);
+    };
+    const loadFromSRS = (surah:number,ayah:number) => startQueue([{surah,start:ayah,end:ayah}]);
+    const advanceReview = () => {
+        if(queueIndex+1<queue.length){const index=queueIndex+1;setQueueIndex(index);openPassage(queue[index],queueStep.current);}
+        else if(queue.length){stopPlayback();void coach.stopCoachListening();coach.setDuoPhase('waiting');setQueue([]);setStep('review');}
+        else if(currentAyahIndex<ayahs.length-1)setCurrentAyahIndex(i=>i+1);
+    };
+    const hardPassages = useMemo(()=>difficultPassages(reviewLog),[reviewLog]);
+    const resumeSession = () => {
+        if(!savedSession)return;
+        resumeAyah.current=savedSession.ayah;
+        setPlaybackSpeed(savedSession.speed);setMaxRepeats(savedSession.repeats);setShowPhonetics(savedSession.phonetics);setSingleVerseMode(savedSession.focus);
+        setQueue([]);openPassage({surah:savedSession.surah,start:savedSession.start,end:savedSession.end},savedSession.step);
+    };
+    useEffect(()=>{
+        if(!sessionTouched.current || !currentAyah || currentAyah.surah!==selectedSurah || currentAyah.numberInSurah<startAyah || currentAyah.numberInSurah>endAyah)return;
+        try{const session={surah:selectedSurah,start:startAyah,end:endAyah,ayah:currentAyah.numberInSurah,speed:playbackSpeed,repeats:maxRepeats,phonetics:showPhonetics,focus:singleVerseMode,step};localStorage.setItem(HIFDH_SESSION_KEY,JSON.stringify(session));setSavedSession(session);setSessionSaved(true);}
+        catch{setSessionSaved(false);}
+    },[selectedSurah,startAyah,endAyah,currentAyah,playbackSpeed,maxRepeats,showPhonetics,singleVerseMode,step,isPlaying]);
 
     // Update max ayahs when surah changes
     useEffect(() => {
@@ -192,50 +227,29 @@ export function HifdhPage() {
         }
     }, [selectedSurah, surahs]);
 
-    // Load surah ayahs - use a ref to track if this is a surah change
-    const prevSurahRef = useRef(selectedSurah);
-
     useEffect(() => {
-        const surah = surahs.find(s => s.number === selectedSurah);
-        const surahChanged = prevSurahRef.current !== selectedSurah;
-        prevSurahRef.current = selectedSurah;
-
-        // Determine the range to use
-        let fetchStart = startAyah;
-        let fetchEnd = endAyah;
-
-        // If surah changed, always load full surah and reset range
-        // EXCEPT if we just came from a deep link (location.state)
-        const state = location.search ? parsePassage(new URLSearchParams(location.search)) : location.state as { surah?: number; ayah?: number };
-        const isDeepLink = state?.surah === selectedSurah && state?.ayah === startAyah && state?.ayah === endAyah;
-
-        if (surahChanged && surah && !isDeepLink) {
-            fetchStart = 1;
-            fetchEnd = Math.min(5, surah.numberOfAyahs);
-            setStartAyah(1);
-            setEndAyah(fetchEnd);
-        }
-
+        const fetchStart = startAyah;
+        const fetchEnd = endAyah;
         let cancelled = false;
         setLoadError(null);
+        coachRef.current.selectCoachMode(null);
         audioRef.current?.pause();
         setIsPlaying(false);
         setAyahs([]);
         setWordTimings(null);
         setAllTimings(new Map());
-        Promise.all([
-            fetchSurah(selectedSurah),
-            fetchSurahTransliteration(selectedSurah),
-            fetchSurahTranslation(selectedSurah)
-        ]).then(([surahData, transData, translationData]) => {
+        playIntent.current=false;++playbackRequest.current;++passageGeneration.current;
+        setAudioError('');setCurrentTime(0);setDuration(0);setSeekOnLoad(null);setPokeEndTime(null);
+        fetchSurah(selectedSurah).then(surahData => {
             if (cancelled) return;
             const filtered = surahData.ayahs.filter(
                 a => a.numberInSurah >= fetchStart && a.numberInSurah <= fetchEnd
             );
+            if(!filtered.length){setLoadError('Ce passage ne contient aucun verset. Modifiez la sélection.');return;}
             setAyahs(filtered);
-            setTransliterations(transData);
-            setTranslations(translationData);
-            setCurrentAyahIndex(0);
+            setMaxAyahs(surahData.surah.numberOfAyahs);
+            const resumed=filtered.findIndex(a=>a.numberInSurah===resumeAyah.current);
+            setCurrentAyahIndex(Math.max(0,resumed));resumeAyah.current=null;
             setCurrentRepeat(1);
             setSelectionStart(null);
             setSelectionEnd(null);
@@ -243,7 +257,30 @@ export function HifdhPage() {
             if (!cancelled) setLoadError('Impossible de charger ce passage. Vérifiez votre connexion puis réessayez.');
         });
         return () => { cancelled = true; };
-    }, [selectedSurah, startAyah, endAyah, surahs, reloadPassage]);
+    }, [selectedSurah, startAyah, endAyah, reloadPassage]);
+
+    useEffect(()=>{
+        let cancelled=false;setTranslations(new Map());
+        fetchSurahTranslation(selectedSurah).then(data=>{if(!cancelled)setTranslations(data);}).catch(()=>{});
+        return ()=>{cancelled=true;};
+    },[selectedSurah]);
+    useEffect(()=>{
+        if(!showPhonetics)return;
+        let cancelled=false;setTransliterations(new Map());
+        fetchSurahTransliteration(selectedSurah).then(data=>{if(!cancelled)setTransliterations(data);}).catch(()=>{});
+        return ()=>{cancelled=true;};
+    },[selectedSurah,showPhonetics]);
+
+    const safePlay = useCallback(async()=>{
+        const audio=audioRef.current;if(!audio)return;
+        const request=++playbackRequest.current;playIntent.current=true;setAudioError('');
+        try{await audio.play();if(request!==playbackRequest.current)return;setIsPlaying(true);}
+        catch{if(request!==playbackRequest.current)return;playIntent.current=false;setIsPlaying(false);setAudioError('Lecture audio indisponible. Réessayez avec le bouton Écouter.');}
+    },[]);
+    const stopPlayback = useCallback(()=>{
+        playIntent.current=false;++playbackRequest.current;audioRef.current?.pause();setIsPlaying(false);
+    },[]);
+    useEffect(()=>{const audio=audioRef.current;return ()=>{playIntent.current=false;++playbackRequest.current;audio?.pause();};},[]);
 
     // Load audio and fetch current timings
     useEffect(() => {
@@ -260,21 +297,18 @@ export function HifdhPage() {
                     setSeekOnLoad(null);
                 }
                 // Only auto-play if we were already playing or if it's a specific seekOnLoad
-                if (isPlaying) {
-                    audio.play().catch(err => {
-                        console.warn('Playback failed:', err);
-                        // setIsPlaying(false); // Don't flip state or it might loop
-                    });
-                }
+                if (playIntent.current) void safePlay();
             };
 
             // Only update src if it's actually different (ignoring domain/relative mapping)
             // audio.src returns absolute URL, so we compare directly
             const currentSrc = audio.src;
             if (!currentSrc || !currentSrc.includes(audioUrl.split('/').pop()!)) {
+                ++playbackRequest.current;
+                audio.addEventListener('loadedmetadata', handleMetadata, { once: true });
                 audio.src = audioUrl;
                 audio.load();
-                audio.addEventListener('loadedmetadata', handleMetadata, { once: true });
+                setCurrentTime(0);setDuration(0);
             } else if (seekOnLoad !== null) {
                 // If src is same but we have a seek request
                 if (audio.readyState >= 1) { // metadata loaded
@@ -298,7 +332,7 @@ export function HifdhPage() {
                 audio.removeEventListener('loadedmetadata', handleMetadata);
             };
         }
-    }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah, seekOnLoad]);
+    }, [ayahs, currentAyahIndex, playbackSpeed, selectedSurah, seekOnLoad, safePlay]);
 
     // Pre-fetch all timings in the selected range for cross-verse loops
     useEffect(() => {
@@ -334,8 +368,7 @@ export function HifdhPage() {
 
                 if (coach.coachMode === 'solo' || coach.coachMode === 'magic_reveal') {
                     coach.setDuoPhase('student');
-                    audioRef.current?.pause();
-                    setIsPlaying(false);
+                    stopPlayback();
                     void coach.startCoachListening(aIdx);
                 } else {
                     coach.setDuoPhase('reciter');
@@ -343,8 +376,7 @@ export function HifdhPage() {
                 return;
             } else {
                 // During active session, clicking a word provides a hint/jump
-                audioRef.current?.pause();
-                setIsPlaying(false);
+                stopPlayback();
                 setCurrentAyahIndex(aIdx);
                 coach.coachJumpToWord(aIdx, wIdx);
                 return;
@@ -362,17 +394,16 @@ export function HifdhPage() {
             if (!isWordSelectionMode) {
                 // Lecture au clic (just play from this word immediately)
                 resetSelection();
+                playIntent.current=true;
                 setIsPlaying(true);
+                if(aIdx !== currentAyahIndex){setCurrentAyahIndex(aIdx);setSeekOnLoad(startTime);return;}
                 setCurrentAyahIndex(aIdx);
 
                 if (audioRef.current) {
                     if (audioRef.current.readyState >= 1) {
                         try {
                             audioRef.current.currentTime = startTime;
-                            const playPromise = audioRef.current.play();
-                            if (playPromise !== undefined) {
-                                playPromise.catch(err => console.warn('Play prevented:', err));
-                            }
+                            void safePlay();
                         } catch (err) {
                             console.warn("Could not seek before load completed.", err);
                         }
@@ -412,15 +443,12 @@ export function HifdhPage() {
                             const loopStartTime = startW.timestampFrom / 1000;
                             if (selectionStart.ayahIndex === currentAyahIndex && audioRef.current && audioRef.current.readyState >= 1) {
                                 audioRef.current.currentTime = loopStartTime;
-                                const playPromise = audioRef.current.play();
-                                if (playPromise !== undefined) {
-                                    playPromise.catch(console.warn);
-                                }
+                                void safePlay();
                             } else {
                                 setCurrentAyahIndex(selectionStart.ayahIndex);
                                 setSeekOnLoad(loopStartTime);
                             }
-                            setIsPlaying(true);
+                            playIntent.current=true;setIsPlaying(true);
                         }
                     }
                 }
@@ -432,12 +460,13 @@ export function HifdhPage() {
         if (cachedTimings) {
             processClick(cachedTimings);
         } else {
+            const generation=passageGeneration.current;
             fetchWordTimings(selectedSurah, clickedAyah.numberInSurah, HIFDH_RECITER_QURAN_COM_ID).then(fetched => {
-                if (fetched) {
+                if (fetched && generation===passageGeneration.current) {
                     setAllTimings(prev => new Map(prev).set(aIdx, fetched));
                     processClick(fetched);
                 }
-            });
+            }).catch(()=>setAudioError('Le repérage des mots est indisponible. Utilisez Écouter pour lire le verset.'));
         }
     };
 
@@ -452,7 +481,7 @@ export function HifdhPage() {
 
         void coachRef.current.stopCoachListening();
         resetSelection(); // Ensure no loop selection interferes
-        setIsPlaying(true);
+        playIntent.current=true;setIsPlaying(true);
 
         const triggerPlayback = async () => {
             const audio = audioRef.current;
@@ -463,7 +492,7 @@ export function HifdhPage() {
                 setPokeEndTime(null);
                 if (audio.readyState >= 1) {
                     audio.currentTime = 0;
-                    await audio.play();
+                    await safePlay();
                 } else {
                     setSeekOnLoad(0);
                 }
@@ -497,6 +526,7 @@ export function HifdhPage() {
             if (currentAyahIndex >= ayahs.length - 1) {
                 coach.setDuoPhase('waiting');
                 coach.setShowMistakesSummary(true);
+                setStep('review');
                 return;
             }
 
@@ -550,20 +580,15 @@ export function HifdhPage() {
 
     // Player logic
     const handlePlayPause = () => {
-        setPokeEndTime(null);
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.pause();
-            } else {
-                if (selectedTimeRange) {
-                    if (audioRef.current.currentTime < selectedTimeRange.start || audioRef.current.currentTime > selectedTimeRange.end) {
-                        audioRef.current.currentTime = selectedTimeRange.start;
-                    }
-                }
-                audioRef.current.play();
-            }
-            setIsPlaying(!isPlaying);
+        sessionTouched.current=true;setPokeEndTime(null);
+        if(!currentAyah)return;
+        if(isPlaying){stopPlayback();return;}
+        if(selectedTimeRange && audioRef.current){
+            playIntent.current=true;
+            if(currentAyahIndex!==selectedTimeRange.startAyahIdx){setCurrentAyahIndex(selectedTimeRange.startAyahIdx);setSeekOnLoad(selectedTimeRange.start);return;}
+            audioRef.current.currentTime=selectedTimeRange.start;
         }
+        void safePlay();
     };
 
     const handleNext = useCallback(() => {
@@ -576,9 +601,8 @@ export function HifdhPage() {
             setCurrentAyahIndex(0);
             setCurrentRepeat(1);
             resetSelection();
-            recordPageRead();
-        }
-    }, [currentAyahIndex, ayahs.length, isLooping, recordPageRead]);
+        } else {stopPlayback();setStep('recite');}
+    }, [currentAyahIndex, ayahs.length, isLooping, stopPlayback]);
 
     const handleAudioEnded = useCallback(() => {
         const currentCoach = coachRef.current;
@@ -591,15 +615,14 @@ export function HifdhPage() {
             setCurrentRepeat(prev => prev + 1);
             if (audioRef.current) {
                 audioRef.current.currentTime = selectedTimeRange ? selectedTimeRange.start : 0;
-                audioRef.current.play();
+                void safePlay();
             }
+        } else if(currentAyahIndex===ayahs.length-1 && isLooping && ayahs.length===1){
+            if(audioRef.current)audioRef.current.currentTime=0;setCurrentRepeat(1);void safePlay();
         } else {
             handleNext();
-            if (audioRef.current && isPlaying) {
-                setTimeout(() => audioRef.current?.play(), 100);
-            }
         }
-    }, [currentRepeat, maxRepeats, handleNext, isPlaying, selectedTimeRange, handleCoachReciterFinished]);
+    }, [currentRepeat, maxRepeats, handleNext, selectedTimeRange, handleCoachReciterFinished, currentAyahIndex, ayahs.length, isLooping, safePlay]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -621,8 +644,7 @@ export function HifdhPage() {
 
             // Poke stop logic
             if (pokeEndTime !== null && audio.currentTime >= pokeEndTime) {
-                audio.pause();
-                setIsPlaying(false);
+                stopPlayback();
                 setPokeEndTime(null);
 
                 const currentCoach = coachRef.current;
@@ -651,19 +673,22 @@ export function HifdhPage() {
                     if (currentRepeat < maxRepeats) {
                         setCurrentRepeat(prev => prev + 1);
 
+                        audio.pause(); // Prevent another animation frame from advancing twice.
                         // Restart at start position
                         setCurrentAyahIndex(selectedTimeRange.startAyahIdx);
                         setSeekOnLoad(selectedTimeRange.start);
+                        return;
                     } else {
-                        audio.pause();
-                        setIsPlaying(false);
+                        stopPlayback();
                         setCurrentRepeat(1);
                         return;
                     }
                 } else if (!isFinalVerseInRange && audio.currentTime >= (audio.duration - margin)) {
+                    audio.pause();
                     // Navigate to next ayah normally within the range
                     setCurrentAyahIndex(prev => prev + 1);
                     setSeekOnLoad(0); // Ensure next start from 0
+                    return;
                 }
 
                 // Force seek on start verse if needed (extra safety)
@@ -723,7 +748,7 @@ export function HifdhPage() {
             audio.removeEventListener('pause', stopRAF);
             audio.removeEventListener('loadedmetadata', updateDuration);
         };
-    }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats, pokeEndTime, currentAyahIndex, seekOnLoad, handleCoachReciterFinished]);
+    }, [wordTimings, selectedTimeRange, isPlaying, currentRepeat, maxRepeats, pokeEndTime, currentAyahIndex, seekOnLoad, handleCoachReciterFinished, stopPlayback]);
 
     const formatTime = (time: number) => {
         const mins = Math.floor(time / 60);
@@ -743,134 +768,41 @@ export function HifdhPage() {
                 <button className="coach-action" onClick={() => setReloadPassage(value => value + 1)}>Réessayer le chargement</button>
             </div>}
 
-            {/* Due Cards Section */}
-            {(dueCards.length > 0 || allCards.length > 0) && (
-                <div className="hifdh-srs-section">
-                    {dueCards.length > 0 && (
-                        <div className="hifdh-srs-due">
-                            <div className="hifdh-srs-due__header">
-                                <BookmarkCheck size={16} />
-                                <span>{t('hifdh.versesToReview', '{{count}} verset(s) à réviser', { count: dueCards.length })}</span>
-                            </div>
-                            <div className="hifdh-srs-due__list">
-                                {dueCards.slice(0, 5).map(card => {
-                                    const surahName = surahs.find(s => s.number === card.surah)?.name || '';
-                                    return (
-                                        <button
-                                            key={card.id}
-                                            className="hifdh-srs-card"
-                                            onClick={() => loadFromSRS(card.surah, card.ayah)}
-                                        >
-                                            <span className="hifdh-srs-card__surah">{surahName}</span>
-                                            <span className="hifdh-srs-card__ayah">:{card.ayah}</span>
-                                        </button>
-                                    );
-                                })}
-                                {dueCards.length > 5 && (
-                                    <span className="hifdh-srs-more">{t('hifdh.moreCards', '+{{count}} autres', { count: dueCards.length - 5 })}</span>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                    {dueCards.length === 0 && allCards.length > 0 && (
-                        <div className="hifdh-srs-all">
-                            <span className="hifdh-srs-all__label">{t('hifdh.memorizedVerses', 'Mes versets mémorisés :')}</span>
-                            <div className="hifdh-srs-due__list">
-                                {allCards.slice(0, 5).map(card => {
-                                    const surahName = surahs.find(s => s.number === card.surah)?.name || '';
-                                    return (
-                                        <button
-                                            key={card.id}
-                                            className="hifdh-srs-card"
-                                            onClick={() => loadFromSRS(card.surah, card.ayah)}
-                                        >
-                                            <span className="hifdh-srs-card__surah">{surahName}</span>
-                                            <span className="hifdh-srs-card__ayah">:{card.ayah}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Error Log — Mots à revoir */}
-            {(() => {
-                try {
-                    const errors = reviewLog;
-                    if (errors.length === 0) return null;
-
-                    // Group by scoreKey (surah:ayahStart-ayahEnd)
-                    const grouped: Record<string, typeof errors> = {};
-                    errors.forEach(e => {
-                        if (!grouped[e.scoreKey]) grouped[e.scoreKey] = [];
-                        grouped[e.scoreKey].push(e);
-                    });
-
-                    return (
-                        <div className="hifdh-errors-section">
-                            <div className="hifdh-errors-header">
-                                <span>📝 Mots à revoir ({errors.length})</span>
-                                <button
-                                    className="hifdh-errors-clear-all"
-                                    disabled={coach.isCoachMode}
-                                    title={coach.isCoachMode ? "Terminez la séance avant d’effacer l’historique" : undefined}
-                                    onClick={() => {
-                                        try {
-                                            localStorage.removeItem(COACH_ERROR_KEY);
-                                            window.dispatchEvent(new Event(COACH_REVIEW_EVENT));
-                                        } catch { /* Storage can be unavailable. */ }
-                                    }}
-                                >
-                                    Effacer l’historique
-                                </button>
-                            </div>
-                            <div className="hifdh-errors-list">
-                                {Object.entries(grouped).slice(0, 8).map(([key, errs]) => {
-                                    const parts = key.split(':');
-                                    const surahNum = parseInt(parts[0]);
-                                    const range = parts[1] || '';
-                                    const surahName = surahs.find(s => s.number === surahNum)?.name || `Sourate ${surahNum}`;
-
-                                    return (
-                                        <div key={key} className="hifdh-error-group">
-                                            <button
-                                                className="hifdh-error-group__header"
-                                                onClick={() => {
-                                                    const [start] = range.split('-').map(Number);
-                                                    setSelectedSurah(surahNum);
-                                                    setStartAyah(start || 1);
-                                                    setEndAyah(parseInt(range.split('-')[1]) || start || 1);
-                                                }}
-                                            >
-                                                <span className="hifdh-error-group__surah">{surahName} ({range})</span>
-                                                <span className="hifdh-error-group__arrow">→</span>
-                                            </button>
-                                            <div className="hifdh-error-group__words">
-                                                {errs.map((err, i) => (
-                                                    <div key={i} className="hifdh-error-word">
-                                                        <span className="hifdh-error-word__expected">{err.expected}</span>
-                                                        <span className="hifdh-error-word__spoken">→ {err.spoken}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    );
-                } catch { return null; }
-            })()}
-
+            <section className="hifdh-session-home" aria-label="Ma séance">
+                {savedSession && <button onClick={resumeSession}>Reprendre ma séance <small>{surahs.find(s=>s.number===savedSession.surah)?.englishName || `Sourate ${savedSession.surah}`} · verset {savedSession.ayah}</small></button>}
+                <button onClick={()=>setLibraryOpen(v=>!v)} aria-expanded={libraryOpen}>Mes révisions <small>{dueCards.length} aujourd’hui · {allCards.length} au total</small></button>
+            </section>
+            {!sessionSaved && <p role="alert">La sauvegarde de séance est indisponible sur cet appareil.</p>}
+            {libraryOpen && <section className="hifdh-review-library" aria-label="Toutes mes révisions">
+                <h2>Mes révisions du jour</h2>
+                {dueCards.length ? <button className="hifdh-primary" onClick={()=>startQueue(dueCards.map(c=>({surah:c.surah,start:c.ayah,end:c.ayah})))}>Commencer les {dueCards.length} révisions</button> : <p>Aucune révision prévue aujourd’hui.</p>}
+                <div className="hifdh-review-list">{[...allCards].sort((a,b)=>a.nextReviewDate.localeCompare(b.nextReviewDate)).map(card=><button key={card.id} onClick={()=>loadFromSRS(card.surah,card.ayah)}><strong>{surahs.find(s=>s.number===card.surah)?.englishName || `Sourate ${card.surah}`} · {card.ayah}</strong><small>{dueCards.some(c=>c.id===card.id)?'À réviser aujourd’hui':`Prochaine révision : ${new Date(card.nextReviewDate+'T12:00:00').toLocaleDateString('fr-FR')}`}</small></button>)}</div>
+            </section>}
+            <nav className="hifdh-steps" aria-label="Étapes de la séance">{(['listen','recite','review'] as const).map((value,i)=><button key={value} aria-current={step===value?'step':undefined} onClick={()=>{sessionTouched.current=true;stopPlayback();void coach.stopCoachListening();coach.setDuoPhase('waiting');setStep(value);}}><span>{i+1}</span>{['Écouter','Réciter','Réviser'][i]}</button>)}</nav>
+            {queue.length>0 && <div className="hifdh-queue-status" role="status">Passage {queueIndex+1} sur {queue.length}<button onClick={advanceReview}>{queueIndex+1<queue.length?'Passage suivant':'Terminer la série'}</button></div>}
+            <section className="hifdh-guided-action">
+                <p>{step==='listen'?'Écoutez le passage, puis récitez à votre rythme.':step==='recite'?'Récitez le passage. Le suivi vocal vous aide à repérer les mots à retravailler.':'Évaluez votre rappel et préparez votre prochaine séance.'}</p>
+                <button className="hifdh-primary" disabled={!currentAyah} onClick={()=>{
+                    sessionTouched.current=true;
+                    if(step==='listen'){if(coach.isCoachMode)coach.selectCoachMode(null);handlePlayPause();}
+                    else if(step==='recite'){
+                        stopPlayback();
+                        if(coach.isListening || coach.isStarting){void coach.stopCoachListening();setStep('review');}
+                        else{if(!coach.isCoachMode)coach.selectCoachMode('solo');coach.setDuoPhase('student');void coach.startCoachListening(currentAyahIndex);}
+                    } else {stopPlayback();void coach.stopCoachListening();document.getElementById('hifdh-review-summary')?.scrollIntoView({behavior:'smooth',block:'start'});}
+                }}>{step==='listen'?(isPlaying?'Mettre en pause':'Écouter le passage'):step==='recite'?(coach.isStarting?'Arrêter la préparation':coach.isListening?'Terminer ma récitation':'Commencer ma récitation'):'Voir mon bilan et mes révisions'}</button>
+                {step==='listen' && <button className="hifdh-text-action" disabled={!currentAyah} onClick={()=>{stopPlayback();setStep('recite');sessionTouched.current=true;}}>Passer à la récitation →</button>}
+            </section>
             {/* Selection */}
+            <details className="hifdh-passage-settings" onClickCapture={()=>{sessionTouched.current=true;}} onChangeCapture={()=>{sessionTouched.current=true;}}>
+            <summary>{surahs.find(s=>s.number===selectedSurah)?.englishName || 'Choisir un passage'} · versets {startAyah}–{endAyah}<span>Modifier</span></summary>
             <div className="hifdh-selection">
                 <div className="hifdh-selection__row">
                     <select
                         className="hifdh-selection__select"
                         value={selectedSurah}
-                        onChange={(e) => setSelectedSurah(parseInt(e.target.value))}
+                        aria-label="Sourate à mémoriser"
+                        onChange={(e) => {const number=Number(e.target.value);setSelectedSurah(number);setStartAyah(1);setEndAyah(Math.min(5,surahs.find(s=>s.number===number)?.numberOfAyahs||5));sessionTouched.current=true;setQueue([]);}}
                     >
                         {surahs.map((s) => (
                             <option key={s.number} value={s.number}>
@@ -885,12 +817,12 @@ export function HifdhPage() {
                         <div className="hifdh-verse-range__group">
                             <button
                                 className="hifdh-verse-btn"
-                                onClick={() => setStartAyah(Math.max(1, startAyah - 1))}
+                                aria-label="Reculer le début du passage" onClick={() => setStartAyah(Math.max(1, startAyah - 1))}
                                 disabled={startAyah <= 1}
                             >−</button>
                             <select
                                 className="hifdh-verse-select"
-                                value={startAyah}
+                                aria-label="Premier verset" value={startAyah}
                                 onChange={(e) => setStartAyah(parseInt(e.target.value))}
                             >
                                 {Array.from({ length: endAyah }, (_, i) => i + 1).map(n => (
@@ -899,7 +831,7 @@ export function HifdhPage() {
                             </select>
                             <button
                                 className="hifdh-verse-btn"
-                                onClick={() => setStartAyah(Math.min(endAyah, startAyah + 1))}
+                                aria-label="Avancer le début du passage" onClick={() => setStartAyah(Math.min(endAyah, startAyah + 1))}
                                 disabled={startAyah >= endAyah}
                             >+</button>
                         </div>
@@ -907,12 +839,12 @@ export function HifdhPage() {
                         <div className="hifdh-verse-range__group">
                             <button
                                 className="hifdh-verse-btn"
-                                onClick={() => setEndAyah(Math.max(startAyah, endAyah - 1))}
+                                aria-label="Reculer la fin du passage" onClick={() => setEndAyah(Math.max(startAyah, endAyah - 1))}
                                 disabled={endAyah <= startAyah}
                             >−</button>
                             <select
                                 className="hifdh-verse-select"
-                                value={endAyah}
+                                aria-label="Dernier verset" value={endAyah}
                                 onChange={(e) => setEndAyah(parseInt(e.target.value))}
                             >
                                 {Array.from({ length: maxAyahs - startAyah + 1 }, (_, i) => startAyah + i).map(n => (
@@ -921,7 +853,7 @@ export function HifdhPage() {
                             </select>
                             <button
                                 className="hifdh-verse-btn"
-                                onClick={() => setEndAyah(Math.min(maxAyahs, endAyah + 1))}
+                                aria-label="Avancer la fin du passage" onClick={() => setEndAyah(Math.min(maxAyahs, endAyah + 1))}
                                 disabled={endAyah >= maxAyahs}
                             >+</button>
                         </div>
@@ -962,11 +894,16 @@ export function HifdhPage() {
                 </div>
             </div>
 
+            </details>
+            {audioError && <p className="hifdh-audio-error" role="alert">{audioError}</p>}
             {/* Main Player Area */}
             <div className="hifdh-main-card">
                 <audio
                     ref={audioRef}
                     onEnded={handleAudioEnded}
+                    onPlay={()=>setIsPlaying(true)}
+                    onPause={()=>setIsPlaying(false)}
+                    onError={()=>{stopPlayback();setAudioError('Impossible de charger cet audio. Réessayez avec Écouter.');}}
                 />
 
                 {/* Surah Header Ornament */}
@@ -1065,7 +1002,7 @@ export function HifdhPage() {
                                             <span className="hifdh-verse-card__badge">{selectedSurah}:{ayah.numberInSurah}</span>
                                             <div style={{ position: 'relative' }}>
                                                 <button 
-                                                    className="hifdh-verse-card__more"
+                                                    className="hifdh-verse-card__more" aria-label={`Options du verset ${ayah.numberInSurah}`}
                                                     onClick={() => setActiveMenu(activeMenu === ayah.number ? null : ayah.number)}
                                                 >
                                                     <MoreVertical size={16} />
@@ -1077,6 +1014,8 @@ export function HifdhPage() {
                                                                 setActiveMenu(null);
                                                                 // Bookmark (sauvegarde locale dans un 1er temps)
                                                                 localStorage.setItem('hifdh-bookmark', JSON.stringify({ surah: selectedSurah, ayah: ayah.numberInSurah }));
+                                                                const saved={surah:selectedSurah,start:startAyah,end:endAyah,ayah:ayah.numberInSurah,speed:playbackSpeed,repeats:maxRepeats,phonetics:showPhonetics,focus:singleVerseMode,step};
+                                                                localStorage.setItem(HIFDH_SESSION_KEY,JSON.stringify(saved));setSavedSession(saved);
                                                                 alert(`Verset ${selectedSurah}:${ayah.numberInSurah} mis en favori !`);
                                                             }}
                                                         >
@@ -1146,7 +1085,7 @@ export function HifdhPage() {
                 </div>
 
                 {/* Player Controls */}
-                <div className="hifdh-player-ui">
+                <div className="hifdh-player-ui" aria-label="Commandes audio">
                     <div className="hifdh-player__progress">
                         <span className="hifdh-player__time">{formatTime(currentTime)}</span>
                         <div className="hifdh-player__progress-bar">
@@ -1159,17 +1098,18 @@ export function HifdhPage() {
                     </div>
 
                     <div className="hifdh-player__controls">
-                        <button className="hifdh-player__btn" onClick={handlePlayPause}>
+                        <button className="hifdh-player__btn" aria-label={isPlaying?'Mettre en pause':'Écouter le passage'} disabled={!currentAyah} onClick={handlePlayPause}>
                             {isPlaying ? <Pause size={28} /> : <Play size={28} />}
                         </button>
-                        <button className="hifdh-player__btn" onClick={() => {
+                        <button className="hifdh-player__btn" aria-label="Arrêter l’écoute" onClick={() => {
+                            stopPlayback();
                             if (audioRef.current) {
                                 audioRef.current.pause();
                                 audioRef.current.currentTime = 0;
                                 setIsPlaying(false);
                             }
                         }}><Square size={18} /></button>
-                        <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} onClick={() => setIsLooping(!isLooping)}>
+                        <button className={`hifdh-player__btn ${isLooping ? 'hifdh-player__btn--active' : ''}`} aria-label="Répéter la plage en continu" aria-pressed={isLooping} onClick={() => setIsLooping(!isLooping)}>
                             <Repeat size={20} />
                         </button>
                         <button
@@ -1207,11 +1147,10 @@ export function HifdhPage() {
             <CoachOverlay
                 coach={coach}
                 audioPlaying={isPlaying}
-                stopAudio={() => { if (audioRef.current) { audioRef.current.pause(); setIsPlaying(false); } }}
-                playAyahAtIndex={async () => { if (audioRef.current) { audioRef.current.currentTime = 0; audioRef.current.play(); setIsPlaying(true); } }}
+                stopAudio={stopPlayback}
+                playAyahAtIndex={async () => { if (audioRef.current) { audioRef.current.currentTime = 0; await safePlay(); } }}
                 onRetryAyah={(index) => {
-                    audioRef.current?.pause();
-                    setIsPlaying(false);
+                    stopPlayback();
                     setCurrentAyahIndex(index);
                     coach.setDuoPhase('student');
                     void coach.startCoachListening(index);
@@ -1224,18 +1163,16 @@ export function HifdhPage() {
                 expectedText={ayahs.map(a => a.text).join(' ')}
             />
 
-            {/* SRS Memorization Controls */}
-            {
-                currentAyah && (
-                    <SRSControls
-                        surah={selectedSurah}
-                        ayah={currentAyah.numberInSurah}
-                        onReviewComplete={handleNext}
-                    />
-                )
-            }
+            <section id="hifdh-review-summary" className="hifdh-summary">
+                <h2>Mon bilan</h2>
+                {coach.coachTotalProcessed>0 ? <><p><strong>{coach.coachTotalProcessed-coach.coachMistakesCount}</strong> mots reconnus · <strong>{coach.coachMistakesCount}</strong> à retravailler</p><small>Indication de reconnaissance vocale. Confirmez vous-même votre mémorisation.</small></> : <p>Après votre récitation, évaluez votre rappel pour planifier la prochaine révision.</p>}
+                {hardPassages.length>0 && <><button className="hifdh-primary" onClick={()=>startQueue(hardPassages,'recite')}>Refaire mes {hardPassages.length} passages difficiles</button><details><summary>Mots à retravailler ({reviewLog.length})</summary><div className="hifdh-review-list">{hardPassages.map(p=><button key={`${p.surah}:${p.start}`} onClick={()=>startQueue([p],'recite')}><strong>{surahs.find(s=>s.number===p.surah)?.englishName || `Sourate ${p.surah}`} · verset {p.start}</strong><span lang="ar" dir="rtl">{reviewLog.filter(e=>difficultPassages([e]).some(v=>v.surah===p.surah&&v.start===p.start)).map(e=>e.expected).join(' · ')}</span></button>)}</div></details></>}
+                {currentAyah && <SRSControls surah={selectedSurah} ayah={currentAyah.numberInSurah} onReviewComplete={advanceReview}/>}
+                <p className="hifdh-next-review">{dueCards.length ? `${dueCards.length} verset(s) à réviser aujourd’hui` : allCards.length ? `Prochaine révision : ${new Date([...allCards].sort((a,b)=>a.nextReviewDate.localeCompare(b.nextReviewDate))[0].nextReviewDate+'T12:00:00').toLocaleDateString('fr-FR')}` : 'Ajoutez un verset pour programmer vos révisions.'}</p>
+            </section>
 
             {/* Secondary Controls (Speed, Repeat) */}
+            <details className="hifdh-extra-settings" open={settingsOpen} onToggle={e=>setSettingsOpen(e.currentTarget.open)} onClickCapture={()=>{sessionTouched.current=true;}} onChangeCapture={()=>{sessionTouched.current=true;}}><summary>Réglages · vitesse, répétitions, phonétique</summary>
             <div className="hifdh-footer-controls">
                 <div className="hifdh-control-group">
                     <button
@@ -1258,12 +1195,13 @@ export function HifdhPage() {
                 </div>
 
                 <div className="hifdh-repeat-control">
-                    <button onClick={() => setMaxRepeats(prev => Math.max(1, prev - 1))}><Minus size={16} /></button>
+                    <button aria-label="Diminuer les répétitions" onClick={() => setMaxRepeats(prev => Math.max(1, prev - 1))}><Minus size={16} /></button>
                     <span className="hifdh-repeat-stat">{t('hifdh.reps', '{{current}}/{{max}} reps', { current: currentRepeat, max: maxRepeats })}</span>
-                    <button onClick={() => setMaxRepeats(prev => Math.min(20, prev + 1))}><Plus size={16} /></button>
+                    <button aria-label="Augmenter les répétitions" onClick={() => setMaxRepeats(prev => Math.min(20, prev + 1))}><Plus size={16} /></button>
                 </div>
             </div>
 
+            </details>
         </div >
     );
 }

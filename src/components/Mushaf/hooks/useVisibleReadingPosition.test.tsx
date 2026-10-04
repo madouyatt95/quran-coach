@@ -32,12 +32,12 @@ beforeEach(async()=>{
  useQuranStore.setState({currentSurah:3,currentPage:50,currentAyah:1,khatmJumpSignal:0,progress:null,isKhatmMode:false,isExploring:false});useKhatmStore.getState().reset();useKhatmStore.getState().activate('2026-10-04','2026-11-04');
  host=document.createElement('div');document.body.append(host);root=createRoot(host);await act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Harness/></MemoryRouter>));
 });
-afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.restoreAllMocks();vi.unstubAllGlobals();vi.useRealTimers();});
+afterEach(async()=>{await vi.dynamicImportSettled();await act(async()=>root.unmount());host.remove();vi.restoreAllMocks();vi.unstubAllGlobals();vi.useRealTimers();});
 async function observe(){await act(async()=>{callback(observed.map(target=>({target,isIntersecting:true})) as unknown as IntersectionObserverEntry[],{} as IntersectionObserver);await vi.advanceTimersByTimeAsync(20);});}
 it('keeps the current page when the next page is only partly visible, then credits a vertical transition',async()=>{
  await observe();expect(useQuranStore.getState().currentPage).toBe(50);
  await act(async()=>vi.advanceTimersByTimeAsync(15000));positions=[{top:-500,bottom:0},{top:0,bottom:500}];
- await act(async()=>{host.firstElementChild!.dispatchEvent(new Event('scroll'));await vi.advanceTimersByTimeAsync(20);});
+ await act(async()=>{host.firstElementChild!.dispatchEvent(new Event('wheel'));host.firstElementChild!.dispatchEvent(new Event('scroll'));await vi.advanceTimersByTimeAsync(20);});
  expect(useQuranStore.getState().currentPage).toBe(51);expect(useKhatmStore.getState().validatedPages).toEqual([50]);expect(constructs).toBe(1);
 });
 it('does not turn an explicit jump into a reading transition',async()=>{
@@ -46,4 +46,8 @@ it('does not turn an explicit jump into a reading transition',async()=>{
 it('selects the same line independently of partially visible next-page verses',async()=>{
  await observe();expect(verseAtReadingLine(observed,0,600)).toBe(observed[0]);
  positions=[{top:-100,bottom:100},{top:100,bottom:600}];expect(verseAtReadingLine(observed,0,600)).toBe(observed[1]);
+});
+it('ignores a layout-driven page change until the reader actually scrolls',async()=>{
+ positions=[{top:-500,bottom:0},{top:0,bottom:500}];await observe();
+ expect(useQuranStore.getState().currentPage).toBe(50);expect(useKhatmStore.getState().validatedPages).toEqual([]);
 });
