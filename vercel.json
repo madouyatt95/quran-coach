@@ -1,8 +1,15 @@
 {
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/"
-        }
-    ]
+  "rewrites": [
+    {
+      "source": "/offline-audio/:ayah(\\d+).mp3",
+      "destination": "https://cdn.islamic.network/quran/audio/128/ar.alafasy/:ayah.mp3"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ],
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
 }

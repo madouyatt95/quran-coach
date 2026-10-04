@@ -26,3 +26,10 @@ dist-ssr
 *.sln
 *.sw?
 supabase/.temp/
+# Verified model/runtime assets are prepared at build time
+public/tilawa/v1/
+
+# Local acoustic test fixtures (downloaded, not redistributed)
+scripts/fixtures/
+.vercel
+.env*

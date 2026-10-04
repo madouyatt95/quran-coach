@@ -12,6 +12,7 @@ import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import './HomePage.css';
+import '../components/Learning/Learning.css';
 
 // ─── Surah names (compact subset for display) ────────────
 const SURAH_NAMES: Record<number, string> = {
@@ -383,6 +384,7 @@ export function HomePage() {
 
     return (
         <div className="home-page">
+            <Link className="learning-home" to="/learning"><span className="learning-kicker">Votre rendez-vous quotidien</span><strong>Ma séance du jour →</strong><span>Réviser · Comprendre · Réciter, en 5 à 20 minutes</span></Link>
             <div className="home-header">
                 <div className="home-header__left">
                     <div className="home-header__greeting">

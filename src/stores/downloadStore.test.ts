@@ -1,0 +1,13 @@
+import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+import {createMemoryCaches} from '../test/memoryCache';
+import {createJSONStorage} from 'zustand/middleware';
+import {createMemoryStorage} from '../test/memoryStorage';
+import {useDownloadStore} from './downloadStore';
+beforeEach(()=>{vi.stubGlobal('localStorage',createMemoryStorage());useDownloadStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});vi.stubGlobal('caches',createMemoryCaches());useDownloadStore.setState({tasks:{}});});
+afterEach(()=>vi.unstubAllGlobals());
+describe('explicit offline packs',()=>{
+ it('does not mark a whole pack complete from a single cached sample',async()=>{const store=useDownloadStore.getState();const cache=await caches.open('quran-coach-audio-v1');await cache.put('/a',new Response('audio'));useDownloadStore.setState({tasks:{p:{id:'p',title:'Test',urls:['/a','/b'],progress:100,status:'completed'}}});await store.verifyCacheStatus('p','/a');expect(useDownloadStore.getState().tasks.p).toMatchObject({status:'idle',progress:50});});
+ it('resumes complete files without downloading them again',async()=>{const store=useDownloadStore.getState();vi.stubGlobal('fetch',vi.fn().mockResolvedValueOnce(new Response('audio')).mockRejectedValueOnce(Error('offline')));await store.startDownload('p','Test',['/a','/b']);expect(useDownloadStore.getState().tasks.p.status).toBe('error');const fetcher=vi.fn().mockResolvedValue(new Response('next'));vi.stubGlobal('fetch',fetcher);await store.startDownload('p','Test',['/a','/b']);expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toBe('/b');expect(useDownloadStore.getState().tasks.p).toMatchObject({status:'completed',bytes:9});});
+ it('preserves files shared by two packs when one pack is removed',async()=>{vi.stubGlobal('fetch',vi.fn().mockImplementation(async()=>new Response('{}')));const store=useDownloadStore.getState();await store.startDownload('p','One',['/shared','/one'],'text');await store.startDownload('q','Two',['/shared','/two'],'text');await store.removeDownload('p',['/shared','/one']);const cache=await caches.open('quran-coach-content-v1');expect(await cache.match('/shared')).toBeDefined();expect(await cache.match('/one')).toBeUndefined();expect(useDownloadStore.getState().tasks.q.status).toBe('completed');});
+ it('rejects a successful HTTP response containing invalid text data',async()=>{vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response('<html>Error</html>')));await useDownloadStore.getState().startDownload('p','Test',['/text'],'text');expect(useDownloadStore.getState().tasks.p.status).toBe('error');expect(await(await caches.open('quran-coach-content-v1')).match('/text')).toBeUndefined();});
+});

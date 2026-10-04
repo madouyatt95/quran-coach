@@ -50,6 +50,11 @@ const FahmPage = lazy(() => import('./pages/FahmPage').then(m => ({ default: m.F
 const FahmLessonPage = lazy(() => import('./pages/FahmLessonPage').then(m => ({ default: m.FahmLessonPage })));
 const VocabPage = lazy(() => import('./pages/VocabPage').then(m => ({ default: m.VocabPage })));
 
+const LearningPage = lazy(() => import('./pages/LearningPage').then(m => ({ default: m.LearningPage })));
+const PassagePage = lazy(() => import('./pages/PassagePage').then(m => ({ default: m.PassagePage })));
+const SimilarPassagesPage = lazy(() => import('./pages/SimilarPassagesPage').then(m => ({ default: m.SimilarPassagesPage })));
+const VoiceSearchPage = lazy(() => import('./pages/VoiceSearchPage').then(m => ({ default: m.VoiceSearchPage })));
+
 // Minimal loading fallback
 function PageLoader() {
   return (
@@ -185,6 +190,10 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/read" element={null} />
+            <Route path="/learning" element={<LearningPage />} />
+            <Route path="/passage" element={<PassagePage />} />
+            <Route path="/similar-passages" element={<SimilarPassagesPage />} />
+            <Route path="/voice-search" element={<VoiceSearchPage />} />
             <Route path="/hifdh" element={<HifdhPage />} />
 
             <Route path="/settings" element={<SettingsPage />} />

@@ -81,6 +81,8 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     }
 
     const SHORTCUTS: ShortcutItem[] = [
+        { path: "/learning", emoji: <GraduationCap size={24} />, label: "Ma séance du jour", color: "rgba(201,168,76,0.2)" },
+        { path: "/voice-search", emoji: <Search size={24} />, label: "Recherche vocale", color: "rgba(78,205,196,0.2)" },
         { path: '/prophets', emoji: <ScrollText size={24} color="#c9a84c" />, label: t('nav.prophets'), color: 'rgba(201,168,76,0.2)' },
         { path: '/stories', emoji: <BookMarked size={24} color="#26A69A" />, label: 'Histoires & Moralités', color: 'rgba(38,166,154,0.2)', isNew: true },
         { path: '/atlas', emoji: <Map size={24} color="#FFD54F" />, label: 'Atlas du Coran', color: 'rgba(255,213,79,0.2)', isNew: true },

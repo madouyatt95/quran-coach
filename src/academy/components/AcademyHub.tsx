@@ -161,6 +161,17 @@ export function AcademyHub() {
         setTajwidAnswer(null);
     }, [isModuleUnlocked, store.progress]);
 
+    const finishModule = useCallback(() => {
+        const score = quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 100;
+        if (activeModule) {
+            if (score >= 80) {
+                if (store.progress[activeModule.id]?.completed) store.markReviewed(activeModule.id);
+                else store.completeModule(activeModule.id, score);
+            }
+        }
+        setShowResult(true);
+    }, [quizCorrect, quizTotal, activeModule, store]);
+
     // Feature 1: Save position on navigation
     const nextSection = useCallback(() => {
         if (!currentContent || currentContent.type !== 'lesson') return;
@@ -181,7 +192,7 @@ export function AcademyHub() {
                 finishModule();
             }
         }
-    }, [currentContent, sectionIdx, contentIdx, activeModule, store]);
+    }, [currentContent, sectionIdx, contentIdx, activeModule, store, finishModule]);
 
     const prevSection = useCallback(() => {
         if (sectionIdx > 0) {
@@ -215,15 +226,8 @@ export function AcademyHub() {
                 finishModule();
             }
         }
-    }, [currentContent, quizIdx, contentIdx, activeModule]);
+    }, [currentContent, quizIdx, contentIdx, activeModule, finishModule]);
 
-    const finishModule = useCallback(() => {
-        const score = quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 100;
-        if (activeModule) {
-            store.completeModule(activeModule.id, score);
-        }
-        setShowResult(true);
-    }, [quizCorrect, quizTotal, activeModule, store]);
 
     const finalScore = useMemo(() => {
         return quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 100;
@@ -697,7 +701,7 @@ export function AcademyHub() {
                         <strong>{reviewModules.length} module{reviewModules.length > 1 ? 's' : ''} à réviser</strong>
                         <small>La révision espacée renforce la mémorisation</small>
                     </div>
-                    <button onClick={() => { startModule(reviewModules[0]); store.markReviewed(reviewModules[0].id); }}>
+                    <button onClick={() => { startModule(reviewModules[0]); }}>
                         Réviser
                     </button>
                 </div>

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useLearningStore } from '../../stores/learningStore';
 import { Volume2, X, GraduationCap, Users, Link2, Sparkles, Square, Loader2, Mic, RotateCcw, BookmarkPlus } from 'lucide-react';
 import { playTts } from '../../lib/ttsService';
 import type { CoachState, CoachMode } from '../../hooks/useCoach';
@@ -61,6 +63,7 @@ export function CoachOverlay({
     } = coach;
 
     const [isCenterOpen, setIsCenterOpen] = useState(false);
+    const { engine, setEngine } = useLearningStore();
     const [reviewAddedFor, setReviewAddedFor] = useState<string | null>(null);
     const openSummary = () => {
         stopAudio();
@@ -148,6 +151,7 @@ export function CoachOverlay({
                 </div>
 
                 <div className="mih-coach-center__content">
+                    <div className="learning-actions"><button className="learning-btn" aria-pressed={engine === 'standard'} onClick={() => {void coach.stopCoachListening();setEngine('standard');}}>Moteur standard</button><button className="learning-btn" aria-pressed={engine === 'tilawa'} onClick={() => {void coach.stopCoachListening();setEngine('tilawa');}}>Tilawa local</button><Link className="learning-btn" to="/storage">Télécharger le pack vocal</Link></div>
                     <p className="coach-explanation">Le coach suit les mots reconnus. Ses signalements sont à vérifier ; ils ne constituent pas une note de tajwid. Selon votre appareil, une connexion peut être nécessaire.</p>
                     {COACH_MODES.map(group => (
                         <div key={group.category} className="mih-coach-group">
@@ -263,7 +267,10 @@ export function CoachOverlay({
                     )}
                 </div>
 
+                <p className="coach-explanation">{engine === 'tilawa' ? 'Tilawa · analyse locale · signalements à vérifier, sans certification de tajwid' : 'Reconnaissance de l’appareil'}</p>
+                {engine === 'tilawa' && isListening && <button className="coach-action" onClick={() => void coach.finishCoachListening()}>Terminer le verset et analyser</button>}
                 {coach.coachError && <p className="coach-feedback" role="alert">{coach.coachError}</p>}
+                {engine === 'tilawa' && coach.coachError && <button className="coach-action" onClick={() => {void coach.stopCoachListening();setEngine('standard');}}>Passer au moteur standard</button>}
                 {coach.storageError && <p className="coach-feedback" role="status">Stockage indisponible : le bilan reste visible pendant cette séance.</p>}
                 {duoPhase === 'student' && (
                     <button className="coach-action" disabled={coach.isStarting}
@@ -314,14 +321,14 @@ export function CoachOverlay({
                                 </button>
                             </div>
                             <div className="mih-coach-error-row">
-                                <span className="mih-coach-error-label">Transcrit :</span>
+                                <span className="mih-coach-error-label">{engine === 'tilawa' ? 'Signalement :' : 'Transcrit :'}</span>
                                 <span className="mih-coach-error-text mih-coach-error-text--spoken" dir="rtl">
                                     {coachMistakes[selectedError].spoken}
                                 </span>
                             </div>
                         </div>
                         <div className="coach-correction-actions">
-                            <p className="coach-explanation">La transcription peut se tromper. Vous pouvez reprendre le verset ou écarter ce signalement.</p>
+                            <p className="coach-explanation">Le moteur peut se tromper. Vous pouvez reprendre le verset ou écarter ce signalement.</p>
                             <button className="coach-action" onClick={() => {
                                 const index = Number(selectedError.split('-')[0]);
                                 setSelectedError(null);
@@ -380,7 +387,7 @@ export function CoachOverlay({
                                             </button>
                                         </div>
                                         <div className="mih-coach-summary-row">
-                                            <span className="mih-coach-error-label">Transcrit :</span>
+                                            <span className="mih-coach-error-label">{engine === 'tilawa' ? 'Signalement :' : 'Transcrit :'}</span>
                                             <span className="mih-coach-error-text mih-coach-error-text--spoken" dir="rtl">{data.spoken}</span>
                                         </div>
                                     </div>

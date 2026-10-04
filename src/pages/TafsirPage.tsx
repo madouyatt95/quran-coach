@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, ChevronDown, ChevronLeft, Loader2, Users, MessageCircle, Volume2, Share2 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { parsePassage } from '../lib/learning';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
 import { useTranslation } from 'react-i18next';
 import { formatDivineNames } from '../lib/divineNames';
@@ -47,10 +48,12 @@ export function TafsirPage() {
     const { t } = useTranslation();
     const { surahs } = useQuranStore();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const incoming = parsePassage(searchParams);
 
     // Selection state
-    const [selectedSurah, setSelectedSurah] = useState(1);
-    const [selectedAyah, setSelectedAyah] = useState(1);
+    const [selectedSurah, setSelectedSurah] = useState(incoming.surah);
+    const [selectedAyah, setSelectedAyah] = useState(incoming.ayah);
     const [maxAyahs, setMaxAyahs] = useState(7);
     const [selectedTafsir, setSelectedTafsir] = useState<number | string>('french_ibnkathir_local');
 
@@ -72,7 +75,7 @@ export function TafsirPage() {
     const [isTtsLoadingState, setIsTtsLoadingState] = useState(false);
 
     // Flag to track if we're initializing from Shazam (to avoid resetting ayah)
-    const [initializedFromShazam, setInitializedFromShazam] = useState(false);
+
 
     // Read from sessionStorage on mount (from Shazam navigation)
     useEffect(() => {
@@ -83,7 +86,7 @@ export function TafsirPage() {
                 if (surah) setSelectedSurah(surah);
                 if (ayah) {
                     setSelectedAyah(ayah);
-                    setInitializedFromShazam(true);
+
                 }
                 if (tafsirId) setSelectedTafsir(tafsirId);
                 sessionStorage.removeItem('shazamResult'); // Clear after reading
@@ -98,15 +101,9 @@ export function TafsirPage() {
         const surah = surahs.find(s => s.number === selectedSurah);
         if (surah) {
             setMaxAyahs(surah.numberOfAyahs);
-            // Only reset ayah to 1 if NOT initialized from Shazam
-            if (!initializedFromShazam) {
-                setSelectedAyah(1);
-            } else {
-                // Clear the flag after first render
-                setInitializedFromShazam(false);
-            }
+
         }
-    }, [selectedSurah, surahs, initializedFromShazam]);
+    }, [selectedSurah, surahs]);
 
     // Fetch tafsir when selection changes
     useEffect(() => {
@@ -202,7 +199,7 @@ export function TafsirPage() {
                     <div className="tafsir-select-wrapper">
                         <select
                             value={selectedSurah}
-                            onChange={(e) => setSelectedSurah(parseInt(e.target.value))}
+                            onChange={(e) => {setSelectedSurah(parseInt(e.target.value));setSelectedAyah(1);}}
                         >
                             {surahs.map((s) => (
                                 <option key={s.number} value={s.number}>

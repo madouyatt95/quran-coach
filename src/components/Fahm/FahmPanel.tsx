@@ -10,6 +10,7 @@ import { EMOTIONAL_VERSES } from '../../data/coachData';
 import { VERSE_HADITH_LINKS } from '../../data/coachData';
 import { useFahmStore } from '../../stores/fahmStore';
 import './FahmPanel.css';
+import { PassageActions } from '../Learning/PassageActions';
 
 interface FahmPanelProps {
     surah: number;
@@ -107,6 +108,7 @@ export function FahmPanel({
                     </button>
                 </div>
 
+                <div style={{padding:"0 20px"}}><PassageActions surah={surah} ayah={ayah} /></div>
                 {/* Verse text */}
                 {verseTextAr && (
                     <div className="fahm-panel__verse" dir="rtl">

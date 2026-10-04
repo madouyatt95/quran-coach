@@ -1,7 +1,8 @@
 /// <reference lib="webworker" />
-import { precacheAndRoute } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
+import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
+import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
+import { createPartialResponse } from 'workbox-range-requests';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
@@ -9,18 +10,20 @@ declare let self: ServiceWorkerGlobalScope;
 
 // ─── Workbox Precaching ─────────────────────────────
 precacheAndRoute(self.__WB_MANIFEST);
+registerRoute(new NavigationRoute(createHandlerBoundToURL('/index.html'), { denylist: [/^\/api\//, /^\/tilawa\//] }));
 
-// ─── Runtime Caching (same as before) ───────────────
-registerRoute(
-    ({ url }) => url.origin === 'https://api.alquran.cloud',
-    new CacheFirst({
-        cacheName: 'quran-api-cache',
-        plugins: [
-            new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 365 * 24 * 60 * 60 }),
-            new CacheableResponsePlugin({ statuses: [200] }),
-        ],
-    })
-);
+// Optional packs: only explicitly downloaded files are stored in these caches.
+registerRoute(({url}) => url.origin === self.location.origin && url.pathname.startsWith('/tilawa/v1/'), async ({request}) => (await (await caches.open('quran-coach-tilawa-v1')).match(request)) || fetch(request));
+registerRoute(({url}) => url.origin === 'https://api.alquran.cloud', async ({request,event}) => {
+    const packed = await (await caches.open('quran-coach-content-v1')).match(request);
+    if (packed) return packed;
+    return new CacheFirst({cacheName:'quran-api-cache',plugins:[new ExpirationPlugin({maxEntries:500,maxAgeSeconds:365*24*60*60}),new CacheableResponsePlugin({statuses:[200]})]}).handle({request,event});
+});
+registerRoute(({url}) => /\.(mp3|wav)$/i.test(url.pathname), async ({request}) => {
+    const packed = await (await caches.open('quran-coach-audio-v1')).match(request.url);
+    if (!packed) return fetch(request);
+    return request.headers.has('range') ? createPartialResponse(request, packed) : packed;
+});
 
 registerRoute(
     ({ url }) => url.origin === 'https://api.quran.com',

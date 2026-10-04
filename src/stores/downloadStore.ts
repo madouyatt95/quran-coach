@@ -1,127 +1,166 @@
-import { create } from 'zustand';
-import { isAudioCached, downloadAudio, deleteAudioFromCache } from '../lib/audioCacheService';
-
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 export interface DownloadTask {
-    id: string; // Ex: "surah-1" ou "hisnul-muslim"
-    title: string;
-    urls: string[];
-    progress: number; // 0 à 100
-    status: 'idle' | 'downloading' | 'completed' | 'error';
-    error?: string;
+  id: string;
+  title: string;
+  urls: string[];
+  progress: number;
+  status: "idle" | "downloading" | "completed" | "error";
+  error?: string;
+  kind?: "audio" | "text";
+  bytes?: number;
 }
-
 interface DownloadStore {
-    tasks: Record<string, DownloadTask>;
-    isItemCached: (id: string) => boolean;
-
-    /** Lance un téléchargement groupé d'un ensemble d'URLs */
-    startDownload: (id: string, title: string, urls: string[]) => Promise<void>;
-
-    /** Supprime du cache et efface la tâche */
-    removeDownload: (id: string, urls: string[]) => Promise<void>;
-
-    /** Vérifie silencieusement si les fichiers sont déjà dispos au chargement de la page */
-    verifyCacheStatus: (id: string, sampleUrl: string) => Promise<void>;
+  tasks: Record<string, DownloadTask>;
+  isItemCached: (id: string) => boolean;
+  startDownload: (
+    id: string,
+    title: string,
+    urls: string[],
+    kind?: "audio" | "text",
+  ) => Promise<void>;
+  removeDownload: (id: string, urls: string[]) => Promise<void>;
+  verifyCacheStatus: (id: string, sampleUrl: string) => Promise<void>;
+  pauseDownload: (id: string) => void;
 }
-
-export const useDownloadStore = create<DownloadStore>((set, get) => ({
-    tasks: {},
-
-    isItemCached: (id: string) => {
-        return get().tasks[id]?.status === 'completed';
-    },
-
-    verifyCacheStatus: async (id: string, sampleUrl: string) => {
-        // On vérifie juste la première URL pour aller vite. Si vraie, on suppose que tout le bloc est complet.
-        const cached = await isAudioCached(sampleUrl);
-        if (cached) {
-            set((state) => ({
-                tasks: {
-                    ...state.tasks,
-                    [id]: {
-                        id,
-                        title: '',
-                        urls: [sampleUrl],
-                        progress: 100,
-                        status: 'completed'
-                    }
-                }
-            }));
-        } else {
-            // S'assurer que le statut soit réinitialisé si effacé manuellement via les devs tools
-            set((state) => {
-                const newTasks = { ...state.tasks };
-                if (newTasks[id]) delete newTasks[id];
-                return { tasks: newTasks };
-            });
-        }
-    },
-
-    startDownload: async (id, title, urls) => {
-        if (urls.length === 0) return;
-
-        set((state) => ({
-            tasks: {
-                ...state.tasks,
-                [id]: { id, title, urls, progress: 0, status: 'downloading' }
-            }
-        }));
-
+const controllers = new Map<string, AbortController>();
+const cacheName = (kind?: "audio" | "text") =>
+  kind === "text" ? "quran-coach-content-v1" : "quran-coach-audio-v1";
+export const useDownloadStore = create<DownloadStore>()(
+  persist(
+    (set, get) => ({
+      tasks: {},
+      isItemCached: (id) => get().tasks[id]?.status === "completed",
+      pauseDownload: (id) => controllers.get(id)?.abort(),
+      verifyCacheStatus: async (id) => {
+        const task = get().tasks[id];
+        if (!task || controllers.has(id)) return;
         try {
-            let completed = 0;
-            const total = urls.length;
-
-            for (const url of urls) {
-                // Si l'audio n'est pas déjà en cache, on le télécharge
-                if (!(await isAudioCached(url))) {
-                    const success = await downloadAudio(url);
-                    if (!success) throw new Error('Échec réseau');
-                }
-
-                completed++;
-                const progress = Math.round((completed / total) * 100);
-
-                set((state) => ({
-                    tasks: {
-                        ...state.tasks,
-                        [id]: { ...state.tasks[id], progress }
-                    }
-                }));
-            }
-
-            set((state) => ({
-                tasks: {
-                    ...state.tasks,
-                    [id]: { ...state.tasks[id], progress: 100, status: 'completed' }
-                }
-            }));
-
-        } catch (error: any) {
-            set((state) => ({
-                tasks: {
-                    ...state.tasks,
-                    [id]: { ...state.tasks[id], status: 'error', error: error.message }
-                }
-            }));
+          const cache = await caches.open(cacheName(task.kind));
+          const matches = await Promise.all(
+            task.urls.map((url) => cache.match(url)),
+          );
+          const count = matches.filter(Boolean).length;
+          if (get().tasks[id] !== task) return;
+          set((state) => ({
+            tasks: {
+              ...state.tasks,
+              [id]: {
+                ...task,
+                status: count === task.urls.length ? "completed" : "idle",
+                progress: Math.round((count / task.urls.length) * 100),
+              },
+            },
+          }));
+        } catch {
+          /* The UI can still offer a retry. */
         }
-    },
-
-    removeDownload: async (id, urls) => {
-        // On ne bloque pas l'UI, on exécute ça en asynchrone
-        Promise.all(urls.map(url => deleteAudioFromCache(url))).then(() => {
-            set((state) => {
-                const newTasks = { ...state.tasks };
-                delete newTasks[id];
-                return { tasks: newTasks };
-            });
-        }).catch(e => console.error("Erreur suppression:", e));
-
-        // Suppression optimiste immédiate pour l'UI
+      },
+      startDownload: async (id, title, urls, kind = "audio") => {
+        if (!urls.length || controllers.has(id)) return;
+        const controller = new AbortController();
+        controllers.set(id, controller);
+        urls = [...new Set(urls)];
+        set((state) => ({
+          tasks: {
+            ...state.tasks,
+            [id]: {
+              id,
+              title,
+              urls,
+              kind,
+              progress: 0,
+              status: "downloading",
+              bytes: 0,
+            },
+          },
+        }));
+        try {
+          const cache = await caches.open(cacheName(kind));
+          let completed = 0;
+          let bytes = 0;
+          for (const url of urls) {
+            controller.signal.throwIfAborted();
+            let response = await cache.match(url);
+            if (!response) {
+              // The public CDN allows audio playback but does not provide CORS headers.
+              // Fetch the fixed same-origin mirror, keeping the original cache key for playback.
+              const match = /^https:\/\/cdn\.islamic\.network\/quran\/audio\/128\/ar\.alafasy\/(\d+)\.mp3$/.exec(url);
+              response = await fetch(match ? `/offline-audio/${match[1]}.mp3` : url, { signal: controller.signal });
+              if (!response.ok)
+                throw new Error(`Échec du téléchargement (${response.status})`);
+              if (kind === "text") await response.clone().json();
+              await cache.put(url, response.clone());
+            }
+            bytes += (await response.blob()).size;
+            completed++;
+            set((state) => ({
+              tasks: {
+                ...state.tasks,
+                [id]: {
+                  ...state.tasks[id],
+                  bytes,
+                  progress: Math.round((completed / urls.length) * 100),
+                },
+              },
+            }));
+          }
+          set((state) => ({
+            tasks: {
+              ...state.tasks,
+              [id]: { ...state.tasks[id], status: "completed" },
+            },
+          }));
+        } catch (error) {
+          set((state) => ({
+            tasks: {
+              ...state.tasks,
+              [id]: {
+                ...state.tasks[id],
+                status: controller.signal.aborted ? "idle" : "error",
+                error: controller.signal.aborted
+                  ? "Téléchargement en pause."
+                  : error instanceof Error
+                    ? error.message
+                    : "Stockage indisponible.",
+              },
+            },
+          }));
+        } finally {
+          controllers.delete(id);
+        }
+      },
+      removeDownload: async (id, urls) => {
+        if (controllers.has(id)) return;
+        const task = get().tasks[id];
+        if (!task) return;
+        const others = Object.values(get().tasks).filter(
+          (t) => t.id !== id && cacheName(t.kind) === cacheName(task.kind),
+        );
+        const shared = new Set(others.flatMap((t) => t.urls));
+        const cache = await caches.open(cacheName(task.kind));
+        await Promise.all(
+          urls
+            .filter((url) => !shared.has(url))
+            .map((url) => cache.delete(url)),
+        );
         set((state) => {
-            const newTasks = { ...state.tasks };
-            delete newTasks[id];
-            return { tasks: newTasks };
+          const tasks = { ...state.tasks };
+          delete tasks[id];
+          return { tasks };
         });
-    }
-}));
-
+      },
+    }),
+    {
+      name: "quran-coach-downloads-v1",
+      partialize: (state) => ({
+        tasks: Object.fromEntries(
+          Object.entries(state.tasks).map(([id, t]) => [
+            id,
+            { ...t, status: t.status === "downloading" ? "idle" : t.status },
+          ]),
+        ),
+      }),
+    },
+  ),
+);

@@ -17,6 +17,13 @@ interface CacheEntry<T> {
 export async function fetchWithCache<T>(url: string, forceRefresh: boolean = false): Promise<T> {
     const cacheKey = `quran-coach-cache-${url}`;
 
+    if (!forceRefresh && typeof caches !== 'undefined') {
+        try {
+            const packed = await (await caches.open('quran-coach-content-v1')).match(url);
+            if (packed) return await packed.json() as T;
+        } catch { /* Try IndexedDB and the network if browser storage is unavailable. */ }
+    }
+
     // Si on ne force pas le rafraîchissement, on cherche dans IndexedDB
     if (!forceRefresh) {
         try {

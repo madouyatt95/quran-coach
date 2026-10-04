@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
+import { parsePassage, passageUrl } from '../lib/learning';
 import {
     Play,
     Pause,
@@ -41,6 +42,7 @@ const HIFDH_RECITER_QURAN_COM_ID = 7;
 export function HifdhPage() {
     const { t } = useTranslation();
     const location = useLocation();
+    const incoming = parsePassage(new URLSearchParams(location.search));
     const { surahs } = useQuranStore();
     const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const { recordPageRead } = useStatsStore();
@@ -63,9 +65,9 @@ export function HifdhPage() {
     }, []);
 
     // Selection state
-    const [selectedSurah, setSelectedSurah] = useState(1);
-    const [startAyah, setStartAyah] = useState(1);
-    const [endAyah, setEndAyah] = useState(5);
+    const [selectedSurah, setSelectedSurah] = useState(incoming.surah);
+    const [startAyah, setStartAyah] = useState(incoming.ayah);
+    const [endAyah, setEndAyah] = useState(location.search ? incoming.ayah : 5);
     const [maxAyahs, setMaxAyahs] = useState(5);
     const [ayahs, setAyahs] = useState<Ayah[]>([]);
     const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
@@ -160,7 +162,7 @@ export function HifdhPage() {
 
     // Handle incoming verse from navigation state (Deep link)
     useEffect(() => {
-        const state = location.state as { surah?: number; ayah?: number };
+        const state = location.search ? parsePassage(new URLSearchParams(location.search)) : location.state as { surah?: number; ayah?: number };
         if (state?.surah && state?.ayah) {
             setSelectedSurah(state.surah);
             setStartAyah(state.ayah);
@@ -168,7 +170,7 @@ export function HifdhPage() {
             // Clear state so it doesn't re-trigger on every render
             window.history.replaceState({}, document.title);
         }
-    }, [location.state]);
+    }, [location.state, location.search]);
 
     const currentAyah = ayahs[currentAyahIndex];
 
@@ -204,7 +206,7 @@ export function HifdhPage() {
 
         // If surah changed, always load full surah and reset range
         // EXCEPT if we just came from a deep link (location.state)
-        const state = location.state as { surah?: number; ayah?: number };
+        const state = location.search ? parsePassage(new URLSearchParams(location.search)) : location.state as { surah?: number; ayah?: number };
         const isDeepLink = state?.surah === selectedSurah && state?.ayah === startAyah && state?.ayah === endAyah;
 
         if (surahChanged && surah && !isDeepLink) {
@@ -735,6 +737,7 @@ export function HifdhPage() {
                 <h1 className="hifdh-page__header">{t('hifdh.title', 'Studio Hifdh')}</h1>
             </div>
 
+            <div style={{padding:"0 16px"}}><Link className="learning-btn" to={passageUrl({surah:selectedSurah,ayah:ayahs[currentAyahIndex]?.numberInSurah || startAyah}) + (new URLSearchParams(location.search).get('step') ? '&step=' + encodeURIComponent(new URLSearchParams(location.search).get('step')!) : '')}>Comprendre et noter ma progression</Link></div>
             {loadError && <div className="coach-feedback" role="alert">
                 <p>{loadError}</p>
                 <button className="coach-action" onClick={() => setReloadPassage(value => value + 1)}>Réessayer le chargement</button>

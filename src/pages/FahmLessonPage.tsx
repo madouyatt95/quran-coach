@@ -8,7 +8,10 @@ import { QURAN_VOCABULARY } from '../data/quranVocabulary';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration } from '../lib/quranApi';
 import { useFahmStore } from '../stores/fahmStore';
 
+import type { Ayah } from '../types';
 import './FahmLessonPage.css';
+import { ComprehensionCheck } from '../components/Learning/ComprehensionCheck';
+import { PassageActions } from '../components/Learning/PassageActions';
 
 const TOTAL_STEPS = 2; // Step 0: Read, Step 1: Understand
 
@@ -18,7 +21,9 @@ export function FahmLessonPage() {
     const fahm = useFahmStore();
 
     const [step, setStep] = useState(0);
-    const [verses, setVerses] = useState<any[]>([]);
+    const [checked, setChecked] = useState(false);
+    const [loadError,setLoadError] = useState(false);
+    const [verses, setVerses] = useState<Ayah[]>([]);
     const [translations, setTranslations] = useState<string[]>([]);
     const [transliterations, setTransliterations] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -30,19 +35,20 @@ export function FahmLessonPage() {
     useEffect(() => {
         if (!dayData) return;
 
+        let cancelled = false;
+        setStep(0); setChecked(false); setVerses([]);
         const loadContent = async () => {
             setIsLoading(true);
+            setLoadError(false);
             try {
                 const passages = dayData.passages || (dayData.surah ? [{ surah: dayData.surah, startAyah: dayData.startAyah!, endAyah: dayData.endAyah! }] : []);
                 
-                let allVerses: any[] = [];
+                let allVerses: Ayah[] = [];
                 let allTrans: string[] = [];
                 let allPhonetics: string[] = [];
 
                 for (const p of passages) {
-                    const surahData = await fetchSurah(p.surah);
-                    const translationData = await fetchSurahTranslation(p.surah, 'fr');
-                    const transliterationData = await fetchSurahTransliteration(p.surah);
+                    const [surahData, translationData, transliterationData] = await Promise.all([fetchSurah(p.surah), fetchSurahTranslation(p.surah, 'fr'), fetchSurahTransliteration(p.surah)]);
 
                     const startIdx = p.startAyah - 1;
                     const endIdx = p.endAyah;
@@ -53,17 +59,21 @@ export function FahmLessonPage() {
                     allPhonetics = [...allPhonetics, ...extractedVerses.map(v => transliterationData.get(v.number) || '')];
                 }
 
+                if(cancelled) return;
+                if(!allVerses.length) throw new Error("Passage vide");
                 setVerses(allVerses);
                 setTranslations(allTrans);
                 setTransliterations(allPhonetics);
             } catch (err) {
                 console.error("Erreur lors du chargement des versets", err);
+                if(!cancelled) setLoadError(true);
             } finally {
-                setIsLoading(false);
+                if(!cancelled) setIsLoading(false);
             }
         };
 
-        loadContent();
+        void loadContent();
+        return () => { cancelled = true; };
     }, [dayData]);
 
     // Extract Vocabulary Words that appear in the reading passage
@@ -203,12 +213,17 @@ export function FahmLessonPage() {
                 </AnimatePresence>
             </div>
 
+            {loadError && <p role="alert">Le passage n’a pas pu être chargé. Revenez au parcours et réessayez avec une connexion.</p>}
+            {step === 1 && !isLoading && !loadError && <div style={{padding:20}}>
+                <ComprehensionCheck key={`${pathId}-${day}`} arabic={verses.map(v=>v.text).join(' ')} reference={dayData.fahmNote} onComplete={()=>setChecked(true)} />
+                {verses[0] && <PassageActions surah={verses[0].surah} ayah={verses[0].numberInSurah} />}
+            </div>}
             {/* Footer */}
             <div className="fahm-lesson-footer">
                 <button
                     className={`fahm-lesson-btn ${step === TOTAL_STEPS - 1 ? 'fahm-lesson-btn--finish' : ''}`}
                     onClick={handleNext}
-                    disabled={isLoading}
+                    disabled={isLoading || loadError || (step === 1 && !checked)}
                 >
                     {step === TOTAL_STEPS - 1 ? (
                         <>
