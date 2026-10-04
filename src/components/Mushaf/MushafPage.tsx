@@ -2,7 +2,7 @@ import { getJuzForPage } from '../../data/juzData';
 import { VerseActionBar } from './VerseActionBar';
 import { useVersePress, type VerseSelection } from './hooks/useVersePress';
 import { ReadingBookmarkControl } from './ReadingBookmarkControl';
-import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useState, useMemo, useRef, useCallback } from 'react';
 import DOMPurify from 'dompurify';
 import {
     Settings,
@@ -15,14 +15,14 @@ import {
     X,
     ChevronLeft,
     ChevronRight,
-    Heart,
+    PanelTopOpen,
     BookOpen,
 } from 'lucide-react';
 import { LiveFollowWords } from './LiveFollowWords';
 import { useLiveFollowStore } from '../../stores/liveFollowStore';
 import { useQuranStore } from '../../stores/quranStore';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { useVisibleReadingPosition } from './hooks/useVisibleReadingPosition';
+import { useVisibleReadingPosition, verseAtReadingLine } from './hooks/useVisibleReadingPosition';
 import { useKhatmReading } from './hooks/useKhatmReading';
 import { useTranslation } from 'react-i18next';
 import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
@@ -33,7 +33,6 @@ import { SideMenu } from '../Navigation/SideMenu';
 import { KhatmTracker, KhatmPageBadge } from '../Khatm/KhatmTracker';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import type { Ayah } from '../../types';
-import { EMOTIONAL_VERSES, VERSE_HADITH_LINKS } from '../../data/coachData';
 
 // Sub-components & hooks
 import { useMushafAudio } from './hooks/useMushafAudio';
@@ -47,9 +46,11 @@ import { BISMILLAH, isMobile, toArabicNumbers, toVerseGlyph, SURAH_NAMES_FR } fr
 import type { MaskMode } from './mushafConstants';
 import { FahmPanel } from '../Fahm/FahmPanel';
 import './MushafPage.css';
+import './TextMushaf.css';
 
 export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElement | null) => void } = {}) {
     const livePassage = useLiveFollowStore(s => s.passage);
+    const liveActive = useLiveFollowStore(s => s.active);
     const { t } = useTranslation();
     const {
         currentPage, surahs, setSurahs,
@@ -65,7 +66,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
         selectedReciter, tajwidEnabled, toggleTajwid,
         setArabicFontSize, showTranslation, toggleTranslation,
         showTransliteration, toggleTransliteration,
-        arabicFontFamily, setArabicFontFamily,
+        arabicFontFamily, setArabicFontFamily, textImmersive, setTextImmersive,
     } = useSettingsStore();
 
     const { toggleFavorite, isFavorite } = useFavoritesStore();
@@ -81,9 +82,6 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     const isSilentJumpRef = useRef(false);
 
     // Panels
-    const [showTajweedSheet, setShowTajweedSheet] = useState(false);
-    const [showMaskSheet, setShowMaskSheet] = useState(false);
-    const [showFontSheet, setShowFontSheet] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const [showToolbar, setShowToolbar] = useState(false);
     const [showSideMenu, setShowSideMenu] = useState(false);
@@ -102,14 +100,6 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     const [maskMode, setMaskMode] = useState<MaskMode>('visible');
     const [partialHidden, setPartialHidden] = useState<Set<string>>(new Set());
 
-    // Context highlights
-    const fahmContextVerseKeys = useMemo(() => {
-        const keys = new Set<string>();
-        EMOTIONAL_VERSES.forEach(e => keys.add(`${e.surah}:${e.ayah}`));
-        VERSE_HADITH_LINKS.forEach(l => keys.add(`${l.surah}:${l.ayah}`));
-        return keys;
-    }, []);
-
     // ===== Hooks =====
     const audio = useMushafAudio({
         selectedReciter,
@@ -126,6 +116,36 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
         nextPage: () => goToPage(currentPage + 1, {reading:true}),
         prevPage: () => goToPage(currentPage - 1, {reading:true}),
     });
+
+    const [immersed, setImmersed] = useState(false);
+    const scrollOrigin = useRef(0);
+    const readingAnchor = useRef<{element: HTMLElement; top: number} | null>(null);
+    const preserveReading = (change: () => void) => {
+        const container = navigation.containerRef.current;
+        if (container) {
+            const bounds = container.getBoundingClientRect();
+            const element = verseAtReadingLine(container.querySelectorAll<HTMLElement>('.mih-ayah'), bounds.top, bounds.height);
+            if (element) readingAnchor.current = {element, top:element.getBoundingClientRect().top};
+        }
+        isSilentJumpRef.current = true;
+        change();
+    };
+    const canImmerse = textImmersive && !audio.audioActive && !liveActive && !showToolbar && !showSearch && !showSideMenu && !verseSelection && !shareAyah && !fahmAyah;
+    const isImmersed = textImmersive && immersed;
+    const changeImmersion = (next: boolean) => preserveReading(() => setImmersed(next));
+    useLayoutEffect(() => {
+        const anchor = readingAnchor.current;
+        const container = navigation.containerRef.current;
+        if (anchor && container) {
+            container.scrollTop += anchor.element.getBoundingClientRect().top - anchor.top;
+            scrollOrigin.current = container.scrollTop;
+        }
+        readingAnchor.current = null;
+    }, [showTranslation, showTransliteration, arabicFontSize, arabicFontFamily, isImmersed, translationMap, transliterationMap]);
+    useLayoutEffect(() => {
+        if (immersed && !canImmerse) changeImmersion(false);
+    }, [canImmerse, immersed]);
+    useEffect(() => { setImmersed(false); scrollOrigin.current = 0; }, [currentSurah, jumpSignal, textImmersive]);
 
     const juzNumber = getJuzForPage(currentPage)?.number ?? 1;
 
@@ -194,17 +214,15 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
         setError(null);
         setRenderedCount(20); // Reset progressive render
 
-        Promise.all([
-            fetchSurah(currentSurah),
-            showTranslation ? fetchSurahTranslation(currentSurah) : Promise.resolve(new Map<number, string>()),
-            showTransliteration ? fetchSurahTransliteration(currentSurah) : Promise.resolve(new Map<number, string>())
-        ]).then(async ([surahData, translations, transliterations]) => {
+        setTranslationMap(new Map());
+        setTransliterationMap(new Map());
+        void fetchSurahTranslation(currentSurah).then(value => {if (!cancelled) preserveReading(() => setTranslationMap(value));}).catch(() => {});
+        void fetchSurahTransliteration(currentSurah).then(value => {if (!cancelled) preserveReading(() => setTransliterationMap(value));}).catch(() => {});
+        fetchSurah(currentSurah).then(async (surahData) => {
             if (cancelled) return;
             const { ayahs } = surahData;
             setSurahAyahs(ayahs);
             audio.pageAyahsRef.current = ayahs;
-            setTranslationMap(translations);
-            setTransliterationMap(transliterations);
             setIsLoading(false);
 
             // Fetch word timings (limited to visible range or first 50 for start)
@@ -251,7 +269,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
             setIsLoading(false);
         });
         return () => { cancelled = true; };
-    }, [currentSurah, showTranslation, showTransliteration]);
+    }, [currentSurah]);
 
     // Dedicated Jump Handling Effect - react to signal even if surah stays the same
     useEffect(() => {
@@ -365,21 +383,21 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
     }
 
     return (
-        <div className={`mushaf-page ${isMobile ? 'is-mobile' : ''}`} data-arabic-size={arabicFontSize}>
+        <div className={`mushaf-page ${isMobile ? 'is-mobile' : ''}`} data-arabic-size={arabicFontSize} data-layout={showTranslation || showTransliteration ? 'assisted' : 'continuous'} data-immersed={isImmersed}>
             {/* ===== Compact Header ===== */}
             <div className="mih-header">
                 <div className="mih-header-left">
                     <button aria-label="Menu" onClick={() => setShowSideMenu(true)} className="mih-header__icon-btn">
                         <Menu size={20} />
                     </button>
-                    <div className="mih-header__info" onClick={() => setShowSearch(true)}>
+                    <button className="mih-header__info" aria-label="Choisir une sourate ou un verset" onClick={() => {changeImmersion(false); setShowSearch(true);}}>
                         <div className="mih-header__surah-name">
                             {SURAH_NAMES_FR[currentSurah]}
                         </div>
                         <div className="mih-header__page-num">
                             {t('mushaf.page', 'Page')} {toArabicNumbers(currentPage)} • {t('mushaf.juz', 'Juz')} {juzNumber}
                         </div>
-                    </div>
+                    </button>
                 </div>
 
                 {/* Header Audio Player */}
@@ -438,25 +456,21 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                     <ReadingBookmarkControl view="mushaf" page={currentPage} ayahs={currentSurahAyahs}/>
                     <MushafToolbar
                         showToolbar={showToolbar}
-                        isMobile={isMobile}
-                        showTajweedSheet={showTajweedSheet}
-                        setShowTajweedSheet={setShowTajweedSheet}
+                        onClose={() => setShowToolbar(false)}
+                        immersive={textImmersive}
+                        setImmersive={setTextImmersive}
                         tajwidEnabled={tajwidEnabled}
                         toggleTajwid={toggleTajwid}
                         tajwidLayers={tajwidLayers}
                         toggleTajwidLayer={toggleTajwidLayer}
                         showTranslation={showTranslation}
-                        toggleTranslation={toggleTranslation}
+                        toggleTranslation={() => preserveReading(toggleTranslation)}
                         showTransliteration={showTransliteration}
-                        toggleTransliteration={toggleTransliteration}
-                        showFontSheet={showFontSheet}
-                        setShowFontSheet={setShowFontSheet}
+                        toggleTransliteration={() => preserveReading(toggleTransliteration)}
                         arabicFontSize={arabicFontSize}
-                        setArabicFontSize={setArabicFontSize}
+                        setArabicFontSize={size => preserveReading(() => setArabicFontSize(size))}
                         arabicFontFamily={arabicFontFamily}
-                        setArabicFontFamily={setArabicFontFamily}
-                        showMaskSheet={showMaskSheet}
-                        setShowMaskSheet={setShowMaskSheet}
+                        setArabicFontFamily={font => preserveReading(() => setArabicFontFamily(font))}
                         maskMode={maskMode}
                         setMaskMode={setMaskMode}
 
@@ -472,6 +486,8 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
             </div>
 
 
+
+            {isImmersed && <button className="text-reader-restore" aria-label="Afficher les commandes de lecture" onClick={() => changeImmersion(false)}><PanelTopOpen size={18}/><span>Commandes</span></button>}
 
             {/* Floating Navigation (desktop) */}
             {!isMobile && (
@@ -491,6 +507,11 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                 onWheelCapture={() => {isSilentJumpRef.current = false;}}
                 onTouchMoveCapture={() => {isSilentJumpRef.current = false;}}
                 onKeyDownCapture={e => {if (['PageUp','PageDown','Home','End','ArrowUp','ArrowDown'].includes(e.key)) isSilentJumpRef.current = false;}}
+                onScroll={e => {
+                    const top = e.currentTarget.scrollTop;
+                    if (canImmerse && !immersed && !isSilentJumpRef.current && top - scrollOrigin.current > 100) changeImmersion(true);
+                    if (top < scrollOrigin.current) scrollOrigin.current = top;
+                }}
                 ref={navigation.containerRef}
                 onTouchStart={navigation.handleTouchStart}
                 onTouchMove={navigation.handleTouchMove}
@@ -535,10 +556,9 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                                 )}
 
                                 <div className="mih-ayahs">
-                                    {ayahs.map((ayah: Ayah) => {
+                                    {ayahs.map((ayah: Ayah, index: number) => {
                                         const ayahIndex = getAyahIndex(ayah);
                                         const isCurrentlyPlaying = audio.currentPlayingAyah === ayah.number;
-                                        const hasContext = fahmContextVerseKeys.has(`${ayah.surah}:${ayah.numberInSurah}`);
                                         const vw = audio.verseWordsMap.get(`${ayah.surah}:${ayah.numberInSurah}`);
 
                                         const rawWords = ayah.text.split(/\s+/).filter((w: string) => w.length > 0);
@@ -575,25 +595,19 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                                         ));
 
                                         return (
-                                            <span
-                                                key={ayah.number}
-                                                className={`mih-ayah ${verseSelection?.ayah.number === ayah.number ? 'mih-ayah--selected' : ''} ${livePassage?.surah === ayah.surah && livePassage?.ayah === ayah.numberInSurah ? 'live-follow-current' : ''}${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''} ${hasContext ? 'mih-ayah--has-context' : ''}`}
+                                            <Fragment key={ayah.number}>
+                                            {(index === 0 || ayahs[index - 1].page !== ayah.page) && <div className="text-page-marker" role="separator" aria-label={`Page ${ayah.page}, Juz ${getJuzForPage(ayah.page)?.number ?? 1}`}><span>Page {ayah.page}</span><span>Juz {getJuzForPage(ayah.page)?.number ?? 1}</span></div>}
+                                            <div
+                                                className={`mih-ayah ${verseSelection?.ayah.number === ayah.number ? 'mih-ayah--selected' : ''} ${livePassage?.surah === ayah.surah && livePassage?.ayah === ayah.numberInSurah ? 'live-follow-current' : ''}${isCurrentlyPlaying ? ' mih-ayah--playing' : ''} ${maskMode !== 'visible' ? 'mih-ayah--word-by-word' : ''}`}
                                                 data-surah={ayah.surah}
                                                 data-ayah={ayah.numberInSurah}
                                                 data-page={ayah.page}
-                                                style={{ cursor: 'pointer', ...(isCurrentlyPlaying ? { backgroundColor: 'rgba(76, 175, 80, 0.08)' } : {}) }}
                                                 {...versePress(ayah)}
                                                 tabIndex={0}
                                                 aria-label={`Verset ${ayah.surah}:${ayah.numberInSurah}`}
                                                 onClick={() => audio.playAyahAtIndex(ayahIndex)}
                                             >
-                                                <button
-                                                    className={`mih-fav-btn ${isFavorite(ayah.number) ? 'active' : ''}`}
-                                                    onClick={(e) => { e.stopPropagation(); toggleFavorite({ number: ayah.number, surah: ayah.surah, numberInSurah: ayah.numberInSurah, text: ayah.text }); }}
-                                                >
-                                                    <Heart size={12} fill={isFavorite(ayah.number) ? 'currentColor' : 'none'} />
-                                                </button>
-
+                                                <span className="mih-ayah__arabic" lang="ar" dir="rtl">
                                                 <LiveFollowWords surah={ayah.surah} ayah={ayah.numberInSurah}
                                                     words={vw ? vw.words.map(word => word.text) : rawWords}>
                                                     {wordElements}
@@ -602,23 +616,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                                                 <span className="mih-verse-num">
                                                     {toVerseGlyph(ayah.numberInSurah)}
                                                 </span>
-                                                <button
-                                                    className={`mih-fahm-btn ${hasContext ? 'mih-fahm-btn--has-context' : ''}`}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        const surahObj = surahs.find(s => s.number === ayah.surah);
-                                                        setFahmAyah({
-                                                            surah: ayah.surah,
-                                                            ayah: ayah.numberInSurah,
-                                                            text: ayah.text,
-                                                            translation: translationMap.get(ayah.number),
-                                                            surahName: surahObj ? (SURAH_NAMES_FR[ayah.surah] || surahObj.englishName) : undefined,
-                                                        });
-                                                    }}
-                                                    title="Comprendre ce verset"
-                                                >
-                                                    💡
-                                                </button>
+                                                </span>
 
                                                 {showTransliteration && transliterationMap.get(ayah.number) && (
                                                     <div className="mih-transliteration">{transliterationMap.get(ayah.number)}</div>
@@ -626,8 +624,8 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                                                 {showTranslation && translationMap.get(ayah.number) && (
                                                     <div className="mih-translation">{formatDivineNames(translationMap.get(ayah.number))}</div>
                                                 )}
-                                                {' '}
-                                            </span>
+                                            </div>{' '}
+                                            </Fragment>
                                         );
                                     })}
                                 </div>
@@ -656,7 +654,10 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
 
             {verseSelection && <VerseActionBar key={verseSelection.ayah.number} selection={verseSelection} view="mushaf"
                 onClose={closeVerseActions} onPlay={()=>audio.playAyahAtIndex(getAyahIndex(verseSelection.ayah))}
-                onMore={()=>setShareAyah(verseSelection.ayah)}/>}
+                onMore={()=>setShareAyah(verseSelection.ayah)}
+                favorite={isFavorite(verseSelection.ayah.number)}
+                onFavorite={() => { const a = verseSelection.ayah; toggleFavorite({number:a.number,surah:a.surah,numberInSurah:a.numberInSurah,text:a.text}); }}
+                onUnderstand={() => { const a = verseSelection.ayah; setFahmAyah({surah:a.surah,ayah:a.numberInSurah,text:a.text,translation:translationMap.get(a.number),surahName:SURAH_NAMES_FR[a.surah]}); }}/>}
 
             {/* Share Modal */}
             {shareAyah && (

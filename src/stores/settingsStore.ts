@@ -16,6 +16,9 @@ interface SettingsState extends Settings {
     playbackSpeed: number;
     setPlaybackSpeed: (speed: number) => void;
 
+    textImmersive: boolean;
+    setTextImmersive: (enabled: boolean) => void;
+
     // Visual
     starryMode: boolean;
     setStarryMode: (enabled: boolean) => void;
@@ -40,6 +43,8 @@ export const useSettingsStore = create<SettingsState>()(
     persist(
         (set) => ({
             // Default settings
+            textImmersive: false,
+            setTextImmersive: (textImmersive) => set({textImmersive}),
             theme: 'dark',
             arabicFontSize: 'xl',
             arabicFontFamily: 'scheherazade',

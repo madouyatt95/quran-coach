@@ -1,0 +1,79 @@
+/* Text-only reader: spacing is independent of the two facsimile readers. */
+.mushaf-page[data-layout]{--paper:#faf7ef;--ink:#282c29;--muted-ink:#736d60;--reader-accent:#93743c;--reader-rule:#ab936d38;background:var(--paper)}
+[data-theme="dark"] .mushaf-page[data-layout]{--paper:#161e22;--ink:#eee9df;--muted-ink:#a7afa9;--reader-accent:#cbb786;--reader-rule:#cbb7862b}
+.mushaf-page[data-layout] .mih-mushaf{background:var(--paper);scrollbar-width:thin;scrollbar-color:var(--reader-rule) transparent;overflow-anchor:none}
+.mushaf-page[data-layout] .mih-mushaf__content{background:transparent;border:0;border-image:none;box-shadow:none;max-width:760px;min-height:0;margin:0 auto;padding:12px clamp(18px,4vw,44px) 50px}
+.mushaf-page[data-layout] .mih-ayahs{font-size:var(--reader-font);line-height:var(--reader-leading);color:var(--ink)!important;word-spacing:normal;letter-spacing:normal;text-align:start;text-justify:auto;overflow-wrap:normal}
+.mushaf-page[data-arabic-size="sm"]{--reader-font:1.55rem;--reader-leading:2.15}
+.mushaf-page[data-arabic-size="md"]{--reader-font:1.8rem;--reader-leading:2.2}
+.mushaf-page[data-arabic-size="lg"]{--reader-font:2.1rem;--reader-leading:2.25}
+.mushaf-page[data-arabic-size="xl"]{--reader-font:2.4rem;--reader-leading:2.3}
+.mushaf-page[data-layout] .mih-ayah{display:inline;padding:0;cursor:pointer;border-radius:6px;box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:background-color .2s}
+.mushaf-page[data-layout] .mih-ayah:focus-visible{outline:2px solid var(--reader-accent);outline-offset:4px}
+.mushaf-page[data-layout] .mih-word{padding:0;line-height:inherit;font-weight:400;color:inherit}
+.mushaf-page[data-layout] .mih-word--active{font-weight:400;background:#baa06030;color:var(--ink);box-shadow:none}
+.mushaf-page[data-layout] .mih-ayah--playing{background:#a6b9981f}
+.mushaf-page[data-layout] .mih-verse-num{font-size:.68em;line-height:1;vertical-align:baseline;color:var(--reader-accent);margin-inline:5px;white-space:nowrap}
+.mushaf-page[data-layout="assisted"] .mih-ayah{display:block;padding:20px 0 24px;border-bottom:1px solid var(--reader-rule)}
+.mushaf-page[data-layout="assisted"] .mih-ayah__arabic{display:block}
+.mushaf-page[data-layout] :is(.mih-transliteration,.mih-translation){direction:ltr;text-align:start;font-family:var(--font-body,Inter,system-ui,sans-serif);font-size:14px;font-style:normal;font-weight:400;line-height:1.85;letter-spacing:0;border:0;border-radius:0;background:transparent;margin:14px 0 0;padding:0;color:var(--ink)}
+.mushaf-page[data-layout] .mih-transliteration{font-size:12.5px;color:var(--muted-ink);line-height:1.8}
+.text-page-marker{display:flex;align-items:center;justify-content:center;gap:12px;direction:ltr;font:500 10px/1.5 var(--font-body,Inter,system-ui,sans-serif);letter-spacing:1px;text-transform:uppercase;color:var(--reader-accent);padding:20px 0 12px;margin:8px 0;clear:both}
+.text-page-marker:before,.text-page-marker:after{content:'';flex:1;height:1px;background:var(--reader-rule)}
+.text-page-marker span{white-space:nowrap}
+.mushaf-page[data-layout] .mih-surah-frame{margin:16px auto 20px;max-width:420px;padding:0;background:none;border:0;box-shadow:none}
+.mushaf-page[data-layout] .mih-surah-frame__border{border:1px solid var(--reader-rule);border-radius:80px;padding:10px 32px;background:none;box-shadow:none}
+.mushaf-page[data-layout] :is(.mih-surah-frame__top-line,.mih-surah-frame__bottom-line){display:none}
+.mushaf-page[data-layout] .mih-surah-name{font-size:1.8rem;line-height:1.8;color:var(--reader-accent);text-shadow:none}
+.mushaf-page[data-layout] .mih-bismillah{color:var(--ink);font-size:1.6rem;line-height:2.3;margin:14px 0 20px}
+.mushaf-page[data-layout] .mih-header__info{background:none;border:0;text-align:start;padding:0;cursor:pointer;font:inherit}
+.mushaf-page[data-layout] .mih-header{background:var(--paper);box-shadow:0 3px 16px #00000006;border-color:var(--reader-rule)}
+.mushaf-page[data-layout] .mih-header__surah-name{color:var(--ink)}
+.mushaf-page[data-layout] .mih-header__page-num{color:var(--muted-ink)}
+/* Collapsing only changes height once; JS preserves the passage's screen position. */
+.mushaf-page[data-immersed="true"] .mih-header{grid-template-columns:1fr;margin-block:calc(8px + env(safe-area-inset-top,0px)) 0;padding:3px 12px;min-height:48px;border:0;box-shadow:none;margin-right:125px}
+.mushaf-page[data-immersed="true"] :is(.mih-header-center,.mih-header-right,.mih-header-left > .mih-header__icon-btn,.mih-float-nav){display:none}
+.text-reader-restore{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:14px;z-index:125;display:flex;align-items:center;gap:7px;padding:8px 10px;min-height:44px;border:1px solid var(--reader-rule);border-radius:14px;background:var(--paper);color:var(--muted-ink);font:500 11px system-ui;cursor:pointer}
+body:has(.mushaf-page[data-immersed="true"]) .mushaf-gesture-nav:not(.is-expanded){transform:translateX(26px);opacity:.5}
+body:has(.mushaf-page[data-immersed="true"]) .mushaf-gesture-nav:focus-within{transform:none;opacity:1}
+body:has(.mushaf-page[data-immersed="true"]) .mih-mushaf{padding-right:8px}
+@media(max-width:699px){.mushaf-page[data-layout] .mih-float-nav{display:none}}
+@media(min-width:700px){.mushaf-page[data-immersed="true"] .mih-header{align-self:stretch;width:auto;max-width:none}}
+.text-reader-settings{box-sizing:border-box;position:fixed;inset:0;margin:auto;width:min(480px,calc(100vw - 24px));max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));padding:0;border:1px solid var(--color-border,#b6a27840);border-radius:26px;background:var(--color-bg-primary,#faf7ef);color:var(--color-text-primary,#282c29);box-shadow:0 30px 100px #0005;overflow:hidden;font:14px/1.5 Inter,system-ui,sans-serif}
+.text-reader-settings[open]{display:flex;flex-direction:column}
+.text-reader-settings::backdrop{background:#09111580;backdrop-filter:blur(5px)}
+.text-reader-settings header{display:flex;align-items:center;justify-content:space-between;padding:22px 22px 16px;flex-shrink:0;border-bottom:1px solid #ac94622a}
+.text-reader-settings header small{font-size:9px;letter-spacing:2px;color:var(--color-text-secondary)}
+.text-reader-settings h2{font-size:20px;line-height:1.3;margin:4px 0 0;font-weight:600}
+.text-reader-settings header button{display:grid;place-items:center;width:44px;height:44px;background:transparent;border:0;border-radius:50%;color:inherit;cursor:pointer}
+.text-reader-settings__body{overflow:auto;overscroll-behavior:contain;padding:4px 22px 20px}
+.text-reader-settings section{padding:12px 0 18px}
+.text-reader-settings h3{font-size:12px;font-weight:600;color:var(--color-text-secondary);margin:8px 0 12px}
+.text-settings-switch{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:60px;cursor:pointer}
+.text-settings-switch small{display:block;color:var(--color-text-secondary);font-size:11px;margin-top:3px}
+.text-settings-switch input{appearance:none;width:38px;height:23px;border-radius:20px;background:#87938950;flex-shrink:0;position:relative;cursor:pointer;transition:background .18s}
+.text-settings-switch input:before{content:'';position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:transform .18s}
+.text-settings-switch input:checked{background:#8f794b}
+.text-settings-switch input:checked:before{transform:translateX(15px)}
+.text-settings-choices{display:flex;gap:6px;margin-top:10px}
+.text-settings-choices button{flex:1;min-width:0;min-height:44px;border:1px solid #ac94623a;border-radius:11px;background:transparent;color:inherit;font:500 11px system-ui;cursor:pointer;padding:6px 4px}
+.text-settings-choices button[aria-pressed="true"]{border-color:#a98b50;background:#bfa0641a;color:var(--color-text-primary)}
+.text-reader-settings details{border-top:1px solid #ac94622a;padding:14px 0}
+.text-reader-settings summary{cursor:pointer;font-weight:500;min-height:30px}
+.text-reader-settings details p{font-size:11px;color:var(--color-text-secondary)}
+.text-settings-rules{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.text-settings-rules button{display:flex;align-items:center;gap:6px;min-height:44px;padding:8px;border-radius:9px;border:1px solid transparent;background:transparent;color:inherit;font-size:10px;cursor:pointer}
+.text-settings-rules button[aria-pressed="true"]{border-color:#ac946250;background:#ac946210}
+.text-settings-rules button:disabled{opacity:.4;cursor:default}
+.text-settings-rules i{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.text-settings-rules span{margin-left:auto}
+.text-reader-settings footer{flex-shrink:0;padding:14px 22px 20px;border-top:1px solid #ac94622a}
+.text-reader-settings footer button{width:100%;min-height:46px;border:0;border-radius:13px;background:#8f794b;color:white;font:600 13px system-ui;cursor:pointer}
+.text-reader-settings :focus-visible,.text-reader-restore:focus-visible{outline:2px solid #b79b61;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.mushaf-page[data-layout] .mih-ayah,.text-settings-switch input,.text-settings-switch input:before{transition:none}}
+.mushaf-page[data-layout] .mih-word{display:inline;transform:none}
+.mushaf-page[data-layout] .mih-word--active{transform:none}
+.mushaf-page[data-layout] .mih-surah-name{color:var(--reader-accent)!important}
+.mushaf-page[data-layout] .mih-bismillah{color:var(--ink)!important}
+.mushaf-page[data-layout] .mih-verse-num{background:none}
+.mushaf-page[data-layout] .mih-word--partial{color:var(--ink)!important;text-shadow:none}

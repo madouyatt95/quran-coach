@@ -1,266 +1,65 @@
-import {
-    Palette,
-    Languages,
-    Type,
-    Layout,
-    X,
-    Eye,
-    EyeOff,
-} from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
 import { getTajweedCategories } from '../../lib/tajweedService';
-import { useTranslation } from 'react-i18next';
 import type { MaskMode } from './mushafConstants';
-import type { ArabicFontFamily } from '../../types';
+import type { ArabicFontFamily, ArabicFontSize } from '../../types';
 
 const tajweedCategories = getTajweedCategories();
-
 interface MushafToolbarProps {
-    // Toolbar visibility
     showToolbar: boolean;
-    isMobile: boolean;
-    // Tajweed
-    showTajweedSheet: boolean;
-    setShowTajweedSheet: (v: boolean) => void;
+    onClose: () => void;
+    immersive: boolean;
+    setImmersive: (enabled: boolean) => void;
     tajwidEnabled: boolean;
     toggleTajwid: () => void;
     tajwidLayers: string[];
     toggleTajwidLayer: (id: string) => void;
-    // Translation / Transliteration
     showTranslation: boolean;
     toggleTranslation: () => void;
     showTransliteration: boolean;
     toggleTransliteration: () => void;
-    // Font
-    showFontSheet: boolean;
-    setShowFontSheet: (v: boolean) => void;
-    arabicFontSize: 'sm' | 'md' | 'lg' | 'xl';
-    setArabicFontSize: (size: 'sm' | 'md' | 'lg' | 'xl') => void;
+    arabicFontSize: ArabicFontSize;
+    setArabicFontSize: (size: ArabicFontSize) => void;
     arabicFontFamily: ArabicFontFamily;
     setArabicFontFamily: (family: ArabicFontFamily) => void;
-    // Mask
-    showMaskSheet: boolean;
-    setShowMaskSheet: (v: boolean) => void;
     maskMode: MaskMode;
     setMaskMode: (mode: MaskMode) => void;
 }
 
-export function MushafToolbar({
-    showToolbar,
-    showTajweedSheet,
-    setShowTajweedSheet,
-    isMobile,
-    tajwidEnabled,
-    toggleTajwid,
-    tajwidLayers,
-    toggleTajwidLayer,
-    showTranslation,
-    toggleTranslation,
-    showTransliteration,
-    toggleTransliteration,
-    showFontSheet,
-    setShowFontSheet,
-    arabicFontSize,
-    setArabicFontSize,
-    arabicFontFamily,
-    setArabicFontFamily,
-    showMaskSheet,
-    setShowMaskSheet,
-    maskMode,
-    setMaskMode,
-}: MushafToolbarProps) {
-    const { t } = useTranslation();
-    return (
-        <>
-            {/* ===== Inline Toolbar ===== */}
-            {showToolbar && (
-                <div className="mih-toolbar">
-                    {!isMobile && (
-                        <button
-                            className={`mih-toolbar__btn ${showTajweedSheet ? 'active' : ''}`}
-                            onClick={() => setShowTajweedSheet(true)}
-                            title={t('mushaf.tajweed', 'Tajweed')}
-                        >
-                            <Palette size={18} />
-                        </button>
-                    )}
-
-                    <button
-                        className={`mih-toolbar__btn ${showTranslation ? 'active' : ''}`}
-                        onClick={toggleTranslation}
-                        title={t('mushaf.translation', 'Traduction')}
-                    >
-                        <Languages size={18} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${showTransliteration ? 'active' : ''}`}
-                        onClick={toggleTransliteration}
-                        title={t('mushaf.transliteration', 'Phonétique')}
-                    >
-                        <span style={{ fontSize: 14, fontWeight: 700 }}>Aa</span>
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${showFontSheet ? 'active' : ''}`}
-                        onClick={() => setShowFontSheet(true)}
-                        title={t('mushaf.fontSize', 'Taille police')}
-                    >
-                        <Type size={18} />
-                    </button>
-
-                    <button
-                        className={`mih-toolbar__btn ${showMaskSheet ? 'active' : ''}`}
-                        onClick={() => setShowMaskSheet(true)}
-                        title={t('mushaf.mask', 'Masquage')}
-                    >
-                        <Layout size={18} />
-                    </button>
-                </div>
-            )}
-
-            {/* ===== Tajweed Sheet ===== */}
-            {showTajweedSheet && (
-                <>
-                    <div className="mih-sheet-overlay" onClick={() => setShowTajweedSheet(false)} />
-                    <div className="mih-sheet">
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">{t('mushaf.tajweedRules', 'Règles de Tajweed')}</span>
-                            <button className="mih-sheet__close" onClick={() => setShowTajweedSheet(false)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        <div
-                            className={`mih-tajweed-toggle ${tajwidEnabled ? '' : 'off'}`}
-                            onClick={toggleTajwid}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <span>Tajweed {tajwidEnabled ? t('common.enabled', 'activé') : t('common.disabled', 'désactivé')}</span>
-                            <div className={`mih-toggle-switch ${tajwidEnabled ? 'on' : ''}`} />
-                        </div>
-
-                        <div className="mih-tajweed-grid">
-                            {tajweedCategories.map(cat => (
-                                <div
-                                    key={cat.id}
-                                    className={`mih-tajweed-card ${tajwidLayers.includes(cat.id) ? 'active' : ''}`}
-                                    style={{ color: cat.color, borderColor: tajwidLayers.includes(cat.id) ? cat.color : '#eee' }}
-                                    onClick={() => toggleTajwidLayer(cat.id)}
-                                >
-                                    <span className="mih-tajweed-card__name">{cat.name.split('(')[0].trim()}</span>
-                                    <span className="mih-tajweed-card__arabic">{cat.nameArabic}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* ===== Masquage Sheet ===== */}
-            {showMaskSheet && (
-                <>
-                    <div className="mih-sheet-overlay" onClick={() => setShowMaskSheet(false)} />
-                    <div className="mih-sheet">
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">{t('mushaf.maskMode', 'Mode Masquage (Hifz)')}</span>
-                            <button className="mih-sheet__close" onClick={() => setShowMaskSheet(false)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        <div className="mih-mask-grid">
-                            <div
-                                className={`mih-mask-card ${maskMode === 'visible' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('visible'); setShowMaskSheet(false); }}
-                            >
-                                <Eye size={20} />
-                                <span>{t('mushaf.visible', 'Visible')}</span>
-                            </div>
-                            <div
-                                className={`mih-mask-card ${maskMode === 'hidden' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('hidden'); setShowMaskSheet(false); }}
-                            >
-                                <EyeOff size={20} />
-                                <span>{t('mushaf.hidden', 'Tout caché')}</span>
-                            </div>
-                            <div
-                                className={`mih-mask-card ${maskMode === 'partial' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('partial'); setShowMaskSheet(false); }}
-                            >
-                                <Eye size={20} />
-                                <span>{t('mushaf.partial', 'Partiel')}</span>
-                            </div>
-                            <div
-                                className={`mih-mask-card ${maskMode === 'minimal' ? 'active' : ''}`}
-                                onClick={() => { setMaskMode('minimal'); setShowMaskSheet(false); }}
-                            >
-                                <EyeOff size={20} />
-                                <span>{t('mushaf.minimal', 'Minimal (flou)')}</span>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* ===== Font Size Sheet ===== */}
-            {showFontSheet && (
-                <>
-                    <div className="mih-sheet-overlay" onClick={() => setShowFontSheet(false)} />
-                    <div className="mih-sheet">
-                        <div className="mih-sheet__handle" />
-                        <div className="mih-sheet__header">
-                            <span className="mih-sheet__title">{t('mushaf.fontAndSize', 'Police & Taille')}</span>
-                            <button className="mih-sheet__close" onClick={() => setShowFontSheet(false)}>
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        {/* Font Family Selector */}
-                        <div style={{ marginBottom: 16 }}>
-                            <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('mushaf.calligraphyStyle', 'Style calligraphique')}</div>
-                            <div style={{ display: 'flex', gap: 8 }}>
-                                <button
-                                    className={`mih-fontsize-btn ${arabicFontFamily === 'scheherazade' ? 'active' : ''}`}
-                                    onClick={() => setArabicFontFamily('scheherazade')}
-                                    style={{ flex: 1 }}
-                                >
-                                    <span style={{ fontSize: '18px', fontFamily: "'Scheherazade New', serif" }}>بِسْمِ</span>
-                                    <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>Othman</span>
-                                </button>
-                                <button
-                                    className={`mih-fontsize-btn ${arabicFontFamily === 'amiri' ? 'active' : ''}`}
-                                    onClick={() => setArabicFontFamily('amiri')}
-                                    style={{ flex: 1 }}
-                                >
-                                    <span style={{ fontSize: '18px', fontFamily: "'Amiri', serif" }}>بِسْمِ</span>
-                                    <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>Amiri</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('mushaf.size', 'Taille')}</div>
-
-                        <div className="mih-fontsize-grid">
-                            {(['sm', 'md', 'lg', 'xl'] as const).map(size => (
-                                <button
-                                    key={size}
-                                    className={`mih-fontsize-btn ${arabicFontSize === size ? 'active' : ''}`}
-                                    onClick={() => { setArabicFontSize(size); setShowFontSheet(false); }}
-                                >
-                                    <span style={{ fontSize: size === 'sm' ? '14px' : size === 'md' ? '18px' : size === 'lg' ? '22px' : '26px', fontFamily: 'var(--font-arabic)' }}>
-                                        بسم
-                                    </span>
-                                    <span style={{ fontSize: '0.7rem', color: '#999', marginTop: 4 }}>
-                                        {size === 'sm' ? t('common.small', 'Petit') : size === 'md' ? t('common.normal', 'Normal') : size === 'lg' ? t('common.large', 'Grand') : t('common.extraLarge', 'Très grand')}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </>
-            )}
-        </>
-    );
+export function MushafToolbar(p: MushafToolbarProps) {
+    const dialog = useRef<HTMLDialogElement>(null);
+    useEffect(() => {
+        if (!p.showToolbar) return;
+        const element = dialog.current;
+        const previous = document.activeElement as HTMLElement | null;
+        element?.showModal();
+        return () => { element?.close(); previous?.focus({preventScroll:true}); };
+    }, [p.showToolbar]);
+    if (!p.showToolbar) return null;
+    return createPortal(<dialog ref={dialog} className="text-reader-settings" aria-labelledby="text-settings-title"
+        onCancel={p.onClose} onKeyDown={e => e.stopPropagation()}
+        onClick={e => {if(e.target === e.currentTarget) {const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) p.onClose();}}}>
+        <header><div><small>MUSHAF TEXTE</small><h2 id="text-settings-title">Confort de lecture</h2></div><button aria-label="Fermer les réglages" onClick={p.onClose}><X size={20}/></button></header>
+        <div className="text-reader-settings__body">
+            <section aria-label="Présentation">
+                <h3>Votre lecture</h3>
+                <label className="text-settings-switch"><span>Traduction<small>Le sens de chaque verset en français</small></span><input type="checkbox" checked={p.showTranslation} onChange={p.toggleTranslation}/></label>
+                <label className="text-settings-switch"><span>Phonétique<small>Une aide à la prononciation</small></span><input type="checkbox" checked={p.showTransliteration} onChange={p.toggleTransliteration}/></label>
+                <label className="text-settings-switch"><span>Lecture immersive<small>Les commandes se réduisent au défilement</small></span><input type="checkbox" checked={p.immersive} onChange={e=>p.setImmersive(e.target.checked)}/></label>
+            </section>
+            <section aria-label="Texte arabe"><h3>Texte arabe</h3>
+                <div className="text-settings-choices" role="group" aria-label="Taille du texte arabe">{(['sm','md','lg','xl'] as const).map((size,i)=><button key={size} aria-pressed={p.arabicFontSize===size} onClick={()=>p.setArabicFontSize(size)}>{['Petit','Moyen','Grand','Très grand'][i]}</button>)}</div>
+                <div className="text-settings-choices" role="group" aria-label="Police arabe">{(['scheherazade','amiri'] as const).map(font=><button key={font} aria-pressed={p.arabicFontFamily===font} onClick={()=>p.setArabicFontFamily(font)}>{font==='amiri'?'Amiri':'Othman'}</button>)}</div>
+            </section>
+            <details><summary>Tajweed</summary>
+                <label className="text-settings-switch"><span>Colorer les règles</span><input type="checkbox" checked={p.tajwidEnabled} onChange={p.toggleTajwid}/></label>
+                <div className="text-settings-rules">{tajweedCategories.map(cat=><button key={cat.id} aria-pressed={p.tajwidLayers.includes(cat.id)} disabled={!p.tajwidEnabled} onClick={()=>p.toggleTajwidLayer(cat.id)}><i style={{background:cat.color}}/>{cat.name.split('(')[0].trim()}<span lang="ar">{cat.nameArabic}</span></button>)}</div>
+            </details>
+            <details><summary>Masquage pour réviser</summary><p>Choisissez la quantité de texte visible pendant votre révision.</p>
+                <div className="text-settings-choices" role="group" aria-label="Masquage">{(['visible','hidden','partial','minimal'] as const).map((mode,i)=><button key={mode} aria-pressed={p.maskMode===mode} onClick={()=>p.setMaskMode(mode)}>{['Visible','Caché','Partiel','Flou'][i]}</button>)}</div>
+            </details>
+        </div>
+        <footer><button onClick={p.onClose}>Reprendre la lecture</button></footer>
+    </dialog>,document.body);
 }

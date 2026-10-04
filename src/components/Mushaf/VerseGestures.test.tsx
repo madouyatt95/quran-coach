@@ -95,3 +95,20 @@ it('keeps slider arrow keys from also changing the reader page through global sh
   expect(globalKey).not.toHaveBeenCalled();
  } finally {window.removeEventListener('keydown',globalKey);}
 });
+
+it('reveals secondary text actions without playing audio or closing the main actions',async()=>{
+ const play=vi.fn(),favorite=vi.fn(),understand=vi.fn(),share=vi.fn(),close=vi.fn();
+ await act(async()=>root.render(<MemoryRouter><VerseActionBar selection={{ayah,x:180,y:500}} view="mushaf" onClose={close} onPlay={play} onMore={share} onFavorite={favorite} onUnderstand={understand}/></MemoryRouter>));
+ await act(async()=>document.querySelector<HTMLButtonElement>('[aria-label="Autres actions"]')!.click());
+ expect(document.querySelector('[aria-label="Autres actions"]')?.getAttribute('aria-expanded')).toBe('true');
+ const secondary=Array.from(document.querySelectorAll<HTMLButtonElement>('.verse-action-bar__secondary button'));
+ expect(secondary.map(b=>b.textContent)).toEqual(['Ajouter aux favoris','Comprendre','Partager']);
+ await act(async()=>secondary[0].click());expect(favorite).toHaveBeenCalledOnce();expect(close).not.toHaveBeenCalled();expect(play).not.toHaveBeenCalled();
+ await act(async()=>secondary[1].click());expect(understand).toHaveBeenCalledOnce();expect(close).toHaveBeenCalledOnce();expect(share).not.toHaveBeenCalled();
+});
+it('preserves the sharing shortcut for the facsimile readers',async()=>{
+ const share=vi.fn(),close=vi.fn();
+ await act(async()=>root.render(<MemoryRouter><VerseActionBar selection={{ayah,x:180,y:500}} view="madinah" onClose={close} onPlay={vi.fn()} onMore={share}/></MemoryRouter>));
+ await act(async()=>document.querySelector<HTMLButtonElement>('[aria-label="Autres actions"]')!.click());
+ expect(share).toHaveBeenCalledOnce();expect(close).toHaveBeenCalledOnce();expect(document.querySelector('.verse-action-bar__secondary')).toBeNull();
+});
