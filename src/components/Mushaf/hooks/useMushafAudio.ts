@@ -12,7 +12,19 @@ interface UseMushafAudioOptions {
     nextSurah: () => void;
 }
 
+export interface AudioPassage {
+    surah: number;
+    startAyah: number;
+    endAyah: number;
+    repetitions: number;
+    iteration: number;
+}
+
 export interface MushafAudioState {
+    passage: AudioPassage | null;
+    passageComplete: boolean;
+    audioError: string | null;
+    startPassage: (startAyah: number, endAyah: number, repetitions: number) => boolean;
     audioRef: React.RefObject<HTMLAudioElement | null>;
     audioActive: boolean;
     audioPlaying: boolean;
@@ -50,6 +62,14 @@ export function useMushafAudio({
     const [playingIndex, setPlayingIndex] = useState(-1);
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const shouldAutoPlay = useRef(false);
+    const expectedSurah = useRef<number | null>(null);
+    const [passage, setPassage] = useState<AudioPassage | null>(null);
+    const passageRef = useRef<AudioPassage | null>(null);
+    const [passageComplete, setPassageComplete] = useState(false);
+    const passageCompleteRef = useRef(false);
+    const [audioError, setAudioError] = useState<string | null>(null);
+    const playRequest = useRef(0);
+    const mounted = useRef(true);
 
     // Timing state for word-by-word
     const [verseWordsMap, setVerseWordsMap] = useState<Map<string, VerseWords>>(new Map());
@@ -95,10 +115,15 @@ export function useMushafAudio({
     pageAyahsRef.current = pageAyahs;
 
     // Play a specific ayah by index
-    const playAyahAtIndex = useCallback(async (idx: number) => {
+    const playAyahAtIndex = useCallback(async (idx: number, keepPassage = false) => {
         const ayahs = pageAyahsRef.current;
         if (!ayahs[idx] || !audioRef.current) return;
 
+        if (!keepPassage) {passageRef.current = null; setPassage(null);}
+        passageCompleteRef.current = false;
+        setPassageComplete(false);
+        setAudioError(null);
+        const request = ++playRequest.current;
         playingIndexRef.current = idx;
         setAudioActive(true);
         setAudioPlaying(true);
@@ -113,25 +138,58 @@ export function useMushafAudio({
         const key = `${ayah.surah}:${ayah.numberInSurah}`;
         if (!verseWordsMap.has(key)) {
             fetchWordTimings(ayah.surah, ayah.numberInSurah).then(vw => {
-                if (vw) setVerseWordsMap(prev => new Map(prev).set(key, vw));
-            });
+                if (vw && mounted.current) setVerseWordsMap(prev => new Map(prev).set(key, vw));
+            }).catch(() => {});
         }
 
         audioRef.current.src = getAudioUrl(selectedReciter, ayah.number);
         audioRef.current.playbackRate = playbackSpeed;
-        audioRef.current.play().catch(() => { });
+        try { await audioRef.current.play(); }
+        catch { if (mounted.current && request === playRequest.current) {setAudioPlaying(false);setAudioError('Écoute indisponible. Réessayez.');} }
     }, [selectedReciter, playbackSpeed, verseWordsMap]);
+
+    const startPassage = useCallback((startAyah: number, endAyah: number, repetitions: number) => {
+        const ayahs = pageAyahsRef.current;
+        if (![startAyah,endAyah,repetitions].every(Number.isInteger) || startAyah < 1 || endAyah < startAyah || repetitions < 1 || repetitions > 20) return false;
+        const first = ayahs.findIndex(a => a.numberInSurah === startAyah);
+        const selected = ayahs.slice(first, first + endAyah - startAyah + 1);
+        if (first < 0 || selected.length !== endAyah-startAyah+1 || !selected.every((a,i)=>a.surah === ayahs[first].surah && a.numberInSurah === startAyah+i)) return false;
+        const value = {surah:ayahs[first].surah,startAyah,endAyah,repetitions,iteration:1};
+        passageRef.current = value;setPassage(value);
+        shouldAutoPlay.current = false;
+        void playAyahAtIndex(first, true);
+        return true;
+    }, [playAyahAtIndex]);
 
     // Play next ayah or advance surah
     const playNextAyah = useCallback(() => {
         const idx = playingIndexRef.current;
+        if (idx < 0) return;
         const ayahs = pageAyahsRef.current;
         const surahNum = currentSurahRef.current;
+        const range = passageRef.current;
+        if (range) {
+            if (passageCompleteRef.current) return;
+            const ayah = ayahs[idx];
+            if (!ayah || ayah.surah !== range.surah) return;
+            if (ayah.numberInSurah >= range.endAyah) {
+                if (range.iteration < range.repetitions) {
+                    const next = {...range,iteration:range.iteration+1};
+                    passageRef.current = next;setPassage(next);
+                    void playAyahAtIndex(ayahs.findIndex(a=>a.surah===range.surah && a.numberInSurah===range.startAyah), true);
+                } else {
+                    passageCompleteRef.current = true;setPassageComplete(true);
+                    audioRef.current?.pause();setAudioPlaying(false);setActiveWordIndex(-1);
+                }
+            } else void playAyahAtIndex(idx + 1, true);
+            return;
+        }
 
         if (idx < ayahs.length - 1) {
             playAyahAtIndex(idx + 1);
         } else if (surahNum < 114) {
             shouldAutoPlay.current = true;
+            expectedSurah.current = surahNum + 1;
             nextSurah();
         } else {
             setAudioPlaying(false);
@@ -143,13 +201,21 @@ export function useMushafAudio({
 
     // Play previous ayah
     const playPrevAyah = useCallback(() => {
-        if (playingIndexRef.current > 0) {
-            playAyahAtIndex(playingIndexRef.current - 1);
+        const range = passageRef.current;
+        const previous = pageAyahsRef.current[playingIndexRef.current - 1];
+        if (playingIndexRef.current > 0 && (!range || (previous?.surah === range.surah && previous.numberInSurah >= range.startAyah))) {
+            void playAyahAtIndex(playingIndexRef.current - 1, true);
         }
     }, [playAyahAtIndex]);
 
     // Stop audio
     const stopAudio = useCallback(() => {
+        playRequest.current++;
+        passageRef.current = null;setPassage(null);
+        passageCompleteRef.current = false;setPassageComplete(false);
+        setAudioError(null);setActiveWordIndex(-1);
+        playingIndexRef.current = -1;
+        expectedSurah.current = null;
         wasPlayingRef.current = false;
         shouldAutoPlay.current = false;
         pendingAutoAdvance.current = false;
@@ -168,20 +234,27 @@ export function useMushafAudio({
         return () => window.removeEventListener('quran-stop-playback', stopAudio);
     }, [stopAudio]);
 
-    // Toggle play/pause
+    // Resume the same media position; a completed selection restarts its first round.
     const toggleAudio = useCallback(() => {
-        if (pageAyahsRef.current.length === 0 || !audioRef.current) return;
+        const element = audioRef.current;
+        if (!pageAyahsRef.current.length || !element) return;
+        if (audioPlaying) {playRequest.current++;element.pause();setAudioPlaying(false);return;}
+        const range = passageRef.current;
+        if (range && passageCompleteRef.current) {startPassage(range.startAyah,range.endAyah,range.repetitions);return;}
+        if (playingIndexRef.current < 0 || !element.src) {void playAyahAtIndex(0);return;}
+        setAudioError(null);setAudioPlaying(true);setAudioActive(true);
+        const request = ++playRequest.current;
+        void element.play().catch(()=>{if(mounted.current && request === playRequest.current){setAudioPlaying(false);setAudioError('Écoute indisponible. Réessayez.');}});
+    }, [audioPlaying, playAyahAtIndex, startPassage]);
 
-        if (audioPlaying) {
-            audioRef.current.pause();
-            setAudioPlaying(false);
-        } else {
-            setAudioPlaying(true);
-            setAudioActive(true);
-            const startIdx = playingIndexRef.current >= 0 ? playingIndexRef.current : 0;
-            playAyahAtIndex(startIdx);
-        }
-    }, [audioPlaying, playAyahAtIndex]);
+    useEffect(() => {if (audioRef.current) audioRef.current.playbackRate = playbackSpeed;}, [playbackSpeed]);
+    useEffect(() => {
+        mounted.current = true;
+        const element = audioRef.current;
+        const error = () => {setAudioPlaying(false);setAudioError('Écoute indisponible. Réessayez.');};
+        element?.addEventListener('error',error);
+        return () => {mounted.current=false;playRequest.current++;element?.pause();element?.removeEventListener('error',error);};
+    }, []);
 
     // Handle audio 'ended' event
     const playNextAyahRef = useRef(playNextAyah);
@@ -244,11 +317,14 @@ export function useMushafAudio({
 
     // Auto-resume after page change
     useEffect(() => {
-        if (shouldAutoPlay.current && pageAyahs.length > 0 && audioActive) {
+        if (shouldAutoPlay.current && pageAyahs[0]?.surah === expectedSurah.current && audioActive) {
             shouldAutoPlay.current = false;
-            playAyahAtIndex(0);
+            expectedSurah.current = null;
+            void playAyahAtIndex(0);
+        } else if (passageRef.current && pageAyahs.length && pageAyahs[0].surah !== passageRef.current.surah) {
+            stopAudio();
         }
-    }, [pageAyahs, audioActive, playAyahAtIndex]);
+    }, [pageAyahs, audioActive, playAyahAtIndex, stopAudio]);
 
     // Auto-scroll to current ayah
     useEffect(() => {
@@ -278,44 +354,26 @@ export function useMushafAudio({
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, [nextSurah]);
 
-    // Seek to a specific word in an ayah
+    // Resolve word timing once, and ignore it if the user has moved on.
     const handleWordClick = useCallback(async (ayahIndex: number, wordIndex: number) => {
-        const ayahs = pageAyahsRef.current;
-        const ayah = ayahs[ayahIndex];
+        const ayah = pageAyahsRef.current[ayahIndex];
         if (!ayah || !audioRef.current) return;
-
-        const seek = (vw?: VerseWords) => {
-            if (vw && audioRef.current) {
-                const word = vw.words[wordIndex];
-                if (word) {
-                    audioRef.current.currentTime = word.timestampFrom / 1000;
-                    setActiveWordIndex(wordIndex);
-                    return true;
-                }
-            }
-            return false;
-        };
-
+        const playback = currentPlayingAyah !== ayah.number || !audioActive ? playAyahAtIndex(ayahIndex) : Promise.resolve();
+        const request = playRequest.current;
+        await playback;
+        if (request !== playRequest.current || playingIndexRef.current !== ayahIndex) return;
         const key = `${ayah.surah}:${ayah.numberInSurah}`;
-        const existingVW = verseWordsMap.get(key);
-
-        // If it's a different ayah, start playing it first
-        if (currentPlayingAyah !== ayah.number) {
-            await playAyahAtIndex(ayahIndex);
-            let attempts = 0;
-            const checkTiming = setInterval(() => {
-                attempts++;
-                const newVW = verseWordsMap.get(key);
-                if (seek(newVW) || attempts > 20) {
-                    clearInterval(checkTiming);
-                }
-            }, 100);
-        } else {
-            seek(existingVW);
-        }
-    }, [currentPlayingAyah, verseWordsMap, playAyahAtIndex]);
+        const timings = verseWordsMap.get(key) ?? await fetchWordTimings(ayah.surah,ayah.numberInSurah).catch(()=>null);
+        if (!mounted.current || request !== playRequest.current || currentSurahRef.current !== ayah.surah || currentAyahRef.current !== ayah.numberInSurah) return;
+        const word = timings?.words[wordIndex];
+        if (word && audioRef.current) {audioRef.current.currentTime = word.timestampFrom/1000;setActiveWordIndex(wordIndex);}
+    }, [currentPlayingAyah, audioActive, verseWordsMap, playAyahAtIndex]);
 
     return {
+        passage,
+        passageComplete,
+        audioError,
+        startPassage,
         audioRef,
         audioActive,
         audioPlaying,

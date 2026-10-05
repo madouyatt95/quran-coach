@@ -77,3 +77,37 @@ body:has(.mushaf-page[data-immersed="true"]) .mih-mushaf{padding-right:8px}
 .mushaf-page[data-layout] .mih-bismillah{color:var(--ink)!important}
 .mushaf-page[data-layout] .mih-verse-num{background:none}
 .mushaf-page[data-layout] .mih-word--partial{color:var(--ink)!important;text-shadow:none}
+/* Contextual additions stay attached to the existing reader controls. */
+.text-bookmark-marker{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;margin-inline:0 8px;padding:4px 7px;border:1px solid var(--reader-rule);border-radius:7px;background:#b99c6414;color:var(--reader-accent);font:500 10px/1.4 Inter,system-ui,sans-serif;white-space:nowrap}
+.mushaf-page[data-layout="assisted"] .text-bookmark-marker{display:flex;width:max-content;margin:0 0 8px auto}
+.text-reading-return{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0;margin:0 14px 6px;border-bottom:1px solid var(--reader-rule);color:var(--muted-ink)}
+.text-reading-return button{display:flex;align-items:center;gap:8px;min-height:44px;padding:5px 8px;border:0;background:transparent;color:inherit;cursor:pointer;font:500 11px/1.5 Inter,system-ui,sans-serif;text-align:left}
+.text-reading-return button:first-child{flex:1}.text-reading-return button:last-child{width:44px;justify-content:center}
+.text-reading-return small{display:block;font-size:9px;opacity:.8}
+.mushaf-page[data-layout] .text-audio-player{display:flex;flex-direction:column;gap:5px;padding-top:8px;border-top:1px solid var(--reader-rule);color:var(--ink);width:100%}
+.text-audio-player__info{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;font:11px/1.5 Inter,system-ui,sans-serif}
+.text-audio-player__info strong{font-weight:600;white-space:nowrap}.text-audio-player__info span{font-size:10px;color:var(--muted-ink);text-align:right}
+.text-audio-player__controls{display:flex;align-items:center;justify-content:center;gap:4px;width:100%}
+.text-audio-player__controls button{display:grid;place-items:center;flex:1;max-width:50px;min-width:36px;min-height:40px;border:0;border-radius:12px;background:transparent;color:inherit;cursor:pointer;font:500 11px system-ui}
+.text-audio-player__controls button:disabled{opacity:.25;cursor:default}
+.text-audio-player__controls .text-audio-player__play,.text-audio-player__controls button[aria-pressed="true"]{background:#b99c6424;color:var(--reader-accent)}
+.text-audio-player button:focus-visible,.text-reading-return button:focus-visible{outline:2px solid var(--reader-accent);outline-offset:1px}
+.text-audio-settings form{display:flex;flex-direction:column;overflow:hidden}
+.text-audio-settings p{font-size:12px;line-height:1.8;color:var(--color-text-secondary)}
+.text-audio-fields{display:flex;gap:14px;margin:18px 0}
+.text-audio-fields label{flex:1;min-width:0;font-size:12px}
+.text-audio-settings input,.text-audio-settings select{display:block;box-sizing:border-box;min-height:46px;width:100%;margin-top:8px;padding:8px 12px;border:1px solid #a98b5060;border-radius:12px;background:var(--color-bg-secondary);color:var(--color-text-primary);font-size:16px}
+.text-audio-count{display:block;font-size:12px}
+.text-audio-settings .text-audio-hint{font-size:11px;margin:18px 0 0}
+.mushaf-page .khatm-header-trigger--daily{padding:6px 8px;max-width:160px;min-width:0;flex-shrink:1}
+.khatm-header-trigger--daily .khatm-trigger-active{display:grid;grid-template-columns:auto auto;gap:4px 6px;align-items:center;text-align:left}
+.khatm-header-trigger--daily .khatm-trigger-pct{font-size:11px;text-align:left}
+.khatm-header-trigger--daily .khatm-trigger-pages{font-size:9px;opacity:.75}
+.khatm-trigger-daily{display:flex;align-items:center;grid-column:1/-1;color:var(--color-text-secondary);font:500 9px/1.45 Inter,system-ui,sans-serif;text-align:left}
+.khatm-trigger-daily.is-reached{color:var(--reader-accent,#9b8148)}
+.mushaf-page[data-layout] .mih-header-center{gap:5px}
+.mushaf-page[data-layout] .mih-header-center .view-mode-selector{min-width:0;flex:1;max-width:145px;padding-inline:2px!important}
+@media(max-width:360px){.mushaf-page .khatm-header-trigger--daily{max-width:139px}.khatm-trigger-daily{font-size:8px}.mushaf-page[data-layout] .mih-header-center .view-mode-selector select{font-size:10px!important}}
+.mushaf-page[data-layout] .text-audio-player{height:auto;min-height:72px;padding:8px 0 0;justify-content:flex-start;overflow:visible}
+body:has(.mushaf-page .text-audio-player) .mushaf-gesture-nav{top:calc(230px + env(safe-area-inset-top,0px))}
+@media(min-width:700px){body:has(.mushaf-page .text-audio-player) .mushaf-gesture-nav{top:calc(180px + env(safe-area-inset-top,0px))}}

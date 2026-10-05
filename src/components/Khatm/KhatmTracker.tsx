@@ -1,15 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
-import { hasCompleteKhatm, useKhatmStore } from '../../stores/khatmStore';
+import { hasCompleteKhatm, khatmToday, useKhatmStore } from '../../stores/khatmStore';
 import { useQuranStore } from '../../stores/quranStore';
 import type { Ayah } from '../../types';
 import './KhatmTracker.css';
-
-// Approximate Ramadan 1447 AH dates
-const RAMADAN_START = '2026-02-18';
-const RAMADAN_END = '2026-03-19';
-
-
 
 function getMotivation(pct: number, todayRead: number, dailyGoal: number): string {
     if (todayRead >= dailyGoal) return 'ما شاء الله ! Objectif atteint pour aujourd\'hui ! 🎉';
@@ -22,13 +16,14 @@ function getMotivation(pct: number, todayRead: number, dailyGoal: number): strin
 
 function SetupModal({ onClose }: { onClose: () => void }) {
     const { activate } = useKhatmStore();
-    const [startDate, setStartDate] = useState(RAMADAN_START);
-    const [endDate, setEndDate] = useState(RAMADAN_END);
+    const [preset] = useState(() => {const end = new Date();end.setDate(end.getDate()+29);return {start:khatmToday(),end:khatmToday(end)};});
+    const [startDate, setStartDate] = useState(preset.start);
+    const [endDate, setEndDate] = useState(preset.end);
     const [usePreset, setUsePreset] = useState(true);
 
     const handleStart = () => {
-        const s = usePreset ? RAMADAN_START : startDate;
-        const e = usePreset ? RAMADAN_END : endDate;
+        const s = usePreset ? preset.start : startDate;
+        const e = usePreset ? preset.end : endDate;
         if (s && e && s <= e) {
             activate(s, e);
             onClose();
@@ -50,15 +45,15 @@ function SetupModal({ onClose }: { onClose: () => void }) {
                     Définissez votre période pour lire les 604 pages du Coran.
                 </p>
 
-                {/* Ramadan Preset */}
+                {/* Rolling 30-day plan */}
                 <div
                     className={`khatm-preset ${usePreset ? 'selected' : ''}`}
                     onClick={() => setUsePreset(true)}
                 >
                     <span className="khatm-preset-icon">🌙</span>
                     <div className="khatm-preset-info">
-                        <div className="khatm-preset-title">Ramadan 1447</div>
-                        <div className="khatm-preset-dates">18 fév → 19 mars (30j)</div>
+                        <div className="khatm-preset-title">En 30 jours</div>
+                        <div className="khatm-preset-dates">À partir d’aujourd’hui</div>
                     </div>
                     {usePreset && <Check size={18} color="#c9a84c" />}
                 </div>
@@ -117,8 +112,15 @@ function SetupModal({ onClose }: { onClose: () => void }) {
     );
 }
 
-export function KhatmTracker() {
+export function KhatmTracker({dailyPreview = false}: {dailyPreview?:boolean} = {}) {
     const store = useKhatmStore();
+    const [,setDay] = useState(khatmToday);
+    useEffect(() => {
+        const refresh = () => setDay(khatmToday());
+        const timer = setInterval(refresh,60000);
+        document.addEventListener('visibilitychange',refresh);
+        return () => {clearInterval(timer);document.removeEventListener('visibilitychange',refresh);};
+    }, []);
     const { goToAyah, goToPage } = useQuranStore();
     const [showDetails, setShowDetails] = useState(false);
     const [showSetup, setShowSetup] = useState(false);
@@ -126,6 +128,8 @@ export function KhatmTracker() {
     const progress = store.getOverallProgress();
     const todayRead = store.getTodayRead();
     const adaptiveGoal = store.getDailyGoal();
+    const remainingToday = Math.max(0,adaptiveGoal-todayRead);
+    const dailyLabel = remainingToday === 0 ? 'Objectif du jour atteint' : `Encore ${remainingToday} page${remainingToday > 1 ? 's' : ''} aujourd’hui`;
     const streak = store.getStreak();
     const daysLeft = store.getDaysRemaining();
     const motivation = getMotivation(progress.pct, todayRead, adaptiveGoal);
@@ -159,7 +163,7 @@ export function KhatmTracker() {
 
     return (
         <>
-            <button type="button" aria-label="Objectif Khatm" className="khatm-header-trigger" onClick={handleClick}>
+            <button type="button" aria-label="Objectif Khatm" aria-description={dailyPreview && store.isActive ? dailyLabel : undefined} className={`khatm-header-trigger ${dailyPreview ? 'khatm-header-trigger--daily' : ''}`} onClick={handleClick}>
                 {!store.isActive ? (
                     <div className="khatm-trigger-inactive" title="Configurer l'objectif Khatm">
                         <span className="khatm-trigger-emoji">🌙</span>
@@ -169,6 +173,7 @@ export function KhatmTracker() {
                     <div className="khatm-trigger-active">
                         <div className="khatm-trigger-pct">{store.completedAt ? "Terminé" : hasCompleteKhatm(store.validatedPages) ? "Confirmer" : `${progress.pct.toLocaleString('fr-FR')}%`}</div>
                         <div className="khatm-trigger-pages">{store.validatedPages.length}/604</div>
+                        {dailyPreview && !store.completedAt && <span className={`khatm-trigger-daily ${remainingToday === 0 ? 'is-reached' : ''}`} role={remainingToday === 0 ? 'status' : undefined}>{remainingToday === 0 && <Check size={12}/>} {dailyLabel}</span>}
                     </div>
                 )}
             </button>

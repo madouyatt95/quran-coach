@@ -8,14 +8,12 @@ import {
     Settings,
     Menu,
     Loader2,
-    SkipBack,
-    SkipForward,
-    Play,
-    Pause,
     X,
     ChevronLeft,
     ChevronRight,
     PanelTopOpen,
+    Bookmark,
+    Undo2,
     BookOpen,
 } from 'lucide-react';
 import { LiveFollowWords } from './LiveFollowWords';
@@ -38,6 +36,9 @@ import type { Ayah } from '../../types';
 import { useMushafAudio } from './hooks/useMushafAudio';
 
 import { useMushafNavigation } from './hooks/useMushafNavigation';
+import { MushafAudioPlayer } from './MushafAudioPlayer';
+import { useReadingReturn } from './hooks/useReadingReturn';
+import { useReadingBookmarkStore } from '../../stores/readingBookmarkStore';
 import { MushafToolbar } from './MushafToolbar';
 import { MushafSearchOverlay } from './MushafSearchOverlay';
 import { MushafShareModal } from './MushafShareModal';
@@ -50,6 +51,7 @@ import './TextMushaf.css';
 
 export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElement | null) => void } = {}) {
     const livePassage = useLiveFollowStore(s => s.passage);
+    const bookmark = useReadingBookmarkStore(s => s.bookmark);
     const liveActive = useLiveFollowStore(s => s.active);
     const { t } = useTranslation();
     const {
@@ -58,7 +60,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
         setSurahAyahs, currentSurahAyahs,
         goToSurah, goToPage, goToAyah,
         nextSurah,
-        jumpSignal,
+        jumpSignal, isKhatmMode,
     } = useQuranStore();
 
     const {
@@ -116,6 +118,19 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
         nextPage: () => goToPage(currentPage + 1, {reading:true}),
         prevPage: () => goToPage(currentPage - 1, {reading:true}),
     });
+
+    const readingReturn = useReadingReturn(navigation.containerRef, {surah:currentSurah,ayah:currentAyah,page:currentPage,khatm:isKhatmMode});
+    useEffect(() => {audio.stopAudio();}, [jumpSignal, audio.stopAudio]);
+    useEffect(() => {
+        if (audio.playingIndex >= renderedCount) setRenderedCount(Math.min(currentSurahAyahs.length, audio.playingIndex + 10));
+        if (!audio.audioPlaying || !audio.currentPlayingAyah) return;
+        const frame = requestAnimationFrame(() => {
+            const verse = currentSurahAyahs[audio.playingIndex];
+            const element = verse && navigation.containerRef.current?.querySelector<HTMLElement>(`[data-surah="${verse.surah}"][data-ayah="${verse.numberInSurah}"]`);
+            element?.scrollIntoView({behavior:'smooth',block:'center'});
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [audio.playingIndex, audio.currentPlayingAyah, renderedCount]);
 
     const [immersed, setImmersed] = useState(false);
     const scrollOrigin = useRef(0);
@@ -180,7 +195,11 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
             if (el) {
                 console.log(`[Mushaf] Found scroll target S${surah}:A${ayah}, scrolling...`);
                 // Use 'auto' behavior for jumps to be more resilient than 'smooth'
-                el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                const returning = readingReturn.restore.current;
+                const container = navigation.containerRef.current;
+                if (returning?.surah === surah && returning.ayah === ayah && returning.offset !== undefined && container) {
+                    container.scrollTop += el.getBoundingClientRect().top - container.getBoundingClientRect().top - returning.offset;
+                } else el.scrollIntoView({ behavior: 'auto', block: 'center' });
                 el.classList.add('highlighted-from-shazam');
                 setTimeout(() => el.classList.remove('highlighted-from-shazam'), 3000);
             } else if (attempts < 40) {
@@ -390,7 +409,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                     <button aria-label="Menu" onClick={() => setShowSideMenu(true)} className="mih-header__icon-btn">
                         <Menu size={20} />
                     </button>
-                    <button className="mih-header__info" aria-label="Choisir une sourate ou un verset" onClick={() => {changeImmersion(false); setShowSearch(true);}}>
+                    <button className="mih-header__info" aria-label="Choisir une sourate ou un verset" onClick={() => {readingReturn.capture();changeImmersion(false); setShowSearch(true);}}>
                         <div className="mih-header__surah-name">
                             {SURAH_NAMES_FR[currentSurah]}
                         </div>
@@ -400,31 +419,11 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                     </button>
                 </div>
 
-                {/* Header Audio Player */}
-                {audio.audioActive && (
-                    <div className="mih-header-player">
-                        <button className="mih-header-player__btn" onClick={audio.playPrevAyah} disabled={audio.playingIndex <= 0}>
-                            <SkipBack size={16} />
-                        </button>
-                        <button className="mih-header-player__play-btn" onClick={audio.toggleAudio}>
-                            {audio.audioPlaying ? <Pause size={18} /> : <Play size={18} />}
-                        </button>
-                        <button className="mih-header-player__btn" onClick={audio.playNextAyah} disabled={audio.playingIndex >= currentSurahAyahs.length - 1}>
-                            <SkipForward size={16} />
-                        </button>
-                        <div className="mih-header-player__divider" />
-                        <div className="mih-header-player__speed" onClick={() => audio.setPlaybackSpeed((s: number) => s >= 2 ? 0.5 : s + 0.25)}>
-                            {audio.playbackSpeed}x
-                        </div>
-                        <button className="mih-header-player__stop" onClick={audio.stopAudio}>
-                            <X size={16} />
-                        </button>
-                    </div>
-                )}
+                <MushafAudioPlayer audio={audio} ayahs={currentSurahAyahs}/>
 
                 {/* Center: Khatm Tracker (Compact) */}
                 <div className="mih-header-center">
-                    <KhatmTracker />
+                    <KhatmTracker dailyPreview />
                     <KhatmPageBadge currentPage={currentPage} />
                     <div className="view-mode-selector" style={{ marginLeft: '12px', display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
                         <BookOpen size={14} style={{ marginRight: '6px', color: 'var(--text-secondary)' }} />
@@ -487,6 +486,10 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
 
 
 
+            {readingReturn.origin && <div className="text-reading-return">
+                <button onClick={() => {const target=readingReturn.consume();if(target){audio.stopAudio();goToAyah(target.surah,target.ayah,target.page,{silent:true,khatm:target.khatm});}}}><Undo2 size={16}/><span>Revenir à ma lecture<small>{SURAH_NAMES_FR[readingReturn.origin.surah]} · {readingReturn.origin.surah}:{readingReturn.origin.ayah}</small></span></button>
+                <button aria-label="Masquer le retour à ma lecture" onClick={readingReturn.dismiss}><X size={16}/></button>
+            </div>}
             {isImmersed && <button className="text-reader-restore" aria-label="Afficher les commandes de lecture" onClick={() => changeImmersion(false)}><PanelTopOpen size={18}/><span>Commandes</span></button>}
 
             {/* Floating Navigation (desktop) */}
@@ -504,8 +507,8 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
             {/* ===== Mushaf Content ===== */}
             <div
                 className="mih-mushaf"
-                onWheelCapture={() => {isSilentJumpRef.current = false;}}
-                onTouchMoveCapture={() => {isSilentJumpRef.current = false;}}
+                onWheelCapture={() => {isSilentJumpRef.current = false;readingReturn.restore.current=null;}}
+                onTouchMoveCapture={() => {isSilentJumpRef.current = false;readingReturn.restore.current=null;}}
                 onKeyDownCapture={e => {if (['PageUp','PageDown','Home','End','ArrowUp','ArrowDown'].includes(e.key)) isSilentJumpRef.current = false;}}
                 onScroll={e => {
                     const top = e.currentTarget.scrollTop;
@@ -559,6 +562,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                                     {ayahs.map((ayah: Ayah, index: number) => {
                                         const ayahIndex = getAyahIndex(ayah);
                                         const isCurrentlyPlaying = audio.currentPlayingAyah === ayah.number;
+                                        const marked = bookmark && (bookmark.precision === 'verse' ? bookmark.surah === ayah.surah && bookmark.ayah === ayah.numberInSurah : bookmark.page === ayah.page && (index === 0 || ayahs[index-1].page !== ayah.page));
                                         const vw = audio.verseWordsMap.get(`${ayah.surah}:${ayah.numberInSurah}`);
 
                                         const rawWords = ayah.text.split(/\s+/).filter((w: string) => w.length > 0);
@@ -607,6 +611,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                                                 aria-label={`Verset ${ayah.surah}:${ayah.numberInSurah}`}
                                                 onClick={() => audio.playAyahAtIndex(ayahIndex)}
                                             >
+                                                {marked && <span className="text-bookmark-marker" dir="ltr" title={bookmark?.precision === 'page' ? 'Signet enregistré pour cette page' : `Signet enregistré au verset ${ayah.surah}:${ayah.numberInSurah}`}><Bookmark size={13} fill="currentColor"/>{bookmark?.precision === 'page' ? 'Page marquée' : 'Votre arrêt'}</span>}
                                                 <span className="mih-ayah__arabic" lang="ar" dir="rtl">
                                                 <LiveFollowWords surah={ayah.surah} ayah={ayah.numberInSurah}
                                                     words={vw ? vw.words.map(word => word.text) : rawWords}>
@@ -645,9 +650,9 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                 <MushafSearchOverlay
                     surahs={surahs}
                     currentPage={currentPage}
-                    goToSurah={goToSurah}
-                    goToPage={goToPage}
-                    goToAyah={goToAyah}
+                    goToSurah={(...args) => {readingReturn.leave();goToSurah(...args);}}
+                    goToPage={(...args) => {readingReturn.leave();goToPage(...args);}}
+                    goToAyah={(...args) => {readingReturn.leave();goToAyah(...args);}}
                     onClose={() => setShowSearch(false)}
                 />
             )}

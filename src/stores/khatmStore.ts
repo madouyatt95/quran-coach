@@ -56,13 +56,14 @@ interface KhatmState {
     getNextPage: () => number;
 }
 
-function todayStr(): string {
-    return new Date().toISOString().slice(0, 10);
+export function khatmToday(date = new Date()): string {
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 }
+const todayStr = khatmToday;
 
 function daysBetween(a: string, b: string): number {
-    const da = new Date(a + 'T00:00:00');
-    const db = new Date(b + 'T00:00:00');
+    const da = new Date(a + 'T00:00:00Z');
+    const db = new Date(b + 'T00:00:00Z');
     return Math.round((db.getTime() - da.getTime()) / 86400000);
 }
 
@@ -190,7 +191,14 @@ export const useKhatmStore = create<KhatmState>()(
                 return Math.max(1, rem);
             },
 
-            getDailyGoal: () => Math.ceil((604 - get().getOverallProgress().read) / get().getDaysRemaining()),
+            getDailyGoal: () => {
+                const state = get();
+                const remaining = 604 - state.getOverallProgress().read;
+                if (remaining === 0) return 0;
+                // Reconstruct the pages remaining at the start of today: today's
+                // validated pages must not lower the target while we count them.
+                return Math.ceil((remaining + state.getTodayRead()) / state.getDaysRemaining());
+            },
 
             getTodayRange: () => {
                 const totalDays = get().getTotalDays();

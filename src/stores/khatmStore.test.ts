@@ -59,3 +59,15 @@ it('shows each newly validated page even around eight percent',()=>{
  useKhatmStore.getState().validatePage(50);
  expect(useKhatmStore.getState().getOverallProgress().pct).toBe(8.3);
 });
+
+it('keeps the daily target stable as today’s pages are validated',()=>{
+ vi.useFakeTimers();vi.setSystemTime(new Date(2026,9,5,12));
+ try {
+  useKhatmStore.getState().activate('2026-10-05','2026-11-03');
+  const goal=useKhatmStore.getState().getDailyGoal();expect(goal).toBe(21);
+  for(let p=1;p<=21;p++)useKhatmStore.getState().validatePage(p);
+  expect(useKhatmStore.getState().getDailyGoal()).toBe(goal);expect(useKhatmStore.getState().getTodayRead()).toBe(21);
+  useKhatmStore.getState().togglePage(21);expect(useKhatmStore.getState().getDailyGoal()).toBe(goal);expect(useKhatmStore.getState().getTodayRead()).toBe(20);
+  vi.setSystemTime(new Date(2026,9,6,0,1));expect(useKhatmStore.getState().getTodayRead()).toBe(0);expect(useKhatmStore.getState().getDailyGoal()).toBe(21);
+ } finally {vi.useRealTimers();}
+});
