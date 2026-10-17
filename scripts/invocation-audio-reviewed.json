@@ -1,0 +1,26 @@
+[
+  {
+    "keys": [
+      "morning:94",
+      "evening:94",
+      "hisn_chap_27:94"
+    ],
+    "entryId": "entry-000075",
+    "localTextSha256": "1acda7a45c408ed6695dd46394c6fed43764c15096972b186c1ec64c915c28c7",
+    "sourceTextSha256": "7f41e78179cb1714d9339f666f276bcdd834b9b0ce8687a475f80453a8964277",
+    "audioNote": "La récitation commence par « Aʿūdhu billāhi mina sh-shayṭāni r-rajīm », puis Ayat al-Kursi.",
+    "review": "Hisn 75 / Coran 2:255 : même verset, istiadhah en introduction et orthographe source conservée."
+  },
+  {
+    "keys": [
+      "morning:95",
+      "evening:95",
+      "hisn_chap_27:95"
+    ],
+    "entryId": "entry-000076",
+    "localTextSha256": "4fa25c7ffc7522c0d746fd686f8130e70dfeb6323e2cb01bb23de0ea2c84b078",
+    "sourceTextSha256": "4fa590f49a0d5f31a3d56741fb0f0b352461d633935c4f12ca16ef74e4af73e9",
+    "audioNote": "",
+    "review": "Hisn 76 : les trois sourates 112, 113, 114 avec basmala, dans le même ordre ; variantes orthographiques du texte source."
+  }
+]

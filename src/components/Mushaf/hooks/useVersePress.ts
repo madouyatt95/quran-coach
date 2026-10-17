@@ -10,7 +10,7 @@ export function useVersePress(onHold: (selection: VerseSelection) => void, scope
     const suppressClick = useRef(false);
     const cancel = () => { if (timer.current) clearTimeout(timer.current); timer.current = null; };
     useEffect(() => () => { cancel(); gesture.current = null; }, [scope]);
-    return (ayah: Ayah): HTMLAttributes<HTMLElement> => ({
+    return (ayah: Ayah, onWordHold = onHold): HTMLAttributes<HTMLElement> => ({
         onPointerDown: e => {
             cancel();
             if (!e.isPrimary || e.button !== 0) return;
@@ -20,7 +20,7 @@ export function useVersePress(onHold: (selection: VerseSelection) => void, scope
             gesture.current = {x,y,id};
             timer.current = setTimeout(() => {
                 suppressClick.current = true;
-                onHold({ayah,x,y});
+                onWordHold({ayah,x,y});
             }, 500);
         },
         onPointerMove: e => {
@@ -36,14 +36,14 @@ export function useVersePress(onHold: (selection: VerseSelection) => void, scope
         onContextMenu: e => {
             if ((e.target as HTMLElement).closest('button,a,input,select')) return;
             e.preventDefault(); cancel(); suppressClick.current = true;
-            onHold({ayah,x:e.clientX,y:e.clientY});
+            onWordHold({ayah,x:e.clientX,y:e.clientY});
         },
         onKeyDown: e => {
             if (e.target !== e.currentTarget) return;
             if (e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) {
                 e.preventDefault();
                 const rect = e.currentTarget.getBoundingClientRect();
-                onHold({ayah,x:rect.left+rect.width/2,y:rect.top});
+                onWordHold({ayah,x:rect.left+rect.width/2,y:rect.top});
             }
         },
     });

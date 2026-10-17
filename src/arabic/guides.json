@@ -1,0 +1,338 @@
+{
+  "categories": {
+    "opening": "Comment savoir ce que fait un mot avant de traduire la phrase ?",
+    "steps": [
+      {
+        "title": "Repérer une désignation",
+        "body": "Dans مَسْجِدٌ, le mot désigne une mosquée : on commence par reconnaître un nom."
+      },
+      {
+        "title": "Repérer une action conjuguée",
+        "body": "Dans فَتَحَ, on comprend « il a ouvert ». Cette forme est un verbe."
+      },
+      {
+        "title": "Repérer une relation",
+        "body": "إِلَى signifie « vers ». Il relie un élément à ce qui suit : c’est une particule."
+      }
+    ],
+    "contrast": {
+      "arabic": "كِتَابٌ · كَتَبَ",
+      "explanation": "Un livre · il a écrit. Des lettres communes ne donnent pas la même catégorie."
+    },
+    "why": "Pourquoi un adjectif est-il un nom en arabe ?",
+    "reason": "La catégorie ism comprend les mots qui désignent ou qualifient sans être des verbes ou des particules. « Nom » n’a donc pas exactement la même extension qu’en grammaire française.",
+    "another": {
+      "arabic": "جَمِيلٌ",
+      "explanation": "Beau : un qualificatif, classé parmi les noms."
+    },
+    "trap": "Un mot n’est pas un verbe simplement parce qu’il évoque une action : on examine sa forme et son emploi."
+  },
+  "pronouns": {
+    "opening": "Comment retrouver une personne quand son nom n’est pas écrit ?",
+    "steps": [
+      {
+        "title": "Identifier la personne",
+        "body": "أَنَا désigne celui qui parle ; هُوَ désigne une personne masculine dont on parle."
+      },
+      {
+        "title": "Observer le support",
+        "body": "Dans قَلَمُهُ, le pronom est attaché au nom « stylo » : il indique ici le possesseur."
+      },
+      {
+        "title": "Revenir au contexte",
+        "body": "Pour savoir de qui est le stylo, il faut chercher le référent de ـهُ dans les phrases autour."
+      }
+    ],
+    "contrast": {
+      "arabic": "هُوَ · قَلَمُهُ",
+      "explanation": "Il · son stylo : la même personne peut être désignée par une forme indépendante ou attachée."
+    },
+    "why": "Pourquoi ne suffit-il pas de traduire ـهُ par « son » ?",
+    "reason": "Le rôle du suffixe dépend du mot auquel il est attaché. Un suffixe attaché à un verbe peut être un complément. C’est ici son attachement au nom qui indique la possession.",
+    "another": {
+      "arabic": "قَلَمُهَا",
+      "explanation": "Son stylo à elle : ـهَا renvoie à un possesseur féminin singulier."
+    },
+    "trap": "Le genre du possesseur n’est pas nécessairement celui de l’objet possédé."
+  },
+  "gender-number": {
+    "opening": "Pourquoi l’arabe a-t-il une forme particulière pour deux ?",
+    "steps": [
+      {
+        "title": "Partir du singulier",
+        "body": "مُعَلِّمٌ désigne un enseignant."
+      },
+      {
+        "title": "Reconnaître exactement deux",
+        "body": "مُعَلِّمَانِ désigne deux enseignants dans la forme au nominatif présentée."
+      },
+      {
+        "title": "Distinguer le pluriel",
+        "body": "مُعَلِّمُونَ désigne plusieurs enseignants. D’autres mots ont un pluriel interne, comme بَيْتٌ / بُيُوتٌ."
+      }
+    ],
+    "contrast": {
+      "arabic": "مُعَلِّمَانِ · مُعَلِّمُونَ",
+      "explanation": "Deux enseignants · des enseignants : ـانِ et ـونَ n’expriment pas le même nombre."
+    },
+    "why": "Pourquoi apprendre le pluriel avec chaque nom ?",
+    "reason": "Les pluriels ne suivent pas tous une seule terminaison. Le pluriel interne change la structure du mot ; le dictionnaire ou une forme attestée permet de le connaître.",
+    "another": {
+      "arabic": "بَيْتٌ ← بُيُوتٌ",
+      "explanation": "Une maison → des maisons : le nombre change à l’intérieur du mot."
+    },
+    "trap": "La terminaison ـانِ est étudiée ici dans un exemple régulier ; sa simple présence ne permet pas de classer tous les mots arabes."
+  },
+  "definite": {
+    "opening": "Qu’est-ce qui distingue « une porte » de « la porte » ?",
+    "steps": [
+      {
+        "title": "Observer le nom seul",
+        "body": "بَابٌ désigne une porte sans la préciser dans cet exemple."
+      },
+      {
+        "title": "Repérer l’article",
+        "body": "الْبَابُ désigne la porte. L’article apparaît et le tanwīn de l’exemple indéfini disparaît."
+      },
+      {
+        "title": "Élargir le repère",
+        "body": "أَنَا est défini sans article : un pronom ne fonctionne pas comme un nom commun indéfini."
+      }
+    ],
+    "contrast": {
+      "arabic": "بَابٌ · الْبَابُ",
+      "explanation": "Une porte · la porte : observez le début et la fin du mot."
+    },
+    "why": "Pourquoi le tanwīn n’est-il pas une preuve absolue ?",
+    "reason": "Il apparaît aussi sur certains noms propres. On combine donc la nature du mot et sa construction au lieu de décider à partir d’un seul signe.",
+    "another": {
+      "arabic": "مَسْجِدٌ · الْمَسْجِدُ",
+      "explanation": "Une mosquée · la mosquée."
+    },
+    "trap": "Ne pas ajouter l’article à un pronom pour le rendre défini : il l’est déjà."
+  },
+  "nominal": {
+    "opening": "Comment dire « la porte est ouverte » sans mot pour « est » ?",
+    "steps": [
+      {
+        "title": "Choisir ce dont on parle",
+        "body": "الْبَابُ : la porte. C’est le thème, le mubtadaʾ, dans cette phrase."
+      },
+      {
+        "title": "Ajouter une information",
+        "body": "مَفْتُوحٌ : ouverte. C’est le khabar, ce qu’on apprend au sujet de la porte."
+      },
+      {
+        "title": "Lire la relation",
+        "body": "الْبَابُ مَفْتُوحٌ forme une phrase complète : « la porte est ouverte »."
+      }
+    ],
+    "contrast": {
+      "arabic": "الْبَابُ مَفْتُوحٌ · الْبَابُ الْمَفْتُوحُ",
+      "explanation": "La porte est ouverte · la porte ouverte. Le second exemple est un groupe nominal."
+    },
+    "why": "Pourquoi le second exemple n’est-il pas la même phrase ?",
+    "reason": "Dans ce groupe simple, l’adjectif défini accompagne le nom défini. Il désigne une porte particulière, mais ne construit pas l’affirmation donnée par le premier exemple.",
+    "another": {
+      "arabic": "الطَّالِبُ حَاضِرٌ",
+      "explanation": "L’étudiant est présent : « l’étudiant » est le thème, « présent » l’information."
+    },
+    "trap": "Un adjectif peut être khabar, mais tous les khabar ne sont pas des adjectifs."
+  },
+  "verbal": {
+    "opening": "Comment distinguer celui qui agit de ce qui reçoit l’action ?",
+    "steps": [
+      {
+        "title": "Trouver l’action",
+        "body": "فَتَحَ : il a ouvert. C’est le verbe."
+      },
+      {
+        "title": "Demander « qui ouvre ? »",
+        "body": "الطَّالِبُ : l’étudiant. Il accomplit l’action, c’est le sujet."
+      },
+      {
+        "title": "Demander « qu’ouvre-t-il ? »",
+        "body": "الْبَابَ : la porte. C’est l’objet direct dans cet exemple."
+      }
+    ],
+    "contrast": {
+      "arabic": "فَتَحَ الطَّالِبُ الْبَابَ",
+      "explanation": "L’étudiant a ouvert la porte : les rôles se lisent avec la construction et les terminaisons."
+    },
+    "why": "Pourquoi la place du mot ne suffit-elle pas ?",
+    "reason": "La phrase arabe peut présenter plusieurs ordres. On ne transforme donc pas mécaniquement « premier nom » en sujet : on examine le verbe, les marques et le sens de la construction.",
+    "another": {
+      "arabic": "نَفْتَحُ الْبَابَ",
+      "explanation": "Nous ouvrons la porte : le sujet « nous » est compris dans نَفْتَحُ."
+    },
+    "trap": "Un nom situé après le verbe peut être un objet ; un sujet peut être implicite."
+  },
+  "prepositions": {
+    "opening": "Pourquoi le nom change-t-il après « dans » ?",
+    "steps": [
+      {
+        "title": "Reconnaître la relation",
+        "body": "فِي introduit ici une relation de lieu."
+      },
+      {
+        "title": "Lire le groupe",
+        "body": "فِي الْمَسْجِدِ signifie « dans la mosquée ». La préposition et le nom se comprennent ensemble."
+      },
+      {
+        "title": "Observer la terminaison",
+        "body": "الْمَسْجِدِ porte ici une kasra : ce nom régulier est au génitif après la préposition."
+      }
+    ],
+    "contrast": {
+      "arabic": "الْمَسْجِدُ · فِي الْمَسْجِدِ",
+      "explanation": "Le nom isolé au nominatif · le groupe après une préposition : la terminaison dépend de la construction."
+    },
+    "why": "Pourquoi certains groupes n’ont-ils pas d’espace ?",
+    "reason": "بِـ et لِـ peuvent s’attacher au nom. L’orthographe réunit les éléments, mais leurs fonctions restent distinctes.",
+    "another": {
+      "arabic": "إِلَى الْبَيْتِ",
+      "explanation": "Vers la maison : le nom dépend de إِلَى et se trouve au génitif."
+    },
+    "trap": "Ne pas analyser tout le groupe comme un seul nom : la préposition a son propre rôle."
+  },
+  "idafa": {
+    "opening": "Comment exprimer « la porte de la maison » ?",
+    "steps": [
+      {
+        "title": "Nommer le premier élément",
+        "body": "بَابُ : la porte. Dans cette iḍāfa simple, le premier terme n’a ni article ni tanwīn."
+      },
+      {
+        "title": "Préciser par un deuxième nom",
+        "body": "الْبَيْتِ : de la maison. C’est le second terme, au génitif."
+      },
+      {
+        "title": "Relier les deux",
+        "body": "بَابُ الْبَيْتِ désigne la porte de la maison sans ajouter une préposition pour « de »."
+      }
+    ],
+    "contrast": {
+      "arabic": "بَابُ الْبَيْتِ · الْبَابُ الْكَبِيرُ",
+      "explanation": "La porte de la maison · la grande porte : complément du nom et adjectif sont deux relations différentes."
+    },
+    "why": "Pourquoi le premier terme n’est-il pas toujours en ـُ ?",
+    "reason": "Son cas dépend de sa fonction dans la phrase. Le second terme reste au génitif. Le nominatif du premier terme n’est donc pas la définition de l’iḍāfa.",
+    "another": {
+      "arabic": "فِي بَيْتِ الطَّالِبِ",
+      "explanation": "Dans la maison de l’étudiant : بَيْتِ est au génitif après فِي, et الطَّالِبِ est le complément du nom."
+    },
+    "trap": "L’absence d’article sur le premier terme ne rend pas toute l’iḍāfa indéfinie."
+  },
+  "roots": {
+    "opening": "Qu’est-ce qui reste commun quand un mot change de forme ?",
+    "steps": [
+      {
+        "title": "Comparer les mots",
+        "body": "فَتَحَ, فَاتِحٌ et مَفْتُوحٌ appartiennent à la famille de ف ت ح."
+      },
+      {
+        "title": "Repérer les radicales",
+        "body": "Les consonnes ف, ت et ح conservent leur ordre dans ces trois exemples réguliers."
+      },
+      {
+        "title": "Lire chaque mot séparément",
+        "body": "Il a ouvert · celui qui ouvre · ouvert : la parenté ne remplace pas le sens propre de chaque forme."
+      }
+    ],
+    "contrast": {
+      "arabic": "فَاتِحٌ · مَفْتُوحٌ",
+      "explanation": "Celui qui ouvre · ouvert : une même racine, des emplois différents."
+    },
+    "why": "Pourquoi ne pas retirer toutes les lettres supplémentaires ?",
+    "reason": "Il faut déjà connaître la construction pour identifier les radicales. Certaines lettres peuvent être radicales dans un mot et ajoutées dans un autre ; les racines faibles demandent d’autres règles.",
+    "another": {
+      "arabic": "سَمِعَ · سَامِعٌ",
+      "explanation": "Il a entendu · celui qui entend : les consonnes س م ع relient les deux mots."
+    },
+    "trap": "La racine n’est pas une traduction à appliquer indistinctement à toute une famille."
+  },
+  "patterns": {
+    "opening": "Comment comparer deux mots de familles différentes ?",
+    "steps": [
+      {
+        "title": "Placer les radicales",
+        "body": "Dans فَاتِحٌ, ف / ت / ح correspondent aux positions ف / ع / ل du modèle."
+      },
+      {
+        "title": "Repérer ce qui s’ajoute",
+        "body": "L’alif après la première radicale appartient au schème فَاعِلٌ."
+      },
+      {
+        "title": "Comparer une autre famille",
+        "body": "كَاتِبٌ et فَاتِحٌ partagent ce schème, sans partager la même racine."
+      }
+    ],
+    "contrast": {
+      "arabic": "كَاتِبٌ · فَاتِحٌ",
+      "explanation": "Celui qui écrit · celui qui ouvre : même construction, racines et sens distincts."
+    },
+    "why": "Pourquoi la lettre ع du modèle ne se voit-elle pas toujours dans le mot ?",
+    "reason": "ف ع ل servent de repères de position. Le ع du modèle représente ici la deuxième radicale, qui est ت dans فَاتِحٌ.",
+    "another": {
+      "arabic": "مَفْتُوحٌ → مَفْعُولٌ",
+      "explanation": "Le mīm initial et le wāw long sont ajoutés dans ce schème ; ف ت ح sont les radicales."
+    },
+    "trap": "Un modèle décrit une structure : il ne garantit pas que chaque combinaison imaginée existe."
+  },
+  "conjugation": {
+    "opening": "Comment le verbe dit-il déjà « je » ou « nous » ?",
+    "steps": [
+      {
+        "title": "Comparer les préfixes",
+        "body": "أَفْتَحُ : j’ouvre ; نَفْتَحُ : nous ouvrons. La première lettre varie avec la personne."
+      },
+      {
+        "title": "Observer aussi l’accompli",
+        "body": "فَتَحْتُ : j’ai ouvert ; فَتَحْنَا : nous avons ouvert. Les marques de personne apparaissent ici à la fin."
+      },
+      {
+        "title": "Garder la famille en vue",
+        "body": "ف ت ح restent les radicales. La conjugaison situe l’action par rapport à une personne et à une forme verbale."
+      }
+    ],
+    "contrast": {
+      "arabic": "أَفْتَحُ · نَفْتَحُ",
+      "explanation": "J’ouvre · nous ouvrons : même action, personne différente."
+    },
+    "why": "Pourquoi ne pas copier les voyelles de يَكْتُبُ partout ?",
+    "reason": "Les verbes simples suivent plusieurs couples de vocalisation. On apprend ensemble كَتَبَ / يَكْتُبُ, فَتَحَ / يَفْتَحُ et سَمِعَ / يَسْمَعُ.",
+    "another": {
+      "arabic": "سَمِعْتُ · أَسْمَعُ",
+      "explanation": "J’ai entendu · j’entends : première personne du singulier dans deux formes verbales."
+    },
+    "trap": "Une traduction au présent sert de repère de départ ; les particules et le contexte peuvent modifier la valeur temporelle."
+  },
+  "derived": {
+    "opening": "Pourquoi une consonne doublée change-t-elle le sens ?",
+    "steps": [
+      {
+        "title": "Lire la forme simple",
+        "body": "عَلِمَ : il a su. Le lām n’est pas doublé."
+      },
+      {
+        "title": "Observer le changement",
+        "body": "عَلَّمَ : il a enseigné. La shadda sur le lām fait partie de la construction de forme II."
+      },
+      {
+        "title": "Comparer une autre construction",
+        "body": "تَعَلَّمَ : il a appris. Le tāʾ initial et le doublement participent à la forme V."
+      }
+    ],
+    "contrast": {
+      "arabic": "عَلِمَ · عَلَّمَ · تَعَلَّمَ",
+      "explanation": "Savoir · enseigner · apprendre : ne négligez ni les voyelles ni la shadda."
+    },
+    "why": "Pourquoi نَكْتُبُ n’est-il pas dérivé à cause du nūn ?",
+    "reason": "Ce nūn exprime « nous » dans la conjugaison. Il ne change pas la forme dérivationnelle du verbe. Il faut distinguer marques de personne et éléments de dérivation.",
+    "another": {
+      "arabic": "يُعَلِّمُ",
+      "explanation": "Il enseigne : le yāʾ marque la personne, tandis que la construction avec lām doublé relève ici de la forme II."
+    },
+    "trap": "Une forme dérivée ne possède pas un sens unique que l’on pourrait appliquer à toutes les racines."
+  }
+}

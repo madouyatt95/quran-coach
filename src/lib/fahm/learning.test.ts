@@ -1,0 +1,11 @@
+import {it,expect} from 'vitest';
+import {READING_PATHS} from '../../data/readingPaths';
+import {QURAN_VOCABULARY} from '../../data/quranVocabulary';
+import {exactVocabulary,passageTargets,personalTargets,validExamples,validTarget,type VerseKnowledge} from './learning';
+import {FAHM_GUIDES} from './guides';
+import {FAHM_MEANING} from './meaning';
+it('all 100 steps have valid, nonempty references and a study guide',()=>{expect(READING_PATHS.reduce((n,p)=>n+p.days.length,0)).toBe(100);for(const p of READING_PATHS){expect(FAHM_GUIDES[p.id]).toBeDefined();for(const d of p.days){const targets=passageTargets(d);expect(targets.length).toBeGreaterThan(0);expect(targets.every(v=>validTarget(v.surah,v.ayah))).toBe(true);}}});
+it('does not confuse a substring with a Quran word',()=>{const words=QURAN_VOCABULARY.filter(w=>['رَبّ','اللَّه'].includes(w.arabic));expect(exactVocabulary('رَبِّ',words).some(w=>w.arabic==='رَبّ')).toBe(true);expect(exactVocabulary('رَبَّنَا',words)).toEqual([]);expect(exactVocabulary('ٱللَّهِ',words).some(w=>w.arabic==='اللَّه')).toBe(true);});
+it('suppresses an example that does not contain its claimed word',()=>{const word=QURAN_VOCABULARY.find(w=>w.id===969)!;expect(validExamples(word)).toEqual([]);});
+it('prioritizes mistakes but preserves an explicit requested verse and duration limits',()=>{const record:VerseKnowledge={surah:1,ayah:5,correct:false,attempts:1,mistakes:1,due:99,at:1,note:''};const records={'1:5':record};expect(personalTargets(5,records,{surah:2,ayah:75},100)).toEqual([{...record}]);expect(personalTargets(5,records,{surah:2,ayah:75},100,true)).toEqual([{surah:2,ayah:75}]);expect(personalTargets(20,{}, {surah:1,ayah:1})).toHaveLength(4);expect(personalTargets(20,{}, {surah:114,ayah:6})).toHaveLength(1);});
+it('each authored meaning question has a Quran reference and a valid answer',()=>{for(const [key,q] of Object.entries(FAHM_MEANING)){const [s,a]=key.split(':').map(Number);expect(validTarget(s,a)).toBe(true);expect(q.options[q.answer]).toBeTruthy();expect(q.explanation.length).toBeGreaterThan(50);}});

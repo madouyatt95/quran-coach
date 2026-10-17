@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "spokenNames": {
+    "Yunus": "Younous", "Musa": "Moussa", "Nuh": "Nouh",
+    "Yusuf": "Youssouf", "Isa": "Issa", "Yaqub": "Yaqoub",
+    "Zakariyya": "Zakariya", "Harun": "Haroun", "Lut": "Lout",
+    "Dawud": "Daoud", "Ayyub": "Ayoub", "Quraysh": "Kouraïch"
+  },
+  "sentenceEdits": {},
+  "pauseSeconds": {"statement": 0.32, "question": 0.48, "paragraph": 0.6}
+}

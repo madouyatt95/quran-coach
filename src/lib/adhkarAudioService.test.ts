@@ -52,3 +52,34 @@ it('repeats the TTS fallback after missing MP3s',async()=>{
  FakeAudio.instances[0].dispatchEvent(new Event('error'));await flush();await vi.advanceTimersByTimeAsync(0);
  FakeAudio.instances[0].dispatchEvent(new Event('error'));await done;expect(mocks.tts).toHaveBeenCalledTimes(2);
 });
+it('pauses a recording at its exact position and resumes without restarting the clip',async()=>{
+ const end=vi.fn();const done=service.playAdhkarAudio('test',14,'hisn_chap_1',undefined,{onEnd:end});await flush();const a=FakeAudio.instances[0];a.currentTime=2.4;service.pauseAdhkarAudio();await vi.advanceTimersByTimeAsync(20000);expect(end).not.toHaveBeenCalled();service.resumeAdhkarAudio();await flush();expect(a.currentTime).toBe(2.4);expect(a.play).toHaveBeenCalledTimes(2);a.dispatchEvent(new Event('ended'));await done;expect(end).toHaveBeenCalledOnce();
+});
+it('pauses the gap between repetitions and cancellation resolves a paused session',async()=>{
+ const end=vi.fn();const done=service.playAdhkarAudioLoop('test',14,'hisn_chap_1',2,undefined,{pauseMs:1000,onEnd:end});await flush();const a=FakeAudio.instances[0];a.dispatchEvent(new Event('ended'));await flush();await vi.advanceTimersByTimeAsync(200);service.pauseAdhkarAudio();await vi.advanceTimersByTimeAsync(2000);expect(a.play).toHaveBeenCalledOnce();service.resumeAdhkarAudio();await vi.advanceTimersByTimeAsync(799);expect(a.play).toHaveBeenCalledOnce();await vi.advanceTimersByTimeAsync(1);expect(a.play).toHaveBeenCalledTimes(2);service.pauseAdhkarAudio();service.stopAdhkarAudio();await done;expect(end).not.toHaveBeenCalled();
+});
+it('learning alternates the supplied phrases and a repeat interval without any recitation counting',async()=>{
+ const onPart=vi.fn();const done=service.learnAdhkar(['one','two'],{rate:0.75,repeats:1,gap:4,onPart});await flush();expect(mocks.tts).toHaveBeenCalledWith('one',expect.objectContaining({rate:0.75}));await vi.advanceTimersByTimeAsync(4000);expect(mocks.tts).toHaveBeenLastCalledWith('two',expect.anything());await vi.advanceTimersByTimeAsync(4000);await done;expect(onPart.mock.calls.filter(c=>c[1]==='repeat').map(c=>c[0])).toEqual([0,1]);
+});
+it('does not reuse the ambiguous recording for the two formerly identical IDs',()=>{
+ expect(service.getAdhkarAudioUrl('hisn_chap_130',276)).not.toBe('/audio/hisn/dua_276.mp3');expect(service.getAdhkarAudioUrl('hisn_chap_130',100276)).not.toBe('/audio/hisn/dua_276.mp3');
+});
+it.each(['morning','evening','hisn_chap_27'])('plays both opening Quran invocations from complete human recordings in %s',async category=>{
+ for(const [id,file] of [[94,'OD-075.mp3'],[95,'OD-076.mp3']] as const){
+  const end=vi.fn();const done=service.playAdhkarAudio('Arabic',id,category,undefined,{onEnd:end});await flush();
+  const a=FakeAudio.instances[0];expect(a.src).toContain(file);expect(a.currentTime).toBe(0);
+  a.dispatchEvent(new Event('ended'));await done;expect(end).toHaveBeenCalledOnce();
+ }
+ expect(mocks.tts).not.toHaveBeenCalled();
+});
+it('learning reuses human audio ranges, then French, without synthesizing Arabic',async()=>{
+ const onPart=vi.fn(),onPhase=vi.fn();const done=service.learnAdhkar(['unused'],{rate:1,repeats:1,gap:2,onPart,recording:{url:'/human.mp3',ranges:[[0,3],[3,6]]},understanding:{arabic:true,french:true,silence:true,translation:'Le sens.',gap:2,onPhase}});await flush();
+ const a=FakeAudio.instances[0];expect(a.src).toBe('/human.mp3');a.currentTime=3;a.dispatchEvent(new Event('timeupdate'));await flush();await vi.advanceTimersByTimeAsync(2000);expect(a.currentTime).toBe(3);a.currentTime=6;a.dispatchEvent(new Event('timeupdate'));await flush();await vi.advanceTimersByTimeAsync(2000);await done;
+ expect(mocks.tts).toHaveBeenCalledExactlyOnceWith('Le sens.',expect.objectContaining({lang:'fr'}));expect(onPhase).toHaveBeenCalledWith('french');
+});
+it('allows French alone and cancellation during the following silent interval',async()=>{
+ const end=vi.fn(),onPhase=vi.fn();const done=service.playAdhkarAudioLoop('Arabic',14,'hisn_chap_1',1,undefined,{onEnd:end,understanding:{arabic:false,french:true,silence:true,translation:'Le sens.',gap:4,onPhase}});await flush();expect(FakeAudio.instances).toHaveLength(0);expect(mocks.tts).toHaveBeenCalledWith('Le sens.',expect.objectContaining({lang:'fr'}));expect(onPhase).toHaveBeenCalledWith('silence');service.stopAdhkarAudio();await done;expect(end).not.toHaveBeenCalled();
+});
+it('waits for the actual passage duration in adaptive learning, accounting for speed',async()=>{
+ const part=vi.fn();const done=service.learnAdhkar(['x','y'],{rate:.5,repeats:1,gap:4,onPart:part,recording:{url:'/human.mp3',ranges:[[0,5],[5,8]]},understanding:{arabic:true,french:false,silence:true,gap:4,gapMode:'auto',translation:''}});await flush();const a=FakeAudio.instances[0];a.currentTime=5;a.dispatchEvent(new Event('timeupdate'));await flush();await vi.advanceTimersByTimeAsync(11999);expect(a.play).toHaveBeenCalledTimes(1);await vi.advanceTimersByTimeAsync(1);expect(a.play).toHaveBeenCalledTimes(2);service.stopAdhkarAudio();await done;
+});

@@ -13,6 +13,10 @@ export function PlayingView() {
     const roundTheme = isDuel && duelRounds.length > 0 ? QUIZ_THEMES.find(t => t.id === duelRounds[duelRound]) : null;
     const question = questions[currentIndex];
     const isSprint = mode === 'sprint';
+    const untimed = mode==='revision'||mode==='sira';
+    const [heardId,setHeardId]=useState<string|null>(null);
+    const [retry,setRetry]=useState(false);
+    const waitingAudio=!!question?.audioUrl&&heardId!==question.id;
     const maxTime = isSprint ? 10 : DIFFICULTY_CONFIG[difficulty].timerSeconds;
 
     const [timeLeft, setTimeLeft] = useState(maxTime);
@@ -21,41 +25,29 @@ export function PlayingView() {
     const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
     const sprintTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
-    // Question timer
+    useEffect(()=>{setSelectedIndex(null);setRetry(false);},[currentIndex]);
+    // Keep countdown paused until the complete excerpt has been heard.
     useEffect(() => {
-        if (isSprint) return; // Sprint uses global timer
+        if (isSprint || untimed || waitingAudio) return;
         setTimeLeft(maxTime);
-        setSelectedIndex(null);
-        timerRef.current = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev <= 1) {
-                    clearInterval(timerRef.current);
-                    submitAnswer(-1); // timeout
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-        return () => clearInterval(timerRef.current);
-    }, [currentIndex, submitAnswer, maxTime, isSprint]);
+        const interval=setInterval(()=>{
+            if(useQuizStore.getState().freezeUntil>Date.now())return;
+            setTimeLeft(prev=>Math.max(0,prev-1));
+        },1000);
+        timerRef.current=interval;
+        return()=>clearInterval(interval);
+    },[currentIndex,maxTime,isSprint,untimed,waitingAudio]);
+    useEffect(()=>{if(!isSprint&&!untimed&&!waitingAudio&&timeLeft===0)submitAnswer(-1);},[timeLeft,isSprint,untimed,waitingAudio,submitAnswer]);
 
-    // Sprint global timer
-    useEffect(() => {
-        if (!isSprint) return;
-        setSprintTime(60);
-        sprintTimerRef.current = setInterval(() => {
-            setSprintTime(prev => {
-                if (prev <= 1) {
-                    clearInterval(sprintTimerRef.current);
-                    // End sprint
-                    useQuizStore.getState().nextQuestion();
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-        return () => clearInterval(sprintTimerRef.current);
-    }, [isSprint]);
+    useEffect(()=>{
+        if(!isSprint)return;
+        const deadline=Date.now()+60000;
+        sprintTimerRef.current=setInterval(()=>{
+            const left=Math.max(0,Math.ceil((deadline-Date.now())/1000));setSprintTime(left);
+            if(!left){clearInterval(sprintTimerRef.current);void useQuizStore.getState().nextQuestion();}
+        },200);
+        return()=>clearInterval(sprintTimerRef.current);
+    },[isSprint]);
 
     // Reset selection on question change (sprint)
     useEffect(() => {
@@ -63,7 +55,8 @@ export function PlayingView() {
     }, [currentIndex, isSprint]);
 
     const handleChoice = (index: number) => {
-        if (selectedIndex !== null && !isSprint) return;
+        if (selectedIndex !== null && !isSprint || waitingAudio) return;
+        if(useQuizStore.getState().secondChance && index!==question.correctIndex){submitAnswer(index);setRetry(true);return;}
 
         if (Capacitor.isNativePlatform()) {
             if (index === question.correctIndex) {
@@ -76,7 +69,7 @@ export function PlayingView() {
         setSelectedIndex(index);
         if (!isSprint) {
             clearInterval(timerRef.current);
-            setTimeout(() => submitAnswer(index), 300);
+            submitAnswer(index);
         } else {
             submitAnswer(index);
         }
@@ -164,7 +157,7 @@ export function PlayingView() {
             </div>
 
             {/* Timer */}
-            <div className="quiz-timer">
+            {!untimed && !waitingAudio && <div className="quiz-timer">
                 <svg width="60" height="60" viewBox="0 0 60 60">
                     <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
                     <circle
@@ -182,8 +175,11 @@ export function PlayingView() {
                 <span className="quiz-timer-text">{displayTime}</span>
             </div>
 
+            }
+            {waitingAudio&&<p>Le temps de réponse commence à la fin de l’extrait.</p>}
+            {retry&&<p role="status">Seconde chance : essaie une autre réponse.</p>}
             {/* Question */}
-            {question.audioUrl && <AudioPlayer url={question.audioUrl} />}
+            {question.audioUrl && <AudioPlayer key={question.id} url={question.audioUrl} onListened={()=>{setHeardId(question.id);useQuizStore.setState({timerStart:Date.now()});}} />}
 
             <div className="quiz-question-card">
                 {question.questionAr && (
@@ -231,7 +227,7 @@ export function PlayingView() {
                         key={i}
                         className={`quiz-choice ${selectedIndex === i ? 'selected' : ''} ${isSprint && selectedIndex === i ? (i === question.correctIndex ? 'sprint-correct' : 'sprint-wrong') : ''}`}
                         onClick={() => handleChoice(i)}
-                        disabled={selectedIndex !== null && !isSprint}
+                        disabled={waitingAudio || selectedIndex !== null && !isSprint}
                     >
                         <span className="quiz-choice-letter">{'ABCD'[i]}</span>
                         <span className="quiz-choice-text">{choice}</span>

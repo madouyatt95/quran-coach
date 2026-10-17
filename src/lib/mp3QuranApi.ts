@@ -39,7 +39,7 @@ export const mp3QuranApi = {
             return data.reciters;
         } catch (error) {
             console.error('[MP3QuranApi] Error fetching reciters:', error);
-            return [];
+            throw error;
         }
     },
 
@@ -54,7 +54,7 @@ export const mp3QuranApi = {
             return data.suwar;
         } catch (error) {
             console.error('[MP3QuranApi] Error fetching surahs:', error);
-            return [];
+            throw error;
         }
     },
 
@@ -73,11 +73,11 @@ export const mp3QuranApi = {
     /**
      * Find the best moshaf (preferring Hafs/Murattal/Complete)
      */
-    getBestMoshaf(moshafs: MP3QuranMoshaf[]): MP3QuranMoshaf {
-        if (!moshafs || moshafs.length === 0) return {} as MP3QuranMoshaf;
+    getBestMoshaf(moshafs: MP3QuranMoshaf[]): MP3QuranMoshaf | undefined {
+        if (!moshafs || moshafs.length === 0) return undefined;
 
         // Prioritize: Hafs A'n Assem - Psalmodie (type 11) with most surahs
-        const hafs = moshafs.find(m => m.moshaf_type === 11);
+        const hafs = [...moshafs].filter(m => m.moshaf_type === 11).sort((a, b) => b.surah_total - a.surah_total)[0];
         if (hafs) return hafs;
 
         // Fallback to the one with the most surahs

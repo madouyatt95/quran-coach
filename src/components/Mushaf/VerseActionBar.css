@@ -8,3 +8,7 @@
 .verse-action-bar__secondary button{width:100%;justify-content:flex-start;padding:6px 12px}
 .verse-action-bar__secondary button[aria-pressed="true"]{color:#c9a84c}
 .verse-action-bar{max-height:calc(100dvh - 24px);overflow:auto;box-sizing:border-box}
+
+.verse-action-bar__continue{width:100%;background:#c9a84c18!important;border-top:1px solid #c9a84c33!important;margin-top:4px}
+
+.verse-action-bar__word-tools{display:flex;flex-wrap:wrap;border-top:1px solid #c9a84c33;margin-top:6px;padding-top:4px}.verse-action-bar__word-tools button{flex:1 1 100%;justify-content:flex-start;padding:6px 12px}

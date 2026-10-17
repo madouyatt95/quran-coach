@@ -1,18 +1,18 @@
-import { useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { prophetRelations } from '../../data/prophetRelations';
+import { useCallback, useMemo, useState } from 'react';
 import {
     ReactFlow,
     MiniMap,
     Controls,
     Background,
-    useNodesState,
-    useEdgesState,
     Handle,
     Position,
     BackgroundVariant
 } from '@xyflow/react';
 import type { NodeProps } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { initialNodes, initialEdges } from '../../data/prophetsGraph';
+import { initialNodes } from '../../data/prophetsGraph';
 import { prophets } from '../../data/prophets';
 import type { Prophet } from '../../data/prophets';
 
@@ -45,26 +45,37 @@ const nodeTypes = {
 
 interface Props {
     onSelectProphet: (prophet: Prophet) => void;
+    search?:string;
 }
 
-export function ProphetsGraph({ onSelectProphet }: Props) {
-    const [nodes, , onNodesChange] = useNodesState(initialNodes);
-    const [edges, , onEdgesChange] = useEdgesState(initialEdges);
+export function ProphetsGraph({ onSelectProphet, search='' }: Props) {
+    const [selected,setSelected]=useState<number|null>(null);
+    const matched=prophets.filter(p=>`${p.nameFr} ${p.nameIslamic} ${p.nameAr} ${p.title}`.toLowerCase().includes(search.toLowerCase().trim())).map(p=>p.id);
+    const connected=new Set(matched);
+    if(search.trim())for(const relation of prophetRelations)if(matched.includes(relation.source)||matched.includes(relation.target)){connected.add(relation.source);connected.add(relation.target);}
+    const allNodes=[...initialNodes,...prophets.filter(p=>!initialNodes.some(n=>n.id===p.id)).map((p,i)=>({id:p.id,position:{x:100+i*180,y:1500},data:{id:p.id},type:'prophetNode'}))];
+    const nodes=allNodes.filter(n=>connected.has(n.id));
+    const edges=prophetRelations.map((r,i)=>({id:String(i),source:r.source,target:r.target,type:'smoothstep',label:r.label,style:{stroke:'#c9a84c'},labelStyle:{fill:'#d4b85e',fontSize:10},labelBgStyle:{fill:'#18203a'}})).filter(e=>connected.has(e.source)&&connected.has(e.target));
+    const relation=selected===null?null:prophetRelations[selected];
 
-    const onNodeClick = useCallback((_: React.MouseEvent, node: any) => {
+    const onNodeClick = useCallback((_: React.MouseEvent, node: {data:{id?:unknown}}) => {
         const prophet = prophets.find(p => p.id === node.data.id);
         if (prophet) {
             onSelectProphet(prophet);
         }
     }, [onSelectProphet]);
 
-    return (
+    return (<section className="journey-relations"><p>Touchez une liaison pour comprendre le lien et consulter son passage source. La disposition ne représente pas une chronologie datée.</p>
+        {nodes.length===0&&<p role="status">Aucun prophète trouvé.</p>}
+        <div className="journey-relation-buttons" aria-label="Relations documentées">{edges.map(e=><button key={e.id} onClick={()=>setSelected(Number(e.id))}>{prophets.find(p=>p.id===e.source)?.nameIslamic} · {prophets.find(p=>p.id===e.target)?.nameIslamic}</button>)}</div>
+        {relation&&<article className="journey-relation-card"><h3>{relation.label}</h3><p>{relation.description}</p><Link to={`/read?surah=${relation.reference.split(':')[0]}&ayah=${relation.reference.split(':')[1].split('-')[0]}`}>Lire le passage {relation.reference}</Link> · <a href={`https://quran.com/${relation.reference.replace(':','/')}`} target="_blank" rel="noopener noreferrer">Source ↗</a><p><button onClick={()=>setSelected(null)}>Fermer l’explication</button></p></article>}
         <div style={{ width: '100%', height: '70vh', borderRadius: 'var(--radius-lg, 12px)', overflow: 'hidden', border: '1px solid var(--color-border, #e5e7eb)' }}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
+                key={search}
+                nodesDraggable={false}
+                onEdgeClick={(_,edge)=>setSelected(Number(edge.id))}
                 onNodeClick={onNodeClick}
                 nodeTypes={nodeTypes}
                 fitView
@@ -77,6 +88,6 @@ export function ProphetsGraph({ onSelectProphet }: Props) {
                 }} />
                 <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--color-border, #e5e7eb)" />
             </ReactFlow>
-        </div>
+        </div></section>
     );
 }

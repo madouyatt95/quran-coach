@@ -1,12 +1,26 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
+import type { VercelRequest, VercelResponse } from '@vercel/node'
+import mosqueHandler from './api/mosques'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  server: { proxy: { '/offline-audio/': { target: 'https://cdn.islamic.network', changeOrigin: true, rewrite: path => path.replace('/offline-audio/', '/quran/audio/128/ar.alafasy/') } } },
+  server: { proxy: { '/verse-audio/': { target:'https://cdn.islamic.network',changeOrigin:true,rewrite:path=>path.replace('/verse-audio/','/quran/audio/') }, '/offline-audio/': { target: 'https://cdn.islamic.network', changeOrigin: true, rewrite: path => path.replace('/offline-audio/', '/quran/audio/128/ar.alafasy/') } } },
   worker: { format: 'es' },
   plugins: [
     react(),
+    {
+      name: 'local-mosque-api',
+      configureServer(server) {
+        server.middlewares.use('/api/mosques', async (req, res) => {
+          const query=Object.fromEntries(new URL(req.url || '/', 'http://localhost').searchParams);
+          const response=res as unknown as VercelResponse;
+          response.status=(code:number)=>{res.statusCode=code;return response;};
+          response.json=(value:unknown)=>{res.setHeader('Content-Type','application/json');res.end(JSON.stringify(value));return response;};
+          await mosqueHandler(Object.assign(req,{query}) as VercelRequest,response);
+        });
+      },
+    } satisfies Plugin,
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
@@ -43,7 +57,7 @@ export default defineConfig({
       },
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json,mp3,wav}'],
-        globIgnores: ['tilawa/**'],
+        globIgnores: ['tilawa/**','audio/narration/**/*.mp3','audio/invocations/**/*.mp3'],
         maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // Augmenter la limite à 15 Mo pour permettre le cache des gros JSON (comme le Tafsir ou le Coran complet)
       },
       devOptions: {

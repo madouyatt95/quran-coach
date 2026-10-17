@@ -1,0 +1,5 @@
+import {create} from 'zustand';
+import {persist} from 'zustand/middleware';
+interface Review {completedAt:number;dueAt:number;answers:Record<string,number>}
+interface Library {later:string[];reviews:Record<string,Review>;toggleLater:(key:string)=>void;finishReview:(key:string,answers:Record<string,number>)=>void}
+export const useStoryLibraryStore=create<Library>()(persist(set=>({later:[],reviews:{},toggleLater:key=>set(s=>({later:s.later.includes(key)?s.later.filter(k=>k!==key):[key,...s.later]})),finishReview:(key,answers)=>{const now=Date.now();set(s=>({reviews:{...s.reviews,[key]:{completedAt:now,dueAt:now+3*86400000,answers}}}));}}),{name:'quran-coach-story-library',version:1,merge:(raw,current)=>{const s=raw as Partial<Library>|null;return {...current,later:Array.isArray(s?.later)?[...new Set(s.later.filter(k=>typeof k==='string'))]:[],reviews:Object.fromEntries(Object.entries(s?.reviews||{}).filter(([,r])=>r&&Number.isFinite(r.completedAt)&&Number.isFinite(r.dueAt)&&r.answers&&typeof r.answers==='object'&&Object.values(r.answers).every(a=>Number.isInteger(a)&&a>=0&&a<=2)))};}}));

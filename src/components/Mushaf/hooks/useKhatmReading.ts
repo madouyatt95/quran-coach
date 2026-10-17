@@ -1,3 +1,4 @@
+import {useCompanionReading} from '../../../hooks/useCompanionReading';
 import {useEffect, useRef, useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import {useKhatmStore} from '../../../stores/khatmStore';
@@ -6,6 +7,7 @@ import {useLiveFollowStore} from '../../../stores/liveFollowStore';
 import {KhatmReadingTracker, MIN_KHATM_READING_MS} from '../../../lib/khatmReading';
 
 export function useKhatmReading({page, ready, surah, ayah, continuousText = false}: {page:number;ready:boolean;surah:number;ayah:number;continuousText?:boolean}) {
+    useCompanionReading({page,ready,surah,ayah,continuousText});
     const {pathname} = useLocation();
     const enabled = useKhatmStore(s => s.isActive && !s.completedAt);
     const jump = useQuranStore(s => s.khatmJumpSignal);
@@ -37,7 +39,7 @@ export function useKhatmReading({page, ready, surah, ayah, continuousText = fals
     useEffect(()=>{
         const observation = {page,ready,surah,ayah,jump,minimumMs:continuousText ? 0 : MIN_KHATM_READING_MS,active:enabled && pathname === '/read' && foreground && !following && !obscured};
         const completed = tracker.current.observe(observation,performance.now());
-        if (completed !== null) useKhatmStore.getState().validatePage(completed);
+        if (completed !== null) useKhatmStore.getState().validatePage(completed,continuousText ? 'vertical-scroll' : 'page-turn');
         const checkpoint = () => {
             if (!document.hidden && tracker.current.qualified(observation,performance.now())) {
                 useKhatmStore.getState().updateLastRead(surah,ayah,page);

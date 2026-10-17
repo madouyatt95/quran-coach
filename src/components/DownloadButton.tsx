@@ -1,85 +1,74 @@
-import React, { useEffect } from 'react';
-import { CloudDownload, Loader2, XCircle, CheckCircle2 } from 'lucide-react';
-import { useDownloadStore } from '../stores/downloadStore';
-import './DownloadButton.css';
-
-interface DownloadButtonProps {
-    id: string; // Identifiant unique, ex: "surah-1-reciter-7"
-    title: string;
-    urls: string[];
-    className?: string;
-    sampleUrlForCheck?: string; // URL à vérifier au montage pour set l'état initial
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { CloudDownload, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
+import { useDownloadStore } from "../stores/downloadStore";
+import type { PlaylistItem } from "../types";
+import "./DownloadButton.css";
+interface Props {
+  id: string;
+  title: string;
+  urls: string[];
+  className?: string;
+  sampleUrlForCheck?: string;
+  items?: PlaylistItem[];
 }
-
-export function DownloadButton({ id, title, urls, className = '', sampleUrlForCheck }: DownloadButtonProps) {
-    const { tasks, isItemCached, startDownload, removeDownload, verifyCacheStatus } = useDownloadStore();
-
-    // Au montage, vérifier silencieusement si c'est déjà en cache
-    useEffect(() => {
-        if (sampleUrlForCheck && !tasks[id]) {
-            verifyCacheStatus(id, sampleUrlForCheck);
-        }
-    }, [id, sampleUrlForCheck]);
-
-    const task = tasks[id];
-    const isCached = isItemCached(id); // Vrai si status === 'completed'
-
-    const handleAction = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-
-        if (isCached) {
-            // Demander confirmation avant de supprimer
-            if (window.confirm(`Voulez-vous supprimer "${title}" de vos téléchargements hors-ligne ?`)) {
-                await removeDownload(id, urls);
-            }
-        } else if (!task || task.status === 'error') {
-            await startDownload(id, title, urls);
-        }
-    };
-
-    if (isCached) {
-        return (
-            <button
-                className={`download-btn download-btn--done ${className}`}
-                onClick={handleAction}
-                title="Supprimer du mode hors-ligne"
-            >
-                <CheckCircle2 size={18} color="#4CAF50" />
-            </button>
-        );
-    }
-
-    if (task && task.status === 'downloading') {
-        return (
-            <button className={`download-btn download-btn--progress ${className}`} disabled>
-                <div className="download-btn__spinner">
-                    <Loader2 size={18} className="spin" color="#c9a84c" />
-                    <span className="download-btn__percent">{task.progress}%</span>
-                </div>
-            </button>
-        );
-    }
-
-    if (task && task.status === 'error') {
-        return (
-            <button
-                className={`download-btn download-btn--error ${className}`}
-                onClick={handleAction}
-                title="Erreur. Réessayer ?"
-            >
-                <XCircle size={18} color="#F44336" />
-            </button>
-        );
-    }
-
-    // Par défaut, proposer le téléchargement
-    return (
-        <button
-            className={`download-btn download-btn--idle ${className}`}
-            onClick={handleAction}
-            title="Télécharger pour écoute hors-ligne"
-        >
-            <CloudDownload size={18} color="rgba(255,255,255,0.7)" />
-        </button>
+export function DownloadButton({
+  id,
+  title,
+  urls,
+  className = "",
+  sampleUrlForCheck,
+  items,
+}: Props) {
+  const task = useDownloadStore((s) => s.tasks[id]);
+  const { startDownload, pauseDownload, removeDownload, verifyCacheStatus } =
+    useDownloadStore(
+      useShallow((s) => ({
+        startDownload: s.startDownload,
+        pauseDownload: s.pauseDownload,
+        removeDownload: s.removeDownload,
+        verifyCacheStatus: s.verifyCacheStatus,
+      })),
     );
+  useEffect(() => {
+    void verifyCacheStatus(id, sampleUrlForCheck || "");
+  }, [id, sampleUrlForCheck, verifyCacheStatus]);
+  const done = task?.status === "completed";
+  const loading = task?.status === "downloading";
+  const label = done
+    ? `Supprimer ${title} du mode hors ligne`
+    : loading
+      ? `Mettre le téléchargement de ${title} en pause`
+      : task
+        ? `Reprendre le téléchargement de ${title}`
+        : `Télécharger ${title}`;
+  return (
+    <button
+      className={`download-btn ${className}`}
+      aria-label={label}
+      title={task?.error || label}
+      disabled={!urls.length}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (loading) pauseDownload(id);
+        else if (done) {
+          if (window.confirm(`Supprimer « ${title} » des téléchargements ?`))
+            void removeDownload(id, urls);
+        } else void startDownload(id, title, urls, "audio", items);
+      }}
+    >
+      {done ? (
+        <CheckCircle2 size={18} />
+      ) : loading ? (
+        <>
+          <Pause size={16} />
+          <small>{task.progress}%</small>
+        </>
+      ) : task ? (
+        <RotateCcw size={18} />
+      ) : (
+        <CloudDownload size={18} />
+      )}
+    </button>
+  );
 }

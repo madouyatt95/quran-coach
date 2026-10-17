@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { localDay } from '../lib/learning';
+import { regularityStreak } from '../lib/regularity';
 
 interface StatsState {
     // Reading stats
@@ -18,6 +20,12 @@ interface StatsState {
     // Activity history for calendar (date -> pages read)
     activityHistory: Record<string, number>;
 
+    activeDays: Record<string, boolean>;
+    countedPages: Record<string, number[]>;
+    recordActivity: (at?: number) => void;
+    recordQualifiedPage: (page: number, at?: number) => void;
+    restoreActivityDays: (dates: string[]) => void;
+
     // Actions
     startSession: () => void;
     endSession: () => void;
@@ -26,11 +34,29 @@ interface StatsState {
     checkAndUpdateStreak: () => void;
 }
 
-const getTodayDate = () => new Date().toISOString().split('T')[0];
+const getTodayDate = () => localDay();
 
 export const useStatsStore = create<StatsState>()(
     persist(
         (set, get) => ({
+            activeDays: {}, countedPages: {},
+            recordActivity: (at = Date.now()) => {
+                const day = localDay(new Date(at));
+                if (day > localDay() || !Number.isFinite(at)) return;
+                set(s => s.activeDays[day] ? s : ({ activeDays: {...s.activeDays, [day]: true} }));
+                get().checkAndUpdateStreak();
+            },
+            restoreActivityDays: dates => {
+                set(s => ({ activeDays: {...s.activeDays, ...Object.fromEntries(dates.filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d) && d <= localDay()).map(d => [d, true]))} }));
+                get().checkAndUpdateStreak();
+            },
+            recordQualifiedPage: (page, at = Date.now()) => {
+                if (!Number.isInteger(page) || page < 1 || page > 604) return;
+                const day = localDay(new Date(at));
+                if (day !== localDay() || get().countedPages[day]?.includes(page)) return;
+                set(s => ({ countedPages: {[day]: [...(s.countedPages[day] || []), page]} }));
+                get().recordPageRead();
+            },
             // Initial state
             readingStreak: 0,
             lastReadDate: null,
@@ -76,34 +102,24 @@ export const useStatsStore = create<StatsState>()(
                     activityHistory: newHistory,
                 });
 
-                // Update streak
-                get().checkAndUpdateStreak();
+                get().recordActivity();
             },
 
             setDailyGoal: (dailyGoalPages) => set({ dailyGoalPages }),
 
             checkAndUpdateStreak: () => {
-                const { lastReadDate, readingStreak, todayPagesRead, dailyGoalPages } = get();
-                const today = getTodayDate();
-                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
-                if (lastReadDate === today && todayPagesRead >= dailyGoalPages) {
-                    // Goal met today - ensure streak is counting
-                    if (readingStreak === 0) {
-                        set({ readingStreak: 1 });
-                    }
-                } else if (lastReadDate === yesterday) {
-                    // Read yesterday, streak continues
-                    // Will be incremented when goal is met today
-                } else if (lastReadDate !== today && lastReadDate !== yesterday) {
-                    // Streak broken
-                    set({ readingStreak: 0, todayPagesRead: 0 });
-                }
+                const state = get(), today = getTodayDate();
+                const days = new Set([...Object.keys(state.activeDays), ...Object.entries(state.activityHistory).filter(([,n]) => n > 0).map(([day]) => day)]);
+                const streak = regularityStreak(days);
+                const pages = state.activityHistory[today] || 0;
+                if (streak !== state.readingStreak || pages !== state.todayPagesRead) set({ readingStreak: streak, todayPagesRead: pages });
             },
         }),
         {
             name: 'quran-coach-stats',
             partialize: (state) => ({
+                activeDays: state.activeDays,
+                countedPages: state.countedPages,
                 readingStreak: state.readingStreak,
                 lastReadDate: state.lastReadDate,
                 totalPagesRead: state.totalPagesRead,

@@ -34,7 +34,7 @@
     box-shadow: 0 8px 24px #00000012;
     gap: 14px;
 }
-.home-page .home-continue__icon { flex-shrink: 0; background: #deca9318; color: var(--home-gold); border-radius: 13px; width: 42px; height: 46px; }
+.home-page .home-continue__icon { flex-shrink: 0; background: #deca9318; color: var(--home-gold); border-radius: 13px; width: 42px; height: 46px; font-size: 24px; line-height: 1; }
 .home-page .home-continue__text { min-width: 0; text-align: left; gap: 6px; }
 .home-page .home-continue__title { color: var(--home-text); font-size: 16px; font-weight: 600; }
 .home-page .home-continue__page { color: #c5c9c9; font-size: 12px; line-height: 1.5; white-space: normal; }
@@ -59,27 +59,51 @@
 .home-page .home-seasonal__text span { color: var(--home-muted); font-size: 12px; }
 .home-page .smart-sentinel { padding: 0 16px; margin: 0 0 24px; }
 .home-page .smart-sentinel__title-row, .home-page .home-surahs__title,
-.home-page .home-dhikr__title, .home-page .home-shortcuts__title { color: #d3d9e1; font-size: 11px; font-weight: 600; letter-spacing: 1.3px; }
+.home-page .home-dhikr__title, .home-page .home-shortcuts__title { color: var(--home-text); font-size: 11px; font-weight: 600; letter-spacing: 1.3px; }
 .home-page .smart-sentinel__count { background: #ffffff08; color: var(--home-muted); font-size: 11px; padding: 4px 8px; }
 .home-page .smart-sentinel__carousel { padding: 2px 0 12px; gap: 12px; }
-.home-page .smart-card { min-width: min(290px, 88%); width: min(290px, 88%); padding: 20px; border-radius: 20px; background: linear-gradient(140deg, #24313b, #19232f)!important; border: 1px solid #deca9322; box-shadow: none; gap: 18px; }
+.home-page .smart-card { min-width: min(290px, 88%); width: min(290px, 88%); padding: 20px; border-radius: 20px; background: var(--home-feature-surface, linear-gradient(140deg, #24313b, #19232f))!important; border: 1px solid #deca9322; box-shadow: none; gap: 18px; }
 .home-page .smart-card::after { display: none; }
 .home-page .smart-card__badge { background: transparent; border: 0; border-radius: 0; padding: 0; color: var(--home-gold); backdrop-filter: none; }
 .home-page .smart-card__arabic { color: var(--home-text); font-size: 23px; line-height: 1.9; text-shadow: none; }
-.home-page .smart-card__french { color: #d0d7df; font-size: 13px; line-height: 1.7; }
+.home-page .smart-card__french { color: var(--home-text); font-size: 13px; line-height: 1.7; }
 .home-page .smart-card__phonetic { color: var(--home-muted); }
 .home-page .smart-card__fav, .home-page .smart-card__action { min-height: 40px; background: #ffffff09; color: var(--home-gold); }
-.home-page .hadith-card { margin: 0 16px 30px; padding: 24px 22px; background: linear-gradient(160deg, #202a39, #18212e); border: 1px solid #deca932b; border-radius: 22px; box-shadow: none; }
+.home-page .hadith-card { margin: 0 16px 30px; padding: 24px 22px; background: var(--home-feature-surface, linear-gradient(160deg, #202a39, #18212e)); border: 1px solid #deca932b; border-radius: 22px; box-shadow: none; height: auto; max-height: none; overflow: visible; min-width: 0; }
 .home-page .hadith-card::before { background: linear-gradient(90deg, transparent, #deca9380, transparent); height: 1px; }
 .home-page .hadith-card::after { opacity: .05; }
 .home-page .hadith-card__label { color: var(--home-gold); letter-spacing: 1.5px; font-size: 10px; }
-.home-page .hadith-card__arabic { color: var(--home-text); font-size: 27px; line-height: 2; padding: 16px 0; margin: 8px 0 16px; text-shadow: none; }
-.home-page .hadith-card__french { color: #d7dce4; font-size: 14px; line-height: 1.85; font-style: normal; }
+.home-page .hadith-card__arabic { color: var(--home-text); font-size: 27px; line-height: 2; padding: 16px 0; margin: 8px 0 16px; text-shadow: none; height: auto; max-height: none; overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.home-page .hadith-card__french { color: var(--home-text); font-size: 14px; line-height: 1.85; font-style: normal; height: auto; max-height: none; overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.home-page .hadith-card .religious-reference { margin: 0 0 16px; justify-content: center; }
 .home-page .hadith-card__meta { flex-wrap: wrap; gap: 16px; border-top: 1px solid var(--home-line); padding-top: 18px; margin-top: 20px; }
 .home-page .hadith-card__source { color: var(--home-gold); font-size: 12px; }
 .home-page .hadith-card__narrator { color: var(--home-muted); font-size: 11px; margin-top: 4px; }
 .home-page .hadith-card__actions { gap: 8px; }
-.home-page .hadith-card__action-btn { min-height: 40px; padding: 8px 12px; background: #ffffff06; border-color: var(--home-line); color: #d4dbe3; font-size: 12px; }
+.home-page .hadith-card__action-btn { min-height: 44px; padding: 8px 12px; background: #ffffff06; border-color: var(--home-line); color: var(--home-text); font-size: 12px; }
+.home-page .hadith-card__disclosure { margin-top: 10px; }
+.home-page .hadith-card__summary { display: grid; gap: 9px; padding: 12px 0 14px; cursor: pointer; list-style: none; }
+.home-page .hadith-card__summary::-webkit-details-marker { display: none; }
+.home-page .hadith-card__preview-ar { display: -webkit-box; overflow: hidden; direction: rtl; color: var(--home-text); font-family: var(--font-arabic, serif); font-size: 22px; line-height: 1.8; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.home-page .hadith-card__preview-fr { display: -webkit-box; overflow: hidden; color: var(--home-muted); font-size: 13px; line-height: 1.65; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.home-page .hadith-card__read-more { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--home-gold); font-size: 12px; font-weight: 600; }
+.home-page .hadith-card__read-more--collapse { display: none; }
+.home-page .hadith-card__disclosure[open] .hadith-card__preview-ar,
+.home-page .hadith-card__disclosure[open] .hadith-card__preview-fr,
+.home-page .hadith-card__disclosure[open] .hadith-card__read-more--open { display: none; }
+.home-page .hadith-card__disclosure[open] .hadith-card__read-more--collapse { display: flex; }
+.home-page .hadith-card__summary:focus-visible { outline: 2px solid var(--home-gold); outline-offset: 4px; border-radius: 8px; }
+.home-page .hadith-card__full-text { border-top: 1px solid var(--home-line); padding-top: 8px; }
+.home-page .hadith-card__phonetic { margin: 0 0 16px; padding: 13px 14px; border-inline-start: 2px solid var(--home-gold); border-radius: 0 12px 12px 0; background: #ffffff05; }
+.home-page .hadith-card__text-label { color: var(--home-gold); font-size: 10px; font-weight: 600; letter-spacing: .7px; text-transform: uppercase; }
+.home-page .hadith-card__phonetic p { margin: 6px 0 3px; color: var(--home-text); font-size: 15px; line-height: 1.75; overflow-wrap: anywhere; }
+.home-page .hadith-card__phonetic small { color: var(--home-muted); font-size: 10px; line-height: 1.5; }
+.home-page .hadith-card__meta { margin-top: 12px; }
+.home-page .hadith-card__actions > button:first-child { margin-right: 0; }
+.home-page .hadith-card__read-comfortably { margin: 12px 0 0; }
+.home-hadith-reading-phonetic { margin: 10px 0 18px; padding: 12px 14px; border-inline-start: 2px solid #c9b477; background: #ffffff05; border-radius: 0 12px 12px 0; }
+.home-hadith-reading-phonetic strong { color: #c9b477; font-size: 11px; letter-spacing: .6px; text-transform: uppercase; }
+.home-hadith-reading-phonetic p { margin: 6px 0 0; font-size: 15px; line-height: 1.8; }
 .home-page .home-surahs { margin-bottom: 30px; }
 .home-page .home-surahs__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-right: 20px; }
 .home-scroll-hint { display: flex; align-items: center; color: var(--home-muted); font-size: 11px; white-space: nowrap; }
@@ -117,7 +141,7 @@
 .home-page .home-shortcuts__title { margin-bottom: 14px; }
 .home-page .home-shortcuts__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .home-page .home-shortcut { display: grid; grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; align-items: center; column-gap: 10px; row-gap: 4px; min-height: 88px; padding: 14px 12px; border-radius: 16px; background: var(--home-surface); border: 1px solid var(--home-line); text-align: left; }
-.home-shortcut__icon { grid-row: 1 / 3; color: var(--home-gold); display: grid; place-items: center; }
+.home-shortcut__icon { grid-row: 1 / 3; display: grid; place-items: center; font-size: 26px; line-height: 1; }
 .home-page .home-shortcut__label { font-size: 13px; font-weight: 500; color: var(--home-text); }
 .home-page .home-shortcut__desc { font-size: 11px; color: var(--home-muted); }
 .home-page button:focus-visible, .home-page a:focus-visible, .home-page [role=button]:focus-visible { outline: 2px solid var(--home-gold); outline-offset: 3px; }
@@ -145,3 +169,7 @@
 .home-page .smart-card__fav.active { background: #deca9322; color: #f4d7a5; }
 .home-page .home-continue-row, .home-page .home-surahs, .home-page .home-shortcuts { animation: none; }
 .home-page .dhikr-card--add { opacity: 1; }
+
+.home-page .home-prayer { flex-wrap: wrap; gap: 10px; }
+.home-prayer__source { flex: 0 0 100%; display: grid; gap: 4px; padding-top: 10px; border-top: 1px solid var(--home-border); color: var(--home-muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.home-prayer__source span:last-child { color: var(--home-text); }

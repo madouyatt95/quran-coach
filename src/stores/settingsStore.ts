@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { applyAppearance, migrateAppearance } from '../lib/appearance';
 import type { Settings, Theme, ArabicFontSize, ArabicFontFamily, ViewMode } from '../types';
+
+const availableViewMode = (mode: ViewMode): ViewMode =>
+    mode === 'tajweed' || mode === 'madinah' ? 'tajweed-interactive' : mode;
 
 // Extended list of reciters with metadata
 // quranComId is used for word timing API (chapter_recitations endpoint)
@@ -45,10 +49,10 @@ export const useSettingsStore = create<SettingsState>()(
             // Default settings
             textImmersive: false,
             setTextImmersive: (textImmersive) => set({textImmersive}),
-            theme: 'dark',
+            theme: 'violet',
             arabicFontSize: 'xl',
             arabicFontFamily: 'scheherazade',
-            viewMode: 'mushaf',
+            viewMode: 'tajweed-interactive',
             lineSpacing: 2.4,
             showTranslation: true,
             showTransliteration: true,
@@ -63,7 +67,7 @@ export const useSettingsStore = create<SettingsState>()(
 
             // Actions
             setTheme: (theme) => {
-                document.documentElement.setAttribute('data-theme', theme);
+                applyAppearance(theme);
                 set({ theme });
             },
             setArabicFontSize: (arabicFontSize) => set({ arabicFontSize }),
@@ -74,7 +78,7 @@ export const useSettingsStore = create<SettingsState>()(
                 document.documentElement.style.setProperty('--font-arabic', fontValue);
                 set({ arabicFontFamily });
             },
-            setViewMode: (viewMode) => set({ viewMode }),
+            setViewMode: (viewMode) => set({ viewMode: availableViewMode(viewMode) }),
             setLineSpacing: (lineSpacing) => set({ lineSpacing }),
             toggleTranslation: () => set((state) => ({ showTranslation: !state.showTranslation })),
             toggleTransliteration: () => set((state) => ({ showTransliteration: !state.showTransliteration })),
@@ -96,20 +100,21 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'quran-coach-settings',
-            version: 7, // Bump to apply new defaults
+            version: 9,
             migrate: (persistedState: any, version: number) => {
+                persistedState = { ...persistedState, viewMode: availableViewMode(persistedState.viewMode ?? 'tajweed-interactive') };
                 const originalLayers = ['madd', 'ghunnah', 'qalqalah', 'idgham', 'ikhfa', 'iqlab', 'izhar'];
 
                 if (version < 7) {
-                    return {
+                    return migrateAppearance({
                         ...persistedState,
                         tajwidLayers: originalLayers,
                         arabicFontSize: 'xl',
                         showTransliteration: true,
                         arabicFontFamily: 'scheherazade',
-                    };
+                    }, version);
                 }
-                return persistedState;
+                return migrateAppearance(persistedState, version);
             },
         }
     )

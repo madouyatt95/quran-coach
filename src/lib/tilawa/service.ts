@@ -1,13 +1,18 @@
 import type { RecognitionCallbacks } from "../speechRecognition";
+import type { Ayah } from "../../types";
 import type { Passage } from "../learning";
 import { recitationWords } from "../recitationMatching";
 import { cachedTilawaFile, tilawaPackStatus } from "./assets";
 import { corpusWordOffset, issueLabels, recognizedIndices } from "./feedback";
 import type { EngineCommand, EngineResult } from "./protocol";
 import { SearchEndpoint } from "./searchEndpoint";
+import { FreeRecitationGate, type FreeRecitationCallbacks } from "./freeRecitation";
+import { validVoicePassage } from '../voiceHistory';
 export interface SearchCallbacks {
   onVerse: (p: Passage) => void;
   onStatus: (message: string) => void;
+  onLevel?: (level: number) => void;
+  onCandidates?: (passages: Passage[]) => void;
   onError: (message: string) => void;
   onEnd: () => void;
 }
@@ -18,7 +23,11 @@ export interface TrackingPosition extends Passage {
 export interface TrackingCallbacks extends SearchCallbacks {
   onProgress?: (position: TrackingPosition) => void;
 }
+export interface FreeCallbacks extends SearchCallbacks, FreeRecitationCallbacks {
+  onLevel?: (level: number) => void;
+}
 export class TilawaService {
+  private freeGate: FreeRecitationGate | null = null;
   private flushDone: (() => void) | null = null;
   private finishing = false;
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -100,6 +109,7 @@ export class TilawaService {
   }
   async stop() {
     ++this.generation;
+    this.freeGate = null;
     if(this.searchTimer) clearTimeout(this.searchTimer);
     this.searchTimer = null;
     this.finishing = false;
@@ -149,11 +159,13 @@ export class TilawaService {
     }
   }
   private async begin(
-    expected: Passage | undefined,
+    expected: (Passage & { ayahEnd?: number }) | undefined,
     makeConsumer: (init: EngineResult) => (r: EngineResult) => void,
     onError: (error: string) => void,
     onEnd: () => void,
     onAutoFinish?: () => void,
+    continuous = false,
+    onLevel?: (level: number) => void,
   ): Promise<boolean> {
     const releasing = this.stop();
     const generation = this.generation;
@@ -189,7 +201,7 @@ export class TilawaService {
       const context = new AudioContext();
       this.context = context;
       await context.resume();
-      const init = await this.command({ type: "begin", expected });
+      const init = await this.command({ type: "begin", expected, continuous });
       if (!current()) return false;
       this.consume = makeConsumer(init);
       this.onEnd = onEnd;
@@ -232,6 +244,11 @@ export class TilawaService {
           return;
         }
         if (!current()) return;
+        if (onLevel) {
+          let energy = 0;
+          for (const sample of data) energy += sample * sample;
+          onLevel(Math.min(1, Math.sqrt(energy / Math.max(1, data.length)) * 12));
+        }
         // Bound memory if inference cannot keep up; do not silently drop recitation audio.
         if (this.inFlight >= 8 || ++frames > 625) {
           onError(
@@ -351,6 +368,71 @@ export class TilawaService {
       callbacks.onEnd,
     );
   }
+  startPassage(ayahs: Ayah[], callbacks: RecognitionCallbacks, startIndex = 0): Promise<boolean> {
+    const first = ayahs[0];
+    if (!first || ayahs.some((a,i)=>a.surah !== first.surah || a.numberInSurah !== first.numberInSurah+i)) {
+      callbacks.onError("Choisissez un passage consécutif dans une sourate.");
+      return Promise.resolve(false);
+    }
+    const words = ayahs.flatMap(a=>recitationWords(a.text));
+    const known = new Map<number, boolean>();
+    let cursor = startIndex;
+    return this.begin({surah:first.surah, ayah:first.numberInSurah, ayahEnd:ayahs.at(-1)!.numberInSurah}, init => {
+      let base = 0;
+      const mapping = new Map<number, {base:number; offset:number; length:number}>();
+      for (const a of ayahs) {
+        const tokens = recitationWords(a.text);
+        const offset = corpusWordOffset(tokens, init.passageWords?.[a.numberInSurah] || [], a.surah, a.numberInSurah);
+        if (offset === null) throw new Error("Le découpage de ce passage diffère du corpus vocal. Utilisez le moteur standard.");
+        mapping.set(a.numberInSurah, {base, offset, length:tokens.length}); base += tokens.length;
+      }
+      callbacks.onCurrentWord(startIndex);
+      return result => {
+        for (const v of result.verdicts) {
+          const m = mapping.get(v.ayah);
+          if (!m || v.surah !== first.surah) continue;
+          const index = m.base + m.offset + v.word;
+          if (index < startIndex || index >= m.base + m.length) continue;
+          if (v.state === 'ok') {
+            if (known.get(index) !== true) callbacks.onWordMatch(index, true, words[index]);
+            known.set(index,true);
+          } else if (known.get(index) === true) {
+            known.delete(index); callbacks.onWordReset?.(index);
+          }
+        }
+        for (const e of result.events) {
+          if (e.type === 'correction' && e.state.phase === 'error' && e.state.issue) {
+            const issue = e.state.issue, m = mapping.get(issue.ayah);
+            if (!m || issue.surah !== first.surah) continue;
+            const index = m.base + m.offset + issue.word;
+            if (index >= startIndex && index < m.base + m.length) {
+              const message = issueLabels[issue.kind] || 'Passage à vérifier';
+              callbacks.onUncertain?.(index,message);
+              known.set(index,false);
+              callbacks.onInterimResult(message);
+            }
+          }
+          if (e.type === 'word_progress' && e.surah === first.surah) {
+            const m = mapping.get(e.ayah);
+            if (m) cursor = Math.max(startIndex, m.base + m.offset + e.word_index);
+          }
+        }
+        const last = words.length - 1;
+        if (known.get(last) === true) cursor = words.length;
+        callbacks.onCurrentWord(Math.min(cursor,words.length));
+      };
+    }, callbacks.onError, callbacks.onEnd, undefined, true);
+  }
+  startFreeRecitation(callbacks: FreeCallbacks) {
+    return this.begin(undefined, () => {
+      const gate = new FreeRecitationGate(callbacks);
+      this.freeGate = gate;
+      return result => gate.consume(result);
+    }, callbacks.onError, callbacks.onEnd, undefined, false, callbacks.onLevel);
+  }
+  confirmFreePassage(passage: Passage): boolean {
+    return this.freeGate?.confirm(passage) ?? false;
+  }
   startTracking(callbacks: TrackingCallbacks) {
     let previous = '';
     let hasCursor = false;
@@ -375,29 +457,69 @@ export class TilawaService {
       }
     }, callbacks.onError, callbacks.onEnd);
   }
-  startSearch(callbacks: SearchCallbacks) {
+  private searchConsumer(callbacks: SearchCallbacks, onMatch: () => void) {
     let found = false;
-    return this.begin(
-      undefined,
-      () => (result) => {
+    return (result: EngineResult) => {
         if(found) return;
         for (const event of result.events) {
           const verse = event.type === "verse_match" ? event
             : event.type === "final_sequence" ? event.verses[0] : undefined;
-          if(verse) {
+          if(verse && validVoicePassage(verse)) {
             found = true;
+            callbacks.onCandidates?.([]);
             callbacks.onVerse({surah:verse.surah,ayah:verse.ayah});
-            void this.stop();
-            callbacks.onEnd();
+            onMatch();
             return;
           }
-          if (event.type === "verse_candidate" && event.candidates.length)
+          if (event.type === "verse_candidate" && event.candidates.length) {
+            const seen = new Set<string>();
+            callbacks.onCandidates?.(event.candidates.filter(p => {
+              const key = `${p.surah}:${p.ayah}`;
+              if (!validVoicePassage(p) || seen.has(key)) return false;
+              seen.add(key); return true;
+            }).slice(0, 3).map(p => ({surah:p.surah, ayah:p.ayah})));
             callbacks.onStatus("Je recherche votre passage…");
+          }
         }
-      },
+    };
+  }
+  /** Feed bounded local file audio sequentially: no microphone and no dropped chunks. */
+  async searchSamples(samples: Float32Array, callbacks: SearchCallbacks, onProgress: (value: number) => void) {
+    const releasing = this.stop(), generation = this.generation;
+    const current = () => generation === this.generation;
+    await releasing;
+    if (!current()) return;
+    if (this.idleTimer) clearTimeout(this.idleTimer);
+    let matched = false;
+    const consume = this.searchConsumer(callbacks, () => { matched = true; });
+    try {
+      if (samples.length < 8000 || samples.length > 16000 * 30 || samples.some(n => !Number.isFinite(n))) throw new Error('Choisissez un extrait de 1 à 30 secondes.');
+      if (!(await tilawaPackStatus()).ready) throw new Error('Téléchargez le pack vocal avant de démarrer.');
+      if (!current()) return;
+      await this.command({type:'begin'});
+      if (!current()) return;
+      for (let offset = 0; offset < samples.length && !matched; offset += 7680) {
+        const result = await this.command({type:'audio', samples:samples.slice(offset, offset + 7680)});
+        if (!current()) return;
+        consume(result);
+        if (!current()) return;
+        onProgress(Math.min(100, Math.round((offset + 7680) / samples.length * 100)));
+      }
+      if (!matched) { const result = await this.command({type:'finish'}); if (!current()) return; consume(result); }
+      if (current()) { onProgress(100); callbacks.onEnd(); }
+    } catch (error) {
+      if (current()) { callbacks.onError(error instanceof Error ? error.message : 'Analyse indisponible.'); callbacks.onEnd(); }
+    } finally { if (current()) await this.stop(); }
+  }
+  startSearch(callbacks: SearchCallbacks) {
+    return this.begin(
+      undefined,
+      () => this.searchConsumer(callbacks, () => { void this.stop(); callbacks.onEnd(); }),
       callbacks.onError,
       callbacks.onEnd,
       () => callbacks.onStatus("Recherche du verset…"),
+      false,
+      callbacks.onLevel,
     );
   }
 }

@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
+import { createHandlerBoundToURL, matchPrecache, precacheAndRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
 import { createPartialResponse } from 'workbox-range-requests';
@@ -9,24 +9,31 @@ import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 declare let self: ServiceWorkerGlobalScope;
 
 // ─── Workbox Precaching ─────────────────────────────
+// iOS media requests byte ranges even for locally cached MP3 files.
+registerRoute(({ url }) => url.origin === self.location.origin && url.pathname.startsWith('/audio/adhan/') && url.pathname.endsWith('.mp3'), async ({request}) => {
+    const cached = await matchPrecache(request.url);
+    if (!cached) return fetch(request);
+    return request.headers.has('range') ? createPartialResponse(request, cached) : cached;
+});
 precacheAndRoute(self.__WB_MANIFEST);
 registerRoute(new NavigationRoute(createHandlerBoundToURL('/index.html'), { denylist: [/^\/api\//, /^\/tilawa\//] }));
 
 // Optional packs: only explicitly downloaded files are stored in these caches.
 registerRoute(({url}) => url.origin === self.location.origin && url.pathname.startsWith('/tilawa/v1/'), async ({request}) => (await (await caches.open('quran-coach-tilawa-v1')).match(request)) || fetch(request));
 registerRoute(({url}) => url.origin === 'https://api.alquran.cloud', async ({request,event}) => {
-    const packed = await (await caches.open('quran-coach-content-v1')).match(request);
+    const packed = await (await caches.open('quran-coach-journeys-v1')).match(request) || await (await caches.open('quran-coach-content-v1')).match(request);
     if (packed) return packed;
     return new CacheFirst({cacheName:'quran-api-cache',plugins:[new ExpirationPlugin({maxEntries:500,maxAgeSeconds:365*24*60*60}),new CacheableResponsePlugin({statuses:[200]})]}).handle({request,event});
 });
+registerRoute(({url}) => url.origin === 'https://quranenc.com', async ({request}) => (await (await caches.open('quran-coach-journeys-v1')).match(request)) || fetch(request));
 registerRoute(({url}) => /\.(mp3|wav)$/i.test(url.pathname), async ({request}) => {
-    const packed = await (await caches.open('quran-coach-audio-v1')).match(request.url);
+    const packed = await (await caches.open('quran-coach-journeys-v1')).match(request.url) || await (await caches.open('quran-coach-audio-v1')).match(request.url);
     if (!packed) return fetch(request);
     return request.headers.has('range') ? createPartialResponse(request, packed) : packed;
 });
 
 registerRoute(
-    ({ url }) => url.origin === 'https://api.quran.com',
+    ({ url }) => url.origin === 'https://api.quran.com' && url.searchParams.get('mushaf') !== '19',
     new CacheFirst({
         cacheName: 'qurancom-api-cache',
         plugins: [

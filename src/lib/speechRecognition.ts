@@ -4,6 +4,7 @@ import { alignRecitation, recitationWords, type RecognizedWord } from './recitat
 
 export interface RecognitionCallbacks {
     onWordMatch: (wordIndex: number, isCorrect: boolean, spokenWord?: string) => void;
+    onUncertain?: (wordIndex: number, message: string) => void;
     onWordReset?: (wordIndex: number) => void;
     onInterimResult: (text: string) => void;
     onCurrentWord: (wordIndex: number) => void;

@@ -1,3 +1,4 @@
+import { FindButton } from '../Navigation/FindButton';
 import { useKhatmReading } from './hooks/useKhatmReading';
 import { ReadingBookmarkControl } from './ReadingBookmarkControl';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -153,7 +154,7 @@ export function TajweedImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
 
     // Switch view mode
     const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah';
+        const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah' | 'tajweed-interactive';
         setViewMode(mode);
         if (mode === 'mushaf') {
             goToPage(page);
@@ -177,6 +178,7 @@ export function TajweedImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
                 </div>
 
                 <div className="tajweed-header__center">
+                    <FindButton className="reader-find-button" />
                     <KhatmTracker />
                     <KhatmPageBadge currentPage={page} pageOnly disabled={loadedPage !== page || imgLoading || imgError}/>
                     <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
@@ -195,8 +197,7 @@ export function TajweedImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
                             }}
                         >
                             <option value="mushaf">{t('settings.textMode', 'Texte Interactif')}</option>
-                            <option value="tajweed">Image (Tajweed)</option>
-                            <option value="madinah">Madinah (Vectoriel)</option>
+                            <option value="tajweed-interactive">Mushaf Tajwid interactif</option>
                         </select>
                     </div>
                 </div>

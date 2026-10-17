@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import './CoachModeDialog.css';
 import { Link } from 'react-router-dom';
 import { useLearningStore } from '../../stores/learningStore';
 import { Volume2, X, GraduationCap, Users, Link2, Sparkles, Square, Loader2, Mic, RotateCcw, BookmarkPlus } from 'lucide-react';
@@ -8,6 +10,8 @@ import { useDeepCoach } from '../../hooks/useDeepCoach';
 import { ExamResultOverlay } from './ExamResultOverlay';
 
 interface CoachOverlayProps {
+    compact?: boolean;
+    onModeSelect?: () => void;
     coach: CoachState;
     audioPlaying: boolean;
     stopAudio: () => void;
@@ -38,6 +42,8 @@ const COACH_MODES = [
 
 export function CoachOverlay({
     coach,
+    compact = false,
+    onModeSelect,
     audioPlaying,
     expectedText,
     stopAudio,
@@ -63,6 +69,18 @@ export function CoachOverlay({
     } = coach;
 
     const [isCenterOpen, setIsCenterOpen] = useState(false);
+    const centerDialog = useRef<HTMLDialogElement>(null);
+    useEffect(() => {
+        if (!isCenterOpen) return;
+        const element = centerDialog.current;
+        const previousOverflow = document.body.style.overflow;
+        element?.showModal();
+        document.body.style.overflow = 'hidden';
+        return () => {
+            element?.close();
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [isCenterOpen]);
     const { engine, setEngine } = useLearningStore();
     const [reviewAddedFor, setReviewAddedFor] = useState<string | null>(null);
     const openSummary = () => {
@@ -135,24 +153,23 @@ export function CoachOverlay({
     );
 
     // Coach Center modal content (shared)
-    const coachCenterModal = isCenterOpen ? (
-        <>
-            <div className="mih-sheet-overlay" onClick={() => setIsCenterOpen(false)} />
-            <div className="mih-coach-center">
+    const coachCenterModal = isCenterOpen ? createPortal(
+        <dialog ref={centerDialog} className="coach-mode-dialog" aria-labelledby="coach-mode-title"
+            onCancel={event => { event.preventDefault(); setIsCenterOpen(false); }}
+            onClick={event => { if (event.target === event.currentTarget) setIsCenterOpen(false); }}>
+            <div className="coach-mode-dialog__panel">
                 <div className="mih-coach-center__handle" />
                 <div className="mih-coach-center__header">
-                    <span className="mih-coach-center__title">
+                    <span id="coach-mode-title" className="mih-coach-center__title">
                         <GraduationCap size={20} />
-                        Mode Coach
+                        Modes de récitation
                     </span>
-                    <button className="mih-sheet__close" onClick={() => setIsCenterOpen(false)} aria-label="Fermer le choix du mode">
+                    <button className="mih-sheet__close" autoFocus onClick={() => setIsCenterOpen(false)} aria-label="Fermer le choix du mode">
                         <X size={20} />
                     </button>
                 </div>
 
                 <div className="mih-coach-center__content">
-                    <div className="learning-actions"><button className="learning-btn" aria-pressed={engine === 'standard'} onClick={() => {void coach.stopCoachListening();setEngine('standard');}}>Moteur standard</button><button className="learning-btn" aria-pressed={engine === 'tilawa'} onClick={() => {void coach.stopCoachListening();setEngine('tilawa');}}>Tilawa local</button><Link className="learning-btn" to="/storage">Télécharger le pack vocal</Link></div>
-                    <p className="coach-explanation">Le coach suit les mots reconnus. Ses signalements sont à vérifier ; ils ne constituent pas une note de tajwid. Selon votre appareil, une connexion peut être nécessaire.</p>
                     {COACH_MODES.map(group => (
                         <div key={group.category} className="mih-coach-group">
                             <h4 className="mih-coach-group-title">{group.category}</h4>
@@ -163,9 +180,11 @@ export function CoachOverlay({
                                         <button
                                             key={mode.id}
                                             className="mih-coach-card"
+                                            aria-pressed={coachMode === mode.id}
                                             onClick={() => {
                                                 stopAudio();
                                                 selectCoachMode(mode.id);
+                                                onModeSelect?.();
                                                 setIsCenterOpen(false);
                                             }}
                                         >
@@ -181,6 +200,9 @@ export function CoachOverlay({
                         </div>
                     ))}
 
+                    <details className="coach-mode-settings"><summary>Réglages vocaux · {engine === 'tilawa' ? 'Tilawa local' : 'Standard'}</summary>                    <div className="learning-actions"><button className="learning-btn" aria-pressed={engine === 'standard'} onClick={() => {void coach.stopCoachListening();setEngine('standard');}}>Moteur standard</button><button className="learning-btn" aria-pressed={engine === 'tilawa'} onClick={() => {void coach.stopCoachListening();setEngine('tilawa');}}>Tilawa local</button><Link className="learning-btn" to="/storage">Télécharger le pack vocal</Link></div>
+                    <p className="coach-explanation">Le coach suit les mots reconnus. Ses signalements sont à vérifier ; ils ne constituent pas une note de tajwid. Selon votre appareil, une connexion peut être nécessaire.</p>
+</details>
                     {/* AI-Powered Exam Mode (Temporarily Deactivated) */}
                     {/* 
                     <div className="mih-coach-group">
@@ -204,7 +226,7 @@ export function CoachOverlay({
                     */}
                 </div>
             </div>
-        </>
+        </dialog>, document.body
     ) : null;
 
     // If no mode is selected, show the floating FAB
@@ -212,13 +234,13 @@ export function CoachOverlay({
         return (
             <>
                 <button
-                    className="mih-coach-aura"
+                    className={compact ? "hifdh-mode-button" : "mih-coach-aura"}
                     onClick={() => setIsCenterOpen(true)}
                     title="Ouvrir le Centre de Coaching"
                     aria-label="Ouvrir le Centre de Coaching"
                 >
                     <GraduationCap size={24} />
-                    <span className="mih-coach-aura-glow"></span>
+                    {compact ? <span>Modes</span> : <span className="mih-coach-aura-glow"></span>}
                 </button>
 
                 {coachCenterModal}
@@ -230,9 +252,14 @@ export function CoachOverlay({
     // Active session UI (Coach is running)
     const activeIcon = COACH_MODES.flatMap(g => g.modes).find(m => m.id === coachMode)?.icon || GraduationCap;
     const ActiveIcon = activeIcon;
+    const SessionContainer = compact ? 'details' : 'div';
 
     return (
         <>
+            {compact && <button className="hifdh-mode-button" aria-label="Ouvrir le Centre de Coaching" onClick={() => setIsCenterOpen(true)}><GraduationCap size={18}/>Modes</button>}
+            {coachCenterModal}
+            <SessionContainer className={compact ? 'hifdh-coach-details' : undefined}>
+            {compact && <summary><ActiveIcon size={15}/><span>{isListening ? 'Écoute en cours' : coach.isStarting ? 'Préparation du micro' : 'Suivi vocal'}{coachTotalProcessed > 0 ? ` · ${coachTotalProcessed} mots` : ''}</span></summary>}
             {/* Active Session Floating Pill */}
             <div className={`mih-coach-session ${audioPlaying ? 'mih-coach-session--reciter' : ''}`}>
                 <div className="mih-coach-session__header">
@@ -293,6 +320,7 @@ export function CoachOverlay({
                 )}
             </div>
 
+            </SessionContainer>
             {/* ===== Coach Interim Text ===== */}
             {coachInterimText && (
                 <div className="mih-coach-interim" dir="rtl">{coachInterimText}</div>

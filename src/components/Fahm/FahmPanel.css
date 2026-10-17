@@ -411,3 +411,7 @@
 [data-theme="light"] .fahm-pearl__hadith-fr {
     color: rgba(0, 0, 0, 0.6);
 }
+
+/* Native modal keeps focus inside the sheet and scrolls on touch devices. */
+dialog.fahm-panel{top:auto;margin:0 auto;width:min(100%,780px);border:1px solid rgba(201,168,76,.2);color:var(--color-text-primary);background:var(--color-bg-secondary,#1b233c);touch-action:pan-y;}dialog.fahm-panel::backdrop{background:rgba(10,8,20,.65)}
+.fahm-panel .struct-word{font:inherit;color:inherit;border:1px solid rgba(201,168,76,.15);background:transparent;padding:6px;cursor:pointer}.fahm-panel .fahm-word-inline{padding:16px;border:1px solid rgba(201,168,76,.3);border-radius:12px;margin:12px 0}.fahm-panel .fahm-word-inline button{padding:12px;color:var(--gold);background:transparent;border:1px solid var(--gold);border-radius:10px}.fahm-panel a{color:var(--gold)}

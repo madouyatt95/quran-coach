@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { X, Download, Monitor } from 'lucide-react';
 import './InstallPrompt.css';
 
@@ -17,8 +18,7 @@ function detectPlatform(): Platform {
 }
 
 function isStandalone(): boolean {
-    const isCapacitor = typeof window !== 'undefined' && (window as any).Capacitor?.isNative;
-    if (isCapacitor) return true; // Never show Install Prompt inside a Capacitor Native App
+    if (Capacitor.isNativePlatform()) return true;
 
     return window.matchMedia('(display-mode: standalone)').matches
         || (navigator as any).standalone === true;

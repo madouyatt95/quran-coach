@@ -16,45 +16,25 @@ function rankingScore(entry: any): number {
 }
 
 export function LeaderboardView() {
-    const { setView, player, totalCorrect, sprintBest, totalPlayed, totalWins, submitToLeaderboard, themeStats, totalXP } = useQuizStore();
+    const { setView, player, totalCorrect, sprintBest, totalPlayed, totalWins, themeStats, totalXP } = useQuizStore();
     const [entries, setEntries] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [tab, setTab] = useState<'alltime' | 'weekly'>('alltime');
+    const [error,setError]=useState(false);
+    const weeklyXP=useQuizStore(s=>s.weeklyXP);
+    const weekStart=new Date();weekStart.setDate(weekStart.getDate()-(weekStart.getDay()+6)%7);weekStart.setHours(0,0,0,0);
+    const weekXP=Object.entries(weeklyXP).filter(([day])=>new Date(day+'T12:00:00').getTime()>=weekStart.getTime()).reduce((sum,[,xp])=>sum+xp,0);
     const [themeFilter, setThemeFilter] = useState<QuizThemeId | 'all'>('all');
 
-    // Get Monday of current week (ISO week)
-    const getWeekStart = () => {
-        const now = new Date();
-        const day = now.getDay();
-        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-        const monday = new Date(now.setDate(diff));
-        monday.setHours(0, 0, 0, 0);
-        return monday.toISOString();
-    };
-
-    useEffect(() => {
-        setLoading(true);
-        submitToLeaderboard().then(async () => {
-            try {
-                const { supabase } = await import('../../lib/supabase');
-                let query = supabase
-                    .from('quiz_leaderboard')
-                    .select('*')
-                    .order('total_score', { ascending: false }) // Let Supabase do the heavy lifting for the Top 100
-                    .limit(100);
-
-                if (tab === 'weekly') {
-                    query = query.gte('updated_at', getWeekStart());
-                }
-
-                const { data } = await query;
-                setEntries(data || []);
-            } catch {
-                // Table may not exist yet
-            }
-            setLoading(false);
-        });
-    }, [submitToLeaderboard, tab]);
+    useEffect(()=>{
+        let cancelled=false;
+        setLoading(true);setError(false);
+        void import('../../lib/supabase').then(async({supabase})=>{
+            const {data,error}=await supabase.from('quiz_leaderboard').select('*').order('total_score',{ascending:false}).limit(100);
+            if(cancelled)return;
+            if(error)setError(true);else setEntries(data||[]);
+        }).catch(()=>{if(!cancelled)setError(true);}).finally(()=>{if(!cancelled)setLoading(false);});
+        return()=>{cancelled=true;};
+    },[]);
 
     // Sort by ranking score client-side (to handle ties or slightly adjust downloaded top 100)
     const sortedEntries = useMemo(() =>
@@ -82,34 +62,8 @@ export function LeaderboardView() {
                 </h1>
             </div>
 
-            {/* Time Tabs */}
-            <div style={{
-                display: 'flex', gap: 8, marginBottom: 8, padding: '0 4px',
-            }}>
-                <button
-                    onClick={() => setTab('alltime')}
-                    style={{
-                        flex: 1, padding: '10px 0', borderRadius: 10, border: 'none',
-                        fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                        background: tab === 'alltime' ? 'rgba(76,175,80,0.2)' : 'rgba(255,255,255,0.05)',
-                        color: tab === 'alltime' ? '#4CAF50' : 'var(--text-secondary, #aaa)',
-                    }}
-                >
-                    🏆 All-time
-                </button>
-                <button
-                    onClick={() => setTab('weekly')}
-                    style={{
-                        flex: 1, padding: '10px 0', borderRadius: 10, border: 'none',
-                        fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                        background: tab === 'weekly' ? 'rgba(33,150,243,0.2)' : 'rgba(255,255,255,0.05)',
-                        color: tab === 'weekly' ? '#2196F3' : 'var(--text-secondary, #aaa)',
-                    }}
-                >
-                    📅 Semaine
-                </button>
-            </div>
-
+            <section className="qx qx-card"><h2>Ta semaine</h2><p>{weekXP} XP gagnés cette semaine sur cet appareil.</p><p className="qx-muted">Le classement ci-dessous compare les XP cumulés de tous les joueurs.</p></section>
+            {error&&<p role="alert">Le classement ne peut pas être chargé. Réessaie dans un instant.</p>}
             {/* Theme Filter */}
             <div style={{
                 display: 'flex', gap: 6, overflowX: 'auto', padding: '4px 4px 12px',
@@ -172,9 +126,9 @@ export function LeaderboardView() {
                     <div className="quiz-spinner" />
                     <p>Chargement...</p>
                 </div>
-            ) : sortedEntries.length === 0 ? (
+            ) : error ? null : sortedEntries.length === 0 ? (
                 <div className="quiz-empty-lb">
-                    <p>🏆 {tab === 'weekly' ? 'Aucun joueur cette semaine.' : 'Aucun joueur dans le classement pour le moment.'}</p>
+                    <p>🏆 Aucun joueur dans le classement pour le moment.</p>
                     <p>Joue une partie pour apparaître !</p>
                 </div>
             ) : (

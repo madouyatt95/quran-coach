@@ -1,5 +1,6 @@
 export interface CoachAssessment {
-    state: 'correct' | 'error' | 'dismissed' | 'unread';
+    state: 'correct' | 'error' | 'dismissed' | 'unread' | 'uncertain';
+    revised?: boolean;
     expected: string;
     spoken: string;
 }

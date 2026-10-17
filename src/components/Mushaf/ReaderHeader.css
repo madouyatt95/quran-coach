@@ -1,6 +1,6 @@
-/* One viewport and safe-area rule shared by all three readers. */
+/* One viewport and safe-area rule shared by all readers. */
 .mushaf-page.mushaf-page{position:fixed;inset:0;height:100dvh;margin:0;z-index:10}
-:is(.mushaf-page,.madinah-page,.tajweed-page) > :is(.mih-header,.madinah-header,.tajweed-header){
+:is(.mushaf-page,.madinah-page,.tajweed-page,.iq-reader) > :is(.mih-header,.madinah-header,.tajweed-header){
  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 10px;
  flex-shrink:0;margin:calc(14px + env(safe-area-inset-top,0px)) 12px 10px;padding:8px 10px;
  min-height:0;border:1px solid color-mix(in srgb,var(--color-text-primary) 10%,transparent);border-radius:22px;
@@ -18,7 +18,7 @@
 .mih-header .mih-header-player{grid-column:1/-1;grid-row:3;justify-content:center;margin:0;min-width:0}
 .mih-header .mih-toolbar{position:absolute;top:100%;right:0;max-width:calc(100vw - 24px);flex-wrap:wrap}
 @media(max-width:360px){
- :is(.mushaf-page,.madinah-page,.tajweed-page) > :is(.mih-header,.madinah-header,.tajweed-header){margin-left:8px;margin-right:8px;padding:6px;column-gap:2px}
+ :is(.mushaf-page,.madinah-page,.tajweed-page,.iq-reader) > :is(.mih-header,.madinah-header,.tajweed-header){margin-left:8px;margin-right:8px;padding:6px;column-gap:2px}
  :is(.mih-header-left,.madinah-header__left,.tajweed-header__left){gap:0}
  :is(.mih-header__surah-name,.madinah-header__surah,.tajweed-header__surah){font-size:12px}
  .mih-header-right .mih-toolbar__btn{width:32px;padding:4px;margin:0!important}
@@ -26,7 +26,7 @@
 @media(prefers-reduced-motion:reduce){.live-follow-toggle{transition:none}}
 :is(.mushaf-page,.madinah-page,.tajweed-page){--bg-primary:var(--color-bg-primary);--bg-secondary:var(--color-bg-secondary);--bg-tertiary:var(--color-bg-tertiary);--border-color:var(--color-bg-tertiary)}
 @media(min-width:700px){
- :is(.mushaf-page,.madinah-page,.tajweed-page)>:is(.mih-header,.madinah-header,.tajweed-header){grid-template-columns:minmax(180px,1fr) auto minmax(180px,1fr);max-width:1100px;width:calc(100% - 40px);align-self:center}
+ :is(.mushaf-page,.madinah-page,.tajweed-page,.iq-reader)>:is(.mih-header,.madinah-header,.tajweed-header){grid-template-columns:minmax(180px,1fr) auto minmax(180px,1fr);max-width:1100px;width:calc(100% - 40px);align-self:center}
  :is(.mih-header-center,.madinah-header__center,.tajweed-header__center){grid-column:2;grid-row:1;border-top:0;padding:0}
  :is(.mih-header-right,.madinah-header__right,.tajweed-header__right){grid-column:3;justify-content:flex-end}
  .mih-header .mih-header-player{grid-column:1/-1;grid-row:2}

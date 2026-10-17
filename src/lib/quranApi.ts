@@ -256,13 +256,20 @@ export async function fetchRabbanaTimings(surah: number, ayah: number, duaText: 
     }
 }
 
-const RECITERS_OLD = {
-    'ar.alafasy': 'https://cdn.islamic.network/quran/audio/128/ar.alafasy',
-};
+export const MUSHAF_RECITERS = [
+    { id: 'ar.alafasy', name: 'Mishary Rashid Al-Afasy', audioEdition: 'ar.alafasy', bitrate: 128, quranComId: 7 },
+    { id: 'ar.abdulbasit', name: 'Abdul Basit Abdul Samad', audioEdition: 'ar.abdulbasitmurattal', bitrate: 192, quranComId: 2 },
+    { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary', audioEdition: 'ar.husary', bitrate: 128, quranComId: 6 },
+    { id: 'ar.minshawi', name: 'Mohamed Siddiq El-Minshawi', audioEdition: 'ar.minshawi', bitrate: 128, quranComId: 9 },
+] as const;
+
+export function mushafReciter(reciterId: string) {
+    return MUSHAF_RECITERS.find((item) => item.id === reciterId) ?? MUSHAF_RECITERS[0];
+}
 
 export function getAudioUrl(reciterId: string, ayahNumber: number): string {
-    const baseUrl = RECITERS_OLD[reciterId as keyof typeof RECITERS_OLD] || RECITERS_OLD['ar.alafasy'];
-    return `${baseUrl}/${ayahNumber}.mp3`;
+    const reciter = mushafReciter(reciterId);
+    return `https://cdn.islamic.network/quran/audio/${reciter.bitrate}/${reciter.audioEdition}/${ayahNumber}.mp3`;
 }
 
 // Translation editions

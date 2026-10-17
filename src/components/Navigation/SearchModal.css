@@ -4,6 +4,7 @@
     z-index: var(--z-modal);
     display: flex;
     flex-direction: column;
+    height: 100dvh;
     background: var(--color-bg-primary);
 }
 
@@ -18,8 +19,9 @@
 }
 
 .search-modal__close {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -30,6 +32,7 @@
 .search-modal__input-wrapper {
     flex: 1;
     position: relative;
+    min-width: 0;
 }
 
 .search-modal__input {
@@ -40,7 +43,7 @@
     border: none;
     border-radius: var(--radius-lg);
     color: var(--color-text-primary);
-    font-size: var(--text-ui-md);
+    font-size: max(16px, var(--text-ui-md));
 }
 
 .search-modal__input::placeholder {
@@ -61,8 +64,10 @@
 
 .search-modal__content {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: var(--space-md);
+    padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
 }
 
 .search-modal__section {

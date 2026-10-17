@@ -40,6 +40,7 @@
     "idb-keyval": "^6.2.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.562.0",
+    "maplibre-gl": "^6.13.0",
     "msedge-tts": "^2.0.4",
     "onnxruntime-web": "1.24.2",
     "react": "^19.2.0",

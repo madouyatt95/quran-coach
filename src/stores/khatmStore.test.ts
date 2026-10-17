@@ -47,10 +47,13 @@ it('uses exact pages for progress and daily targets',()=>{
 });
 
 it('automatic validation is idempotent and respects a manually unchecked page',()=>{
- const store=useKhatmStore.getState();store.validatePage(42);store.validatePage(42);
+ const store=useKhatmStore.getState();store.validatePage(42,'vertical-scroll');store.validatePage(42);
  expect(useKhatmStore.getState().validatedPages).toEqual([42]);expect(useKhatmStore.getState().dailyReadCount).toBe(1);
+ expect(useKhatmStore.getState().validationDetails[42]).toMatchObject({source:'automatic',method:'vertical-scroll'});
  store.togglePage(42);store.validatePage(42);expect(useKhatmStore.getState().validatedPages).toEqual([]);
+ expect(useKhatmStore.getState().validationDetails[42]).toBeUndefined();
  store.togglePage(42);expect(useKhatmStore.getState().validatedPages).toEqual([42]);expect(useKhatmStore.getState().autoExcludedPages).toEqual([]);
+ expect(useKhatmStore.getState().validationDetails[42].source).toBe('manual');
 });
 
 it('shows each newly validated page even around eight percent',()=>{

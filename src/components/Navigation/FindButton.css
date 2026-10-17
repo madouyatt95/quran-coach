@@ -1,0 +1,37 @@
+.find-button{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:44px;min-height:44px;border-radius:12px;color:var(--color-accent);background:color-mix(in srgb,var(--color-accent) 9%,var(--color-bg-secondary));text-decoration:none;border:1px solid color-mix(in srgb,var(--color-accent) 20%,transparent)}
+.find-button:hover{background:color-mix(in srgb,var(--color-accent) 17%,var(--color-bg-secondary))}
+.find-button:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px}
+.find-button--expanded{width:100%;justify-content:flex-start;gap:12px;padding:10px 14px;margin-bottom:12px;box-sizing:border-box}
+.find-button--expanded span{display:grid;gap:3px}.find-button--expanded small{color:var(--color-text-secondary);font-size:12px}.find-button--expanded strong{font-size:15px}
+.reader-find-button{width:38px;min-height:38px;border-radius:10px}
+.global-page-tools{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:12px;z-index:50;display:flex;align-items:center;gap:8px;padding:0;background:transparent}
+.global-page-tools .global-menu-btn{position:static;width:44px;height:44px;box-shadow:none;border:1px solid var(--color-bg-tertiary)}
+
+/* Tools share the first heading row; the root already owns the top safe area. */
+.app-main--compact > :is(div,section) > :is(header,[class$="-header"],[class$="__header-row"],.listen-page-heading,.listen-section-heading) { padding-right:112px; }
+.app-main--compact > :is(div,section) > :is(h1,h2):first-child { padding-right:104px; }
+.app-main--compact .listen-hub { padding-top:14px; }
+.app-main--compact .listen-page-heading { min-height:44px; align-items:flex-start; }
+.app-main--compact .listen-page-heading .listen-home { display:none; }
+.app-main--compact .listen-page-heading .listen-eyebrow { display:none; }
+.app-main--compact .listen-page-heading h1 { margin-top:0; }
+.app-main--compact .listen-page-heading p { margin-top:12px; }
+.app-main--compact .voice-page { padding-top:8px; }
+.app-main--compact .voice-header { padding-right:100px; margin-bottom:16px; }
+.app-main--compact .voice-local { display:none; }
+.app-main--compact .home-page .home-header { padding-top:14px; padding-bottom:18px; }
+.app-main--compact .home-page .home-header__greeting { padding-right:0; font-size:22px; }
+.app-main--compact .hifdh-page { padding-top:0; }
+.app-main--compact .hifdh-page__header-row { margin-top:0; padding-top:14px; padding-bottom:14px; }
+.app-main--compact .experience-header { padding-top:0; padding-bottom:16px; min-height:44px; flex-wrap:wrap; }
+.app-main--compact .experience-header > button { margin-top:8px; }
+.app-main--compact :is(.coach-page,.circle-page,.academy-page,.dashboard-page,.themes-page) { padding-top:16px; }
+.app-main--compact :is(.adhkar-page,.sentinelle-page,.settings-page,.fahm-page,.vocab-page,.quiz-page,.stories-page,.prophets-page,.qibla-page,.tafsir-page) { padding-top:16px; }
+@media(min-width:1100px) { .app-main--compact > :is(div,section) > :is(header,[class$="-header"],[class$="__header-row"],.listen-page-heading,.listen-section-heading) { padding-right:24px; } }
+
+.app-main--compact .prayer-hero { padding-top:8px; }
+.app-main--compact .prayer-hero__top { padding-right:100px; gap:6px; flex-wrap:wrap; }
+.app-main--compact .prayer-hero__location { min-width:0; padding-inline:8px; }
+.app-main--compact .prayer-hero__location span { max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.app-main--compact :is(.hadiths-header,.library-header,.ps-header) { flex-wrap:wrap; }
+.app-main--compact :is(.hadiths-title,.library-header > div,.ps-header__title) { min-width:0; overflow-wrap:anywhere; }

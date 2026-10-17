@@ -112,10 +112,12 @@ export function getHadithOfDay(date: Date = new Date()): Hadith {
     const dateStr = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
     const seed = hashString(dateStr);
     const seasonalTags = getSeasonalTags(date);
+    // The daily card promises a readable hadith, not a quotation cut off in the source data.
+    const completeHadiths = HADITHS.filter(h => !/(?:…|\.{3})/.test(h.textAr) && !/(?:…|\.{3})/.test(h.textFr));
 
     // If we have seasonal tags, prioritize hadiths matching them
     if (seasonalTags.length > 0) {
-        const seasonalHadiths = HADITHS.filter(h =>
+        const seasonalHadiths = completeHadiths.filter(h =>
             h.tags.some(t => seasonalTags.includes(t))
         );
 
@@ -125,12 +127,12 @@ export function getHadithOfDay(date: Date = new Date()): Hadith {
     }
 
     // Fallback: general rotation
-    return HADITHS[seed % HADITHS.length];
+    return completeHadiths[seed % completeHadiths.length];
 }
 
 // ─── Get Greeting ───────────────────────────────────────
-export function getGreeting(): { text: string; emoji: string } {
-    const hour = new Date().getHours();
+export function getGreeting(date: Date = new Date()): { text: string; emoji: string } {
+    const hour = date.getHours();
     if (hour >= 4 && hour < 12) return { text: 'Sabah al-Khayr', emoji: '🌅' };
     if (hour >= 12 && hour < 17) return { text: 'Masa al-Khayr', emoji: '☀️' };
     if (hour >= 17 && hour < 21) return { text: 'Masa al-Khayr', emoji: '🌇' };

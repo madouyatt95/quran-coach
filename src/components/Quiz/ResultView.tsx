@@ -4,13 +4,14 @@ import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES, BADGES } from '../../data/quizTypes';
 
 export function ResultView() {
-    const { score, answers, mode, opponent, opponentScore, resetQuiz, theme, player, sprintCorrect, sprintBest, unlockedBadges, currentStreak, lastPowerUpGained } = useQuizStore();
+    const { score, answers, mode, opponent, opponentScore, resetQuiz, theme, player, sprintCorrect, sprintBest, unlockedBadges, lastPowerUpGained } = useQuizStore();
     const correctCount = answers.filter(a => a.correct).length;
     const total = answers.length;
     const themeData = QUIZ_THEMES.find(t => t.id === theme);
     const correctRate = total > 0 ? correctCount / total : 0;
     const pct = Math.round(correctRate * 100);
-    const isWinner = mode === 'duel' ? score >= opponentScore : correctRate >= 0.8;
+    const isWinner = mode === 'duel' ? score > opponentScore : correctRate >= (mode==='sira'?1:0.8);
+    const currentStreak = answers.reduce((acc,a)=>{const run=a.correct?acc.run+1:0;return {run,best:Math.max(run,acc.best)};},{run:0,best:0}).best;
     const isSprint = mode === 'sprint';
 
     // Color based on percentage
@@ -47,7 +48,7 @@ export function ResultView() {
                     }}>
                         <span style={{ fontSize: 28, fontWeight: 800, color: pctColor }}>{pct}%</span>
                         <span style={{ fontSize: 11, opacity: 0.7, color: 'var(--text-primary, #fff)' }}>
-                            {pct >= 80 ? '✅ Réussi' : '❌ < 80%'}
+                            {isWinner ? '✅ Réussi' : mode==='sira'?'Objectif : 100 % pour la suite':'Objectif : 80 %'}
                         </span>
                     </div>
                 </div>
@@ -126,7 +127,7 @@ export function ResultView() {
             {/* New Badges */}
             {newBadges.length > 0 && (
                 <div className="quiz-new-badges">
-                    <h3>🏅 Badges débloqués</h3>
+                    <h3>🏅 Tes derniers badges</h3>
                     <div className="quiz-new-badge-list">
                         {newBadges.map(id => {
                             const badge = BADGES.find(b => b.id === id);

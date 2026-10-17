@@ -1,0 +1,8 @@
+.hifdh-word-study { --iq-paper: var(--color-bg-tertiary); --iq-ink: var(--color-text-primary); }
+.hifdh-word-study .iq-word-card { position: fixed; z-index: 1200; bottom: calc(var(--bottom-nav-height, 78px) + 10px); max-height: min(45dvh, 340px); }
+.hifdh-word-study .iq-word-expanded { max-height: min(65dvh, 520px); }
+.hifdh-word-study button { font: inherit; cursor: pointer; color: inherit; border: 0; background: transparent; min-height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; }
+.hifdh-word-study .iq-word-card-actions button { background: var(--color-bg-tertiary); font-size: 13px; }
+.hifdh-word-study button:disabled { opacity: .4; cursor: default; }
+.hifdh-word-study button:focus-visible, .hifdh-page span[role=button]:focus-visible { outline: 2px solid var(--color-accent-primary); outline-offset: 3px; }
+.hifdh-page span[aria-label$="sens et prononciation"] { -webkit-touch-callout: none; user-select: none; touch-action: pan-y; }

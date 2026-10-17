@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { PACE } from '../lib/companion';
+import { useCompanionStore } from './companionStore';
 import { persist } from 'zustand/middleware';
 
 // ─── Types ────────────────────────────────────────────────────
@@ -85,8 +87,9 @@ interface InvisibleCoachState {
 // ─── Constants ────────────────────────────────────────────────
 
 const MAX_HISTORY = 50;
-const MAX_SESSION_INTERVENTIONS = 3;
-const MIN_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes between interventions
+// Explicit user-selected pace replaces the inferred receptivity score.
+
+
 const RECEPTIVITY_DECAY = 5; // Lose 5 points per dismiss
 const RECEPTIVITY_GAIN = 10; // Gain 10 points per action
 
@@ -212,16 +215,10 @@ export const useInvisibleCoachStore = create<InvisibleCoachState>()(
                 if (state.suppressedUntil && Date.now() < state.suppressedUntil) return false;
 
                 // Max per session
-                if (state.sessionInterventionCount >= MAX_SESSION_INTERVENTIONS) return false;
+                if (state.sessionInterventionCount >= PACE[useCompanionStore.getState().pace].max) return false;
 
                 // Min interval
-                if (Date.now() - state.lastInterventionTime < MIN_INTERVAL_MS) return false;
-
-                // Very low receptivity — reduce frequency further
-                if (state.receptivityScore < 20) {
-                    // Only allow 1 per session when receptivity is very low
-                    if (state.sessionInterventionCount >= 1) return false;
-                }
+                if (Date.now() - state.lastInterventionTime < PACE[useCompanionStore.getState().pace].interval * 60000) return false;
 
                 return true;
             },

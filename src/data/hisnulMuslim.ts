@@ -3273,7 +3273,7 @@ export const HISNUL_MUSLIM_DATA: HisnMegaCategory[] = [
                         "source": "مسلم 4/2072، وأبو داود"
                     },
                     {
-                        "id": 276,
+                        "id": 100276,
                         "arabic": "كَانَ الرَّجُلُ إِذَا أَسْلَمَ عَلَّمَهُ النَّبِيُّ ﷺ الصَّلَاةَ ثُمَّ أَمَرَهُ أَنْ يَدْعُوَ بِهَؤُلَاءِ الْكَلِمَاتِ: «اللهُمَّ اغْفِرْ لِي، وَارْحَمْنِي، وَاهْدِنِي، وَعَافِنِي وَارْزُقْنِي».",
                         "phonetic": "Kāna-r-rajulu idhā aslama 'allamahu-n-Nabiyyu ﷺ aṣ-ṣalāta thumma amarahu an yad'uwa bi-hā'ulā'i-l-kalimāt: «Allāhumma-ghfir lī, wa-rḥamnī, wa-hdinī, wa 'āfinī wa-rzuqnī».",
                         "translation": "Lorsqu'un homme embrassait l'Islam, le Prophète ﷺ lui enseignait la prière, puis lui ordonnait d'invoquer avec ces paroles : « Ô Allah, pardonne-moi, fais-moi miséricorde, guide-moi, accorde-moi la santé (et le salut) et attribue-moi ma subsistance. »",

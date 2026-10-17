@@ -35,7 +35,7 @@ function determineWeatherEvent(code: number, windSpeed: number): WeatherEvent {
 /**
  * Fetch current weather from Open-Meteo using lat/lng
  */
-export async function getCurrentWeather(lat: number, lng: number): Promise<WeatherCondition> {
+async function fetchCurrentWeather(lat: number, lng: number): Promise<WeatherCondition> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
 
@@ -66,5 +66,13 @@ export async function getCurrentWeather(lat: number, lng: number): Promise<Weath
     } catch (error) {
         console.error('[WeatherService] Failed to fetch weather:', error);
         return { event: 'none', windSpeedKmH: 0, codeWMO: 0, isNight: false };
-    }
+    } finally { clearTimeout(timeoutId); }
+}
+
+const weatherCache=new Map<string,{at:number;result:Promise<WeatherCondition>}>();
+export function getCurrentWeather(lat:number,lng:number):Promise<WeatherCondition>{
+    const key=`${lat.toFixed(2)}:${lng.toFixed(2)}`,cached=weatherCache.get(key);
+    if(cached && Date.now()-cached.at<15*60000)return cached.result;
+    if(weatherCache.size>8)weatherCache.clear();
+    const result=fetchCurrentWeather(lat,lng);weatherCache.set(key,{at:Date.now(),result});return result;
 }

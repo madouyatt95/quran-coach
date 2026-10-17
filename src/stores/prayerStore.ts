@@ -33,6 +33,12 @@ interface PrayerStoreState {
     cityName: string;
     countryName: string;
 
+    locationMode: 'auto' | 'fixed';
+    locationRevision: number;
+    locationUpdatedAt: number;
+    locationError: string;
+    setLocationMode: (mode: 'auto' | 'fixed') => void;
+
     // Cache
     cache: Record<string, DayResult>; // dateKey → DayResult
     cacheSettingsHash: string;
@@ -94,6 +100,8 @@ export const usePrayerStore = create<PrayerStoreState>()(
             lng: null,
             cityName: '',
             countryName: '',
+            locationMode: 'auto', locationRevision: 0, locationUpdatedAt: 0, locationError: '',
+            setLocationMode: locationMode => set(s => ({locationMode, locationRevision: s.locationRevision + 1, locationError: ''})),
             cache: {},
             cacheSettingsHash: hashSettings(DEFAULT_PRAYER_SETTINGS),
             cacheCoordsHash: 'none',
@@ -240,6 +248,8 @@ export const usePrayerStore = create<PrayerStoreState>()(
                 lng: state.lng,
                 cityName: state.cityName,
                 countryName: state.countryName,
+                locationMode: state.locationMode,
+                locationUpdatedAt: state.locationUpdatedAt,
                 cache: state.cache,
                 cacheSettingsHash: state.cacheSettingsHash,
                 cacheCoordsHash: state.cacheCoordsHash,

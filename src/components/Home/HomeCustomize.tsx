@@ -1,0 +1,20 @@
+import {useEffect,useState} from 'react';
+import {Link} from 'react-router-dom';
+import {HomeDialog} from './HomeDialog';
+import {HOME_SECTION_LABELS,moveHomeSection,type HomeSection} from './homeExperience';
+import {MENU_FAVORITES_KEY,readMenuFavorites,toggleMenuFavorite,moveMenuFavorite} from '../../lib/menuFavorites';
+export const HOME_DESTINATIONS=[
+ ['/quiz','🧠','Quiz'],['/test-memorization','🎓','Me tester'],['/prophets','📜','Prophètes'],['/stories','📚','Histoires'],['/atlas','🗺️','Atlas'],['/qibla','🧭','Qibla'],['/prayers','🕌','Prières'],['/themes','📚','Thèmes'],['/adhkar','🤲','Invocations'],['/hadiths','✨','Hadiths'],['/tafsir','📘','Tafsir'],['/academy','🎓','Académie'],['/circles','👥','Cercles'],['/fahm','💡','Comprendre'],['/sentinel','🛡️','Sentinelle'],['/dashboard','📊','Progression'],['/favorites','🔖','Bibliothèque'],['/storage','📥','Téléchargements']
+] as const;
+export function useHomeShortcuts(){
+ const [favorites,setFavorites]=useState(readMenuFavorites);
+ useEffect(()=>{const refresh=()=>setFavorites(readMenuFavorites());window.addEventListener('storage',refresh);window.addEventListener('quran-menu-favorites',refresh);return()=>{window.removeEventListener('storage',refresh);window.removeEventListener('quran-menu-favorites',refresh);};},[]);
+ const save=(next:string[])=>{setFavorites(next);try{localStorage.setItem(MENU_FAVORITES_KEY,JSON.stringify(next));window.dispatchEvent(new Event('quran-menu-favorites'));}catch{/* Current session remains usable. */}};
+ return {favorites,save};
+}
+export function HomeQuickLinks({favorites,onEdit}:{favorites:string[];onEdit:()=>void}){
+ return <section className="home-quick" aria-label="Mes raccourcis"><div className="home-section-heading"><h2>Mes raccourcis</h2><button onClick={onEdit}>Modifier</button></div><div className="home-quick-grid">{favorites.map(path=>{const item=HOME_DESTINATIONS.find(v=>v[0]===path);return item?<Link key={path} to={path}><span aria-hidden="true">{item[1]}</span>{item[2]}</Link>:null;})}{!favorites.length&&<button onClick={onEdit}>＋ Choisir mes raccourcis</button>}</div></section>;
+}
+export function HomeCustomize({order,onOrder,favorites,onFavorites,onClose}:{order:HomeSection[];onOrder:(next:HomeSection[])=>void;favorites:string[];onFavorites:(next:string[])=>void;onClose:()=>void}){
+ return <HomeDialog title="Personnaliser mon accueil" onClose={onClose}><section className="home-custom-section"><h3>L’ordre de vos sections</h3><p>Toutes restent disponibles. La reprise d’activité reste en haut.</p>{order.map((id,index)=><div className="home-order-row" key={id}><span>{HOME_SECTION_LABELS[id]}</span><button disabled={index===0} aria-label={`Monter ${HOME_SECTION_LABELS[id]}`} onClick={()=>onOrder(moveHomeSection(order,id,-1))}>↑</button><button disabled={index===order.length-1} aria-label={`Descendre ${HOME_SECTION_LABELS[id]}`} onClick={()=>onOrder(moveHomeSection(order,id,1))}>↓</button></div>)}</section><section className="home-custom-section"><h3>Vos raccourcis · {favorites.length}/4</h3><p>Les mêmes que dans votre menu.</p>{favorites.map((path,index)=><div className="home-order-row" key={path}><span>{HOME_DESTINATIONS.find(v=>v[0]===path)?.slice(1).join(' ')}</span><button disabled={index===0} aria-label={`Monter le raccourci ${HOME_DESTINATIONS.find(v=>v[0]===path)?.[2]}`} onClick={()=>onFavorites(moveMenuFavorite(favorites,path,-1))}>↑</button><button disabled={index===favorites.length-1} aria-label={`Descendre le raccourci ${HOME_DESTINATIONS.find(v=>v[0]===path)?.[2]}`} onClick={()=>onFavorites(moveMenuFavorite(favorites,path,1))}>↓</button></div>)}<div className="home-shortcut-picker">{HOME_DESTINATIONS.map(([path,icon,label])=><button key={path} aria-pressed={favorites.includes(path)} disabled={!favorites.includes(path)&&favorites.length>=4} onClick={()=>onFavorites(toggleMenuFavorite(favorites,path))}>{icon} {label}{favorites.includes(path)?' ✓':''}</button>)}</div></section><button className="home-dialog-done" onClick={onClose}>Terminer</button></HomeDialog>;
+}

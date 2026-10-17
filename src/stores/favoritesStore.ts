@@ -7,9 +7,16 @@ export interface FavoriteVerse {
     surah: number;
     numberInSurah: number;
     text: string;
+    page?: number;
     /** Timestamp when added */
     addedAt: number;
 }
+
+export interface FavoriteCollection { id: string; name: string; createdAt: number }
+export interface FavoriteAnnotation { note: string; collectionIds: string[] }
+export const verseFavoriteKey = (number: number) => `verse:${number}`;
+export const hadithFavoriteKey = (id: number) => `hadith:${id}`;
+export const duaFavoriteKey = (chapterId: string, id: number) => `dua:${chapterId}:${id}`;
 
 export interface FavoriteHadith {
     id: number;
@@ -35,6 +42,13 @@ interface FavoritesState {
     favorites: FavoriteVerse[];
     favoriteHadiths: FavoriteHadith[];
     favoriteDuas: FavoriteDua[];
+    collections: FavoriteCollection[];
+    annotations: Record<string, FavoriteAnnotation>;
+    createCollection: (name: string) => string | null;
+    renameCollection: (id: string, name: string) => boolean;
+    removeCollection: (id: string) => void;
+    setNote: (key: string, note: string) => void;
+    setCollections: (key: string, ids: string[]) => void;
 
     addFavorite: (verse: Omit<FavoriteVerse, 'addedAt'>) => void;
     removeFavorite: (number: number) => void;
@@ -56,6 +70,29 @@ export const useFavoritesStore = create<FavoritesState>()(
             favorites: [],
             favoriteHadiths: [],
             favoriteDuas: [],
+            collections: [],
+            annotations: {},
+            createCollection: (value) => {
+                const name = value.trim().slice(0, 60);
+                if (!name) return null;
+                const existing = get().collections.find(c => c.name.toLocaleLowerCase() === name.toLocaleLowerCase());
+                if (existing) return existing.id;
+                const id = crypto.randomUUID();
+                set(state => ({ collections: [...state.collections, { id, name, createdAt: Date.now() }] }));
+                return id;
+            },
+            renameCollection: (id, value) => {
+                const name = value.trim().slice(0, 60);
+                if (!name || !get().collections.some(c => c.id === id) || get().collections.some(c => c.id !== id && c.name.toLocaleLowerCase() === name.toLocaleLowerCase())) return false;
+                set(state => ({ collections: state.collections.map(c => c.id === id ? { ...c, name } : c) }));
+                return true;
+            },
+            removeCollection: id => set(state => ({
+                collections: state.collections.filter(c => c.id !== id),
+                annotations: Object.fromEntries(Object.entries(state.annotations).map(([key, value]) => [key, { ...value, collectionIds: value.collectionIds.filter(c => c !== id) }])),
+            })),
+            setNote: (key, note) => set(state => ({ annotations: { ...state.annotations, [key]: { collectionIds: state.annotations[key]?.collectionIds ?? [], note: note.slice(0, 4000) } } })),
+            setCollections: (key, ids) => set(state => ({ annotations: { ...state.annotations, [key]: { note: state.annotations[key]?.note ?? '', collectionIds: [...new Set(ids)].filter(id => state.collections.some(c => c.id === id)) } } })),
 
             addFavorite: (verse) => {
                 const { favorites } = get();

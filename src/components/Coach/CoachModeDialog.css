@@ -1,0 +1,57 @@
+/* A top-layer dialog stays inside the viewport even when the page animates,
+   scrolls, or creates a transformed containing block. */
+.coach-mode-dialog {
+    box-sizing: border-box;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    border: 0;
+    background: transparent;
+    color: var(--color-text-primary);
+    overflow: hidden;
+}
+.coach-mode-dialog[open] { display: flex; align-items: flex-end; justify-content: center; }
+.coach-mode-dialog::backdrop { background: #0009; backdrop-filter: blur(6px); }
+.coach-mode-dialog__panel {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 560px;
+    max-height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--color-bg-tertiary);
+    border-radius: 24px;
+    background: var(--color-bg-primary);
+    box-shadow: 0 24px 80px #0006;
+    animation: coach-dialog-enter 180ms ease-out;
+}
+.coach-mode-dialog .mih-coach-center__handle { flex-shrink: 0; }
+.coach-mode-dialog .mih-coach-center__header { flex-shrink: 0; gap: 12px; padding: 12px 18px; }
+.coach-mode-dialog .mih-coach-center__title { font-size: 18px; line-height: 1.3; }
+.coach-mode-dialog .mih-sheet__close { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; border: 1px solid var(--color-bg-tertiary); background: var(--color-bg-secondary); color: inherit; cursor: pointer; }
+.coach-mode-dialog .mih-coach-center__content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 16px 18px 24px; gap: 20px; }
+.coach-mode-dialog .learning-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.coach-mode-dialog .learning-btn { min-height: 44px; }
+.coach-mode-dialog .learning-btn[aria-pressed=true] { border-color: #d2b45f; background: #d2b45f; color: #14181c; }
+.coach-mode-dialog .coach-explanation { margin: 0; font-size: 13px; line-height: 1.55; }
+.coach-mode-dialog .mih-coach-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.coach-mode-dialog .mih-coach-card { min-width: 0; padding: 16px 10px; }
+.coach-mode-dialog .mih-coach-card-label { overflow-wrap: anywhere; }
+.coach-mode-dialog button:focus-visible,.coach-mode-dialog a:focus-visible { outline: 2px solid #c9a84c; outline-offset: 2px; }
+@media (min-width: 640px) { .coach-mode-dialog[open] { align-items: center; } }
+@media (max-height: 500px) { .coach-mode-dialog .mih-coach-card { flex-direction: row; flex-wrap: wrap; justify-content: center; } .coach-mode-dialog .mih-coach-card-icon { width: 32px; height: 32px; } }
+@media (prefers-reduced-motion: reduce) { .coach-mode-dialog__panel { animation: none; } }
+@keyframes coach-dialog-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.coach-mode-settings { border-top: 1px solid var(--color-bg-tertiary); padding-top: 8px; }
+.coach-mode-settings summary { cursor: pointer; padding: 12px 0; min-height: 44px; font-size: 13px; color: var(--color-text-secondary); }
+.coach-mode-settings .coach-explanation { margin-top: 14px; }
+.coach-mode-dialog .mih-coach-card[aria-pressed=true] { border-color: #c9a84c; background: #c9a84c15; }
+@media (max-width: 360px) { .coach-mode-dialog .mih-coach-card-label { font-size: 13px; } .coach-mode-dialog .mih-coach-card-desc { font-size: 11px; } .coach-mode-dialog .mih-coach-center__content { padding-inline: 12px; } }

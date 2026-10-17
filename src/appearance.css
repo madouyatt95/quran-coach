@@ -1,0 +1,111 @@
+/* One palette, shared by navigation and all four primary destinations.
+   data-theme remains dark for existing reading and tajwid contrast rules. */
+:root { --nav-accent: #e8d48b; --nav-selected: #c9a84c18; }
+/* Palette recovered from HomePage.css before 2ea613d and the original reader.
+   Keep the persisted "violet" key so installed apps receive the corrected palette. */
+html[data-appearance="violet"] {
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-bg-tertiary: #ffffff18;
+  --color-bg-elevated: #16213e;
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #b4bdcb;
+  --color-text-muted: #a1a9bb;
+  --color-accent: #e8d48b;
+  --color-accent-hover: #c9a84c;
+  --color-accent-muted: #c9a84c26;
+  --nav-accent: #e8d48b;
+  --nav-selected: #c9a84c26;
+  --original-gradient: linear-gradient(160deg,#0a0e1a 0%,#1a1a2e 35%,#16213e 65%,#0f3460 100%);
+  --original-glass: linear-gradient(145deg,#ffffff17,#ffffff05);
+}
+[data-theme="light"], [data-theme="sepia"] { --nav-accent: #684494; --nav-selected: #8655b91a; }
+html .bottom-nav { background: color-mix(in srgb,var(--color-bg-primary) 90%,transparent); border-top-color: var(--color-bg-tertiary); }
+html .bottom-nav .bottom-nav__item { color: var(--color-text-secondary); transition: background-color 180ms, color 180ms; }
+html .bottom-nav .bottom-nav__icon { display: grid; place-items: center; opacity: 1; color: inherit; }
+html .bottom-nav .bottom-nav__label { color: inherit; }
+html .bottom-nav .bottom-nav__item.active { color: var(--nav-accent); background: var(--nav-selected); }
+html .bottom-nav .bottom-nav__dot { display: none; }
+html .bottom-nav .bottom-nav__item:focus-visible { outline-color: var(--nav-accent); }
+
+/* Original navy/indigo gradient and translucent cards, current layout retained. */
+html[data-appearance="violet"] .home-page {
+  --home-text: var(--color-text-primary); --home-muted: var(--color-text-secondary);
+  --home-surface: #ffffff0a; --home-line: #ffffff14;
+  --home-feature-surface: var(--original-glass);
+  background: var(--original-gradient);
+}
+html[data-appearance="violet"] .home-page .home-continue { background: linear-gradient(115deg,#c9a84c2e,#c9a84c0f); border-color: #c9a84c50; box-shadow: 0 10px 30px #0a0e1a35,inset 0 1px #ffffff12; }
+html[data-appearance="violet"] .home-page :is(.home-continue__icon,.home-shortcut__icon) { color: #e8d48b; }
+html[data-appearance="violet"] .home-page .home-continue__icon { background: #c9a84c33; }
+html[data-appearance="violet"] .home-page .learning-home { background: var(--original-glass); }
+html[data-appearance="violet"] .home-page .home-shortcut { border-color: #ffffff14; }
+/* Previously hard-coded home surfaces must also honor the two reading themes. */
+html:is([data-theme="light"],[data-theme="sepia"]) .home-page {
+  --home-text: var(--color-text-primary); --home-muted: var(--color-text-secondary);
+  --home-surface: var(--color-bg-secondary); --home-gold: #80612a; --home-line: #80612a26;
+  --home-feature-surface: var(--color-bg-secondary);
+  background: var(--color-bg-primary);
+}
+html:is([data-theme="light"],[data-theme="sepia"]) .home-page :is(.home-continue,.hadith-card,.smart-card,.surah-card,.dhikr-card) { background: var(--home-surface); }
+html:is([data-theme="light"],[data-theme="sepia"]) .home-page :is(.home-continue__page,.surah-card__name-fr,.dhikr-card__fr) { color: var(--home-muted); }
+
+/* Identifier: the light follows actual input amplitude, never simulated sound. */
+html[data-appearance="violet"] .voice-page { --voice-accent: #e8d48b; --voice-ink: #1a1a2e; background: var(--original-gradient); min-height: calc(100dvh - var(--bottom-nav-height)); }
+html[data-appearance="violet"] .voice-listener { background: radial-gradient(ellipse at 50% 38%,#c9a84c26,transparent 75%),var(--color-bg-secondary); border-color: #ffffff18; }
+html[data-appearance="violet"] .voice-page .voice-search-trigger { background: linear-gradient(145deg,#e8d48b,#c9a84c); border-color: #e8d48b80; box-shadow: 0 10px 35px #c9a84c35,inset 0 1px #fff8; }
+html[data-appearance="violet"] .voice-page .is-active .voice-search-trigger { background: #1a1a2e; color: #e8d48b; box-shadow: 0 0 calc(18px + var(--voice-level)*36px) #c9a84c65; }
+html[data-appearance="violet"] .voice-page .voice-ring { border-color: #c9a84c55; transform: scale(calc(1 + var(--voice-level)*.16)); transition: transform 160ms ease; animation: none; }
+html[data-appearance="violet"] .voice-page .voice-ring--outer { border-color: #c9a84c25; transform: scale(calc(1 + var(--voice-level)*.26)); }
+html[data-appearance="violet"] .voice-page :is(.voice-modes button[aria-pressed=true],.voice-visibility button) { background: #c9a84c24; color: #e8d48b; }
+html[data-appearance="violet"] .voice-result { border-color: #c9a84c44; background: linear-gradient(150deg,#1a1a2e,#16213e); }
+html[data-appearance="violet"] .voice-continue { background: #c9a84c12; border-color: #c9a84c40; }
+html[data-appearance="violet"] .voice-reference { color: #e8d48b; }
+html[data-appearance="violet"] .voice-arabic span[data-current=true] { background: #c9a84c30; }
+
+/* Original gold actions; correction verdicts keep their semantic colors. */
+html[data-appearance="violet"] .hifdh-page { background: var(--original-gradient); }
+html[data-appearance="violet"] .hifdh-page__header-row { background: transparent; }
+html[data-appearance="violet"] .journey { --journey-accent: #e8d48b; }
+html[data-appearance="violet"] .journey-hero { background: radial-gradient(ellipse at top right,#c9a84c26,transparent 80%),var(--color-bg-secondary); border-color: #c9a84c45; }
+html[data-appearance="violet"] :is(.journey .journey-primary,.hifdh-page .hifdh-primary) { background: linear-gradient(110deg,#e8d48b,#c9a84c); color: #1a1a2e; }
+html[data-appearance="violet"] .hifdh-view-nav button[aria-current] { color: #e8d48b; background: #c9a84c2b; }
+html[data-appearance="violet"] .hifdh-page .hifdh-verse-card--active { border-color: #c9a84c78; box-shadow: inset 3px 0 #c9a84c; }
+html[data-appearance="violet"] .hifdh-command-dock { background: #16213ef5; border-color: #c9a84c45; }
+html[data-appearance="violet"] .journey-stats>div { border-bottom-color: #c9a84c; }
+
+/* No recoloring or filters are applied to scanned Mushaf pages or tajwid spans. */
+html[data-appearance="violet"] .mushaf-page[data-layout] { --paper: #1a1a2e; --ink: #e8e0d4; --muted-ink: #b4bdcb; --reader-accent: #c9a84c; --reader-rule: #c9a84c30; }
+html[data-appearance="violet"] :is(.mih-header,.madinah-header,.tajweed-header,.mih-toolbar,.mih-nav) { background: #16213e; border-color: #c9a84c3b; }
+html[data-appearance="violet"] .mushaf-page[data-layout] .mih-header { background: #16213e; }
+html[data-appearance="violet"] :is(.mih-toolbar__btn.active,.live-follow-toggle.is-active) { background: #c9a84c2b; color: #e8d48b; }
+
+/* Theme chooser: four previews, each independent of the active palette. */
+.settings-page .appearance-options { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 9px; width: 100%; }
+.settings-page .settings-item:has(.appearance-options) { display: block; }
+.appearance-options { margin-top: 12px; }
+.appearance-option { --preview-bg:#0d1117; --preview-card:#21262d; --preview-ink:#eee6d3; --preview-accent:#dfc886; min-width:0; padding:8px; border:1px solid var(--color-bg-tertiary); border-radius:16px; background:var(--color-bg-secondary); color:var(--color-text-primary); text-align:left; cursor:pointer; }
+.appearance-option[data-preview="violet"] { --preview-bg:#1a1a2e; --preview-card:#16213e; --preview-ink:#e0e0e0; --preview-accent:#e8d48b; }
+.appearance-option[data-preview="light"] { --preview-bg:#fff; --preview-card:#eef0f4; --preview-ink:#313141; --preview-accent:#8055a6; }
+.appearance-option[data-preview="sepia"] { --preview-bg:#f4ecd8; --preview-card:#e3d7bd; --preview-ink:#514432; --preview-accent:#987a3a; }
+.appearance-option[aria-pressed="true"] { border-color: var(--color-accent); box-shadow:0 0 0 1px var(--color-accent); }
+.appearance-option:focus-visible { outline:2px solid var(--color-accent); outline-offset:4px; }
+.appearance-preview { height:58px; border-radius:9px; padding:8px; display:flex; flex-direction:column; gap:5px; background:var(--preview-bg); overflow:hidden; }
+.appearance-preview__title { height:4px; width:55%; border-radius:4px; background:var(--preview-ink); opacity:.7; }
+.appearance-preview__card { flex:1; background:var(--preview-card); border-radius:7px; padding:7px; display:flex; flex-direction:column; gap:5px; }
+.appearance-preview__card i { height:3px; width:70%; border-radius:3px; background:var(--preview-ink); opacity:.6; }
+.appearance-preview__card i:last-child { width:40%; background:var(--preview-accent); opacity:1; }
+.appearance-preview__nav { display:flex; justify-content:space-around; }
+.appearance-preview__nav i { width:13px; height:5px; border-radius:5px; background:var(--preview-ink); opacity:.3; }
+.appearance-preview__nav i:first-child { width:24px; background:var(--preview-accent); opacity:1; }
+.appearance-option__name { display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:650; margin:10px 2px 4px; }
+.appearance-option small { display:block; font-size:10px; line-height:1.5; color:var(--color-text-secondary); margin:0 2px 4px; }
+@media (max-width: 650px) {
+  .settings-page .appearance-options { gap: 6px; }
+  .appearance-options .appearance-option { padding: 5px; border-radius: 12px; }
+  .appearance-options .appearance-preview { height: 44px; padding: 5px; gap: 4px; }
+  .appearance-options .appearance-option__name { align-items: flex-start; font-size: 10px; min-height: 26px; margin: 8px 1px 0; gap: 2px; }
+  .appearance-options .appearance-option small { display: none; }
+  .appearance-options .appearance-preview__nav i { width: 7px; height: 3px; }
+}
+@media(prefers-reduced-motion:reduce) { html .bottom-nav *,html[data-appearance="violet"] .voice-page .voice-ring { transition:none; } }

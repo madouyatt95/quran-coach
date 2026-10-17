@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/verse-audio/:bitrate(32|48|64|128|192)/:voice(ar\\.[a-z]+)/:ayah(\\d+).mp3",
+      "destination": "https://cdn.islamic.network/quran/audio/:bitrate/:voice/:ayah.mp3"
+    },
+    {
       "source": "/offline-audio/:ayah(\\d+).mp3",
       "destination": "https://cdn.islamic.network/quran/audio/128/ar.alafasy/:ayah.mp3"
     },

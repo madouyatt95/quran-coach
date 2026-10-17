@@ -11,10 +11,11 @@ import './CoachWhisper.css';
 interface CoachWhisperProps {
     intervention: Intervention;
     onDismiss: () => void;
+    onExpire: () => void;
     onAction: () => void;
 }
 
-export function CoachWhisper({ intervention, onDismiss, onAction }: CoachWhisperProps) {
+export function CoachWhisper({ intervention, onDismiss, onExpire, onAction }: CoachWhisperProps) {
     const navigate = useNavigate();
     const [visible, setVisible] = useState(true);
 
@@ -22,10 +23,10 @@ export function CoachWhisper({ intervention, onDismiss, onAction }: CoachWhisper
     useEffect(() => {
         const timer = setTimeout(() => {
             setVisible(false);
-            setTimeout(onDismiss, 300); // Wait for exit animation
+            onExpire();
         }, 6000);
         return () => clearTimeout(timer);
-    }, [onDismiss]);
+    }, [onExpire]);
 
     const handleAction = () => {
         if (intervention.action) {
@@ -55,17 +56,18 @@ export function CoachWhisper({ intervention, onDismiss, onAction }: CoachWhisper
                     dragElastic={0.3}
                     onDragEnd={handleDragEnd}
                 >
-                    <div className="coach-whisper__content" onClick={handleAction}>
+                    <button className="coach-whisper__content" onClick={handleAction}>
                         <span className="coach-whisper__emoji">{intervention.emoji}</span>
                         <div className="coach-whisper__text">
                             <span className="coach-whisper__title">{intervention.title}</span>
                             <span className="coach-whisper__msg">{intervention.message}</span>
+                            {intervention.source && <small className="coach-whisper__source">{intervention.source}</small>}
                         </div>
                         {intervention.action && (
                             <ChevronRight size={16} className="coach-whisper__arrow" />
                         )}
-                    </div>
-                    <button className="coach-whisper__close" onClick={(e) => { e.stopPropagation(); setVisible(false); setTimeout(onDismiss, 300); }}>
+                    </button>
+                    <button aria-label="Fermer le conseil" className="coach-whisper__close" onClick={(e) => { e.stopPropagation(); setVisible(false); setTimeout(onDismiss, 300); }}>
                         <X size={14} />
                     </button>
                     <div className="coach-whisper__timer" />

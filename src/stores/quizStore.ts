@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
-import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore, getAudioQuestions, generateSiraLevels } from '../lib/quizEngine';
+import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore, getAudioQuestions, generateSiraLevels, stableQuestionId } from '../lib/quizEngine';
 import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId, QuizView, QuizMode, PowerUpId, PowerUpEffect, SiraLevel } from '../data/quizTypes';
 import { DIFFICULTY_CONFIG, BADGES } from '../data/quizTypes';
 import type { RealtimeChannel } from '@supabase/supabase-js';
@@ -27,6 +27,12 @@ interface QuizState {
     timerStart: number;
     currentStreak: number;
 
+    secondChance: boolean;
+    freezeUntil: number;
+    dailySessionDate: string | null;
+    dailyDraft: {date: string; questions: QuizQuestion[]; currentIndex: number; answers: QuizAnswer[]; score: number; currentStreak: number; feedback: boolean} | null;
+    saveDaily: () => void;
+    reviewSchedule: Record<string, {due: number; successes: number; last: number}>;
     // Sprint state
     sprintTimeLeft: number;
     sprintCorrect: number;
@@ -70,6 +76,7 @@ interface QuizState {
     totalWins: number;
     totalCorrect: number;
     totalXP: number;
+    weeklyXP: Record<string,number>;
     level: number;
     title: string | null;
     card_theme: string | null;
@@ -102,6 +109,8 @@ interface QuizState {
     completeSiraLevel: (id: string, stars: number) => void;
     startSiraLevel: (level: SiraLevel) => void;
 }
+
+function gameTitle(level:number){return level>=31?'Vétéran':level>=16?'Persévérant':level>=6?'Passionné':'Explorateur';}
 
 function generateCode(): string {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -194,6 +203,12 @@ export const useQuizStore = create<QuizState>()(
             timerStart: 0,
             currentStreak: 0,
 
+            secondChance: false,
+            freezeUntil: 0,
+            dailySessionDate: null,
+            dailyDraft: null,
+            reviewSchedule: {},
+            saveDaily: () => {const s=get(); if(s.mode==='daily' && s.view!=='result' && s.dailySessionDate) set({dailyDraft:{date:s.dailySessionDate,questions:s.questions,currentIndex:s.currentIndex,answers:s.answers,score:s.score,currentStreak:s.currentStreak,feedback:s.view==='feedback'}});},
             // Sprint
             sprintTimeLeft: 60,
             sprintCorrect: 0,
@@ -220,8 +235,9 @@ export const useQuizStore = create<QuizState>()(
             totalWins: 0,
             totalCorrect: 0,
             totalXP: 0,
+            weeklyXP: {},
             level: 1,
-            title: 'Mubtadi',
+            title: 'Explorateur',
             card_theme: null,
             powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3, 'sandstorm': 2, 'shield': 2, 'timer-bomb': 1 },
             dailyChallengeLastDate: null,
@@ -256,6 +272,7 @@ export const useQuizStore = create<QuizState>()(
                     score: 0,
                     currentStreak: 0,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
             },
@@ -266,13 +283,14 @@ export const useQuizStore = create<QuizState>()(
                 const newLevel = Math.floor(newXP / 1000) + 1;
 
                 // Determine Title based on level
-                let newTitle = 'Mubtadi';
-                if (newLevel >= 31) newTitle = 'Alim';
-                else if (newLevel >= 16) newTitle = 'Hafidh';
-                else if (newLevel >= 6) newTitle = 'Talib';
+                let newTitle = 'Explorateur';
+                if (newLevel >= 31) newTitle = 'Vétéran';
+                else if (newLevel >= 16) newTitle = 'Persévérant';
+                else if (newLevel >= 6) newTitle = 'Passionné';
 
                 set({
                     totalXP: newXP,
+                    weeklyXP: {...get().weeklyXP,[new Date().toLocaleDateString('en-CA')]: (get().weeklyXP[new Date().toLocaleDateString('en-CA')]||0)+amount},
                     level: newLevel,
                     title: newTitle,
                     player: player ? { ...player, total_xp: newXP, level: newLevel, title: newTitle } : null
@@ -309,6 +327,7 @@ export const useQuizStore = create<QuizState>()(
                     score: 0,
                     currentStreak: 0,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
             },
@@ -336,6 +355,7 @@ export const useQuizStore = create<QuizState>()(
                     sprintTimeLeft: 60,
                     currentStreak: 0,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
             },
@@ -352,6 +372,7 @@ export const useQuizStore = create<QuizState>()(
                     score: 0,
                     currentStreak: 0,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
             },
@@ -369,24 +390,31 @@ export const useQuizStore = create<QuizState>()(
                     currentStreak: 0,
                     lastPowerUpGained: null,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
             },
 
             startDaily: () => {
                 const today = new Date().toISOString().split('T')[0];
+                if (get().dailyChallengeLastDate === today) return;
+                const draft = get().dailyDraft;
+                if(draft?.date === today) {set({...draft, dailySessionDate:today, mode:'daily', difficulty:'medium', view:draft.feedback?'feedback':'playing', timerStart:Date.now(), secondChance:false,freezeUntil:0});return;}
                 const questions = getDailyQuestions(today);
                 set({
                     mode: 'daily',
                     questions,
-                    dailyChallengeLastDate: today,
+                    dailySessionDate: today,
+                    difficulty: 'medium',
                     currentIndex: 0,
                     answers: [],
                     score: 0,
                     currentStreak: 0,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
+                get().saveDaily();
             },
 
             createDuel: async (customThemes?: QuizThemeId[]) => {
@@ -489,7 +517,7 @@ export const useQuizStore = create<QuizState>()(
                         total_played: 0,
                         total_xp: 0,
                         level: 1,
-                        title: 'Mubtadi'
+                        title: 'Explorateur'
                     },
                     duelAllQuestions: rebuiltRounds,
                     duelRounds: rebuiltThemes,
@@ -502,6 +530,7 @@ export const useQuizStore = create<QuizState>()(
                     answers: [],
                     score: 0,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
 
@@ -548,7 +577,7 @@ export const useQuizStore = create<QuizState>()(
                             total_played: 0,
                             total_xp: 0,
                             level: 1,
-                            title: 'Mubtadi'
+                            title: 'Explorateur'
                         },
                         opponentScore: isPlayer1 ? (match.player2_score || 0) : (match.player1_score || 0),
                         opponentAnswers: isPlayer1 ? (match.player2_answers || []) : (match.player1_answers || []),
@@ -587,7 +616,7 @@ export const useQuizStore = create<QuizState>()(
                                     id: oId,
                                     pseudo: isP1 ? m.player2_pseudo : m.player1_pseudo,
                                     avatar_emoji: isP1 ? m.player2_emoji : m.player1_emoji,
-                                    total_wins: 0, total_played: 0, total_xp: 0, level: 1, title: 'Mubtadi'
+                                    total_wins: 0, total_played: 0, total_xp: 0, level: 1, title: 'Explorateur'
                                 },
                                 duelAllQuestions: rebuiltRounds,
                                 duelRounds: rebuiltThemes,
@@ -597,6 +626,7 @@ export const useQuizStore = create<QuizState>()(
                                 answers: [],
                                 score: 0,
                                 timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                                 view: 'playing',
                             });
                         }
@@ -627,7 +657,7 @@ export const useQuizStore = create<QuizState>()(
 
             applyPowerUp: (id) => {
                 const { powerUps, mode } = get();
-                if (mode === 'sprint' || mode === 'revision') return;
+                if (!['solo','duel'].includes(mode) || get().view!=='playing') return;
                 if (powerUps[id] <= 0) return;
 
                 const newPowerUps = { ...powerUps, [id]: powerUps[id] - 1 };
@@ -635,11 +665,15 @@ export const useQuizStore = create<QuizState>()(
                 if (id === 'time-freeze') {
                     // Stop timer by resetting timerStart to a future date or just setting a flag
                     // Simple: add 10s to timerStart
-                    set({ timerStart: get().timerStart + 10000, powerUps: newPowerUps });
+                    if(get().freezeUntil>Date.now())return;
+                    set({ freezeUntil: Date.now()+10000, powerUps: newPowerUps });
+                } else if (id === 'second-chance') {
+                    if(get().secondChance)return;
+                    set({secondChance:true, powerUps:newPowerUps});
                 } else if (id === '50-50') {
                     const { questions, currentIndex } = get();
                     const q = questions[currentIndex];
-                    if (!q) return;
+                    if (!q || q.choices.length<=2) return;
 
                     const correctChoice = q.choices[q.correctIndex];
                     const others = q.choices.filter((_, i) => i !== q.correctIndex);
@@ -698,10 +732,11 @@ export const useQuizStore = create<QuizState>()(
             submitAnswer: (chosenIndex) => {
                 const { questions, currentIndex, answers, score, timerStart, mode, matchId, player, difficulty, currentStreak, wrongQuestions, totalCorrect, sprintCorrect } = get();
                 const question = questions[currentIndex];
-                if (!question) return;
+                if (!question || get().view !== 'playing' || answers.some(a=>a.questionId===question.id)) return;
+                if(chosenIndex>=0 && chosenIndex!==question.correctIndex && get().secondChance){set({secondChance:false});return;}
 
                 const maxTimeMs = mode === 'sprint' ? 10000 : DIFFICULTY_CONFIG[difficulty].timerSeconds * 1000;
-                const timeMs = Date.now() - timerStart;
+                const timeMs = Math.max(0, Date.now() - timerStart);
                 const correct = chosenIndex === question.correctIndex;
                 const points = calculateScore(correct, timeMs, maxTimeMs, difficulty);
 
@@ -733,13 +768,17 @@ export const useQuizStore = create<QuizState>()(
                 // Track wrong answers for revision (don't add duplicates)
                 let newWrong = wrongQuestions;
                 if (!correct) {
-                    if (!wrongQuestions.find(q => q.id === question.id)) {
+                    if (!wrongQuestions.find(q => stableQuestionId(q) === stableQuestionId(question))) {
                         newWrong = [...wrongQuestions, question];
                     }
-                } else if (mode === 'revision') {
-                    // Remove from wrong if answered correctly in revision
-                    newWrong = wrongQuestions.filter(q => q.id !== question.id);
                 }
+                const key=stableQuestionId(question);
+                const oldReview=get().reviewSchedule[key];
+                const spaced= !oldReview || Date.now()-oldReview.last>=86400000;
+                const successes=correct?(oldReview?.successes||0)+(spaced?1:0):0;
+                const reviewSchedule={...get().reviewSchedule,[key]:{successes,due:Date.now()+(correct?(successes>=2?7:2):1)*86400000,last:Date.now()}};
+                if(correct && mode==='revision' && successes>=2) newWrong=newWrong.filter(q=>stableQuestionId(q)!==key);
+                set({reviewSchedule});
 
                 // Update theme stats
                 const themeId = question.theme;
@@ -763,8 +802,10 @@ export const useQuizStore = create<QuizState>()(
                     sprintCorrect: correct ? sprintCorrect + 1 : sprintCorrect,
                     themeStats: { ...themeStats, [themeId]: updatedStats },
                     view: mode === 'sprint' ? 'playing' : 'feedback',
+                    secondChance: false,freezeUntil:0,
                 });
 
+                get().saveDaily();
                 // Sync to Supabase in duel mode
                 if (mode === 'duel' && matchId && player) {
                     const isP1 = get().isDuelCreator;
@@ -794,10 +835,12 @@ export const useQuizStore = create<QuizState>()(
                 // In sprint, auto-advance to next question
                 if (mode === 'sprint') {
                     const nextIdx = currentIndex + 1;
+                    if (nextIdx >= questions.length) {void get().nextQuestion();}
                     if (nextIdx < questions.length) {
                         set({
                             currentIndex: nextIdx,
                             timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                         });
                     }
                 }
@@ -812,6 +855,8 @@ export const useQuizStore = create<QuizState>()(
 
             nextQuestion: async () => {
                 const state = get();
+                if(!['feedback','playing'].includes(state.view)||!state.questions.length)return;
+                if(state.mode!=='sprint'&&!state.answers.some(a=>a.questionId===state.questions[state.currentIndex]?.id))return;
                 const { currentIndex, questions, mode, score, totalPlayed, totalWins, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest, duelRound, duelRounds, duelRoundScores, siraCurrentLevel } = state;
 
                 // In duel mode: check if current round is done (3 questions per round)
@@ -828,6 +873,8 @@ export const useQuizStore = create<QuizState>()(
                 }
 
                 if (currentIndex + 1 >= questions.length || mode === 'sprint') {
+                    // Close synchronously before awaiting remote results to prevent duplicate awards.
+                    set({view:'result'});
                     // End of match
                     const isDuelMatch = mode === 'duel';
 
@@ -896,6 +943,8 @@ export const useQuizStore = create<QuizState>()(
 
                     set({
                         view: 'result',
+                        dailyChallengeLastDate: mode==='daily'?get().dailySessionDate:get().dailyChallengeLastDate,
+                        dailyDraft:mode==='daily'?null:get().dailyDraft,
                         totalPlayed: totalPlayed + 1,
                         totalWins: isWin ? totalWins + 1 : totalWins,
                         soloHighScores: newHighScores,
@@ -951,8 +1000,10 @@ export const useQuizStore = create<QuizState>()(
                     set({
                         currentIndex: currentIndex + 1,
                         timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                         view: 'playing',
                     });
+                    get().saveDaily();
                 }
             },
 
@@ -967,6 +1018,7 @@ export const useQuizStore = create<QuizState>()(
                     questions: duelAllQuestions[nextRound],
                     currentIndex: 0,
                     timerStart: Date.now(),
+                    secondChance: false, freezeUntil: 0,
                     view: 'playing',
                 });
             },
@@ -993,6 +1045,7 @@ export const useQuizStore = create<QuizState>()(
             },
 
             resetQuiz: () => {
+                get().saveDaily();
                 const { channel } = get();
                 if (channel) supabase.removeChannel(channel);
                 set({
@@ -1024,13 +1077,16 @@ export const useQuizStore = create<QuizState>()(
         }),
         {
             name: 'quiz-store',
-            version: 2, // ← Increment this number to force-reset ALL users' stats on next deploy
+            version: 3,
             partialize: (state) => ({
+                dailyDraft: state.dailyDraft,
+                reviewSchedule: state.reviewSchedule,
                 player: state.player,
                 totalPlayed: state.totalPlayed,
                 totalWins: state.totalWins,
                 totalCorrect: state.totalCorrect,
                 totalXP: state.totalXP,
+                weeklyXP: state.weeklyXP,
                 level: state.level,
                 title: state.title,
                 card_theme: state.card_theme,
@@ -1046,30 +1102,9 @@ export const useQuizStore = create<QuizState>()(
                 gameHistory: state.gameHistory,
                 siraProgression: state.siraProgression,
             }),
-            migrate: (persistedState: any, version: number) => {
-                // If stored version < current version, reset stats but keep player identity
-                if (version < 2) {
-                    console.log('[QuizStore] Stats reset triggered (v' + version + ' → v2)');
-                    return {
-                        ...persistedState,
-                        player: persistedState?.player || null, // Keep player profile
-                        totalPlayed: 0,
-                        totalWins: 0,
-                        totalCorrect: 0,
-                        totalXP: 0,
-                        level: 1,
-                        title: 'Mubtadi',
-                        soloHighScores: {},
-                        themeStats: {},
-                        unlockedBadges: [],
-                        wrongQuestions: [],
-                        sprintBest: 0,
-                        duelWins: 0,
-                        powerUps: { '50-50': 3, 'time-freeze': 3, 'second-chance': 3, 'sandstorm': 2, 'shield': 2, 'timer-bomb': 1 },
-                        siraProgression: {},
-                    };
-                }
-                return persistedState;
+            migrate: (persistedState: unknown): Partial<QuizState> => {
+                const saved = (persistedState || {}) as Partial<QuizState>;
+                return {...saved, title: gameTitle(saved.level || 1), wrongQuestions:[...new Map((saved.wrongQuestions||[]).map(q=>{const id=stableQuestionId(q);return [id,{...q,id}] as const;})).values()]};
             },
         }
     )

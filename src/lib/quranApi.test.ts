@@ -30,6 +30,14 @@ describe('quranApi', () => {
                 expect(url.startsWith('https://')).toBe(true);
             }
         });
+
+        it.each([
+            ['ar.abdulbasit', '192/ar.abdulbasitmurattal'],
+            ['ar.husary', '128/ar.husary'],
+            ['ar.minshawi', '128/ar.minshawi'],
+        ])('should play the selected reciter %s', (reciter, path) => {
+            expect(getAudioUrl(reciter, 1)).toBe(`https://cdn.islamic.network/quran/audio/${path}/1.mp3`);
+        });
     });
 
     // ── RECITERS constant ──────────────────────────────────

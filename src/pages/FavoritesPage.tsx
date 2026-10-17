@@ -1,173 +1,93 @@
-import { useState, useMemo } from 'react';
-import { Heart, Trash2, BookOpen, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useFavoritesStore } from '../stores/favoritesStore';
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useFavoritesStore, verseFavoriteKey, hadithFavoriteKey, duaFavoriteKey } from '../stores/favoritesStore';
 import { useQuranStore } from '../stores/quranStore';
-import { useTranslation } from 'react-i18next';
+import { useOpenReader, type ReaderTarget } from '../hooks/useOpenReader';
+import { ReligiousReference } from '../components/ReligiousReference';
 import './FavoritesPage.css';
 
-type Tab = 'verses' | 'hadiths' | 'duas';
+type Kind = 'verses' | 'hadiths' | 'duas';
+interface LibraryItem { key: string; kind: Kind; title: string; arabic: string; french?: string; source?: string; addedAt: number; target?: ReaderTarget; remove: () => void }
+const normalize = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f\u064b-\u065f\u0670\u0640]/g, '').replace(/[أإآٱ]/g, 'ا').toLocaleLowerCase();
+const kinds: { id: 'all' | Kind; label: string }[] = [{ id: 'all', label: 'Tout' }, { id: 'verses', label: '📖 Versets' }, { id: 'hadiths', label: '📜 Hadiths' }, { id: 'duas', label: '🤲 Invocations' }];
+
+function LibraryCard({ item }: { item: LibraryItem }) {
+    const store = useFavoritesStore();
+    const annotation = store.annotations[item.key];
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState(annotation?.note ?? '');
+    const [confirmRemove, setConfirmRemove] = useState(false);
+    const [saved, setSaved] = useState(false);
+    const openReader = useOpenReader('Ma bibliothèque');
+    const navigate = useNavigate();
+    const selected = annotation?.collectionIds ?? [];
+    return <article className="library-card">
+        <div className="library-card__heading"><span>{item.title}</span><time dateTime={new Date(item.addedAt).toISOString()}>{new Date(item.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</time></div>
+        <div className="library-card__text" lang="ar" dir="rtl">{item.arabic}</div>
+        {item.french && <p className="library-card__translation">{item.french}</p>}
+        {item.source && <ReligiousReference kind={item.kind === 'hadiths' ? 'Hadith' : 'Invocation'} source={item.source} />}
+        {!!selected.length && <div className="library-card__tags">{store.collections.filter(c => selected.includes(c.id)).map(c => <span key={c.id}>📁 {c.name}</span>)}</div>}
+        {!editing && annotation?.note && <div className="library-note"><small>Ma note personnelle</small><p>{annotation.note}</p></div>}
+        <div className="library-card__actions">
+            {item.target && <><button className="library-primary" onClick={() => openReader(item.target!)}>📖 Lire le verset</button><button onClick={() => navigate(`/passage?surah=${item.target!.surah}&ayah=${item.target!.ayah}&from=favorites`)}>Comprendre</button></>}
+            <button aria-expanded={editing} onClick={() => { setDraft(annotation?.note ?? ''); setEditing(!editing); setSaved(false); }}>✍️ {editing ? 'Fermer' : 'Classer / annoter'}</button>
+            <button aria-label={`Retirer ${item.title} des favoris`} onClick={() => setConfirmRemove(true)}>Retirer</button>
+        </div>
+        {editing && <section className="library-editor" aria-label={`Organiser ${item.title}`}>
+            <fieldset><legend>Collections</legend>
+                {store.collections.length ? store.collections.map(c => <label className="library-check" key={c.id}><input type="checkbox" checked={selected.includes(c.id)} onChange={event => store.setCollections(item.key, event.target.checked ? [...selected, c.id] : selected.filter(id => id !== c.id))} />{c.name}</label>) : <p>Créez une collection avec « Nouvelle collection » en haut de la page.</p>}
+            </fieldset>
+            <label className="library-note-label">Ma note personnelle<textarea value={draft} maxLength={4000} rows={4} placeholder="Ce que je souhaite retenir…" onChange={event => { setDraft(event.target.value); setSaved(false); }} /></label>
+            <div className="library-editor__footer"><small>{draft.length} / 4 000</small><button className="library-primary" onClick={() => { store.setNote(item.key, draft.trim()); setSaved(true); }}>Enregistrer la note</button>{saved && <span role="status">Note enregistrée</span>}</div>
+        </section>}
+        {confirmRemove && <div className="library-remove" role="group" aria-label="Confirmer le retrait"><p>Retirer ce contenu de vos favoris ?</p><button onClick={() => setConfirmRemove(false)}>Garder</button><button onClick={item.remove}>Retirer des favoris</button></div>}
+    </article>;
+}
 
 export function FavoritesPage() {
-    const { t } = useTranslation();
-    const [tab, setTab] = useState<Tab>('verses');
-    const { favorites, removeFavorite, favoriteHadiths, removeFavoriteHadith, favoriteDuas, removeFavoriteDua } = useFavoritesStore();
-    const { goToPage, surahs } = useQuranStore();
+    const store = useFavoritesStore();
+    const surahs = useQuranStore(state => state.surahs);
     const navigate = useNavigate();
-
-    const sortedVerses = useMemo(() => [...favorites].sort((a, b) => b.addedAt - a.addedAt), [favorites]);
-    const sortedHadiths = useMemo(() => [...favoriteHadiths].sort((a, b) => b.addedAt - a.addedAt), [favoriteHadiths]);
-    const sortedDuas = useMemo(() => [...favoriteDuas].sort((a, b) => b.addedAt - a.addedAt), [favoriteDuas]);
-
-    const totalCount = favorites.length + favoriteHadiths.length + favoriteDuas.length;
-
-    const handleGoToVerse = (fav: typeof favorites[0]) => {
-        sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah: fav.surah, ayah: fav.numberInSurah }));
-        fetch(`https://api.alquran.cloud/v1/ayah/${fav.number}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.code === 200 && data.data?.page) { goToPage(data.data.page); }
-            })
-            .catch(() => { });
-        navigate('/');
+    const [params, setParams] = useSearchParams();
+    const query = params.get('q') ?? '';
+    const kind = params.get('type') ?? 'all';
+    const collection = params.get('collection') ?? 'all';
+    const [composer, setComposer] = useState<'new' | 'rename' | null>(null);
+    const [name, setName] = useState('');
+    const [message, setMessage] = useState('');
+    const update = (key: string, value: string) => { const next = new URLSearchParams(params); if (!value || value === 'all') next.delete(key); else next.set(key, value); setParams(next, { replace: true }); };
+    const activeCollection = store.collections.find(c => c.id === collection);
+    const items: LibraryItem[] = [
+        ...store.favorites.map(v => ({ key: verseFavoriteKey(v.number), kind: 'verses' as const, title: `${surahs.find(s => s.number === v.surah)?.englishName ?? `Sourate ${v.surah}`} · ${v.surah}:${v.numberInSurah}`, arabic: v.text, addedAt: v.addedAt, target: { surah: v.surah, ayah: v.numberInSurah, page: v.page }, remove: () => store.removeFavorite(v.number) })),
+        ...store.favoriteHadiths.map(h => ({ key: hadithFavoriteKey(h.id), kind: 'hadiths' as const, title: `📜 Hadith · ${h.nar}`, arabic: h.ar, french: h.fr, source: h.src, addedAt: h.addedAt, remove: () => store.removeFavoriteHadith(h.id) })),
+        ...store.favoriteDuas.map(d => ({ key: duaFavoriteKey(d.chapterId, d.duaId), kind: 'duas' as const, title: `🤲 ${d.chapterTitle}`, arabic: d.arabic, french: d.translation, source: d.source, addedAt: d.addedAt, remove: () => store.removeFavoriteDua(d.chapterId, d.duaId) })),
+    ].sort((a, b) => b.addedAt - a.addedAt);
+    const count = (id: string) => items.filter(item => (store.annotations[item.key]?.collectionIds ?? []).includes(id)).length;
+    const filtered = items.filter(item => {
+        const annotation = store.annotations[item.key];
+        const groups = annotation?.collectionIds ?? [];
+        return (kind === 'all' || item.kind === kind) && (collection === 'all' || (collection === 'unfiled' ? groups.length === 0 : groups.includes(collection))) && normalize([item.title, item.arabic, item.french, item.source, annotation?.note].join(' ')).includes(normalize(query.trim()));
+    });
+    const saveCollection = (event: React.FormEvent) => {
+        event.preventDefault();
+        if (composer === 'rename' && activeCollection) {
+            if (!store.renameCollection(activeCollection.id, name)) { setMessage('Choisissez un nom différent et non vide.'); return; }
+        } else {
+            const id = store.createCollection(name);
+            if (!id) { setMessage('Donnez un nom à votre collection.'); return; }
+            // Stay in All so the user can immediately classify existing favorites.
+        }
+        setComposer(null); setName(''); setMessage('Collection enregistrée. Vous pouvez maintenant y classer vos favoris.');
     };
-
-    const tabs: { id: Tab; emoji: string; label: string; count: number }[] = [
-        { id: 'verses', emoji: '📖', label: t('common.verses', 'Versets'), count: favorites.length },
-        { id: 'hadiths', emoji: '📜', label: t('sideMenu.hadiths', 'Hadiths'), count: favoriteHadiths.length },
-        { id: 'duas', emoji: '🤲', label: t('sideMenu.adhkar', 'Duas'), count: favoriteDuas.length },
-    ];
-
-    return (
-        <div className="favorites-page">
-            <div className="favorites-header">
-                <button className="favorites-back" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={22} />
-                </button>
-                <h1 className="favorites-title">
-                    <Heart size={24} fill="currentColor" />
-                    {t('favorites.title', 'Favoris')}
-                </h1>
-                <span className="favorites-count">{totalCount}</span>
-            </div>
-
-            {/* Tabs */}
-            <div className="favorites-tabs">
-                {tabs.map(t => (
-                    <button
-                        key={t.id}
-                        className={`favorites-tab ${tab === t.id ? 'active' : ''}`}
-                        onClick={() => setTab(t.id)}
-                    >
-                        <span>{t.emoji}</span>
-                        <span>{t.label}</span>
-                        {t.count > 0 && <span className="favorites-tab__badge">{t.count}</span>}
-                    </button>
-                ))}
-            </div>
-
-            {/* === VERSES TAB === */}
-            {tab === 'verses' && (
-                sortedVerses.length === 0 ? (
-                    <div className="favorites-empty">
-                        <Heart size={48} strokeWidth={1} />
-                        <p>{t('favorites.empty', 'Aucun favori')}</p>
-                        <p className="favorites-empty__hint">
-                            {t('favorites.addHint', 'Appuyez sur le ❤️')}
-                        </p>
-                    </div>
-                ) : (
-                    <div className="favorites-list">
-                        {sortedVerses.map(fav => {
-                            const surah = surahs.find(s => s.number === fav.surah);
-                            return (
-                                <div key={fav.number} className="favorites-card" onClick={() => handleGoToVerse(fav)}>
-                                    <div className="favorites-card__ref">
-                                        <BookOpen size={14} />
-                                        {surah?.name} ({surah?.englishName}) — {t('mushaf.verse', 'Verset')} {fav.numberInSurah}
-                                    </div>
-                                    <div className="favorites-card__text" dir="rtl">
-                                        {fav.text.length > 120 ? fav.text.slice(0, 120) + '…' : fav.text}
-                                    </div>
-                                    <div className="favorites-card__footer">
-                                        <span className="favorites-card__date">
-                                            {new Date(fav.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                        </span>
-                                        <button className="favorites-card__delete" onClick={e => { e.stopPropagation(); removeFavorite(fav.number); }} title="Retirer">
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )
-            )}
-
-            {/* === HADITHS TAB === */}
-            {tab === 'hadiths' && (
-                sortedHadiths.length === 0 ? (
-                    <div className="favorites-empty">
-                        <Heart size={48} strokeWidth={1} />
-                        <p>{t('favorites.empty', 'Aucun favori')}</p>
-                        <p className="favorites-empty__hint">
-                            {t('favorites.addHint', 'Appuyez sur le ❤️')}
-                        </p>
-                    </div>
-                ) : (
-                    <div className="favorites-list">
-                        {sortedHadiths.map(h => (
-                            <div key={h.id} className="favorites-card favorites-card--hadith">
-                                <div className="favorites-card__text" dir="rtl">{h.ar}</div>
-                                <div className="favorites-card__french">{h.fr}</div>
-                                <div className="favorites-card__meta">
-                                    <span>📕 {h.src}</span>
-                                    <span>🗣️ {h.nar}</span>
-                                </div>
-                                <div className="favorites-card__footer">
-                                    <span className="favorites-card__date">
-                                        {new Date(h.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                    </span>
-                                    <button className="favorites-card__delete" onClick={() => removeFavoriteHadith(h.id)} title="Retirer">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )
-            )}
-
-            {/* === DUAS TAB === */}
-            {tab === 'duas' && (
-                sortedDuas.length === 0 ? (
-                    <div className="favorites-empty">
-                        <Heart size={48} strokeWidth={1} />
-                        <p>{t('favorites.empty', 'Aucun favori')}</p>
-                        <p className="favorites-empty__hint">
-                            {t('favorites.addHint', 'Appuyez sur le ❤️')}
-                        </p>
-                    </div>
-                ) : (
-                    <div className="favorites-list">
-                        {sortedDuas.map(d => (
-                            <div key={`${d.chapterId}-${d.duaId}`} className="favorites-card favorites-card--dua">
-                                <div className="favorites-card__ref">🤲 {d.chapterTitle}</div>
-                                <div className="favorites-card__text" dir="rtl">{d.arabic}</div>
-                                <div className="favorites-card__french">{d.translation}</div>
-                                <div className="favorites-card__footer">
-                                    <span className="favorites-card__date">
-                                        {new Date(d.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                    </span>
-                                    <button className="favorites-card__delete" onClick={() => removeFavoriteDua(d.chapterId, d.duaId)} title="Retirer">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )
-            )}
-        </div>
-    );
+    return <div className="favorites-page">
+        <header className="library-header"><button aria-label="Retour" onClick={() => navigate(-1)}>←</button><div><span className="library-eyebrow">VOTRE ESPACE PERSONNEL</span><h1>Ma bibliothèque</h1><p>{items.length} favori{items.length !== 1 ? 's' : ''} · Vos collections et vos notes</p></div><span className="library-emblem" aria-hidden="true">📚</span></header>
+        <div className="library-tools"><label className="library-search"><span aria-hidden="true">🔎</span><input type="search" aria-label="Rechercher dans ma bibliothèque" placeholder="Un mot, une référence, une note…" value={query} onChange={event => update('q', event.target.value)} /></label><button className="library-new" onClick={() => { setComposer('new'); setName(''); setMessage(''); }}>＋ Nouvelle collection</button></div>
+        {composer && <form className="library-composer" onSubmit={saveCollection}><label>{composer === 'new' ? 'Nom de la collection' : 'Renommer la collection'}<input autoFocus maxLength={60} value={name} onChange={event => setName(event.target.value)} placeholder="Ex. À mémoriser" /></label><div><button type="submit" className="library-primary" disabled={!name.trim()}>Enregistrer</button><button type="button" onClick={() => setComposer(null)}>Annuler</button></div></form>}
+        {message && <p className="library-message" role="status">{message}</p>}
+        <nav className="library-collections" aria-label="Collections"><button aria-pressed={collection === 'all'} onClick={() => update('collection', 'all')}>Tous mes favoris <span>{items.length}</span></button><button aria-pressed={collection === 'unfiled'} onClick={() => update('collection', 'unfiled')}>À classer</button>{store.collections.map(c => <button key={c.id} aria-pressed={collection === c.id} onClick={() => update('collection', c.id)}>📁 {c.name} <span>{count(c.id)}</span></button>)}</nav>
+        {activeCollection && <div className="library-collection-heading"><strong>📁 {activeCollection.name}</strong><button onClick={() => { setComposer('rename'); setName(activeCollection.name); setMessage(''); }}>Renommer</button><button onClick={() => { store.removeCollection(activeCollection.id); update('collection', 'all'); setMessage('Collection supprimée. Vos favoris et vos notes sont conservés.'); }}>Dissoudre la collection</button></div>}
+        <div className="library-types" role="group" aria-label="Type de contenu">{kinds.map(t => <button key={t.id} aria-pressed={kind === t.id} onClick={() => update('type', t.id)}>{t.label}</button>)}</div>
+        <div className="library-results" aria-live="polite">{filtered.length} contenu{filtered.length !== 1 ? 's' : ''}</div>
+        {!filtered.length ? <div className="library-empty"><span aria-hidden="true">{items.length ? '🔎' : '🤍'}</span><h2>{items.length ? 'Aucun contenu dans cette sélection' : 'Gardez ce qui compte pour vous'}</h2><p>{items.length ? 'Changez les filtres ou utilisez « Classer / annoter » sur un favori pour l’ajouter à cette collection.' : 'Ajoutez des versets, hadiths ou invocations avec le cœur, puis rassemblez-les ici selon vos envies.'}</p>{!items.length && <button className="library-primary" onClick={() => navigate('/read')}>Ouvrir le Coran</button>}</div> : <div className="library-list">{filtered.map(item => <LibraryCard key={item.key} item={item} />)}</div>}
+    </div>;
 }

@@ -1,0 +1,23 @@
+.verse-hub{max-width:760px;padding-top:20px}
+.verse-hub__back{display:inline-flex;align-items:center;min-height:44px;color:var(--color-text-secondary);text-decoration:none;font-size:.9rem}
+.verse-hub__back:focus-visible{outline:2px solid #c9a84c;outline-offset:4px;border-radius:6px}
+.verse-hub__hero{position:relative;overflow:hidden;padding:22px 24px;margin:8px 0 18px;border:1px solid #c9a84c55;border-radius:24px;background:radial-gradient(circle at 100% 0%,#8456c235,transparent 48%),linear-gradient(130deg,#c9a84c1c,#362b6d27)}
+.verse-hub__hero::after{content:'۞';position:absolute;right:20px;top:8px;font:56px serif;color:#c9a84c29;pointer-events:none}
+.verse-hub__hero h1{margin:8px 0;color:var(--color-text-primary)}
+.verse-hub__hero p{max-width:33em;margin:0;color:var(--color-text-secondary);line-height:1.5}
+.verse-hub__text{border-color:#c9a84c4a;background:linear-gradient(165deg,var(--color-bg-secondary),#59427916)}
+.verse-hub__meta{display:flex;justify-content:space-between;gap:12px;color:#d5b66b;font-size:.77rem;font-weight:700;letter-spacing:.05em}
+.verse-hub__text .learning-arabic{font-size:clamp(1.95rem,7vw,2.7rem);line-height:2.1;margin:18px 0;user-select:text}
+.verse-hub__translation{font-size:1rem;line-height:1.75;margin:10px 0 6px;color:var(--color-text-primary)}
+.verse-hub__actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:22px 0 12px}
+.verse-hub__actions .learning-btn{padding:10px 8px;font-size:.82rem;text-align:center;white-space:normal;line-height:1.25}
+.verse-hub__actions .learning-btn:last-child{grid-column:span 2;background:#c9a84c19;border-color:#c9a84c66}
+.verse-hub__actions .learning-btn[aria-pressed="true"]{background:#c9a84c24;border-color:#c9a84c;color:var(--color-text-primary)}
+.verse-hub__text audio{margin-bottom:0}
+.verse-hub__work h2{margin-bottom:6px}
+.verse-hub-comparison__row{border-top:1px solid #c9a84c33;padding-top:12px;margin-top:14px}
+.verse-hub-comparison__row h3{font-size:.95rem;color:#d5b66b}
+.verse-hub-comparison__row .learning-arabic{font-size:1.7rem;line-height:2}
+.verse-hub-comparison__row audio{display:block}
+@media(max-width:560px){.verse-hub__hero{padding:18px}.verse-hub__actions{grid-template-columns:repeat(2,minmax(0,1fr))}.verse-hub__actions .learning-btn:last-child{grid-column:span 2}}
+@media(prefers-reduced-motion:reduce){.verse-hub *{scroll-behavior:auto!important}}

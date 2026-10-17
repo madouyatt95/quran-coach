@@ -33,3 +33,15 @@ public/tilawa/v1/
 scripts/fixtures/
 .vercel
 .env*
+
+# Local imports, review screenshots and build credentials
+/tmp/
+/docs/audits/**/*.png
+/docs/audits/**/*.jpg
+/docs/audits/**/*.jpeg
+*.p12
+*.p8
+*.mobileprovision
+*.xcarchive/
+*.ipa
+!.env.example

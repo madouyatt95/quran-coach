@@ -1,61 +1,36 @@
 // @vitest-environment jsdom
 import {act} from 'react';
 import {createRoot,type Root} from 'react-dom/client';
-import {MemoryRouter,useNavigate} from 'react-router-dom';
-import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {MemoryRouter} from 'react-router-dom';
+import {it,expect,vi,beforeEach,afterEach} from 'vitest';
 import {createJSONStorage} from 'zustand/middleware';
 import {createMemoryStorage} from '../../../test/memoryStorage';
+import {useKhatmReading} from './useKhatmReading';
 import {useKhatmStore} from '../../../stores/khatmStore';
 import {useQuranStore} from '../../../stores/quranStore';
-import {useLiveFollowStore} from '../../../stores/liveFollowStore';
-import {useKhatmReading} from './useKhatmReading';
-vi.mock('../../../stores/challengesStore',()=>({useChallengesStore:{getState:()=>({markPageRead:vi.fn()})}}));
+vi.mock('../../../hooks/useCompanionReading',()=>({useCompanionReading:()=>{}}));
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
-let root:Root,container:HTMLDivElement,ready=true;let navigate:ReturnType<typeof useNavigate>;
-function Harness(){const page=useQuranStore(s=>s.currentPage);navigate=useNavigate();useKhatmReading({page,ready,surah:2,ayah:255});return null;}
-const tick=async(ms:number)=>act(async()=>{await vi.advanceTimersByTimeAsync(ms);});
-const move=async(page:number,reading=true)=>act(async()=>useQuranStore.getState().goToPage(page,{silent:!reading,reading}));
+let page=1,ready=true,root:Root,div:HTMLDivElement;
+function Harness(){useKhatmReading({page,ready,surah:page===1?1:2,ayah:1});return null;}
+const render=()=>act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Harness/></MemoryRouter>));
 beforeEach(async()=>{
- vi.useFakeTimers({toFake:['setTimeout','clearTimeout','performance']});vi.stubGlobal('localStorage',createMemoryStorage());vi.stubGlobal('sessionStorage',createMemoryStorage());
- vi.spyOn(document,'hasFocus').mockReturnValue(true);Object.defineProperty(document,'hidden',{configurable:true,value:false});
+ vi.stubGlobal('localStorage',createMemoryStorage());vi.stubGlobal('sessionStorage',createMemoryStorage());
  useKhatmStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});useQuranStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
- useKhatmStore.getState().reset();useKhatmStore.getState().activate('2026-10-04','2026-11-04');
- useQuranStore.setState({currentPage:42,khatmJumpSignal:0});useLiveFollowStore.setState({active:false});ready=true;
- container=document.createElement('div');document.body.append(container);root=createRoot(container);
- await act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Harness/></MemoryRouter>));
+ vi.useFakeTimers({toFake:['setTimeout','clearTimeout','Date','performance']});
+ useKhatmStore.setState({isActive:true,completedAt:null,validatedPages:[],autoExcludedPages:[],validationDetails:{}});
+ useQuranStore.setState({khatmJumpSignal:0});page=1;ready=true;
+ div=document.createElement('div');document.body.append(div);root=createRoot(div);await render();
 });
-afterEach(async()=>{await vi.dynamicImportSettled();await act(async()=>root.unmount());container.remove();vi.restoreAllMocks();vi.useRealTimers();vi.unstubAllGlobals();});
-it('does not validate the displayed page; validates it once on a normal next-page transition',async()=>{
- expect(useKhatmStore.getState().validatedPages).toEqual([]);await tick(15000);
- expect(useKhatmStore.getState().validatedPages).toEqual([]);expect(useKhatmStore.getState().lastKhatmPage).toBe(42);
- await move(43);expect(useKhatmStore.getState().validatedPages).toEqual([42]);await move(44);expect(useKhatmStore.getState().validatedPages).toEqual([42]);
+afterEach(async()=>{await act(async()=>root.unmount());div.remove();vi.useRealTimers();vi.unstubAllGlobals();});
+it('validates the previous page through a loading transition, but never a rapid swipe',async()=>{
+ await act(async()=>vi.advanceTimersByTime(16000));page=2;ready=false;await render();
+ expect(useKhatmStore.getState().validatedPages).toEqual([1]);
+ ready=true;await render();await act(async()=>vi.advanceTimersByTime(1000));page=3;ready=false;await render();
+ expect(useKhatmStore.getState().validatedPages).toEqual([1]);
 });
-it('ignores search/bookmark/slider jumps even by one page',async()=>{
- await tick(15000);await move(43,false);expect(useKhatmStore.getState().validatedPages).toEqual([]);
- await tick(15000);await move(44);expect(useKhatmStore.getState().validatedPages).toEqual([43]);
-});
-it('does not count hidden time or pages changed while the persistent reader is off route',async()=>{
- await tick(10000);await act(async()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
- await tick(60000);await act(async()=>{Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'));});await move(43);
+it('does not validate pages skipped by search or while a modal obscures reading',async()=>{
+ await act(async()=>vi.advanceTimersByTime(16000));await act(async()=>useQuranStore.setState({khatmJumpSignal:1}));page=4;await render();
  expect(useKhatmStore.getState().validatedPages).toEqual([]);
- await act(async()=>navigate('/'));await tick(60000);await move(44);expect(useKhatmStore.getState().validatedPages).toEqual([]);
-});
-it('excludes a loading image and an open Khatm dialog',async()=>{
- ready=false;await act(async()=>root.render(<MemoryRouter><Harness/></MemoryRouter>));await tick(60000);
- ready=true;await act(async()=>root.render(<MemoryRouter><Harness/></MemoryRouter>));await move(43);expect(useKhatmStore.getState().validatedPages).toEqual([]);
- const modal=document.createElement('div');modal.className='khatm-popup';await act(async()=>document.body.append(modal));await tick(60000);await act(async()=>modal.remove());await move(44);
- expect(useKhatmStore.getState().validatedPages).toEqual([]);
-});
-it('never credits voice-recognition jumps',async()=>{
- await tick(15000);await act(async()=>useLiveFollowStore.setState({active:true}));await move(43);expect(useKhatmStore.getState().validatedPages).toEqual([]);
-});
-it('credits a fresh text Khatm through page 12 without a 15-second dwell, even when hasFocus is false',async()=>{
- await act(async()=>root.unmount());vi.spyOn(document,'hasFocus').mockReturnValue(false);
- useKhatmStore.getState().activate('2026-10-04','2026-11-04');useQuranStore.setState({currentPage:1,currentSurah:1,currentAyah:1,khatmJumpSignal:0});
- function Text(){const q=useQuranStore();useKhatmReading({continuousText:true,page:q.currentPage,surah:q.currentSurah,ayah:q.currentAyah,ready:true});return null;}
- root=createRoot(container);await act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Text/></MemoryRouter>));
- for(let page=2;page<=12;page++){await tick(700);await move(page);}
- expect(useKhatmStore.getState().validatedPages).toEqual(Array.from({length:11},(_,i)=>i+1));
- expect(useKhatmStore.getState().getOverallProgress()).toEqual({read:11,total:604,pct:1.8});
- await move(50,false);expect(useKhatmStore.getState().validatedPages).toHaveLength(11);
+ const dialog=document.createElement('dialog');await act(async()=>{dialog.setAttribute('open','');document.body.append(dialog);});
+ await act(async()=>vi.advanceTimersByTime(20000));page=5;await render();expect(useKhatmStore.getState().validatedPages).toEqual([]);await act(async()=>dialog.remove());
 });

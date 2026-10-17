@@ -11,15 +11,18 @@ export type HadithTag =
 export interface Hadith {
     id: number;
     textAr: string;
+    /** Optional reviewed phonetic rendering; otherwise the UI derives a reading aid from Arabic. */
+    textPhonetic?: string;
     textFr: string;
     source: string;
+    sourceUrl?: string;
     narrator: string;
     tags: HadithTag[];
 }
 
 export const HADITHS: Hadith[] = [
     // ─── GENERAL ─────────────────────────────────
-    { id: 1, textAr: "إنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى", textFr: "Les actes ne valent que par leurs intentions, et chacun n'a pour lui que ce qu'il a eu réellement l'intention de faire.", source: "Bukhari & Muslim", narrator: "Umar ibn al-Khattab", tags: ['general'] },
+    { id: 1, textAr: "إنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى", textFr: "Les actes ne valent que par leurs intentions, et chacun n'a pour lui que ce qu'il a eu réellement l'intention de faire.", source: "Bukhari 1 · Muslim 1907", sourceUrl: "https://sunnah.com/bukhari:1", narrator: "Umar ibn al-Khattab", tags: ['general'] },
     { id: 2, textAr: "مِنْ حُسْنِ إسْلامِ الْمَرْءِ تَرْكُهُ مَا لا يَعْنِيهِ", textFr: "Parmi les qualités d'un bon Islam, il y a le fait de délaisser ce qui ne nous concerne pas.", source: "Tirmidhi", narrator: "Abu Hurayra", tags: ['general', 'bon_comportement'] },
     { id: 3, textAr: "لا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ", textFr: "Aucun de vous ne sera un vrai croyant tant qu'il n'aimera pas pour son frère ce qu'il aime pour lui-même.", source: "Bukhari & Muslim", narrator: "Anas ibn Malik", tags: ['general', 'fraternie'] },
     { id: 4, textAr: "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ", textFr: "Que celui qui croit en Allah et au Jour dernier dise du bien ou qu'il se taise.", source: "Bukhari & Muslim", narrator: "Abu Hurayra", tags: ['general', 'bon_comportement'] },
@@ -160,7 +163,7 @@ export const HADITHS: Hadith[] = [
 
     // ─── PLUS GENERAL / DUA / DHIKR ─────────────
     { id: 95, textAr: "ادْعُوا اللَّهَ وَأَنْتُمْ مُوقِنُونَ بِالإِجَابَةِ وَاعْلَمُوا أَنَّ اللَّهَ لَا يَسْتَجِيبُ دُعَاءً مِنْ قَلْبٍ غَافِلٍ لَاهٍ", textFr: "Invoquez Allah avec la certitude d'être exaucés, et sachez qu'Allah n'exauce pas une invocation venant d'un cœur distrait.", source: "Tirmidhi", narrator: "Abu Hurayra", tags: ['dua'] },
-    { id: 97, textAr: "اللَّهُمَّ أَنْتَ رَبِّي، لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي، فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.", textFr: "Ô Allah, Tu es mon Seigneur, il n'y a de divinité que Toi.\nTu m'as créé et je suis Ton serviteur.\nJe demeure fidèle à Ton engagement et à Ta promesse autant que je le peux.\nJe cherche refuge auprès de Toi contre le mal que j'ai commis.\nJe reconnais Tes bienfaits envers moi,\net je reconnais mon péché.\nPardonne-moi, car nul ne pardonne les péchés sauf Toi.", source: "Bukhari", narrator: "Shaddad ibn Aws", tags: ['dhikr', 'repentir', 'matin', 'soir'] },
+    { id: 97, textAr: "اللَّهُمَّ أَنْتَ رَبِّي، لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي، فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.", textFr: "Ô Allah, Tu es mon Seigneur, il n'y a de divinité que Toi.\nTu m'as créé et je suis Ton serviteur.\nJe demeure fidèle à Ton engagement et à Ta promesse autant que je le peux.\nJe cherche refuge auprès de Toi contre le mal que j'ai commis.\nJe reconnais Tes bienfaits envers moi,\net je reconnais mon péché.\nPardonne-moi, car nul ne pardonne les péchés sauf Toi.", source: "Bukhari", textPhonetic: "Allāhumma Anta Rabbī lā ilāha illā Anta, khalaqtanī wa ana 'abduka, wa ana 'alā 'ahdika wa wa'dika mā staṭa'tu, a'ūdhu bika min sharri mā ṣana'tu, abū'u laka bi-ni'matika 'alayya, wa abū'u bi-dhanbī fa-ghfir lī fa-innahu lā yaghfiru adh-dhunūba illā Anta.", narrator: "Shaddad ibn Aws", tags: ['dhikr', 'repentir', 'matin', 'soir'] },
     { id: 99, textAr: "مَنْ قَرَأَ آيَةَ الْكُرْسِيِّ فِي كُلِّ لَيْلَةِ لَمْ يَزَلْ عَلَيْهِ مِنَ اللَّهِ حَافِظٌ", textFr: "Celui qui lit Ayat al-Kursi chaque soir sera sous la protection d'Allah.", source: "Bukhari", narrator: "Abu Hurayra", tags: ['coran', 'soir', 'dhikr'] },
     { id: 100, textAr: "مَنْ قَرَأَ سُورَةَ الْكَهْفِ يَوْمَ الْجُمُعَةِ أَضَاءَ لَهُ مِنَ النُّورِ مَا بَيْنَ الْجُمُعَتَيْنِ", textFr: "Celui qui lit la sourate Al-Kahf le vendredi sera illuminé entre les deux vendredis.", source: "Nasa'i & Bayhaqi", narrator: "Abu Sa'id", tags: ['coran', 'vendredi'] },
 

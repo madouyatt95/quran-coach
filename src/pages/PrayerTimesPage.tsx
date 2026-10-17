@@ -1,3 +1,6 @@
+import { useFavoriteMosqueSchedule } from '../hooks/useFavoriteMosqueSchedule';
+import { publishedDay, publishedNext, prayerCountdown } from '../lib/publishedPrayerClock';
+import { PublishedPrayerList } from '../components/Prayer/PublishedPrayerList';
 /**
  * PrayerTimesPage — Advanced Fiqh Module (Sprint 3)
  * Replaces the old AlAdhan API-based page with local computation + fiqh windows.
@@ -11,7 +14,7 @@ import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import {
     computeDay, computeStandard, compareWithStandard, formatDate, type DayResult,
-    ANGLE_PRESETS, getHijriDate, PRAYER_NAMES_FR, SALAT_KEYS
+    ANGLE_PRESETS, PRAYER_NAMES_FR, SALAT_KEYS
 } from '../lib/prayerEngine';
 import { computeWindows, formatWindow, formatIshaWindow, type FiqhWindows } from '../lib/windowsEngine';
 import { isHighLatitude, getHighLatWarning } from '../lib/highLatResolver';
@@ -19,10 +22,18 @@ import { schedulePrayerNotifications, hashSettings, cancelAllScheduled } from '.
 import { updatePushPreferences, updatePushLocation } from '../lib/notificationService';
 // PrayerCalendarModal removed — replaced by Sunnan Rawatib tracker
 import { LocationSearchModal } from '../components/Prayer/LocationSearchModal';
+import { useIslamicCalendarStore } from '../stores/islamicCalendarStore';
+import { civilKey, hijriLabel } from '../lib/islamicCalendar';
 import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import { SideMenu } from '../components/Navigation/SideMenu';
 import { resolveCoords } from '../lib/locationService';
+import { PrayerSunArc } from '../components/Prayer/PrayerSunArc';
+import { MosqueExplorer, MosqueSheet, MyMosqueCard } from '../components/Prayer/MosqueExplorer';
+import { AutomaticMosqueControl } from '../components/Prayer/AutomaticMosqueControl';
+import type { Mosque } from '../lib/mosques';
+import { MosqueComparison, MosqueDepartureCard, FridayCard } from '../components/Prayer/MosquePlanning';
 import './PrayerTimesPage.css';
+import '../components/Prayer/PrayerExperience.css';
 
 // ─── Constants ───────────────────────────────────────────
 
@@ -141,36 +152,6 @@ function getThemeClass(nextPrayerName: string): string {
     return 'theme--default';
 }
 
-// ─── Radial Progress Component ───────────────────────────
-
-function RadialProgress({ progress }: { progress: number }) {
-    const radius = 18;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (progress / 100) * circumference;
-
-    return (
-        <div className="radial-progress-container">
-            <svg width="44" height="44" viewBox="0 0 44 44">
-                <circle
-                    className="radial-progress-bg"
-                    cx="22" cy="22" r={radius}
-                    fill="none" strokeWidth="3"
-                />
-                <circle
-                    className="radial-progress-value"
-                    cx="22" cy="22" r={radius}
-                    fill="none" strokeWidth="3"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    transform="rotate(-90 22 22)"
-                />
-            </svg>
-            <div className="radial-progress-text">{Math.round(progress)}%</div>
-        </div>
-    );
-}
-
 // ─── Express Qibla Component ───────────────────────────
 
 function ExpressQibla({ lat, lng }: { lat: number, lng: number }) {
@@ -212,6 +193,8 @@ export function PrayerTimesPage() {
 
     // Subscribe only to the specific slices we display in JSX
     const cityName = usePrayerStore((s) => s.cityName);
+    const locationMode = usePrayerStore(s=>s.locationMode);
+    const locationError = usePrayerStore(s=>s.locationError);
     const lat = usePrayerStore((s) => s.lat);
     const lng = usePrayerStore((s) => s.lng);
     const settings = usePrayerStore((s) => s.settings);
@@ -236,10 +219,18 @@ export function PrayerTimesPage() {
     const [deltas, setDeltas] = useState<Record<string, number> | null>(null);
     const [countdown, setCountdown] = useState('');
     const [nextPrayerName, setNextPrayerName] = useState('');
-    const [progressValue, setProgressValue] = useState(0);
-    const [hijriDateLabel, setHijriDateLabel] = useState('');
+    const [nowMs, setNowMs] = useState(Date.now());
+    const {timetable:mosqueTimetable,favorite:activeMosque}=useFavoriteMosqueSchedule(nowMs);
+    const mosqueDay=publishedDay(mosqueTimetable,nowMs,formatDate(selectedDate));
+    const mosqueNext=publishedNext(mosqueTimetable,nowMs);
+    const [prayerView, setPrayerView] = useState<'times'|'mosques'>('times');
+    const [selectedMosque, setSelectedMosque] = useState<Mosque|null>(null);
+    const calendarMethod = useIslamicCalendarStore(s=>s.method);
+    const calendarOffset = useIslamicCalendarStore(s=>s.offset);
+    const hijriDateLabel = hijriLabel(civilKey(new Date(nowMs)),calendarMethod,calendarOffset);
 
     const shouldOpenCalendar = location.state?.openIslamicCalendar;
+    useEffect(()=>{if(location.state?.openLocation)setShowLocationModal(true);},[location.state?.openLocation]);
 
     useEffect(() => {
         if (shouldOpenCalendar) {
@@ -333,29 +324,22 @@ export function PrayerTimesPage() {
         const update = () => {
             const now = new Date();
             const nowMs = now.getTime();
+            setNowMs(nowMs);
+            const liveDay = formatDate(now) === dayResult.date ? dayResult : computeDay(now, lat ?? 0, lng ?? 0, settings);
 
-            setHijriDateLabel(getHijriDate(now));
+
 
             let nextP = 'fajr';
             let nextPMs = 0;
-            let prevPMs = 0;
 
-            // Find next prayer and previous prayer for progress bar
+
+            // Find the next prayer for today's countdown.
             for (let i = 0; i < SALAT_KEYS.length; i++) {
                 const key = SALAT_KEYS[i];
-                const t = dayResult.times[key];
+                const t = liveDay.times[key];
                 if (t.getTime() > nowMs) {
                     nextP = key;
                     nextPMs = t.getTime();
-                    if (i > 0) {
-                        prevPMs = dayResult.times[SALAT_KEYS[i - 1]].getTime();
-                    } else {
-                        // Previous was Isha yesterday
-                        const yesterday = new Date(now);
-                        yesterday.setDate(yesterday.getDate() - 1);
-                        const yesterdayTimes = computeDay(yesterday, lat || 0, usePrayerStore.getState().lng || 0, settings).times;
-                        prevPMs = yesterdayTimes.isha.getTime();
-                    }
                     break;
                 }
             }
@@ -367,7 +351,7 @@ export function PrayerTimesPage() {
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 const tomorrowTimes = computeDay(tomorrow, lat || 0, usePrayerStore.getState().lng || 0, settings).times;
                 nextPMs = tomorrowTimes.fajr.getTime();
-                prevPMs = dayResult.times.isha.getTime();
+
             }
 
             setNextPrayerName(nextP);
@@ -384,17 +368,12 @@ export function PrayerTimesPage() {
                 : `${mins}m ${secs}s`;
             setCountdown(countdownStr);
 
-            // Progress percentage
-            const totalWindow = nextPMs - prevPMs;
-            const elapsed = nowMs - prevPMs;
-            const pct = Math.min(100, Math.max(0, (elapsed / totalWindow) * 100));
-            setProgressValue(pct);
         };
 
         update();
         const interval = setInterval(update, 1000);
         return () => clearInterval(interval);
-    }, [dayResult, lat, settings]);
+    }, [dayResult, lat, lng, settings]);
 
     // ─── Day navigation ───────────────────────────────────
 
@@ -404,9 +383,7 @@ export function PrayerTimesPage() {
         setSelectedDate(d);
     };
 
-    const isToday = useMemo(() =>
-        formatDate(selectedDate) === formatDate(new Date()),
-        [selectedDate]);
+    const isToday = formatDate(selectedDate) === formatDate(new Date(nowMs));
 
     const dateLabel = useMemo(() => {
         if (isToday) return "Aujourd'hui";
@@ -474,37 +451,128 @@ export function PrayerTimesPage() {
             {/* Header / Hero */}
             <div className="prayer-hero">
                 <div className="prayer-hero__top">
-                    <button className="prayer-hero__back" onClick={() => navigate('/')}>
+                    <button className="prayer-hero__back" aria-label="Revenir à l’accueil" onClick={() => navigate('/')}>
                         <ChevronLeft size={24} />
                     </button>
                     <button className="prayer-hero__location" onClick={() => setShowLocationModal(true)}>
                         <MapPin size={14} />
-                        <span>{cityName || 'Localisation...'}</span>
+                        <span>{cityName || 'Localisation...'} · {locationMode==='auto'?'GPS':'Ville fixe'}</span>
                     </button>
-                    <button className="prayer-hero__settings-btn" onClick={() => navigate('/prayer-settings')}>
+                    <button className="prayer-hero__settings-btn" aria-label="Réglages des horaires de prière" onClick={() => navigate('/prayer-settings')}>
                         <Settings size={22} />
                     </button>
                 </div>
 
+                {locationError && locationMode==='auto' && <p role="status" className="mosque-caption">{locationError} Horaires conservés pour {cityName || 'le dernier lieu'}.</p>}
                 <div className="prayer-hero__main">
                     <div className="prayer-hero__countdown-box">
-                        <RadialProgress progress={progressValue} />
+
                         <div className="prayer-hero__countdown-text">
-                            <span className="prayer-hero__next-label">{PRAYER_NAMES_FR[nextPrayerName] || nextPrayerName} dans</span>
-                            <span className="prayer-hero__timer">{countdown || '--:--'}</span>
+                            <span className="prayer-hero__next-label">{isToday ? mosqueDay ? (mosqueNext ? `${mosqueNext.label} · ${mosqueNext.kind} dans` : 'Prochain horaire non renseigné') : `${PRAYER_NAMES_FR[nextPrayerName] || nextPrayerName} dans` : 'Horaires du jour choisi'}</span>
+                            <span className="prayer-hero__timer">{isToday ? (mosqueDay ? (mosqueNext ? prayerCountdown(mosqueNext.at,nowMs) : '—') : countdown || '--:--') : dateLabel}</span>
                         </div>
                     </div>
 
                     <div className="prayer-hero__hijri-box">
-                        <span className="prayer-hero__hijri">{hijriDateLabel}</span>
+                        <span className="prayer-hero__hijri">{isToday ? hijriDateLabel : hijriLabel(civilKey(selectedDate),calendarMethod,calendarOffset)}</span>
                         {lat && usePrayerStore.getState().lng && (
                             <ExpressQibla lat={lat} lng={usePrayerStore.getState().lng!} />
                         )}
                     </div>
                 </div>
+                <p className="prayer-calculation-caption">{mosqueDay ? `Horaires de ${activeMosque?.name}` : `Horaires calculés pour ${cityName || 'votre position'} · aucun calendrier de mosquée disponible pour ce jour`}</p>
+                <PrayerSunArc day={mosqueDay ? {...dayResult,times:{...dayResult.times,...Object.fromEntries(mosqueDay.prayers.map(p=>[p.key,new Date(p.adhanAt!)]))},formattedTimes:{...dayResult.formattedTimes,...Object.fromEntries(mosqueDay.prayers.map(p=>[p.key,p.adhan!]))}} : dayResult} now={nowMs} isToday={isToday}/>
             </div>
 
             <div className="prayer-content">
+                <div className="prayer-view-tabs" role="group" aria-label="Vue de la page Prières">
+                    <button type="button" aria-pressed={prayerView === 'times'} onClick={() => setPrayerView('times')}>☀️ Mes horaires</button>
+                    <button type="button" aria-pressed={prayerView === 'mosques'} onClick={() => setPrayerView('mosques')}>🕌 Mosquées</button>
+                </div>
+                <AutomaticMosqueControl onOpen={setSelectedMosque} onChoose={() => setPrayerView('mosques')}/>
+                <MosqueDepartureCard now={nowMs} onOpen={setSelectedMosque} onChoose={() => setPrayerView('mosques')}/>
+                {prayerView === 'mosques' ? <>
+                    <MosqueExplorer lat={lat} lng={lng} city={cityName || ''} onChooseCity={() => setShowLocationModal(true)} onOpen={setSelectedMosque}/>
+                    <MosqueComparison now={nowMs} lat={lat} lng={lng} onOpen={setSelectedMosque}/>
+                    <MyMosqueCard onOpen={setSelectedMosque} onChoose={() => setShowLocationModal(true)}/>
+                </> : <>
+
+                <div className="prayer-page-footer">
+                    <div className="prayer-date-selector">
+                        <button aria-label="Jour précédent" onClick={() => goDay(-1)} className="prayer-date-selector__btn">
+                            <ChevronLeft size={20} />
+                        </button>
+                        <span className="prayer-date-selector__label">{dateLabel}</span>{!isToday && <button type="button" onClick={() => setSelectedDate(new Date())}>Aujourd’hui</button>}
+                        <button aria-label="Jour suivant" onClick={() => goDay(1)} className="prayer-date-selector__btn">
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                </div>
+
+                {mosqueDay && mosqueTimetable ? <PublishedPrayerList day={mosqueDay} timetable={mosqueTimetable} nextKey={isToday?mosqueNext?.key:undefined}/> : <div className="prayer-list">
+                    <div className="prayer-list__title">
+                        <Clock size={14} />
+                        <span>{isToday ? t('prayer.todayTimes') : 'Horaires de cette journée'}</span>
+                    </div>
+                    {PRAYER_KEYS.map((key) => {
+                        const isNext = nextPrayerName === key && isToday;
+                        const prayerTime = dayResult.times[key];
+                        const isPassed = isToday && new Date() > prayerTime && !isNext;
+
+                        return (
+                            <div
+                                key={key}
+                                className={`prayer-row ${isNext ? 'prayer-row--active' : ''} ${isPassed ? 'prayer-row--passed' : ''} ${key === 'sunrise' ? 'prayer-row--sunrise' : ''}`}
+                            >
+                                <div className="prayer-row__left">
+                                    <span className="prayer-row__emoji">{PRAYER_EMOJIS[key]}</span>
+                                    <div className="prayer-row__names">
+                                        <span className="prayer-row__name">{t(`prayer.${key}`, PRAYER_NAMES_FR[key])}</span>
+                                        <span className="prayer-row__name-ar">{PRAYER_NAMES_AR[key]}</span>
+                                    </div>
+                                </div>
+                                <div className="prayer-row__time-box">
+                                    <span className="prayer-row__time">{dayResult.formattedTimes[key]}</span>
+                                    {isNext && <span className="prayer-row__active-badge">{t('prayer.nextPrayer', 'PROCHAINE PRIÈRE')}</span>}
+                                </div>
+                            </div>
+                        );
+                    })}
+
+                    {/* Extra Prayers (Tahajjud/Ishraq) */}
+                    {(settings.showTahajjud || settings.showIshraq) && (
+                        <div className="prayer-extra-section">
+                            <div className="prayer-extra-divider">Options</div>
+                            {settings.showTahajjud && dayResult.formattedTimes.tahajjud && (
+                                <div className="prayer-row prayer-row--extra">
+                                    <div className="prayer-row__left">
+                                        <span className="prayer-row__emoji">🌙</span>
+                                        <div className="prayer-row__names">
+                                            <span className="prayer-row__name">Tahajjud</span>
+                                            <span className="prayer-row__desc">Dernier tiers</span>
+                                        </div>
+                                    </div>
+                                    <span className="prayer-row__time">{dayResult.formattedTimes.tahajjud}</span>
+                                </div>
+                            )}
+                            {settings.showIshraq && dayResult.formattedTimes.ishraq && (
+                                <div className="prayer-row prayer-row--extra">
+                                    <div className="prayer-row__left">
+                                        <span className="prayer-row__emoji">☀️</span>
+                                        <div className="prayer-row__names">
+                                            <span className="prayer-row__name">Ishraq</span>
+                                            <span className="prayer-row__desc">15m après Shuruq</span>
+                                        </div>
+                                    </div>
+                                    <span className="prayer-row__time">{dayResult.formattedTimes.ishraq}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>}
+
+                <p className="prayer-calculation-caption">{mosqueDay ? 'Le lever du soleil, le ciel et les fenêtres ci-dessous restent calculés selon votre position.' : `Horaires calculés pour ${cityName || 'la ville choisie'} · selon vos réglages. Iqamas non renseignées.`}</p>
+                <FridayCard now={nowMs} onOpen={setSelectedMosque}/>
                 {/* Secondary Actions Row */}
                 <div className="prayer-actions-row">
                     <button className="prayer-action-card" onClick={() => navigate('/adhkar')}>
@@ -664,80 +732,6 @@ export function PrayerTimesPage() {
                         <span>{highLatWarning}</span>
                     </div>
                 )}
-
-                <div className="prayer-list">
-                    <div className="prayer-list__title">
-                        <Clock size={14} />
-                        <span>{t('prayer.todayTimes')}</span>
-                    </div>
-                    {PRAYER_KEYS.map((key) => {
-                        const isNext = nextPrayerName === key && isToday;
-                        const prayerTime = dayResult.times[key];
-                        const isPassed = isToday && new Date() > prayerTime && !isNext;
-
-                        return (
-                            <div
-                                key={key}
-                                className={`prayer-row ${isNext ? 'prayer-row--active' : ''} ${isPassed ? 'prayer-row--passed' : ''} ${key === 'sunrise' ? 'prayer-row--sunrise' : ''}`}
-                            >
-                                <div className="prayer-row__left">
-                                    <span className="prayer-row__emoji">{PRAYER_EMOJIS[key]}</span>
-                                    <div className="prayer-row__names">
-                                        <span className="prayer-row__name">{t(`prayer.${key}`, PRAYER_NAMES_FR[key])}</span>
-                                        <span className="prayer-row__name-ar">{PRAYER_NAMES_AR[key]}</span>
-                                    </div>
-                                </div>
-                                <div className="prayer-row__time-box">
-                                    <span className="prayer-row__time">{dayResult.formattedTimes[key]}</span>
-                                    {isNext && <span className="prayer-row__active-badge">{t('prayer.nextPrayer', 'PROCHAINE PRIÈRE')}</span>}
-                                </div>
-                            </div>
-                        );
-                    })}
-
-                    {/* Extra Prayers (Tahajjud/Ishraq) */}
-                    {(settings.showTahajjud || settings.showIshraq) && (
-                        <div className="prayer-extra-section">
-                            <div className="prayer-extra-divider">Options</div>
-                            {settings.showTahajjud && dayResult.formattedTimes.tahajjud && (
-                                <div className="prayer-row prayer-row--extra">
-                                    <div className="prayer-row__left">
-                                        <span className="prayer-row__emoji">🌙</span>
-                                        <div className="prayer-row__names">
-                                            <span className="prayer-row__name">Tahajjud</span>
-                                            <span className="prayer-row__desc">Dernier tiers</span>
-                                        </div>
-                                    </div>
-                                    <span className="prayer-row__time">{dayResult.formattedTimes.tahajjud}</span>
-                                </div>
-                            )}
-                            {settings.showIshraq && dayResult.formattedTimes.ishraq && (
-                                <div className="prayer-row prayer-row--extra">
-                                    <div className="prayer-row__left">
-                                        <span className="prayer-row__emoji">☀️</span>
-                                        <div className="prayer-row__names">
-                                            <span className="prayer-row__name">Ishraq</span>
-                                            <span className="prayer-row__desc">15m après Shuruq</span>
-                                        </div>
-                                    </div>
-                                    <span className="prayer-row__time">{dayResult.formattedTimes.ishraq}</span>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                <div className="prayer-page-footer">
-                    <div className="prayer-date-selector">
-                        <button onClick={() => goDay(-1)} className="prayer-date-selector__btn">
-                            <ChevronLeft size={20} />
-                        </button>
-                        <span className="prayer-date-selector__label">{dateLabel}</span>
-                        <button onClick={() => goDay(1)} className="prayer-date-selector__btn">
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                </div>
 
                 {/* Fiqh Windows */}
                 {windows && (
@@ -947,7 +941,8 @@ export function PrayerTimesPage() {
                     </label>
                 </div>
 
-                {/* PrayerCalendarModal removed — replaced by Sunnan Rawatib */}
+                </>}
+                {selectedMosque && <MosqueSheet key={selectedMosque.id} mosque={selectedMosque} onClose={() => setSelectedMosque(null)}/>}
 
                 <LocationSearchModal
                     isOpen={showLocationModal}

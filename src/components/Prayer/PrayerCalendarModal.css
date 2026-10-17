@@ -10,7 +10,8 @@
     align-items: center;
     justify-content: center;
     z-index: 2000;
-    padding: 16px;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+    box-sizing: border-box;
     animation: fadeIn 0.2s ease-out;
 }
 
@@ -18,7 +19,7 @@
     background: var(--bg-card);
     width: 100%;
     max-width: 500px;
-    max-height: 85vh;
+    max-height: calc(100dvh - max(12px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom)));
     border-radius: 20px;
     display: flex;
     flex-direction: column;
@@ -67,7 +68,10 @@
 }
 
 .prayer-calendar-modal__close {
-    padding: 8px;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
     border-radius: 50%;
     color: var(--text-secondary);
 }
@@ -88,7 +92,8 @@
 }
 
 .prayer-calendar-modal__nav-btn {
-    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
     color: var(--cta-gold);
 }
 

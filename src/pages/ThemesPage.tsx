@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, BookOpen, ChevronRight, ArrowLeft } from 'lucide-react';
 import { QURAN_THEMES, type QuranTheme } from '../data/themesData';
-import { useQuranStore } from '../stores/quranStore';
+import { useOpenReader } from '../hooks/useOpenReader';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatDivineNames } from '../lib/divineNames';
@@ -11,7 +11,7 @@ export function ThemesPage() {
     const { t } = useTranslation();
     const [selectedTheme, setSelectedTheme] = useState<QuranTheme | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const { goToPage } = useQuranStore();
+    const openReader = useOpenReader('Thèmes');
     const navigate = useNavigate();
 
     const filteredThemes = QURAN_THEMES.filter(t =>
@@ -20,18 +20,7 @@ export function ThemesPage() {
     );
 
     const handleVerseClick = (surah: number, ayah: number) => {
-        // Fetch the page for this ayah and navigate
-        fetch(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.code === 200 && data.data?.page) {
-                    sessionStorage.setItem('isSilentJump', 'true');
-                    sessionStorage.setItem('scrollToAyah', JSON.stringify({ surah, ayah }));
-                    goToPage(data.data.page, { silent: true });
-                    navigate('/read');
-                }
-            })
-            .catch(() => { });
+        openReader({ surah, ayah });
     };
 
     if (selectedTheme) {

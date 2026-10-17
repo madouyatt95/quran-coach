@@ -1,0 +1,12 @@
+import {Link} from 'react-router-dom';
+import {usePracticeState} from '../stores/arabicPracticeStore';
+import {lessonById} from './data';
+import {DIAGNOSTIC,diagnosticRecommendation} from './diagnosticData';
+export function Diagnostic(){
+ const [draft,setDraft]=usePracticeState<{profile:string;answers:Record<string,number>;done:boolean}>('diagnostic',{profile:'',answers:{},done:false});
+ const current=DIAGNOSTIC.find(q=>draft.answers[q.lesson]===undefined);
+ const recommended=lessonById(diagnosticRecommendation(draft.answers))!;
+ return <><h1>Trouver mon point de départ</h1><p>Six repères pour vous orienter. Ce diagnostic est facultatif ; tous les cours restent ouverts.</p><section className="fahm-card"><h2>Votre expérience</h2><div className="arabic-options">{['Je débute','Je lis sans comprendre la grammaire','J’ai déjà étudié quelques notions','Je reprends après une pause'].map(p=><button key={p} aria-pressed={draft.profile===p} onClick={()=>setDraft(d=>({...d,profile:p}))}>{p}</button>)}</div>
+ {!draft.done&&current?<><span>{Object.keys(draft.answers).length+1} / {DIAGNOSTIC.length}</span><h3>{current.prompt}</h3><div className="arabic-options">{[...current.options,'Je ne sais pas encore'].map((o,i)=><button key={o} onClick={()=>setDraft(d=>{const answers={...d.answers,[current.lesson]:i};return{...d,answers,done:Object.keys(answers).length===DIAGNOSTIC.length};})}>{o}</button>)}</div></>:<><h2>Votre départ conseillé</h2><p>{DIAGNOSTIC.every(q=>draft.answers[q.lesson]===q.answer)?'Les six repères de ce diagnostic sont retrouvés. Vous pouvez aborder le deuxième niveau.':`Le premier repère à consolider est « ${recommended.title} ». Commencer ici permettra de suivre les notions qui en dépendent.`}</p><Link className="fahm-primary" to={`/academy/arabic/${recommended.id}`}>Commencer : {recommended.title} →</Link><details><summary>Comprendre ma recommandation</summary>{DIAGNOSTIC.map(q=><p key={q.lesson}><strong>{draft.answers[q.lesson]===q.answer?'✓':'À reprendre'} · {lessonById(q.lesson)!.title}</strong><br/>{q.why}</p>)}</details><button className="arabic-next-reason" onClick={()=>setDraft(d=>({...d,answers:{},done:false}))}>Refaire le diagnostic</button></>}
+ <p className="arabic-muted">Votre niveau déclaré est conservé comme repère personnel. Le conseil de départ repose sur vos réponses, sans attribuer de certification de niveau.</p><Link to="/academy/arabic">Choisir librement dans le programme →</Link></section></>;
+}

@@ -1,157 +1,18 @@
-import { ArrowLeft, Swords, BarChart3, Award, Globe, User, BookOpen, Timer, GraduationCap, Headphones, Clock, Map } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useQuizStore } from '../../stores/quizStore';
-import { DIFFICULTY_CONFIG, BADGES } from '../../data/quizTypes';
-import type { QuizDifficulty } from '../../data/quizTypes';
-
-export function HomeView() {
-    const { startSolo, setView, player, totalPlayed, totalWins, totalXP, level, title, difficulty, setDifficulty, wrongQuestions, unlockedBadges, sprintBest, startAudio, gameHistory } = useQuizStore();
-    const navigate = useNavigate();
-
-    return (
-        <div className="quiz-container">
-            <div className="quiz-header">
-                <button className="quiz-back-btn" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={22} />
-                </button>
-                <h1 className="quiz-title">
-                    <Swords size={24} />
-                    <span>Duel Quiz</span>
-                </h1>
-                <div className="quiz-player-badge" onClick={() => setView('profile')}>
-                    <span className="quiz-player-emoji">{player?.avatar_emoji}</span>
-                    <div className="quiz-player-info">
-                        <span className="quiz-player-name">{player?.pseudo}</span>
-                        <span className="quiz-player-title">{title}</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Level & XP Bar */}
-            <div className="quiz-xp-container" onClick={() => setView('stats')}>
-                <div className="quiz-xp-header">
-                    <span className="quiz-level-tag">Niveau {level}</span>
-                    <span className="quiz-xp-text">{totalXP % 1000} / 1000 XP</span>
-                </div>
-                <div className="quiz-xp-bar-bg">
-                    <div className="quiz-xp-bar-fill" style={{ width: `${(totalXP % 1000) / 10}%` }}></div>
-                </div>
-            </div>
-
-            {/* Quick Stats Bar */}
-            {totalPlayed > 0 && (
-                <div className="quiz-stats-bar">
-                    <div className="quiz-stat" onClick={() => setView('stats')}>
-                        <BarChart3 size={14} />
-                        <span>{totalWins}/{totalPlayed}</span>
-                    </div>
-                    <div className="quiz-stat" onClick={() => setView('badges')}>
-                        <Award size={14} />
-                        <span>{unlockedBadges.length}/{BADGES.length}</span>
-                    </div>
-                    <div className="quiz-stat" onClick={() => setView('leaderboard')}>
-                        <Globe size={14} />
-                        <span>Classement</span>
-                    </div>
-                </div>
-            )}
-
-            {/* Difficulty Selector */}
-            <p className="quiz-subtitle">Difficulté</p>
-            <div className="quiz-difficulty-row">
-                {(Object.keys(DIFFICULTY_CONFIG) as QuizDifficulty[]).map(d => {
-                    const cfg = DIFFICULTY_CONFIG[d];
-                    return (
-                        <button
-                            key={d}
-                            className={`quiz-diff-btn ${difficulty === d ? 'active' : ''}`}
-                            onClick={() => setDifficulty(d)}
-                        >
-                            <span className="quiz-diff-emoji">{cfg.emoji}</span>
-                            <span className="quiz-diff-label">{cfg.label}</span>
-                            <span className="quiz-diff-detail">
-                                {cfg.choiceCount} choix • {cfg.timerSeconds}s
-                            </span>
-                        </button>
-                    );
-                })}
-            </div>
-
-            <p className="quiz-subtitle">Choisis ton mode</p>
-            <div className="quiz-mode-cards">
-                <button className="quiz-mode-card daily" onClick={() => setView('daily')}>
-                    <Timer size={32} />
-                    <h3>Défi du Jour</h3>
-                    <p>Même quiz pour tous !</p>
-                    <span className="quiz-mode-tag">XP x2</span>
-                </button>
-                <div className="quiz-mode-row">
-                    <button className="quiz-mode-card solo" onClick={startSolo}>
-                        <User size={32} />
-                        <h3>Solo</h3>
-                    </button>
-                    <button className="quiz-mode-card duel" onClick={() => setView('lobby')}>
-                        <Swords size={32} />
-                        <h3>Duel</h3>
-                    </button>
-                </div>
-                <button className="quiz-mode-card sira" onClick={() => setView('sira-map')} style={{ marginTop: '12px', background: 'linear-gradient(135deg, #FFD700, #DAAB00)', color: '#000' }}>
-                    <Map size={32} />
-                    <h3>Parcours de la Sira</h3>
-                    <p>Découvre l'histoire du Prophète ﷺ</p>
-                    <span className="quiz-mode-tag" style={{ background: '#000', color: '#FFD700' }}>MODE HISTOIRE</span>
-                </button>
-            </div>
-
-            <button className="quiz-join-btn" onClick={() => setView('join')} style={{ marginTop: '12px' }}>
-                Rejoindre un duel avec un code
-            </button>
-
-            {/* Special Modes */}
-            <div className="quiz-special-modes" style={{ marginTop: '24px' }}>
-                <button className="quiz-special-card sprint-card" onClick={() => {
-                    useQuizStore.getState().startSprint();
-                }}>
-                    <Timer size={24} />
-                    <div>
-                        <h4>⚡ Sprint</h4>
-                        <p>60s • Tous thèmes</p>
-                    </div>
-                    {sprintBest > 0 && <span className="quiz-special-best">🏆 {sprintBest}</span>}
-                </button>
-                <button className="quiz-special-card teacher-card" onClick={() => setView('custom-duel')}>
-                    <GraduationCap size={24} />
-                    <div>
-                        <h4>🎓 Mode Professeur</h4>
-                        <p>Crée ton duel sur mesure</p>
-                    </div>
-                </button>
-                {wrongQuestions.length > 0 && (
-                    <button className="quiz-special-card revision-card" onClick={() => setView('error-review')}>
-                        <BookOpen size={24} />
-                        <div>
-                            <h4>📝 Mes Erreurs</h4>
-                            <p>{wrongQuestions.length} à revoir</p>
-                        </div>
-                    </button>
-                )}
-                <button className="quiz-special-card" onClick={startAudio} style={{ background: 'linear-gradient(135deg, #1a237e, #3F51B5)' }}>
-                    <Headphones size={24} />
-                    <div>
-                        <h4>🎧 Mode Audio</h4>
-                        <p>Reconnais la sourate</p>
-                    </div>
-                </button>
-                {gameHistory.length > 0 && (
-                    <button className="quiz-special-card" onClick={() => setView('history')} style={{ background: 'linear-gradient(135deg, #263238, #455A64)' }}>
-                        <Clock size={24} />
-                        <div>
-                            <h4>📋 Historique</h4>
-                            <p>{gameHistory.length} parties</p>
-                        </div>
-                    </button>
-                )}
-            </div>
-        </div>
-    );
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useQuizStore} from '../../stores/quizStore';
+import {useQuizLearningStore} from '../../stores/quizLearningStore';
+import {buildLearningSession,learningCandidates} from '../../lib/quizLearning';
+import {QUIZ_THEMES,DIFFICULTY_CONFIG,type QuizDifficulty} from '../../data/quizTypes';
+export function HomeView(){
+ const q=useQuizStore(),study=useQuizLearningStore(),navigate=useNavigate();
+ const [tab,setTab]=useState<'learn'|'challenge'|'together'>('learn');
+ const daily=()=>{if(!study.session||study.session.finished)study.start('Ma séance du jour',buildLearningSession({recalls:study.recalls,count:8}),'learn',[],{poolIds:learningCandidates({recalls:study.recalls}).map(q=>q.id)});q.setView('study');};
+ return <main className="quiz-container qx"><header className="qx-header qx-home-header"><button aria-label="Retour" onClick={()=>navigate(-1)}>←</button><h1>Quiz & défis</h1></header><section className="qx-hero"><span>UN PETIT PAS CHAQUE JOUR</span><h2>{study.session&&!study.session.finished?'Reprends ta séance':'Ta séance du jour'}</h2><p>5 minutes pour découvrir, comprendre et retenir.</p><button className="qx-primary" onClick={daily}>{study.session&&!study.session.finished?'Reprendre':'C’est parti'} →</button><small>{study.completed} séance{study.completed>1?'s':''} terminée{study.completed>1?'s':''}</small></section>
+ <div className="qx-tabs qx-main-tabs">{([['learn','🌱 Apprendre'],['challenge','⚡ Se défier'],['together','🤝 Ensemble']] as const).map(([id,label])=><button key={id} aria-pressed={tab===id} onClick={()=>setTab(id)}>{label}</button>)}</div>
+ {tab==='learn'&&<><button className="qx-card qx-launch" onClick={()=>{q.setView('studio');}}>📚 <span><strong>Composer ma séance</strong><small>Mes lectures · niveaux · formats variés</small></span><b>→</b></button><button className="qx-card qx-launch" onClick={()=>q.setView('investigations')}>🧭 <span><strong>Les enquêtes du savoir</strong><small>Observer, trouver l’indice, justifier</small></span><b>→</b></button><div className="qx-row"><button onClick={()=>q.setView('sira-map')}>🗺️ Parcours Sira</button><button onClick={()=>q.setView('error-review')}>↻ Mes erreurs ({q.wrongQuestions.length})</button><button onClick={q.startAudio}>🎧 Reconnaître une sourate</button></div></>}
+ {tab==='challenge'&&<><button className="qx-card qx-launch" onClick={()=>q.setView('daily')}>📅 <span><strong>Le défi du jour</strong><small>10 questions communes · reprise sauvegardée</small></span><b>→</b></button><div className="qx-row"><button onClick={q.startSprint}>⚡ Sprint · 60 secondes</button><button onClick={q.startSolo}>🎯 Défi par thème</button></div><details className="qx-card"><summary>Réglages du défi chronométré</summary><div className="qx-tabs">{(Object.keys(DIFFICULTY_CONFIG) as QuizDifficulty[]).map(d=><button key={d} aria-pressed={q.difficulty===d} onClick={()=>q.setDifficulty(d)}>{DIFFICULTY_CONFIG[d].label} · {DIFFICULTY_CONFIG[d].timerSeconds}s</button>)}</div></details></>}
+ {tab==='together'&&<><button className="qx-card qx-launch" onClick={()=>q.setView('studio')}>📱 <span><strong>Un téléphone, plusieurs joueurs</strong><small>À tour de rôle ou objectif commun</small></span><b>→</b></button><p className="qx-muted">À la fin d’une séance, partage les mêmes questions par lien.</p><div className="qx-row"><button onClick={()=>q.setView('lobby')}>⚔️ Duel en ligne</button><button onClick={()=>q.setView('join')}>Rejoindre avec un code</button><button onClick={()=>q.setView('custom-duel')}>🎓 Créer un duel sur mesure</button></div></>}
+ <h2>Explorer un thème</h2><div className="qx-themes">{QUIZ_THEMES.map(t=><button key={t.id} onClick={()=>q.selectTheme(t.id)}><span>{t.emoji}</span><strong>{t.name}</strong><small>Défi rapide</small></button>)}</div>
+ <details className="qx-card"><summary>Ma progression · niveau {q.level} · {q.totalXP} XP</summary><p>Les niveaux représentent ton expérience dans le jeu.</p><div className="qx-row">{([['stats','Statistiques'],['badges','Badges'],['leaderboard','Classement'],['history','Historique'],['profile','Profil']] as const).map(([view,label])=><button key={view} onClick={()=>q.setView(view)}>{label}</button>)}</div></details></main>;
 }

@@ -1,3 +1,4 @@
+import { FindButton } from '../Navigation/FindButton';
 import { getJuzForPage } from '../../data/juzData';
 import { VerseActionBar } from './VerseActionBar';
 import { useVersePress, type VerseSelection } from './hooks/useVersePress';
@@ -23,7 +24,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { useVisibleReadingPosition, verseAtReadingLine } from './hooks/useVisibleReadingPosition';
 import { useKhatmReading } from './hooks/useKhatmReading';
 import { useTranslation } from 'react-i18next';
-import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs } from '../../lib/quranApi';
+import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration, fetchSurahs, mushafReciter } from '../../lib/quranApi';
 import { fetchWordTimings, type VerseWords } from '../../lib/wordTimings';
 import { formatDivineNames } from '../../lib/divineNames';
 // import { fetchTajweedPage } from '../../lib/tajweedService'; // Optional, might need surah version later
@@ -244,15 +245,6 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
             audio.pageAyahsRef.current = ayahs;
             setIsLoading(false);
 
-            // Fetch word timings (limited to visible range or first 50 for start)
-            const wordsMap = new Map<string, VerseWords>();
-            const initialTimingAyahs = ayahs.slice(0, 50);
-            // Navigation must not wait for audio word timings.
-            void Promise.all(initialTimingAyahs.map(async (a) => {
-                const vw = await fetchWordTimings(a.surah, a.numberInSurah);
-                if (vw) wordsMap.set(`${a.surah}:${a.numberInSurah}`, vw);
-            })).then(() => { if (!cancelled) audio.setVerseWordsMap(wordsMap); }).catch(() => {});
-
             if (maskMode === 'partial') generatePartialMask(ayahs);
 
             // Handle pending jumps that were waiting for surah data
@@ -289,6 +281,20 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
         });
         return () => { cancelled = true; };
     }, [currentSurah]);
+
+    // Keep prefetched word positions aligned with the selected audio edition.
+    useEffect(() => {
+        let cancelled = false;
+        const reciterId = mushafReciter(selectedReciter).quranComId;
+        const wordsMap = new Map<string, VerseWords>();
+        void Promise.all(currentSurahAyahs.slice(0, 50).map(async (ayah) => {
+            const words = await fetchWordTimings(ayah.surah, ayah.numberInSurah, reciterId).catch(() => null);
+            if (words) wordsMap.set(`${ayah.surah}:${ayah.numberInSurah}`, words);
+        })).then(() => {
+            if (!cancelled) audio.setVerseWordsMap(previous => new Map([...wordsMap, ...previous]));
+        });
+        return () => { cancelled = true; };
+    }, [currentSurahAyahs, selectedReciter]);
 
     // Dedicated Jump Handling Effect - react to signal even if surah stays the same
     useEffect(() => {
@@ -423,6 +429,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
 
                 {/* Center: Khatm Tracker (Compact) */}
                 <div className="mih-header-center">
+                    <FindButton className="reader-find-button" />
                     <KhatmTracker dailyPreview />
                     <KhatmPageBadge currentPage={currentPage} />
                     <div className="view-mode-selector" style={{ marginLeft: '12px', display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
@@ -430,7 +437,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                         <select aria-label="Type de Mushaf"
                             value="mushaf"
                             onChange={(e) => {
-                                const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah';
+                                const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah' | 'tajweed-interactive';
                                 useSettingsStore.getState().setViewMode(mode);
                             }}
                             style={{
@@ -444,8 +451,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                             }}
                         >
                             <option value="mushaf">{t('settings.textMode', 'Texte Interactif')}</option>
-                            <option value="tajweed">Image (Tajweed)</option>
-                            <option value="madinah">Madinah (Vectoriel)</option>
+                            <option value="tajweed-interactive">Mushaf Tajwid interactif</option>
                         </select>
                     </div>
                 </div>
@@ -661,7 +667,7 @@ export function MushafPage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElemen
                 onClose={closeVerseActions} onPlay={()=>audio.playAyahAtIndex(getAyahIndex(verseSelection.ayah))}
                 onMore={()=>setShareAyah(verseSelection.ayah)}
                 favorite={isFavorite(verseSelection.ayah.number)}
-                onFavorite={() => { const a = verseSelection.ayah; toggleFavorite({number:a.number,surah:a.surah,numberInSurah:a.numberInSurah,text:a.text}); }}
+                onFavorite={() => { const a = verseSelection.ayah; toggleFavorite({number:a.number,surah:a.surah,numberInSurah:a.numberInSurah,text:a.text,page:a.page}); }}
                 onUnderstand={() => { const a = verseSelection.ayah; setFahmAyah({surah:a.surah,ayah:a.numberInSurah,text:a.text,translation:translationMap.get(a.number),surahName:SURAH_NAMES_FR[a.surah]}); }}/>}
 
             {/* Share Modal */}

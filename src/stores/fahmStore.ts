@@ -93,7 +93,7 @@ export const useFahmStore = create<FahmState>()(
                 const { learnedWords } = get();
                 const now = Date.now();
                 return Object.entries(learnedWords)
-                    .filter(([, progress]) => progress.level > 0 && progress.nextReview <= now)
+                    .filter(([, progress]) => (progress.correctCount + progress.wrongCount) > 0 && progress.nextReview <= now)
                     .sort(([, a], [, b]) => a.nextReview - b.nextReview)
                     .map(([id]) => parseInt(id));
             },

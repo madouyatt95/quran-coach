@@ -1,7 +1,12 @@
 import type {CoachReviewEntry} from './coachSession';
 export type HifdhStep = 'listen' | 'recite' | 'review';
-export interface HifdhSession {surah:number;start:number;end:number;ayah:number;speed:number;repeats:number;phonetics:boolean;focus:boolean;step:HifdhStep}
+export interface HifdhSession {surah:number;start:number;end:number;ayah:number;speed:number;repeats:number;phonetics:boolean;focus:boolean;step:HifdhStep;updatedAt?:number}
 export const HIFDH_SESSION_KEY='hifdh-session-v1';
+export const HIFDH_SESSION_EVENT='quran-hifdh-session-changed';
+export function saveHifdhSession(storage:Pick<Storage,'setItem'>,session:HifdhSession){
+ storage.setItem(HIFDH_SESSION_KEY,JSON.stringify(session));
+ if(typeof window!=='undefined')window.dispatchEvent(new Event(HIFDH_SESSION_EVENT));
+}
 export function readHifdhSession(storage:Pick<Storage,'getItem'>):HifdhSession|null {
  try {
   const raw=storage.getItem(HIFDH_SESSION_KEY);

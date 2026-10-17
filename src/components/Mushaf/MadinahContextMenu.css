@@ -16,6 +16,8 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
     animation: scale-up-context 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 

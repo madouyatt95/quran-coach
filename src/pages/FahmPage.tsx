@@ -1,276 +1,35 @@
-// ─── Fahm Page — Hub de Compréhension du Coran ──────────────
-// Page dédiée avec parcours thématiques, vocabulaire SRS, et statistiques.
-
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-    ArrowLeft, BookOpen, Hash, Route, TrendingUp,
-    ChevronRight, Play, CheckCircle2, Star, Sparkles
-} from 'lucide-react';
-import { READING_PATHS, type ReadingPath } from '../data/readingPaths';
-import { QURAN_VOCABULARY } from '../data/quranVocabulary';
-import { useFahmStore } from '../stores/fahmStore';
-import { useQuranStore } from '../stores/quranStore';
-import './FahmPage.css';
-
-export function FahmPage() {
-    const navigate = useNavigate();
-    const fahm = useFahmStore();
-    const { goToAyah } = useQuranStore();
-    const [tab, setTab] = useState<'paths' | 'vocab' | 'stats'>('paths');
-
-    const wordsForReview = useMemo(() => fahm.getWordsForReview(), [fahm.learnedWords]);
-    const totalLearned = fahm.totalWordsLearned;
-    const totalWords = QURAN_VOCABULARY.length;
-    const pct = totalWords > 0 ? Math.round((totalLearned / totalWords) * 100) : 0;
-
-    const handleStartPath = (path: ReadingPath) => {
-        fahm.startPath(path.id);
-        // Navigate to first incomplete day
-        const completed = fahm.pathProgress[path.id] || [];
-        const nextDay = path.days.find(d => !completed.includes(d.day));
-        if (nextDay) {
-            navigate(`/fahm/lesson/${path.id}/${nextDay.day}`);
-        }
-    };
-
-    const handleContinuePath = (path: ReadingPath) => {
-        const completed = fahm.pathProgress[path.id] || [];
-        const nextDay = path.days.find(d => !completed.includes(d.day));
-        if (nextDay) {
-            navigate(`/fahm/lesson/${path.id}/${nextDay.day}`);
-        }
-    };
-
-    const handleDayClick = (path: ReadingPath, day: typeof path.days[0]) => {
-        navigate(`/fahm/lesson/${path.id}/${day.day}`);
-    };
-
-    return (
-        <div className="fahm-page">
-            {/* Header */}
-            <header className="fahm-page__header">
-                <button className="fahm-page__back" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={20} />
-                </button>
-                <div className="fahm-page__title-block">
-                    <h1>فَهْم</h1>
-                    <span className="fahm-page__subtitle">Comprendre le Coran</span>
-                </div>
-            </header>
-
-            {/* Stats bar */}
-            <div className="fahm-stats-bar">
-                <div className="fahm-stat">
-                    <Hash size={16} />
-                    <span>{totalLearned}/{totalWords} mots</span>
-                </div>
-                <div className="fahm-stat">
-                    <TrendingUp size={16} />
-                    <span>{pct}% compréhension</span>
-                </div>
-                {wordsForReview.length > 0 && (
-                    <button className="fahm-review-btn" onClick={() => navigate('/vocab')}>
-                        <Sparkles size={14} />
-                        {wordsForReview.length} à réviser
-                    </button>
-                )}
-            </div>
-
-            {/* Progress bar */}
-            <div className="fahm-progress-bar">
-                <div className="fahm-progress-bar__fill" style={{ width: `${pct}%` }} />
-            </div>
-
-            {/* Tabs */}
-            <div className="fahm-page__tabs">
-                <button
-                    className={`fahm-page__tab ${tab === 'paths' ? 'active' : ''}`}
-                    onClick={() => setTab('paths')}
-                >
-                    <Route size={16} />
-                    <span>Parcours</span>
-                </button>
-                <button
-                    className={`fahm-page__tab ${tab === 'vocab' ? 'active' : ''}`}
-                    onClick={() => navigate('/vocab')}
-                >
-                    <Hash size={16} />
-                    <span>Vocabulaire</span>
-                </button>
-                <button
-                    className={`fahm-page__tab ${tab === 'stats' ? 'active' : ''}`}
-                    onClick={() => setTab('stats')}
-                >
-                    <TrendingUp size={16} />
-                    <span>Progrès</span>
-                </button>
-            </div>
-
-            {/* Content */}
-            <div className="fahm-page__content">
-                {tab === 'paths' && (
-                    <div className="fahm-paths">
-                        {/* Active path */}
-                        {fahm.activePath && (() => {
-                            const activePath = READING_PATHS.find(p => p.id === fahm.activePath);
-                            if (!activePath) return null;
-                            const completed = fahm.pathProgress[activePath.id] || [];
-                            const progress = Math.round((completed.length / activePath.days.length) * 100);
-
-                            return (
-                                <div className="fahm-active-path">
-                                    <div className="fahm-active-path__header">
-                                        <span className="fahm-active-path__emoji">{activePath.emoji}</span>
-                                        <div>
-                                            <h3>{activePath.title}</h3>
-                                            <span className="fahm-active-path__ar">{activePath.titleAr}</span>
-                                        </div>
-                                        <div className="fahm-active-path__progress">
-                                            <span>{progress}%</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="fahm-active-path__bar">
-                                        <div className="fahm-active-path__bar-fill" style={{ width: `${progress}%` }} />
-                                    </div>
-
-                                    <div className="fahm-active-path__days">
-                                        {activePath.days.map(day => {
-                                            const isDone = completed.includes(day.day);
-                                            return (
-                                                <div
-                                                    key={day.day}
-                                                    className={`fahm-day ${isDone ? 'fahm-day--done' : ''}`}
-                                                    onClick={() => {
-                                                        if (!isDone) {
-                                                            fahm.completePathDay(activePath.id, day.day);
-                                                        }
-                                                        handleDayClick(activePath, day);
-                                                    }}
-                                                >
-                                                    <div className="fahm-day__num">
-                                                        {isDone ? <CheckCircle2 size={16} /> : <span>J{day.day}</span>}
-                                                    </div>
-                                                    <div className="fahm-day__info">
-                                                        <span className="fahm-day__title">{day.title}</span>
-                                                        <span className="fahm-day__note">{day.fahmNote}</span>
-                                                    </div>
-                                                    <ChevronRight size={16} />
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <div className="fahm-active-path__actions">
-                                        <button className="fahm-btn fahm-btn--primary" onClick={() => handleContinuePath(activePath)}>
-                                            <Play size={16} />
-                                            Continuer
-                                        </button>
-                                        <button className="fahm-btn fahm-btn--ghost" onClick={() => fahm.abandonPath()}>
-                                            Abandonner
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })()}
-
-                        {/* Available paths */}
-                        <h2 className="fahm-section-title">
-                            {fahm.activePath ? 'Autres parcours' : 'Choisis un parcours'}
-                        </h2>
-                        <div className="fahm-paths-grid">
-                            {READING_PATHS.filter(p => p.id !== fahm.activePath).map(path => {
-                                const completed = fahm.pathProgress[path.id] || [];
-                                const isStarted = completed.length > 0;
-                                const progress = Math.round((completed.length / path.days.length) * 100);
-                                const isComplete = completed.length === path.days.length;
-
-                                return (
-                                    <div
-                                        key={path.id}
-                                        className={`fahm-path-card ${isComplete ? 'fahm-path-card--complete' : ''}`}
-                                        onClick={() => handleStartPath(path)}
-                                    >
-                                        <div className="fahm-path-card__emoji">{path.emoji}</div>
-                                        <div className="fahm-path-card__info">
-                                            <h3>{path.title}</h3>
-                                            <span className="fahm-path-card__ar">{path.titleAr}</span>
-                                            <p>{path.description}</p>
-                                            <div className="fahm-path-card__meta">
-                                                <span>{path.durationDays} jours</span>
-                                                <span className={`fahm-difficulty fahm-difficulty--${path.difficulty}`}>
-                                                    {path.difficulty === 'beginner' ? '🟢 Débutant'
-                                                        : path.difficulty === 'intermediate' ? '🟡 Intermédiaire'
-                                                            : '🔴 Avancé'}
-                                                </span>
-                                            </div>
-                                            {isStarted && !isComplete && (
-                                                <div className="fahm-path-card__progress-bar">
-                                                    <div style={{ width: `${progress}%` }} />
-                                                </div>
-                                            )}
-                                            {isComplete && (
-                                                <div className="fahm-path-card__complete">
-                                                    <Star size={14} /> Terminé
-                                                </div>
-                                            )}
-                                        </div>
-                                        <ChevronRight size={18} />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
-
-                {tab === 'stats' && (
-                    <div className="fahm-stats-page">
-                        <div className="fahm-stat-card">
-                            <BookOpen size={28} />
-                            <div className="fahm-stat-card__value">{totalLearned}</div>
-                            <div className="fahm-stat-card__label">Mots appris</div>
-                        </div>
-                        <div className="fahm-stat-card">
-                            <TrendingUp size={28} />
-                            <div className="fahm-stat-card__value">{pct}%</div>
-                            <div className="fahm-stat-card__label">Compréhension</div>
-                        </div>
-                        <div className="fahm-stat-card">
-                            <Sparkles size={28} />
-                            <div className="fahm-stat-card__value">{fahm.totalReviews}</div>
-                            <div className="fahm-stat-card__label">Révisions</div>
-                        </div>
-                        <div className="fahm-stat-card">
-                            <Route size={28} />
-                            <div className="fahm-stat-card__value">
-                                {Object.values(fahm.pathProgress).filter(p => p.length > 0).length}
-                            </div>
-                            <div className="fahm-stat-card__label">Parcours commencés</div>
-                        </div>
-
-                        {fahm.lastFahmVerses.length > 0 && (
-                            <>
-                                <h3 className="fahm-section-title" style={{ marginTop: 24 }}>Derniers versets consultés</h3>
-                                <div className="fahm-recent-verses">
-                                    {fahm.lastFahmVerses.slice(0, 10).map((v, i) => (
-                                        <div
-                                            key={i}
-                                            className="fahm-recent-verse"
-                                            onClick={() => { goToAyah(v.surah, v.ayah); navigate('/read'); }}
-                                        >
-                                            <span>S{v.surah}:V{v.ayah}</span>
-                                            <span className="fahm-recent-verse__time">
-                                                {new Date(v.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
+import {ArabicEntry} from '../arabic/ArabicEntry';
+import {SURAH_JOURNEYS} from '../lib/fahm/surahJourneys';
+import {FahmKnowledge} from '../components/Fahm/FahmKnowledge';
+import {useState} from 'react';
+import {Link,useLocation,useNavigate,useSearchParams} from 'react-router-dom';
+import {READING_PATHS} from '../data/readingPaths';
+import {QURAN_VOCABULARY} from '../data/quranVocabulary';
+import {useFahmStore} from '../stores/fahmStore';
+import {useFahmLearningStore} from '../stores/fahmLearningStore';
+import {useQuranStore} from '../stores/quranStore';
+import {useStatsStore} from '../stores/statsStore';
+import {personalTargets,validTarget,verseKey} from '../lib/fahm/learning';
+import {useHomeClock} from '../components/Home/useHomeClock';
+import './FahmExperience.css';
+export function FahmPage(){
+ const fahm=useFahmStore(),learning=useFahmLearningStore(),quran=useQuranStore(),navigate=useNavigate(),location=useLocation();
+ const [params]=useSearchParams();const [minutes,setMinutes]=useState<5|10|20>(10),[filter,setFilter]=useState('all'),[tab,setTab]=useState('paths');
+ const now=useHomeClock().getTime(),streak=useStatsStore(s=>s.readingStreak);
+ const s=Number(params.get('surah')),a=Number(params.get('ayah'));
+ const current=validTarget(s,a)?{surah:s,ayah:a}:{surah:quran.currentSurah||1,ayah:quran.currentAyah||1};
+ const planning={...learning.records},scheduled=new Set<string>();
+ for(const c of Object.values(learning.checks)){const key=verseKey(c.target),old=planning[key];planning[key]={...c.target,correct:c.correct&&!c.assisted&&(!scheduled.has(key)||!!old?.correct),attempts:old?.attempts||c.attempts,mistakes:old?.mistakes||0,due:scheduled.has(key)?Math.min(old?.due||Infinity,c.due):c.due,at:Math.max(old?.at||0,c.at),note:old?.note||''};scheduled.add(key);}
+ const targets=personalTargets(minutes,planning,current,now,validTarget(s,a)),due=Object.values(planning).filter(r=>r.attempts>0&&r.due<=now);
+ const wordsDue=fahm.getWordsForReview().length,records=Object.values(learning.records),studied=new Set([...Object.values(learning.studied).flat(),...records.filter(r=>r.compared).map(verseKey)]).size;
+ const last=learning.lastLesson,session=learning.session;
+ const resume=last?.startsWith('personal-')?session&&!session.finished?'/fahm/session':null:last?.startsWith('surah/')?`/fahm/${last}`:last?`/fahm/lesson/${last}`:null;
+ const start=(listen=false)=>{if(listen)targets.forEach(t=>learning.listenDraft(`listen:${verseKey(t)}`,{help:0,choice:null,heard:false,wrong:false,completed:false,seenText:false}));learning.begin(targets,minutes,validTarget(s,a)?`Approfondir le verset ${s}:${a}`:'Ma séance de compréhension');navigate(`/fahm/session${listen?'?mode=listen':''}`,{state:location.state});};
+ return <main className="fahm-shell">
+  <header className="fahm-hero"><span className="fahm-eyebrow">فَهْم · FAHM</span><h1>Comprendre ce que je récite</h1><p>Explorez les mots, étudiez le sens et retrouvez vos acquis dans le Coran.</p><div className="fahm-hero-stats"><span>{studied} verset{studied>1?'s':''} étudié{studied>1?'s':''}</span><span>{fahm.totalWordsLearned} / {QURAN_VOCABULARY.length} fiches de vocabulaire étudiées</span>{streak>0&&<span>🔥 {streak} jour{streak>1?'s':''} de régularité</span>}</div></header>
+  {resume&&<Link className="fahm-resume" to={resume} state={location.state}><span>REPRENDRE MA SÉANCE<strong>{last?.startsWith('personal-')?session?.title:last?.startsWith('surah/')?SURAH_JOURNEYS[Number(last.split('/')[1])]?.name:READING_PATHS.find(p=>p.id===last?.split('/')[0])?.days.find(d=>d.day===Number(last?.split('/')[1]))?.title}</strong><small>Votre dernier verset et vos notes vous attendent.</small></span><span>→</span></Link>}
+  <section className="fahm-card fahm-session"><span className="fahm-eyebrow">UN MOMENT POUR COMPRENDRE</span><h2>{validTarget(s,a)?`Approfondir ${s}:${a}`:'Votre séance personnelle'}</h2><p>{due.length?`${due.length} passage${due.length>1?'s':''} à revoir, puis votre lecture actuelle.`:'À partir de votre lecture actuelle, avec des explications et des exercices.'}</p><div className="fahm-duration" role="group" aria-label="Durée de la séance">{([5,10,20] as const).map(n=><button key={n} aria-pressed={minutes===n} onClick={()=>setMinutes(n)}>{n} min</button>)}</div><small>Durée indicative · {targets.length} verset{targets.length>1?'s':''} : {targets.map(verseKey).join(' · ')}</small><button className="fahm-primary" onClick={()=>start()}>Préparer ma séance →</button><button className="fahm-listening-start" onClick={()=>start(true)}>🎧 Commencer sans texte, par l’écoute</button></section>
+  <nav className="fahm-tabs" aria-label="Fahm"><button aria-pressed={tab==='paths'} onClick={()=>setTab('paths')}>Parcours</button><Link to="/vocab">Vocabulaire {wordsDue>0?`· ${wordsDue} à revoir`:''}</Link><button aria-pressed={tab==='notes'} onClick={()=>setTab('notes')}>Carnet et progrès</button></nav>
+  {tab==='paths'?<><ArabicEntry/><section className="fahm-card"><span className="fahm-eyebrow">UNE SOURATE, UN CHEMINEMENT</span><h2>Découvrir une sourate entière</h2><p>Une question de départ, des expressions à explorer et le fil du passage.</p><div className="fahm-surah-links">{Object.entries(SURAH_JOURNEYS).map(([s,j])=><Link key={s} to={`/fahm/surah/${s}`}>{j.name} <span>→</span></Link>)}</div></section><div className="fahm-section-heading"><h2>Choisir un parcours</h2><select aria-label="Filtrer les parcours" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">Tous les niveaux</option><option value="beginner">Découvrir</option><option value="intermediate">Approfondir</option><option value="advanced">Étudier une sourate</option></select></div><div className="fahm-path-grid">{READING_PATHS.filter(p=>filter==='all'||p.difficulty===filter).map(path=>{const done=fahm.pathProgress[path.id]||[],next=path.days.find(d=>!done.includes(d.day))||path.days[0];return <section className="fahm-card fahm-path" key={path.id}><span className="fahm-path-emoji" aria-hidden="true">{path.emoji}</span><h3>{path.title}</h3><p>{path.description}</p><small>{path.days.length} étapes · à votre rythme</small><progress aria-label={`Progression ${path.title}`} value={done.length} max={path.days.length}/><div className="fahm-row"><Link className="fahm-primary" to={`/fahm/lesson/${path.id}/${next.day}`} state={location.state} onClick={()=>fahm.startPath(path.id)}>{done.length===path.days.length?'Relire':done.length?'Continuer':'Commencer'} →</Link><small>{done.length}/{path.days.length}</small></div><details><summary>Voir les étapes</summary>{path.days.map(day=><Link key={day.day} className="fahm-day-link" to={`/fahm/lesson/${path.id}/${day.day}`} state={location.state} onClick={()=>fahm.startPath(path.id)}><span>{done.includes(day.day)?'✓':day.day}</span>{day.title}</Link>)}</details></section>;})}</div></>:<section className="fahm-notes"><FahmKnowledge/><h2>Mon carnet de compréhension</h2><p>Les réponses aux exercices et vos formulations personnelles restent distinctes.</p><div className="fahm-hero-stats"><span>{records.filter(r=>r.attempts>0&&r.correct).length} derniers exercices réussis</span><span>{due.length} passages à revoir</span><span>{fahm.totalReviews} réponses de vocabulaire</span></div>{records.filter(r=>r.note).length===0?<div className="fahm-card">Vos notes apparaîtront ici après votre première séance.</div>:records.filter(r=>r.note).sort((a,b)=>b.at-a.at).map(r=><article key={verseKey(r)} className="fahm-card"><h3>Coran {verseKey(r)}</h3><p>{r.note}</p><small>{r.compared?'Formulation comparée au texte':'Note personnelle'}{r.attempts>0?` · ${r.correct?'Dernier exercice réussi':'À revoir'}`:''}</small><Link to={`/fahm?surah=${r.surah}&ayah=${r.ayah}`}>Revoir ce passage →</Link></article>)}</section>}
+ </main>;
 }

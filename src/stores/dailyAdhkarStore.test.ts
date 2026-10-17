@@ -15,3 +15,6 @@ it('persists counts, caps them and resets at the local day boundary',async()=>{
  vi.setSystemTime(new Date(2026,9,5,1));useDailyAdhkarStore.getState().increment('evening-103',3);
  expect(useDailyAdhkarStore.getState().counts).toEqual({'evening-103':1});
 });
+it('undoes a tap without going negative or restoring yesterday’s counts',()=>{
+ vi.useFakeTimers();vi.setSystemTime(new Date(2026,9,12,23,59));useDailyAdhkarStore.setState({day:localAdhkarDay(),counts:{a:2}});useDailyAdhkarStore.getState().decrement('a');expect(useDailyAdhkarStore.getState().counts.a).toBe(1);vi.setSystemTime(new Date(2026,9,13,0,1));useDailyAdhkarStore.getState().decrement('a');expect(useDailyAdhkarStore.getState().counts.a).toBe(0);
+});

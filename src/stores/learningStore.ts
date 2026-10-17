@@ -29,7 +29,8 @@ interface LearningState {
     passage: Passage,
   ) => void;
   completeStep: (id: string, skipped?: boolean) => void;
-  recordRecall: (passage: Passage, recall: Recall) => void;
+  recordRecall: (passage: Passage, recall: Recall, origin?: 'journey' | 'passage') => void;
+  correctJourneyRecall: (passage: Passage, remaining: Array<{ at: string; outcome: string; scope?: 'phrase' | 'verse' }>) => void;
 }
 export const useLearningStore = create<LearningState>()(
   persist(
@@ -69,7 +70,7 @@ export const useLearningStore = create<LearningState>()(
             },
           };
         }),
-      recordRecall: (passage, recall) =>
+      recordRecall: (passage, recall, origin: 'journey' | 'passage' = 'passage') =>
         set((state) => ({
           records: {
             ...state.records,
@@ -77,9 +78,19 @@ export const useLearningStore = create<LearningState>()(
               recall,
               lastPracticed: new Date().toISOString(),
               attempts: (state.records[passageKey(passage)]?.attempts || 0) + 1,
+              origin,
             },
           },
         })),
+      correctJourneyRecall: (passage, remaining) => set(state => {
+        const key = passageKey(passage), current = state.records[key];
+        if (!current || current.origin !== 'journey') return state;
+        const latest = [...remaining].filter(a => a.scope !== 'phrase' && a.outcome !== 'uncertain').sort((a,b) => b.at.localeCompare(a.at))[0];
+        const records = { ...state.records };
+        if (!latest) delete records[key];
+        else records[key] = { ...current, recall: latest.outcome === 'independent' ? 'independent' : latest.outcome === 'assisted' ? 'assisted' : 'consolidate', lastPracticed: latest.at, attempts: Math.max(1,current.attempts - 1) };
+        return { records };
+      }),
     }),
     { name: "quran-coach-learning-v1" },
   ),

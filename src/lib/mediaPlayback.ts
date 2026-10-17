@@ -1,16 +1,19 @@
+import type {PlaybackGate} from './playbackGate';
 /** One cancellable playback. Events from a stopped clip cannot finish its replacement. */
 export function playMediaClip(audio: HTMLAudioElement, url: string, options: {
-    signal: AbortSignal; rate?: number; start?: number; end?: number;
+    signal: AbortSignal; gate?: PlaybackGate; onStarted?:()=>void; rate?: number; start?: number; end?: number;
 }): Promise<boolean> {
     const {signal, start = 0, end} = options;
     if (signal.aborted) return Promise.resolve(false);
     return new Promise(resolve => {
         let settled = false;
+        let unsubscribe: (()=>void) | undefined;
         let timer: ReturnType<typeof setTimeout> | undefined;
         const finish = (success: boolean) => {
             if (settled) return;
             settled = true;
             clearTimeout(timer);
+            unsubscribe?.();
             signal.removeEventListener('abort', abort);
             audio.removeEventListener('ended', ended);
             audio.removeEventListener('error', failed);
@@ -34,7 +37,20 @@ export function playMediaClip(audio: HTMLAudioElement, url: string, options: {
             audio.playbackRate = options.rate ?? 1;
             seek();
             timer = setTimeout(failed, 15000);
-            void audio.play().then(() => { clearTimeout(timer); }).catch(failed);
+            const begin = () => {
+                if (settled) return;
+                clearTimeout(timer);
+                if (options.gate?.paused) { audio.pause(); return; }
+                timer = setTimeout(failed, 15000);
+                void audio.play().then(() => {
+                    clearTimeout(timer);
+                    if (settled) return;
+                    if (options.gate?.paused) audio.pause();
+                    else options.onStarted?.();
+                }).catch(failed);
+            };
+            unsubscribe = options.gate?.subscribe(begin);
+            begin();
         } catch { failed(); }
     });
 }

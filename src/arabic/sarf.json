@@ -1,0 +1,518 @@
+[
+  {
+    "id": "ktb",
+    "root": "ك ت ب",
+    "title": "Écrire",
+    "source": "https://en.wiktionary.org/wiki/كتب#Arabic",
+    "forms": [
+      {
+        "id": "past-active-i",
+        "aspect": "past",
+        "voice": "active",
+        "person": "i",
+        "word": "كَتَبْتُ",
+        "meaning": "J’ai écrit",
+        "phonetic": "katabtu",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-you",
+        "aspect": "past",
+        "voice": "active",
+        "person": "you",
+        "word": "كَتَبْتَ",
+        "meaning": "Tu as écrit",
+        "phonetic": "katabta",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-he",
+        "aspect": "past",
+        "voice": "active",
+        "person": "he",
+        "word": "كَتَبَ",
+        "meaning": "Il a écrit",
+        "phonetic": "kataba",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-we",
+        "aspect": "past",
+        "voice": "active",
+        "person": "we",
+        "word": "كَتَبْنَا",
+        "meaning": "Nous avons écrit",
+        "phonetic": "katabnā",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "present-active-i",
+        "aspect": "present",
+        "voice": "active",
+        "person": "i",
+        "word": "أَكْتُبُ",
+        "meaning": "J’écris",
+        "phonetic": "ʾaktubu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-you",
+        "aspect": "present",
+        "voice": "active",
+        "person": "you",
+        "word": "تَكْتُبُ",
+        "meaning": "Tu écris",
+        "phonetic": "taktubu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-he",
+        "aspect": "present",
+        "voice": "active",
+        "person": "he",
+        "word": "يَكْتُبُ",
+        "meaning": "Il écrit",
+        "phonetic": "yaktubu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-we",
+        "aspect": "present",
+        "voice": "active",
+        "person": "we",
+        "word": "نَكْتُبُ",
+        "meaning": "Nous écrivons",
+        "phonetic": "naktubu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "past-passive-he",
+        "aspect": "past",
+        "voice": "passive",
+        "person": "he",
+        "word": "كُتِبَ",
+        "meaning": "Cela a été écrit",
+        "phonetic": "kutiba",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "present-passive-he",
+        "aspect": "present",
+        "voice": "passive",
+        "person": "he",
+        "word": "يُكْتَبُ",
+        "meaning": "Cela est écrit",
+        "phonetic": "yuktabu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "participles": [
+      {
+        "word": "كَاتِبٌ",
+        "meaning": "Celui qui écrit",
+        "phonetic": "kātibun",
+        "radicals": [
+          0,
+          2,
+          3
+        ],
+        "pattern": "فَاعِلٌ"
+      },
+      {
+        "word": "مَكْتُوبٌ",
+        "meaning": "Écrit",
+        "phonetic": "maktūbun",
+        "radicals": [
+          1,
+          2,
+          4
+        ],
+        "pattern": "مَفْعُولٌ"
+      }
+    ]
+  },
+  {
+    "id": "fth",
+    "root": "ف ت ح",
+    "title": "Ouvrir",
+    "source": "https://en.wiktionary.org/wiki/فتح#Arabic",
+    "forms": [
+      {
+        "id": "past-active-i",
+        "aspect": "past",
+        "voice": "active",
+        "person": "i",
+        "word": "فَتَحْتُ",
+        "meaning": "J’ai ouvert",
+        "phonetic": "fataḥtu",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-you",
+        "aspect": "past",
+        "voice": "active",
+        "person": "you",
+        "word": "فَتَحْتَ",
+        "meaning": "Tu as ouvert",
+        "phonetic": "fataḥta",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-he",
+        "aspect": "past",
+        "voice": "active",
+        "person": "he",
+        "word": "فَتَحَ",
+        "meaning": "Il a ouvert",
+        "phonetic": "fataḥa",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-we",
+        "aspect": "past",
+        "voice": "active",
+        "person": "we",
+        "word": "فَتَحْنَا",
+        "meaning": "Nous avons ouvert",
+        "phonetic": "fataḥnā",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "present-active-i",
+        "aspect": "present",
+        "voice": "active",
+        "person": "i",
+        "word": "أَفْتَحُ",
+        "meaning": "J’ouvre",
+        "phonetic": "ʾaftaḥu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-you",
+        "aspect": "present",
+        "voice": "active",
+        "person": "you",
+        "word": "تَفْتَحُ",
+        "meaning": "Tu ouvres",
+        "phonetic": "taftaḥu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-he",
+        "aspect": "present",
+        "voice": "active",
+        "person": "he",
+        "word": "يَفْتَحُ",
+        "meaning": "Il ouvre",
+        "phonetic": "yaftaḥu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-we",
+        "aspect": "present",
+        "voice": "active",
+        "person": "we",
+        "word": "نَفْتَحُ",
+        "meaning": "Nous ouvrons",
+        "phonetic": "naftaḥu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "past-passive-he",
+        "aspect": "past",
+        "voice": "passive",
+        "person": "he",
+        "word": "فُتِحَ",
+        "meaning": "Cela a été ouvert",
+        "phonetic": "futiḥa",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "present-passive-he",
+        "aspect": "present",
+        "voice": "passive",
+        "person": "he",
+        "word": "يُفْتَحُ",
+        "meaning": "Cela est ouvert",
+        "phonetic": "yuftaḥu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "participles": [
+      {
+        "word": "فَاتِحٌ",
+        "meaning": "Celui qui ouvre",
+        "phonetic": "fātiḥun",
+        "radicals": [
+          0,
+          2,
+          3
+        ],
+        "pattern": "فَاعِلٌ"
+      },
+      {
+        "word": "مَفْتُوحٌ",
+        "meaning": "Ouvert",
+        "phonetic": "maftūḥun",
+        "radicals": [
+          1,
+          2,
+          4
+        ],
+        "pattern": "مَفْعُولٌ"
+      }
+    ]
+  },
+  {
+    "id": "sm3",
+    "root": "س م ع",
+    "title": "Entendre",
+    "source": "https://en.wiktionary.org/wiki/سمع#Arabic",
+    "forms": [
+      {
+        "id": "past-active-i",
+        "aspect": "past",
+        "voice": "active",
+        "person": "i",
+        "word": "سَمِعْتُ",
+        "meaning": "J’ai entendu",
+        "phonetic": "samiʿtu",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-you",
+        "aspect": "past",
+        "voice": "active",
+        "person": "you",
+        "word": "سَمِعْتَ",
+        "meaning": "Tu as entendu",
+        "phonetic": "samiʿta",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-he",
+        "aspect": "past",
+        "voice": "active",
+        "person": "he",
+        "word": "سَمِعَ",
+        "meaning": "Il a entendu",
+        "phonetic": "samiʿa",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "past-active-we",
+        "aspect": "past",
+        "voice": "active",
+        "person": "we",
+        "word": "سَمِعْنَا",
+        "meaning": "Nous avons entendu",
+        "phonetic": "samiʿnā",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "present-active-i",
+        "aspect": "present",
+        "voice": "active",
+        "person": "i",
+        "word": "أَسْمَعُ",
+        "meaning": "J’entends",
+        "phonetic": "ʾasmaʿu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-you",
+        "aspect": "present",
+        "voice": "active",
+        "person": "you",
+        "word": "تَسْمَعُ",
+        "meaning": "Tu entends",
+        "phonetic": "tasmaʿu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-he",
+        "aspect": "present",
+        "voice": "active",
+        "person": "he",
+        "word": "يَسْمَعُ",
+        "meaning": "Il entend",
+        "phonetic": "yasmaʿu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "present-active-we",
+        "aspect": "present",
+        "voice": "active",
+        "person": "we",
+        "word": "نَسْمَعُ",
+        "meaning": "Nous entendons",
+        "phonetic": "nasmaʿu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "id": "past-passive-he",
+        "aspect": "past",
+        "voice": "passive",
+        "person": "he",
+        "word": "سُمِعَ",
+        "meaning": "Cela a été entendu",
+        "phonetic": "sumiʿa",
+        "radicals": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "id": "present-passive-he",
+        "aspect": "present",
+        "voice": "passive",
+        "person": "he",
+        "word": "يُسْمَعُ",
+        "meaning": "Cela est entendu",
+        "phonetic": "yusmaʿu",
+        "radicals": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "participles": [
+      {
+        "word": "سَامِعٌ",
+        "meaning": "Celui qui entend",
+        "phonetic": "sāmiʿun",
+        "radicals": [
+          0,
+          2,
+          3
+        ],
+        "pattern": "فَاعِلٌ"
+      },
+      {
+        "word": "مَسْمُوعٌ",
+        "meaning": "Entendu",
+        "phonetic": "masmūʿun",
+        "radicals": [
+          1,
+          2,
+          4
+        ],
+        "pattern": "مَفْعُولٌ"
+      }
+    ]
+  }
+]

@@ -1,8 +1,14 @@
+import DOMPurify from 'dompurify';
+import {Link,useLocation} from 'react-router-dom';
+import {exactVocabulary,sourceUrl} from '../../lib/fahm/learning';
+import {fahmExplanation} from '../../lib/fahm/content';
+import {FahmWordExplorer} from './FahmWordExplorer';
+import type {TafsirContent} from '../../lib/tafsirApi';
 // ─── Fahm Panel — Panneau de compréhension du verset ─────────
 // S'ouvre quand l'utilisateur tape sur le 💡 après le ﴾ du verset.
 // 4 onglets : Mots clés | Structure | Contexte | Perle
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, BookOpen, Hash, MapPin, Sparkles } from 'lucide-react';
 import { QURAN_VOCABULARY, type QuranWord } from '../../data/quranVocabulary';
@@ -26,6 +32,9 @@ type FahmTab = 'words' | 'structure' | 'context' | 'pearl';
 export function FahmPanel({
     surah, ayah, surahName, verseTextAr, verseTextFr, onClose
 }: FahmPanelProps) {
+    const location=useLocation();
+    const dialog=useRef<HTMLDialogElement>(null);
+    useEffect(()=>{const el=dialog.current;el?.showModal();return()=>el?.close();},[]);
     const [activeTab, setActiveTab] = useState<FahmTab>('words');
     const fahmStore = useFahmStore();
 
@@ -37,11 +46,7 @@ export function FahmPanel({
     // Find relevant vocabulary for this verse
     const relevantWords = useMemo(() => {
         if (!verseTextAr) return [];
-        const cleanText = verseTextAr.replace(/[\u064B-\u065F\u0670]/g, '');
-        return QURAN_VOCABULARY.filter(word => {
-            const cleanWord = word.arabic.replace(/[\u064B-\u065F\u0670]/g, '');
-            return cleanText.includes(cleanWord);
-        });
+        return exactVocabulary(verseTextAr,QURAN_VOCABULARY);
     }, [verseTextAr]);
 
     // Find emotional annotation
@@ -59,9 +64,9 @@ export function FahmPanel({
 
     const tabs = [
         { key: 'words' as const, icon: Hash, label: 'Mots' },
-        { key: 'structure' as const, icon: BookOpen, label: 'Structure' },
-        { key: 'context' as const, icon: MapPin, label: 'Contexte' },
-        { key: 'pearl' as const, icon: Sparkles, label: 'Perle' },
+        { key: 'structure' as const, icon: BookOpen, label: 'Mot à mot' },
+        { key: 'context' as const, icon: MapPin, label: 'Exégèse' },
+        ...(emotion||hadithLink?[{ key: 'pearl' as const, icon: Sparkles, label: 'Réflexion' }]:[]),
     ];
 
     return (
@@ -73,7 +78,7 @@ export function FahmPanel({
                 exit={{ opacity: 0 }}
                 onClick={onClose}
             />
-            <motion.div
+            <motion.dialog ref={dialog} onCancel={onClose} aria-label="Comprendre le verset"
                 className="fahm-panel"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
@@ -84,10 +89,10 @@ export function FahmPanel({
                     className="fahm-panel__drag-zone"
                     onTouchStart={(e) => {
                         const touch = e.touches[0];
-                        (e.currentTarget as any)._startY = touch.clientY;
+                        e.currentTarget.dataset.startY = String(touch.clientY);
                     }}
                     onTouchEnd={(e) => {
-                        const startY = (e.currentTarget as any)._startY;
+                        const startY = Number(e.currentTarget.dataset.startY);
                         if (startY != null) {
                             const endY = e.changedTouches[0].clientY;
                             if (endY - startY > 80) onClose();
@@ -108,7 +113,7 @@ export function FahmPanel({
                     </button>
                 </div>
 
-                <div style={{padding:"0 20px"}}><PassageActions surah={surah} ayah={ayah} /></div>
+                <div style={{padding:"0 20px"}}><PassageActions surah={surah} ayah={ayah} /><Link to={`/fahm?surah=${surah}&ayah=${ayah}`} state={{readerReturn:{to:location.pathname==='/read'?`/read?surah=${surah}&ayah=${ayah}`:location.pathname+location.search,label:"Retour au passage"}}}>Approfondir avec Fahm →</Link></div>
                 {/* Verse text */}
                 {verseTextAr && (
                     <div className="fahm-panel__verse" dir="rtl">
@@ -144,16 +149,16 @@ export function FahmPanel({
                         <WordsTab words={relevantWords} fahmStore={fahmStore} />
                     )}
                     {activeTab === 'structure' && (
-                        <StructureTab verseAr={verseTextAr} verseFr={verseTextFr} />
+                        <FahmWordExplorer key={`${surah}:${ayah}`} surah={surah} ayah={ayah} text={verseTextAr||''}/>
                     )}
                     {activeTab === 'context' && (
-                        <ContextTab surah={surah} ayah={ayah} emotion={emotion} />
+                        <ContextTab key={`${surah}:${ayah}`} surah={surah} ayah={ayah} emotion={emotion} />
                     )}
                     {activeTab === 'pearl' && (
                         <PearlTab emotion={emotion} hadithLink={hadithLink} />
                     )}
                 </div>
-            </motion.div>
+            </motion.dialog>
         </AnimatePresence>
     );
 }
@@ -166,7 +171,7 @@ function WordsTab({ words, fahmStore }: { words: QuranWord[]; fahmStore: { learn
             <div className="fahm-empty">
                 <Hash size={32} />
                 <p>Aucun mot clé identifié dans ce verset.</p>
-                <p className="fahm-empty__hint">Le vocabulaire sera enrichi progressivement.</p>
+                <p className="fahm-empty__hint">Ouvrez « Mot à mot » pour explorer les mots de ce verset.</p>
             </div>
         );
     }
@@ -185,7 +190,7 @@ function WordsTab({ words, fahmStore }: { words: QuranWord[]; fahmStore: { learn
                                 Racine : {word.root} · {word.transliteration}
                             </div>
                             <div className="fahm-word__freq">
-                                {word.frequency}x dans le Coran · {word.category}
+                                {word.category}
                             </div>
                         </div>
                         <button
@@ -207,85 +212,14 @@ function WordsTab({ words, fahmStore }: { words: QuranWord[]; fahmStore: { learn
     );
 }
 
-function StructureTab({ verseAr, verseFr }: { verseAr?: string; verseFr?: string }) {
-    if (!verseAr) {
-        return (
-            <div className="fahm-empty">
-                <BookOpen size={32} />
-                <p>Structure non disponible pour ce verset.</p>
-            </div>
-        );
-    }
-
-    // Simple word-by-word display
-    const arWords = verseAr.split(/\s+/).filter(w => w.length > 0);
-
-    return (
-        <div className="fahm-structure">
-            <p className="fahm-structure__intro">
-                Décomposition mot par mot :
-            </p>
-            <div className="fahm-structure__words" dir="rtl">
-                {arWords.map((word, i) => {
-                    // Check if this word is in our vocabulary
-                    const cleanWord = word.replace(/[\u064B-\u065F\u0670]/g, '');
-                    const vocabMatch = QURAN_VOCABULARY.find(v =>
-                        v.arabic.replace(/[\u064B-\u065F\u0670]/g, '') === cleanWord
-                    );
-                    return (
-                        <span
-                            key={i}
-                            className={`struct-word ${vocabMatch ? 'struct-word--known' : ''}`}
-                            title={vocabMatch ? `${vocabMatch.meaningFr} (${vocabMatch.transliteration})` : undefined}
-                        >
-                            {word}
-                        </span>
-                    );
-                })}
-            </div>
-            {verseFr && (
-                <div className="fahm-structure__translation">
-                    <strong>Traduction :</strong> {verseFr}
-                </div>
-            )}
-            <p className="fahm-structure__tip">
-                💡 Les mots surlignés en <span style={{color: '#4ecdc4'}}>bleu-vert</span> font partie des 300 mots les plus fréquents du Coran.
-            </p>
-        </div>
-    );
-}
-
 function ContextTab({ surah, ayah, emotion }: {
     surah: number;
     ayah: number;
     emotion?: typeof EMOTIONAL_VERSES[0];
 }) {
-    return (
-        <div className="fahm-context">
-            <div className="fahm-context__ref">
-                📍 Sourate {surah}, Verset {ayah}
-            </div>
-
-            {emotion ? (
-                <>
-                    <div className="fahm-context__category">
-                        Thème : <strong>{getCategoryLabel(emotion.category)}</strong>
-                    </div>
-                    <div className="fahm-context__reflection">
-                        {emotion.reflection}
-                    </div>
-                </>
-            ) : (
-                <div className="fahm-empty">
-                    <MapPin size={32} />
-                    <p>Le contexte détaillé de ce verset sera ajouté prochainement.</p>
-                    <p className="fahm-empty__hint" style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '8px' }}>
-                        Le Coran compte 6236 versets. Nous enrichissons cette base de données en continu.
-                    </p>
-                </div>
-            )}
-        </div>
-    );
+    const [content,setContent]=useState<TafsirContent|null>(null),[loading,setLoading]=useState(true);
+    useEffect(()=>{let gone=false;void fahmExplanation({surah,ayah}).then(data=>{if(!gone){setContent(data);setLoading(false);}});return()=>{gone=true;};},[surah,ayah]);
+    return <div className="fahm-context"><h3>Exégèse du verset {surah}:{ayah}</h3>{loading?<p>Chargement…</p>:content?<div style={{whiteSpace:'pre-line',lineHeight:1.8}} dangerouslySetInnerHTML={{__html:DOMPurify.sanitize(content.text,{ALLOWED_TAGS:['p','br','sup','strong'],ALLOWED_ATTR:[]})}}/>:<p>L’explication n’a pas pu être chargée.</p>}<a href={sourceUrl({surah,ayah})} target="_blank" rel="noreferrer">Al-Mokhtasar · QuranEnc ↗</a>{emotion&&<p>Thème de réflexion : {getCategoryLabel(emotion.category)}</p>}</div>;
 }
 
 function PearlTab({ emotion, hadithLink }: {

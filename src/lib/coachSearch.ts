@@ -1,21 +1,11 @@
-// ─── Coach Search Engine ─────────────────────────────
-// Searches locally in hadiths, Hisnul Muslim, and uses Quran API for verse search
-
 import { HADITHS } from '../data/hadiths';
-
-// Types
+import { normalizeSearch, rankSearch, searchExcerpt } from './searchText';
+export type SearchKind = 'hadith'|'invocation'|'verse'|'surah'|'course'|'arabic'|'story'|'note';
 export interface SearchResult {
-    type: 'hadith' | 'invocation' | 'verse' | 'surah';
-    title: string;
-    textAr: string;
-    textFr: string;
-    source?: string;
-    link?: string;
-    score: number;
-    emoji: string;
+ id:string; type:SearchKind; title:string; textAr:string; textFr:string;
+ source?:string; link?:string; score:number; emoji:string; studied?:boolean;
 }
-
-// ─── Tag Synonyms for fuzzy matching ─────
+export interface SearchResponse { results:SearchResult[]; unavailable:string[] }
 const TAG_SYNONYMS: Record<string, string[]> = {
     priere: ['prière', 'salat', 'prières', 'salah', 'prosternation', 'prier'],
     patience: ['patient', 'épreuve', 'épreuves', 'sabr', 'difficile', 'souffrance'],
@@ -40,202 +30,47 @@ const TAG_SYNONYMS: Record<string, string[]> = {
     general: [],
 };
 
-// ─── Normalize text for comparison ─────
-function normalize(text: string): string {
-    return text
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Remove accents
-        .replace(/[^\w\s]/g, ' ')
-        .trim();
+
+export function searchHadiths(query:string):SearchResult[]{
+ return HADITHS.flatMap(h=>{
+  const synonyms=h.tags.flatMap(tag=>[tag,...(TAG_SYNONYMS[tag]||[])]).join(' ');
+  const score=rankSearch(query,h.source,`${h.textAr} ${h.textFr} ${h.narrator} ${synonyms}`);
+  return score?[{id:`hadith:${h.id}`,type:'hadith' as const,title:`Hadith — ${h.source}`,textAr:h.textAr,textFr:h.textFr,source:`${h.source} — ${h.narrator}`,link:`/hadiths?search=${encodeURIComponent(h.textFr.slice(0,40))}`,score,emoji:'📜'}]:[];
+ });
 }
-
-// ─── Search hadiths ─────
-function searchHadiths(query: string): SearchResult[] {
-    const normalizedQuery = normalize(query);
-    const words = normalizedQuery.split(/\s+/).filter(w => w.length > 2);
-
-    if (words.length === 0) return [];
-
-    return HADITHS.map(hadith => {
-        let score = 0;
-        const normalizedFr = normalize(hadith.textFr);
-        const normalizedSource = normalize(hadith.source);
-
-        // Tag matching (highest priority)
-        for (const tag of hadith.tags) {
-            const tagNorm = normalize(tag);
-            const synonyms = TAG_SYNONYMS[tag] || [];
-
-            for (const word of words) {
-                if (tagNorm.includes(word) || word.includes(tagNorm)) {
-                    score += 30;
-                }
-                for (const syn of synonyms) {
-                    if (normalize(syn).includes(word) || word.includes(normalize(syn))) {
-                        score += 25;
-                    }
-                }
-            }
-        }
-
-        // Text content matching
-        for (const word of words) {
-            if (normalizedFr.includes(word)) {
-                score += 10;
-            }
-            if (normalizedSource.includes(word)) {
-                score += 5;
-            }
-        }
-
-        if (score === 0) return null;
-
-        return {
-            type: 'hadith' as const,
-            title: `Hadith — ${hadith.source}`,
-            textAr: hadith.textAr,
-            textFr: hadith.textFr,
-            source: `${hadith.source} — ${hadith.narrator}`,
-            link: `/hadiths?search=${encodeURIComponent(hadith.textFr.slice(0, 40))}`,
-            score,
-            emoji: '📜',
-        };
-    }).filter(Boolean) as SearchResult[];
+export async function searchAllInvocations(query:string):Promise<SearchResult[]>{
+ const {searchInvocations,invocationTitle}=await import('./adhkarExperience');
+ return searchInvocations(query).map(d=>({id:`dua:${d.key}`,type:'invocation',title:invocationTitle(d),textAr:d.arabic,textFr:d.translation,source:d.source||d.categoryName,link:`/adhkar?cat=${encodeURIComponent(d.categoryId)}&dua=${encodeURIComponent(d.key)}`,score:rankSearch(query,d.categoryName,`${d.arabic} ${d.translation} ${d.transliteration||''}`)||10,emoji:'🤲'}));
 }
-
-// ─── Search Hisnul Muslim ─────
-async function searchHisnulMuslim(query: string): Promise<SearchResult[]> {
-    const normalizedQuery = normalize(query);
-    const words = normalizedQuery.split(/\s+/).filter(w => w.length > 2);
-    if (words.length === 0) return [];
-
-    try {
-        const { HISNUL_MUSLIM_DATA } = await import('../data/hisnulMuslim');
-        const results: SearchResult[] = [];
-
-        for (const category of HISNUL_MUSLIM_DATA) {
-            for (const chapter of category.chapters) {
-                let score = 0;
-                const titleNorm = normalize(chapter.title);
-
-                for (const word of words) {
-                    if (titleNorm.includes(word)) {
-                        score += 20;
-                    }
-                }
-
-                // Also check duas content
-                for (const dua of chapter.duas.slice(0, 3)) {
-                    const translationNorm = normalize(dua.translation);
-                    for (const word of words) {
-                        if (translationNorm.includes(word)) {
-                            score += 8;
-                        }
-                    }
-                }
-
-                if (score > 0) {
-                    const firstDua = chapter.duas[0];
-                    results.push({
-                        type: 'invocation',
-                        title: chapter.title,
-                        textAr: firstDua?.arabic || chapter.titleAr,
-                        textFr: firstDua?.translation || chapter.title,
-                        source: `Hisnul Muslim — ${chapter.duas.length} invocation(s)`,
-                        link: `/adhkar?cat=hisn_${encodeURIComponent(chapter.id)}`,
-                        score,
-                        emoji: '🤲',
-                    });
-                }
-            }
-        }
-
-        return results;
-    } catch {
-        return [];
-    }
+async function searchQuran(query:string,signal?:AbortSignal):Promise<SearchResult[]>{
+ const arabic=/[\u0600-\u06ff]/.test(query),edition=arabic?'ar.quran-uthmani':'fr.hamidullah';
+ const response=await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(query)}/all/${edition}`,{signal});
+ const data=await response.json();
+ // The provider also uses 404 with this precise message for a successful empty search.
+ if(response.status===404&&data.code===404&&data.data==='Nothing matching your search was found..')return [];
+ if(!response.ok||data.code!==200||!Array.isArray(data.data?.matches))throw new Error('Coran indisponible');
+ return data.data.matches.filter((m:{surah?:{number:number};numberInSurah:number;text:string})=>m.surah&&Number.isInteger(m.surah.number)&&Number.isInteger(m.numberInSurah)&&typeof m.text==='string').map((m:{surah:{number:number;englishName:string};numberInSurah:number;text:string})=>({id:`verse:${m.surah.number}:${m.numberInSurah}`,type:'verse',title:`${m.surah.englishName} — Verset ${m.numberInSurah}`,textAr:arabic?m.text:'',textFr:arabic?'':m.text,source:`Coran ${m.surah.number}:${m.numberInSurah}`,link:`/read?surah=${m.surah.number}&ayah=${m.numberInSurah}`,score:50,emoji:'📖'}));
 }
-
-// ─── Search Quran via API (Arabic + French) ─────
-async function searchQuranVerses(query: string): Promise<SearchResult[]> {
-    const API_BASE = 'https://api.alquran.cloud/v1';
-
-    // Search both Arabic and French translations in parallel
-    const searches = [
-        // French translation search (for semantic queries like "patience", "paradis")
-        fetch(`${API_BASE}/search/${encodeURIComponent(query)}/all/fr.hamidullah`)
-            .then(r => r.json())
-            .then(data => {
-                if (data.code !== 200 || !data.data?.matches) return [];
-                return data.data.matches.slice(0, 5).map((m: any) => ({
-                    type: 'verse' as const,
-                    title: `Sourate ${m.surah?.englishName || m.surah?.number || '?'} — Verset ${m.numberInSurah}`,
-                    textAr: '',
-                    textFr: m.text,
-                    source: `Coran ${m.surah?.number || ''}:${m.numberInSurah}`,
-                    link: '/read',
-                    score: 20,
-                    emoji: '📖',
-                }));
-            })
-            .catch(() => []),
-        // Arabic text search (for Arabic queries)
-        fetch(`${API_BASE}/search/${encodeURIComponent(query)}/all/ar.quran-uthmani`)
-            .then(r => r.json())
-            .then(data => {
-                if (data.code !== 200 || !data.data?.matches) return [];
-                return data.data.matches.slice(0, 5).map((m: any) => ({
-                    type: 'verse' as const,
-                    title: `Sourate ${m.surah?.englishName || m.surah?.number || '?'} — Verset ${m.numberInSurah}`,
-                    textAr: m.text,
-                    textFr: '',
-                    source: `Coran ${m.surah?.number || ''}:${m.numberInSurah}`,
-                    link: '/read',
-                    score: 18,
-                    emoji: '📖',
-                }));
-            })
-            .catch(() => []),
-    ];
-
-    try {
-        const [frResults, arResults] = await Promise.all(searches);
-        // Deduplicate by verse key
-        const seen = new Set<string>();
-        const combined: SearchResult[] = [];
-        for (const r of [...frResults, ...arResults]) {
-            if (!seen.has(r.source)) {
-                seen.add(r.source);
-                combined.push(r);
-            }
-        }
-        return combined.slice(0, 8);
-    } catch {
-        return [];
-    }
+export async function coachSearch(query:string,options:{signal?:AbortSignal;localOnly?:boolean}={}):Promise<SearchResponse>{
+ if(normalizeSearch(query).length<2)return {results:[],unavailable:[]};
+ const controller=new AbortController();
+ const abort=()=>controller.abort();options.signal?.addEventListener('abort',abort,{once:true});
+ if(options.signal?.aborted)controller.abort();
+ const timeout=setTimeout(abort,9000);
+ try{
+  const sources:{name:string;load:()=>Promise<SearchResult[]>}[]=[
+   {name:'Hadiths',load:async()=>searchHadiths(query)},
+   {name:'Invocations',load:()=>searchAllInvocations(query)},
+   {name:'Cours, récits et notes',load:async()=> (await import('./knowledgeSearch')).searchKnowledge(query)},
+   ...(!options.localOnly?[{name:'Coran en ligne',load:()=>searchQuran(query,controller.signal)}]:[])
+  ];
+  const settled=await Promise.allSettled(sources.map(s=>s.load()));
+  const unavailable=settled.flatMap((r,i)=>r.status==='rejected'?[sources[i].name]:[]);
+  const seen=new Set<string>();
+  const results=settled.flatMap(r=>r.status==='fulfilled'?r.value:[]).sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id)).filter(r=>{if(seen.has(r.id))return false;seen.add(r.id);return true;});
+  return {results:results.map(r=>({...r,textFr:searchExcerpt(r.textFr,query,420)})),unavailable};
+ }finally{clearTimeout(timeout);options.signal?.removeEventListener('abort',abort);}
 }
-
-// ─── Main Search ─────
-export async function coachSearch(query: string): Promise<SearchResult[]> {
-    if (!query || query.trim().length < 2) return [];
-
-    const [hadithResults, hisnResults, quranResults] = await Promise.all([
-        Promise.resolve(searchHadiths(query)),
-        searchHisnulMuslim(query),
-        searchQuranVerses(query),
-    ]);
-
-    const all = [...hadithResults, ...hisnResults, ...quranResults];
-
-    // Sort by score descending
-    all.sort((a, b) => b.score - a.score);
-
-    // Limit to top 15 results
-    return all.slice(0, 15);
-}
-
-// ─── Quick Tags ─────
 export const QUICK_TAGS = [
     { label: 'Patience', query: 'patience', emoji: '🪨' },
     { label: 'Prière', query: 'prière', emoji: '🕌' },

@@ -15,6 +15,7 @@ interface NotificationState {
     daruriAsrEnabled: boolean;
     akhirIshaEnabled: boolean;
     adhanSound: string;
+    adhanEnabled: boolean;
 
     // Runtime state
     permission: NotificationPermission;
@@ -31,6 +32,7 @@ interface NotificationState {
     setDaruriAsrEnabled: (enabled: boolean) => void;
     setAkhirIshaEnabled: (enabled: boolean) => void;
     setAdhanSound: (sound: string) => void;
+    setAdhanEnabled: (enabled: boolean) => void;
     setPermission: (permission: NotificationPermission) => void;
 }
 
@@ -53,7 +55,8 @@ export const useNotificationStore = create<NotificationState>()(
             daruriSobhEnabled: false,
             daruriAsrEnabled: false,
             akhirIshaEnabled: false,
-            adhanSound: 'Mecque',
+            adhanSound: 'ahmed-1',
+            adhanEnabled: false,
             permission: 'default' as NotificationPermission,
 
             // Actions
@@ -70,6 +73,7 @@ export const useNotificationStore = create<NotificationState>()(
             setDaruriAsrEnabled: (daruriAsrEnabled) => set({ daruriAsrEnabled }),
             setAkhirIshaEnabled: (akhirIshaEnabled) => set({ akhirIshaEnabled }),
             setAdhanSound: (adhanSound) => set({ adhanSound }),
+            setAdhanEnabled: (adhanEnabled) => set({ adhanEnabled }),
             setPermission: (permission) => set({ permission }),
         }),
         {
@@ -87,6 +91,7 @@ export const useNotificationStore = create<NotificationState>()(
                 daruriAsrEnabled: state.daruriAsrEnabled,
                 akhirIshaEnabled: state.akhirIshaEnabled,
                 adhanSound: state.adhanSound,
+                adhanEnabled: state.adhanEnabled,
             }),
         }
     )

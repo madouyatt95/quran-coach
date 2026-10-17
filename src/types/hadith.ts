@@ -14,6 +14,7 @@ export interface HadithEntry {
     ar: string;
     fr: string;
     src: string; // 'B' = Bukhari, 'M' = Muslim, 'T' = Tirmidhi, 'BM' = both
+    sourceUrl?: string; // Exact, reviewed reference only
     nar: string;
     cat: HadithCategory;
     subcat?: BulughChapter; // Sous-catégorie spécifique (ex: pour l'œuvre Boulough Al-Marâm)

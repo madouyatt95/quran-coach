@@ -1,0 +1,5 @@
+.religious-reference { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin:10px 0; color:var(--color-text-secondary,#b5bfd1); font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+.religious-reference__kind { padding:3px 8px; border-radius:999px; border:1px solid rgba(201,168,76,.35); color:var(--color-accent,#d8bc73); font-weight:700; }
+.religious-reference a { display:inline-flex; align-items:center; min-height:44px; color:var(--color-accent,#d8bc73); text-decoration:underline; text-underline-offset:3px; }
+.religious-reference__pending { color:#d9ac72; font-size:11px; }
+.religious-reference a:focus-visible { outline:2px solid currentColor; outline-offset:3px; border-radius:4px; }

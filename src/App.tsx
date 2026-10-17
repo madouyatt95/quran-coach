@@ -1,3 +1,12 @@
+import { startCarMediaBridge } from './lib/carExperience';
+import { startActivityWidgetBridge } from './lib/widgetService';
+import { useWidgetNavigation } from './hooks/useWidgetNavigation';
+import { AdhanPlayer } from './components/Prayer/AdhanPlayer';
+import { useRegularity } from './hooks/useRegularity';
+import { useAutomaticMosque } from './hooks/useAutomaticMosque';
+import { AutomaticMosqueContext } from './hooks/AutomaticMosqueContext';
+import { usePrayerLocation } from './hooks/usePrayerLocation';
+import { FindButton } from './components/Navigation/FindButton';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { Menu } from 'lucide-react';
@@ -18,18 +27,22 @@ import { KhatmCelebration } from './components/KhatmCelebration';
 import { updateLastVisit } from './lib/notificationService';
 import { trackAppOpen, trackPageView } from './lib/analyticsService';
 import './index.css';
+import './appearance.css';
+import { applyAppearance } from './lib/appearance';
 
 // Lazy-loaded pages (code splitting)
 const HifdhPage = lazy(() => import('./pages/HifdhPage').then(m => ({ default: m.HifdhPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const PrayerTimesPage = lazy(() => import('./pages/PrayerTimesPage').then(m => ({ default: m.PrayerTimesPage })));
 const AdhkarPage = lazy(() => import('./pages/AdhkarPage').then(m => ({ default: m.AdhkarPage })));
+const ListeningExperiencePage = lazy(() => import('./pages/ListeningExperiencePage').then(m => ({ default: m.ListeningExperiencePage })));
 const ListenPage = lazy(() => import('./pages/ListenPage').then(m => ({ default: m.ListenPage })));
 const ReciterDetailPage = lazy(() => import('./pages/ReciterDetailPage').then(m => ({ default: m.ReciterDetailPage })));
 const PlaylistDetailPage = lazy(() => import('./pages/PlaylistDetailPage').then(m => ({ default: m.PlaylistDetailPage })));
-const AdminAssetsPage = lazy(() => import('./pages/AdminAssetsPage').then(m => ({ default: m.AdminAssetsPage })));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage').then(m => ({ default: m.AdminAnalyticsPage })));
 const TafsirPage = lazy(() => import('./pages/TafsirPage').then(m => ({ default: m.TafsirPage })));
+const EditorialJourneyPage = lazy(() => import('./pages/EditorialJourneyPage').then(m => ({ default: m.EditorialJourneyPage })));
+const JourneyNotebookPage = lazy(() => import('./pages/JourneyNotebookPage').then(m => ({ default: m.JourneyNotebookPage })));
 const ProphetsPage = lazy(() => import('./pages/ProphetsPage').then(m => ({ default: m.ProphetsPage })));
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then(m => ({ default: m.FavoritesPage })));
 const ThemesPage = lazy(() => import('./pages/ThemesPage').then(m => ({ default: m.ThemesPage })));
@@ -41,12 +54,14 @@ const SentinellePage = lazy(() => import('./pages/SentinellePage').then(m => ({ 
 const StoragePage = lazy(() => import('./pages/StoragePage').then(m => ({ default: m.StoragePage })));
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const CoachPage = lazy(() => import('./pages/CoachPage').then(m => ({ default: m.CoachPage })));
+const ArabicPage = lazy(() => import('./arabic/ArabicPage').then(m => ({ default: m.ArabicPage })));
 const AcademyPage = lazy(() => import('./academy/components/AcademyHub').then(m => ({ default: m.AcademyHub })));
 const CirclePage = lazy(() => import('./pages/CirclePage').then(m => ({ default: m.CirclePage })));
 const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const AtlasPage = lazy(() => import('./pages/AtlasPage').then(m => ({ default: m.AtlasPage })));
 const LastNightsDashboard = lazy(() => import('./components/Home/LastNightsDashboard').then(m => ({ default: m.LastNightsDashboard })));
 const FahmPage = lazy(() => import('./pages/FahmPage').then(m => ({ default: m.FahmPage })));
+const FahmRecallPage = lazy(() => import('./pages/FahmRecallPage').then(m => ({ default: m.FahmRecallPage })));
 const FahmLessonPage = lazy(() => import('./pages/FahmLessonPage').then(m => ({ default: m.FahmLessonPage })));
 const VocabPage = lazy(() => import('./pages/VocabPage').then(m => ({ default: m.VocabPage })));
 
@@ -83,6 +98,10 @@ function ReadPagePersistent() {
 function AppContent() {
   const { theme, arabicFontSize, arabicFontFamily } = useSettingsStore();
   const { surahs, setSurahs } = useQuranStore();
+  useRegularity();
+  useWidgetNavigation();
+  useEffect(() => startCarMediaBridge(), []);
+  useEffect(() => startActivityWidgetBridge(), []);
   const { startSession, endSession } = useStatsStore();
   const hasUnlockedAudio = useRef(false);
   const [showSideMenu, setShowSideMenu] = useState(false);
@@ -125,7 +144,7 @@ function AppContent() {
 
   // Apply theme on mount and changes
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    applyAppearance(theme);
   }, [theme]);
 
   // Apply Arabic font size
@@ -165,7 +184,8 @@ function AppContent() {
 
   const location = useLocation();
   const isLecturePage = location.pathname === '/read';
-  const isLessonPage = location.pathname.startsWith('/fahm/lesson');
+  usePrayerLocation(location.pathname === '/' || location.pathname === '/prayers');
+  const automaticMosque=useAutomaticMosque(location.pathname === '/' || location.pathname === '/prayers');
 
   // Track page views on route changes
   useEffect(() => {
@@ -173,9 +193,12 @@ function AppContent() {
   }, [location.pathname]);
 
   return (
-    <>
+    <AutomaticMosqueContext.Provider value={automaticMosque}>
+      <AdhanPlayer />
       {/* Global burger menu button – hidden on Lecture and Lesson pages */}
-      {!isLecturePage && !isLessonPage && (
+      {!isLecturePage && (
+        <div className="global-page-tools">
+        {location.pathname !== '/coach' && <FindButton />}
         <button
           className="global-menu-btn"
           onClick={() => setShowSideMenu(true)}
@@ -183,10 +206,11 @@ function AppContent() {
         >
           <Menu size={22} />
         </button>
+        </div>
       )}
 
       <KhatmCelebration />
-      <main style={{ flex: 1, paddingBottom: 'var(--bottom-nav-height)' }}>
+      <main className={isLecturePage ? undefined : "app-main--compact"} style={{ flex: 1, paddingBottom: 'var(--bottom-nav-height)' }}>
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
         <Suspense fallback={<PageLoader />}>
@@ -206,12 +230,14 @@ function AppContent() {
             <Route path="/prayer-settings" element={<PrayerSettingsPage />} />
             <Route path="/adhkar" element={<AdhkarPage />} />
             <Route path="/listen" element={<ListenPage />} />
+            <Route path="/listen/experience" element={<ListeningExperiencePage key={location.search} />} />
             <Route path="/listen/:id" element={<ReciterDetailPage />} />
             <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
-            <Route path="/admin/assets" element={<AdminAssetsPage />} />
             <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
             <Route path="/storage" element={<StoragePage />} />
             <Route path="/tafsir" element={<TafsirPage />} />
+            <Route path="/journeys/notebook" element={<JourneyNotebookPage />} />
+            <Route path="/journeys/:kind/:id" element={<EditorialJourneyPage />} />
             <Route path="/prophets" element={<ProphetsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/themes" element={<ThemesPage />} />
@@ -222,23 +248,28 @@ function AppContent() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/coach" element={<CoachPage />} />
             <Route path="/academy" element={<AcademyPage />} />
+            <Route path="/academy/arabic" element={<ArabicPage />} />
+            <Route path="/academy/arabic/:lessonId" element={<ArabicPage />} />
             <Route path="/circles" element={<CirclePage />} />
             <Route path="/stories" element={<StoriesPage />} />
             <Route path="/atlas" element={<AtlasPage />} />
             <Route path="/last-nights" element={<LastNightsDashboard />} />
             <Route path="/fahm" element={<FahmPage />} />
+            <Route path="/fahm/review" element={<FahmRecallPage />} />
+                        <Route path="/fahm/surah/:surah" element={<FahmLessonPage />} />
+                        <Route path="/fahm/session" element={<FahmLessonPage />} />
             <Route path="/fahm/lesson/:pathId/:day" element={<FahmLessonPage />} />
             <Route path="/vocab" element={<VocabPage />} />
           </Routes>
         </Suspense>
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
-      <InstallPrompt />
+      {location.pathname !== "/listen/experience" && !location.pathname.startsWith("/journeys/") && !location.pathname.startsWith("/fahm/") && <InstallPrompt />}
       <UpdateBanner />
       <MiniPlayer />
       <InvisibleCoachLayer />
       <BottomNav />
-    </>
+    </AutomaticMosqueContext.Provider>
   );
 }
 
@@ -249,4 +280,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-

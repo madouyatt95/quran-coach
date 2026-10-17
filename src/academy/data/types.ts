@@ -1,6 +1,6 @@
 // ─── Academy Data Types ──────────────────────────────────
 
-export type AcademyLevelId = 'fondations' | 'pratique' | 'junior';
+export type AcademyLevelId = 'fondations' | 'pratique' | 'junior' | 'sabirin-tawhid' | 'sabirin-hadith';
 
 export interface LessonSection {
     title: string;
@@ -10,6 +10,8 @@ export interface LessonSection {
     audioHint?: string; // text to feed TTS
     image?: string;     // path to illustration (from /academy/)
     illustration?: string; // key for inline SVG illustration mapping
+    reflection?: string;
+    source?: { document: string; page: number; url: string };
 }
 
 export interface QuizQuestion {
@@ -17,6 +19,7 @@ export interface QuizQuestion {
     options: string[];
     answer: number; // 0-indexed
     explanation: string;
+    feedbacks?: string[];
 }
 
 export interface AcademyLesson {
@@ -41,7 +44,8 @@ export interface AcademyModule {
     title: string;
     titleAr: string;
     description: string;
-    category: 'alphabet' | 'quran' | 'fiqh' | 'aqidah';
+    category: 'alphabet' | 'quran' | 'fiqh' | 'aqidah' | 'hadith' | 'sira';
+    sourceDocument?: string;
     difficulty: 1 | 2 | 3;
     estimatedMinutes: number;
     linkedSurah?: number; // connects to Hifdh memorization

@@ -1,3 +1,5 @@
+import { fetchWithCache } from './apiCache';
+
 // Service for word-by-word audio synchronization
 // Uses Quran.com API for word timing data
 
@@ -30,25 +32,18 @@ export async function fetchWordTimings(
 
     // 1. Fetch verse words if not cached (contains text and positions)
     // We'll use a local cache for verse words to avoid redundant calls
-    const verseWordsRes = await fetch(
+    const verseData = await fetchWithCache<any>(
         `https://api.quran.com/api/v4/verses/by_key/${verseKey}?words=true&word_fields=text_uthmani,text_uthmani_tajweed`
     );
-    if (!verseWordsRes.ok) return null;
-    const verseData = await verseWordsRes.json();
     const words = verseData.verse.words;
 
     // 2. Fetch or get chapter segments for this reciter
     let chapterTimings = chapterTimingsCache.get(chapterCacheKey);
     if (!chapterTimings) {
         try {
-            const res = await fetch(
-                `https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surah}?segments=true`
-            );
-            if (res.ok) {
-                const data = await res.json();
-                chapterTimings = data.audio_file.timestamps;
-                chapterTimingsCache.set(chapterCacheKey, chapterTimings);
-            }
+            const data = await fetchWithCache<any>(`https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${surah}?segments=true`);
+            chapterTimings = data.audio_file?.timestamps;
+            if (chapterTimings) chapterTimingsCache.set(chapterCacheKey, chapterTimings);
         } catch (e) {
             console.error("Failed to fetch chapter timings", e);
         }

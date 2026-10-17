@@ -1,17 +1,23 @@
+import { chapterBooks } from '../data/storyChapters';
+import { ChapterPreview } from '../components/Journeys/ChapterPreview';
+import { StoryLibrary } from '../components/Journeys/StoryLibrary';
+import { LIFE_THEMES } from '../lib/editorialJourneys';
+import { JourneyLinks } from '../components/Journeys/JourneyShelf';
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square, Sparkles, MapPin } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square, Sparkles, MapPin, X } from 'lucide-react';
 import { stories, STORY_CATEGORIES, type Story, type StoryCategory } from '../data/storiesData';
-import { useQuranStore } from '../stores/quranStore';
+import { useOpenReader } from '../hooks/useOpenReader';
 import { playTts, stopTts } from '../lib/ttsService';
+import { ReligiousReference } from '../components/ReligiousReference';
 import './StoriesPage.css';
 
 type FilterMode = 'all' | StoryCategory;
 
 function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) {
     const navigate = useNavigate();
-    const { goToSurah, goToAyah } = useQuranStore();
+    const openReader = useOpenReader('Histoires');
     const [imageError, setImageError] = useState(false);
 
     const [isAudioLoading, setIsAudioLoading] = useState(false);
@@ -47,13 +53,8 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
     };
 
     const goToSurahPage = (surahNumber: number, startAyah?: number, page?: number) => {
-        if (startAyah) {
-            goToAyah(surahNumber, startAyah, page);
-        } else {
-            goToSurah(surahNumber);
-        }
         onClose();
-        navigate('/read');
+        openReader({ surah: surahNumber, ayah: startAyah ?? 1, page });
     };
 
     const handleShare = async () => {
@@ -61,7 +62,7 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
             try {
                 await navigator.share({
                     title: story.title,
-                    text: `${story.titleAr} — ${story.title}\n\n${story.summary}\n\n🕌 Moralités :\n${story.morals.map(m => `• ${m}`).join('\n')}\n\nDécouvrez cette histoire et bien plus sur Quran Coach\nhttps://qurancoach.com`
+                    text: `${story.titleAr} — ${story.title}\n\n${story.summary}\n\n🕌 Moralités :\n${story.morals.map(m => `• ${m}`).join('\n')}\n\nDécouvrez cette histoire et bien plus sur Quran Coach\nhttps://www.quran-coach.fr/stories?story=${story.id}`
                 });
             } catch (err) {
                 console.log("Partage annulé", err);
@@ -86,8 +87,9 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             >
-                <div className="story-modal__handle" />
+                <div className="story-modal__topbar"><div className="story-modal__handle" /><button type="button" className="story-modal__dismiss" onClick={onClose} aria-label="Fermer le récit"><X size={20} /></button></div>
 
+                <JourneyLinks kind="story" id={story.id}/>
                 {/* Hero */}
                 <div className="story-modal__hero">
                     <span className="story-modal__emoji">{story.icon}</span>
@@ -134,7 +136,9 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
                             {isAudioPlaying ? 'Arrêter' : 'Écouter'}
                         </button>
                     </div>
-                    <p className="story-modal__text">{story.summary}</p>
+                    {chapterBooks[`story:${story.id}`]?<ChapterPreview bookKey={`story:${story.id}`}/>:<p className="story-modal__text">{story.summary}</p>}
+                    {story.sourceRefs?.length?story.sourceRefs.map(ref=><ReligiousReference key={ref} kind="Verset" source={ref}/>):<ReligiousReference kind="Récit" source="Synthèse pédagogique des passages associés"/>}
+                    <p className="story-modal__source-note">Les sourates ci-dessous permettent de retrouver les passages associés. Les détails du résumé et les moralités sont une reformulation pédagogique, à vérifier dans les textes.</p>
                 </div>
 
                 {/* Morals */}
@@ -199,6 +203,8 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
 export function StoriesPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [search, setSearch] = useState('');
+    const [lifeTheme,setLifeTheme]=useState('');
+    const theme=LIFE_THEMES.find(t=>t.id===lifeTheme);
     const [filter, setFilter] = useState<FilterMode>('all');
     const [selectedStory, setSelectedStory] = useState<Story | null>(null);
 
@@ -227,6 +233,7 @@ export function StoriesPage() {
 
     const filteredStories = useMemo(() => {
         let result = stories;
+        if(theme)result=result.filter(s=>(theme.stories as readonly string[]).includes(s.id));
 
         if (filter !== 'all') {
             result = result.filter(s => s.category === filter);
@@ -244,7 +251,7 @@ export function StoriesPage() {
         }
 
         return result;
-    }, [search, filter]);
+    }, [search, filter, theme]);
 
     // Group by category for display
     const groupedStories = useMemo(() => {
@@ -253,7 +260,7 @@ export function StoriesPage() {
         }
 
         const groups: { category: StoryCategory; stories: Story[] }[] = [];
-        const categoryOrder: StoryCategory[] = ['peuples', 'personnages', 'paraboles', 'evenements', 'divers'];
+        const categoryOrder: StoryCategory[] = ['peuples', 'personnages', 'paraboles', 'evenements', 'divers', 'sira', 'duas'];
 
         for (const cat of categoryOrder) {
             const catStories = filteredStories.filter(s => s.category === cat);
@@ -285,6 +292,7 @@ export function StoriesPage() {
                 </span>
             </div>
 
+            <StoryLibrary kind="story"/>
             {/* Search */}
             <div className="stories-search">
                 <div className="stories-search__wrapper">
@@ -299,6 +307,7 @@ export function StoriesPage() {
                 </div>
             </div>
 
+            <section className="journey-themes"><h2>Une histoire pour aujourd’hui</h2><div className="journey-theme-chips"><button aria-pressed={!lifeTheme} onClick={()=>setLifeTheme('')}>Tous les récits</button>{LIFE_THEMES.map(t=><button key={t.id} aria-pressed={t.id===lifeTheme} onClick={()=>{setLifeTheme(t.id);setFilter('all');setSearch('');}}>{t.icon} {t.label}</button>)}</div>{theme&&<div className="journey-theme-description"><p>{theme.description}</p><strong>{theme.question}</strong><p>{theme.action}</p><small>Pistes de réflexion personnelles, facultatives.</small></div>}</section>
             {/* Category Filters */}
             <div className="stories-filters">
                 <button

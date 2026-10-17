@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useQuizStore } from '../stores/quizStore';
 import { PseudoSetup } from '../components/Quiz/PseudoSetup';
@@ -19,11 +20,19 @@ import { HistoryView } from '../components/Quiz/HistoryView';
 import { SiraMapView } from '../components/Quiz/SiraMapView';
 import { ErrorReviewView } from '../components/Quiz/ErrorReviewView';
 import './QuizPage.css';
+import '../components/Quiz/QuizExperience.css';
+import {QuizStudy} from '../components/Quiz/QuizStudy';
+import {QuizInvestigations} from '../components/Quiz/QuizInvestigations';
+import {QuizStudio} from '../components/Quiz/QuizStudio';
 
 // ─── Main Quiz Page ──────────────────────────────────────
 export function QuizPage() {
     const { view, player, matchId, channel, syncMatch } = useQuizStore();
+    const [params,setParams]=useSearchParams();
+    useEffect(()=>{if(player && params.get('companion')==='revision'){useQuizStore.getState().setView('error-review');const next=new URLSearchParams(params);next.delete('companion');setParams(next,{replace:true});}},[player,params,setParams]);
     const [showSetup, setShowSetup] = useState(!player);
+
+    useEffect(()=>{window.scrollTo({top:0});},[view]);
 
     // Auto-sync duel on mount or recovery
     useEffect(() => {
@@ -37,7 +46,11 @@ export function QuizPage() {
         return <PseudoSetup onDone={() => setShowSetup(false)} />;
     }
 
+    if(params.has('challenge'))return <QuizStudio/>;
     switch (view) {
+        case 'study': return <QuizStudy/>;
+        case 'investigations': return <QuizInvestigations/>;
+        case 'studio': return <QuizStudio/>;
         case 'home':
             return <HomeView />;
         case 'daily':

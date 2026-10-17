@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
-import { useListenStore } from '../stores/listenStore';
 import { trackAudioPlay } from '../lib/analyticsService';
 import { ChevronLeft, Play, Trash2, ListMusic, Music, ChevronUp, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -12,9 +11,8 @@ export function PlaylistDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { playlists, deletePlaylist, removeItemFromPlaylist, reorderItem } = usePlaylistsStore();
-    const { setPlaylist, isPlaying, currentSurahNumber } = useAudioPlayerStore();
+    const { setPlaylist, isPlaying, playlist: activePlaylist, currentPlaylistIndex } = useAudioPlayerStore();
 
-    const { setLastListened } = useListenStore();
 
     const playlist = playlists.find(p => p.id === id);
 
@@ -30,30 +28,15 @@ export function PlaylistDetailPage() {
         );
     }
 
-    const saveLastListened = (item: typeof playlist.items[0], index: number) => {
-        setLastListened({
-            reciterId: Number(item.reciterId || 0),
-            reciterName: item.reciterName || playlist.name,
-            surahNumber: item.surahNumber,
-            surahName: item.surahName,
-            audioUrl: item.audioUrl || '',
-            position: 0,
-            playlist: playlist.items,
-            playlistIndex: index,
-        });
-    };
-
     const handlePlayAll = () => {
         if (playlist.items.length === 0) return;
         setPlaylist(playlist.items, 0, playlist.items[0].reciterId || '1');
-        saveLastListened(playlist.items[0], 0);
         trackAudioPlay(playlist.items[0].surahNumber, playlist.items[0].surahName, playlist.items[0].reciterName || '', 'playlist');
     };
 
     const handlePlayItem = (index: number) => {
         const item = playlist.items[index];
         setPlaylist(playlist.items, index, item.reciterId || '1');
-        saveLastListened(item, index);
         trackAudioPlay(item.surahNumber, item.surahName, item.reciterName || '', 'playlist');
     };
 
@@ -109,7 +92,7 @@ export function PlaylistDetailPage() {
                     </div>
                 ) : (
                     playlist.items.map((item, index) => {
-                        const isCurrent = currentSurahNumber === item.surahNumber && isPlaying;
+                        const isCurrent = activePlaylist[currentPlaylistIndex]?.audioUrl === item.audioUrl && isPlaying;
 
                         return (
                             <div

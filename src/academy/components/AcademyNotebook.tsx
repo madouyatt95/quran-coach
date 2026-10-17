@@ -1,0 +1,14 @@
+import {useState} from 'react';
+import {useAcademyStore} from '../../stores/academyStore';
+import type {AcademyModule} from '../data/types';
+import {courseChapter} from '../data/courseLibrary';
+import {CourseProject} from './CourseProject';
+import './CourseDiscovery.css';
+import {masteryLevel} from '../mastery';
+const FIELDS=[['understood','Ce que j’ai compris','Résume l’idée avec tes mots.'],['distinction','La distinction essentielle','Quelles notions ne faut-il pas confondre ?'],['example','Mon exemple personnel','Décris une situation concrète.'],['review','Ce que je dois revoir','Une question ou un point encore fragile.']] as const;
+export function AcademyNotebook({modules,initial,onBack,onOpen}:{modules:AcademyModule[];initial?:string;onBack:()=>void;onOpen:(module:AcademyModule)=>void}){
+ const store=useAcademyStore();const [selected,setSelected]=useState(initial||'');
+ const studied=modules.filter(m=>m.sourceDocument&&(store.progress[m.id]?.lastVisitedAt||store.progress[m.id]?.completed||store.notebook[m.id]));
+ const module=modules.find(m=>m.id===selected),entry=module?store.notebook[module.id]:undefined,source=module?courseChapter(module.id):null;
+ return <section className="academy-hub academy-workspace academy-notebook"><button onClick={onBack}>← Académie</button><h2>📓 Mon carnet d’apprentissage</h2><p>Un endroit pour garder ce que tu as compris, ton exemple et les questions à reprendre. Tes notes restent sur cet appareil.</p>{module?<><button onClick={()=>setSelected('')}>← Toutes mes fiches</button><div className="academy-notebook__sheet"><small>{source?.doc.subject==='hadith'?'HADITH':'AQIDAH'} · {masteryLevel(store.progress[module.id],store.mastery[module.id])}</small><h3>{module.title}</h3><p>{module.description}</p>{FIELDS.map(([field,label,placeholder])=><label key={field} className="academy-notebook__field">{label}<textarea value={entry?.[field]||''} placeholder={placeholder} onChange={e=>store.saveNotebook(module.id,field,e.target.value)}/></label>)}<small>{entry?.updatedAt?'Enregistré automatiquement sur cet appareil.':'Commence par une phrase ; elle sera enregistrée automatiquement.'}</small>{source&&<p>Source : {source.doc.author}, chapitre {source.chapter.number}, page {source.chapter.start}. <a href={`${source.doc.pdf}#page=${source.chapter.start}`} target="_blank" rel="noopener noreferrer">Consulter ↗</a></p>}</div><CourseProject id={module.id}/><button onClick={()=>onOpen(module)}>Retourner à la leçon →</button></>:studied.length?<div className="academy-notebook__list">{studied.map(m=><button key={m.id} onClick={()=>setSelected(m.id)}><span>{m.title}</span><small>{masteryLevel(store.progress[m.id],store.mastery[m.id])} · {store.notebook[m.id]?'Fiche commencée':'À compléter'}</small></button>)}</div>:<p>Ouvre une leçon de Aqidah ou de Hadith pour commencer ton premier carnet.</p>}</section>;
+}

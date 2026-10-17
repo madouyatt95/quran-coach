@@ -1,0 +1,386 @@
+{
+  "categories-1": {
+    "feedback": {
+      "1": "Le mot désigne un objet, il ne présente pas une action conjuguée.",
+      "2": "Une particule établit une relation ; ce mot nomme un objet."
+    },
+    "check": {
+      "prompt": "Quelle est la catégorie de مَسْجِدٌ ?",
+      "options": [
+        "Nom",
+        "Verbe",
+        "Particule"
+      ],
+      "answer": 0,
+      "explanation": "Il désigne une mosquée : c’est un nom."
+    }
+  },
+  "categories-2": {
+    "feedback": {
+      "0": "Le lieu sera nommé après la préposition ; فِي ne nomme pas ce lieu.",
+      "1": "فِي ne se conjugue pas : elle introduit une relation."
+    },
+    "check": {
+      "prompt": "Dans quelle catégorie entre إِلَى (« vers ») ?",
+      "options": [
+        "Nom",
+        "Particule",
+        "Verbe"
+      ],
+      "answer": 1,
+      "explanation": "إِلَى est une préposition, donc une particule."
+    }
+  },
+  "pronouns-1": {
+    "feedback": {
+      "0": "هُوَ désigne « il », une personne dont on parle.",
+      "2": "هِيَ désigne « elle », une personne dont on parle."
+    },
+    "check": {
+      "prompt": "Quel pronom désigne celui qui parle au singulier ?",
+      "options": [
+        "هُوَ",
+        "هِيَ",
+        "أَنَا"
+      ],
+      "answer": 2,
+      "explanation": "أَنَا signifie « je »."
+    }
+  },
+  "pronouns-2": {
+    "feedback": {
+      "1": "Un suffixe possessif ne donne aucune date.",
+      "2": "Ce suffixe désigne une personne ; ce n’est pas une particule de négation."
+    },
+    "check": {
+      "prompt": "Dans قَلَمُهَا, que précise ـهَا ?",
+      "options": [
+        "Le temps",
+        "La propriétaire du stylo",
+        "Une négation"
+      ],
+      "answer": 1,
+      "explanation": "Attaché à قَلَم, le suffixe désigne ici un possesseur féminin singulier."
+    }
+  },
+  "gender-number-1": {
+    "feedback": {
+      "0": "Le singulier serait طَالِبٌ : vous avez laissé de côté la marque du duel.",
+      "2": "Le duel n’est pas un pluriel indéterminé : il désigne exactement deux."
+    },
+    "check": {
+      "prompt": "Combien désigne مُعَلِّمَانِ dans cet exemple ?",
+      "options": [
+        "Deux",
+        "Un",
+        "Plusieurs sans précision"
+      ],
+      "answer": 0,
+      "explanation": "Il s’agit de deux enseignants."
+    }
+  },
+  "gender-number-2": {
+    "feedback": {
+      "0": "كَاتِبٌ désigne celui qui écrit : vous avez changé de mot, pas formé le pluriel de livre.",
+      "1": "كِتَابَانِ est le duel : deux livres exactement."
+    },
+    "check": {
+      "prompt": "بُيُوتٌ est donné comme pluriel de بَيْتٌ. Que désigne-t-il ?",
+      "options": [
+        "Deux maisons exactement",
+        "Une maison",
+        "Des maisons"
+      ],
+      "answer": 2,
+      "explanation": "Ce pluriel se forme par changement interne."
+    }
+  },
+  "definite-1": {
+    "feedback": {
+      "0": "Sans article, كِتَابٌ signifie ici « un livre ».",
+      "2": "كُتُبٌ désigne des livres au pluriel, pas « le livre »."
+    },
+    "check": {
+      "prompt": "Quel mot signifie « la porte » ?",
+      "options": [
+        "بَابٌ",
+        "الْبَابُ",
+        "بُيُوتٌ"
+      ],
+      "answer": 1,
+      "explanation": "الْبَابُ porte l’article défini."
+    }
+  },
+  "definite-2": {
+    "feedback": {
+      "0": "Tous les mots définis n’ont pas d’article : les pronoms sont définis par nature.",
+      "1": "On n’ajoute pas cet article à un pronom indépendant."
+    },
+    "check": {
+      "prompt": "أَنَا est-il défini ?",
+      "options": [
+        "Oui, c’est un pronom",
+        "Non, sans article",
+        "Seulement avec un tanwīn"
+      ],
+      "answer": 0,
+      "explanation": "Le pronom est défini sans article."
+    }
+  },
+  "nominal-1": {
+    "feedback": {
+      "0": "الْبَيْتُ est ce dont on parle ; il ne dit pas encore comment est la maison.",
+      "2": "Les deux éléments construisent bien une information : la maison est grande."
+    },
+    "check": {
+      "prompt": "Dans الْبَابُ مَفْتُوحٌ, quel mot est le khabar ?",
+      "options": [
+        "الْبَابُ",
+        "Aucun",
+        "مَفْتُوحٌ"
+      ],
+      "answer": 2,
+      "explanation": "مَفْتُوحٌ apporte l’information « ouverte »."
+    }
+  },
+  "nominal-2": {
+    "feedback": {
+      "1": "Cet exemple affirme « la maison est grande » : vous avez choisi une phrase, pas le groupe nominal demandé.",
+      "2": "كَبِيرٌ signifie « grand » ; il manque le nom désigné."
+    },
+    "check": {
+      "prompt": "Quel groupe signifie « la porte ouverte » ?",
+      "options": [
+        "الْبَابُ مَفْتُوحٌ",
+        "الْبَابُ الْمَفْتُوحُ",
+        "مَفْتُوحٌ"
+      ],
+      "answer": 1,
+      "explanation": "L’adjectif défini accompagne ici le nom défini."
+    }
+  },
+  "verbal-1": {
+    "feedback": {
+      "0": "La leçon est ce qui est écrit : c’est l’objet, pas celui qui agit.",
+      "1": "كَتَبَ exprime l’action ; la question demande qui l’accomplit."
+    },
+    "check": {
+      "prompt": "Dans فَتَحَ الطَّالِبُ الْبَابَ, quel est l’objet ?",
+      "options": [
+        "الْبَابَ",
+        "الطَّالِبُ",
+        "فَتَحَ"
+      ],
+      "answer": 0,
+      "explanation": "La porte est ce que l’étudiant ouvre."
+    }
+  },
+  "verbal-2": {
+    "feedback": {
+      "1": "« Il écrit » serait يَكْتُبُ dans cette famille.",
+      "2": "« Tu écris » au masculin singulier serait تَكْتُبُ."
+    },
+    "check": {
+      "prompt": "Quel sujet comprend-on dans نَفْتَحُ ?",
+      "options": [
+        "Il",
+        "Tu",
+        "Nous"
+      ],
+      "answer": 2,
+      "explanation": "La forme signifie ici « nous ouvrons »."
+    }
+  },
+  "prepositions-1": {
+    "feedback": {
+      "0": "Un sujet implicite se cherche dans une construction verbale ; ici nous lisons une préposition avec un nom.",
+      "2": "La préposition introduit bien un complément : le nom qui suit."
+    },
+    "check": {
+      "prompt": "Quel mot dépend de إِلَى dans إِلَى الْمَسْجِدِ ?",
+      "options": [
+        "إِلَى",
+        "الْمَسْجِدِ",
+        "Un verbe caché"
+      ],
+      "answer": 1,
+      "explanation": "الْمَسْجِدِ est le nom régi par la préposition."
+    }
+  },
+  "prepositions-2": {
+    "feedback": {
+      "0": "L’espace n’est pas un critère grammatical : certaines prépositions sont attachées.",
+      "2": "L’attachement dépend de la préposition, pas du fait que la phrase pose une question."
+    },
+    "check": {
+      "prompt": "Dans لِلْبَيْتِ, la préposition لِـ est…",
+      "options": [
+        "attachée au nom",
+        "un verbe",
+        "un nom indépendant"
+      ],
+      "answer": 0,
+      "explanation": "لِـ garde son rôle malgré son attachement orthographique."
+    }
+  },
+  "idafa-1": {
+    "feedback": {
+      "1": "كِتَابُ est le premier terme, le muḍāf.",
+      "2": "L’iḍāfa relie directement les deux noms ; il ne faut pas inventer une préposition."
+    },
+    "check": {
+      "prompt": "Dans بَابُ الْبَيْتِ, quel mot est le muḍāf ilayhi ?",
+      "options": [
+        "بَابُ",
+        "Un mot absent",
+        "الْبَيْتِ"
+      ],
+      "answer": 2,
+      "explanation": "الْبَيْتِ est le second terme au génitif."
+    }
+  },
+  "idafa-2": {
+    "feedback": {
+      "0": "Le premier terme de cette iḍāfa simple ne prend pas l’article.",
+      "1": "Le tanwīn du premier terme disparaît dans cette construction."
+    },
+    "check": {
+      "prompt": "Quelle forme convient pour « la porte de la maison » ?",
+      "options": [
+        "الْبَابُ الْبَيْتِ",
+        "بَابُ الْبَيْتِ",
+        "بَابٌ الْبَيْتِ"
+      ],
+      "answer": 1,
+      "explanation": "بَابُ est sans article ni tanwīn."
+    }
+  },
+  "roots-1": {
+    "feedback": {
+      "0": "Le mīm de مَكْتُوبٌ est ajouté dans cette construction : ce n’est pas la première radicale.",
+      "2": "L’alif de كَاتِبٌ appartient au schème ; la troisième radicale est ب."
+    },
+    "check": {
+      "prompt": "Quelle racine relie فَتَحَ et مَفْتُوحٌ ?",
+      "options": [
+        "ف ت ح",
+        "م ف ت",
+        "ف و ح"
+      ],
+      "answer": 0,
+      "explanation": "ف ت ح sont les trois radicales communes."
+    }
+  },
+  "roots-2": {
+    "feedback": {
+      "1": "Une famille rassemble des mots apparentés, pas des synonymes interchangeables.",
+      "2": "Retirer les voyelles ne suffit pas à séparer radicales et lettres ajoutées."
+    },
+    "check": {
+      "prompt": "فَاتِحٌ et مَفْتُوحٌ ont-ils forcément la même traduction ?",
+      "options": [
+        "Oui",
+        "Oui, sans leurs voyelles",
+        "Non, leurs constructions diffèrent"
+      ],
+      "answer": 2,
+      "explanation": "Celui qui ouvre et ouvert sont des emplois différents."
+    }
+  },
+  "patterns-1": {
+    "feedback": {
+      "0": "فَعَلَ est le modèle donné pour un verbe simple à l’accompli, sans cet alif.",
+      "1": "مَفْعُولٌ comporte un mīm initial et un wāw long, absents de كَاتِبٌ."
+    },
+    "check": {
+      "prompt": "Quel schème correspond à مَفْتُوحٌ ?",
+      "options": [
+        "فَاعِلٌ",
+        "مَفْعُولٌ",
+        "فَعَلَ"
+      ],
+      "answer": 1,
+      "explanation": "La structure comporte le mīm initial et le wāw long."
+    }
+  },
+  "patterns-2": {
+    "feedback": {
+      "1": "ف représente la première radicale.",
+      "2": "ل représente la troisième radicale."
+    },
+    "check": {
+      "prompt": "Dans فَاتِحٌ, quelle lettre occupe la deuxième position radicale ?",
+      "options": [
+        "ت",
+        "ا",
+        "ح"
+      ],
+      "answer": 0,
+      "explanation": "Les radicales sont ف ت ح ; ت est la deuxième."
+    }
+  },
+  "conjugation-1": {
+    "feedback": {
+      "0": "يَكْتُبُ signifie « il écrit » ; le sujet demandé est « nous ».",
+      "1": "أَكْتُبُ signifie « j’écris » : même personne de discours, mais singulier."
+    },
+    "check": {
+      "prompt": "Complétez نَحْنُ … (« nous ouvrons »).",
+      "options": [
+        "أَفْتَحُ",
+        "يَفْتَحُ",
+        "نَفْتَحُ"
+      ],
+      "answer": 2,
+      "explanation": "نَفْتَحُ est la première personne du pluriel."
+    }
+  },
+  "conjugation-2": {
+    "feedback": {
+      "1": "Le yāʾ marque ici « il », pas « je ».",
+      "2": "Le nūn marque ici « nous », pas « je »."
+    },
+    "check": {
+      "prompt": "Quelle forme signifie « j’entends » ?",
+      "options": [
+        "يَسْمَعُ",
+        "أَسْمَعُ",
+        "نَسْمَعُ"
+      ],
+      "answer": 1,
+      "explanation": "أَسْمَعُ indique ici la première personne du singulier."
+    }
+  },
+  "derived-1": {
+    "feedback": {
+      "1": "عَلِمَ signifie « il a su » ; le lām n’est pas doublé.",
+      "2": "تَعَلَّمَ signifie « il a appris », pas « il a enseigné »."
+    },
+    "check": {
+      "prompt": "Quel détail distingue عَلَّمَ de عَلِمَ ?",
+      "options": [
+        "Le doublement du lām et les voyelles",
+        "La disparition de ع",
+        "Un pronom ajouté"
+      ],
+      "answer": 0,
+      "explanation": "La shadda et la vocalisation distinguent ces constructions."
+    }
+  },
+  "derived-2": {
+    "feedback": {
+      "0": "Vous confondez une marque de conjugaison avec un élément de dérivation.",
+      "2": "La forme X ne se reconnaît pas à un simple nūn personnel."
+    },
+    "check": {
+      "prompt": "Dans يَكْتُبُ, que marque le yāʾ initial ?",
+      "options": [
+        "Une forme X",
+        "Un nom défini",
+        "La personne dans la conjugaison"
+      ],
+      "answer": 2,
+      "explanation": "Il indique ici la troisième personne masculine singulière."
+    }
+  }
+}

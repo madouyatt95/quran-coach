@@ -1,6 +1,7 @@
+import {ArabicEntry} from '../../arabic/ArabicEntry';
 // ─── Academy Hub — Premium Redesign ──────────────────────
-import { useState, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useMemo, useEffect, useEffectEvent } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, CheckCircle, Trophy, Volume2, BookOpen, ArrowRight, Search, RotateCcw } from 'lucide-react';
 import { useAcademyStore } from '../../stores/academyStore';
 import { LEVEL_1_FONDATIONS } from '../data/level1-fondations';
@@ -11,40 +12,31 @@ import { GlossaryText } from './GlossaryText';
 import { CertificateModal } from './CertificateModal';
 import { AcademyJunior } from './AcademyJunior';
 import './AcademyHub.css';
+import './AcademyLearning.css';
+import {COURSE_LEVELS} from '../data/courseLibrary';
+import {moduleProgress,attemptResult,questionKey,moduleQuestions} from '../learning';
+import {AcademyStart} from './AcademyStart';
+import {AcademyReview} from './AcademyReview';
+import {CoursePersonalReview} from './CoursePersonalReview';
+import {useAcademyKnowledgeStore} from '../../stores/academyKnowledgeStore';
+import {AcademyCourse} from './AcademyCourse';
+import {CourseSyllabus} from './CourseSyllabus';
+import {chapterTeaching} from '../data/courseExplanations';
+import {PronunciationWorkshop} from './PronunciationWorkshop';
+import {TajwidBridge} from './TajwidBridge';
+import {AcademyNotebook} from './AcademyNotebook';
+import {masteryDue,masteryLevel} from '../mastery';
 
-const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE];
+const LEVELS: AcademyLevel[] = [LEVEL_1_FONDATIONS, LEVEL_2_PRATIQUE,...COURSE_LEVELS];
 
-// ─── TTS Helper ──────────────────────────────────────────
-function playAudio(text: string, audioHint?: string) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const source = audioHint || text;
-        const clean = source.replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s,،.]/g, '').trim();
-        if (!clean) return;
-
-        // Check if it's individual letters (short tokens separated by spaces)
-        const tokens = clean.split(/\s+/).filter(t => t.length > 0);
-        const isLetterList = tokens.length > 1 && tokens.every(t => t.length <= 2);
-
-        if (isLetterList) {
-            // Read each letter separately with a pause
-            let delay = 0;
-            tokens.forEach((letter) => {
-                setTimeout(() => {
-                    const utter = new SpeechSynthesisUtterance(letter);
-                    utter.lang = 'ar-SA';
-                    utter.rate = 0.6;
-                    window.speechSynthesis.speak(utter);
-                }, delay);
-                delay += 900; // 900ms pause between letters
-            });
-        } else {
-            const utter = new SpeechSynthesisUtterance(clean);
-            utter.lang = 'ar-SA';
-            utter.rate = 0.75;
-            window.speechSynthesis.speak(utter);
-        }
-    }
+// Pending letter timers are cancelled on every page/lesson transition.
+let speechTimers:ReturnType<typeof setTimeout>[]=[];
+function stopAcademySpeech(){speechTimers.forEach(clearTimeout);speechTimers=[];window.speechSynthesis?.cancel();}
+function playAudio(text:string,audioHint?:string){
+ stopAcademySpeech();if(!window.speechSynthesis)return;
+ const clean=(audioHint||text).replace(/[^\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\s,،.]/g,'').trim();if(!clean)return;
+ const words=clean.split(/\s+/),letters=words.length>1&&words.every(w=>w.length<=2);
+ (letters?words:[clean]).forEach((word,index)=>speechTimers.push(setTimeout(()=>{const u=new SpeechSynthesisUtterance(word);u.lang='ar-SA';u.rate=.65;speechSynthesis.speak(u);},index*900)));
 }
 
 // ─── Tajweed Visualizer ──────────────────────────────────
@@ -88,7 +80,7 @@ function TajweedVisualizer() {
 
 // ─── Main Component ──────────────────────────────────────
 export function AcademyHub() {
-    const navigate = useNavigate();
+    const navigate = useNavigate(),location=useLocation();
     const store = useAcademyStore();
 
     // Navigation state
@@ -98,8 +90,7 @@ export function AcademyHub() {
     const [sectionIdx, setSectionIdx] = useState(0);   // within a lesson, which section
     const [quizIdx, setQuizIdx] = useState(0);
     const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
-    const [quizCorrect, setQuizCorrect] = useState(0);
-    const [quizTotal, setQuizTotal] = useState(0);
+
     const [showResult, setShowResult] = useState(false);
     const [showTajweed, setShowTajweed] = useState(false);
     // Feature 8: Search
@@ -111,6 +102,9 @@ export function AcademyHub() {
     const [showCertificate, setShowCertificate] = useState(false);
     const [juniorMode, setJuniorMode] = useState(false);
 
+    const [reviewMode,setReviewMode]=useState(false),[workshop,setWorkshop]=useState(false),[lockedNotice,setLockedNotice]=useState('');
+    const [notebookMode,setNotebookMode]=useState(false),[notebookInitial,setNotebookInitial]=useState('');
+    useEffect(()=>{const stop=()=>stopAcademySpeech();window.addEventListener('quran-stop-playback',stop);return()=>{stop();window.removeEventListener('quran-stop-playback',stop);};},[activeModule?.id,contentIdx,sectionIdx]);
     const currentContent = activeModule?.content[contentIdx] ?? null;
 
     // Level progress
@@ -121,56 +115,45 @@ export function AcademyHub() {
         return Math.round((done / total) * 100);
     }, [store.progress]);
 
-    const getModuleProgress = useCallback((mod: AcademyModule) => {
-        const p = store.progress[mod.id];
-        if (p?.completed) return 100;
-        // partial: count completed content blocks
-        const total = mod.content.length;
-        if (total === 0) return 0;
-        // Use contentIdx as rough progress indicator when active
-        if (activeModule?.id === mod.id) {
-            return Math.round((contentIdx / total) * 100);
-        }
-        return 0;
-    }, [store.progress, activeModule, contentIdx]);
-
-    const isModuleUnlocked = useCallback((modId: string) => {
-        return store.unlockedModules.includes(modId);
-    }, [store.unlockedModules]);
+    const getModuleProgress=(mod:AcademyModule)=>{const p=store.progress[mod.id];return moduleProgress(mod,!!p?.completed,p?.lastContentIdx,p?.quizIdx||p?.lastSectionIdx);};
+    const isModuleUnlocked = useCallback((id:string)=>id.startsWith('sabirin-')||store.unlockedModules.includes(id),[store.unlockedModules]);
 
     // Handlers
     const startModule = useCallback((mod: AcademyModule) => {
-        if (!isModuleUnlocked(mod.id)) return;
+        if (!isModuleUnlocked(mod.id)) {setLockedNotice('Pour ouvrir ce cours, termine d’abord son parcours de fondations. Tu peux aussi adapter ton parcours depuis le repérage de niveau.');return;}
+        setLockedNotice('');store.setCurrentModule(mod.id);
         setActiveModule(mod);
+        if(mod.sourceDocument && new URLSearchParams(location.search).get('module')!==mod.id)navigate(`/academy?module=${mod.id}`,{replace:true});
         // Feature 1: Resume from saved position
         const saved = store.progress[mod.id];
-        if (saved?.lastContentIdx !== undefined && !saved.completed) {
+        const explicitSection=new URLSearchParams(location.search).get('section');
+        const restarting=!mod.sourceDocument&&!!saved?.completed&&saved.lastContentIdx===undefined;
+        if(explicitSection!==null&&/^[0-2]$/.test(explicitSection)){
+            setContentIdx(0);setSectionIdx(Number(explicitSection));store.savePosition(mod.id,0,Number(explicitSection));
+        } else if (saved?.lastContentIdx !== undefined) {
             setContentIdx(saved.lastContentIdx);
             setSectionIdx(saved.lastSectionIdx ?? 0);
         } else {
             setContentIdx(0);
             setSectionIdx(0);
         }
-        setQuizIdx(0);
-        setQuizAnswer(null);
-        setQuizCorrect(0);
-        setQuizTotal(0);
+        if(restarting)store.resetAttempt(mod.id);
+        const qi=restarting?0:saved?.quizIdx||0,ci=restarting?0:saved?.lastContentIdx||0;
+        setQuizIdx(qi);setQuizAnswer(restarting?null:saved?.answers?.[questionKey(mod.id,ci,qi)]??null);
         setShowResult(false);
         setShowTajweed(false);
         setTajwidPractice(false);
         setTajwidAnswer(null);
-    }, [isModuleUnlocked, store.progress]);
+    }, [isModuleUnlocked, store,location.search,navigate]);
 
-    const finishModule = useCallback(() => {
-        const score = quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 100;
-        if (activeModule) {
-            if (score >= 80) {
-                if (store.progress[activeModule.id]?.completed) store.markReviewed(activeModule.id);
-                else store.completeModule(activeModule.id, score);
-            }
-        }
-        setShowResult(true);
-    }, [quizCorrect, quizTotal, activeModule, store]);
+    const finishModule=useCallback(()=>{
+      if(!activeModule)return;const result=attemptResult(activeModule,store.progress[activeModule.id]?.answers||{});
+      if(activeModule.sourceDocument){const answers=store.progress[activeModule.id]?.answers||{};store.startNotebook(activeModule.id,{understood:store.notes[`${activeModule.id}:reflection:0`],example:store.notes[`${activeModule.id}:reflection:3`],review:[store.notes[`${activeModule.id}:course-question`],...moduleQuestions(activeModule).filter(q=>answers[q.key]!==q.answer).map(q=>q.q)].filter(Boolean).join('\n')});}
+      if(result.complete&&result.passed){if(store.progress[activeModule.id]?.completed)store.markReviewed(activeModule.id);else store.completeModule(activeModule.id,result.score);}
+      setShowResult(true);
+    },[activeModule,store]);
+    const openLinkedModule=useEffectEvent(()=>{const id=new URLSearchParams(location.search).get('module');const mod=LEVELS.flatMap(l=>l.modules).find(m=>m.id===id);if(mod&&(mod.id!==activeModule?.id||new URLSearchParams(location.search).has('section')))startModule(mod);});
+    useEffect(()=>{openLinkedModule();},[location.key]);
 
     // Feature 1: Save position on navigation
     const nextSection = useCallback(() => {
@@ -197,27 +180,29 @@ export function AcademyHub() {
     const prevSection = useCallback(() => {
         if (sectionIdx > 0) {
             setSectionIdx(s => s - 1);
+            if(activeModule)store.savePosition(activeModule.id,contentIdx,sectionIdx-1);
         }
-    }, [sectionIdx]);
+    }, [sectionIdx,activeModule,contentIdx,store]);
 
     const handleQuizAnswer = useCallback((answerIdx: number) => {
         if (quizAnswer !== null || !currentContent || currentContent.type !== 'quiz') return;
         const quiz = currentContent as AcademyQuiz;
         const correct = quiz.questions[quizIdx].answer === answerIdx;
         setQuizAnswer(answerIdx);
-        setQuizTotal(t => t + 1);
-        if (correct) setQuizCorrect(c => c + 1);
-    }, [quizAnswer, currentContent, quizIdx]);
+        if(activeModule){store.recordAnswer(activeModule.id,questionKey(activeModule.id,contentIdx,quizIdx),answerIdx,correct);if(activeModule.sourceDocument&&contentIdx===1)useAcademyKnowledgeStore.getState().answer(activeModule.id,quizIdx,'quiz',answerIdx,correct);}
+    }, [quizAnswer, currentContent, quizIdx,activeModule,contentIdx,store]);
 
     const nextQuizQuestion = useCallback(() => {
         if (!currentContent || currentContent.type !== 'quiz') return;
         const quiz = currentContent as AcademyQuiz;
         if (quizIdx < quiz.questions.length - 1) {
             setQuizIdx(i => i + 1);
-            setQuizAnswer(null);
+            if(activeModule)store.saveQuiz(activeModule.id,contentIdx,quizIdx+1);
+            setQuizAnswer(activeModule?store.progress[activeModule.id]?.answers?.[questionKey(activeModule.id,contentIdx,quizIdx+1)]??null:null);
         } else {
             // Quiz done — check if more content or module finished
             if (activeModule && contentIdx < activeModule.content.length - 1) {
+                store.savePosition(activeModule.id,contentIdx+1,0);
                 setContentIdx(c => c + 1);
                 setSectionIdx(0);
                 setQuizIdx(0);
@@ -226,14 +211,11 @@ export function AcademyHub() {
                 finishModule();
             }
         }
-    }, [currentContent, quizIdx, contentIdx, activeModule, finishModule]);
+    }, [currentContent, quizIdx, contentIdx, activeModule, finishModule,store]);
 
 
-    const finalScore = useMemo(() => {
-        return quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 100;
-    }, [quizCorrect, quizTotal]);
-
-    const passed = finalScore >= 80;
+    const result=activeModule?attemptResult(activeModule,store.progress[activeModule.id]?.answers||{}):{score:0,complete:false,passed:false};
+    const finalScore=result.score,passed=result.complete&&result.passed;
 
     // Feature 8: Filtered modules for search
     const allModules = useMemo(() => LEVELS.flatMap(l => l.modules), []);
@@ -244,7 +226,7 @@ export function AcademyHub() {
             m.title.toLowerCase().includes(q) ||
             m.description.toLowerCase().includes(q) ||
             m.titleAr.includes(q) ||
-            m.content.some(c => c.title.toLowerCase().includes(q))
+            m.content.some(c => c.title.toLowerCase().includes(q)||c.type==='lesson'&&c.sections.some(s=>(s.title+' '+s.body).toLowerCase().includes(q)))
         );
     }, [searchQuery, allModules]);
 
@@ -292,10 +274,14 @@ export function AcademyHub() {
             { verse: 'قِيلَ', rule: 'Madd tabii', options: ['Qalqalah', 'Izhar', 'Madd tabii', 'Ikhfa'], answer: 2, explanation: 'Ya sakin précédée de kasra → Madd tabii (allongement naturel de 2 temps).' },
         ];
         // Shuffle for variety
-        return all.sort(() => Math.random() - 0.5);
+        return all;
     }, []);
 
     // ─── RENDER: Tajwid Practice Mode ────────────────────
+    if(new URLSearchParams(location.search).get('review')==='personal')return <CoursePersonalReview onOtherReviews={()=>{setReviewMode(true);navigate('/academy');}} modules={allModules} onBack={()=>navigate(activeModule?`/academy?module=${activeModule.id}`:'/academy')} onRead={(id,index)=>navigate(`/academy?module=${id}&section=${index}`)}/>;
+    if(reviewMode)return <AcademyReview modules={allModules} onBack={()=>setReviewMode(false)}/>;
+    if(workshop)return <PronunciationWorkshop onBack={()=>setWorkshop(false)}/>;
+    if(notebookMode)return <AcademyNotebook modules={allModules} initial={notebookInitial} onBack={()=>{setNotebookMode(false);setNotebookInitial('');}} onOpen={mod=>{setNotebookMode(false);setNotebookInitial('');startModule(mod);}}/>;
     if (tajwidPractice) {
         const ex = TAJWID_EXERCISES[tajwidIdx];
         return (
@@ -357,16 +343,17 @@ export function AcademyHub() {
                 <div className="academy-result">
                     <div className="academy-result__icon">{passed ? '🏆' : '📚'}</div>
                     <h2 className={`academy-result__title ${passed ? 'success' : 'fail'}`}>
-                        {passed ? 'Module Validé !' : 'Pas encore...'}
+                        {passed ? 'Chapitre validé !' : 'Des points à reprendre'}
                     </h2>
                     <div className="academy-result__score">{finalScore}%</div>
                     <p className="academy-result__message">
                         {passed
-                            ? `Bravo ! Vous avez obtenu ${quizCorrect}/${quizTotal} bonnes réponses.`
-                            : `Vous avez obtenu ${quizCorrect}/${quizTotal}. Il faut 80% pour valider le module.`
+                            ? `Parcours compris · ${finalScore}% de bonnes réponses. Une question différente reviendra plus tard pour le consolider.`
+                            : `Score : ${finalScore}%. Reprends les exercices à consolider pour valider chaque étape.`
                         }
                     </p>
                     <div className="academy-result__actions">
+                        {passed&&activeModule.sourceDocument&&<button className="academy-result__btn academy-result__btn-secondary" onClick={()=>{setNotebookInitial(activeModule.id);setNotebookMode(true);}}>📓 Écrire ma fiche dans le carnet</button>}
                         {passed && activeModule.linkedSurah && (
                             <button
                                 className="academy-result__btn academy-result__btn-hifdh"
@@ -380,20 +367,31 @@ export function AcademyHub() {
                             className="academy-result__btn academy-result__btn-primary"
                             onClick={() => { setActiveModule(null); setShowResult(false); }}
                         >
-                            {passed ? 'Retour aux modules' : 'Réessayer plus tard'}
+                            {passed ? 'Retour aux cours' : 'Réessayer plus tard'}
                         </button>
                         {!passed && (
                             <button
                                 className="academy-result__btn academy-result__btn-secondary"
-                                onClick={() => startModule(activeModule)}
+                                onClick={() => {store.resetAttempt(activeModule.id);setContentIdx(0);setSectionIdx(0);setQuizIdx(0);setQuizAnswer(null);setShowResult(false);}}
                             >
-                                Recommencer le module
+                                Reprendre le chapitre
                             </button>
                         )}
                     </div>
                 </div>
             </div>
         );
+    }
+
+    if (activeModule?.sourceDocument && currentContent?.type === 'lesson') {
+        const level=COURSE_LEVELS.find(level=>level.id===activeModule.sourceDocument)!;
+        const next=level.modules[level.modules.findIndex(course=>course.id===activeModule.id)+1];
+        const goToQuiz=()=>{const target=contentIdx===0?1:3;const saved=store.progress[activeModule.id];setContentIdx(target);setSectionIdx(0);setQuizIdx(0);setQuizAnswer(saved?.answers?.[questionKey(activeModule.id,target,0)]??null);store.saveQuiz(activeModule.id,target,0);};
+        return <AcademyCourse key={`${activeModule.id}-${contentIdx}`} course={activeModule} application={contentIdx===2} onReview={()=>navigate(`/academy?module=${activeModule.id}&review=personal`)}
+          onBack={()=>{setActiveModule(null);setSelectedLevel(level);navigate('/academy',{replace:true});}}
+          onPractice={goToQuiz}
+          onRead={()=>{setContentIdx(0);setSectionIdx(0);store.savePosition(activeModule.id,0,0);}}
+          onNextChapter={next?()=>startModule(next):undefined}/>;
     }
 
     // ─── RENDER: Lesson View ─────────────────────────────
@@ -426,8 +424,8 @@ export function AcademyHub() {
                                 className="academy-lesson__illustration"
                             />
                         )}
-                        {section.title && <h3 className="academy-lesson__section-title">{section.title}</h3>}
-                        {section.body && <div className="academy-lesson__body"><GlossaryText text={section.body} /></div>}
+                        {!activeModule.sourceDocument&&section.title && <h3 className="academy-lesson__section-title">{section.title}</h3>}
+                        {!activeModule.sourceDocument&&section.body && <div className="academy-lesson__body"><GlossaryText text={section.body} /></div>}
 
                         {section.arabic && (
                             <div className="academy-lesson__arabic-block">
@@ -439,11 +437,13 @@ export function AcademyHub() {
                                     className="academy-lesson__audio-btn"
                                     onClick={() => playAudio(section.arabic!, section.audioHint)}
                                 >
-                                    <Volume2 size={16} /> Écouter
+                                    <Volume2 size={16} /> Écouter · voix de l’appareil
                                 </button>
                             </div>
                         )}
+                        {['alphabet-arabe','makharij-al-huruf','tajweed-fondamental'].includes(activeModule.id)&&<button onClick={()=>setWorkshop(true)}>🎧 M’exercer avec une récitation enregistrée</button>}
                     </div>
+                    {isTajweedModule&&<TajwidBridge moduleId={activeModule.id}/>}
 
                     {/* Tajweed Visualizer (in Tajweed module only) */}
                     {isTajweedModule && sectionIdx === 0 && (
@@ -465,12 +465,12 @@ export function AcademyHub() {
                                 ← Précédent
                             </button>
                         ) : <span />}
-                        <button className="academy-lesson__nav-next" onClick={nextSection}>
+                        {<button className="academy-lesson__nav-next" onClick={nextSection}>
                             {sectionIdx === totalSections - 1
-                                ? (contentIdx < activeModule.content.length - 1 ? 'Passer au quiz →' : 'Terminer ✓')
+                                ? (contentIdx < activeModule.content.length - 1 ? activeModule.content[contentIdx+1].type==='quiz'?'M’exercer →':'Continuer →' : 'Terminer ✓')
                                 : 'Suivant →'
                             }
-                        </button>
+                        </button>}
                     </div>
                 </div>
             </div>
@@ -492,6 +492,7 @@ export function AcademyHub() {
                         <span className="academy-quiz__counter">{quizIdx + 1}/{quiz.questions.length}</span>
                     </div>
 
+                    {activeModule.sourceDocument&&<details className="academy-course-recall"><summary>Relire les explications sans perdre mes réponses</summary>{activeModule.content[0].type==='lesson'&&activeModule.content[0].sections.map((section,index)=><section key={section.title}><h3>{section.title}</h3><p>{section.body}</p>{chapterTeaching(activeModule.id)?.developments[index].split('\n\n').map((paragraph,n)=><p key={n}>{paragraph}</p>)}</section>)}</details>}
                     <p className="academy-quiz__question">{q.q}</p>
 
                     <div className="academy-quiz__options">
@@ -517,7 +518,7 @@ export function AcademyHub() {
                     {quizAnswer !== null && (
                         <>
                             <div className="academy-quiz__explanation">
-                                {isCorrect ? '✅ ' : '❌ '}{q.explanation}
+                                {isCorrect ? '✅ ' : '❌ '}{q.feedbacks?.[quizAnswer]||q.explanation}
                             </div>
                             <button className="academy-quiz__next-btn" onClick={nextQuizQuestion}>
                                 {quizIdx === quiz.questions.length - 1
@@ -531,6 +532,8 @@ export function AcademyHub() {
             </div>
         );
     }
+
+    if (selectedLevel?.id.startsWith('sabirin-')) return <CourseSyllabus level={selectedLevel} onBack={()=>setSelectedLevel(null)} onOpen={startModule}/>;
 
     // ─── RENDER: Module Grid ─────────────────────────────
     if (selectedLevel) {
@@ -553,7 +556,7 @@ export function AcademyHub() {
                         style={{ margin: '0 16px 16px', background: 'linear-gradient(135deg, #c9a84c, #b8962d)', border: 'none', color: '#fff', width: 'calc(100% - 32px)' }}
                         onClick={() => setShowCertificate(true)}
                     >
-                        🎓 Obtenir mon diplôme
+                        🎓 Mon attestation de parcours
                     </button>
                 )}
                 {showCertificate && (
@@ -576,6 +579,11 @@ export function AcademyHub() {
                             <div
                                 key={mod.id}
                                 className={`academy-module-card ${!unlocked ? 'locked' : ''} ${completed ? 'completed' : ''}`}
+                                role="button"
+                                tabIndex={unlocked?0:-1}
+                                aria-disabled={!unlocked}
+                                aria-label={`${mod.title}${mod.sourceDocument?` · ${masteryLevel(store.progress[mod.id],store.mastery[mod.id])}`:''}`}
+                                onKeyDown={event=>{if(unlocked&&(event.key==='Enter'||event.key===' ')){event.preventDefault();startModule(mod);}}}
                                 onClick={() => unlocked && startModule(mod)}
                             >
                                 <div className="academy-module-card__top">
@@ -596,6 +604,7 @@ export function AcademyHub() {
                                     <span>⏱ {mod.estimatedMinutes} min</span>
                                     <span>{'⭐'.repeat(mod.difficulty)}</span>
                                     {completed && <span>Score: {score}%</span>}
+                                    {mod.sourceDocument&&<span className="academy-module-card__mastery">{masteryLevel(store.progress[mod.id],store.mastery[mod.id])}</span>}
                                     {!unlocked && <span>🔒 Verrouillé</span>}
                                     {mod.linkedSurah && <span>📖 Mémorisation</span>}
                                 </div>
@@ -609,7 +618,7 @@ export function AcademyHub() {
                                     <div className="academy-module-card__resume">▶ Reprendre</div>
                                 )}
                                 {/* Feature 3: Review due badge */}
-                                {isReviewDue && (
+                                {(isReviewDue||mod.sourceDocument&&masteryDue(store.progress[mod.id],store.mastery[mod.id])) && (
                                     <div className="academy-module-card__review">
                                         <RotateCcw size={12} /> Réviser
                                     </div>
@@ -642,6 +651,9 @@ export function AcademyHub() {
                 <h1>📚 Académie</h1>
             </header>
 
+            {lockedNotice&&<p className="academy-notice" role="status">{lockedNotice}</p>}
+            <AcademyStart modules={allModules} onStart={startModule} onReview={()=>navigate('/academy?review=personal')} onWorkshop={()=>setWorkshop(true)} onNotebook={()=>setNotebookMode(true)}/>
+            <ArabicEntry/>
             {/* Mode Toggle: Classique / Junior */}
             <div style={{ display: 'flex', gap: 4, margin: '0 16px 16px', background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 4 }}>
                 <button
@@ -698,7 +710,7 @@ export function AcademyHub() {
                 <div className="academy-review-banner">
                     <RotateCcw size={16} />
                     <div>
-                        <strong>{reviewModules.length} module{reviewModules.length > 1 ? 's' : ''} à réviser</strong>
+                        <strong>{reviewModules.length} chapitre{reviewModules.length > 1 ? 's' : ''} à réviser</strong>
                         <small>La révision espacée renforce la mémorisation</small>
                     </div>
                     <button onClick={() => { startModule(reviewModules[0]); }}>
@@ -742,6 +754,7 @@ export function AcademyHub() {
                         <div
                             key={level.id}
                             className="academy-level-card"
+                            role="button" tabIndex={0} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();setSelectedLevel(level);}}}
                             onClick={() => setSelectedLevel(level)}
                         >
                             <div className="academy-level-card__banner" style={{ background: level.gradient }}>
@@ -759,7 +772,7 @@ export function AcademyHub() {
                                     <div className="academy-level-card__progress-fill" style={{ width: `${pct}%` }} />
                                 </div>
                                 <div className="academy-level-card__pct">
-                                    {pct}% • {level.modules.filter(m => store.progress[m.id]?.completed).length}/{level.modules.length} modules
+                                    {pct}% • {level.modules.filter(m => store.progress[m.id]?.completed).length}/{level.modules.length} chapitres
                                 </div>
                             </div>
                         </div>

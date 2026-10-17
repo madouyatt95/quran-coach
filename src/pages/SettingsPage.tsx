@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
+const ProgressBackupPanel=lazy(()=>import('../components/Backup/ProgressBackupPanel').then(m=>({default:m.ProgressBackupPanel})));
 import { useSettingsStore } from '../stores/settingsStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import {
@@ -10,36 +11,34 @@ import {
 } from '../lib/notificationService';
 import { usePrayerStore } from '../stores/prayerStore';
 import { resolveCoords } from '../lib/locationService';
-import type { Theme, ArabicFontSize } from '../types';
-import { Stars, Bell, BellOff, HardDrive, Server, ChevronRight } from 'lucide-react';
+import type { ArabicFontSize } from '../types';
+import { APPEARANCES } from '../lib/appearance';
+import { MUSHAF_RECITERS } from '../lib/quranApi';
+import { Stars, Bell, BellOff, HardDrive, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './SettingsPage.css';
 
-const RECITERS = [
-    { id: 'ar.alafasy', name: 'Mishary Rashid Al-Afasy' },
-    { id: 'ar.abdulbasit', name: 'Abdul Basit Abdul Samad' },
-    { id: 'ar.husary', name: 'Mahmoud Khalil Al-Husary' },
-    { id: 'ar.minshawi', name: 'Mohamed Siddiq El-Minshawi' },
-];
-
 const isMobile = typeof navigator !== 'undefined' && (
-  /iPhone|iPad|iPod/i.test(navigator.userAgent) || 
+  /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
   new RegExp(['A','n','d','r','o','i','d'].join(''), 'i').test(navigator.userAgent)
 );
 
-const MINUTES_OPTIONS = [5, 10, 15, 30];
-
 export function SettingsPage() {
     const { t } = useTranslation();
+    const location = useLocation();
+    useEffect(() => {
+        const sectionId = location.hash.slice(1);
+        if (!sectionId) return;
+        const frame = requestAnimationFrame(() => document.getElementById(sectionId)?.scrollIntoView({ block: 'start' }));
+        return () => cancelAnimationFrame(frame);
+    }, [location.hash]);
     const navigate = useNavigate();
     const {
         theme,
         setTheme,
         arabicFontSize,
         setArabicFontSize,
-        lineSpacing,
-        setLineSpacing,
         tajwidEnabled,
         toggleTajwid,
         showTranslation,
@@ -48,8 +47,6 @@ export function SettingsPage() {
         toggleTransliteration,
         selectedReciter,
         setReciter,
-        repeatCount,
-        setRepeatCount,
         starryMode,
         setStarryMode,
     } = useSettingsStore();
@@ -116,11 +113,6 @@ export function SettingsPage() {
         await updatePushPreferences({ prayerEnabled: newVal });
     };
 
-    const handleMinutesBefore = async (m: number) => {
-        notif.setPrayerMinutesBefore(m);
-        await updatePushPreferences({ prayerMinutesBefore: m });
-    };
-
     const handleToggleHadith = async () => {
         const newVal = !notif.hadithEnabled;
         notif.setHadithEnabled(newVal);
@@ -149,64 +141,49 @@ export function SettingsPage() {
 
     return (
         <div className="settings-page">
-            <h1 className="settings-page__header">{t('settings.title', 'Réglages')}</h1>
-
-            {/* General */}
-            <section className="settings-section">
-                <h2 className="settings-section__title">{t('settings.general', 'Général')}</h2>
-
-                <button className="settings-section__card settings-link" onClick={() => navigate('/admin/assets')}>
-                    <span className="settings-link__icon"><Server size={20} /></span>
-                    <span className="settings-link__text">Gestion des Assets (Admin)</span>
-                    <ChevronRight size={20} className="settings-link__chevron" />
-                </button>
-
-                <button className="settings-section__card settings-link" onClick={() => navigate('/storage')}>
-                    <span className="settings-link__icon"><HardDrive size={20} color="#c9a84c" /></span>
-                    <span className="settings-link__text">Stockage Hors-Ligne</span>
-                    <ChevronRight size={20} className="settings-link__chevron" />
-                </button>
-            </section>
+            <header className="settings-page__intro">
+                <p className="settings-page__eyebrow">VOTRE EXPÉRIENCE</p>
+                <h1 className="settings-page__header">{t('settings.title', 'Réglages')}</h1>
+                <p className="settings-page__subtitle">Choisissez comment lire, écouter et recevoir vos rappels.</p>
+            </header>
+            <nav className="settings-jump" aria-label="Sections des réglages">
+                <a href="#appearance">Apparence</a>
+                <a href="#reading">Lecture</a>
+                <a href="#audio">Audio</a>
+                <a href="#notifications">Notifications</a>
+                <a href="#storage">Stockage</a><a href="#backup">Sauvegarde</a>
+            </nav>
 
             {/* Appearance */}
-            <section className="settings-section">
+            <section className="settings-section" id="appearance">
                 <h2 className="settings-section__title">{t('settings.appearance', 'Apparence')}</h2>
 
                 <div className="settings-item">
                     <div className="settings-item__label">
                         <span className="settings-item__title">{t('settings.theme', 'Thème')}</span>
                     </div>
-                    <div className="segment-control">
-                        {(['dark', 'light', 'sepia'] as Theme[]).map((tOption) => (
+                    <div className="appearance-options" role="group" aria-label="Choisir le thème">
+                        {APPEARANCES.map((option) => (
                             <button
-                                key={tOption}
-                                className={`segment-control__btn ${theme === tOption ? 'active' : ''}`}
-                                onClick={() => setTheme(tOption)}
+                                key={option.id}
+                                className="appearance-option"
+                                data-preview={option.id}
+                                aria-pressed={theme === option.id}
+                                onClick={() => setTheme(option.id)}
                             >
-                                {tOption === 'dark' ? t('settings.themeDark', 'Sombre') : tOption === 'light' ? t('settings.themeLight', 'Clair') : t('settings.themeSepia', 'Sépia')}
+                                <span className="appearance-preview" aria-hidden="true"><span className="appearance-preview__title"/><span className="appearance-preview__card"><i/><i/></span><span className="appearance-preview__nav"><i/><i/><i/><i/></span></span>
+                                <span className="appearance-option__name">{option.label}<span aria-hidden="true">{theme === option.id ? '✓' : ''}</span></span>
+                                <small>{option.description}</small>
                             </button>
                         ))}
                     </div>
-                </div>
-
-                <div className="settings-item">
-                    <div className="settings-item__label">
-                        <span className="settings-item__title">{t('settings.language', 'Langue')}</span>
-                    </div>
-                    <div className="segment-control">
-                        {(['fr', 'en', 'wo']).map((langUrl) => (
-                            <button
-                                key={langUrl}
-                                className={`segment-control__btn ${localStorage.getItem('i18nextLng')?.startsWith(langUrl) || (langUrl === 'fr' && !localStorage.getItem('i18nextLng')) ? 'active' : ''}`}
-                                onClick={() => {
-                                    localStorage.setItem('i18nextLng', langUrl);
-                                    window.location.reload();
-                                }}
-                            >
-                                {langUrl === 'fr' ? 'Français' : langUrl === 'en' ? 'English' : 'Wolof'}
-                            </button>
-                        ))}
-                    </div>
+                    <details className="settings-theme-detail">
+                        <summary>Agrandir l’aperçu du thème</summary>
+                        <div className="appearance-option settings-theme-large" data-preview={theme}>
+                            <span className="appearance-preview" aria-hidden="true"><span className="appearance-preview__title"/><span className="appearance-preview__card"><i/><i/></span><span className="appearance-preview__nav"><i/><i/><i/><i/></span></span>
+                            <p>{APPEARANCES.find(option => option.id === theme)?.description}</p>
+                        </div>
+                    </details>
                 </div>
 
                 <div className="settings-item">
@@ -225,7 +202,7 @@ export function SettingsPage() {
             </section>
 
             {/* Reading */}
-            <section className="settings-section">
+            <section className="settings-section" id="reading">
                 <h2 className="settings-section__title">{t('settings.reading', 'Lecture')}</h2>
 
                 <div className="settings-item">
@@ -242,24 +219,6 @@ export function SettingsPage() {
                                 {size.toUpperCase()}
                             </button>
                         ))}
-                    </div>
-                </div>
-
-                <div className="settings-item">
-                    <div className="settings-item__label">
-                        <span className="settings-item__title">{t('settings.lineSpacing', 'Espacement')}</span>
-                    </div>
-                    <div className="slider-container">
-                        <input
-                            type="range"
-                            className="slider"
-                            min="1.8"
-                            max="3"
-                            step="0.2"
-                            value={lineSpacing}
-                            onChange={(e) => setLineSpacing(parseFloat(e.target.value))}
-                        />
-                        <span className="slider-value">{lineSpacing.toFixed(1)}</span>
                     </div>
                 </div>
 
@@ -305,19 +264,21 @@ export function SettingsPage() {
             </section>
 
             {/* Audio */}
-            <section className="settings-section">
-                <h2 className="settings-section__title">{t('settings.audio', 'Audio')}</h2>
+            <section className="settings-section" id="audio">
+                <h2 className="settings-section__title">Audio du mushaf</h2>
 
                 <div className="settings-item">
                     <div className="settings-item__label">
-                        <span className="settings-item__title">{t('settings.reciter', 'Récitateur')}</span>
+                        <label className="settings-item__title" htmlFor="mushaf-reciter">{t('settings.reciter', 'Récitateur')}</label>
+                        <span className="settings-item__description">Voix utilisée lorsque vous écoutez un verset dans la lecture. L’onglet Écoute conserve son propre choix.</span>
                     </div>
                     <select
+                        id="mushaf-reciter"
                         className="reciter-select"
                         value={selectedReciter}
                         onChange={(e) => setReciter(e.target.value)}
                     >
-                        {RECITERS.map((reciter) => (
+                        {MUSHAF_RECITERS.map((reciter) => (
                             <option key={reciter.id} value={reciter.id}>
                                 {reciter.name}
                             </option>
@@ -325,28 +286,10 @@ export function SettingsPage() {
                     </select>
                 </div>
 
-                <div className="settings-item">
-                    <div className="settings-item__label">
-                        <span className="settings-item__title">{t('settings.repeatCountHifdh', 'Répétitions (Hifdh)')}</span>
-                        <span className="settings-item__description">{t('settings.repeatCountDesc', 'Nombre de répétitions par défaut')}</span>
-                    </div>
-                    <div className="slider-container">
-                        <input
-                            type="range"
-                            className="slider"
-                            min="1"
-                            max="10"
-                            step="1"
-                            value={repeatCount}
-                            onChange={(e) => setRepeatCount(parseInt(e.target.value))}
-                        />
-                        <span className="slider-value">{repeatCount}x</span>
-                    </div>
-                </div>
             </section>
 
             {/* Notifications */}
-            <section className="settings-section">
+            <section className="settings-section" id="notifications" style={{ scrollMarginTop: 16 }}>
                 <h2 className="settings-section__title">🔔 {t('settings.notifications', 'Notifications')}</h2>
 
                 <div className="settings-item">
@@ -389,22 +332,10 @@ export function SettingsPage() {
                         </div>
 
                         {notif.prayerEnabled && (
-                            <div className="settings-item">
-                                <div className="settings-item__label">
-                                    <span className="settings-item__title">{t('settings.minutesBefore', 'Minutes avant')}</span>
-                                </div>
-                                <div className="segment-control">
-                                    {MINUTES_OPTIONS.map((m) => (
-                                        <button
-                                            key={m}
-                                            className={`segment-control__btn ${notif.prayerMinutesBefore === m ? 'active' : ''}`}
-                                            onClick={() => handleMinutesBefore(m)}
-                                        >
-                                            {m}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                            <button className="settings-link" type="button" onClick={() => navigate('/prayer-settings')}>
+                                <span className="settings-link__text">Régler le délai pour chaque prière</span>
+                                <ChevronRight size={18} aria-hidden="true" />
+                            </button>
                         )}
 
                         <div className="settings-item">
@@ -456,6 +387,17 @@ export function SettingsPage() {
                     </>
                 )}
             </section>
+
+            <section className="settings-section" id="storage">
+                <h2 className="settings-section__title">Stockage et informations</h2>
+                <button className="settings-link" type="button" onClick={() => navigate('/storage')}>
+                    <span className="settings-link__icon"><HardDrive size={20} aria-hidden="true" /></span>
+                    <span className="settings-link__text">Stockage hors ligne</span>
+                    <ChevronRight size={18} aria-hidden="true" />
+                </button>
+            </section>
+
+            <Suspense fallback={<p>Chargement de la sauvegarde…</p>}><ProgressBackupPanel/></Suspense>
 
             {/* Footer / Build */}
             <div className="settings-footer">

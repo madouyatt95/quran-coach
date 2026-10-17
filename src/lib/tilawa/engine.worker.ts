@@ -12,6 +12,8 @@ const worker = self as unknown as DedicatedWorkerGlobalScope;
 let session: ZipformerSession | null = null;
 let corpus: QuranCorpus | null = null;
 let correction = false;
+let continuous = false;
+let trackingLost = false;
 let queue: Promise<unknown> = Promise.resolve();
 ort.env.wasm.numThreads = 1;
 ort.env.wasm.initTimeout = 60000;
@@ -20,6 +22,7 @@ worker.onmessage = ({ data }: { data: EngineCommand & { id: number } }) => {
     .then(async () => {
       let events: WorkerOutbound[] = [];
       let words: string[] | undefined;
+      let passageWords: Record<number, string[]> | undefined;
       if (data.type === "begin") {
         if (!session) {
           const raw = await (await cachedTilawaFile("corpus.json")).json();
@@ -43,6 +46,7 @@ worker.onmessage = ({ data }: { data: EngineCommand & { id: number } }) => {
           try {
             session = await createZipformerSession({
               ort,
+              debug: true,
               model: () =>
                 cachedTilawaFile("model.onnx").then((r) => r.arrayBuffer()),
               corpus: raw,
@@ -57,10 +61,17 @@ worker.onmessage = ({ data }: { data: EngineCommand & { id: number } }) => {
           }
         }
         session.reset();
+        trackingLost = false;
         correction = !!data.expected;
+        continuous = !!data.continuous;
         session.setMode(data.expected ? "correction" : "tracking");
         session.setExpected(data.expected || null);
         if (data.expected && corpus) {
+          passageWords = {};
+          for (let ayah = data.expected.ayah; ayah <= (data.expected.ayahEnd ?? data.expected.ayah); ayah++) {
+            const first = corpus.ayahFirstWord(data.expected.surah, ayah);
+            passageWords[ayah] = corpus.plain.slice(first, first + corpus.ayahWordCount(data.expected.surah, ayah));
+          }
           const first = corpus.ayahFirstWord(
             data.expected.surah,
             data.expected.ayah,
@@ -77,6 +88,10 @@ worker.onmessage = ({ data }: { data: EngineCommand & { id: number } }) => {
             ? await session.feed(data.samples)
             : await session.stop();
       }
+      for (const event of events) {
+        if (event.type === 'debug' && ['lost', 'idle', 'completed'].includes(event.event)) trackingLost = true;
+        if (event.type === 'word_progress' || (event.type === 'debug' && ['located', 'relocated'].includes(event.event))) trackingLost = false;
+      }
       const cursor = [...events].reverse().find(e => e.type === "word_progress");
       const cursorWords = cursor?.type === "word_progress" && corpus
         ? corpus.plain.slice(corpus.ayahFirstWord(cursor.surah, cursor.ayah),
@@ -88,7 +103,12 @@ worker.onmessage = ({ data }: { data: EngineCommand & { id: number } }) => {
         verdicts: correction ? session?.verdicts() || [] : [],
         cursorWords,
         words,
+        passageWords,
+        trackingState: trackingLost || session?.engineState !== "tracking" ? "searching" : "tracking",
       };
+      // Retain the verdict snapshot before acknowledging a correction. The microphone
+      // remains open; uncertain acoustic evidence is presented for review, never mastery.
+      if (continuous && events.some(e => e.type === 'correction' && e.state.phase === 'error')) session?.correct('continue');
       worker.postMessage(result);
     })
     .catch((error) => {

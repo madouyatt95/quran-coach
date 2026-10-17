@@ -1,41 +1,4 @@
-import { useEffect } from 'react';
-import { CheckCircle, XCircle } from 'lucide-react';
-import { useQuizStore } from '../../stores/quizStore';
-
-export function FeedbackView() {
-    const { questions, currentIndex, answers, nextQuestion } = useQuizStore();
-    const question = questions[currentIndex];
-    const answer = answers[answers.length - 1];
-
-    useEffect(() => {
-        const delay = question?.explanation && !answer?.correct ? 4000 : 2000;
-        const timer = setTimeout(nextQuestion, delay);
-        return () => clearTimeout(timer);
-    }, [nextQuestion, question, answer]);
-
-    if (!question || !answer) return null;
-
-    return (
-        <div className={`quiz-container quiz-feedback ${answer.correct ? 'correct' : 'wrong'}`}>
-            <div className="quiz-feedback-icon">
-                {answer.correct ? (
-                    <CheckCircle size={80} className="quiz-icon-correct" />
-                ) : (
-                    <XCircle size={80} className="quiz-icon-wrong" />
-                )}
-            </div>
-            <h2 className="quiz-feedback-title">
-                {answer.correct ? 'Correct !' : 'Faux !'}
-            </h2>
-            {!answer.correct && (
-                <p className="quiz-feedback-answer">
-                    Réponse : <strong>{question.choices[question.correctIndex]}</strong>
-                </p>
-            )}
-            {question.explanation && (
-                <p className="quiz-feedback-explanation">{question.explanation}</p>
-            )}
-            <p className="quiz-feedback-next">Question suivante...</p>
-        </div>
-    );
-}
+import {useQuizStore} from '../../stores/quizStore';
+import {legacyLearningQuestion} from '../../lib/quizLearning';
+import {Correction} from './QuizStudy';
+export function FeedbackView(){const {questions,currentIndex,answers,nextQuestion,mode}=useQuizStore();const question=questions[currentIndex],answer=answers.at(-1);if(!question||!answer)return null;return <main className="quiz-container qx"><section className="qx-card"><span>{currentIndex+1} / {questions.length}</span><h1>{answer.correct?'✓ Bien trouvé !':'↻ Une occasion de retenir'}</h1><h2>{question.questionFr}</h2><Correction q={legacyLearningQuestion(question)}/>{mode==='revision'&&<p className="qx-muted">Cette notion sera vérifiée à nouveau à distance.</p>}<button className="qx-primary" onClick={()=>void nextQuestion()}>{currentIndex+1===questions.length?'Voir mon bilan':'Continuer'}</button></section></main>;}

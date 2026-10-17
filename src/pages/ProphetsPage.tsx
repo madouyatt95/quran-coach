@@ -1,15 +1,21 @@
+import { chapterBooks } from '../data/storyChapters';
+import { ChapterPreview } from '../components/Journeys/ChapterPreview';
+import { StoryLibrary } from '../components/Journeys/StoryLibrary';
+import { prophetEpisodes } from '../data/editorialExpansion';
+import { JourneyLinks } from '../components/Journeys/JourneyShelf';
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote, Share2, MapPin } from 'lucide-react';
+import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote, Share2, MapPin, X } from 'lucide-react';
 import { prophets } from '../data/prophets';
 import type { Prophet } from '../data/prophets';
 import { companions } from '../data/companions';
 import type { Companion } from '../data/companions';
-import { useQuranStore } from '../stores/quranStore';
+import { useOpenReader } from '../hooks/useOpenReader';
 import { ProphetsGraph } from '../components/Prophets/ProphetsGraph';
 import { SanadGraph } from '../components/Companions/SanadGraph';
+import { ReligiousReference } from '../components/ReligiousReference';
 import './ProphetsPage.css';
 
 type TabMode = 'prophets' | 'companions';
@@ -17,17 +23,12 @@ type TabMode = 'prophets' | 'companions';
 function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => void }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { goToSurah, goToAyah } = useQuranStore();
+    const openReader = useOpenReader('Prophètes');
     const [imageError, setImageError] = useState(false);
 
     const goToSurahPage = (surahNumber: number, startAyah?: number) => {
-        if (startAyah) {
-            goToAyah(surahNumber, startAyah);
-        } else {
-            goToSurah(surahNumber);
-        }
         onClose();
-        navigate('/read');
+        openReader({ surah: surahNumber, ayah: startAyah ?? 1 });
     };
 
     const handleShare = async () => {
@@ -35,7 +36,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
             try {
                 await navigator.share({
                     title: `Histoire du Prophète ${prophet.nameFr}`,
-                    text: `${prophet.nameAr} - ${prophet.nameIslamic}\n\n${prophet.summary}\n\nSachez que vous pouvez trouver cette histoire et bien plus sur l'application Quran Coach 🕌\nhttps://qurancoach.com`
+                    text: `${prophet.nameAr} - ${prophet.nameIslamic}\n\n${prophet.summary}\n\nSachez que vous pouvez trouver cette histoire et bien plus sur l'application Quran Coach 🕌\nhttps://www.quran-coach.fr/prophets?prophet=${prophet.id}`
                 });
             } catch (err) {
                 console.log("Partage annulé ou échoué", err);
@@ -58,8 +59,9 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             >
-                <div className="prophet-modal__handle" />
+                <div className="prophet-modal__topbar"><div className="prophet-modal__handle" /><button type="button" className="prophet-modal__dismiss" onClick={onClose} aria-label="Fermer la fiche"><X size={20} /></button></div>
 
+                <JourneyLinks kind="prophet" id={prophet.id}/>
                 {/* Hero */}
                 <div className="prophet-modal__hero">
                     <span className="prophet-modal__emoji">{prophet.icon}</span>
@@ -107,9 +109,10 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                         {t('prophets.details', 'Son histoire')}
                     </h3>
 
-                    <p className="prophet-modal__text">{prophet.summary}</p>
+                    {chapterBooks[`prophet:${prophet.id}`]?<ChapterPreview bookKey={`prophet:${prophet.id}`}/>:<><p className="prophet-modal__text">{prophet.summary}</p><ReligiousReference kind="Récit" source="Synthèse pédagogique des passages associés"/></>}
                 </div>
 
+                {!chapterBooks[`prophet:${prophet.id}`]&&!!prophetEpisodes[prophet.id]?.length&&<section className="journey-extra"><h3>Pour aller plus loin</h3>{prophetEpisodes[prophet.id].map(e=><details key={e.id}><summary>{e.title}</summary><p>{e.text}</p><ReligiousReference kind="Verset" source={e.reference}/></details>)}</section>}
                 {/* Key Verses */}
                 {prophet.keyVerses.length > 0 && (
                     <div className="prophet-modal__section">
@@ -122,7 +125,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                                 <div key={i} className="prophet-modal__verse">
                                     <div className="prophet-modal__verse-arabic">{v.arabic}</div>
                                     <div className="prophet-modal__verse-translation">{v.translation}</div>
-                                    <div className="prophet-modal__verse-ref">{v.reference}</div>
+                                    <ReligiousReference kind="Verset" source={v.reference}/>
                                 </div>
                             ))}
                         </div>
@@ -159,7 +162,7 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
                                 <div key={i} className="prophet-modal__dua">
                                     <div className="prophet-modal__dua-arabic">{d.arabic}</div>
                                     <div className="prophet-modal__dua-translation">{d.translation}</div>
-                                    <div className="prophet-modal__dua-ref">{d.reference}</div>
+                                    <ReligiousReference kind="Invocation" source={d.reference}/>
                                 </div>
                             ))}
                         </div>
@@ -233,7 +236,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
             try {
                 await navigator.share({
                     title: `Histoire de ${companion.nameFr}`,
-                    text: `${companion.nameAr} - ${companion.nameFr}\n\n${companion.summary}\n\nSachez que vous pouvez trouver cette histoire et bien plus sur l'application Quran Coach 🕌\nhttps://qurancoach.com`
+                    text: `${companion.nameAr} - ${companion.nameFr}\n\n${companion.summary}\n\nSachez que vous pouvez trouver cette histoire et bien plus sur l'application Quran Coach 🕌\nhttps://www.quran-coach.fr/prophets`
                 });
             } catch (err) {
                 console.log("Partage annulé ou échoué", err);
@@ -256,7 +259,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             >
-                <div className="prophet-modal__handle" />
+                <div className="prophet-modal__topbar"><div className="prophet-modal__handle" /><button type="button" className="prophet-modal__dismiss" onClick={onClose} aria-label="Fermer la fiche"><X size={20} /></button></div>
 
                 {/* Hero */}
                 <div className="prophet-modal__hero">
@@ -339,7 +342,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
                                 <div key={i} className="prophet-modal__verse">
                                     <div className="prophet-modal__verse-arabic">{v.arabic}</div>
                                     <div className="prophet-modal__verse-translation">{v.translation}</div>
-                                    <div className="prophet-modal__verse-ref">{v.reference}</div>
+                                    <ReligiousReference kind="Verset" source={v.reference}/>
                                 </div>
                             ))}
                         </div>
@@ -358,7 +361,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
                                 <div key={i} className="prophet-modal__dua">
                                     <div className="prophet-modal__dua-arabic">{h.arabic}</div>
                                     <div className="prophet-modal__dua-translation">{h.translation}</div>
-                                    <div className="prophet-modal__dua-ref">{h.source}</div>
+                                    <ReligiousReference kind="Hadith" source={h.source}/>
                                 </div>
                             ))}
                         </div>
@@ -471,10 +474,11 @@ export function ProphetsPage() {
                     {tab === 'prophets' ? `${prophets.length} ${t('prophets.title', 'prophètes')}` : `${companions.length} ${t('prophets.companions', 'compagnons')}`}
                 </span>
                 {tab === 'prophets' && (
-                    <span className="prophets-hero__source">{t('prophets.sourceTafsir', 'Source : Coran & Tafsir Ibn Kathir — قصص الأنبياء')}</span>
+                    <span className="prophets-hero__source">Synthèses pédagogiques · références précises dans les fiches</span>
                 )}
             </div>
 
+            <StoryLibrary kind="prophet"/>
             {/* Tabs */}
             <div className="prophets-tabs">
                 <button
@@ -537,10 +541,10 @@ export function ProphetsPage() {
             </div>
 
             {/* Content */}
-            <div className="prophets-timeline">
+            <div className={`prophets-timeline ${(tab==='prophets'?viewMode:viewModeCompanions)==='graph'?'prophets-timeline--graph':''}`}>
                 {tab === 'prophets' ? (
                     viewMode === 'graph' ? (
-                        <ProphetsGraph onSelectProphet={setSelectedProphet} />
+                        <ProphetsGraph search={search} onSelectProphet={p=>{setSelectedProphet(p);setSearchParams({prophet:p.id});}} />
                     ) : (
                         filteredProphets.length === 0 ? (
                             <div className="prophets-empty">

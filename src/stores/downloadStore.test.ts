@@ -1,13 +1,106 @@
-import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
-import {createMemoryCaches} from '../test/memoryCache';
-import {createJSONStorage} from 'zustand/middleware';
-import {createMemoryStorage} from '../test/memoryStorage';
-import {useDownloadStore} from './downloadStore';
-beforeEach(()=>{vi.stubGlobal('localStorage',createMemoryStorage());useDownloadStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});vi.stubGlobal('caches',createMemoryCaches());useDownloadStore.setState({tasks:{}});});
-afterEach(()=>vi.unstubAllGlobals());
-describe('explicit offline packs',()=>{
- it('does not mark a whole pack complete from a single cached sample',async()=>{const store=useDownloadStore.getState();const cache=await caches.open('quran-coach-audio-v1');await cache.put('/a',new Response('audio'));useDownloadStore.setState({tasks:{p:{id:'p',title:'Test',urls:['/a','/b'],progress:100,status:'completed'}}});await store.verifyCacheStatus('p','/a');expect(useDownloadStore.getState().tasks.p).toMatchObject({status:'idle',progress:50});});
- it('resumes complete files without downloading them again',async()=>{const store=useDownloadStore.getState();vi.stubGlobal('fetch',vi.fn().mockResolvedValueOnce(new Response('audio')).mockRejectedValueOnce(Error('offline')));await store.startDownload('p','Test',['/a','/b']);expect(useDownloadStore.getState().tasks.p.status).toBe('error');const fetcher=vi.fn().mockResolvedValue(new Response('next'));vi.stubGlobal('fetch',fetcher);await store.startDownload('p','Test',['/a','/b']);expect(fetcher).toHaveBeenCalledTimes(1);expect(fetcher.mock.calls[0][0]).toBe('/b');expect(useDownloadStore.getState().tasks.p).toMatchObject({status:'completed',bytes:9});});
- it('preserves files shared by two packs when one pack is removed',async()=>{vi.stubGlobal('fetch',vi.fn().mockImplementation(async()=>new Response('{}')));const store=useDownloadStore.getState();await store.startDownload('p','One',['/shared','/one'],'text');await store.startDownload('q','Two',['/shared','/two'],'text');await store.removeDownload('p',['/shared','/one']);const cache=await caches.open('quran-coach-content-v1');expect(await cache.match('/shared')).toBeDefined();expect(await cache.match('/one')).toBeUndefined();expect(useDownloadStore.getState().tasks.q.status).toBe('completed');});
- it('rejects a successful HTTP response containing invalid text data',async()=>{vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response('<html>Error</html>')));await useDownloadStore.getState().startDownload('p','Test',['/text'],'text');expect(useDownloadStore.getState().tasks.p.status).toBe('error');expect(await(await caches.open('quran-coach-content-v1')).match('/text')).toBeUndefined();});
+// @vitest-environment jsdom
+import { beforeEach, afterEach, expect, it, vi } from "vitest";
+import { createJSONStorage } from "zustand/middleware";
+import { createMemoryStorage } from "../test/memoryStorage";
+import { useDownloadStore as store } from "./downloadStore";
+const files = new Map<string, Response>();
+const item = {
+  surahNumber: 1,
+  surahName: "Fatiha",
+  surahNameAr: "",
+  totalAyahs: 7,
+  audioUrl: "https://example.org/1.mp3",
+  reciterId: "123",
+  playbackType: "surah" as const,
+};
+beforeEach(() => {
+  vi.stubGlobal("localStorage", createMemoryStorage());
+  store.persist.setOptions({ storage: createJSONStorage(() => localStorage) });
+  store.setState({ tasks: {} });
+  files.clear();
+  vi.stubGlobal("caches", {
+    open: vi.fn(async () => ({
+      match: async (url: string) => files.get(url)?.clone(),
+      put: async (url: string, r: Response) => {
+        files.set(url, r);
+      },
+      delete: async (url: string) => files.delete(url),
+    })),
+  });
+});
+afterEach(() => vi.unstubAllGlobals());
+it("recommence après une erreur sans retélécharger les fichiers présents ni perdre les pistes", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValueOnce(new Response("audio1"))
+    .mockRejectedValueOnce(new Error("Network error"))
+    .mockResolvedValueOnce(new Response("audio2"));
+  vi.stubGlobal("fetch", fetch);
+  await store
+    .getState()
+    .startDownload(
+      "test",
+      "Séance",
+      [item.audioUrl, "https://example.org/2.mp3"],
+      "audio",
+      [item],
+    );
+  expect(store.getState().tasks.test).toMatchObject({
+    status: "error",
+    progress: 50,
+    items: [item],
+  });
+  await store
+    .getState()
+    .startDownload("test", "Séance", [
+      item.audioUrl,
+      "https://example.org/2.mp3",
+    ]);
+  expect(fetch).toHaveBeenCalledTimes(3);
+  expect(store.getState().tasks.test).toMatchObject({
+    status: "completed",
+    progress: 100,
+    bytes: 12,
+    items: [item],
+  });
+  files.delete(item.audioUrl);
+  await store.getState().verifyCacheStatus("test", item.audioUrl);
+  expect(store.getState().tasks.test).toMatchObject({
+    status: "idle",
+    progress: 50,
+  });
+});
+it("conserve un fichier partagé lors du retrait d’un téléchargement", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response("audio")),
+  );
+  await store
+    .getState()
+    .startDownload("a", "A", [item.audioUrl], "audio", [item]);
+  await store
+    .getState()
+    .startDownload("b", "B", [item.audioUrl], "audio", [item]);
+  await store.getState().removeDownload("a", [item.audioUrl]);
+  expect(files.has(item.audioUrl)).toBe(true);
+  expect(store.getState().tasks.a).toBeUndefined();
+});
+it("ne valide le pack mixte qu’avec audio, texte et explication puis le répare", async () => {
+  const urls=['https://example.org/1.mp3','https://api.alquran.cloud/v1/surah/1/quran-uthmani','https://quranenc.com/api/v1/translation/aya/french_mokhtasar/1/1'];
+  const fetch=vi.fn().mockResolvedValueOnce(new Response('audio',{headers:{'content-type':'audio/mpeg'}})).mockResolvedValueOnce(Response.json({data:{ayahs:[]}})).mockResolvedValueOnce(Response.json({result:null}));vi.stubGlobal('fetch',fetch);
+  await store.getState().startDownload('pack','Fatiha',urls,'journey',[item]);
+  expect(store.getState().tasks.pack.status).toBe('error');expect(files.has(urls[2])).toBe(false);
+  fetch.mockResolvedValueOnce(Response.json({result:{translation:'Explication',footnotes:''}}));
+  await store.getState().startDownload('pack','Fatiha',urls,'journey',[item]);
+  expect(fetch).toHaveBeenCalledTimes(4);expect(store.getState().tasks.pack.status).toBe('completed');
+  files.delete(urls[0]);await store.getState().verifyCacheStatus('pack',urls[0]);expect(store.getState().tasks.pack.status).toBe('idle');
+});
+it('valide les polices, signale un fichier HTML puis reprend le pack incomplet', async()=>{
+ const good=new Uint8Array(64);good.set([119,79,70,50]);
+ const urls=['https://verses.quran.foundation/fonts/quran/hafs/v4/colrv1/woff2/p1.woff2','https://verses.quran.foundation/fonts/quran/hafs/v4/colrv1/woff2/p2.woff2'];
+ const network=vi.fn().mockResolvedValueOnce(new Response(good)).mockResolvedValueOnce(new Response('<html>Error</html>')).mockResolvedValueOnce(new Response(good));vi.stubGlobal('fetch',network);
+ await store.getState().startDownload('fonts','Polices',urls,'font');
+ expect(store.getState().tasks.fonts).toMatchObject({status:'error',progress:50});expect(files.has(urls[1])).toBe(false);
+ await store.getState().startDownload('fonts','Polices',urls,'font');
+ expect(network).toHaveBeenCalledTimes(3);expect(store.getState().tasks.fonts).toMatchObject({status:'completed',bytes:128});
 });

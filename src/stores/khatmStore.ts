@@ -24,6 +24,7 @@ interface KhatmState {
 
     // Progress - stored as sorted array for persistence
     validatedPages: number[];
+    validationDetails: Record<number, { source: 'automatic' | 'manual'; at: string; method?: 'vertical-scroll' | 'page-turn' }>;
     autoExcludedPages: number[];
 
     // Last reading position (dedicated to khatm, independent from quranStore)
@@ -39,7 +40,7 @@ interface KhatmState {
     activate: (start: string, end: string) => void;
     deactivate: () => void;
     togglePage: (page: number) => void;
-    validatePage: (page: number) => void;
+    validatePage: (page: number, method?: 'vertical-scroll' | 'page-turn') => void;
     updateLastRead: (surah: number, ayah: number, page: number) => void;
     reset: () => void;
 
@@ -84,6 +85,7 @@ export const useKhatmStore = create<KhatmState>()(
             startDate: '',
             endDate: '',
             validatedPages: [],
+            validationDetails: {},
             autoExcludedPages: [],
             lastKhatmSurah: 1,
             lastKhatmAyah: 1,
@@ -96,6 +98,7 @@ export const useKhatmStore = create<KhatmState>()(
                 startDate: start,
                 endDate: end,
                 validatedPages: [],
+                validationDetails: {},
                 autoExcludedPages: [],
                 lastKhatmSurah: 1,
                 lastKhatmAyah: 1,
@@ -125,11 +128,11 @@ export const useKhatmStore = create<KhatmState>()(
 
             deactivate: () => set({ isActive: false }),
 
-            validatePage: (page) => {
+            validatePage: (page, method = 'page-turn') => {
                 const state = get();
                 if (!state.isActive || state.completedAt || !Number.isInteger(page) || page < 1 || page > 604 || (state.validatedPages.includes(page) || state.autoExcludedPages.includes(page))) return;
                 const today = todayStr();
-                set({validatedPages:[...state.validatedPages,page].sort((a,b)=>a-b),dailyReadCount:(state.lastActiveDate === today ? state.dailyReadCount || 0 : 0)+1,lastActiveDate:today});
+                set({validatedPages:[...state.validatedPages,page].sort((a,b)=>a-b),validationDetails:{...(state.validationDetails || {}),[page]:{source:'automatic',at:new Date().toISOString(),method}},dailyReadCount:(state.lastActiveDate === today ? state.dailyReadCount || 0 : 0)+1,lastActiveDate:today});
             },
 
             togglePage: (page) => set((state) => {
@@ -146,21 +149,24 @@ export const useKhatmStore = create<KhatmState>()(
 
                 const excluded = new Set(state.autoExcludedPages);
                 const pages = [...state.validatedPages];
+                const validationDetails = { ...(state.validationDetails || {}) };
                 const idx = pages.indexOf(page);
                 if (idx >= 0) {
                     excluded.add(page);
                     pages.splice(idx, 1);
+                    delete validationDetails[page];
                     dailyReadCount = Math.max(0, dailyReadCount - 1);
                 } else {
                     excluded.delete(page);
                     pages.push(page);
                     pages.sort((a, b) => a - b);
+                    validationDetails[page] = { source:'manual', at:new Date().toISOString() };
                     dailyReadCount += 1;
                 }
-                return { validatedPages: pages, autoExcludedPages:[...excluded], dailyReadCount, lastActiveDate };
+                return { validatedPages: pages, validationDetails, autoExcludedPages:[...excluded], dailyReadCount, lastActiveDate };
             }),
 
-            reset: () => set({ autoExcludedPages: [], completedAt: null, celebrationPending: false, validatedPages: [], isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1, dailyReadCount: 0, lastActiveDate: '' }),
+            reset: () => set({ autoExcludedPages: [], completedAt: null, celebrationPending: false, validatedPages: [], validationDetails:{}, isActive: false, startDate: '', endDate: '', lastKhatmSurah: 1, lastKhatmAyah: 1, lastKhatmPage: 1, dailyReadCount: 0, lastActiveDate: '' }),
 
             isPageValidated: (page) => get().validatedPages.includes(page),
 

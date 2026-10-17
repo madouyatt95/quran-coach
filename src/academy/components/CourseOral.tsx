@@ -1,0 +1,28 @@
+import {useEffect,useRef,useState} from 'react';
+import {get,set,del} from 'idb-keyval';
+import {useAudioPlayerStore} from '../../stores/audioPlayerStore';
+import {useAcademyExperienceStore} from '../../stores/academyExperienceStore';
+import {coursePlan} from '../courseExperience';
+export function CourseOral({id}:{id:string}){
+ const claiming=useRef(false),saving=useRef(false);
+ const key=`academy-oral:${id}`,recorder=useRef<MediaRecorder|null>(null),stream=useRef<MediaStream|null>(null),timer=useRef<ReturnType<typeof setTimeout>|null>(null),alive=useRef(true),epoch=useRef(0),preview=useRef<HTMLAudioElement>(null);
+ const [url,setUrl]=useState(''),[mime,setMime]=useState(''),[recording,setRecording]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState('');
+ const checks=useAcademyExperienceStore(state=>state.courses[id]?.oralChecks),update=useAcademyExperienceStore(state=>state.update);
+ const labels=coursePlan(id)!.concepts.map(([title])=>`J’ai expliqué : ${title}`);
+ const stop=()=>{const finalizing=recorder.current?.state==='recording';epoch.current++;if(timer.current)clearTimeout(timer.current);if(recorder.current?.state==='recording')recorder.current.stop();stream.current?.getTracks().forEach(track=>track.stop());stream.current=null;if(alive.current){setRecording(false);setBusy(finalizing||saving.current);}};
+ useEffect(()=>{alive.current=true;let loaded='';void get<Blob>(key).then(blob=>{if(alive.current&&blob){loaded=URL.createObjectURL(blob);setUrl(loaded);setMime(blob.type);}}).catch(()=>{if(alive.current)setError('Le stockage audio local est indisponible.');});const hidden=()=>{if(document.hidden)stop();};const cancel=()=>{if(claiming.current)return;stop();preview.current?.pause();};document.addEventListener('visibilitychange',hidden);window.addEventListener('quran-stop-playback',cancel);return()=>{alive.current=false;stop();URL.revokeObjectURL(loaded);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('quran-stop-playback',cancel);};},[key]);
+ useEffect(()=>()=>{URL.revokeObjectURL(url);},[url]);
+ const record=async()=>{
+  window.dispatchEvent(new Event('quran-stop-playback'));const global=useAudioPlayerStore.getState();if(global.isPlaying||global.isLoading)global.togglePlay();
+  const token=++epoch.current;setBusy(true);setError('');
+  try{
+   if(!navigator.mediaDevices?.getUserMedia||typeof MediaRecorder==='undefined')throw new Error('L’enregistrement n’est pas disponible dans ce navigateur. Tu peux écrire ta synthèse.');
+   const media=await navigator.mediaDevices.getUserMedia({audio:true});if(!alive.current||token!==epoch.current){media.getTracks().forEach(track=>track.stop());return;}stream.current=media;
+   const type=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(type=>MediaRecorder.isTypeSupported(type));const rec=new MediaRecorder(media,type?{mimeType:type}:undefined);recorder.current=rec;const chunks:Blob[]=[];
+   rec.ondataavailable=event=>{if(event.data.size)chunks.push(event.data);};rec.onerror=()=>{stop();if(alive.current)setError('La prise a été interrompue. Réessaie.');};
+   rec.onstop=async()=>{media.getTracks().forEach(track=>track.stop());if(timer.current)clearTimeout(timer.current);if(!alive.current)return;const blob=new Blob(chunks,{type:rec.mimeType});if(!blob.size){setBusy(false);setError('Aucun son enregistré.');return;}setUrl(URL.createObjectURL(blob));setMime(blob.type);setRecording(false);saving.current=true;setBusy(true);try{await set(key,blob);if(alive.current)setMessage('Prise enregistrée sur cet appareil.');}catch{if(alive.current)setError('La prise est lisible maintenant mais sa sauvegarde locale a échoué. Télécharge-la pour la conserver.');}finally{saving.current=false;if(alive.current)setBusy(false);}};
+   rec.start();setRecording(true);setBusy(false);setMessage('Parle avec tes mots. La prise s’arrête après trois minutes.');timer.current=setTimeout(stop,180000);
+  }catch(error){stop();if(alive.current)setError(error instanceof DOMException&&error.name==='NotAllowedError'?'Microphone non autorisé. Ta synthèse écrite reste disponible.':error instanceof Error?error.message:'Microphone indisponible.');}
+ };
+ return <details className="course-oral"><summary>Expliquer avec ma voix</summary><p>Explique le chapitre comme si tu le présentais à un proche. Réécoute-toi, puis vérifie les idées ci-dessous.</p><button disabled={busy} onClick={()=>recording?stop():void record()}>{busy?'Préparation de la prise…':recording?'Terminer ma prise':url?'Enregistrer une nouvelle prise':'Commencer ma prise'}</button>{url&&<><audio ref={preview} controls src={url} onPlay={()=>{claiming.current=true;window.dispatchEvent(new Event('quran-stop-playback'));claiming.current=false;const global=useAudioPlayerStore.getState();if(global.isPlaying)global.togglePlay();}}/><div><a href={url} download={`${id}-mon-explication.${mime.includes('mp4')?'m4a':'webm'}`}>Télécharger ma prise</a><button disabled={recording||busy} onClick={()=>{stop();preview.current?.pause();void del(key).then(()=>{setUrl('');setMessage('Prise supprimée.');}).catch(()=>setError('La suppression a échoué. Réessaie.'));}}>Supprimer ma prise</button></div></>}{message&&<p role="status">{message}</p>}{error&&<p role="alert">{error}</p>}<fieldset><legend>Ma grille de réécoute</legend>{labels.map(label=><label key={label}><input type="checkbox" checked={checks?.includes(label)||false} onChange={event=>update(id,{oralChecks:event.target.checked?[...(checks||[]),label]:(checks||[]).filter(value=>value!==label)})}/>{label}</label>)}</fieldset><small>Audio stocké uniquement sur cet appareil, sans envoi ni notation automatique de son contenu.</small></details>;
+}

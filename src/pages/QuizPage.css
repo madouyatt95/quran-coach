@@ -2029,3 +2029,5 @@
 [data-theme="light"] .quiz-feedback.wrong {
     background: rgba(244, 67, 54, 0.05);
 }
+.quiz-verse-sheet-link{display:flex;align-items:center;min-height:44px;margin-top:8px;padding:8px 12px;border:1px solid #c9a84c66;border-radius:10px;color:#e0c780;background:#c9a84c14;text-decoration:none;font-size:13px;font-weight:600}
+.quiz-verse-sheet-link:focus-visible{outline:2px solid #c9a84c;outline-offset:2px}

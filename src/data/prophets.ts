@@ -1,3 +1,4 @@
+import { chapterBooks,BOOK_LESSONS } from './storyChapters';
 export interface KeyVerse {
   arabic: string;
   translation: string;
@@ -35,7 +36,7 @@ export interface Prophet {
 }
 
 // Source : Coran & Tafsir Ibn Kathir — Qisas al-Anbiya (قصص الأنبياء)
-export const prophets: Prophet[] = [
+const existingProphets: Prophet[] = [
   {
     id: 'adam',
     nameAr: 'آدَم',
@@ -101,7 +102,7 @@ export const prophets: Prophet[] = [
     surahs: [{ number: 11, name: 'Hud', startAyah: 25 }, { number: 23, name: 'Al-Mu\'minun', startAyah: 23 }, { number: 71, name: 'Nuh', startAyah: 1 }],
     summary: 'Ibn Kathir le considère comme le premier messager (rasul) envoyé à l\'humanité. Il prêcha le tawhid pendant 950 ans (Coran 29:14) avec une patience extraordinaire, appelant les gens jour et nuit, en secret et en public. Seule une minorité le suivit. Allah lui ordonna de construire l\'Arche. Quand l\'eau jaillit du four (tannur), il embarqua les croyants et un couple de chaque espèce. Son propre fils refusa et périt noyé. Nuh supplia Allah pour son fils, mais Allah lui dit que ce n\'était plus de sa famille car il était mécréant.',
     lessons: ['La persévérance dans la da\'wah malgré 950 ans de rejet', 'Les liens de sang ne protègent pas sans la foi', 'Nuh est le premier des cinq Ulu al-\'Azm (prophètes de ferme résolution)'],
-    miracles: ['Construction de l\'Arche par inspiration divine', 'Le Déluge universel déclenché par Allah', 'L\'Arche se posa sur le mont Judi (Coran 11:44)'],
+    miracles: ['Construction de l\'Arche par inspiration divine', "Le déluge et le salut des personnes embarquées (Coran 11:40-44)", 'L\'Arche se posa sur le mont Judi (Coran 11:44)'],
     keyVerses: [
       { arabic: 'وَلَقَدْ أَرْسَلْنَا نُوحًا إِلَىٰ قَوْمِهِ فَلَبِثَ فِيهِمْ أَلْفَ سَنَةٍ إِلَّا خَمْسِينَ عَامًا', translation: 'Nous avons envoyé Nuh vers son peuple. Il demeura parmi eux mille ans moins cinquante années.', reference: 'Al-Ankabut 29:14' },
       { arabic: 'وَقِيلَ يَا أَرْضُ ابْلَعِي مَاءَكِ وَيَا سَمَاءُ أَقْلِعِي', translation: 'Et il fut dit : Ô terre, absorbe ton eau ! Et toi, ô ciel, cesse !', reference: 'Hud 11:44' },
@@ -290,7 +291,7 @@ export const prophets: Prophet[] = [
     surahs: [{ number: 12, name: 'Yusuf', startAyah: 1 }],
     summary: 'Ibn Kathir commente longuement la sourate Yusuf, qu\'Allah qualifie de « plus beau des récits ». Enfant, Yusuf vit en rêve onze étoiles, le soleil et la lune se prosterner devant lui. Ses frères le jetèrent dans un puits par jalousie. Une caravane le vendit comme esclave en Égypte. La femme de Al-\'Aziz (Zulaykha) tenta de le séduire, mais il résista : « Je cherche refuge auprès d\'Allah ! » Il fut emprisonné injustement. En prison, il interpréta des rêves. Quand le roi vit un songe, Yusuf l\'interpréta et proposa un plan économique. Il devint trésorier d\'Égypte, retrouva ses frères, leur pardonna, et réunit sa famille entière.',
     lessons: ['La chasteté face à la tentation est une forme suprême de piété', 'Allah transforme les épreuves en élévation pour les patients', 'Le pardon envers ceux qui nous ont fait du mal est la voie des prophètes'],
-    miracles: ['Interprétation des rêves par révélation divine', 'Son rêve d\'enfance se réalisa des décennies plus tard', 'Allah déchira la chemise de Yusuf par derrière comme preuve de son innocence'],
+    miracles: ['Interprétation des rêves par révélation divine', 'Son rêve d\'enfance se réalisa des décennies plus tard', "La chemise déchirée par derrière intervient dans l’examen de l’accusation (Coran 12:25-28)"],
     keyVerses: [
       { arabic: 'نَحْنُ نَقُصُّ عَلَيْكَ أَحْسَنَ الْقَصَصِ', translation: 'Nous te racontons le plus beau des récits.', reference: 'Yusuf 12:3' },
       { arabic: 'إِنَّهُ مَن يَتَّقِ وَيَصْبِرْ فَإِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ', translation: 'Quiconque craint Allah et patiente… Allah ne perd pas la récompense des bienfaisants.', reference: 'Yusuf 12:90' },
@@ -622,3 +623,5 @@ export const prophets: Prophet[] = [
     ],
   },
 ];
+
+export const prophets:Prophet[]=existingProphets.map(p=>{const book=chapterBooks[`prophet:${p.id}`];return book?{...p,summary:book.chapters.map(c=>c.text).join("\n\n"),lessons:BOOK_LESSONS[`prophet:${p.id}`]}:p;});

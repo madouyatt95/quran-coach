@@ -1,6 +1,4 @@
-import { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { ReaderSettingsDialog } from './ReaderSettingsDialog';
 import { getTajweedCategories } from '../../lib/tajweedService';
 import type { MaskMode } from './mushafConstants';
 import type { ArabicFontFamily, ArabicFontSize } from '../../types';
@@ -28,20 +26,8 @@ interface MushafToolbarProps {
 }
 
 export function MushafToolbar(p: MushafToolbarProps) {
-    const dialog = useRef<HTMLDialogElement>(null);
-    useEffect(() => {
-        if (!p.showToolbar) return;
-        const element = dialog.current;
-        const previous = document.activeElement as HTMLElement | null;
-        element?.showModal();
-        return () => { element?.close(); previous?.focus({preventScroll:true}); };
-    }, [p.showToolbar]);
     if (!p.showToolbar) return null;
-    return createPortal(<dialog ref={dialog} className="text-reader-settings" aria-labelledby="text-settings-title"
-        onCancel={p.onClose} onKeyDown={e => e.stopPropagation()}
-        onClick={e => {if(e.target === e.currentTarget) {const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) p.onClose();}}}>
-        <header><div><small>MUSHAF TEXTE</small><h2 id="text-settings-title">Confort de lecture</h2></div><button aria-label="Fermer les réglages" onClick={p.onClose}><X size={20}/></button></header>
-        <div className="text-reader-settings__body">
+    return <ReaderSettingsDialog edition="MUSHAF TEXTE" onClose={p.onClose}>
             <section aria-label="Présentation">
                 <h3>Votre lecture</h3>
                 <label className="text-settings-switch"><span>Traduction<small>Le sens de chaque verset en français</small></span><input type="checkbox" checked={p.showTranslation} onChange={p.toggleTranslation}/></label>
@@ -59,7 +45,5 @@ export function MushafToolbar(p: MushafToolbarProps) {
             <details><summary>Masquage pour réviser</summary><p>Choisissez la quantité de texte visible pendant votre révision.</p>
                 <div className="text-settings-choices" role="group" aria-label="Masquage">{(['visible','hidden','partial','minimal'] as const).map((mode,i)=><button key={mode} aria-pressed={p.maskMode===mode} onClick={()=>p.setMaskMode(mode)}>{['Visible','Caché','Partiel','Flou'][i]}</button>)}</div>
             </details>
-        </div>
-        <footer><button onClick={p.onClose}>Reprendre la lecture</button></footer>
-    </dialog>,document.body);
+    </ReaderSettingsDialog>;
 }

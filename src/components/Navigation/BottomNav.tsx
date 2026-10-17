@@ -14,6 +14,7 @@ const navItems: NavItem[] = [
     { path: '/', emoji: '🏠', labelKey: 'nav.home' },
     { path: '/read', emoji: '📖', labelKey: 'nav.read' },
     { path: '/voice-search', emoji: '🎤', labelKey: '', label: 'Identifier' },
+    { path: '/listen', emoji: '🎧', labelKey: '', label: 'Écoute' },
     { path: '/hifdh', emoji: '🎙️', labelKey: 'nav.memorize' },
 ];
 
@@ -26,11 +27,11 @@ export function BottomNav() {
                 <NavLink
                     key={item.path}
                     to={item.path}
-                    state={item.path === '/voice-search' ? { startVoiceSearch: true, returnTo: location.pathname === '/voice-search' ? '/learning' : location.pathname + location.search } : undefined}
+                    state={item.path === '/voice-search' ? { returnTo: location.pathname === '/voice-search' ? '/learning' : location.pathname + location.search } : undefined}
                     aria-label={item.path === '/voice-search' ? 'Identifier un verset avec le micro' : undefined}
                     end={item.path === '/'}
                     className={({ isActive }) =>
-                        `bottom-nav__item ${isActive ? 'active' : ''} ${item.path === '/voice-search' ? 'bottom-nav__item--voice' : ''}`
+                        `bottom-nav__item ${isActive || (item.path === '/listen' && (location.pathname.startsWith('/listen/') || location.pathname.startsWith('/playlists/'))) ? 'active' : ''} ${item.path === '/voice-search' ? 'bottom-nav__item--voice' : ''}`
                     }
                 >
                     <span className="bottom-nav__icon">{item.path === '/voice-search' ? <Mic size={23} aria-hidden="true"/> : item.emoji}</span>
@@ -41,4 +42,3 @@ export function BottomNav() {
         </nav>
     );
 }
-

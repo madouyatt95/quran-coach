@@ -1,0 +1,6 @@
+import {SURAH_JOURNEYS} from '../../lib/fahm/surahJourneys';
+import {sourceUrl} from '../../lib/fahm/learning';
+export function FahmSurahMap({surah,ayah,studied,onSelect,complete=false}:{surah:number;ayah:number;studied:string[];onSelect:(ayah:number)=>void;complete?:boolean}){
+ const journey=SURAH_JOURNEYS[surah];if(!journey)return null;
+ return <section className="fahm-card fahm-surah-map"><span className="fahm-eyebrow">LE FIL DE {journey.name.toLocaleUpperCase('fr')}</span><h2>{complete?'Retrouver le cheminement de la sourate':journey.question}</h2><ol>{journey.parts.map((part,i)=>{const done=Array.from({length:part.to-part.from+1},(_,j)=>`${surah}:${part.from+j}`).every(k=>studied.includes(k));const current=ayah>=part.from&&ayah<=part.to;return <li key={part.from} className={current?'is-current':''}><button onClick={()=>onSelect(part.from)} aria-current={current?'step':undefined}><span>{done?'✓':i+1}</span><strong>{part.title}</strong><small>{surah}:{part.from}{part.to!==part.from?`–${part.to}`:''}</small></button>{(current||done||complete)&&<p>{part.connection}</p>}</li>;})}</ol><a href={sourceUrl({surah,ayah})} target="_blank" rel="noreferrer">Lire l’explication de référence ↗</a></section>;
+}

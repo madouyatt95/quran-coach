@@ -1,3 +1,4 @@
+import {FahmVocabularyExample} from '../components/Fahm/FahmVocabularyExample';
 // ─── Vocab Page — Flashcards SRS pour le vocabulaire coranique ─
 
 import { useState, useMemo, useCallback } from 'react';
@@ -69,7 +70,7 @@ export function VocabPage() {
     }, [mode, reviewQueue, currentIndex]);
 
     const getLevelLabel = (level: number) => {
-        const labels = ['Nouveau', 'Appris', 'Révisé', 'Consolidé', 'Maîtrisé', 'Expert'];
+        const labels = ['À découvrir', 'Étudié', 'Révisé', 'Révisé 3 fois', 'Révisé 4 fois', 'Révisé 5 fois'];
         return labels[Math.min(level, 5)];
     };
 
@@ -116,21 +117,9 @@ export function VocabPage() {
                         <div className="vocab-flashcard__back">
                             <div className="vocab-flashcard__meaning">{currentWord.meaningFr}</div>
                             <div className="vocab-flashcard__translit">{currentWord.transliteration}</div>
-                            <div className="vocab-flashcard__freq">{currentWord.frequency}× dans le Coran</div>
 
-                            {currentWord.examples[0] && (
-                                <div className="vocab-flashcard__example">
-                                    <div className="vocab-flashcard__example-ar" dir="rtl">
-                                        {currentWord.examples[0].contextAr}
-                                    </div>
-                                    <div className="vocab-flashcard__example-fr">
-                                        {currentWord.examples[0].contextFr}
-                                    </div>
-                                    <div className="vocab-flashcard__example-ref">
-                                        — S{currentWord.examples[0].surah}:V{currentWord.examples[0].ayah}
-                                    </div>
-                                </div>
-                            )}
+
+                            {flipped&&<FahmVocabularyExample key={currentWord.id} word={currentWord}/>}
                         </div>
                     </div>
                 </div>
@@ -231,7 +220,7 @@ export function VocabPage() {
                             <div className="vocab-word-row__info">
                                 <span className="vocab-word-row__meaning">{word.meaningFr}</span>
                                 <span className="vocab-word-row__meta">
-                                    {word.transliteration} · {word.frequency}×
+                                    {word.transliteration}
                                 </span>
                             </div>
                             <div

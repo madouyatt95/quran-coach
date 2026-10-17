@@ -7,10 +7,10 @@ export function ProfileView() {
     const xpToNext = 1000 - xpInLevel;
 
     const titles = [
-        { name: 'Mubtadi', range: 'Lv 1-5', info: 'Débutant courageux' },
-        { name: 'Talib', range: 'Lv 6-15', info: 'Étudiant assidu' },
-        { name: 'Hafidh', range: 'Lv 16-30', info: 'Gardien du savoir' },
-        { name: 'Alim', range: 'Lv 31+', info: 'Savant accompli' }
+        { name: 'Explorateur', range: 'Lv 1-5', info: 'Débutant courageux' },
+        { name: 'Passionné', range: 'Lv 6-15', info: 'Étudiant assidu' },
+        { name: 'Persévérant', range: 'Lv 16-30', info: 'Pratique régulière' },
+        { name: 'Vétéran', range: 'Lv 31+', info: 'Expérience du jeu' }
     ];
 
     return (

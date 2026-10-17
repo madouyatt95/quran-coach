@@ -1,0 +1,30 @@
+.prayer-sky {width:100%;max-width:520px;margin:22px auto 0;color:#f8edf7;animation:sky-arrive .9s ease-out both;}
+.prayer-sky-scene {position:relative;border-radius:22px;overflow:hidden;isolation:isolate;border:1px solid #e5c7ed24;box-shadow:0 14px 35px #09081826;background:var(--sky-top);}
+.prayer-sky-scene svg {display:block;width:100%;height:auto;aspect-ratio:400/218;}
+.prayer-sky-heading {position:absolute;left:18px;top:16px;pointer-events:none;display:grid;gap:5px;text-shadow:0 1px 8px #18152d90;}
+.prayer-sky-heading>span {font-size:9px;letter-spacing:.17em;font-weight:600;opacity:.75;}
+.prayer-sky-heading strong {font-size:16px;letter-spacing:-.025em;font-weight:500;}
+.prayer-sky-caption {position:absolute;inset:auto 17px 13px;display:flex;justify-content:space-between;align-items:center;gap:8px;pointer-events:none;font-size:11px;}
+.prayer-sky-caption span+span {font-size:9px;opacity:.6;}
+.prayer-sky-sun {animation:sky-sun-arrive 1.2s cubic-bezier(.22,.68,0,1) both;transition:transform .7s cubic-bezier(.22,.68,0,1),opacity .7s;}
+.prayer-sky-stars,.prayer-sky-moon {transition:opacity .7s;}
+.prayer-sky-scene stop {transition:stop-color .7s;}
+.prayer-sky-control {position:absolute;inset:0;appearance:none;-webkit-appearance:none;width:100%;height:100%;margin:0;background:transparent;cursor:ew-resize;touch-action:pan-y;border:0;border-radius:22px;}
+.prayer-sky-control::-webkit-slider-runnable-track {background:transparent;}
+.prayer-sky-control::-webkit-slider-thumb {appearance:none;-webkit-appearance:none;width:1px;height:180px;background:transparent;border:0;}
+.prayer-sky-control::-moz-range-track {background:transparent;border:0;}
+.prayer-sky-control::-moz-range-thumb {width:1px;height:180px;background:transparent;border:0;}
+.prayer-sky-control:focus-visible {outline:2px solid #ffe0b1;outline-offset:-4px;}
+.prayer-sky-bubble {position:absolute;top:97px;transform:translateX(-50%);border:1px solid #ffe6cb50;border-radius:10px;padding:6px 10px;background:#211b3abf;color:#fff2d9;font-size:13px;font-variant-numeric:tabular-nums;pointer-events:none;box-shadow:0 5px 15px #17102525;}
+.prayer-sky-stops {display:flex;justify-content:space-between;gap:2px;margin:8px -4px 0;}
+.prayer-sky-stops button {display:grid;gap:4px;flex:1;min-width:0;min-height:48px;padding:7px 2px;border:1px solid transparent;border-radius:11px;background:none;color:#d2c5dd;cursor:pointer;font-family:inherit;font-size:11px;}
+.prayer-sky-stops small {font-size:10px;opacity:.65;font-variant-numeric:tabular-nums;}
+.prayer-sky-stops button[aria-pressed=true] {color:#ffe3b3;background:#f0cda916;border-color:#f0cda92b;}
+.prayer-sky-stops button:focus-visible,.prayer-sky-detail button:focus-visible {outline:2px solid #ffe0b1;outline-offset:2px;}
+.prayer-sky-detail {padding:12px 14px;margin-top:9px;background:#14152e75;border:1px solid #d3b7ec26;border-radius:14px;font-size:13px;}
+.prayer-sky-detail>div:first-child {display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.prayer-sky-detail button {min-height:44px;border:0;background:none;color:#e6c98f;font:inherit;font-size:11px;cursor:pointer;}
+@keyframes sky-sun-arrive {from {transform:translate(35px,180px);opacity:0;}}
+@keyframes sky-arrive {from {opacity:0;transform:translateY(8px);} to {opacity:1;transform:translateY(0);}}
+@media(min-width:600px) {.prayer-sky-heading strong {font-size:19px;}}
+@media(prefers-reduced-motion:reduce) {.prayer-sky,.prayer-sky-sun {animation:none;}.prayer-sky-sun,.prayer-sky-stars,.prayer-sky-moon,.prayer-sky-scene stop {transition:none;}}

@@ -45,6 +45,7 @@ export interface ReadingContext {
     totalAyahsInSurah: number;
     sessionStartTime: number;
     pagesReadThisSession: number;
+    completedSurah?: boolean;
 }
 
 export interface UserContext {
@@ -115,7 +116,7 @@ export function evaluateVerseEmotion(ctx: ReadingContext): Intervention | null {
         message: match.reflection,
         messageAr: match.textAr,
         source: `Coran ${match.surah}:${match.ayah}`,
-        action: { label: 'Comprendre ce verset', route: `/fahm?surah=${match.surah}&ayah=${match.ayah}` },
+        action: { label: 'Comprendre ce verset', route: `/passage?surah=${match.surah}&ayah=${match.ayah}` },
         priority: 5,
         cooldownMinutes: 30,
     };
@@ -125,20 +126,14 @@ export function evaluateVerseEmotion(ctx: ReadingContext): Intervention | null {
  * Trigger 3: Surah completed
  */
 export function evaluateSurahComplete(ctx: ReadingContext): Intervention | null {
-    if (ctx.currentAyah >= ctx.totalAyahsInSurah && ctx.totalAyahsInSurah > 0) {
-        // Find a hadith link for this surah's key verse
-        const link = VERSE_HADITH_LINKS.find(l => l.surah === ctx.currentSurah);
-        const extra = link
-            ? `\n\nHadith lié : « ${link.hadithFr} » (${link.source})`
-            : '';
-
+    if (ctx.completedSurah && ctx.currentAyah === ctx.totalAyahsInSurah && ctx.totalAyahsInSurah > 0) {
         return {
             id: uid(),
             level: 'celebration',
             trigger: 'surah_complete',
             emoji: '🎉',
-            title: 'Sourate terminée !',
-            message: `Tu viens de terminer une sourate complète. Chaque sourate est une lumière le Jour du Jugement.${extra}`,
+            title: 'Un parcours de sourate accompli',
+            message: 'Tous les versets de cette sourate ont été consultés à l’écran au cours de vos dernières visites. Continuez à votre rythme.',
             messageAr: 'الْحَمْدُ لِلَّهِ',
             priority: 7,
             cooldownMinutes: 10, // Short cooldown for consecutive surahs
@@ -192,8 +187,8 @@ export function evaluateStreakDanger(user: UserContext): Intervention | null {
             level: 'whisper',
             trigger: 'streak_danger',
             emoji: '🛡️',
-            title: 'Série en danger !',
-            message: `Ta série de ${user.readingStreak} jours est en jeu ! Une seule page suffit pour la sauver.`,
+            title: 'Votre moment de lecture',
+            message: 'Si vous avez un moment, quelques versets peuvent prolonger votre habitude.',
             messageAr: 'خَيْرُ الأَعْمَالِ أَدْوَمُهَا وَإِنْ قَلَّ',
             source: 'Bukhari 6464',
             action: { label: 'Lire une page', route: '/read' },
@@ -217,8 +212,8 @@ export function evaluatePageReread(ctx: ReadingContext, user: UserContext): Inte
             trigger: 'page_reread',
             emoji: '🧠',
             title: 'Mémorisation ?',
-            message: `Tu as visité cette page ${visitCount} fois. Veux-tu passer en mode Mémorisation ?`,
-            action: { label: 'Mode Hifdh', route: '/hifdh' },
+            message: `Vous avez consulté cette page sur ${visitCount} journées. Envie de travailler ce passage ?`,
+            action: { label: 'Mode Hifdh', route: `/hifdh?surah=${ctx.currentSurah}&ayah=${ctx.currentAyah}` },
             priority: 4,
             cooldownMinutes: 60 * 24, // Once per day per page
         };
@@ -363,7 +358,7 @@ export function evaluateHadithLink(ctx: ReadingContext): Intervention | null {
         title: 'Connexion Coran ↔ Sunna',
         message: `« ${link.hadithFr} »\n— ${link.source}\n\n${link.connection}`,
         messageAr: link.hadithAr,
-        source: link.source,
+        source: `${link.source} — référence et formulation à confirmer`,
         priority: 6,
         cooldownMinutes: 30,
     };
@@ -389,7 +384,7 @@ export function evaluateFahmPush(ctx: ReadingContext): Intervention | null {
             emoji: '💡',
             title: 'Comprends ce verset',
             message: 'Ce verset a une profondeur. Veux-tu le comprendre en détail ?',
-            action: { label: 'Panneau Fahm', route: `/fahm?surah=${ctx.currentSurah}&ayah=${ctx.currentAyah}` },
+            action: { label: 'Panneau Fahm', route: `/passage?surah=${ctx.currentSurah}&ayah=${ctx.currentAyah}` },
             priority: 3,
             cooldownMinutes: 15,
         };

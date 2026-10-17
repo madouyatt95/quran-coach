@@ -1,0 +1,8 @@
+export const LISTENING_TASKS=[
+ {id:'worship',verse:'1:5',position:2,prompt:'Quelle personne reconnaissez-vous ?',options:['Je','Nous','Il'],answer:1,explanation:'Le préfixe نَـ de نَعْبُدُ marque ici la première personne du pluriel : « nous adorons ».',pair:1},
+ {id:'help',verse:'1:5',position:4,prompt:'Quel sujet est compris dans ce verbe ?',options:['Nous','Tu','Ils'],answer:0,explanation:'نَسْتَعِينُ signifie « nous demandons de l’aide ». Comparez son préfixe personnel à celui du mot précédent.',pair:0},
+ {id:'active',verse:'112:3',position:2,prompt:'Reconnaissez-vous une forme active ou passive ?',options:['Passive','Active','Un nom'],answer:1,explanation:'يَلِدْ est actif, au jussif après لَمْ dans le verset. Comparez le début ya- avec yū- dans la forme passive suivante.',pair:3},
+ {id:'passive',verse:'112:3',position:4,prompt:'Reconnaissez-vous une forme active ou passive ?',options:['Active','Un impératif','Passive'],answer:2,explanation:'يُولَدْ est passif, au jussif après لَمْ. Les voyelles distinguent cette forme de يَلِدْ.',pair:2},
+ {id:'request',verse:'1:6',position:1,prompt:'Quelle construction entendez-vous ?',options:['Une négation','Une demande avec « nous » comme complément','Un nom seul'],answer:1,explanation:'ٱهْدِنَا contient une forme impérative de demande et le pronom complément « nous ». Le verset formule une invocation.',pair:null},
+ {id:'preposition',verse:'1:1',position:1,prompt:'Quelle construction entendez-vous ?',options:['Une préposition attachée à un nom','Un verbe conjugué','Un adjectif seul'],answer:0,explanation:'بِسْمِ réunit la préposition بِـ et le nom اسْم. Le nom est au génitif après la préposition.',pair:null},
+];

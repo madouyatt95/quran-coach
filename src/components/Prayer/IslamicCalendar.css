@@ -1,230 +1,54 @@
-/* ─── Islamic Calendar Component ─────────────────────── */
-
-.islamic-calendar {
-    margin: 0.75rem 0;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    overflow: hidden;
-}
-
-.islamic-calendar__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: none;
-    background: transparent;
-    color: var(--color-text);
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.islamic-calendar__title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.islamic-calendar__title svg {
-    color: #c9a84c;
-}
-
-.islamic-calendar__header .rotated {
-    transform: rotate(90deg);
-    transition: transform 0.2s;
-}
-
-.islamic-calendar__body {
-    padding: 0 1rem 1rem;
-    animation: cal-slide-in 0.25s ease;
-}
-
-@keyframes cal-slide-in {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ─── Hijri Date Display ─────────────────────────────── */
-
-.hijri-today {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, rgba(201, 168, 76, 0.12), rgba(201, 168, 76, 0.04));
-    border-radius: 10px;
-    border: 1px solid rgba(201, 168, 76, 0.15);
-}
-
-.hijri-today__date {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.hijri-today__day {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #c9a84c;
-    line-height: 1;
-}
-
-.hijri-today__month-year {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-}
-
-.hijri-today__month {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.hijri-today__month-ar {
-    font-size: 0.85rem;
-    color: #c9a84c;
-    font-family: 'Amiri', serif;
-}
-
-.hijri-today__year {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-}
-
-/* ─── Sunnah Badge ───────────────────────────────────── */
-
-.calendar-badge {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    margin-bottom: 0.75rem;
-}
-
-.calendar-badge--sunnah {
-    background: rgba(76, 175, 80, 0.1);
-    border: 1px solid rgba(76, 175, 80, 0.2);
-    color: #81c784;
-}
-
-.calendar-badge--sunnah svg {
-    color: #ffd54f;
-}
-
-/* ─── Sections ───────────────────────────────────────── */
-
-.calendar-section {
-    margin-bottom: 0.75rem;
-}
-
-.calendar-section__title {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 0.5rem;
-}
-
-/* ─── Event Cards ────────────────────────────────────── */
-
-.calendar-event {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    padding: 0.6rem 0.75rem;
-    border-radius: 8px;
-    margin-bottom: 0.4rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-}
-
-.calendar-event:active {
-    transform: scale(0.98);
-}
-
-.calendar-event--today {
-    background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), rgba(201, 168, 76, 0.03));
-    border-color: rgba(201, 168, 76, 0.2);
-}
-
-.calendar-event--major {
-    border-left: 3px solid #c9a84c;
-}
-
-.calendar-event--sunnah {
-    border-left: 3px solid #81c784;
-}
-
-.calendar-event--monthly {
-    border-left: 3px solid rgba(255, 255, 255, 0.2);
-}
-
-.calendar-event__emoji {
-    font-size: 1.2rem;
-    margin-top: 0.1rem;
-    flex-shrink: 0;
-}
-
-.calendar-event__content {
-    flex: 1;
-    min-width: 0;
-}
-
-.calendar-event__name {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.calendar-event__name-ar {
-    font-size: 0.78rem;
-    color: #c9a84c;
-    font-family: 'Amiri', serif;
-    margin-top: 0.1rem;
-}
-
-.calendar-event__date-badge {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.72rem;
-    color: var(--color-text-muted);
-    margin-top: 0.2rem;
-}
-
-.calendar-event__countdown {
-    background: rgba(201, 168, 76, 0.15);
-    color: #c9a84c;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.68rem;
-    font-weight: 600;
-}
-
-.calendar-event__desc {
-    font-size: 0.72rem;
-    color: var(--color-text-muted);
-    margin-top: 0.2rem;
-    line-height: 1.3;
-}
+.islamic-calendar { margin:1rem 0; border:1px solid var(--color-border,rgba(167,139,250,.22)); border-radius:22px; overflow:hidden; color:var(--color-text); background:linear-gradient(145deg,rgba(124,88,182,.12),rgba(124,88,182,.035)); }
+.islamic-calendar button,.islamic-calendar select,.islamic-calendar input { font:inherit; }
+.islamic-calendar button { cursor:pointer; color:inherit; }
+.islamic-calendar button:focus-visible,.islamic-calendar a:focus-visible,.islamic-calendar summary:focus-visible { outline:2px solid var(--color-accent,#c9a84c); outline-offset:3px; }
+.islamic-calendar__header { width:100%; display:flex; align-items:center; gap:.5rem; min-height:64px; padding:1rem; border:0; background:transparent; text-align:left; }
+.islamic-calendar__title { display:flex; align-items:center; gap:.5rem; font-size:.95rem; font-weight:650; flex:1; }
+.islamic-calendar__title svg { color:var(--color-accent,#c9a84c); flex-shrink:0; }
+.calendar-header-date { font-size:.72rem; color:var(--color-text-secondary); }
+.islamic-calendar__header .rotated { transform:rotate(90deg); }
+.islamic-calendar__body { padding:0 1rem 1rem; }
+.calendar-month-heading { text-align:center; padding:1rem .1rem; background:radial-gradient(ellipse at top,rgba(164,129,233,.13),transparent 72%); }
+.calendar-month-navigation { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin:.75rem 0; }
+.calendar-month-navigation h2 { margin:0; font-size:1.35rem; font-weight:650; }
+.calendar-month-navigation h2 span { font-size:.75rem; color:var(--color-text-secondary); display:block; margin-top:.35rem; }
+.calendar-month-navigation p { font-family:Amiri,serif; color:var(--color-accent,#c9a84c); font-size:1.5rem; margin:.2rem 0; }
+.calendar-month-navigation button { width:44px; height:44px; display:grid; place-items:center; border-radius:50%; border:1px solid rgba(167,139,250,.2); background:rgba(167,139,250,.06); flex-shrink:0; }
+.calendar-today-button { background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.22); border-radius:16px; padding:.65rem .85rem; min-height:44px; font-size:.8rem!important; }
+.calendar-alignment { border-top:1px solid rgba(167,139,250,.15); border-bottom:1px solid rgba(167,139,250,.15); margin:.5rem 0 1rem; padding:.4rem 0; font-size:.8rem; }
+.calendar-alignment summary { cursor:pointer; padding:.7rem .15rem; min-height:44px; box-sizing:border-box; }
+.calendar-alignment p { color:var(--color-text-secondary); line-height:1.65; }
+.calendar-alignment label { display:grid; gap:.45rem; margin:.8rem 0; }
+.calendar-alignment select,.calendar-alignment input { width:100%; box-sizing:border-box; min-height:44px; border:1px solid var(--color-border,rgba(167,139,250,.25)); border-radius:10px; padding:.6rem; background:var(--color-bg-secondary,#242239); color:var(--color-text); }
+.calendar-view-switch { display:flex; gap:.3rem; padding:.3rem; border-radius:14px; background:rgba(139,117,181,.08); margin-bottom:1rem; }
+.calendar-view-switch button { flex:1; min-height:44px; border:1px solid transparent; border-radius:11px; background:transparent; font-size:.85rem; }
+.calendar-view-switch button[aria-pressed=true] { border-color:rgba(167,139,250,.3); background:rgba(167,139,250,.15); font-weight:650; }
+.calendar-weekdays,.calendar-month-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:.25rem; }
+.calendar-weekdays { text-align:center; font-size:.75rem; color:var(--color-text-secondary); margin-bottom:.6rem; }
+.calendar-month-grid button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.2rem; min-width:0; min-height:66px; padding:.35rem .05rem; border:1px solid transparent; border-radius:12px; background:rgba(143,120,179,.05); }
+.calendar-month-grid strong { font-size:1.05rem; }
+.calendar-month-grid small { font-size:.56rem; white-space:nowrap; color:var(--color-text-secondary); }
+.calendar-day-marker { font-size:.65rem; line-height:.8rem; height:.8rem; color:var(--color-accent,#c9a84c); }
+.calendar-month-grid button[aria-current=date] { border-color:rgba(201,168,76,.65); }
+.calendar-month-grid button[aria-pressed=true] { background:linear-gradient(140deg,rgba(159,115,226,.28),rgba(201,168,76,.11)); box-shadow:inset 0 0 0 1px rgba(167,139,250,.35); }
+.calendar-legend { font-size:.72rem; color:var(--color-text-secondary); margin:.7rem .1rem 1rem; }
+.calendar-selected { border-radius:17px; border:1px solid rgba(167,139,250,.2); padding:1rem; margin-top:1rem; background:rgba(139,111,184,.07); }
+.calendar-selected h3 { text-transform:capitalize; font-size:1rem; line-height:1.5; margin:.3rem 0; }
+.calendar-date-note { font-size:.73rem; color:var(--color-text-secondary); line-height:1.6; }
+.calendar-event-detail { border-top:1px solid rgba(167,139,250,.15); padding:.85rem 0; }
+.calendar-event-kind { font-size:.68rem; color:var(--color-text-secondary); }
+.calendar-event-detail h4,.calendar-fasting-controls h4 { margin:.4rem 0; font-size:.95rem; }
+.calendar-event-detail p,.calendar-fasting-controls p,.calendar-fast-list p,.calendar-ramadan p { font-size:.85rem; line-height:1.7; color:var(--color-text-secondary); margin:.6rem 0; }
+.calendar-detail-actions { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; }
+.calendar-detail-actions button,.calendar-detail-actions a { display:inline-flex; align-items:center; min-height:44px; box-sizing:border-box; border:1px solid rgba(167,139,250,.25); border-radius:11px; padding:.6rem .75rem; background:rgba(167,139,250,.08); color:var(--color-text); text-decoration:none; font-size:.78rem; }
+.calendar-detail-actions button[aria-pressed=true] { background:rgba(201,168,76,.16); border-color:rgba(201,168,76,.4); }
+.calendar-fasting-controls { border-top:1px solid rgba(167,139,250,.2); padding-top:.8rem; }
+.calendar-remove-fast { background:transparent; border:0; text-decoration:underline; font-size:.75rem!important; margin-top:.6rem; min-height:44px; }
+.calendar-ramadan { border-radius:17px; padding:1rem; margin-top:1rem; background:linear-gradient(130deg,rgba(201,168,76,.12),rgba(146,100,217,.12)); border:1px solid rgba(201,168,76,.2); }
+.calendar-ramadan h3 { font-size:1.05rem; margin:.5rem 0; }
+.calendar-agenda,.calendar-fast-list { display:grid; gap:.4rem; }
+.calendar-agenda>button,.calendar-fast-list>button { display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.85rem .6rem; background:rgba(167,139,250,.06); border:1px solid rgba(167,139,250,.12); border-radius:12px; text-align:left; font-size:.78rem; }
+.calendar-agenda>button>span:nth-child(2) { flex:1; }
+.calendar-agenda strong { display:block; font-size:.85rem; }.calendar-agenda small { display:block; margin-top:.35rem; font-size:.68rem; line-height:1.5; color:var(--color-text-secondary); }
+.calendar-feedback { padding:.85rem; border:1px solid rgba(201,168,76,.35); border-radius:12px; font-size:.8rem; line-height:1.6; }
+@media(max-width:360px){.islamic-calendar__body{padding:0 .6rem .7rem}.calendar-header-date{display:none}.calendar-month-grid{gap:.1rem}.calendar-month-grid small{font-size:.51rem}.calendar-selected{padding:.8rem}}

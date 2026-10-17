@@ -37,6 +37,11 @@ describe('quizEngine', () => {
 
     // ── getQuestions ────────────────────────────────────────
     describe('getQuestions', () => {
+        it('keeps an exact verse reference on Quran questions for the shared verse sheet', () => {
+            const questions = getQuestions('verses', 30).filter(q => q.theme === 'verses');
+            expect(questions.length).toBeGreaterThan(0);
+            expect(questions.every(q => q.verseRef && q.verseRef.surah >= 1 && q.verseRef.ayah >= 1)).toBe(true);
+        });
         it('should return questions for the "prophets" theme', () => {
             const questions = getQuestions('prophets', 5);
             expect(questions.length).toBeGreaterThan(0);

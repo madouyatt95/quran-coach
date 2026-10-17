@@ -9,7 +9,7 @@ export function SiraMapView() {
             <header className="sira-map-header">
                 <button className="quiz-back-btn" onClick={() => setView('home')}>←</button>
                 <h1>Parcours de la Sira</h1>
-                <p>Retracez la vie du Messager ﷺ</p>
+                <p>Retracez la vie du Messager ﷺ</p><p>Sans chronomètre · 100 % pour ouvrir l’étape suivante</p>
             </header>
 
             <div className="sira-path">
@@ -19,7 +19,7 @@ export function SiraMapView() {
 
                     return (
                         <div key={level.id} className={`sira-node-wrapper ${index % 2 === 0 ? 'left' : 'right'}`}>
-                            <div className={`sira-node ${isUnlocked ? 'unlocked' : 'locked'} ${stats.completed ? 'completed' : ''}`}
+                            <button type="button" disabled={!isUnlocked} className={`sira-node ${isUnlocked ? 'unlocked' : 'locked'} ${stats.completed ? 'completed' : ''}`}
                                 onClick={() => isUnlocked && startSiraLevel(level)}>
                                 <div className="sira-node-icon">
                                     {isUnlocked ? (stats.completed ? <Star className="star-filled" /> : <Play />) : <Lock />}
@@ -29,7 +29,7 @@ export function SiraMapView() {
                                     <h3>{level.title}</h3>
                                     <span className="sira-node-year">{level.year} • {level.location}</span>
                                 </div>
-                            </div>
+                            </button>
                             {index < siraLevels.length - 1 && (
                                 <div className={`sira-connector ${isUnlocked && stats.completed ? 'active' : ''}`} />
                             )}

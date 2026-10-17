@@ -1,0 +1,8 @@
+import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {createJSONStorage} from 'zustand/middleware';
+import {createMemoryStorage} from '../test/memoryStorage';
+import {useStoryLibraryStore as store} from './storyLibraryStore';
+beforeEach(()=>{vi.stubGlobal('localStorage',createMemoryStorage());store.persist.setOptions({storage:createJSONStorage(()=>localStorage)});store.setState({later:[],reviews:{}});});afterEach(()=>vi.unstubAllGlobals());
+it('persists later-list additions and removal without touching reviews',async()=>{store.getState().toggleLater('prophet:adam');const raw=localStorage.getItem('quran-coach-story-library')!;store.setState({later:[]});localStorage.setItem('quran-coach-story-library',raw);await store.persist.rehydrate();expect(store.getState().later).toEqual(['prophet:adam']);store.getState().toggleLater('prophet:adam');await store.persist.rehydrate();expect(store.getState().later).toEqual([]);});
+it('schedules rediscovery three days after explicit review completion and restores it',async()=>{store.getState().finishReview('prophet:adam',{names:1,temptation:0,guidance:2});const review=store.getState().reviews['prophet:adam'];expect(review.dueAt-review.completedAt).toBe(3*86400000);await store.persist.rehydrate();expect(store.getState().reviews['prophet:adam'].answers).toEqual({names:1,temptation:0,guidance:2});});
+it('ignores malformed stored state',async()=>{localStorage.setItem('quran-coach-story-library',JSON.stringify({version:1,state:{later:[null,4,'story:luqman','story:luqman'],reviews:{bad:null,bad2:{dueAt:'tomorrow'}}}}));await store.persist.rehydrate();expect(store.getState().later).toEqual(['story:luqman']);expect(store.getState().reviews).toEqual({});});

@@ -1,8 +1,10 @@
+import {getRecordedNarration} from './recordedNarration';
+import type {PlaybackGate} from './playbackGate';
 /**
  * Arabic TTS Service
  * 
- * Uses Arabic-TTS-Spark HuggingFace Space (IbrahimSalah/Arabic-TTS-Spark)
- * with fallback to Web Speech API (SpeechSynthesisUtterance).
+ * French editorial texts use locally prepared neural recordings.
+ * Other texts use the existing online voice, then the device speech service.
  * 
  * Includes audio caching to avoid re-synthesis of the same text.
  * 
@@ -118,7 +120,7 @@ function getGoogleTtsUrl(text: string, lang: string = 'ar'): string {
 /**
  * Fallback: use Web Speech API (SpeechSynthesisUtterance)
  */
-function speakWithWebSpeech(text: string, rate: number, lang: string, signal: AbortSignal): Promise<void> {
+function speakWithWebSpeech(text: string, rate: number, lang: string, signal: AbortSignal,onStart?:()=>void,gate?:PlaybackGate): Promise<void> {
     if (signal.aborted) return Promise.resolve();
     return new Promise((resolve, reject) => {
         if (!window.speechSynthesis) {
@@ -156,14 +158,18 @@ function speakWithWebSpeech(text: string, rate: number, lang: string, signal: Ab
             if (langVoices.length > 0) utterance.voice = langVoices[0];
         }
 
+        const off = gate?.subscribe(() => { if(gate.paused) window.speechSynthesis.pause(); else window.speechSynthesis.resume(); });
         const finish = (error?: Error) => {
+            off?.();
             signal.removeEventListener('abort', abort);
             utterance.onend = null;
+            utterance.onstart = null;
             utterance.onerror = null;
             if (error && !signal.aborted) reject(error); else resolve();
         };
         const abort = () => { finish(); window.speechSynthesis.cancel(); };
         signal.addEventListener('abort', abort, {once:true});
+        utterance.onstart = () => {if(gate?.paused)window.speechSynthesis.pause();if(!signal.aborted)onStart?.();};
         utterance.onend = () => finish();
         utterance.onerror = () => finish(new Error('La lecture vocale a échoué. Réessayez.'));
 
@@ -205,7 +211,7 @@ function chunkText(text: string, maxLength: number = 180): string[] {
  */
 export async function playTts(
     text: string,
-    options?: { rate?: number; lang?: string; onEnd?: () => void; signal?: AbortSignal }
+    options?: { rate?: number; lang?: string; onEnd?: () => void; onStart?:()=>void; signal?: AbortSignal; gate?:PlaybackGate }
 ): Promise<void> {
     stopTts();
     if (options?.signal?.aborted) return;
@@ -219,13 +225,27 @@ export async function playTts(
     _isLoading = true;
     notifyChange();
     try {
+        if (lang === 'fr') {
+            const recorded = await getRecordedNarration(text).catch(() => null);
+            if (signal.aborted) return;
+            if (recorded) {
+                await options?.gate?.wait(signal);
+                if (signal.aborted) return;
+                _isLoading = false; _isPlaying = true; notifyChange();
+                const played = await playMediaClip(getTtsAudio(), recorded.url, {signal, rate, gate:options?.gate, onStarted:options?.onStart});
+                if (!signal.aborted && !played) throw new Error('La narration n’a pas pu être chargée. Réessayez.');
+                if (!signal.aborted) options?.onEnd?.();
+                return;
+            }
+        }
         let urls: string[] = [];
         try {
             urls = await Promise.all(chunks.map(async chunk => {
                 const key = `${lang}:${chunk}`;
                 const cached = audioCache.get(key);
                 if (cached) return cached;
-                const res = await fetch(getGoogleTtsUrl(chunk, lang), {referrerPolicy:'no-referrer', signal});
+                const request=new AbortController();const cancel=()=>request.abort();signal.addEventListener('abort',cancel,{once:true});const timeout=setTimeout(cancel,8000);
+                let res:Response;try{res=await fetch(getGoogleTtsUrl(chunk, lang), {referrerPolicy:'no-referrer', signal:request.signal});}finally{clearTimeout(timeout);signal.removeEventListener('abort',cancel);}
                 if (!res.ok) throw new Error(`TTS ${res.status}`);
                 const blob = await res.blob();
                 const url = await new Promise<string>((resolve,reject) => {
@@ -239,17 +259,19 @@ export async function playTts(
             }));
         } catch { /* Use device speech when the online voice is unavailable. */ }
         if (signal.aborted) return;
+        await options?.gate?.wait(signal);
+        if(signal.aborted)return;
         _isLoading = false;
         _isPlaying = true;
         notifyChange();
         if (urls.length) {
             for (let i = 0; i < urls.length; i++) {
                 if (signal.aborted) return;
-                const played = await playMediaClip(getTtsAudio(),urls[i],{signal,rate});
+                const played = await playMediaClip(getTtsAudio(),urls[i],{signal,rate,onStarted:options?.onStart,gate:options?.gate});
                 if (signal.aborted) return;
-                if (!played) { await speakWithWebSpeech(chunks.slice(i).join(' '),rate,lang,signal); break; }
+                if (!played) { await speakWithWebSpeech(chunks.slice(i).join(' '),rate,lang,signal,options?.onStart,options?.gate); break; }
             }
-        } else { await speakWithWebSpeech(text,rate,lang,signal); }
+        } else { await speakWithWebSpeech(text,rate,lang,signal,options?.onStart,options?.gate); }
         if (!signal.aborted) options?.onEnd?.();
     } finally {
         options?.signal?.removeEventListener('abort',abort);

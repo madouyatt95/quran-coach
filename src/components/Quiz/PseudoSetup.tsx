@@ -17,7 +17,7 @@ export function PseudoSetup({ onDone }: { onDone: () => void }) {
             total_played: 0,
             total_xp: 0,
             level: 1,
-            title: 'Mubtadi'
+            title: 'Explorateur'
         });
         onDone();
     };

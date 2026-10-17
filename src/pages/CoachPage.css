@@ -33,44 +33,6 @@
     margin-top: 4px;
 }
 
-/* ── Tab Switcher ── */
-.coach-tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    padding: 4px;
-    margin-bottom: 16px;
-}
-
-.coach-tab {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px 16px;
-    border-radius: 11px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
-
-.coach-tab--active {
-    background: rgba(201, 168, 76, 0.15);
-    color: #c9a84c;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-.coach-tab:active {
-    transform: scale(0.97);
-}
-
 /* ── Search Input ── */
 .coach-search-wrapper {
     position: relative;
@@ -284,3 +246,6 @@
 [data-theme="light"] .coach-tag {
     background: rgba(201, 168, 76, 0.06);
 }
+.coach-return{min-height:44px;color:var(--color-accent);font:inherit;cursor:pointer;margin-bottom:8px;padding:8px 0}.coach-card:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px}
+
+.coach-filters{display:flex;gap:8px;overflow-x:auto;padding:10px 0;scrollbar-width:thin}.coach-filters button,.coach-more,.coach-search-warning button{border:1px solid var(--color-border);background:var(--color-bg-secondary);color:var(--color-text-primary);border-radius:20px;padding:10px 15px;white-space:nowrap;cursor:pointer}.coach-filters button[aria-pressed="true"]{border-color:var(--color-accent);color:var(--color-accent)}.coach-studied{display:flex;align-items:center;gap:10px;padding:12px 0;color:var(--color-text-secondary);font-size:.9rem}.coach-studied input{width:20px;height:20px;accent-color:var(--color-accent)}.coach-studied-badge{display:inline-block;font-size:.75rem;color:var(--color-accent);margin:8px 0}.coach-search-warning{border:1px solid var(--color-accent);border-radius:14px;padding:14px;margin:14px 0;color:var(--color-text-secondary);line-height:1.6}.coach-card-french{white-space:pre-line}.coach-more{margin:12px auto;display:block}

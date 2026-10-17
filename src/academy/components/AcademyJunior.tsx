@@ -1,18 +1,12 @@
 // ─── Académie Junior — Composant Principal ───────────────
 import { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
+import {JUNIOR_PRACTICE} from '../data/junior/practice-paths';
 import { CLEF_DU_PARADIS } from '../data/junior/clef-du-paradis';
 import type { JuniorModule, JuniorStep } from '../data/junior/types';
 import './AcademyJunior.css';
 
-// Future modules (placeholders)
-const JUNIOR_MODULES: (JuniorModule | { id: string; title: string; emoji: string; description: string; color: string; locked: true })[] = [
-    CLEF_DU_PARADIS,
-    { id: 'jr-alphabet', title: 'J\'apprends l\'alphabet arabe', emoji: '🔤', description: 'Découvre les lettres arabes en t\'amusant !', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', locked: true },
-    { id: 'jr-sourates', title: 'Mes premières sourates', emoji: '📖', description: 'Mémorise tes premières sourates du Coran.', color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', locked: true },
-    { id: 'jr-invocations', title: 'Les invocations du quotidien', emoji: '🤲', description: 'Apprends les douas de tous les jours.', color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', locked: true },
-    { id: 'jr-prophets', title: 'Histoires des prophètes', emoji: '🕊️', description: 'Les plus belles histoires des prophètes.', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', locked: true },
-];
+const JUNIOR_MODULES:JuniorModule[]=[CLEF_DU_PARADIS,...JUNIOR_PRACTICE];
 
 const STORAGE_KEY = 'qc_junior_progress';
 
@@ -59,6 +53,7 @@ function playSound(type: 'correct' | 'wrong' | 'victory') {
             setTimeout(() => { osc.frequency.value = 784; }, 300);
             osc.stop(ctx.currentTime + 0.5);
         }
+        osc.onended=()=>void ctx.close();
     } catch { /* noop */ }
 }
 

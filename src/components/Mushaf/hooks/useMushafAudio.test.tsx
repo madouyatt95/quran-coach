@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { useMushafAudio, type MushafAudioState } from './useMushafAudio';
 import type { Ayah } from '../../../types';
-vi.mock('../../../lib/quranApi',()=>({getAudioUrl:(_r:string,n:number)=>`https://audio.test/${n}.mp3`}));
+vi.mock('../../../lib/quranApi',()=>({mushafReciter:(r:string)=>({quranComId:r==='ar.husary'?6:7}),getAudioUrl:(_r:string,n:number)=>`https://audio.test/${n}.mp3`}));
 vi.mock('../../../lib/wordTimings',()=>({fetchWordTimings:vi.fn().mockResolvedValue(null)}));
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 class FakeAudio extends EventTarget {
@@ -14,14 +14,17 @@ class FakeAudio extends EventTarget {
     pause=vi.fn(()=>{this.paused=true;this.dispatchEvent(new Event('pause'));});
 }
 let element:FakeAudio, api:MushafAudioState, root:Root, div:HTMLDivElement, ayahs:Ayah[];
+let selectedReciter='ar.alafasy',pageMode=false,currentPage=2;
+const nextPage=vi.fn();
 const nextSurah=vi.fn();
-function Harness(){api=useMushafAudio({pageAyahs:ayahs,selectedReciter:'ar.alafasy',currentPage:2,nextPage:vi.fn(),nextSurah});return null;}
+const onPassageAyah=vi.fn();
+function Harness(){api=useMushafAudio({pageAyahs:ayahs,selectedReciter,currentPage,nextPage,nextSurah,pageMode,onPassageAyah});return null;}
 const render=()=>act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Harness/></MemoryRouter>));
 beforeEach(async()=>{
  vi.stubGlobal('Audio',class extends FakeAudio{constructor(){super();element=this;}});
  vi.stubGlobal('requestAnimationFrame',vi.fn(()=>1));vi.stubGlobal('cancelAnimationFrame',vi.fn());
  ayahs=Array.from({length:5},(_,i)=>({number:i+8,numberInSurah:i+1,surah:2,page:2,text:'نص'} as Ayah));
- nextSurah.mockClear();div=document.createElement('div');document.body.append(div);root=createRoot(div);await render();
+ selectedReciter='ar.alafasy';pageMode=false;currentPage=2;onPassageAyah.mockClear();nextPage.mockClear();nextSurah.mockClear();div=document.createElement('div');document.body.append(div);root=createRoot(div);await render();
 });
 afterEach(async()=>{await act(async()=>root.unmount());div.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
 async function ended(){await act(async()=>{element.paused=true;element.dispatchEvent(new Event('ended'));});}
@@ -63,4 +66,94 @@ it('waits for the next surah data before continuous autoplay',async()=>{
  await act(async()=>api.playAyahAtIndex(4));await ended();expect(nextSurah).toHaveBeenCalledOnce();
  expect(api.currentAyahRef.current).toBe(5);
  ayahs=ayahs.map(a=>({...a,surah:3,number:a.number+100}));await render();expect(api.currentSurahRef.current).toBe(3);expect(api.currentAyahRef.current).toBe(1);
+});
+
+it('clears old word timings and requests the selected voice when changing reciter',async()=>{
+ await act(async()=>api.playAyahAtIndex(1));
+ await act(async()=>api.setVerseWordsMap(new Map([['2:2',{verseKey:'2:2',words:[]}]])));
+ selectedReciter='ar.husary';await render();
+ expect(api.audioActive).toBe(false);expect(api.verseWordsMap.size).toBe(0);
+ await act(async()=>api.playAyahAtIndex(1));
+ const {fetchWordTimings}=await import('../../../lib/wordTimings');
+ expect(fetchWordTimings).toHaveBeenLastCalledWith(2,2,6);
+});
+
+it('continues onto the next page of the same surah only after its data is ready',async()=>{
+ pageMode=true;await render();await act(async()=>api.playAyahAtIndex(4));await ended();
+ expect(nextPage).toHaveBeenCalledOnce();expect(nextSurah).not.toHaveBeenCalled();
+ const played=element.play.mock.calls.length;currentPage=3;ayahs=[];await render();expect(element.play).toHaveBeenCalledTimes(played);
+ ayahs=[{number:13,numberInSurah:6,surah:2,page:3,text:'نص'} as Ayah];await render();
+ expect(api.currentAyahRef.current).toBe(6);expect(element.play).toHaveBeenCalledTimes(played+1);
+});
+it('targets the right chapter when several chapters on a page share verse numbers',async()=>{
+ pageMode=true;currentPage=604;ayahs=[{number:6222,numberInSurah:1,surah:112,page:604,text:'نص'},{number:6226,numberInSurah:1,surah:113,page:604,text:'نص'}] as Ayah[];await render();
+ await act(async()=>{expect(api.startPassage(1,1,2,113)).toBe(true);});
+ expect(api.currentSurahRef.current).toBe(113);await ended();expect(api.currentSurahRef.current).toBe(113);await ended();expect(api.passageComplete).toBe(true);
+});
+it('stops continuous page playback at the final verse of page 604',async()=>{
+ pageMode=true;currentPage=604;ayahs=[{number:6236,numberInSurah:6,surah:114,page:604,text:'نص'}] as Ayah[];await render();
+ await act(async()=>api.toggleAudio());await ended();expect(api.audioPlaying).toBe(false);expect(nextPage).not.toHaveBeenCalled();expect(nextSurah).not.toHaveBeenCalled();
+});
+
+it('keeps a prepared passage across page loads, repeats from its start, and cancels manual navigation',async()=>{
+ pageMode=true;await render();
+ const passage=[...ayahs.slice(3),{...ayahs[4],number:13,numberInSurah:6,page:3}];
+ await act(async()=>{expect(api.startPassageFromAyahs(passage,2)).toBe(true);});
+ await ended();await ended();expect(onPassageAyah).toHaveBeenLastCalledWith(passage[2]);
+ currentPage=3;ayahs=[];await render();expect(api.audioPlaying).toBe(true);
+ ayahs=[passage[2]];await render();expect(api.passage).not.toBeNull();
+ await ended();expect(api.currentAyahRef.current).toBe(4);expect(api.passage?.iteration).toBe(2);
+ currentPage=2;await render();await ended();await ended();currentPage=3;await render();await ended();
+ expect(api.passageComplete).toBe(true);
+ await act(async()=>api.toggleAudio());expect(api.currentAyahRef.current).toBe(4);expect(api.passage?.iteration).toBe(1);
+ currentPage=15;await render();expect(api.audioActive).toBe(false);expect(api.passage).toBeNull();
+});
+it('rejects incomplete prepared passages and clears their queue when choosing a displayed verse',async()=>{
+ expect(api.startPassageFromAyahs([ayahs[0],ayahs[2]],2)).toBe(false);
+ expect(api.startPassageFromAyahs([],2)).toBe(false);
+ await act(async()=>{api.startPassageFromAyahs(ayahs.slice(2),2);});
+ await act(async()=>api.playAyahAtIndex(0));expect(api.currentAyahRef.current).toBe(1);expect(api.passage).toBeNull();
+});
+
+it('starts at a word with paired media, leaves single-verse mode and continues across pages',async()=>{
+ pageMode=true;await render();await act(async()=>{api.startPassage(2,2,1);});
+ await act(async()=>api.startContinuousAt(3,{url:'https://verses.quran.com/paired.mp3',offset:5.7,timings:{verseKey:'2:4',words:[{id:4,position:4,text:'',timestampFrom:5700,timestampTo:6000}]}}));
+ expect(element.src).toBe('https://verses.quran.com/paired.mp3');expect(element.currentTime).toBe(5.7);expect(api.passage).toBeNull();
+ await ended();expect(api.currentAyahRef.current).toBe(5);expect(element.currentTime).toBe(0);
+ await ended();expect(nextPage).toHaveBeenCalledOnce();currentPage=3;ayahs=[{number:13,numberInSurah:6,surah:2,page:3,text:'نص'} as Ayah];await render();expect(api.currentAyahRef.current).toBe(6);
+});
+it('temporarily pauses and resumes only if originally playing and still on the same session',async()=>{
+ await act(async()=>api.playAyahAtIndex(2));element.currentTime=8.2;let resume:()=>void=()=>{};
+ await act(async()=>{resume=api.pauseForReading();});expect(element.paused).toBe(true);
+ await act(async()=>resume());expect(element.paused).toBe(false);expect(element.currentTime).toBe(8.2);
+ await act(async()=>api.toggleAudio());const calls=element.play.mock.calls.length;
+ await act(async()=>{resume=api.pauseForReading();resume();});expect(element.play).toHaveBeenCalledTimes(calls);
+ await act(async()=>api.toggleAudio());await act(async()=>{resume=api.pauseForReading();api.stopAudio();resume();});expect(api.audioPlaying).toBe(false);
+});
+it('stops at the configured final verse without advancing to the next page',async()=>{
+ pageMode=true;await render();await act(async()=>{api.setStopAt(ayahs[2].number);await api.startContinuousAt(1);});
+ await ended();expect(api.currentAyahRef.current).toBe(3);await ended();
+ expect(api.audioActive).toBe(false);expect(nextPage).not.toHaveBeenCalled();
+});
+it('restores the exact source, timestamp, speed and boundary after stopping',async()=>{
+ await act(async()=>api.startContinuousAt(2));element.currentTime=7.625;
+ await act(async()=>{api.setPlaybackSpeed(1.25);api.setStopAt(ayahs[4].number);});
+ const saved=api.snapshot()!;expect(saved.verse.numberInSurah).toBe(3);
+ await act(async()=>api.stopAudio());await act(async()=>api.restoreSession(saved));
+ expect(element.src).toBe(saved.url);expect(element.currentTime).toBe(7.625);expect(element.playbackRate).toBe(1.25);expect(api.stopAt).toBe(ayahs[4].number);
+});
+it('repeats a word-bounded selection and stops before the rest of the verse',async()=>{
+ const timings={verseKey:'2:2',words:[]};const start={url:'https://audio.test/cut.mp3',offset:2.5,timings};
+ await act(async()=>{api.startPassageFromAyahs([ayahs[1]],2,{start,end:{...start,offset:4},endTime:5});});
+ expect(element.currentTime).toBe(2.5);
+ await act(async()=>{element.currentTime=5.1;element.dispatchEvent(new Event('timeupdate'));});
+ expect(api.passage?.iteration).toBe(2);expect(element.currentTime).toBe(2.5);
+ await act(async()=>{element.currentTime=5.1;element.dispatchEvent(new Event('timeupdate'));});
+ expect(api.passageComplete).toBe(true);expect(element.paused).toBe(true);expect(api.currentAyahRef.current).toBe(2);
+});
+it('keeps a stop boundary across automatic page changes',async()=>{
+ pageMode=true;await render();await act(async()=>{api.setStopAt(14);await api.startContinuousAt(4);});
+ await ended();expect(nextPage).toHaveBeenCalledOnce();
+ currentPage=3;ayahs=[{number:13,numberInSurah:6,surah:2,page:3},{number:14,numberInSurah:7,surah:2,page:3},{number:15,numberInSurah:8,surah:2,page:3}] as Ayah[];await render();
+ await ended();expect(api.currentPlayingAyah).toBe(14);await ended();expect(api.audioActive).toBe(false);expect(nextPage).toHaveBeenCalledTimes(1);
 });

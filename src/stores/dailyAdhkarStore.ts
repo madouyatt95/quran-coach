@@ -7,8 +7,10 @@ export function localAdhkarDay() {
 export const useDailyAdhkarStore = create<{
     day: string; counts: Record<string, number>;
     increment: (key: string, max: number) => number;
+    decrement: (key:string)=>void;
 }>()(persist((set, get) => ({
     day: localAdhkarDay(), counts: {},
+    decrement: key => { const day=localAdhkarDay(); const counts=get().day===day?get().counts:{}; set({day,counts:{...counts,[key]:Math.max(0,(counts[key]||0)-1)}}); },
     increment: (key, max) => {
         const day = localAdhkarDay();
         const counts = get().day === day ? get().counts : {};

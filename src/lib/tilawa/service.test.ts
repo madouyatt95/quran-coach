@@ -8,7 +8,7 @@ vi.mock('./assets',()=>assets);
 class FakeWorker {
  static all:FakeWorker[]=[];onmessage:((e:{data:EngineResult})=>void)|null=null;onerror:(()=>void)|null=null;commands:(EngineCommand&{id:number})[]=[];terminate=vi.fn();
  constructor(){FakeWorker.all.push(this);}
- postMessage(c:EngineCommand&{id:number}){this.commands.push(c);if(c.type==='begin')queueMicrotask(()=>this.reply(c.id,{words:['قل','هو']}));if(c.type==='finish')queueMicrotask(()=>this.reply(c.id,{}));}
+ postMessage(c:EngineCommand&{id:number}){this.commands.push(c);if(c.type==='begin')queueMicrotask(()=>this.reply(c.id,{words:['قل','هو'],passageWords:{1:['قل','هو'],2:['الله','الصمد']}}));if(c.type==='finish')queueMicrotask(()=>this.reply(c.id,{}));}
  reply(id:number,r:Partial<EngineResult>){this.onmessage?.({data:{id,events:[],verdicts:[],...r}});}
 }
 class FakeCapture {
@@ -91,4 +91,42 @@ it('delivers each current word and never jumps back on a late verse confirmation
  await feed([{type:'word_progress',surah:112,ayah:2,word_index:0},{type:'verse_match',surah:112,ayah:1}] as EngineResult['events']);
  await feed([{type:'verse_match',surah:112,ayah:1}] as EngineResult['events']);
  expect(tracking.onVerse.mock.calls.map(c=>c[0].ayah)).toEqual([1,2]);
+});
+
+it('keeps local capture alive across ayahs and uncertain corrections',async()=>{
+ const verses=[{surah:112,numberInSurah:1,number:6222,text:'قل هو',page:604,juz:30,hizbQuarter:240},{surah:112,numberInSurah:2,number:6223,text:'الله الصمد',page:604,juz:30,hizbQuarter:240}];
+ callbacks.onUncertain=vi.fn();await service.startPassage(verses,callbacks);
+ const worker=FakeWorker.all[0],capture=FakeCapture.all[0];
+ expect(worker.commands[0]).toMatchObject({type:'begin',expected:{surah:112,ayah:1,ayahEnd:2},continuous:true});
+ capture.port.onmessage!({data:new Float32Array(7680)});
+ worker.reply(worker.commands.at(-1)!.id,{verdicts:[{surah:112,ayah:2,word:0,state:'ok'}] as WordVerdict[],events:[{type:'word_progress',surah:112,ayah:2,word_index:1}] as EngineResult['events']});await drain();
+ expect(callbacks.onWordMatch).toHaveBeenCalledWith(2,true,'الله');expect(callbacks.onCurrentWord).toHaveBeenCalledWith(3);
+ capture.port.onmessage!({data:new Float32Array(7680)});
+ worker.reply(worker.commands.at(-1)!.id,{events:[{type:'correction',state:{phase:'error',issue:{surah:112,ayah:2,word:1,kind:'unclear_ayah'}}}] as EngineResult['events']});await drain();
+ expect(callbacks.onUncertain).toHaveBeenCalledWith(3,'Passage mal reconnu');expect(stopTrack).not.toHaveBeenCalled();expect(callbacks.onEnd).not.toHaveBeenCalled();
+});
+
+it('keeps one microphone open for free recitation, confirms relocation, and stops cleanly',async()=>{
+ const c={onVerse:vi.fn(),onProgress:vi.fn(),onCandidate:vi.fn(),onSearching:vi.fn(),onStatus:vi.fn(),onError:vi.fn(),onEnd:vi.fn(),onLevel:vi.fn()};
+ await service.startFreeRecitation(c);const worker=FakeWorker.all[0],capture=FakeCapture.all[0];
+ const feed=async(surah:number,ayah:number)=>{capture.port.onmessage!({data:new Float32Array(7680).fill(.03)});worker.reply(worker.commands.at(-1)!.id,{cursorWords:['قل','هو'],events:[{type:'word_progress',surah,ayah,word_index:1,total_words:2,matched_indices:[0,1]}]});await drain();};
+ await feed(112,1);await feed(112,1);await feed(112,2);expect(c.onVerse).toHaveBeenCalledTimes(2);expect(media).toHaveBeenCalledOnce();expect(stopTrack).not.toHaveBeenCalled();
+ await feed(2,75);expect(c.onVerse).toHaveBeenCalledTimes(2);expect(service.confirmFreePassage({surah:2,ayah:75})).toBe(true);expect(c.onVerse).toHaveBeenLastCalledWith({surah:2,ayah:75});expect(c.onLevel).toHaveBeenCalled();
+ await service.stop();expect(stopTrack).toHaveBeenCalledOnce();expect(service.confirmFreePassage({surah:2,ayah:75})).toBe(false);
+});
+
+it('feeds a file sequentially without microphone access and stops at a confirmed match',async()=>{
+ const c={onVerse:vi.fn(),onCandidates:vi.fn(),onStatus:vi.fn(),onError:vi.fn(),onEnd:vi.fn()}, progress=vi.fn();
+ const pending=service.searchSamples(new Float32Array(16000),c,progress);await drain();
+ const worker=FakeWorker.all[0];expect(media).not.toHaveBeenCalled();expect(worker.commands.map(c=>c.type)).toEqual(['begin','audio']);
+ worker.reply(worker.commands.at(-1)!.id,{events:[{type:'verse_candidate',candidates:[{surah:2,ayah:75,confidence:.5,rank:1,source:'discovery'}],stable:false,final_flush:false}]});await drain();
+ expect(c.onCandidates).toHaveBeenCalledWith([{surah:2,ayah:75}]);expect(c.onVerse).not.toHaveBeenCalled();expect(worker.commands.filter(c=>c.type==='audio')).toHaveLength(2);
+ worker.reply(worker.commands.at(-1)!.id,{events:[{type:'verse_match',surah:112,ayah:1}] as EngineResult['events']});await pending;
+ expect(c.onVerse).toHaveBeenCalledExactlyOnceWith({surah:112,ayah:1});expect(c.onEnd).toHaveBeenCalledOnce();expect(progress).toHaveBeenLastCalledWith(100);expect(media).not.toHaveBeenCalled();
+});
+it('cancels file recognition without publishing a late response',async()=>{
+ const c={onVerse:vi.fn(),onStatus:vi.fn(),onError:vi.fn(),onEnd:vi.fn()};
+ const pending=service.searchSamples(new Float32Array(16000),c,vi.fn());await drain();const worker=FakeWorker.all[0],id=worker.commands.at(-1)!.id;
+ await service.stop();worker.reply(id,{events:[{type:'verse_match',surah:112,ayah:1}] as EngineResult['events']});await pending;
+ expect(c.onVerse).not.toHaveBeenCalled();expect(c.onEnd).not.toHaveBeenCalled();expect(media).not.toHaveBeenCalled();
 });

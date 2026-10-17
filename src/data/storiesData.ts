@@ -1,3 +1,6 @@
+import { chapterBooks,BOOK_LESSONS } from './storyChapters';
+import { storyCorrections } from './editorialCorrections';
+import { additionalStories } from './editorialExpansion';
 // Histoires et Moralités du Coran (hors prophètes, déjà dans prophets.ts)
 
 export type StoryCategory =
@@ -35,6 +38,7 @@ export interface Story {
   surahs: StorySurah[];
   color: string;
   audio?: string;
+  sourceRefs?: string[];
   location?: StoryLocation;
 }
 
@@ -48,7 +52,8 @@ export const STORY_CATEGORIES: Record<StoryCategory, { label: string; labelAr: s
   duas: { label: 'Invocations (Du\'as)', labelAr: 'أدعية', icon: '🤲', color: '#00BCD4' },
 };
 
-export const stories: Story[] = [
+const existingStories: Story[] = [
+  ...additionalStories,
   // ========== PEUPLES DÉTRUITS ==========
   {
     id: 'aad',
@@ -825,3 +830,5 @@ export const stories: Story[] = [
     location: { lat: 21.4225, lng: 39.8262, name: 'La Mecque (Ka\'ba)', nameAr: 'مكة المكرمة' },
   }
 ];
+
+export const stories:Story[]=existingStories.map(s=>{const book=chapterBooks[`story:${s.id}`];return book?{...s,summary:book.chapters.map(c=>c.text).join("\n\n"),morals:BOOK_LESSONS[`story:${s.id}`],sourceRefs:book.chapters.map(c=>c.reference)}:{...s,...storyCorrections[s.id]};});

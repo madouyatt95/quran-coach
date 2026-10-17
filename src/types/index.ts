@@ -76,10 +76,10 @@ export interface TajwidRule {
     enabled: boolean;
 }
 
-export type Theme = 'dark' | 'light' | 'sepia';
+export type Theme = 'violet' | 'dark' | 'light' | 'sepia';
 export type ArabicFontSize = 'sm' | 'md' | 'lg' | 'xl';
 export type ArabicFontFamily = 'scheherazade' | 'amiri';
-export type ViewMode = 'mushaf' | 'tajweed' | 'madinah' | 'focus' | 'list';
+export type ViewMode = 'mushaf' | 'tajweed' | 'madinah' | 'tajweed-interactive' | 'focus' | 'list';
 
 export interface Settings {
     theme: Theme;
@@ -98,6 +98,8 @@ export interface Settings {
 }
 
 export interface PlaylistItem {
+    journey?: { id: string; step: number; ordinal: number; total: number };
+    verse?: { number: number; globalNumber: number; text: string; translation: string; chapterTitle?: string; introduction?: string; chapterFrom?: number; chapterTo?: number };
     surahNumber: number;
     surahName: string;
     surahNameAr: string;

@@ -1,0 +1,738 @@
+[
+  {
+    "id": "categories",
+    "track": "Fondations",
+    "title": "Nom, verbe ou particule ?",
+    "arabic": "اسم · فعل · حرف",
+    "goal": "Distinguer la nature d’un mot avant de chercher son rôle.",
+    "paragraphs": [
+      "La grammaire arabe organise les mots en trois grandes catégories. Le nom (ism) peut désigner un être, une chose ou une idée. Cette famille comprend aussi les pronoms et les adjectifs : le mot « nom » a donc ici un sens plus large qu’en français.",
+      "Le verbe (fiʿl) exprime notamment une action ou un état avec une forme verbale. La particule (ḥarf) établit une relation, pose une question ou apporte une négation. Il ne s’agit pas ici d’une simple lettre de l’alphabet.",
+      "Une unité écrite peut réunir plusieurs éléments : une préposition attachée à un nom, ou une conjonction devant un pronom. On analyse alors ses segments sans découper ni modifier le texte lu."
+    ],
+    "advanced": "La catégorie répond à « quelle sorte de mot ? ». La fonction répond à « que fait ce mot dans cette phrase ? ». Un même nom peut changer de fonction selon la phrase.",
+    "example": [
+      {
+        "text": "كِتَابٌ",
+        "label": "Nom · ism",
+        "detail": "Il désigne un livre."
+      },
+      {
+        "text": "كَتَبَ",
+        "label": "Verbe · fiʿl",
+        "detail": "Il signifie « il a écrit »."
+      },
+      {
+        "text": "فِي",
+        "label": "Particule · ḥarf",
+        "detail": "Cette préposition introduit une relation de lieu ou de domaine."
+      }
+    ],
+    "translation": "Un livre · il a écrit · dans. Trois exemples indépendants.",
+    "takeaway": "La catégorie et la fonction sont deux informations différentes.",
+    "target": {
+      "surah": 1,
+      "ayah": 5
+    },
+    "questions": [
+      {
+        "id": "categories-1",
+        "skill": "category",
+        "prompt": "Dans quelle catégorie entre كِتَابٌ ?",
+        "options": [
+          "Nom",
+          "Verbe",
+          "Particule"
+        ],
+        "answer": 0,
+        "explanation": "Ce mot désigne un livre. Sa catégorie est nominale ; aucun rôle dans une phrase n’est encore donné."
+      },
+      {
+        "id": "categories-2",
+        "skill": "category",
+        "prompt": "Que reconnaît-on dans فِي ?",
+        "options": [
+          "Un nom de lieu",
+          "Un verbe",
+          "Une préposition"
+        ],
+        "answer": 2,
+        "explanation": "فِي est une particule de préposition. Elle ne nomme pas elle-même le lieu."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/tagset.jsp"
+  },
+  {
+    "id": "pronouns",
+    "track": "Fondations",
+    "title": "Qui parle, à qui, de qui ?",
+    "arabic": "الضَّمَائِر",
+    "goal": "Reconnaître les personnes sans confondre pronom et verbe.",
+    "paragraphs": [
+      "Un pronom permet de parler de quelqu’un sans répéter son nom. أَنَا signifie « je », نَحْنُ « nous », هُوَ « il » et هِيَ « elle ». Ces formes sont des noms dans la classification arabe.",
+      "Le pronom peut être indépendant, comme هُوَ, ou attaché à un autre mot. Dans كِتَابُهُ, le suffixe ـهُ indique « son livre / le livre de lui ». Dans un verbe, un suffixe peut remplir une autre fonction : il faut regarder la construction.",
+      "Un pronom n’identifie pas son référent à lui seul. Pour savoir qui est désigné, on lit le contexte. On ne devine donc pas une personne à partir d’une terminaison isolée."
+    ],
+    "advanced": "Le pronom indépendant se dit ḍamīr munfaṣil ; le pronom attaché, ḍamīr muttaṣil. Dans كِتَابُهُ, ـهُ est en position de complément du nom.",
+    "example": [
+      {
+        "text": "هُوَ",
+        "label": "Il",
+        "detail": "Pronom indépendant, troisième personne masculine singulière."
+      },
+      {
+        "text": "هِيَ",
+        "label": "Elle",
+        "detail": "Pronom indépendant, troisième personne féminine singulière."
+      },
+      {
+        "text": "كِتَابُهُ",
+        "label": "Son livre",
+        "detail": "Le suffixe ـهُ renvoie à un possesseur masculin singulier."
+      }
+    ],
+    "translation": "Il · elle · son livre.",
+    "takeaway": "Le contexte permet de retrouver le référent.",
+    "target": {
+      "surah": 1,
+      "ayah": 5
+    },
+    "questions": [
+      {
+        "id": "pronouns-1",
+        "skill": "category",
+        "prompt": "Quel élément signifie « nous » ?",
+        "options": [
+          "هُوَ",
+          "نَحْنُ",
+          "هِيَ"
+        ],
+        "answer": 1,
+        "explanation": "نَحْنُ est le pronom de première personne du pluriel."
+      },
+      {
+        "id": "pronouns-2",
+        "skill": "role",
+        "prompt": "Dans كِتَابُهُ, que précise ـهُ ?",
+        "options": [
+          "Le possesseur du livre",
+          "La date de l’écriture",
+          "Une négation"
+        ],
+        "answer": 0,
+        "explanation": "Le suffixe pronominal est ici attaché à un nom : il précise à qui le livre appartient."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/tagset.jsp"
+  },
+  {
+    "id": "gender-number",
+    "track": "Fondations",
+    "title": "Genre et nombre",
+    "arabic": "الجِنْس وَالعَدَد",
+    "goal": "Repérer singulier, duel et pluriel.",
+    "paragraphs": [
+      "L’arabe distingue le masculin et le féminin, ainsi que trois nombres : singulier, duel et pluriel. Le duel permet de parler exactement de deux éléments.",
+      "طَالِبٌ désigne un étudiant ; طَالِبَةٌ une étudiante. طَالِبَانِ désigne deux étudiants dans la forme présentée ici. Ce sont des exemples réguliers pour commencer : tous les noms féminins n’ont pas la même terminaison.",
+      "Un pluriel peut se former avec une terminaison ou avec un changement interne du mot. كِتَابٌ devient كُتُبٌ. On apprend donc le pluriel avec le nom, au lieu de lui ajouter systématiquement la même terminaison."
+    ],
+    "advanced": "Le duel est notamment en ـانِ au nominatif et ـيْنِ à l’accusatif et au génitif. Cette leçon distingue d’abord le nombre ; les terminaisons de cas seront étudiées dans leur construction.",
+    "example": [
+      {
+        "text": "طَالِبٌ",
+        "label": "Singulier",
+        "detail": "Un étudiant."
+      },
+      {
+        "text": "طَالِبَانِ",
+        "label": "Duel",
+        "detail": "Deux étudiants ; forme au nominatif."
+      },
+      {
+        "text": "كُتُبٌ",
+        "label": "Pluriel",
+        "detail": "Des livres ; pluriel interne de كِتَابٌ."
+      }
+    ],
+    "translation": "Un étudiant · deux étudiants · des livres.",
+    "takeaway": "Le duel signifie deux ; le pluriel n’est pas toujours une terminaison ajoutée.",
+    "target": {
+      "surah": 1,
+      "ayah": 5
+    },
+    "questions": [
+      {
+        "id": "gender-number-1",
+        "skill": "form",
+        "prompt": "Combien d’étudiants désigne طَالِبَانِ ?",
+        "options": [
+          "Un",
+          "Deux",
+          "Trois ou plus"
+        ],
+        "answer": 1,
+        "explanation": "Le duel désigne exactement deux éléments."
+      },
+      {
+        "id": "gender-number-2",
+        "skill": "form",
+        "prompt": "Quel est le pluriel présenté de كِتَابٌ ?",
+        "options": [
+          "كَاتِبٌ",
+          "كِتَابَانِ",
+          "كُتُبٌ"
+        ],
+        "answer": 2,
+        "explanation": "كُتُبٌ est un pluriel interne. كَاتِبٌ désigne celui qui écrit ; كِتَابَانِ est un duel."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/morphologicalfeatures.jsp"
+  },
+  {
+    "id": "definite",
+    "track": "Fondations",
+    "title": "Défini et indéfini",
+    "arabic": "المَعْرِفَة وَالنَّكِرَة",
+    "goal": "Comprendre ce que change l’article al-.",
+    "paragraphs": [
+      "كِتَابٌ peut se traduire par « un livre ». الْكِتَابُ désigne « le livre ». L’article الْـ est un moyen de rendre un nom défini.",
+      "Le tanwīn, ici ـٌ, n’est pas un mot séparé. Il apparaît notamment sur de nombreux noms indéfinis, mais ne suffit pas à classer tous les noms : certains noms propres portent aussi un tanwīn.",
+      "Un pronom ou un nom propre est déjà défini sans recevoir cet article. Il faut donc reconnaître plusieurs façons d’être défini, plutôt que chercher seulement les lettres ا et ل."
+    ],
+    "advanced": "Maʿrifa désigne le défini ; nakira, l’indéfini. Dans les exemples simples présentés, l’article et le tanwīn ne sont pas réunis sur le même nom.",
+    "example": [
+      {
+        "text": "كِتَابٌ",
+        "label": "Indéfini",
+        "detail": "Un livre, sans désignation précise dans cet exemple."
+      },
+      {
+        "text": "الْكِتَابُ",
+        "label": "Défini",
+        "detail": "Le livre ; le nom porte l’article."
+      },
+      {
+        "text": "هُوَ",
+        "label": "Défini",
+        "detail": "Un pronom est défini par sa nature."
+      }
+    ],
+    "translation": "Un livre · le livre · il.",
+    "takeaway": "L’absence de الْـ ne prouve pas qu’un mot est indéfini.",
+    "target": {
+      "surah": 112,
+      "ayah": 2
+    },
+    "questions": [
+      {
+        "id": "definite-1",
+        "skill": "category",
+        "prompt": "Quel groupe correspond à « le livre » ?",
+        "options": [
+          "كِتَابٌ",
+          "الْكِتَابُ",
+          "كُتُبٌ"
+        ],
+        "answer": 1,
+        "explanation": "L’article الْـ rend ici le nom défini."
+      },
+      {
+        "id": "definite-2",
+        "skill": "category",
+        "prompt": "هُوَ n’a pas l’article الْـ. Est-il pour autant indéfini ?",
+        "options": [
+          "Oui, toujours",
+          "Il faut lui ajouter الْـ",
+          "Non, c’est un pronom défini"
+        ],
+        "answer": 2,
+        "explanation": "Les pronoms font partie des mots définis sans avoir besoin de l’article."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/morphologicalfeatures.jsp"
+  },
+  {
+    "id": "nominal",
+    "track": "Naḥw",
+    "title": "Construire une phrase nominale",
+    "arabic": "الجُمْلَة الاسْمِيَّة",
+    "goal": "Distinguer ce dont on parle et ce qu’on en dit.",
+    "paragraphs": [
+      "Dans الْبَيْتُ كَبِيرٌ, on parle de la maison, puis on dit qu’elle est grande. En français, on traduit « La maison est grande » ; aucun mot distinct pour « est » n’apparaît dans cette phrase arabe.",
+      "Le premier élément est ici le mubtadaʾ : ce dont on parle. Le second est le khabar : l’information apportée. On ne doit pas les confondre avec le nom et l’adjectif d’un seul groupe nominal.",
+      "Comparez الْبَيْتُ كَبِيرٌ (« la maison est grande ») avec الْبَيْتُ الْكَبِيرُ (« la grande maison »). Dans le deuxième groupe, l’adjectif défini accompagne le nom ; le groupe seul ne donne pas la même phrase complète."
+    ],
+    "advanced": "Dans la phrase simple étudiée, le mubtadaʾ et le khabar sont au nominatif, marfūʿ. Le khabar peut aussi être un groupe ou une phrase : il n’est pas toujours un adjectif isolé.",
+    "example": [
+      {
+        "text": "الْبَيْتُ",
+        "label": "Mubtadaʾ · thème",
+        "detail": "Ce dont on parle : la maison."
+      },
+      {
+        "text": "كَبِيرٌ",
+        "label": "Khabar · information",
+        "detail": "Ce qu’on en dit : elle est grande."
+      }
+    ],
+    "translation": "La maison est grande.",
+    "takeaway": "Une phrase apporte une information ; un groupe nominal peut seulement désigner.",
+    "target": {
+      "surah": 112,
+      "ayah": 2
+    },
+    "questions": [
+      {
+        "id": "nominal-1",
+        "skill": "role",
+        "prompt": "Dans الْبَيْتُ كَبِيرٌ, quel mot apporte l’information ?",
+        "options": [
+          "الْبَيْتُ",
+          "كَبِيرٌ",
+          "Aucun des deux"
+        ],
+        "answer": 1,
+        "explanation": "كَبِيرٌ est le khabar : il dit quelque chose de la maison."
+      },
+      {
+        "id": "nominal-2",
+        "skill": "role",
+        "prompt": "Quel exemple signifie « la grande maison » ?",
+        "options": [
+          "الْبَيْتُ الْكَبِيرُ",
+          "الْبَيْتُ كَبِيرٌ",
+          "كَبِيرٌ"
+        ],
+        "answer": 0,
+        "explanation": "L’adjectif défini الْكَبِيرُ accompagne le nom défini الْبَيْتُ."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/phrasetags.jsp"
+  },
+  {
+    "id": "verbal",
+    "track": "Naḥw",
+    "title": "Verbe, sujet et complément",
+    "arabic": "الفِعْل وَالفَاعِل وَالمَفْعُول بِهِ",
+    "goal": "Repérer qui accomplit l’action et ce qu’elle concerne.",
+    "paragraphs": [
+      "Dans كَتَبَ الطَّالِبُ الدَّرْسَ, le verbe est « a écrit », le sujet est « l’étudiant » et l’objet est « la leçon ». Le sujet accomplit l’action ; l’objet est ce sur quoi elle porte.",
+      "Les questions « qui écrit ? » et « qu’écrit-il ? » aident à distinguer les deux rôles. Leur ordre en français ne suffit pas à analyser l’arabe : la construction et les marques grammaticales comptent.",
+      "Le sujet n’est pas toujours un nom écrit à côté du verbe. Dans نَكْتُبُ, « nous écrivons », la conjugaison permet de comprendre le sujet « nous ». Tous les verbes ne demandent pas un objet."
+    ],
+    "advanced": "Le sujet du verbe actif est le fāʿil ; l’objet direct est le mafʿūl bihi. Dans cet exemple, الطَّالِبُ est marfūʿ et الدَّرْسَ manṣūb.",
+    "example": [
+      {
+        "text": "كَتَبَ",
+        "label": "Verbe",
+        "detail": "L’action : il a écrit."
+      },
+      {
+        "text": "الطَّالِبُ",
+        "label": "Sujet",
+        "detail": "Celui qui écrit."
+      },
+      {
+        "text": "الدَّرْسَ",
+        "label": "Objet",
+        "detail": "Ce qui est écrit."
+      }
+    ],
+    "translation": "L’étudiant a écrit la leçon.",
+    "takeaway": "Le sujet peut être compris dans la conjugaison.",
+    "target": {
+      "surah": 1,
+      "ayah": 5
+    },
+    "questions": [
+      {
+        "id": "verbal-1",
+        "skill": "role",
+        "prompt": "Qui écrit dans كَتَبَ الطَّالِبُ الدَّرْسَ ?",
+        "options": [
+          "الدَّرْسَ",
+          "كَتَبَ",
+          "الطَّالِبُ"
+        ],
+        "answer": 2,
+        "explanation": "الطَّالِبُ est le sujet ; الدَّرْسَ est l’objet."
+      },
+      {
+        "id": "verbal-2",
+        "skill": "role",
+        "prompt": "Dans نَكْتُبُ, quel sujet comprend-on ?",
+        "options": [
+          "Nous",
+          "Il",
+          "Tu"
+        ],
+        "answer": 0,
+        "explanation": "La forme donnée signifie « nous écrivons ». Le sujet est compris sans nom séparé."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/verb.jsp"
+  },
+  {
+    "id": "prepositions",
+    "track": "Naḥw",
+    "title": "Les prépositions et leur groupe",
+    "arabic": "حُرُوف الجَرّ",
+    "goal": "Relier une préposition au nom qu’elle introduit.",
+    "paragraphs": [
+      "Une préposition comme فِي (« dans »), مِنْ (« de / depuis ») ou إِلَى (« vers ») relie un groupe au reste de la phrase. Elle se lit avec ce qui suit.",
+      "Dans فِي الْبَيْتِ, le nom الْبَيْتِ est au génitif, appelé majrūr, après la préposition. Dans cet exemple régulier, la kasra finale rend cette relation visible.",
+      "Certaines prépositions s’attachent au mot : بِـ ou لِـ, par exemple. L’absence d’espace ne fait pas disparaître leur rôle. On identifie les éléments à l’intérieur de l’unité écrite."
+    ],
+    "advanced": "L’ensemble forme un groupe jār wa-majrūr. La marque du génitif n’est pas toujours une kasra : d’autres classes de noms ont d’autres marques.",
+    "example": [
+      {
+        "text": "فِي",
+        "label": "Préposition",
+        "detail": "Elle introduit le groupe."
+      },
+      {
+        "text": "الْبَيْتِ",
+        "label": "Nom au génitif",
+        "detail": "Le nom est régi par فِي."
+      }
+    ],
+    "translation": "Dans la maison.",
+    "takeaway": "On analyse ensemble la préposition et son complément.",
+    "target": {
+      "surah": 1,
+      "ayah": 1
+    },
+    "questions": [
+      {
+        "id": "prepositions-1",
+        "skill": "role",
+        "prompt": "Quel mot dépend de فِي dans فِي الْبَيْتِ ?",
+        "options": [
+          "Un sujet implicite",
+          "الْبَيْتِ",
+          "Aucun mot"
+        ],
+        "answer": 1,
+        "explanation": "Le nom الْبَيْتِ est le complément de la préposition."
+      },
+      {
+        "id": "prepositions-2",
+        "skill": "category",
+        "prompt": "Une préposition doit-elle toujours être séparée par un espace ?",
+        "options": [
+          "Oui",
+          "Non : بِـ peut être attaché",
+          "Seulement dans les questions"
+        ],
+        "answer": 1,
+        "explanation": "Une particule peut être attachée au nom. C’est le cas de بِـ."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/prepositionphrase.jsp"
+  },
+  {
+    "id": "idafa",
+    "track": "Naḥw",
+    "title": "Relier deux noms",
+    "arabic": "الإِضَافَة",
+    "goal": "Reconnaître une relation de complément du nom.",
+    "paragraphs": [
+      "كِتَابُ الطَّالِبِ signifie « le livre de l’étudiant ». Le deuxième nom précise le premier sans qu’une préposition équivalente au français « de » soit nécessaire.",
+      "Le premier terme est le muḍāf ; le second, le muḍāf ilayhi. Dans cette construction simple, le premier ne reçoit ni article الْـ ni tanwīn, et le second est au génitif.",
+      "Cette relation exprime souvent une possession, mais pas seulement. Elle peut aussi préciser un jour, un type ou une relation entre notions. Pour traduire, il faut lire les deux noms ensemble."
+    ],
+    "advanced": "Dans l’iḍāfa simple, le cas du premier nom dépend de sa fonction dans la phrase ; le second est majrūr. Ne pas confondre cette relation avec un nom suivi de son adjectif.",
+    "example": [
+      {
+        "text": "كِتَابُ",
+        "label": "Muḍāf",
+        "detail": "Le livre : premier terme, sans tanwīn."
+      },
+      {
+        "text": "الطَّالِبِ",
+        "label": "Muḍāf ilayhi",
+        "detail": "De l’étudiant : second terme, au génitif."
+      }
+    ],
+    "translation": "Le livre de l’étudiant.",
+    "takeaway": "Le second nom précise le premier ; le lien peut dépasser la possession.",
+    "target": {
+      "surah": 1,
+      "ayah": 4
+    },
+    "questions": [
+      {
+        "id": "idafa-1",
+        "skill": "role",
+        "prompt": "Quel est le deuxième terme de كِتَابُ الطَّالِبِ ?",
+        "options": [
+          "الطَّالِبِ",
+          "كِتَابُ",
+          "Une préposition cachée"
+        ],
+        "answer": 0,
+        "explanation": "الطَّالِبِ est le muḍāf ilayhi, au génitif."
+      },
+      {
+        "id": "idafa-2",
+        "skill": "role",
+        "prompt": "Dans cette iḍāfa simple, quelle forme convient pour « le livre de l’étudiant » ?",
+        "options": [
+          "الْكِتَابُ الطَّالِبِ",
+          "كِتَابٌ الطَّالِبِ",
+          "كِتَابُ الطَّالِبِ"
+        ],
+        "answer": 2,
+        "explanation": "Le premier terme de cette iḍāfa ne porte ni article ni tanwīn."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/possessiveconstruction.jsp"
+  },
+  {
+    "id": "roots",
+    "track": "Ṣarf",
+    "title": "Découvrir les familles de mots",
+    "arabic": "الجَذْر",
+    "goal": "Distinguer la racine du sens complet du mot.",
+    "paragraphs": [
+      "Une racine est un ensemble de consonnes servant à former une famille de mots. Beaucoup de racines ont trois lettres ; certaines en ont quatre. Tous les mots ne s’analysent pas en retirant simplement leurs voyelles.",
+      "كَتَبَ, كَاتِبٌ et مَكْتُوبٌ partagent les consonnes ك ت ب. Pourtant, ils ne signifient pas la même chose : « il a écrit », « celui qui écrit », « écrit ».",
+      "La racine fournit une piste. La forme du mot, sa fonction et le contexte sont nécessaires pour son sens. On ne peut pas attribuer automatiquement tous les sens d’une famille à chacun de ses mots."
+    ],
+    "advanced": "Les lettres radicales sont à distinguer des lettres ajoutées dans la formation. Les verbes faibles peuvent comporter des transformations qui rendent la racine moins immédiatement visible.",
+    "example": [
+      {
+        "text": "كَتَبَ",
+        "label": "ك ت ب",
+        "detail": "Verbe : il a écrit."
+      },
+      {
+        "text": "كَاتِبٌ",
+        "label": "ك ت ب",
+        "detail": "Nom : celui qui écrit."
+      },
+      {
+        "text": "مَكْتُوبٌ",
+        "label": "ك ت ب",
+        "detail": "Participe passif : écrit."
+      }
+    ],
+    "translation": "Trois mots apparentés, trois emplois.",
+    "takeaway": "Racine commune ne signifie pas traduction identique.",
+    "target": {
+      "surah": 1,
+      "ayah": 3
+    },
+    "questions": [
+      {
+        "id": "roots-1",
+        "skill": "form",
+        "prompt": "Quelles lettres forment la racine des trois exemples ?",
+        "options": [
+          "م ك ت",
+          "ك ت ب",
+          "ك ا ت"
+        ],
+        "answer": 1,
+        "explanation": "ك ت ب sont les trois consonnes radicales communes."
+      },
+      {
+        "id": "roots-2",
+        "skill": "form",
+        "prompt": "La racine suffit-elle pour traduire un mot dans un verset ?",
+        "options": [
+          "Non, il faut la forme et le contexte",
+          "Oui, tous les mots de la famille ont le même sens",
+          "Oui, il suffit de retirer les voyelles"
+        ],
+        "answer": 0,
+        "explanation": "Les mots apparentés peuvent avoir des sens et des fonctions différents."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/verbforms.jsp"
+  },
+  {
+    "id": "patterns",
+    "track": "Ṣarf",
+    "title": "Comprendre le mīzān",
+    "arabic": "المِيزَان الصَّرْفِيّ",
+    "goal": "Comparer la structure des mots avec un schème.",
+    "paragraphs": [
+      "Le mīzān est un outil de comparaison. Les lettres ف ع ل représentent les positions d’une racine à trois consonnes : première, deuxième et troisième radicales.",
+      "كَاتِبٌ suit le schème فَاعِلٌ. Le ك correspond au ف du modèle, le ت au ع et le ب au ل. L’alif allongé appartient au schème présenté.",
+      "On ne remplace pas librement une racine dans chaque modèle pour fabriquer des mots. Tous les mots théoriquement possibles ne sont pas employés, et les racines faibles demandent des règles supplémentaires."
+    ],
+    "advanced": "Le schème décrit une structure morphologique. Il n’est pas une conjugaison complète et ne suffit pas à fixer le sens en contexte.",
+    "example": [
+      {
+        "text": "كَاتِبٌ",
+        "label": "فَاعِلٌ",
+        "detail": "ك / ت / ب : les trois radicales occupent les positions du modèle."
+      },
+      {
+        "text": "مَكْتُوبٌ",
+        "label": "مَفْعُولٌ",
+        "detail": "Le mīm initial et l’allongement appartiennent ici au schème."
+      }
+    ],
+    "translation": "Celui qui écrit · écrit.",
+    "takeaway": "Un schème décrit la forme, pas une traduction automatique.",
+    "target": {
+      "surah": 1,
+      "ayah": 4
+    },
+    "questions": [
+      {
+        "id": "patterns-1",
+        "skill": "form",
+        "prompt": "Quel schème correspond à كَاتِبٌ ?",
+        "options": [
+          "فَعَلَ",
+          "مَفْعُولٌ",
+          "فَاعِلٌ"
+        ],
+        "answer": 2,
+        "explanation": "كَاتِبٌ présente le schème فَاعِلٌ, avec l’allongement après la première radicale."
+      },
+      {
+        "id": "patterns-2",
+        "skill": "form",
+        "prompt": "Dans le modèle ف ع ل, quelle lettre représente la deuxième radicale ?",
+        "options": [
+          "ع",
+          "ف",
+          "ل"
+        ],
+        "answer": 0,
+        "explanation": "ع représente la deuxième position ; ce n’est pas nécessairement une lettre du mot étudié."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/verbforms.jsp"
+  },
+  {
+    "id": "conjugation",
+    "track": "Ṣarf",
+    "title": "Faire varier la personne",
+    "arabic": "تَصْرِيف الفِعْل",
+    "goal": "Reconnaître la personne dans des formes verbales courantes.",
+    "paragraphs": [
+      "La conjugaison change la forme du verbe selon la personne, le nombre et d’autres caractéristiques. Avec كَتَبَ, on peut apprendre ensemble أَكْتُبُ (« j’écris »), نَكْتُبُ (« nous écrivons ») et يَكْتُبُ (« il écrit »).",
+      "On distingue notamment le māḍī, le muḍāriʿ et l’impératif. Les équivalents français « passé » et « présent » sont utiles pour débuter, mais les particules et le contexte peuvent changer la valeur temporelle.",
+      "Apprenez une forme avec sa prononciation et son sens. Les voyelles internes du muḍāriʿ de la forme simple ne se déduisent pas toutes d’un seul exemple : le modèle étudié ici n’est pas universel."
+    ],
+    "advanced": "Dans ces exemples, أَكْتُبُ est à la première personne du singulier, نَكْتُبُ à la première du pluriel, يَكْتُبُ à la troisième masculine du singulier. Ces trois verbes sont au muḍāriʿ indicatif.",
+    "example": [
+      {
+        "text": "أَكْتُبُ",
+        "label": "Je",
+        "detail": "Première personne du singulier."
+      },
+      {
+        "text": "نَكْتُبُ",
+        "label": "Nous",
+        "detail": "Première personne du pluriel."
+      },
+      {
+        "text": "يَكْتُبُ",
+        "label": "Il",
+        "detail": "Troisième personne masculine du singulier."
+      }
+    ],
+    "translation": "J’écris · nous écrivons · il écrit.",
+    "takeaway": "Une forme verbale renseigne sur la personne ; le contexte complète le temps.",
+    "target": {
+      "surah": 1,
+      "ayah": 5
+    },
+    "questions": [
+      {
+        "id": "conjugation-1",
+        "skill": "form",
+        "prompt": "Complétez : نَحْنُ … (« nous écrivons »).",
+        "options": [
+          "يَكْتُبُ",
+          "أَكْتُبُ",
+          "نَكْتُبُ"
+        ],
+        "answer": 2,
+        "explanation": "نَكْتُبُ est la forme de première personne du pluriel."
+      },
+      {
+        "id": "conjugation-2",
+        "skill": "form",
+        "prompt": "Quelle forme signifie ici « j’écris » ?",
+        "options": [
+          "أَكْتُبُ",
+          "يَكْتُبُ",
+          "نَكْتُبُ"
+        ],
+        "answer": 0,
+        "explanation": "Le préfixe de أَكْتُبُ indique ici la première personne du singulier."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/morphologicalfeatures.jsp"
+  },
+  {
+    "id": "derived",
+    "track": "Ṣarf",
+    "title": "Observer les formes dérivées",
+    "arabic": "المُجَرَّد وَالمَزِيد",
+    "goal": "Comprendre pourquoi les lettres ajoutées comptent.",
+    "paragraphs": [
+      "Le Ṣarf distingue notamment des verbes simples et des verbes avec des éléments ajoutés. Avec la racine ع ل م, عَلِمَ signifie « il a su », tandis que عَلَّمَ signifie « il a enseigné ». La consonne doublée compte dans la forme.",
+      "Les formes dérivées sont souvent numérotées I, II, III… dans les ressources modernes. Cette numérotation aide à comparer les modèles ; elle ne décrit pas à elle seule tous les sens possibles.",
+      "Dans Al-Fatiha, نَسْتَعِينُ signifie « nous demandons secours ». Sa racine est ع و ن et il appartient à la forme X. Le changement lié à cette racine faible montre pourquoi on ne doit pas déduire toutes les racines par suppression de lettres."
+    ],
+    "advanced": "Le mujarrad n’a pas de lettres dérivationnelles ajoutées ; le mazīd en comporte. Les marques de conjugaison sont une autre question : un verbe au muḍāriʿ n’est pas « dérivé » simplement parce qu’il commence par un préfixe personnel.",
+    "example": [
+      {
+        "text": "عَلِمَ",
+        "label": "Forme I",
+        "detail": "Il a su."
+      },
+      {
+        "text": "عَلَّمَ",
+        "label": "Forme II",
+        "detail": "Il a enseigné ; le lām est doublé."
+      },
+      {
+        "text": "تَعَلَّمَ",
+        "label": "Forme V",
+        "detail": "Il a appris."
+      }
+    ],
+    "translation": "Savoir · enseigner · apprendre.",
+    "takeaway": "Ni un préfixe personnel ni une racine seule ne déterminent la forme dérivée.",
+    "target": {
+      "surah": 1,
+      "ayah": 5
+    },
+    "questions": [
+      {
+        "id": "derived-1",
+        "skill": "form",
+        "prompt": "Quel exemple signifie « il a enseigné » ?",
+        "options": [
+          "عَلَّمَ",
+          "عَلِمَ",
+          "تَعَلَّمَ"
+        ],
+        "answer": 0,
+        "explanation": "عَلَّمَ est la forme II de cette famille : le lām doublé est déterminant."
+      },
+      {
+        "id": "derived-2",
+        "skill": "form",
+        "prompt": "Le préfixe personnel de نَكْتُبُ suffit-il à en faire une forme dérivée ?",
+        "options": [
+          "Oui, toute lettre au début compte comme dérivation",
+          "Non, conjugaison et dérivation sont distinctes",
+          "Oui, c’est toujours une forme X"
+        ],
+        "answer": 1,
+        "explanation": "Le préfixe marque la personne dans la conjugaison. Il ne suffit pas à classer le verbe comme mazīd."
+      }
+    ],
+    "source": "https://corpus.quran.com/documentation/verbforms.jsp"
+  }
+]

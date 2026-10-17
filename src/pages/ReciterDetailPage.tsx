@@ -1,227 +1,362 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useListenStore } from '../stores/listenStore';
-import { useAssetsStore } from '../stores/assetsStore';
-import { useAudioPlayerStore } from '../stores/audioPlayerStore';
-import { useQuranStore } from '../stores/quranStore';
-import { mp3QuranApi, ARABIC_FRENCH_COLLECTION, OMAR_HISHAM_COLLECTION } from '../lib/mp3QuranApi';
-import { SURAH_NAMES_FR } from '../components/Mushaf/mushafConstants';
-import { getReciterColor } from '../lib/assetPipeline';
-import { trackAudioPlay } from '../lib/analyticsService';
-import { ChevronLeft, Play, Plus } from 'lucide-react';
-import { AddToPlaylistModal } from '../components/Playlist/AddToPlaylistModal';
-import { useTranslation } from 'react-i18next';
-import { DownloadButton } from '../components/DownloadButton';
-import type { PlaylistItem } from '../types';
-import './ReciterDetailPage.css';
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+import {
+  Link,
+  useParams,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
+import { useListenStore } from "../stores/listenStore";
+import { useAssetsStore } from "../stores/assetsStore";
+import { useAudioPlayerStore } from "../stores/audioPlayerStore";
+import { useQuranStore } from "../stores/quranStore";
+import { usePlaylistsStore } from "../stores/playlistsStore";
+import { useDownloadStore } from "../stores/downloadStore";
+import { mp3QuranApi } from "../lib/mp3QuranApi";
+import {
+  COLLECTIONS,
+  collectionItems,
+  downloadId,
+  listeningSurahs,
+  matchesSurah,
+  reciterKey,
+  reciterName,
+} from "../lib/listening";
+import { AddToPlaylistModal } from "../components/Playlist/AddToPlaylistModal";
+import { DownloadButton } from "../components/DownloadButton";
+import { LearnFromAudio } from "../components/Listen/LearnFromAudio";
+import type { PlaylistItem } from "../types";
+import "../components/Listen/Listen.css";
 
 export function ReciterDetailPage() {
-    const { t } = useTranslation();
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
-    const { reciters } = useListenStore();
-    const { assets } = useAssetsStore();
-    const { surahs: quranSurahs } = useQuranStore();
-    const { setPlaylist, isPlaying, currentSurahNumber } = useAudioPlayerStore();
+  const {id} = useParams();
+  const [params] = useSearchParams();
+  return <ReciterDetailContent key={`${id}:${params}`} />;
+}
 
-    const [surahs, setSurahs] = useState<any[]>([]);
-    const [loadingSurahs, setLoadingSurahs] = useState(true);
-    const [playlistModalItem, setPlaylistModalItem] = useState<PlaylistItem | null>(null);
-    const { setLastListened } = useListenStore();
-
-    // Resolve custom collections by their string id
-    const CUSTOM_COLLECTIONS = [ARABIC_FRENCH_COLLECTION, OMAR_HISHAM_COLLECTION];
-    const customCollection = CUSTOM_COLLECTIONS.find(c => c.id === id);
-    const isCustom = !!customCollection;
-
-    // Find reciter: custom collection, synthetic (-1 for Omar Hisham), or API reciter
-    const reciter = customCollection
-        ? customCollection
-        : reciters.find(r => r.id.toString() === id || (id === OMAR_HISHAM_COLLECTION.id && r.id === -1));
-
-    useEffect(() => {
-        async function loadSurahs() {
-            const data = await mp3QuranApi.getSurahs('fr');
-            setSurahs(data);
-            setLoadingSurahs(false);
-        }
-        loadSurahs();
-    }, []);
-
-    if (!reciter) {
-        return <div className="detail-error">{t('reciters.notFound', 'Récitant non trouvé')}</div>;
-    }
-
-    const asset = assets.get(reciter.id.toString());
-    const initials = reciter.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
-
-    const handlePlaySurah = (surah: any) => {
-        // Create a playlist from this surah to the end for auto-play
-        const startIndex = surahs.findIndex(s => s.id === surah.id);
-        // For custom collections, only include available surahs in playlist
-        const availableSurahs = isCustom
-            ? surahs.slice(startIndex).filter(s => customCollection!.surahs.includes(s.id))
-            : surahs.slice(startIndex);
-        const playlistItems = availableSurahs.map(s => {
-            const qSurah = quranSurahs.find(qs => qs.number === s.id);
-            const bestMoshaf = !isCustom && (reciter as any).moshaf
-                ? mp3QuranApi.getBestMoshaf((reciter as any).moshaf)
-                : null;
-
-            const audioUrl = isCustom
-                ? customCollection!.getAudioUrl(s.id)
-                : mp3QuranApi.getAudioUrl(bestMoshaf?.server || '', s.id);
-
-            return {
-                surahNumber: s.id,
-                surahName: s.name,
-                surahNameAr: qSurah?.name || s.name,
-                transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || s.name,
-                totalAyahs: qSurah?.numberOfAyahs || 0,
-                audioUrl,
-                playbackType: 'surah' as const
-            };
-        });
-
-        setPlaylist(playlistItems, 0, id || 'default');
-
-        // Start playback immediately
-        const audio = useAudioPlayerStore.getState().getAudioRef();
-        audio.src = playlistItems[0].audioUrl!;
-        audio.play().catch(console.error);
-        useAudioPlayerStore.setState({ isPlaying: true });
-
-        // Save last listened for resume feature (with full playlist context)
-        setLastListened({
-            reciterId: isNaN(Number(id)) ? -1 : Number(id),
-            reciterName: reciter.name,
-            surahNumber: surah.id,
-            surahName: SURAH_NAMES_FR[surah.id] || surah.name,
-            audioUrl: playlistItems[0].audioUrl!,
-            position: 0,
-            playlist: playlistItems,
-            playlistIndex: 0,
-        });
-
-        trackAudioPlay(surah.id, SURAH_NAMES_FR[surah.id] || surah.name, reciter.name, 'reciter');
-    };
-
+function ReciterDetailContent() {
+  const { id: routeId = "" } = useParams();
+  const id = reciterKey(routeId);
+  const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
+  const {
+    reciters,
+    isLoading,
+    error,
+    fetchReciters,
+    favoriteReciters,
+    toggleFavorite,
+  } = useListenStore();
+  const assets = useAssetsStore((s) => s.assets);
+  const surahs = useQuranStore((s) => s.surahs);
+  const player = useAudioPlayerStore(
+    useShallow((s) => ({
+      playlist: s.playlist,
+      currentPlaylistIndex: s.currentPlaylistIndex,
+      isPlaying: s.isPlaying,
+      togglePlay: s.togglePlay,
+      setPlaylist: s.setPlaylist,
+    })),
+  );
+  const [query, setQuery] = useState(params.get("surah") || "");
+  const [selection, setSelection] = useState<number[]>([]);
+  const [selecting, setSelecting] = useState(false);
+  const [name, setName] = useState("Ma séance d’écoute");
+  const [modalItem, setModalItem] = useState<PlaylistItem | null>(null);
+  const [learn, setLearn] = useState<PlaylistItem | null>(null);
+  useEffect(() => {
+    void fetchReciters();
+  }, [fetchReciters]);
+  const custom = COLLECTIONS.find((c) => c.id === id);
+  const reciter = reciters.find((r) => String(r.id) === id);
+  const edition =
+    reciter?.moshaf.find((m) => m.id === Number(params.get("edition"))) ||
+    mp3QuranApi.getBestMoshaf(reciter?.moshaf || []);
+  const items = collectionItems(id, reciters, surahs, edition?.id);
+  const allSurahs = listeningSurahs(surahs);
+  const filtered = items.filter((item) =>
+    matchesSurah(allSurahs[item.surahNumber - 1], query),
+  );
+  const selected = items.filter((item) => selection.includes(item.surahNumber));
+  const title = custom?.name || (reciter ? reciterName(reciter) : "");
+  const current = player.playlist[player.currentPlaylistIndex];
+  if (!custom && !reciter)
     return (
-        <div className="reciter-detail-page">
-            <div className="detail-header-nav">
-                <button className="back-btn" onClick={() => navigate(-1)}>
-                    <ChevronLeft size={24} />
-                </button>
-            </div>
-
-            <div className="reciter-profile-hero">
-                <div className="profile-photo-container">
-                    {asset?.status === 'approved' ? (
-                        <img src={asset.image_url} alt={reciter.name} className="profile-photo" />
-                    ) : (
-                        <div
-                            className="profile-avatar-fallback"
-                            style={{ backgroundColor: getReciterColor(reciter.id.toString()) }}
-                        >
-                            {initials}
-                        </div>
-                    )}
-                </div>
-                <div className="profile-text">
-                    <h1>{reciter.name}</h1>
-                    <p className="profile-moshaf">
-                        {mp3QuranApi.getBestMoshaf((reciter as any).moshaf || [])?.name || t('reciters.fullQuran', 'Coran Complet')}
-                    </p>
-                </div>
-            </div>
-
-            <div className="surah-list-container">
-                <div className="list-header">
-                    <h2>{t('reciters.surahs', 'Sourates')} {isCustom ? `(${customCollection!.surahs.length} / ${surahs.length})` : `(${surahs.length})`}</h2>
-                    <button className="download-all-btn">{t('common.downloadAll', 'Tout télécharger')}</button>
-                </div>
-
-                {loadingSurahs ? (
-                    <div className="loading-spinner">{t('common.loading', 'Chargement...')}</div>
-                ) : (
-                    <div className="surah-rows">
-                        {surahs.map(surah => {
-                            const isCurrent = currentSurahNumber === surah.id && isPlaying;
-                            const qSurah = quranSurahs.find(qs => qs.number === surah.id);
-                            const transliteration = qSurah?.englishName.toUpperCase().replace('-', ' ');
-                            const isAvailable = !isCustom || customCollection!.surahs.includes(surah.id);
-
-
-                            return (
-                                <div
-                                    key={surah.id}
-                                    className={`surah-row ${isCurrent ? 'active' : ''} ${!isAvailable ? 'unavailable' : ''}`}
-                                >
-                                    <div className="surah-number">{surah.id}</div>
-                                    <div className="surah-info-main" onClick={() => isAvailable && handlePlaySurah(surah)}>
-                                        <div className="surah-names-container">
-                                            <div className="surah-names-top">
-                                                <span className="surah-name-fr">{SURAH_NAMES_FR[surah.id] || surah.name}</span>
-                                                <span className="surah-name-trans">{transliteration}</span>
-                                            </div>
-                                            <span className="surah-name-ar">{qSurah?.name}</span>
-                                        </div>
-                                        <span className="surah-meta">
-                                            {surah.makkia === 1 ? t('surah.meccan', 'Mecquoise') : t('surah.medinan', 'Médinoise')} • {qSurah?.numberOfAyahs} {t('surah.verses', 'versets')}
-                                        </span>
-                                    </div>
-                                    {isAvailable ? (
-                                        <div className="surah-actions">
-                                            <button
-                                                className="action-btn add-playlist-btn"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const qSurah = quranSurahs.find(qs => qs.number === surah.id);
-                                                    const audioUrl = isCustom
-                                                        ? customCollection!.getAudioUrl(surah.id)
-                                                        : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id);
-
-                                                    setPlaylistModalItem({
-                                                        surahNumber: surah.id,
-                                                        surahName: surah.name,
-                                                        surahNameAr: qSurah?.name || surah.name,
-                                                        totalAyahs: qSurah?.numberOfAyahs || 0,
-                                                        transliteration: qSurah?.englishName.toUpperCase().replace('-', ' ') || surah.name,
-                                                        reciterId: reciter.id.toString(),
-                                                        reciterName: reciter.name,
-                                                        playbackType: 'surah',
-                                                        audioUrl
-                                                    });
-                                                }}
-                                            >
-                                                <Plus size={20} />
-                                            </button>
-                                            <DownloadButton
-                                                id={`surah-${surah.id}-${reciter.id}`}
-                                                title={`${SURAH_NAMES_FR[surah.id] || surah.name} - ${reciter.name}`}
-                                                urls={[isCustom ? customCollection!.getAudioUrl(surah.id) : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id)]}
-                                                sampleUrlForCheck={isCustom ? customCollection!.getAudioUrl(surah.id) : mp3QuranApi.getAudioUrl(mp3QuranApi.getBestMoshaf((reciter as any).moshaf).server, surah.id)}
-                                            />
-                                            <button className="action-btn play-btn" onClick={(e) => { e.stopPropagation(); handlePlaySurah(surah); }}>
-                                                {isCurrent ? <div className="playing-bars"><span></span><span></span><span></span></div> : <Play size={20} />}
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <span className="unavailable-badge">{t('common.unavailable', 'Indisponible')}</span>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-
-            {playlistModalItem && (
-                <AddToPlaylistModal
-                    item={playlistModalItem}
-                    onClose={() => setPlaylistModalItem(null)}
-                />
-            )}
-        </div>
+      <div className="listen-hub">
+        <Link to="/listen">← Écoute</Link>
+        <h1>
+          {isLoading
+            ? "Chargement du récitant…"
+            : error
+              ? "Catalogue indisponible"
+              : "Récitant introuvable"}
+        </h1>
+        <p>
+          {error ||
+            "Le catalogue doit être chargé pour ouvrir cette récitation."}
+        </p>
+        <button
+          className="listen-primary"
+          onClick={() => void fetchReciters(true)}
+        >
+          Réessayer
+        </button>
+      </div>
     );
+  const asset = assets.get(id);
+  const play = (item: PlaylistItem) => {
+    if (current?.audioUrl === item.audioUrl) player.togglePlay();
+    else
+      player.setPlaylist(
+        items,
+        items.findIndex((s) => s.audioUrl === item.audioUrl),
+        id,
+      );
+  };
+  return (
+    <div className="listen-hub">
+      <header className="listen-section-heading">
+        <Link to="/listen">← Écoute</Link>
+        <button
+          className="listen-secondary"
+          aria-pressed={favoriteReciters.includes(id)}
+          onClick={() => toggleFavorite(id)}
+        >
+          {favoriteReciters.includes(id)
+            ? "★ Dans mes favoris"
+            : "☆ Ajouter aux favoris"}
+        </button>
+      </header>
+      <section className="listen-profile">
+        <span className="listen-avatar">
+          {asset?.status === "approved" ? (
+            <img src={asset.image_url} alt="" />
+          ) : (
+            title
+              .split(" ")
+              .map((n) => n[0])
+              .slice(0, 2)
+              .join("")
+          )}
+        </span>
+        <div>
+          <span className="listen-eyebrow">UNE VOIX À RETROUVER</span>
+          <h1>{title}</h1>
+          <p>
+            {items.length} sourates disponibles
+            {custom?.type === "arabic_french" ? " · Arabe et français" : ""}
+          </p>
+        </div>
+      </section>
+      {error && (
+        <p className="listen-notice" role="status">
+          {error}
+        </p>
+      )}
+      {reciter && (
+        <label className="listen-voice-select">
+          Récitation
+          <select
+            value={edition?.id || ""}
+            onChange={(e) => {
+              const next = new URLSearchParams(params);
+              next.set("edition", e.target.value);
+              setParams(next);
+            }}
+          >
+            {reciter.moshaf.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name} · {m.surah_total} sourates
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <div className="listen-actions">
+        <button
+          className="listen-primary"
+          disabled={!items.length}
+          onClick={() => player.setPlaylist(items, 0, id)}
+        >
+          ▶ Tout écouter
+        </button>
+        <button
+          className="listen-secondary"
+          onClick={() => {
+            setSelecting((v) => !v);
+            setSelection([]);
+          }}
+        >
+          {selecting ? "Annuler la sélection" : "Sélectionner des sourates"}
+        </button>
+      </div>
+      <label className="listen-search">
+        <span>⌕</span>
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Rechercher dans cette récitation…"
+          aria-label="Rechercher une sourate"
+        />
+      </label>
+      {selecting && (
+        <section className="listen-selection">
+          <div className="listen-section-heading">
+            <h2>
+              {selected.length} sélectionnée{selected.length > 1 ? "s" : ""}
+            </h2>
+            <button
+              onClick={() => setSelection(filtered.map((s) => s.surahNumber))}
+            >
+              Tout sélectionner ({filtered.length})
+            </button>
+          </div>
+          <label>
+            Nom de la séance
+            <input
+              value={name}
+              maxLength={80}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </label>
+          <div className="listen-actions">
+            <button
+              disabled={!selected.length}
+              onClick={() => player.setPlaylist(selected, 0, id)}
+            >
+              ▶ Écouter la sélection
+            </button>
+            <button
+              disabled={!selected.length || !name.trim()}
+              onClick={() => {
+                const store = usePlaylistsStore.getState();
+                const key = store.createPlaylist(name.trim());
+                selected.forEach((s) => store.addItemToPlaylist(key, s));
+                navigate(`/playlists/${key}`);
+              }}
+            >
+              Créer une séance
+            </button>
+            <button
+              disabled={!selected.length}
+              onClick={() => {
+                void useDownloadStore.getState().startDownload(
+                  downloadId(selected),
+                  `${title} · ${selected.length} sourates`,
+                  selected.map((s) => s.audioUrl!),
+                  "audio",
+                  selected,
+                );
+                navigate("/listen?library=offline");
+              }}
+            >
+              📥 Télécharger la sélection
+            </button>
+          </div>
+          <small>
+            Le téléchargement peut être volumineux. Vous pourrez le mettre en
+            pause dans « Hors ligne ».
+          </small>
+        </section>
+      )}
+      <div className="listen-section-heading">
+        <h2>
+          Sourates <small>({filtered.length})</small>
+        </h2>
+        {!selecting && (
+          <button
+            onClick={() => {
+              setSelecting(true);
+              setSelection(items.map((s) => s.surahNumber));
+            }}
+          >
+            Tout télécharger…
+          </button>
+        )}
+      </div>
+      {!filtered.length && (
+        <p className="listen-empty">
+          Aucune sourate disponible ne correspond à cette recherche.{" "}
+          <button onClick={() => setQuery("")}>
+            Afficher toute la collection
+          </button>
+        </p>
+      )}
+      <div className="listen-list">
+        {filtered.map((item) => (
+          <article
+            className={`listen-surah-row ${current?.audioUrl === item.audioUrl ? "is-current" : ""}`}
+            key={item.audioUrl}
+          >
+            {selecting && (
+              <input
+                type="checkbox"
+                aria-label={`Sélectionner ${item.surahName}`}
+                checked={selection.includes(item.surahNumber)}
+                onChange={() =>
+                  setSelection((s) =>
+                    s.includes(item.surahNumber)
+                      ? s.filter((n) => n !== item.surahNumber)
+                      : [...s, item.surahNumber],
+                  )
+                }
+              />
+            )}
+            <button
+              className="listen-track"
+              onClick={() => play(item)}
+              aria-label={`${current?.audioUrl === item.audioUrl && player.isPlaying ? "Mettre en pause" : "Écouter"} ${item.surahName}`}
+            >
+              <span className="listen-number">
+                {current?.audioUrl === item.audioUrl && player.isPlaying
+                  ? "Ⅱ"
+                  : item.surahNumber}
+              </span>
+              <span>
+                <strong>{item.surahName}</strong>
+                <small>
+                  {item.transliteration}
+                  {item.totalAyahs ? ` · ${item.totalAyahs} versets` : ""}
+                </small>
+                <span className="listen-arabic" lang="ar" dir="rtl">
+                  {item.surahNameAr}
+                </span>
+              </span>
+              <span aria-hidden="true">▶</span>
+            </button>
+            <details className="listen-track-menu">
+              <summary aria-label={`Actions pour ${item.surahName}`}>
+                •••
+              </summary>
+              <div>
+                <button onClick={() => setModalItem(item)}>
+                  ＋ Ajouter à une séance
+                </button>
+                <button onClick={() => setLearn(item)}>
+                  📖 Lire ou mémoriser
+                </button>
+                <span>
+                  Hors ligne{" "}
+                  <DownloadButton
+                    id={downloadId([item])}
+                    title={`${item.surahName} · ${title}`}
+                    urls={[item.audioUrl!]}
+                    items={[item]}
+                  />
+                </span>
+              </div>
+            </details>
+          </article>
+        ))}
+      </div>
+      {modalItem && (
+        <AddToPlaylistModal
+          item={modalItem}
+          onClose={() => setModalItem(null)}
+        />
+      )}
+      {learn && <LearnFromAudio item={learn} onClose={() => setLearn(null)} />}
+    </div>
+  );
 }

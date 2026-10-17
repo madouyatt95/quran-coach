@@ -1,6 +1,7 @@
 // Quiz Engine — Algorithmic question generator
 // Generates quiz questions from existing app data sources
 
+import { SIRA_CONTEXT } from '../data/quizSiraTeaching';
 import { prophets } from '../data/prophets';
 import { companions } from '../data/companions';
 import { QURAN_THEMES } from '../data/themesData';
@@ -31,8 +32,9 @@ function pick<T>(arr: T[], n: number, random: () => number = Math.random): T[] {
     return shuffle(arr, random).slice(0, n);
 }
 
-function uid(): string {
-    return Math.random().toString(36).slice(2, 10);
+
+export function stableQuestionId(q: Pick<QuizQuestion, 'theme' | 'questionFr' | 'questionAr' | 'choices' | 'correctIndex'>): string {
+    return `q-${hashString([q.theme, q.questionFr, q.questionAr || "", q.choices[q.correctIndex]].join("|"))}`;
 }
 
 function buildMCQ(
@@ -44,12 +46,14 @@ function buildMCQ(
     explanation?: string,
     choiceCount: number = 4
 ): QuizQuestion | null {
+    if(!correct.trim() || !questionFr.trim())return null;
     const needed = choiceCount - 1;
-    const distractors = shuffle(pool.filter(p => p !== correct)).slice(0, needed);
+    const rng = seededRandom(hashString(`${theme}|${questionFr}|${correct}`));
+    const distractors = shuffle([...new Set(pool.filter(p => p.trim() && p !== correct))], rng).slice(0, needed);
     if (distractors.length < needed) return null;
-    const choices = shuffle([correct, ...distractors]);
+    const choices = shuffle([correct, ...distractors], rng);
     return {
-        id: uid(),
+        id: `q-${hashString([theme, questionFr, questionAr || "", correct].join("|"))}`,
         theme,
         questionFr,
         questionAr,
@@ -226,20 +230,20 @@ function generateCompanionQuestions(): QuizQuestion[] {
 // ─── Verse / Theme Questions ────────────────────────────
 function generateVerseQuestions(): QuizQuestion[] {
     const questions: QuizQuestion[] = [];
-    const themeNames = QURAN_THEMES.map(t => t.nameFr);
+    const translations = [...new Set(QURAN_THEMES.flatMap(t => t.verses).map(v => v.textFr).filter(Boolean))];
 
     for (const theme of QURAN_THEMES) {
         for (const verse of theme.verses) {
-            // Q: Which theme does this verse belong to?
+            // A verse may belong to several themes: compare its supplied translation instead.
             const q = buildMCQ(
                 'verses',
-                `À quel thème appartient ce verset ?`,
-                theme.nameFr,
-                themeNames,
+                `Quelle traduction correspond à ce verset ?`,
+                verse.textFr,
+                translations,
                 verse.textAr,
-                `${theme.nameFr} — Sourate ${verse.surah}:${verse.ayah}`
+                `${verse.textFr} — Sourate ${verse.surah}:${verse.ayah}`
             );
-            if (q) questions.push(q);
+            if (q) questions.push({ ...q, verseRef: { surah: verse.surah, ayah: verse.ayah } });
         }
 
         // Q: Complete the translation
@@ -259,17 +263,19 @@ function generateVerseQuestions(): QuizQuestion[] {
                         return w.slice(Math.floor(w.length / 2)).join(' ');
                     })
                     .filter(s => s.length > 5);
-                const distractors = pick(otherVerses, 3);
+                const rng = seededRandom(hashString(`${verse.surah}:${verse.ayah}`));
+                const distractors = pick([...new Set(otherVerses)].filter(v=>v!==correct), 3, rng);
                 if (distractors.length === 3) {
-                    const choices = shuffle([correct, ...distractors]);
+                    const choices = shuffle([correct, ...distractors], rng);
                     questions.push({
-                        id: uid(),
+                        id: `verse-${verse.surah}-${verse.ayah}`,
                         theme: 'verses',
                         questionFr: `Complétez : "${start}"`,
                         questionAr: verse.textAr,
                         choices,
                         correctIndex: choices.indexOf(correct),
                         explanation: verse.textFr,
+                        verseRef: { surah: verse.surah, ayah: verse.ayah },
                     });
                 }
             }
@@ -981,6 +987,7 @@ function generateAudioQuestions(): QuizQuestion[] {
         );
         if (q) {
             q.audioUrl = audioUrl;
+            q.verseRef = { surah: s.surahNum, ayah: s.localAyah };
             questions.push(q);
         }
     }
@@ -990,16 +997,16 @@ function generateAudioQuestions(): QuizQuestion[] {
 // ─── Question Bank Cache ────────────────────────────────
 let questionBank: Record<QuizThemeId, QuizQuestion[]> | null = null;
 
-function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
+export function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
     if (questionBank) return questionBank;
 
     questionBank = {
         prophets: generateProphetQuestions(),
         companions: generateCompanionQuestions(),
-        verses: shuffle([...generateVerseQuestions(), ...generateAudioQuestions()]).slice(0, 30),
-        invocations: shuffle(generateInvocationQuestions()).slice(0, 30),
-        structure: shuffle(generateStructureQuestions()).slice(0, 30),
-        'ya-ayyuha': shuffle(generateYaAyyuhaQuestions()).slice(0, 30),
+        verses: generateVerseQuestions(),
+        invocations: generateInvocationQuestions(),
+        structure: generateStructureQuestions(),
+        'ya-ayyuha': generateYaAyyuhaQuestions(),
         stories: generateStoriesQuestions(),
         geography: generateGeographyQuestions(),
         virtues: generateVirtuesQuestions(),
@@ -1011,6 +1018,14 @@ function getQuestionBank(): Record<QuizThemeId, QuizQuestion[]> {
         fiqh: generateFiqhQuestions(),
     };
 
+    for (const key of Object.keys(questionBank) as QuizThemeId[]) {
+        questionBank[key] = [...new Map(questionBank[key].map(q => {
+            const correct = q.choices[q.correctIndex];
+            const choices = shuffle([...q.choices].sort(), seededRandom(hashString(stableQuestionId(q))));
+            const fixed = {...q, id: stableQuestionId(q), choices, correctIndex: choices.indexOf(correct)};
+            return [fixed.id, fixed] as const;
+        })).values()];
+    }
     console.log('[QuizEngine] Question bank generated:',
         Object.entries(questionBank).map(([k, v]) => `${k}: ${v.length}`).join(', ')
     );
@@ -1039,13 +1054,7 @@ export function getQuestions(
     const bank = getQuestionBank();
     const pool = bank[theme] || [];
 
-    // Inject 1-2 audio questions into every Solo game
-    const audioPool = generateAudioQuestions();
-    const audioCount = Math.min(2, audioPool.length);
-    const themeCount = Math.max(1, count - audioCount);
-    const themeSelected = pick(pool, Math.min(themeCount, pool.length));
-    const audioSelected = pick(audioPool, audioCount);
-    const selected = shuffle([...themeSelected, ...audioSelected]);
+    const selected = pick(pool.filter(q => !q.audioUrl), count);
 
     const config = DIFFICULTY_CONFIG[difficulty];
 
@@ -1123,7 +1132,7 @@ export function calculateScore(
     difficulty: QuizDifficulty = 'medium'
 ): number {
     if (!correct) return 0;
-    const timeBonus = Math.max(0, 1 - timeMs / maxTimeMs);
+    const timeBonus = Math.max(0, Math.min(1, 1 - Math.max(0, timeMs) / Math.max(1, maxTimeMs)));
     const base = Math.round(100 + timeBonus * 100); // 100-200 points
     return Math.round(base * DIFFICULTY_CONFIG[difficulty].scoreMultiplier);
 }
@@ -1332,5 +1341,8 @@ export function generateSiraLevels(): SiraLevel[] {
             unlocked: false, completed: false, stars: 0,
         }
     ];
-    return levels;
+    return levels.map(level=>({...level,questions:level.questions.filter(Boolean).map(q=>({...q,
+        explanation:`${q.choices[q.correctIndex]}. ${SIRA_CONTEXT[level.id].text} Repère pour éviter une confusion : ${SIRA_CONTEXT[level.id].contrast}`,
+        sourceLink:{label:'Relire le portrait de Muhammad ﷺ',href:'/prophets?prophet=muhammad'},
+    }))}));
 }

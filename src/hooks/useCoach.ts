@@ -1,3 +1,5 @@
+import { useId } from 'react';
+import { useCompanionRuntimeStore } from '../stores/companionStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { speechRecognitionService, recognitionErrorMessage } from '../lib/speechRecognition';
 import { recitationWords } from '../lib/recitationMatching';
@@ -7,12 +9,12 @@ import { tilawaService } from '../lib/tilawa/service';
 import { useLearningStore } from '../stores/learningStore';
 import type { RecognitionCallbacks } from '../lib/speechRecognition';
 
-export type WordState = 'correct' | 'error' | 'current' | 'unread' | 'dismissed';
+export type WordState = 'correct' | 'error' | 'current' | 'unread' | 'dismissed' | 'uncertain';
 export type CoachMode = 'solo' | 'duo_echo' | 'link' | 'magic_reveal';
 export type DuoPhase = 'reciter' | 'student' | 'waiting';
-interface UseCoachOptions { ayahs: Ayah[]; scoreKey: string; playingIndex: number }
+interface UseCoachOptions { ayahs: Ayah[]; scoreKey: string; playingIndex: number; continuous?: boolean }
 
-export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
+export function useCoach({ ayahs, scoreKey, playingIndex, continuous = false }: UseCoachOptions) {
     const [isCoachMode, setIsCoachMode] = useState(false);
     const recognitionEngine = useLearningStore(state => state.engine);
     const [coachMode, setCoachMode] = useState<CoachMode | null>(null);
@@ -21,6 +23,8 @@ export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
     const [assessments, setAssessments] = useState<CoachAssessments>({});
     const [currentWord, setCurrentWord] = useState<string | null>(null);
     const [isListening, setIsListening] = useState(false);
+    const companionBusyId=useId();
+    useEffect(()=>{useCompanionRuntimeStore.getState().setBusy(companionBusyId,isListening);return()=>useCompanionRuntimeStore.getState().setBusy(companionBusyId,false);},[companionBusyId,isListening]);
     const [isStarting, setIsStarting] = useState(false);
     const [coachError, setCoachError] = useState<string | null>(null);
     const [storageError, setStorageError] = useState(false);
@@ -29,6 +33,7 @@ export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
     const [coachInterimText, setCoachInterimText] = useState('');
     const [coachAtEnd, setCoachAtEnd] = useState(false);
     const [coachRevision, setCoachRevision] = useState(0);
+    const [activeAyahIndex, setActiveAyahIndex] = useState(0);
     const sessionRef = useRef<CoachAssessments>({});
     const requestRef = useRef(0);
     const activeRef = useRef(false);
@@ -107,7 +112,10 @@ export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
         const ayahIndex = overrideAyahIndex ?? Math.max(0, playingIndex);
         const ayah = ayahs[ayahIndex];
         if (!ayah || !modeRef.current || !activeRef.current) return;
-        const words = recitationWords(ayah.text);
+        const passage = continuous && (modeRef.current === 'solo' || modeRef.current === 'magic_reveal') ? ayahs.slice(ayahIndex) : [ayah];
+        const positions = passage.flatMap((a, offset) => recitationWords(a.text).map((text, w) => ({text, ayahIndex: ayahIndex + offset, wordIndex:w})));
+        const words = positions.map(p => p.text);
+        const keyAt = (index:number) => `${positions[index].ayahIndex}-${positions[index].wordIndex}`;
         if (!words.length) return;
         const start = Math.max(0, Math.min(wordIndex, words.length - 1));
         const request = ++requestRef.current;
@@ -122,27 +130,35 @@ export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
         if (!current()) return;
         // Only clear the retried part. Earlier verses remain in the session summary.
         const retained = { ...sessionRef.current };
-        words.forEach((_, index) => { if (index >= start) delete retained[`${ayahIndex}-${index}`]; });
+        words.forEach((_, index) => { if (index >= start) delete retained[keyAt(index)]; });
         updateAssessments(retained);
         positionRef.current = { ayahIndex, wordIndex: start };
-        setCurrentWord(`${ayahIndex}-${start}`);
+        setCurrentWord(keyAt(start));
+        setActiveAyahIndex(ayahIndex);
         const callbacks: RecognitionCallbacks = {
             onWordMatch: (index, isCorrect, spoken) => {
                 if (!current() || !words[index]) return;
-                updateAssessments({ ...sessionRef.current, [`${ayahIndex}-${index}`]: {
-                    state: isCorrect ? 'correct' : 'error', expected: words[index], spoken: spoken || '(non reconnu)',
+                updateAssessments({ ...sessionRef.current, [keyAt(index)]: {
+                    state: isCorrect ? 'correct' : spoken === '(non reconnu)' ? 'uncertain' : 'error', expected: words[index], spoken: spoken || '(non reconnu)',
+                    revised: isCorrect && (sessionRef.current[keyAt(index)]?.state === 'error' || sessionRef.current[keyAt(index)]?.revised),
                 } });
             },
+            onUncertain: (index, message) => {
+                if (!current() || !positions[index]) return;
+                updateAssessments({...sessionRef.current, [keyAt(index)]: {state:'uncertain', expected:words[index], spoken:message}});
+            },
             onWordReset: index => {
-                if (!current()) return;
+                if (!current() || !positions[index]) return;
                 const next = { ...sessionRef.current };
-                next[`${ayahIndex}-${index}`] = { state: 'unread', expected: words[index], spoken: '' };
+                next[keyAt(index)] = { state: 'unread', expected: words[index], spoken: '' };
                 updateAssessments(next);
             },
             onCurrentWord: index => {
-                if (!current()) return;
-                positionRef.current = { ayahIndex, wordIndex: index };
-                setCurrentWord(index < words.length ? `${ayahIndex}-${index}` : null);
+                if (!current() || !Number.isInteger(index) || index < 0) return;
+                const position = positions[Math.min(index, words.length - 1)];
+                positionRef.current = { ayahIndex: position.ayahIndex, wordIndex: index >= words.length ? position.wordIndex + 1 : position.wordIndex };
+                setActiveAyahIndex(position.ayahIndex);
+                setCurrentWord(index < words.length ? keyAt(index) : null);
                 setCoachAtEnd(index >= words.length);
                 setCoachRevision(revision => revision + 1);
             },
@@ -162,13 +178,13 @@ export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
             },
         };
         const success = recognitionEngine === 'tilawa'
-            ? await tilawaService.start(ayah.text, callbacks, start, { surah: ayah.surah, ayah: ayah.numberInSurah })
-            : await speechRecognitionService.start(ayah.text, callbacks, start);
+            ? continuous ? await tilawaService.startPassage(passage, callbacks, start) : await tilawaService.start(ayah.text, callbacks, start, { surah: ayah.surah, ayah: ayah.numberInSurah })
+            : await speechRecognitionService.start(passage.map(a=>a.text).join(' '), callbacks, start);
         if (!current()) return;
         setIsStarting(false);
         setIsListening(success);
         if (!success) setCoachError(previous => previous || recognitionErrorMessage('unavailable'));
-    }, [ayahs, playingIndex, saveSession, updateAssessments, recognitionEngine]);
+    }, [ayahs, playingIndex, saveSession, updateAssessments, recognitionEngine, continuous]);
 
     const resumeCoachListening = useCallback(() => {
         const position = positionRef.current;
@@ -224,13 +240,14 @@ export function useCoach({ ayahs, scoreKey, playingIndex }: UseCoachOptions) {
 
     return {
         isCoachMode, coachMode, duoPhase, blindMode, wordStates, isListening, isStarting, recognitionEngine,
-        coachError, storageError, coachAtEnd, coachRevision,
+        coachError, storageError, coachAtEnd, coachRevision, activeAyahIndex, assessments,
+        coachUncertainCount: Object.values(assessments).filter(a=>a.state === 'uncertain').length,
         coachMistakes, coachMistakesCount: totals.mistakes, coachTotalProcessed: totals.processed,
         selectedError, setSelectedError, showMistakesSummary, setShowMistakesSummary,
         coachInterimText, allCoachWords, coachAccuracy: totals.accuracy,
         coachProgress: verseWords.length ? processedInVerse / verseWords.length : 0,
         resetCoach, coachJumpToWord, startCoachListening, resumeCoachListening, stopCoachListening,
-        finishCoachListening: () => recognitionEngine === 'tilawa' ? tilawaService.finish() : stopCoachListening(),
+        finishCoachListening: () => recognitionEngine === 'tilawa' && !isStarting ? tilawaService.finish() : stopCoachListening(),
         toggleCoachMode: () => selectCoachMode(isCoachMode ? null : 'solo'),
         toggleBlindMode: () => setBlindMode(previous => !previous),
         selectCoachMode, setDuoPhase, dismissCoachMistake,

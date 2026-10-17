@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bookmark, Check, X } from 'lucide-react';
+import { Bookmark, Check, Play, Trash2, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useReadingBookmarkStore, resumeReadingBookmark, type BookmarkView } from '../../stores/readingBookmarkStore';
 import { useQuranStore } from '../../stores/quranStore';
@@ -10,12 +10,14 @@ import './ReadingBookmark.css';
 
 export function ReadingBookmarkControl({ view, page, ayahs = [] }: {view: BookmarkView; page: number; ayahs?: Ayah[]}) {
     const bookmark = useReadingBookmarkStore(s => s.bookmark);
-    const save = useReadingBookmarkStore(s => s.save);
+    const bookmarks = useReadingBookmarkStore(s => s.bookmarks);
+    const saveNamed = useReadingBookmarkStore(s => s.saveNamed);
     const navigate = useNavigate();
     const dialog = useRef<HTMLDialogElement>(null);
     const [open, setOpen] = useState(false);
     const [choices, setChoices] = useState<Ayah[]>([]);
     const [selected, setSelected] = useState('');
+    const [label, setLabel] = useState('Reprendre ma lecture');
     const [loading, setLoading] = useState(false);
     const [saved, setSaved] = useState(false);
     const [targetPage, setTargetPage] = useState(page);
@@ -44,33 +46,44 @@ export function ReadingBookmarkControl({ view, page, ayahs = [] }: {view: Bookma
     const close = () => setOpen(false);
     const mark = () => {
         const verse = choices.find(a => `${a.surah}:${a.numberInSurah}` === selected);
-        save({page:targetPage, view, surah:verse?.surah || SURAH_START_PAGES.reduce((surah, start, index) => start <= targetPage ? index + 1 : surah, 1),
-            ayah:verse?.numberInSurah || 1, precision:verse ? 'verse' : 'page'});
+        saveNamed({page:targetPage, view, surah:verse?.surah || SURAH_START_PAGES.reduce((surah, start, index) => start <= targetPage ? index + 1 : surah, 1),
+            ayah:verse?.numberInSurah || 1, precision:verse ? 'verse' : 'page'}, label);
         setSaved(true); close();
     };
     return <>
         <button className="reading-bookmark-trigger" aria-label="Signet de lecture" title="Signet de lecture"
-            onClick={() => {setTargetPage(page);setSaved(false);setOpen(true);}}>
+            onClick={() => {setTargetPage(page);setLabel('Reprendre ma lecture');setSaved(false);setOpen(true);}}>
             <Bookmark size={19} fill={bookmark?.page === page && bookmark.view === view ? 'currentColor' : 'none'}/>
         </button>
-        {saved && <span className="reading-bookmark-toast" role="status"><Check size={16}/> Signet enregistré · page {targetPage}</span>}
+        {saved && <span className="reading-bookmark-toast" role="status"><Check size={16}/> « {label.trim() || 'Signet'} » · page {targetPage}</span>}
         <dialog ref={dialog} className="reading-bookmark-dialog" aria-labelledby={`bookmark-title-${view}`}
             onCancel={close} onClose={close} onClick={e => {if(e.target === dialog.current) close();}}>
             <div className="reading-bookmark-sheet">
                 <button className="reading-bookmark-close" aria-label="Fermer le signet" onClick={close}><X size={20}/></button>
-                <h2 id={`bookmark-title-${view}`}>Mon signet de lecture</h2>
-                <p>Page {targetPage} · {view === 'mushaf' ? 'Texte interactif' : view === 'madinah' ? 'Madinah' : 'Tajweed'}</p>
+                <h2 id={`bookmark-title-${view}`}>Mes signets de lecture</h2>
+                <p>Page {targetPage} · {view === 'tajweed-interactive' ? 'Tajwid interactif' : view === 'mushaf' ? 'Texte interactif' : view === 'madinah' ? 'Madinah' : 'Tajweed'}</p>
+                <label htmlFor={`bookmark-label-${view}`}>Nom du signet</label>
+                <input id={`bookmark-label-${view}`} className="reading-bookmark-label" value={label} maxLength={48} onChange={e => setLabel(e.target.value)} placeholder="Ex. À mémoriser" />
                 {loading ? <p role="status">Chargement des versets…</p> : choices.length ? <>
                     <label htmlFor={`bookmark-verse-${view}`}>Je m’arrête au verset</label>
                     <select id={`bookmark-verse-${view}`} value={selected} onChange={e => setSelected(e.target.value)}>
                         {choices.map(a => <option key={a.number} value={`${a.surah}:${a.numberInSurah}`}>Sourate {a.surah} · verset {a.numberInSurah} — {a.text.slice(0,45)}</option>)}
                     </select>
                 </> : <p>Texte indisponible : le signet conservera cette page.</p>}
-                <button className="reading-bookmark-save" disabled={loading} onClick={mark}><Bookmark size={18}/> Marquer mon arrêt ici</button>
-                <p className="reading-bookmark-help">Ce signet reste en place jusqu’à ce que vous le remplaciez.</p>
-                {bookmark && <button className="reading-bookmark-resume" onClick={() => {
-                    resumeReadingBookmark(bookmark); close(); navigate('/read');
-                }}>Reprendre mon signet · page {bookmark.page}{bookmark.precision === 'verse' ? ` · ${bookmark.surah}:${bookmark.ayah}` : ''}</button>}
+                <button className="reading-bookmark-save" disabled={loading || !label.trim()} onClick={mark}><Bookmark size={18}/> Enregistrer ce signet</button>
+                {selected && <button className="reading-bookmark-resume" onClick={() => {
+                    const [surah,ayah]=selected.split(':').map(Number);
+                    close();navigate(`/passage?surah=${surah}&ayah=${ayah}&from=read`);
+                }}>Ouvrir la fiche du verset sélectionné</button>}
+                <p className="reading-bookmark-help">Donnez un nom différent à chaque arrêt pour les retrouver facilement.</p>
+                <section className="reading-bookmark-list" aria-label="Signets enregistrés">
+                    <h3>Enregistrés · {bookmarks.length}</h3>
+                    {bookmarks.length === 0 ? <p>Aucun signet pour le moment.</p> : bookmarks.map(item => <article key={item.id || `${item.view}-${item.page}-${item.surah}-${item.ayah}`}>
+                        <div><strong>{item.label || 'Reprendre ma lecture'}</strong><small>Page {item.page}{item.precision === 'verse' ? ` · ${item.surah}:${item.ayah}` : ''}</small></div>
+                        <button aria-label={`Reprendre « ${item.label || 'signet'} »`} title="Reprendre" onClick={() => {resumeReadingBookmark(item);close();navigate('/read');}}><Play size={16}/></button>
+                        <button aria-label={`Supprimer « ${item.label || 'signet'} »`} title="Supprimer ce signet" onClick={() => useReadingBookmarkStore.getState().remove(item.id)}><Trash2 size={16}/></button>
+                    </article>)}
+                </section>
             </div>
         </dialog>
     </>;

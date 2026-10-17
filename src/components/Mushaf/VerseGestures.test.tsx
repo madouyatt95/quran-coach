@@ -14,7 +14,8 @@ import type { Ayah } from '../../types';
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 const ayah = {number:262,surah:2,numberInSurah:255,page:42,text:'اللَّهُ'} as Ayah;
 let div:HTMLDivElement;let root:Root;
-beforeEach(()=>{
+beforeEach(async()=>{
+ await import('../Journeys/StoryContextButton');
  vi.spyOn(window,'scrollTo').mockImplementation(()=>{});
  vi.useFakeTimers();vi.stubGlobal('localStorage',createMemoryStorage());vi.stubGlobal('sessionStorage',createMemoryStorage());
  useReadingBookmarkStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
@@ -102,13 +103,26 @@ it('reveals secondary text actions without playing audio or closing the main act
  await act(async()=>document.querySelector<HTMLButtonElement>('[aria-label="Autres actions"]')!.click());
  expect(document.querySelector('[aria-label="Autres actions"]')?.getAttribute('aria-expanded')).toBe('true');
  const secondary=Array.from(document.querySelectorAll<HTMLButtonElement>('.verse-action-bar__secondary button'));
- expect(secondary.map(b=>b.textContent)).toEqual(['Ajouter aux favoris','Comprendre','Partager']);
- await act(async()=>secondary[0].click());expect(favorite).toHaveBeenCalledOnce();expect(close).not.toHaveBeenCalled();expect(play).not.toHaveBeenCalled();
- await act(async()=>secondary[1].click());expect(understand).toHaveBeenCalledOnce();expect(close).toHaveBeenCalledOnce();expect(share).not.toHaveBeenCalled();
+ expect(secondary.map(b=>b.textContent)).toEqual(['Fiche du verset','Ajouter aux favoris','Comprendre','Partager']);
+ await act(async()=>secondary[1].click());expect(favorite).toHaveBeenCalledOnce();expect(close).not.toHaveBeenCalled();expect(play).not.toHaveBeenCalled();
+ await act(async()=>secondary[2].click());expect(understand).toHaveBeenCalledOnce();expect(close).toHaveBeenCalledOnce();expect(share).not.toHaveBeenCalled();
 });
 it('preserves the sharing shortcut for the facsimile readers',async()=>{
  const share=vi.fn(),close=vi.fn();
  await act(async()=>root.render(<MemoryRouter><VerseActionBar selection={{ayah,x:180,y:500}} view="madinah" onClose={close} onPlay={vi.fn()} onMore={share}/></MemoryRouter>));
  await act(async()=>document.querySelector<HTMLButtonElement>('[aria-label="Autres actions"]')!.click());
  expect(share).toHaveBeenCalledOnce();expect(close).toHaveBeenCalledOnce();expect(document.querySelector('.verse-action-bar__secondary')).toBeNull();
+});
+it('removes the marked verse from its actions without playing audio',async()=>{
+ useReadingBookmarkStore.getState().save({surah:2,ayah:255,page:42,view:'tajweed-interactive',precision:'verse'});
+ const play=vi.fn();await act(async()=>root.render(<MemoryRouter><VerseActionBar selection={{ayah,x:100,y:200}} view="tajweed-interactive" onClose={vi.fn()} onPlay={play}/></MemoryRouter>));
+ const remove=Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='Retirer le signet') as HTMLButtonElement;
+ await act(async()=>remove.click());expect(useReadingBookmarkStore.getState().bookmark).toBeNull();expect(play).not.toHaveBeenCalled();
+});
+it('holds the exact word and suppresses its tap, while retaining verse actions',async()=>{
+ const onWord=vi.fn(),play=vi.fn();
+ function Words(){const press=useVersePress(vi.fn(),3);return <span {...press(ayah,sel=>onWord('2:255:2',sel))} onClick={play}>word</span>;}
+ await act(async()=>root.render(<Words/>));const target=div.querySelector('span')!;
+ await act(async()=>{pointer(target,'pointerdown');vi.advanceTimersByTime(500);pointer(target,'pointerup');target.click();});
+ expect(onWord).toHaveBeenCalledWith('2:255:2',expect.objectContaining({ayah}));expect(play).not.toHaveBeenCalled();
 });

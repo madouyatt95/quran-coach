@@ -1,12 +1,16 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES } from '../../data/quizTypes';
-import type { QuizThemeId } from '../../data/quizTypes';
+import type { QuizThemeId,QuizQuestion } from '../../data/quizTypes';
 
 export function ErrorReviewView() {
     const { setView, wrongQuestions } = useQuizStore();
     const [themeFilter, setThemeFilter] = useState<QuizThemeId | 'all'>('all');
+    const [removed,setRemoved]=useState<QuizQuestion[]>([]);
+    const undo=()=>{useQuizStore.setState(s=>({wrongQuestions:[...new Map([...s.wrongQuestions,...removed].map(q=>[q.id,q])).values()]}));setRemoved([]);};
+    const undoBanner=removed.length?<div className="qx qx-card" role="status">{removed.length} question(s) retirée(s). <button onClick={undo}>Annuler</button></div>:null;
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
     // Group by theme
@@ -29,13 +33,14 @@ export function ErrorReviewView() {
 
     const removeQuestion = (questionId: string) => {
         const store = useQuizStore.getState();
+        setRemoved(store.wrongQuestions.filter(q=>q.id===questionId));
         const updated = store.wrongQuestions.filter(q => q.id !== questionId);
         useQuizStore.setState({ wrongQuestions: updated });
     };
 
     const clearAll = () => {
+        setRemoved(useQuizStore.getState().wrongQuestions);
         useQuizStore.setState({ wrongQuestions: [] });
-        setView('home');
     };
 
     const retryErrors = () => {
@@ -58,7 +63,7 @@ export function ErrorReviewView() {
 
     if (wrongQuestions.length === 0) {
         return (
-            <div className="quiz-container">
+            <div className="quiz-container">{undoBanner}
                 <div className="quiz-header">
                     <button className="quiz-back-btn" onClick={() => setView('home')}>
                         <ArrowLeft size={22} />
@@ -75,7 +80,7 @@ export function ErrorReviewView() {
     }
 
     return (
-        <div className="quiz-container">
+        <div className="quiz-container">{undoBanner}
             <div className="quiz-header">
                 <button className="quiz-back-btn" onClick={() => setView('home')}>
                     <ArrowLeft size={22} />
@@ -155,6 +160,8 @@ export function ErrorReviewView() {
                 {filtered.map((q) => {
                     const theme = getTheme(q.theme);
                     const isExpanded = expandedId === q.id;
+                    const oldRef = q.theme === 'verses' ? /Sourate (\d{1,3}):(\d{1,3})/.exec(q.explanation || '') : null;
+                    const verseRef = q.verseRef || (oldRef ? {surah:Number(oldRef[1]),ayah:Number(oldRef[2])} : null);
                     return (
                         <div
                             key={q.id}
@@ -235,6 +242,7 @@ export function ErrorReviewView() {
                                             💡 {q.explanation}
                                         </div>
                                     )}
+                                    {verseRef && <Link className="quiz-verse-sheet-link" to={`/passage?surah=${verseRef.surah}&ayah=${verseRef.ayah}&from=quiz`}>Ouvrir la fiche du verset {verseRef.surah}:{verseRef.ayah} →</Link>}
                                 </div>
                             )}
                         </div>

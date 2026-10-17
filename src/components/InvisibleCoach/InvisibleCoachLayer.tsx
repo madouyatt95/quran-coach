@@ -8,7 +8,7 @@ import { CoachNudge } from './CoachNudge';
 import { CoachCelebration } from './CoachCelebration';
 
 export function InvisibleCoachLayer() {
-    const { currentIntervention, dismiss, action, snooze } = useInvisibleCoach();
+    const { currentIntervention, dismiss, expire, action, snooze } = useInvisibleCoach();
 
     if (!currentIntervention) return null;
 
@@ -18,6 +18,7 @@ export function InvisibleCoachLayer() {
                 <CoachWhisper
                     intervention={currentIntervention}
                     onDismiss={dismiss}
+                    onExpire={expire}
                     onAction={action}
                 />
             );

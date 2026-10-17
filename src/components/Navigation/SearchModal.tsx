@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Search, BookOpen } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useOpenReader } from '../../hooks/useOpenReader';
 import { useQuranStore } from '../../stores/quranStore';
 import { searchQuran, fetchSurahs } from '../../lib/quranApi';
 import type { Ayah, Surah } from '../../types';
@@ -17,8 +17,8 @@ type SearchTab = 'all' | 'surah' | 'ayah';
 const POPULAR_SURAHS = [1, 2, 18, 36, 55, 67, 78, 112, 114];
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
-    const navigate = useNavigate();
-    const { surahs, setSurahs, goToSurah, goToAyah } = useQuranStore();
+    const openReader = useOpenReader('Recherche');
+    const { surahs, setSurahs } = useQuranStore();
 
     const [query, setQuery] = useState('');
     const [activeTab, setActiveTab] = useState<SearchTab>('all');
@@ -58,15 +58,13 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }, [query, performSearch]);
 
     const handleSurahClick = (surahNum: number) => {
-        goToSurah(surahNum);
         onClose();
-        navigate('/');
+        openReader({ surah: surahNum, ayah: 1 });
     };
 
     const handleResultClick = (result: Ayah) => {
-        goToAyah(result.surah, result.numberInSurah, result.page);
         onClose();
-        navigate('/');
+        openReader({ surah: result.surah, ayah: result.numberInSurah, page: result.page });
     };
 
     const getSurahName = (surahNum: number) => {

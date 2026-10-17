@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-07",
+  "scope": "Local deterministic engine; each call receives the current query only. This is a diagnostic set, not an exhaustive religious validation.",
+  "results": [
+    {
+      "id": "maliki",
+      "question": "Comment faire les ablutions selon l’école malikite ? Donne les références précises des ouvrages utilisés.",
+      "expected": "Respecter l’école demandée et permettre de consulter les références.",
+      "answer": "**Comment faire les ablutions (wudu) ?**\n\nLes ablutions comprennent 4 actes obligatoires : 1) Se laver le visage 2) Se laver les mains et avant-bras jusqu'aux coudes 3) Essuyer la tête 4) Se laver les pieds jusqu'aux chevilles. Il est recommandé de commencer par le côté droit, de laver 3 fois chaque membre, et de dire Bismillah au début.\n\n---\n\n**Comment faire le tayammum ?**\n\nLe Tayammum (ablutions sèches) est autorisé quand l'eau est absente ou nuisible. On frappe la terre une fois avec les deux mains, on essuie le visage, puis on essuie le dos des mains. C'est mentionné dans Sourate An-Nisa (4:43) et Al-Ma'ida (5:6).\n\n---\n\n**📜 Hadiths pertinents :**\n\n> « L'œil est le lien de l'anus (qui retient ce qui s'y trouve) ; ainsi, celui qui s'endort doit refaire ses ablutions. »\n> — *Abu Dawud & Ibn Majah*\n\n> Un homme demanda au Prophète ﷺ : « Devons-nous refaire nos ablutions après avoir mangé de la viande de chameau ? » Il répondit : « Oui. »\n> — *Muslim*\n\n\n---\n\n**📜 Prophètes :**\n\n• **Job (أيُّوب)** : Ibn Kathir rapporte qu'Ayyub était un homme riche, en bonne santé et père de nombreux enfants. Allah l'éprouva : il perdit ses biens, ses enfants, puis fut frappé d'une maladie terrible qui dura 18 an...\n\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [
+        {
+          "type": "faq",
+          "label": "📚 Fiqh"
+        },
+        {
+          "type": "faq",
+          "label": "📚 Fiqh / Coran 4:43"
+        },
+        {
+          "type": "hadith",
+          "label": "Abu Dawud & Ibn Majah",
+          "link": "/hadiths"
+        },
+        {
+          "type": "hadith",
+          "label": "Muslim",
+          "link": "/hadiths"
+        },
+        {
+          "type": "prophet",
+          "label": "Job (أيُّوب)",
+          "link": "/prophets"
+        }
+      ],
+      "fallback": false,
+      "chars": 1468
+    },
+    {
+      "id": "followup-water",
+      "question": "Et si je manque d’eau ? Réponds brièvement avec une référence.",
+      "expected": "Conserver le contexte précédent et traiter le manque d’eau.",
+      "answer": "**Comment faire le tayammum ?**\n\nLe Tayammum (ablutions sèches) est autorisé quand l'eau est absente ou nuisible. On frappe la terre une fois avec les deux mains, on essuie le visage, puis on essuie le dos des mains. C'est mentionné dans Sourate An-Nisa (4:43) et Al-Ma'ida (5:6).\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [
+        {
+          "type": "faq",
+          "label": "📚 Fiqh / Coran 4:43"
+        }
+      ],
+      "fallback": false,
+      "chars": 530
+    },
+    {
+      "id": "followup-source",
+      "question": "Donne-moi la source exacte",
+      "expected": "Renvoyer à la source de la réponse précédente.",
+      "answer": "**📜 Prophètes :**\n\n• **Job (أيُّوب)** : Ibn Kathir rapporte qu'Ayyub était un homme riche, en bonne santé et père de nombreux enfants. Allah l'éprouva : il perdit ses biens, ses enfants, puis fut frappé d'une maladie terrible qui dura 18 an...\n\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [
+        {
+          "type": "prophet",
+          "label": "Job (أيُّوب)",
+          "link": "/prophets"
+        }
+      ],
+      "fallback": false,
+      "chars": 495
+    },
+    {
+      "id": "verse",
+      "question": "Que signifie le verset 2:255 ? Réponds en français en citant un tafsir et son passage.",
+      "expected": "Identifier 2:255 et attribuer son explication à un tafsir.",
+      "answer": "Je n'ai pas trouvé de réponse précise à \"Que signifie le verset 2:255 ? Réponds en français en citant un tafsir et son passage.\". Essayez de reformuler votre question ou utilisez l'onglet **Recherche** pour trouver des hadiths et versets par mot-clé.\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [],
+      "fallback": true,
+      "chars": 500
+    },
+    {
+      "id": "hadith-verification",
+      "question": "Le hadith « Celui qui lit Al-Mulk devient riche en sept jours » est-il authentique ? Donne la référence exacte ou indique si tu ne la trouves pas.",
+      "expected": "Vérifier l’attribution sans inventer une référence ni valider la prémisse.",
+      "answer": "**Quelle sourate protège de la tombe ?**\n\nSourate Al-Mulk (67 - La Royauté, 30 versets). Le Prophète ﷺ a dit : \"Il y a dans le Coran une sourate de 30 versets qui intercède pour celui qui la lit jusqu'à ce qu'il soit pardonné : Tabarak alladhi biyadihil mulk.\" (Abu Dawud, At-Tirmidhi).\n\n---\n\n**📜 Hadiths pertinents :**\n\n> Celui qui jeûne le Ramadan avec foi et espérance de la récompense, ses péchés antérieurs lui seront pardonnés.\n> — *Bukhari & Muslim*\n\n> Celui qui prie la nuit pendant le Ramadan avec foi et espérance, ses péchés antérieurs lui seront pardonnés.\n> — *Bukhari & Muslim*\n\n\n---\n\n**🤲 Invocations :**\n\n• **Pour celui qui vous dit : Qu'Allah te pardonne** : et à toi aussi.\n\n\n---\n\n**📜 Prophètes :**\n\n• **Job (أيُّوب)** : Ibn Kathir rapporte qu'Ayyub était un homme riche, en bonne santé et père de nombreux enfants. Allah l'éprouva : il perdit ses biens, ses enfants, puis fut frappé d'une maladie terrible qui dura 18 an...\n\n• **Dhul-Kifl (ذُو الكِفْل)** : Ibn Kathir mentionne un avis selon lequel Dhul-Kifl serait le fils d'Ayyub, nommé Bishr. D'autres savants considèrent qu'il n'était pas prophète mais un homme pieux. Le Coran le cite parmi les patient...\n\n\n---\n\n**⭐ Compagnons :**\n\n• **'Abd ar-Rahman ibn 'Awf (عبد الرحمن بن عوف)** : 'Abd ar-Rahman ibn 'Awf était l'un des huit premiers convertis et l'un des hommes les plus riches de Médine. En arrivant à Médine lors de la Hijra, il refusa l'aide matérielle proposée par son frère a...\n\n• **Abu Hurayra (أبو هريرة)** : Abu Hurayra (« le père du chaton ») se convertit en l'an 7 de l'Hégire et passa seulement 3 ans avec le Prophète ﷺ, mais devint le plus grand narrateur de hadiths : environ 5 374 hadiths lui sont attr...\n\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [
+        {
+          "type": "faq",
+          "label": "📚 Abu Dawud / At-Tirmidhi"
+        },
+        {
+          "type": "hadith",
+          "label": "Bukhari & Muslim",
+          "link": "/hadiths"
+        },
+        {
+          "type": "hadith",
+          "label": "Bukhari & Muslim",
+          "link": "/hadiths"
+        },
+        {
+          "type": "invocation",
+          "label": "Pour celui qui vous dit : Qu'Allah te pardonne",
+          "link": "/adhkar"
+        },
+        {
+          "type": "prophet",
+          "label": "Job (أيُّوب)",
+          "link": "/prophets"
+        },
+        {
+          "type": "prophet",
+          "label": "Dhul-Kifl (ذُو الكِفْل)",
+          "link": "/prophets"
+        },
+        {
+          "type": "companion",
+          "label": "'Abd ar-Rahman ibn 'Awf (عبد الرحمن بن عوف)"
+        },
+        {
+          "type": "companion",
+          "label": "Abu Hurayra (أبو هريرة)"
+        }
+      ],
+      "fallback": false,
+      "chars": 1952
+    },
+    {
+      "id": "simple",
+      "question": "Explique plus simplement",
+      "expected": "Reformuler la réponse précédente.",
+      "answer": "Je n'ai pas trouvé de réponse précise à \"Explique plus simplement\". Essayez de reformuler votre question ou utilisez l'onglet **Recherche** pour trouver des hadiths et versets par mot-clé.\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [],
+      "fallback": true,
+      "chars": 438
+    },
+    {
+      "id": "app-help",
+      "question": "Comment sauvegarder mon signet ?",
+      "expected": "Donner les gestes réellement disponibles dans Quran Coach.",
+      "answer": "**Comment faire la prière ?**\n\nLa prière comprend : 1) Se mettre debout face à la Qibla 2) Dire 'Allahu Akbar' (Takbir) 3) Réciter Al-Fatiha + une sourate 4) S'incliner (Ruku) en disant 'Subhana Rabbiyal Adhim' 5) Se relever en disant 'Sami Allahu liman hamida' 6) Se prosterner (Sujud) en disant 'Subhana Rabbiyal A'la' 7) S'asseoir brièvement 8) Deuxième prosternation. Cela fait une rak'at. À la fin, on récite le Tashahud et on salue.\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [
+        {
+          "type": "faq",
+          "label": "📚 Fiqh"
+        }
+      ],
+      "fallback": false,
+      "chars": 688
+    },
+    {
+      "id": "memorization",
+      "question": "Je veux mémoriser Al-Mulk en 7 jours",
+      "expected": "Proposer un programme de mémorisation et une action pertinente.",
+      "answer": "**Quelle sourate protège de la tombe ?**\n\nSourate Al-Mulk (67 - La Royauté, 30 versets). Le Prophète ﷺ a dit : \"Il y a dans le Coran une sourate de 30 versets qui intercède pour celui qui la lit jusqu'à ce qu'il soit pardonné : Tabarak alladhi biyadihil mulk.\" (Abu Dawud, At-Tirmidhi).\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [
+        {
+          "type": "faq",
+          "label": "📚 Abu Dawud / At-Tirmidhi"
+        }
+      ],
+      "fallback": false,
+      "chars": 536
+    },
+    {
+      "id": "arabic",
+      "question": "ما هي الصلاة؟",
+      "expected": "Comprendre une question simple en arabe.",
+      "answer": "Je n'ai pas trouvé de réponse précise à \"ما هي الصلاة؟\". Essayez de reformuler votre question ou utilisez l'onglet **Recherche** pour trouver des hadiths et versets par mot-clé.\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [],
+      "fallback": true,
+      "chars": 427
+    },
+    {
+      "id": "alias",
+      "question": "salat",
+      "expected": "Reconnaître le thème ou demander une précision utile.",
+      "answer": "Je n'ai pas trouvé de réponse précise à \"salat\". Essayez de reformuler votre question ou utilisez l'onglet **Recherche** pour trouver des hadiths et versets par mot-clé.\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [],
+      "fallback": true,
+      "chars": 419
+    },
+    {
+      "id": "dated",
+      "question": "Zakat al fitr 2026",
+      "expected": "Distinguer pays et année et ne pas présenter un ancien montant comme actuel.",
+      "answer": "**Quel est le montant de Zakat al-Fitr ?**\n\nZakat al-Fitr est obligatoire à la fin du Ramadan. Le montant est d'environ 9€ par personne cette année en France (ce montant peut varier, veuillez toujours vous référer aux autorités locales compétentes de votre pays). Il est préférable de la donner sous forme de nourriture (un Saa' ≈ 2,5 kg de la nourriture de base) si possible. Elle doit être donnée avant la prière de l'Aïd.\n\n---\n\n**Comment calculer la Zakat ?**\n\nLa Zakat est de 2,5% sur l'épargne qui atteint le seuil (Nissab) pendant un an lunaire. Nissab en or : 85g (environ 5000€). Nissab en argent : 595g. On calcule sur tout ce qu'on possède (argent, or, actions, marchandises) moins les dettes. Les 8 bénéficiaires sont : pauvres, nécessiteux, collecteurs, ceux dont le cœur est à gagner, esclaves, endettés, pour la cause d'Allah, voyageurs.\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [
+        {
+          "type": "faq",
+          "label": "📚 Fiqh"
+        },
+        {
+          "type": "faq",
+          "label": "📚 Fiqh / Coran 9:60"
+        }
+      ],
+      "fallback": false,
+      "chars": 1101
+    },
+    {
+      "id": "emotion",
+      "question": "Je suis triste",
+      "expected": "Répondre avec tact et proposer un contenu réellement pertinent.",
+      "answer": "Je n'ai pas trouvé de réponse précise à \"Je suis triste\". Essayez de reformuler votre question ou utilisez l'onglet **Recherche** pour trouver des hadiths et versets par mot-clé.\n\n---\n\n*⚠️ Avertissement : Les réponses fournies par cette IA proviennent de sources textuelles générales. Pour toute question complexe, doute ou situation personnelle, veuillez impérativement consulter un imam ou une autorité religieuse compétente.*",
+      "sources": [],
+      "fallback": true,
+      "chars": 428
+    }
+  ]
+}

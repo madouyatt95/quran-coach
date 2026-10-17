@@ -5,6 +5,7 @@
 
 import { supabase } from './supabase';
 import { usePrayerStore } from '../stores/prayerStore';
+import { useNotificationStore } from '../stores/notificationStore';
 
 let VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
@@ -155,13 +156,15 @@ export async function updatePushPreferences(prefs: {
             const lat = prefs.latitude !== undefined ? prefs.latitude : prayerState.lat;
             const lng = prefs.longitude !== undefined ? prefs.longitude : prayerState.lng;
             const pSettings = prefs.prayerSettings !== undefined ? prefs.prayerSettings : prayerState.settings;
-            const pConf = prefs.prayerMinutesConfig !== undefined ? prefs.prayerMinutesConfig : {};
+            const notificationState = useNotificationStore.getState();
+            const pConf = prefs.prayerMinutesConfig ?? notificationState.prayerMinutesConfig;
             
-            // Annuler d'abord toutes les notifications en attente
+            // Replace only prayer reminders; preserve adhan and other scheduled notifications.
             try {
                 const pending = await LocalNotifications.getPending();
-                if (pending.notifications.length > 0) {
-                    await LocalNotifications.cancel({ notifications: pending.notifications });
+                const reminders = pending.notifications.filter(n => n.id >= 1000 && n.id < 2000);
+                if (reminders.length > 0) {
+                    await LocalNotifications.cancel({ notifications: reminders });
                 }
             } catch (e) { console.error('Cancel failed', e); }
 
@@ -175,7 +178,7 @@ export async function updatePushPreferences(prefs: {
                 asr: '🌤️', maghrib: '🌅', isha: '🌙',
             };
 
-            if (prefs.prayerEnabled === false || lat == null || lng == null) {
+            if (!notificationState.enabled || !(prefs.prayerEnabled ?? notificationState.prayerEnabled) || lat == null || lng == null) {
                 return true;
             }
 
@@ -190,7 +193,8 @@ export async function updatePushPreferences(prefs: {
                 const result = computeDay(date, lat, lng, pSettings);
 
                 for (const p of prayers) {
-                    const offsetMin = pConf[p] ?? 10; // 10 min par défaut
+                    const offsetMin = pConf[p] ?? notificationState.prayerMinutesBefore;
+                    if (offsetMin === 0 && notificationState.adhanEnabled) continue;
                     const timeStr = result.formattedTimes[p];
                     if (!timeStr) continue;
 
@@ -198,6 +202,7 @@ export async function updatePushPreferences(prefs: {
                     const prayerDate = new Date(date);
                     prayerDate.setHours(h, m, 0, 0);
                     prayerDate.setMinutes(prayerDate.getMinutes() - offsetMin);
+                    if (prayerDate.getTime() <= Date.now()) continue;
 
                     // Exactly matching PWA (Supabase push) format
                     const SUNNAN_HINTS: Record<string, string> = {

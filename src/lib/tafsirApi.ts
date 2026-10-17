@@ -1,3 +1,4 @@
+import { packedResponse } from "./listeningOffline";
 // Tafsir API integration using Quran.com API
 // Documentation: https://api-docs.quran.foundation
 
@@ -118,10 +119,8 @@ async function fetchFrenchTafsir(
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
         // QuranEnc API: https://quranenc.com/api/v1/translation/aya/{resource_id}/{sura_number}/{aya_number}
-        const response = await fetch(
-            `https://quranenc.com/api/v1/translation/aya/${resourceId}/${surah}/${ayah}`,
-            { signal: controller.signal }
-        );
+        const url = `https://quranenc.com/api/v1/translation/aya/${resourceId}/${surah}/${ayah}`;
+        const response = await packedResponse(url) || await fetch(url, { signal: controller.signal });
         clearTimeout(timeoutId);
 
         if (!response.ok) throw new Error('Failed to fetch from QuranEnc');

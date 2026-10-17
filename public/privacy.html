@@ -53,53 +53,42 @@
 </head>
 <body>
     <div class="container">
-        <h1>Politique de Confidentialité</h1>
-        <p class="date">Quran Coach — Dernière mise à jour : 14 mars 2026</p>
+        <h1>Politique de confidentialité</h1>
+        <p class="date">Quran Coach — Mise à jour : 17 octobre 2026</p>
 
-        <h2>1. Introduction</h2>
-        <p>Quran Coach est une application d'apprentissage du Noble Coran. Nous respectons votre vie privée et nous engageons à protéger vos données personnelles.</p>
+        <h2>1. Fonctionnement et stockage local</h2>
 
-        <h2>2. Données collectées</h2>
-        <p>Quran Coach fonctionne <strong>sans inscription</strong> et <strong>sans compte utilisateur</strong>. Nous ne collectons aucune donnée personnelle identifiable.</p>
-        <p>Les données suivantes sont stockées <strong>uniquement sur votre appareil</strong> (stockage local) :</p>
-        <ul>
-            <li>Votre progression de mémorisation</li>
-            <li>Vos résultats de quiz</li>
-            <li>Vos préférences (thème, langue, récitateur préféré)</li>
-            <li>Vos compteurs de dhikr</li>
-            <li>Vos playlists d'écoute</li>
-        </ul>
-        <p>Ces données ne quittent <strong>jamais</strong> votre appareil et ne sont transmises à aucun serveur.</p>
+        <p>Les principales fonctions de Quran Coach sont accessibles sans création de compte. Les signets, positions de lecture, séances et révisions de mémorisation, cours suivis, compteurs d’invocations, préférences et téléchargements sont conservés dans le stockage local. Les widgets iOS lisent une sélection de ces données dans un espace partagé entre l’app et son extension sur le même appareil. Les fonctions collectives peuvent partager les éléments précisés ci-dessous lorsque vous les utilisez.</p>
 
-        <h2>3. Services tiers</h2>
-        <p>L'application utilise les services suivants pour le contenu :</p>
-        <ul>
-            <li><strong>MP3Quran.net</strong> — Récitations audio du Coran</li>
-            <li><strong>Archive.org</strong> — Hébergement de fichiers audio</li>
-            <li><strong>API Aladhan</strong> — Horaires de prière et direction de la Qibla</li>
-        </ul>
-        <p>Ces services ont leurs propres politiques de confidentialité. Aucune donnée personnelle ne leur est transmise.</p>
+        <h2>Synchronisation facultative de vos progrès</h2>
 
-        <h2>4. Géolocalisation</h2>
-        <p>L'application peut demander l'accès à votre position géographique pour :</p>
-        <ul>
-            <li>Calculer les horaires de prière</li>
-            <li>Déterminer la direction de la Qibla</li>
-        </ul>
-        <p>Cette donnée est traitée localement et n'est jamais enregistrée ni transmise.</p>
+        <p>Depuis les réglages, vous pouvez choisir de synchroniser vos progrès, positions de lecture, signets, favoris, notes personnelles, parcours et préférences entre vos appareils. L’activation nécessite votre accord et une connexion par code email. Votre adresse email et les informations techniques de connexion sont traitées par Supabase pour gérer votre compte ; Resend traite l’adresse destinataire et l’email contenant le code de connexion.</p>
 
-        <h2>5. Publicité et suivi</h2>
-        <p>Quran Coach ne contient <strong>aucune publicité</strong> et n'utilise <strong>aucun outil de suivi</strong> (analytics, trackers, pixels).</p>
+        <p>Le contenu de la sauvegarde est chiffré sur votre appareil avant son envoi à Supabase, puis associé à votre compte avec une révision et une date de mise à jour. La phrase secrète de chiffrement reste en mémoire pendant la session et n’est pas envoyée au serveur. Conservez-la : le contenu chiffré ne peut pas être déchiffré sans cette phrase. Vos coordonnées GPS, jetons de connexion et téléchargements audio ou polices ne font pas partie de cette sauvegarde. Une copie locale des versions précédant une importation ou un rapprochement peut être conservée pour récupération.</p>
 
-        <h2>6. Données des enfants</h2>
-        <p>L'application est adaptée à tous les âges. Nous ne collectons aucune donnée de mineurs ni d'adultes.</p>
+        <p>Vous pouvez verrouiller la synchronisation ou déconnecter l’appareil dans les réglages. Cela arrête les transferts depuis cet appareil sans supprimer les données déjà conservées dans votre espace en ligne. Pour demander leur suppression, contactez-nous selon la rubrique « Vos choix et demandes ». Les sauvegardes exportées par fichier sont des fichiers personnels non chiffrés : leur conservation et leur transfert restent à votre initiative.</p>
 
-        <h2>7. Modifications</h2>
-        <p>Cette politique peut être mise à jour. Les modifications seront publiées sur cette page.</p>
+        <h2>2. Statistiques d’utilisation</h2>
 
-        <h2>8. Contact</h2>
-        <p>Pour toute question concernant cette politique, contactez-nous à :<br>
-        <a href="mailto:contact@qurancoach.app">contact@qurancoach.app</a></p>
+        <p>L’app envoie à son service Supabase des événements d’usage : ouverture, pages consultées, actions, recherches saisies, passages et récitateurs écoutés ou contenus consultés. Ces événements peuvent comprendre le type d’appareil ou de navigateur, la taille d’écran et la langue. Un identifiant aléatoire persistant permet de rapprocher les événements d’un même appareil. Ces statistiques sont pseudonymes et servent à comprendre l’utilisation et à améliorer le service. L’app ne contient pas de publicité et n’utilise pas cet identifiant pour un suivi publicitaire entre les applications.</p>
+
+        <h2>3. Quiz et cercles de lecture</h2>
+
+        <p>Les duels, classements et cercles utilisent Supabase pour les informations nécessaires à leur fonctionnement : identifiant de joueur ou d’appareil, nom ou pseudonyme choisi, avatar, scores, réponses ou état de partie, nom et objectif du cercle, participation, pages déclarées et activités partagées. Un pseudonyme suffit. Les informations de classement sont présentées dans les classements et celles d’un cercle à ses participants selon les écrans de l’app. Effacer le stockage local ne supprime pas automatiquement les données déjà partagées en ligne.</p>
+
+        <h2>4. Localisation et microphone</h2>
+
+        <p>Avec votre autorisation, la position permet les horaires, la Qibla, les recherches de mosquées et les informations liées au lieu. La dernière position et la ville peuvent être conservées localement. Certaines requêtes transmettent les coordonnées nécessaires aux fournisseurs de mosquées, de géocodage ou de météo. Certaines recherches arrondissent les coordonnées avant envoi. Les termes d’une recherche de ville sont transmis au service de géocodage.</p>
+
+        <p>Le microphone est utilisé depuis une commande de l’utilisateur, après autorisation du système. Selon la fonction et le moteur, la reconnaissance s’effectue sur l’appareil, via le système ou en ligne. La transcription en ligne peut transmettre l’enregistrement ou le fichier choisi au service de Quran Coach et au moteur configuré sur Hugging Face/Gradio pour produire une transcription et identifier un passage. Ce traitement n’est pas présenté comme exclusivement local.</p>
+
+        <h2>5. Services tiers et hébergement</h2>
+
+        <p>Les fonctions utilisent notamment Vercel pour l’hébergement, Supabase pour les statistiques, les fonctions collectives et la synchronisation facultative, Resend pour les emails de connexion, Quran.com/Quran Foundation et QUL/Tarteel pour des ressources coraniques, MP3Quran et Archive.org pour des audios, OpenStreetMap/Overpass et OpenFreeMap pour les cartes et mosquées, BigDataCloud pour le nom du lieu et Open-Meteo pour la météo. Les sources d’horaires varient selon la mosquée. Ces services reçoivent les informations nécessaires aux requêtes et les informations techniques habituelles d’une connexion, dont l’adresse IP. Leurs propres politiques et modalités s’appliquent également. Les permissions, sauvegardes et services système Apple relèvent aussi des réglages et conditions Apple.</p>
+
+        <h2 id="vos-choix">6. Vos choix et demandes</h2>
+
+        <p>Vous pouvez choisir une ville manuellement et retirer les autorisations de localisation ou de microphone dans les réglages de l’appareil. Les fonctions collectives sont facultatives. Les données et téléchargements locaux peuvent être gérés depuis l’app ou le système ; leur effacement peut supprimer la progression locale. Pour une question ou une demande d’accès, de rectification ou de suppression concernant des données conservées par le service, contactez <a href="mailto:contact@qurancoach.app">contact@qurancoach.app</a> en précisant la fonction et le pseudonyme concernés, sans transmettre de mot de passe. Les données traitées par les services tiers restent soumises à leurs modalités.</p>
 
         <div class="footer">
             © 2026 Quran Coach. Tous droits réservés.

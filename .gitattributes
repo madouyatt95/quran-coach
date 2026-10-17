@@ -1,0 +1,8 @@
+# Preserve packaged application assets byte for byte.
+*.pdf binary
+*.mp3 binary
+*.caf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary

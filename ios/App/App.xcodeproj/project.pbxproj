@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD3150000000000000000001 /* QuranCoachWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3150000000000000000003; };
+		CD3150000000000000000002 /* QuranCoachWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3150000000000000000003; };
+		CD3140000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CD3140000000000000000003; };
+		CD3140000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CD3140000000000000000003; };
+		0FA1B6A7C2EB7D30073785FD /* SpeechRecognitionCapacitor8.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF4BA4C2F04F5DDAD12B0D42 /* SpeechRecognitionCapacitor8.swift */; };
+		19776C437D4D176C374387AC /* QuranCoachCarPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE041D80B299DA87DA2DEC /* QuranCoachCarPlugin.swift */; };
+		1B4B6379DA8CFCAA87AD31DA /* QuranCoachWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 63BC5BE66D5422B0BADC3028 /* QuranCoachWidgets.appex */; };
+		2DBC803E54591DB8D05DF674 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 633CDEF8EEFBBA7F8FFE621F /* Foundation.framework */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
@@ -15,9 +23,42 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		7F901ABCE2CC9B3D524BF040 /* QuranCoachBridgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D710351AB019B65825A20D1 /* QuranCoachBridgeViewController.swift */; };
+		9EF788DC33135D99D7B09FAC /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710367487D09141C8F15B169 /* Plugin.swift */; };
+		ADAB00000000000000000001 /* adhan-ahmed-1.caf in Resources */ = {isa = PBXBuildFile; fileRef = ADAA00000000000000000001 /* adhan-ahmed-1.caf */; };
+		ADAB00000000000000000002 /* adhan-ahmed-2.caf in Resources */ = {isa = PBXBuildFile; fileRef = ADAA00000000000000000002 /* adhan-ahmed-2.caf */; };
+		ADAB00000000000000000003 /* adhan-ahmed-fajr.caf in Resources */ = {isa = PBXBuildFile; fileRef = ADAA00000000000000000003 /* adhan-ahmed-fajr.caf */; };
+		D5B9C8B4C2104B7ED312EEDE /* QuranCoachWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7447242723C776BD158B9A71 /* QuranCoachWidgets.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0B8898CBAE9689CE6E2CA90B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B5C10444B7E97DDCADA057D;
+			remoteInfo = QuranCoachWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FA39EB26ABF4790BE1262BE8 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1B4B6379DA8CFCAA87AD31DA /* QuranCoachWidgets.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		CD3150000000000000000003 /* QuranCoachWidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/QuranCoachWidgetData.swift; sourceTree = SOURCE_ROOT; };
+		CD3140000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
+		11AE041D80B299DA87DA2DEC /* QuranCoachCarPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuranCoachCarPlugin.swift; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -27,7 +68,16 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
+		5D710351AB019B65825A20D1 /* QuranCoachBridgeViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuranCoachBridgeViewController.swift; sourceTree = "<group>"; };
+		633CDEF8EEFBBA7F8FFE621F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		63BC5BE66D5422B0BADC3028 /* QuranCoachWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = QuranCoachWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		710367487D09141C8F15B169 /* Plugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Plugin.swift; path = "../../../node_modules/@capacitor-community/speech-recognition/ios/Plugin/Plugin.swift"; sourceTree = "<group>"; };
+		7447242723C776BD158B9A71 /* QuranCoachWidgets.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuranCoachWidgets.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		ADAA00000000000000000001 /* adhan-ahmed-1.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "adhan-ahmed-1.caf"; sourceTree = "<group>"; };
+		ADAA00000000000000000002 /* adhan-ahmed-2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "adhan-ahmed-2.caf"; sourceTree = "<group>"; };
+		ADAA00000000000000000003 /* adhan-ahmed-fajr.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "adhan-ahmed-fajr.caf"; sourceTree = "<group>"; };
+		FF4BA4C2F04F5DDAD12B0D42 /* SpeechRecognitionCapacitor8.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionCapacitor8.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,15 +89,42 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		743FFD97230206E79819EECB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DBC803E54591DB8D05DF674 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1704C56093A51F2CEDD02A75 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				633CDEF8EEFBBA7F8FFE621F /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		467FD20BED45B75DDBACC3E3 /* QuranCoachWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				7447242723C776BD158B9A71 /* QuranCoachWidgets.swift */,
+			);
+			name = QuranCoachWidgets;
+			path = QuranCoachWidgets;
+			sourceTree = "<group>";
+		};
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
+				467FD20BED45B75DDBACC3E3 /* QuranCoachWidgets */,
 				504EC3051FED79650016851F /* Products */,
+				B008399F0A9C74507EA540D5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -55,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				63BC5BE66D5422B0BADC3028 /* QuranCoachWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -62,7 +140,11 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
+				ADAA00000000000000000003 /* adhan-ahmed-fajr.caf */,
+				ADAA00000000000000000002 /* adhan-ahmed-2.caf */,
+				ADAA00000000000000000001 /* adhan-ahmed-1.caf */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
+				CD3150000000000000000003 /* QuranCoachWidgetData.swift */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
@@ -70,13 +152,42 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				5D710351AB019B65825A20D1 /* QuranCoachBridgeViewController.swift */,
+				11AE041D80B299DA87DA2DEC /* QuranCoachCarPlugin.swift */,
+				FF4BA4C2F04F5DDAD12B0D42 /* SpeechRecognitionCapacitor8.swift */,
+				710367487D09141C8F15B169 /* Plugin.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		B008399F0A9C74507EA540D5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1704C56093A51F2CEDD02A75 /* iOS */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2B5C10444B7E97DDCADA057D /* QuranCoachWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ACEC74526FC7C7773503B11F /* Build configuration list for PBXNativeTarget "QuranCoachWidgets" */;
+			buildPhases = (
+				7FF11C726CEAEDECA326D51E /* Sources */,
+				743FFD97230206E79819EECB /* Frameworks */,
+				6FC33CA278BF00682E669112 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QuranCoachWidgets;
+			productName = QuranCoachWidgets;
+			productReference = 63BC5BE66D5422B0BADC3028 /* QuranCoachWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		504EC3031FED79650016851F /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
@@ -84,10 +195,12 @@
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
+				FA39EB26ABF4790BE1262BE8 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E27BCA6A1797C68EB5245AC7 /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -130,6 +243,7 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				2B5C10444B7E97DDCADA057D /* QuranCoachWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -139,12 +253,24 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD3140000000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
+				ADAB00000000000000000003 /* adhan-ahmed-fajr.caf in Resources */,
+				ADAB00000000000000000002 /* adhan-ahmed-2.caf in Resources */,
+				ADAB00000000000000000001 /* adhan-ahmed-1.caf in Resources */,
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
 				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6FC33CA278BF00682E669112 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD3140000000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,11 +281,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD3150000000000000000001 /* QuranCoachWidgetData.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				7F901ABCE2CC9B3D524BF040 /* QuranCoachBridgeViewController.swift in Sources */,
+				19776C437D4D176C374387AC /* QuranCoachCarPlugin.swift in Sources */,
+				0FA1B6A7C2EB7D30073785FD /* SpeechRecognitionCapacitor8.swift in Sources */,
+				9EF788DC33135D99D7B09FAC /* Plugin.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7FF11C726CEAEDECA326D51E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD3150000000000000000002 /* QuranCoachWidgetData.swift in Sources */,
+				D5B9C8B4C2104B7ED312EEDE /* QuranCoachWidgets.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E27BCA6A1797C68EB5245AC7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = QuranCoachWidgets;
+			target = 2B5C10444B7E97DDCADA057D /* QuranCoachWidgets */;
+			targetProxy = 0B8898CBAE9689CE6E2CA90B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC30B1FED79650016851F /* Main.storyboard */ = {
@@ -181,6 +330,29 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		39D52DB51AB5EA1991684897 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = QuranCoachWidgets/QuranCoachWidgetsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = A3PR55X9BY;
+				CURRENT_PROJECT_VERSION = 11;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = QuranCoachWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app.QuranCoachWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		504EC3141FED79650016851F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
@@ -230,7 +402,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -281,7 +453,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -295,15 +467,17 @@
 			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A3PR55X9BY;
+				CURRENT_PROJECT_VERSION = 11;
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -317,15 +491,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A3PR55X9BY;
+				CURRENT_PROJECT_VERSION = 11;
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -333,6 +509,28 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
+		};
+		F35001478655F0A8EF383FA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = QuranCoachWidgets/QuranCoachWidgetsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = A3PR55X9BY;
+				CURRENT_PROJECT_VERSION = 11;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = QuranCoachWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app.QuranCoachWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -351,6 +549,15 @@
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
 				504EC3181FED79650016851F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ACEC74526FC7C7773503B11F /* Build configuration list for PBXNativeTarget "QuranCoachWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				39D52DB51AB5EA1991684897 /* Release */,
+				F35001478655F0A8EF383FA1 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

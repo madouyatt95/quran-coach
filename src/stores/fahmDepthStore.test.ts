@@ -1,0 +1,12 @@
+// @vitest-environment jsdom
+import {beforeEach,it,expect,vi,afterEach} from 'vitest';
+import {createJSONStorage} from 'zustand/middleware';
+import {createMemoryStorage} from '../test/memoryStorage';
+import {useFahmLearningStore as store} from './fahmLearningStore';
+import {useStatsStore as stats} from './statsStore';
+let storage:Storage;
+beforeEach(()=>{vi.useFakeTimers();storage=createMemoryStorage();store.persist.setOptions({storage:createJSONStorage(()=>storage)});stats.persist.setOptions({storage:createJSONStorage(()=>storage)});store.setState({checks:{},drafts:{},listening:{},records:{},positions:{},studied:{},words:{},session:null,lastLesson:null});});
+afterEach(()=>vi.useRealTimers());
+it('restores the exact exercise step, fixed word, choices, selected expression and help state',async()=>{store.getState().setMode('surah/1','listen');store.getState().draft('surah/1:1:5',{stage:2,wordKey:'1:5:1',choice:'Toi',meaningChoice:0,evidence:'C’est Toi que nous adorons.',compared:true});store.getState().listenDraft('listen:1:5',{help:2,heard:true,choice:1,wrong:true,seenText:true});const saved=storage.getItem('quran-coach-fahm-learning-v1');store.setState({drafts:{},listening:{}});storage.setItem('quran-coach-fahm-learning-v1',saved!);await store.persist.rehydrate();expect(store.getState().drafts['surah/1:1:5']).toMatchObject({stage:2,wordKey:'1:5:1',meaningChoice:0,evidence:'C’est Toi que nous adorons.',compared:true});expect(store.getState().modes['surah/1']).toBe('listen');expect(store.getState().listening['listen:1:5']).toMatchObject({help:2,wrong:true,seenText:true});});
+it('legacy persisted progress hydrates without resetting notes or gaining fictitious mastery',async()=>{storage.setItem('quran-coach-fahm-learning-v1',JSON.stringify({state:{records:{'1:1':{surah:1,ayah:1,note:'Note conservée',correct:true,attempts:3}},positions:{'discover/1':3}},version:0}));await store.persist.rehydrate();expect(store.getState().records['1:1'].note).toBe('Note conservée');expect(store.getState().checks).toEqual({});expect(store.getState().positions['discover/1']).toBe(3);});
+it('resetting practice preserves answers, notes and scheduled recall evidence',()=>{store.getState().note({surah:1,ayah:1},'Ma note');store.getState().check('word:1:1:1',{surah:1,ayah:1},false);store.getState().draft('x',{stage:2,completed:true});store.getState().resetExercise('x');expect(store.getState().drafts.x.stage).toBe(0);expect(store.getState().records['1:1'].note).toBe('Ma note');expect(store.getState().checks['word:1:1:1'].attempts).toBe(1);});

@@ -1,3 +1,4 @@
+import { AdhanSettings } from '../components/Prayer/AdhanSettings';
 /**
  * PrayerSettingsPage — Advanced prayer calculation settings.
  */
@@ -61,7 +62,7 @@ export function PrayerSettingsPage() {
             };
             sync().catch(err => console.error('[PrayerSettings] Sync error:', err));
         }
-    }, [s, nc, notifStore.enabled]);
+    }, [s, nc, notifStore.enabled, notifStore.adhanEnabled]);
 
     return (
         <div className="prayer-settings-page">
@@ -362,22 +363,7 @@ export function PrayerSettingsPage() {
                     </div>
                 </div>
 
-                {/* Adhan Sound */}
-                <div className="ps-section">
-                    <div className="ps-section__title">🔊 {t('prayerSettings.adhanSound', "Son de l'Adhan")}</div>
-                    <div className="ps-section__desc">{t('prayerSettings.adhanSoundDesc', "Choisir le muezzin pour les notifications")}</div>
-                    <div className="ps-presets ps-presets--small">
-                        {['Mecque', 'Médine', 'Al-Aqsa', 'Égypte', 'Turquie', 'Maroc'].map((sound) => (
-                            <button
-                                key={sound}
-                                className={`ps-toggle ${notifStore.adhanSound === sound ? 'ps-toggle--active' : ''}`}
-                                onClick={() => notifStore.setAdhanSound(sound)}
-                            >
-                                {t(`prayerSettings.sounds.${sound.toLowerCase().replace('-', '')}`, sound)}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                <AdhanSettings />
             </div>
         </div>
     );

@@ -1,6 +1,8 @@
 // Quiz Duel — Types
 
 export type QuizView =
+    | 'study'
+    | 'investigations' | 'studio'
     | 'home'        // Mode Selection (Solo, Duel, etc.) + Difficulty
     | 'solo-themes' // Theme selection (only for Solo)
     | 'custom-duel' // Theme selection for custom duel (Teacher mode)
@@ -24,11 +26,13 @@ export type QuizMode = 'solo' | 'duel' | 'sprint' | 'revision' | 'daily' | 'sira
 export interface QuizQuestion {
     id: string;
     theme: QuizThemeId;
+    verseRef?: { surah: number; ayah: number }; // Exact Quran source when the question concerns one verse
     questionAr?: string;       // Arabic text (verse, dua, etc.)
     questionFr: string;        // Question text in French
     choices: string[];         // 2-4 answer choices
     correctIndex: number;      // Index of correct answer
     explanation?: string;      // Brief explanation shown after answer
+    sourceLink?: { label: string; href: string };
     audioUrl?: string;         // Optional audio snippet URL
 }
 
@@ -199,7 +203,7 @@ export const BADGES: Badge[] = [
     { id: 'duel_champion', name: 'Champion', nameAr: 'البطل', description: 'Gagne 10 duels', emoji: '👑', condition: '10 duels gagnés' },
     { id: 'marathon', name: 'Marathonien', nameAr: 'الماراثون', description: 'Joue 50 parties au total', emoji: '🏃', condition: '50 quizzes' },
     { id: 'sprint_30', name: 'Sprinter Pro', nameAr: 'عداء محترف', description: '30 bonnes réponses en mode Sprint', emoji: '🚀', condition: '30 en sprint' },
-    { id: 'all_themes', name: 'Polyvalent', nameAr: 'متعدد', description: 'Joue les 6 thèmes', emoji: '🌟', condition: '6 thèmes joués' },
+    { id: 'all_themes', name: 'Polyvalent', nameAr: 'متعدد', description: 'Joue les 15 thèmes', emoji: '🌟', condition: '15 thèmes joués' },
     { id: 'scholar', name: 'Érudit', nameAr: 'العالم', description: '500 bonnes réponses au total', emoji: '🎓', condition: '500 correct' },
 ];
 

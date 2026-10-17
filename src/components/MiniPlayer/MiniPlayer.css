@@ -1,455 +1,268 @@
-/* ========================================
-   Mini Player - Minimized Pill
-   ======================================== */
+.mini-player,
 .mini-player-pill {
-    position: fixed;
-    bottom: 80px;
-    right: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: #fff;
-    border-radius: 50px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    z-index: 500;
-    cursor: pointer;
-    overflow: hidden;
-    transition: transform 0.2s ease;
-    animation: pill-enter 0.3s ease;
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height, 72px) + 8px);
+  z-index: 500;
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  border: 1px solid
+    color-mix(in srgb, var(--color-text-secondary) 22%, transparent);
+  box-shadow: 0 12px 40px #0005;
+  font-size: 0.85rem;
 }
-
-.mini-player-pill:active {
-    transform: scale(0.95);
-}
-
-.mini-player-pill__progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #4CAF50, #66BB6A);
-    border-radius: 0 2px 0 0;
-    transition: width 0.3s linear;
-}
-
-.mini-player-pill__play {
-    background: #4CAF50;
-    border: none;
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    cursor: pointer;
-}
-
-.mini-player-pill__name {
-    font-family: var(--font-arabic, 'Scheherazade New', serif);
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #333;
-    max-width: 120px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mini-player-pill__expand {
-    color: #bbb;
-    flex-shrink: 0;
-}
-
-@keyframes pill-enter {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.8);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Dark theme */
-[data-theme="dark"] .mini-player-pill {
-    background: #1a1a2e;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="dark"] .mini-player-pill__play {
-    background: #66BB6A;
-    color: #111;
-}
-
-[data-theme="dark"] .mini-player-pill__name {
-    color: #e8e0d4;
-}
-
-[data-theme="dark"] .mini-player-pill__expand {
-    color: #666;
-}
-
-/* ========================================
-   Mini Player - Persistent Audio Controls
-   ======================================== */
 .mini-player {
-    position: fixed;
-    bottom: 72px;
-    /* Above BottomNav */
-    left: 0;
-    right: 0;
-    background: #fff;
-    border-top: 1px solid #e8e4da;
-    z-index: 500;
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
-    transition: height 0.3s ease;
+  left: 12px;
+  right: 12px;
+  max-width: 740px;
+  margin: auto;
+  border-radius: 20px;
+  overflow: hidden;
+  max-height: calc(
+    100dvh - var(--bottom-nav-height, 72px) - env(safe-area-inset-top, 0px) -
+      28px
+  );
+  display: flex;
+  flex-direction: column;
 }
-
-/* Progress bar */
+.mini-player * {
+  box-sizing: border-box;
+}
+.mini-player button,
+.mini-player-pill button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  min-height: 40px;
+  padding: 8px;
+  border-radius: 10px;
+}
+.mini-player button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.mini-player button:hover {
+  background: var(--nav-selected);
+}
+.mini-player :focus-visible,
+.mini-player-pill :focus-visible {
+  outline: 2px solid var(--nav-accent);
+  outline-offset: -2px;
+}
 .mini-player__progress {
-    height: 4px;
-    background: #e8e4da;
-    position: relative;
-    cursor: pointer;
+  height: 3px;
+  background: #8b6bb51a;
+  flex-shrink: 0;
 }
-
-.mini-player__progress:hover {
-    height: 6px;
+.mini-player__progress span {
+  display: block;
+  height: 100%;
+  background: var(--nav-accent);
+  transition: width 0.2s linear;
 }
-
-.mini-player__progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #4CAF50, #66BB6A);
-    transition: width 0.3s linear;
-    border-radius: 0 2px 2px 0;
-}
-
-/* Main compact row */
 .mini-player__main {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 9px 12px;
+  flex-shrink: 0;
 }
-
-.mini-player__info {
-    flex: 1;
-    min-width: 0;
-    cursor: pointer;
+.mini-player .mini-player__info {
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
 }
-
-.mini-player__surah {
-    font-family: var(--font-arabic, 'Scheherazade New', serif);
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.mini-player__info strong,
+.mini-player__info small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
-
-.mini-player__detail {
-    font-size: 0.75rem;
-    color: #888;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.mini-player__info strong {
+  font-size: 0.94rem;
 }
-
-/* Controls */
-.mini-player__controls {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    flex-shrink: 0;
+.mini-player__info small {
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+  margin-top: 4px;
 }
-
-.mini-player__btn {
-    background: none;
-    border: none;
-    color: #555;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
+.mini-player .mini-player__play,
+.mini-player-pill .mini-player__play {
+  background: var(--nav-accent);
+  color: var(--color-bg-primary);
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin: 0 3px;
 }
-
-.mini-player__btn:hover {
-    background: rgba(0, 0, 0, 0.05);
+.mini-player__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 16px 16px;
+  min-height: 0;
 }
-
-.mini-player__btn.active {
-    color: #4CAF50;
-    background: rgba(76, 175, 80, 0.1);
+.mini-player__seek input {
+  width: 100%;
+  accent-color: var(--nav-accent);
+  margin: 8px 0 0;
+  height: 22px;
+  cursor: pointer;
 }
-
-.mini-player__btn--play {
-    background: #4CAF50;
-    color: #fff;
-    width: 36px;
-    height: 36px;
+.mini-player__times {
+  display: flex;
+  justify-content: space-between;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
 }
-
-.mini-player__btn--play:hover {
-    background: #43A047;
+.mini-player__transport {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
 }
-
-.mini-player__btn--close {
-    color: #bbb;
+.mini-player__transport button {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
 }
-
-.mini-player__btn--close:hover {
-    color: #e74c3c;
+.mini-player__transport button[aria-pressed="true"] {
+  color: var(--nav-accent);
+  background: var(--nav-selected);
 }
-
-.mini-player__btn--expand {
-    color: #bbb;
+.mini-player__settings {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 12px;
 }
-
-.mini-player__btn--minimize {
-    color: #bbb;
+.mini-player__settings label {
+  display: grid;
+  gap: 7px;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
 }
-
-/* Expanded content area (replaces ayah-list for clarity) */
-.mini-player__expanded-content {
-    display: flex;
-    flex-direction: column;
-    max-height: 400px;
+.mini-player__settings select {
+  width: 100%;
+  min-width: 0;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border: 1px solid #8b6bb54a;
+  font: inherit;
+  font-size: 0.8rem;
+  border-radius: 10px;
+  padding: 10px 6px;
+  min-height: 42px;
 }
-
-.mini-player__time-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 16px;
-    font-size: 0.7rem;
-    color: #999;
+.mini-player__tools {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 14px 0;
 }
-
-.mini-player__scroll {
-    max-height: 280px;
-    overflow-y: auto;
-    padding: 4px 0;
-    -webkit-overflow-scrolling: touch;
+.mini-player__tools > button,
+.mini-player__tools > a {
+  color: inherit;
+  text-decoration: none;
+  border-radius: 10px;
+  border: 1px solid #8b6bb530;
+  font-size: 0.75rem;
+  padding: 9px;
 }
-
-
-/* ========================================
-   Dark Theme
-   ======================================== */
-[data-theme="dark"] .mini-player {
-    background: #1a1a2e;
-    border-top-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
+.mini-player__hint {
+  font-size: 0.72rem;
+  color: var(--nav-accent);
+  line-height: 1.5;
+  margin: 8px 0;
 }
-
-[data-theme="dark"] .mini-player__progress {
-    background: rgba(255, 255, 255, 0.08);
+.mini-player__queue-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  border-top: 1px solid #8b6bb530;
+  padding-top: 10px;
 }
-
-[data-theme="dark"] .mini-player__surah {
-    color: #e8e0d4;
+.mini-player__queue-title button {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
 }
-
-[data-theme="dark"] .mini-player__detail {
-    color: #888;
+.mini-player__queue {
+  max-height: 190px;
+  overflow: auto;
+  padding: 0;
+  margin: 4px 0;
+  list-style: none;
 }
-
-[data-theme="dark"] .mini-player__btn.active {
-    color: #66BB6A;
-    background: rgba(102, 187, 106, 0.15);
+.mini-player__queue li {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
 }
-
-[data-theme="dark"] .mini-player__btn {
-    color: #ccc;
+.mini-player__queue li[aria-current] {
+  background: var(--nav-selected);
+  color: var(--nav-accent);
 }
-
-[data-theme="dark"] .mini-player__btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+.mini-player__queue li > button:first-child {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
 }
-
-[data-theme="dark"] .mini-player__btn--play {
-    background: #66BB6A;
-    color: #111;
+.mini-player__queue strong {
+  font-size: 0.78rem;
+  font-weight: 500;
 }
-
-[data-theme="dark"] .mini-player__btn--close {
-    color: #666;
+.mini-player__queue small {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--color-text-secondary);
+  margin-top: 3px;
 }
-
-
-[data-theme="dark"] .mini-player__time-row {
-    color: #666;
+.mini-player__queue li > button:last-child {
+  flex-shrink: 0;
 }
-
-/* Queue badge in compact view */
-.mini-player__queue-badge {
-    display: inline-block;
-    margin-left: 6px;
-    padding: 1px 7px;
-    border-radius: 10px;
-    background: rgba(76, 175, 80, 0.15);
-    color: #4CAF50;
-    font-size: 0.68rem;
-    font-weight: 600;
-    vertical-align: middle;
+.mini-player__error {
+  padding: 10px 16px;
+  background: #b6404020;
+  color: var(--color-text-primary);
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
-
-[data-theme="dark"] .mini-player__queue-badge {
-    background: rgba(102, 187, 106, 0.15);
-    color: #66BB6A;
+.mini-player__error button {
+  color: var(--nav-accent);
+  text-decoration: underline;
 }
-
-/* ========================================
-   Tabs (Versets / File d'attente)
-   ======================================== */
-.mini-player__tabs-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #4CAF50;
-    background: rgba(76, 175, 80, 0.05);
-    border-bottom: 1px solid rgba(76, 175, 80, 0.1);
+.mini-player-pill {
+  right: 12px;
+  max-width: calc(100vw - 24px);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  border-radius: 40px;
+  padding: 6px;
 }
-
-[data-theme="dark"] .mini-player__tabs-header {
-    color: #66BB6A;
-    background: rgba(102, 187, 106, 0.05);
-    border-bottom-color: rgba(102, 187, 106, 0.1);
+.mini-player-pill > button:last-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8rem;
 }
-
-/* ========================================
-   Queue Items
-   ======================================== */
-.mini-player__queue-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    transition: background 0.15s;
-}
-
-.mini-player__queue-item:hover {
-    background: rgba(0, 0, 0, 0.03);
-}
-
-.mini-player__queue-item.active {
-    background: rgba(76, 175, 80, 0.08);
-    border-left: 3px solid #4CAF50;
-}
-
-.mini-player__queue-names {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-
-.mini-player__queue-trans {
-    font-weight: 600;
-    color: #333;
-    font-size: 0.95rem;
-}
-
-.mini-player__queue-ar {
-    font-family: var(--font-arabic, 'Scheherazade New', serif);
-    font-size: 1rem;
-    color: #4CAF50;
-}
-
-.mini-player__queue-num {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #f0ede6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #888;
-}
-
-.mini-player__queue-info {
-    flex: 1;
-    min-width: 0;
-}
-
-[data-theme="dark"] .mini-player__queue-item.active {
-    background: rgba(102, 187, 106, 0.12);
-    border-left-color: #66BB6A;
-}
-
-[data-theme="dark"] .mini-player__queue-trans {
-    color: #e8e0d4;
-}
-
-[data-theme="dark"] .mini-player__queue-ar {
-    color: #66BB6A;
-}
-
-[data-theme="dark"] .mini-player__queue-name {
-    font-family: var(--font-arabic, 'Scheherazade New', serif);
-    font-size: 1rem;
-    color: #333;
-    display: block;
-}
-
-.mini-player__queue-detail {
-    font-size: 0.72rem;
-    color: #999;
-}
-
-.mini-player__queue-remove {
-    background: none;
-    border: none;
-    color: #ccc;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 50%;
-    display: flex;
-    transition: all 0.15s;
-}
-
-.mini-player__queue-remove:hover {
-    color: #e74c3c;
-    background: rgba(231, 76, 60, 0.08);
-}
-
-
-/* Dark theme — queue */
-[data-theme="dark"] .mini-player__queue-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-}
-
-[data-theme="dark"] .mini-player__queue-num {
-    background: rgba(255, 255, 255, 0.08);
-    color: #aaa;
-}
-
-[data-theme="dark"] .mini-player__queue-name {
-    color: #e8e0d4;
-}
-
-[data-theme="dark"] .mini-player__queue-detail {
-    color: #888;
-}
-
-[data-theme="dark"] .mini-player__queue-remove {
-    color: #666;
-}
-
-[data-theme="dark"] .mini-player__queue-remove:hover {
-    color: #e74c3c;
-    background: rgba(231, 76, 60, 0.15);
+@media (prefers-reduced-motion: reduce) {
+  .mini-player__progress span {
+    transition: none;
+  }
 }

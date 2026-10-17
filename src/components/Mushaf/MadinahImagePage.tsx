@@ -1,3 +1,4 @@
+import { FindButton } from '../Navigation/FindButton';
 import { useKhatmReading } from './hooks/useKhatmReading';
 import { VerseActionBar } from './VerseActionBar';
 import { useVersePress, type VerseSelection } from './hooks/useVersePress';
@@ -52,7 +53,7 @@ const isMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) || new RegExp(['A
 
 export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDivElement | null) => void } = {}) {
     const { t } = useTranslation();
-    const { currentPage, goToPage, goToSurah, goToAyah, surahs } = useQuranStore();
+    const { currentPage, currentSurah, currentAyah, jumpSignal, goToPage, goToSurah, goToAyah, surahs } = useQuranStore();
     const {
         isActive: khatmActive,
         isPageValidated,
@@ -123,6 +124,11 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
         return ()=>{cancelled=true;};
     }, [page]);
 
+    useEffect(() => {
+        if (page !== currentPage || !pageAyahs.some(a => a.page === page && a.surah === currentSurah && a.numberInSurah === currentAyah)) return;
+        setSelectedVerse(`${currentSurah}:${currentAyah}`);
+    }, [pageAyahs, page, currentPage, currentSurah, currentAyah, jumpSignal]);
+
     // Show swipe hint on first visit
     useEffect(() => {
         if (isMobile && !sessionStorage.getItem('madinah-swipe-hint-shown')) {
@@ -187,7 +193,7 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
 
     // Switch view mode
     const handleViewModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah';
+        const mode = e.target.value as 'mushaf' | 'tajweed' | 'madinah' | 'tajweed-interactive';
         setViewMode(mode);
         if (mode === 'mushaf') {
             goToPage(page);
@@ -211,6 +217,7 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
                 </div>
 
                 <div className="madinah-header__center">
+                    <FindButton className="reader-find-button" />
                     <KhatmTracker />
                     <KhatmPageBadge currentPage={page} pageOnly disabled={loadedPage !== page || imgLoading || imgError}/>
                     <div className="view-mode-selector" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-tertiary)', borderRadius: '8px', padding: '4px 8px', border: '1px solid var(--border-color)' }}>
@@ -229,8 +236,7 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
                             }}
                         >
                             <option value="mushaf">{t('settings.textMode', 'Texte Interactif')}</option>
-                            <option value="tajweed">Image (Tajweed)</option>
-                            <option value="madinah">Madinah (Vectoriel)</option>
+                            <option value="tajweed-interactive">Mushaf Tajwid interactif</option>
                         </select>
                     </div>
                 </div>
@@ -434,6 +440,7 @@ export function MadinahImagePage({ onVoiceHost }: { onVoiceHost?: (node: HTMLDiv
                         navigate('/tafsir');
                     }}
                     onHifdh={() => navigate(`/hifdh?surah=${contextMenuState.ayah.surah}&ayah=${contextMenuState.ayah.numberInSurah}`)}
+                    onVerseSheet={() => navigate(`/passage?surah=${contextMenuState.ayah.surah}&ayah=${contextMenuState.ayah.numberInSurah}&from=read`)}
                     onShare={() => {
                         if (navigator.share) {
                             navigator.share({

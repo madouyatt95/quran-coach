@@ -2,7 +2,7 @@ import { ArrowLeft, Zap, Trophy, CheckCircle } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
 
 export function DailyChallengeView() {
-    const { startDaily, dailyChallengeLastDate, setView } = useQuizStore();
+    const { startDaily, dailyChallengeLastDate, dailyDraft, setView } = useQuizStore();
     const today = new Date().toISOString().split('T')[0];
     const hasPlayedToday = dailyChallengeLastDate === today;
 
@@ -30,7 +30,7 @@ export function DailyChallengeView() {
                     </div>
                     <div className="quiz-perk">
                         <Trophy size={18} color="#FFD700" />
-                        <span>Classement spécial</span>
+                        <span>Même défi pour tous · renouvelé à 00 h UTC</span>
                     </div>
                 </div>
 
@@ -44,7 +44,7 @@ export function DailyChallengeView() {
                     </div>
                 ) : (
                     <button className="quiz-btn-primary" onClick={startDaily} style={{ marginTop: '20px' }}>
-                        Relever le défi
+                        {dailyDraft?.date===today?'Reprendre mon défi':'Relever le défi'}
                     </button>
                 )}
             </div>

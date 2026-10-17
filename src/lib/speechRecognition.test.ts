@@ -146,3 +146,11 @@ describe('Quran text matching', () => {
         expect(result.matches.get(1)?.isCorrect).toBe(true);
     });
 });
+
+it('keeps alignment through a repeated phrase and an immediate self-correction',()=>{
+ const expected=recitationWords('قل هو الله أحد');
+ const repeated=alignRecitation(expected,'قل هو قل هو الله أحد');
+ expect(repeated.cursor).toBe(4);expect([...repeated.matches.values()].every(w=>w.isCorrect)).toBe(true);
+ const corrected=alignRecitation(expected,'قل هي هو الله أحد');
+ expect(corrected.cursor).toBe(4);expect([...corrected.matches.values()].every(w=>w.isCorrect)).toBe(true);
+});

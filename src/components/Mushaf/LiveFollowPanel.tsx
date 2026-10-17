@@ -9,6 +9,7 @@ import { useQuranStore } from '../../stores/quranStore';
 import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
 import { useLiveFollowStore } from '../../stores/liveFollowStore';
 import './LiveFollow.css';
+import { useSettingsStore } from '../../stores/settingsStore';
 
 export function LiveFollowPanel({ host }: { host?: HTMLElement | null }) {
   const [showStatus, setShowStatus] = useState(false);
@@ -60,6 +61,14 @@ export function LiveFollowPanel({ host }: { host?: HTMLElement | null }) {
           setMessage(`Sourate ${passage.surah} · verset ${passage.ayah}`);
           // Paint first. Already displayed text must never wait on IndexedDB or the network.
           useLiveFollowStore.setState({passage,position:null});
+          if(useSettingsStore.getState().viewMode==='tajweed-interactive') {
+            void import('../../lib/interactiveMushaf/model').then(({pageForVerse})=>{
+              if(!current() || update!==latest)return;
+              const page=pageForVerse(passage.surah,passage.ayah);
+              if(page)useQuranStore.getState().goToAyah(passage.surah,passage.ayah,page,{silent:true});
+            });
+            return;
+          }
           const quran = useQuranStore.getState();
           const loaded = [...quran.currentSurahAyahs, ...quran.pageAyahs]
             .find(a => a.surah === passage.surah && a.numberInSurah === passage.ayah);

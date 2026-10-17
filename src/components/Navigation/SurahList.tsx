@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useOpenReader } from '../../hooks/useOpenReader';
 import { useQuranStore } from '../../stores/quranStore';
 import { fetchSurahs } from '../../lib/quranApi';
 import type { Surah } from '../../types';
 import './SurahList.css';
 
 export function SurahList() {
-    const navigate = useNavigate();
-    const { surahs, setSurahs, goToSurah } = useQuranStore();
+    const openReader = useOpenReader('Sourates');
+    const { surahs, setSurahs } = useQuranStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [_isLoading, setIsLoading] = useState(false);
 
@@ -27,8 +27,7 @@ export function SurahList() {
     );
 
     const handleSurahClick = (surah: Surah) => {
-        goToSurah(surah.number);
-        navigate('/');
+        openReader({ surah: surah.number, ayah: 1 });
     };
 
     return (

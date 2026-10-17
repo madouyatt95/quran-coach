@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Play, Pause, BookOpen, Share2, Copy, BookmarkPlus, Info } from 'lucide-react';
+import { Play, Pause, BookOpen, Share2, Copy, BookmarkPlus, Info, PanelTopOpen } from 'lucide-react';
 import type { Ayah } from '../../types';
 import './MadinahContextMenu.css';
 
@@ -12,6 +12,7 @@ interface MadinahContextMenuProps {
     onTafsir: () => void;
     onAsbab: () => void;
     onHifdh: () => void;
+    onVerseSheet: () => void;
     onShare: () => void;
     onCopy: () => void;
 }
@@ -25,6 +26,7 @@ export function MadinahContextMenu({
     onTafsir,
     onAsbab,
     onHifdh,
+    onVerseSheet,
     onShare,
     onCopy
 }: MadinahContextMenuProps) {
@@ -48,8 +50,8 @@ export function MadinahContextMenu({
     // Handle viewport overflow for position
     const menuStyle: React.CSSProperties = {
         position: 'fixed',
-        top: Math.min(position.y, window.innerHeight - 300),
-        left: Math.min(position.x, window.innerWidth - 250),
+        top: Math.max(12, Math.min(position.y, window.innerHeight - 390)),
+        left: Math.max(12, Math.min(position.x, window.innerWidth - 252)),
         zIndex: 1000,
     };
 
@@ -77,6 +79,11 @@ export function MadinahContextMenu({
                 </button>
 
                 <div className="madinah-context-divider" />
+
+                <button className="madinah-context-item" onClick={() => { onVerseSheet(); onClose(); }}>
+                    <PanelTopOpen size={18} />
+                    <span>Fiche du verset</span>
+                </button>
 
                 <button className="madinah-context-item" onClick={() => { onHifdh(); onClose(); }}>
                     <BookmarkPlus size={18} />

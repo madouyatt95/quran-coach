@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { useState, useRef } from 'react';
 import { Mic, Square, Search, Loader2, X } from 'lucide-react';
 import { getSupportedMimeType } from '../../lib/audioUnlock';
@@ -76,7 +77,7 @@ export function VoiceSearch({ onResult, onClose }: VoiceSearchProps) {
             });
 
             // Use free HuggingFace Space via Vercel API
-            const response = await fetch('/api/transcribe', {
+            const response = await fetch(`${Capacitor.isNativePlatform() ? 'https://www.quran-coach.fr' : ''}/api/transcribe`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ audio: base64Audio, mimeType }),

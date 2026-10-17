@@ -137,3 +137,18 @@ describe('coach sessions', () => {
         expect(JSON.parse(localStorage.getItem('hifdh-error-log')!)).toHaveLength(1);
     });
 });
+
+it('keeps one recognition session across verse boundaries and maps global word results',async()=>{
+ options={...options,continuous:true};await render();await act(async()=>coach.startCoachListening(0));
+ expect(recognizer.start).toHaveBeenCalledTimes(1);
+ expect(recognizer.start).toHaveBeenLastCalledWith(ayahs.map(a=>a.text).join(' '),expect.any(Object),0);
+ await act(async()=>{latest().onWordMatch(3,true,'أحد');latest().onCurrentWord(4);latest().onWordMatch(4,true,'الله');});
+ expect(coach.activeAyahIndex).toBe(1);expect(coach.coachAtEnd).toBe(false);expect(coach.wordStates.get('1-0')).toBe('correct');expect(recognizer.start).toHaveBeenCalledTimes(1);
+ await act(async()=>latest().onCurrentWord(6));expect(coach.coachAtEnd).toBe(true);
+});
+it('keeps uncertain recognition out of scores and mistakes',async()=>{
+ await act(async()=>coach.startCoachListening(0));
+ await act(async()=>{latest().onUncertain?.(1,'Passage mal reconnu');latest().onWordMatch(2,false,'(non reconnu)');});
+ expect(coach.coachUncertainCount).toBe(2);expect(coach.coachMistakesCount).toBe(0);expect(coach.coachTotalProcessed).toBe(0);
+ await act(async()=>coach.stopCoachListening());expect(JSON.parse(localStorage.getItem('hifdh-error-log')!)).toEqual([]);
+});

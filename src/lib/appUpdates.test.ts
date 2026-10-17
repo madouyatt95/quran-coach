@@ -16,10 +16,18 @@ it('does not activate or reload during a session, including a takeover from anot
  s.container.dispatchEvent(new Event('controllerchange'));s.watcher.checkIdle();expect(s.reload).not.toHaveBeenCalled();
  s.state.protected=false;s.watcher.checkIdle();s.watcher.checkIdle();expect(s.reload).toHaveBeenCalledOnce();s.watcher.dispose();
 });
-it('activates only on a safe explicit request and defers a late controllerchange',async()=>{
- const s=setup(false);await Promise.resolve();expect(s.worker.postMessage).not.toHaveBeenCalled();
- s.watcher.apply();expect(s.worker.postMessage).toHaveBeenCalledExactlyOnceWith({type:'SKIP_WAITING'});
+it('activates automatically on a safe screen and defers a late controllerchange',async()=>{
+ const s=setup(false);await Promise.resolve();expect(s.worker.postMessage).toHaveBeenCalledExactlyOnceWith({type:'SKIP_WAITING'});
+ s.watcher.apply();expect(s.worker.postMessage).toHaveBeenCalledTimes(1);
  s.state.protected=true;s.container.dispatchEvent(new Event('controllerchange'));expect(s.reload).not.toHaveBeenCalled();s.watcher.dispose();
+});
+it('checks for a new worker immediately when an installed app opens',async()=>{
+ const s=setup(false,false);await Promise.resolve();expect(s.reg.update).toHaveBeenCalledOnce();s.watcher.dispose();
+});
+it('waits for a protected session to finish before activating the update',async()=>{
+ const s=setup(true);await Promise.resolve();expect(s.worker.postMessage).not.toHaveBeenCalled();
+ s.state.protected=false;s.watcher.checkIdle();expect(s.worker.postMessage).toHaveBeenCalledExactlyOnceWith({type:'SKIP_WAITING'});
+ s.watcher.dispose();
 });
 it('cleans timers and listeners, including late registration resolution',async()=>{
  vi.useFakeTimers();const s=setup();await Promise.resolve();expect(vi.getTimerCount()).toBe(1);s.watcher.dispose();
@@ -30,7 +38,13 @@ it('observes an installation already running at mount',async()=>{
  const s=setup(false,false);s.worker.state='installing';Object.assign(s.reg,{installing:s.worker});await Promise.resolve();
  s.worker.state='installed';s.worker.dispatchEvent(new Event('statechange'));expect(s.available).toHaveBeenLastCalledWith(true);s.watcher.dispose();
 });
-it('protects reading, memorization, identification and invocations throughout the route',()=>{
- for(const path of ['/read','/hifdh','/test-memorization','/voice-search','/adhkar','/passage'])expect(isSessionRoute(path)).toBe(true);
+it('offers updates on a passive Mushaf page while protecting active learning sessions',()=>{
+ expect(isSessionRoute('/read')).toBe(false);
+ for(const path of ['/hifdh','/test-memorization','/voice-search','/adhkar','/passage'])expect(isSessionRoute(path)).toBe(true);
  expect(isSessionRoute('/')).toBe(false);expect(isSessionRoute('/settings')).toBe(false);
+});
+
+it('protects immersive listening including pauses and explanations', () => {
+  expect(isSessionRoute('/listen/experience')).toBe(true);
+  expect(isSessionRoute('/listen')).toBe(false);
 });

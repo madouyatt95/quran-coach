@@ -2384,6 +2384,7 @@
 .hifdh-summary,.hifdh-review-library{background:var(--color-bg-secondary);border:1px solid var(--color-bg-tertiary);border-radius:16px;padding:16px;margin:16px 0;scroll-margin-top:20px}
 .hifdh-summary h2,.hifdh-review-library h2{font-size:18px;margin:0 0 12px}.hifdh-summary p,.hifdh-summary small,.hifdh-summary summary,.hifdh-review-library p{font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
 .hifdh-summary .hifdh-primary{margin:14px 0}.hifdh-review-list{display:grid;gap:8px;max-height:340px;overflow-y:auto;margin-top:12px}.hifdh-review-list button{width:100%}.hifdh-review-list span[lang=ar]{font-family:var(--font-arabic);font-size:21px;align-self:stretch}
+.hifdh-review-entry{border:1px solid var(--color-bg-tertiary);border-radius:14px;overflow:hidden}.hifdh-review-entry button{border:0;border-radius:0}.hifdh-review-entry a{display:flex;align-items:center;min-height:44px;padding:8px 14px;color:#d6b56d;text-decoration:none;border-top:1px solid var(--color-bg-tertiary);font-size:13px}.hifdh-review-entry a:focus-visible{outline:2px solid #c9a84c;outline-offset:-3px}
 .hifdh-queue-status{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;font-size:12px;background:#c9a84c14;border-radius:12px}.hifdh-queue-status button{padding:8px;border:0;background:transparent;color:#c9a84c}
 .hifdh-audio-error{font-size:13px;padding:14px;border:1px solid #e89b5755;border-radius:12px;line-height:1.5}
 .hifdh-page .mih-coach-aura{position:static;width:100%;height:44px;border-radius:12px;background:var(--color-bg-secondary);color:#c9a84c;box-shadow:none;margin:12px 0;gap:8px;font-size:13px}
@@ -2391,3 +2392,99 @@
 .hifdh-page .mih-coach-controls{bottom:calc(var(--bottom-nav-height) + 10px)}
 .hifdh-page button:focus-visible,.hifdh-page summary:focus-visible{outline:2px solid #c9a84c;outline-offset:2px}
 @media(max-width:360px){.hifdh-session-home{grid-template-columns:1fr}.hifdh-steps button{font-size:12px}.hifdh-passage-settings summary span{float:none;margin-left:8px}}
+
+/* One navigation level per purpose; the reading surface gets most of the room. */
+.hifdh-page [hidden] { display: none !important; }
+.hifdh-page__header-row { background: var(--color-bg-primary); padding-bottom: 12px; margin-bottom: 0; }
+.hifdh-page__header-row::before { display: none; }
+.hifdh-page__header { color: var(--color-text-primary); font-size: 21px; letter-spacing: -.4px; }
+.hifdh-view-nav { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 4px; padding: 4px; margin: 4px 0 18px; background: var(--color-bg-secondary); border: 1px solid var(--color-bg-tertiary); border-radius: 15px; }
+.hifdh-view-nav button { min-height: 44px; border: 0; border-radius: 11px; background: transparent; color: var(--color-text-secondary); font: inherit; font-size: 12px; cursor: pointer; }
+.hifdh-view-nav button[aria-current] { background: var(--color-bg-tertiary); color: var(--color-text-primary); font-weight: 700; box-shadow: 0 2px 8px #0001; }
+.hifdh-training { min-width: 0; }
+.hifdh-session-home { margin: 12px 0; }
+.hifdh-session-home button { min-height: 44px; padding: 10px 12px; font-size: 12px; }
+.hifdh-steps { margin: 12px 0; }
+.hifdh-passage-settings { margin-bottom: 12px; }
+.hifdh-surah-header-ornament { background: none; min-height: 0; margin: 18px 0; padding: 6px; }
+.hifdh-page .hifdh-verse-card { border: 1px solid var(--color-bg-tertiary); border-radius: 18px; padding: 16px; margin-bottom: 10px; background: var(--color-bg-secondary); }
+.hifdh-page .hifdh-verse-card--active { border-color: #c9a84c66; box-shadow: inset 3px 0 #c9a84c; }
+.hifdh-page .hifdh-verse-card__arabic { justify-content: center; gap: 4px 8px; line-height: 2.1; padding: 6px 0; }
+.hifdh-page .hifdh-word { font-size: clamp(28px,7vw,38px); }
+.hifdh-page .hifdh-verse-card__translation { font-size: 13px; line-height: 1.7; }
+.hifdh-page .hifdh-verse-card__phonetics { font-size: 12px; }
+.hifdh-page .hifdh-verse-card__badge { border: 0; padding: 0; color: var(--color-text-secondary); }
+.hifdh-page .hifdh-verse-card__more { min-width: 44px; min-height: 44px; color: var(--color-text-secondary); }
+.hifdh-command-dock { position: sticky; bottom: calc(var(--bottom-nav-height, 64px) + 8px); z-index: 30; border: 1px solid var(--color-bg-tertiary); border-radius: 18px; padding: 10px; background: var(--color-bg-primary); box-shadow: 0 8px 24px #0002; }
+.hifdh-command-dock .hifdh-guided-action { padding: 0; }
+.hifdh-command-dock .hifdh-guided-action>p { font-size: 11px; margin-bottom: 6px; }
+.hifdh-command-dock .hifdh-primary { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.hifdh-command-dock .hifdh-text-action { margin: 0 auto; min-height: 32px; }
+.hifdh-page .hifdh-command-dock .hifdh-player-ui { background: transparent; border: 0; margin: 0; padding: 6px 0 0; }
+.hifdh-page .hifdh-player__controls { gap: 10px; flex-wrap: wrap; }
+.hifdh-page .hifdh-player__btn,.hifdh-mode-button,.hifdh-page .hifdh-coach-toggle { min-width: 44px; min-height: 44px; border-radius: 12px; }
+.hifdh-mode-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border: 1px solid var(--color-bg-tertiary); background: var(--color-bg-secondary); color: var(--color-text-primary); font-size: 12px; cursor: pointer; }
+.hifdh-mode-button svg { width: 18px; }
+.hifdh-page .mih-coach-session { position: static; width: 100%; max-height: 200px; transform: none; background: var(--color-bg-secondary); color: var(--color-text-primary); box-shadow: none; padding: 12px; border-color: var(--color-bg-tertiary); }
+.hifdh-page .mih-coach-session__text,.hifdh-page .mih-coach-session .mih-coach-stats { color: var(--color-text-primary); }
+.hifdh-page .hifdh-summary { border-radius: 20px; padding: 20px; }
+.hifdh-page .hifdh-extra-settings { margin-top: 16px; }
+@media(max-height:600px) { .hifdh-command-dock { position: static; } }
+@media(prefers-reduced-motion:reduce) { .hifdh-page * { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+.hifdh-step-hint p { margin: 0 0 12px; color: var(--color-text-secondary); font-size: 12px; line-height: 1.5; }
+.hifdh-page .hifdh-command-dock .hifdh-player__controls { gap: 6px; }
+.hifdh-page .hifdh-command-dock .hifdh-player__progress { margin-bottom: 6px; }
+.hifdh-coach-details { width: 100%; border-top: 1px solid var(--color-bg-tertiary); font-size: 12px; }
+.hifdh-coach-details>summary { display: flex; gap: 8px; align-items: center; min-height: 44px; cursor: pointer; color: var(--color-text-secondary); }
+.hifdh-coach-details>summary::after { content: '+'; margin-inline-start: auto; }
+.hifdh-coach-details[open]>summary::after { content: '−'; }
+
+/* Playback stays reachable even when the selected range spans a whole surah. */
+.hifdh-page .hifdh-command-dock {
+    position: fixed;
+    inset: auto 12px calc(var(--bottom-nav-height, 64px) + 10px);
+    width: auto;
+    max-width: 560px;
+    margin-inline: auto;
+    max-height: min(70dvh, calc(100dvh - var(--bottom-nav-height, 64px) - 24px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 880;
+    box-sizing: border-box;
+    background: var(--color-bg-secondary);
+    border-color: color-mix(in srgb, var(--color-accent-primary, #ad8def) 24%, var(--color-bg-tertiary));
+    box-shadow: 0 8px 32px #0005;
+}
+.hifdh-training:not([hidden]) { padding-bottom: 200px; }
+.hifdh-dock-main { display: flex; gap: 8px; align-items: stretch; }
+.hifdh-dock-main .hifdh-guided-action { flex: 1; min-width: 0; }
+.hifdh-dock-settings-toggle { flex: 0 0 48px; min-height: 48px; display: grid; place-items: center; border-radius: 14px; border: 1px solid var(--color-bg-tertiary); background: var(--color-bg-primary); color: var(--color-text-primary); cursor: pointer; }
+.hifdh-dock-settings-toggle[aria-expanded=true] { color: var(--color-accent-primary, #c9a84c); border-color: currentColor; }
+.hifdh-dock-settings { padding: 4px 2px 12px; margin-bottom: 10px; border-bottom: 1px solid var(--color-bg-tertiary); }
+.hifdh-dock-settings[hidden] { display: none; }
+.hifdh-dock-settings h2 { margin: 4px 8px 8px; font-size: 14px; }
+.hifdh-page .hifdh-dock-settings .hifdh-footer-controls { margin: 0; padding: 4px; background: none; border: 0; }
+.hifdh-dock-settings .hifdh-control-group { flex-wrap: wrap; justify-content: center; }
+.hifdh-dock-settings .hifdh-speed-row { display: flex; flex-wrap: wrap; justify-content: center; }
+.hifdh-dock-settings .hifdh-speed-row button { min-width: 44px; min-height: 44px; }
+.hifdh-page .hifdh-command-dock .hifdh-primary { font-size: 13px; }
+@media(max-height:500px) {
+    .hifdh-page .hifdh-command-dock { max-height: calc(100dvh - var(--bottom-nav-height, 64px) - 24px); padding: 6px; }
+    .hifdh-page .hifdh-command-dock .hifdh-player__progress { display: none; }
+}
+
+/* Compact transport: repeat count stays visible; secondary tools open above it. */
+.hifdh-page .hifdh-command-dock { padding: 7px 9px; border-radius: 18px; }
+.hifdh-dock-main { align-items: center; gap: 6px; }
+.hifdh-page .hifdh-dock-main .hifdh-primary { min-height: 44px; padding: 8px 10px; }
+.hifdh-dock-action-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 110px; }
+.hifdh-dock-main .hifdh-repeat-control { display: flex; align-items: center; gap: 0; margin: 0; padding: 0; background: transparent; border: 0; flex: 0 0 auto; }
+.hifdh-dock-main .hifdh-repeat-control button { width: 36px; min-width: 36px; height: 44px; padding: 0; display: grid; place-items: center; }
+.hifdh-dock-main .hifdh-repeat-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; min-width: 36px; justify-content: center; font-variant-numeric: tabular-nums; }
+.hifdh-dock-settings-toggle { flex-basis: 44px; min-height: 44px; }
+.hifdh-command-dock .hifdh-player__time { display: none; }
+.hifdh-page .hifdh-command-dock .hifdh-player-ui { gap: 0; padding: 5px 0 0; }
+.hifdh-page .hifdh-command-dock .hifdh-player__progress { margin: 0; height: 3px; }
+.hifdh-command-dock .hifdh-player__progress-bar { height: 3px; }
+.hifdh-training:not([hidden]) { padding-bottom: 110px; }
+@media(max-width:360px) { .hifdh-dock-action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } }

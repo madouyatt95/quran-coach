@@ -1,241 +1,51 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { X, ChevronRight, CheckCircle2, Lightbulb, Hash, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {SURAH_JOURNEYS} from '../lib/fahm/surahJourneys';
+import {FahmSurahMap} from '../components/Fahm/FahmSurahMap';
+import {FahmListeningStudy} from '../components/Fahm/FahmListeningStudy';
+import {CHAPTERS} from '../lib/interactiveMushaf/model';
+import {useEffect,useRef,useState} from 'react';
+import {Link,useLocation,useNavigate,useParams} from 'react-router-dom';
+import {READING_PATHS} from '../data/readingPaths';
+import {passageTargets,verseKey,type VerseTarget} from '../lib/fahm/learning';
+import {FAHM_GUIDES,DEFAULT_GUIDE} from '../lib/fahm/guides';
+import {useFahmStore} from '../stores/fahmStore';
+import {useFahmLearningStore} from '../stores/fahmLearningStore';
+import {FahmVerseStudy} from '../components/Fahm/FahmVerseStudy';
+import './FahmExperience.css';
 
-import { READING_PATHS } from '../data/readingPaths';
-import { QURAN_VOCABULARY } from '../data/quranVocabulary';
-import { fetchSurah, fetchSurahTranslation, fetchSurahTransliteration } from '../lib/quranApi';
-import { useFahmStore } from '../stores/fahmStore';
-
-import type { Ayah } from '../types';
-import './FahmLessonPage.css';
-import { ComprehensionCheck } from '../components/Learning/ComprehensionCheck';
-import { PassageActions } from '../components/Learning/PassageActions';
-
-const TOTAL_STEPS = 2; // Step 0: Read, Step 1: Understand
-
-export function FahmLessonPage() {
-    const { pathId, day } = useParams<{ pathId: string; day: string }>();
-    const navigate = useNavigate();
-    const fahm = useFahmStore();
-
-    const [step, setStep] = useState(0);
-    const [checked, setChecked] = useState(false);
-    const [loadError,setLoadError] = useState(false);
-    const [verses, setVerses] = useState<Ayah[]>([]);
-    const [translations, setTranslations] = useState<string[]>([]);
-    const [transliterations, setTransliterations] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    // Find Path and Day Data
-    const path = useMemo(() => READING_PATHS.find(p => p.id === pathId), [pathId]);
-    const dayData = useMemo(() => path?.days.find(d => d.day === Number(day)), [path, day]);
-
-    useEffect(() => {
-        if (!dayData) return;
-
-        let cancelled = false;
-        setStep(0); setChecked(false); setVerses([]);
-        const loadContent = async () => {
-            setIsLoading(true);
-            setLoadError(false);
-            try {
-                const passages = dayData.passages || (dayData.surah ? [{ surah: dayData.surah, startAyah: dayData.startAyah!, endAyah: dayData.endAyah! }] : []);
-                
-                let allVerses: Ayah[] = [];
-                let allTrans: string[] = [];
-                let allPhonetics: string[] = [];
-
-                for (const p of passages) {
-                    const [surahData, translationData, transliterationData] = await Promise.all([fetchSurah(p.surah), fetchSurahTranslation(p.surah, 'fr'), fetchSurahTransliteration(p.surah)]);
-
-                    const startIdx = p.startAyah - 1;
-                    const endIdx = p.endAyah;
-
-                    const extractedVerses = surahData.ayahs.slice(startIdx, endIdx);
-                    allVerses = [...allVerses, ...extractedVerses];
-                    allTrans = [...allTrans, ...extractedVerses.map(v => translationData.get(v.number) || '')];
-                    allPhonetics = [...allPhonetics, ...extractedVerses.map(v => transliterationData.get(v.number) || '')];
-                }
-
-                if(cancelled) return;
-                if(!allVerses.length) throw new Error("Passage vide");
-                setVerses(allVerses);
-                setTranslations(allTrans);
-                setTransliterations(allPhonetics);
-            } catch (err) {
-                console.error("Erreur lors du chargement des versets", err);
-                if(!cancelled) setLoadError(true);
-            } finally {
-                if(!cancelled) setIsLoading(false);
-            }
-        };
-
-        void loadContent();
-        return () => { cancelled = true; };
-    }, [dayData]);
-
-    // Extract Vocabulary Words that appear in the reading passage
-    const relevantWords = useMemo(() => {
-        if (!verses.length) return [];
-        const fullTextAr = verses.map(v => v.text).join(' '); // Simple concat of verses
-
-        return QURAN_VOCABULARY.filter(word => {
-            // Strip harakat for a better match, or just use simple indexOf since the DB has harakat
-            // We use simple indexOf for now (this represents an approximation)
-            return fullTextAr.includes(word.arabic) || fullTextAr.includes(word.arabic.replace(/َ|ً|ُ|ٌ|ِ|ٍ|ْ|ّ/g, ''));
-        }).slice(0, 5); // Limit to top 5 words per lesson to not overwhelm
-    }, [verses]);
-
-    if (!path || !dayData) {
-        return (
-            <div className="fahm-lesson-page" style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <p>Leçon introuvable.</p>
-                <button onClick={() => navigate(-1)} className="fahm-lesson-btn" style={{ width: '200px', marginTop: 20 }}>
-                    Retour
-                </button>
-            </div>
-        );
-    }
-
-    const handleNext = () => {
-        if (step < TOTAL_STEPS - 1) {
-            setStep(step + 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            // Finish lesson
-            fahm.completePathDay(path.id, dayData.day);
-            navigate('/fahm', { replace: true });
-        }
-    };
-
-    const progressPct = ((step + 1) / TOTAL_STEPS) * 100;
-
-    return (
-        <div className="fahm-lesson-page">
-            {/* Header */}
-            <header className="fahm-lesson-header">
-                <div className="fahm-lesson-header__top">
-                    <button className="fahm-lesson-header__close" onClick={() => navigate(-1)}>
-                        <X size={24} />
-                    </button>
-                    <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                        Jour {dayData.day}
-                    </span>
-                    <div style={{ width: 40 }} /> {/* Spacer */}
-                </div>
-                <div className="fahm-lesson-header__progress">
-                    <div className="fahm-lesson-header__progress-fill" style={{ width: `${progressPct}%` }} />
-                </div>
-            </header>
-
-            {/* Content Container */}
-            <div className="fahm-lesson-content">
-                <AnimatePresence mode="wait">
-                    {isLoading ? (
-                        <motion.div
-                            key="loading"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >
-                            <Loader2 className="spin" size={32} color="var(--gold)" />
-                        </motion.div>
-                    ) : step === 0 ? (
-                        <motion.div
-                            key="step1"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="fahm-lesson-verses"
-                        >
-                            <h2 style={{ marginBottom: 16, color: 'var(--gold)', textAlign: 'center' }}>
-                                Lecture du jour
-                            </h2>
-                            {verses.map((ayah, i) => (
-                                <div key={ayah.number} className="fahm-lesson-verse">
-                                    <div className="fahm-lesson-verse__ar arabic">
-                                        {ayah.text} 
-                                        <span className="ayah-number">{ayah.numberInSurah}</span>
-                                    </div>
-                                    {transliterations[i] && (
-                                        <div className="fahm-lesson-verse__transliteration" style={{ color: 'var(--color-primary)', fontStyle: 'italic', marginBottom: '12px', fontSize: '1.05rem', lineHeight: 1.5 }}>
-                                            {transliterations[i]}
-                                        </div>
-                                    )}
-                                    <div className="fahm-lesson-verse__fr" style={{ paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                                        {translations[i] || 'Traduction non disponible'}
-                                    </div>
-                                </div>
-                            ))}
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="step2"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                        >
-                            <div className="fahm-lesson-note">
-                                <div className="fahm-lesson-note__title">
-                                    <Lightbulb size={20} />
-                                    <span>Compréhension</span>
-                                </div>
-                                <div className="fahm-lesson-note__text">
-                                    {dayData.fahmNote}
-                                </div>
-                            </div>
-
-                            {relevantWords.length > 0 && (
-                                <div className="fahm-lesson-vocab">
-                                    <div className="fahm-lesson-vocab__title">
-                                        <Hash size={18} />
-                                        Mots clés du verset
-                                    </div>
-                                    <div className="fahm-lesson-words">
-                                        {relevantWords.map(word => (
-                                            <div key={word.id} className="fahm-lesson-word">
-                                                <div className="fahm-lesson-word__ar arabic">
-                                                    {word.arabic}
-                                                </div>
-                                                <div className="fahm-lesson-word__fr">
-                                                    {word.meaningFr}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {loadError && <p role="alert">Le passage n’a pas pu être chargé. Revenez au parcours et réessayez avec une connexion.</p>}
-            {step === 1 && !isLoading && !loadError && <div style={{padding:20}}>
-                <ComprehensionCheck key={`${pathId}-${day}`} arabic={verses.map(v=>v.text).join(' ')} reference={dayData.fahmNote} onComplete={()=>setChecked(true)} />
-                {verses[0] && <PassageActions surah={verses[0].surah} ayah={verses[0].numberInSurah} />}
-            </div>}
-            {/* Footer */}
-            <div className="fahm-lesson-footer">
-                <button
-                    className={`fahm-lesson-btn ${step === TOTAL_STEPS - 1 ? 'fahm-lesson-btn--finish' : ''}`}
-                    onClick={handleNext}
-                    disabled={isLoading || loadError || (step === 1 && !checked)}
-                >
-                    {step === TOTAL_STEPS - 1 ? (
-                        <>
-                            <CheckCircle2 size={20} /> Terminer la leçon
-                        </>
-                    ) : (
-                        <>
-                            Explications <ChevronRight size={20} />
-                        </>
-                    )}
-                </button>
-            </div>
-        </div>
-    );
+export function FahmLessonPage(){
+    const {pathId,day,surah}=useParams(),location=useLocation();
+    const session=useFahmLearningStore(s=>s.session);
+    const path=READING_PATHS.find(p=>p.id===pathId),lesson=path?.days.find(d=>d.day===Number(day));
+    if(surah&&SURAH_JOURNEYS[Number(surah)])return <FahmLesson key={`surah-${surah}`} id={`surah/${surah}`} title={SURAH_JOURNEYS[Number(surah)].name} targets={Array.from({length:CHAPTERS[Number(surah)-1].count},(_,i)=>({surah:Number(surah),ayah:i+1}))} pathId="discover"/>;
+    if(location.pathname==='/fahm/session')return session?<FahmLesson key={session.id} id={session.id} title={session.title} targets={session.targets} personal pathId="discover"/>:<div className="fahm-shell"><h1>Votre séance</h1><p>Choisissez votre durée pour commencer.</p><Link to="/fahm">Préparer une séance</Link></div>;
+    if(!path||!lesson)return <div className="fahm-shell"><h1>Étape introuvable</h1><Link to="/fahm">Revenir aux parcours</Link></div>;
+    return <FahmLesson key={`${path.id}/${lesson.day}`} id={`${path.id}/${lesson.day}`} title={lesson.title} targets={passageTargets(lesson)} pathId={path.id} day={lesson.day}/>;
+}
+function FahmLesson({id,title,targets,pathId,day,personal=false}:{id:string;title:string;targets:VerseTarget[];pathId:string;day?:number;personal?:boolean}){
+    const state=useFahmLearningStore(),fahm=useFahmStore(),navigate=useNavigate(),location=useLocation();
+    const index=Math.min(state.positions[id]||0,targets.length-1),target=targets[index];
+    const [mode,setMode]=useState<'study'|'listen'>(state.modes[id]||(new URLSearchParams(location.search).get('mode')==='listen'?'listen':'study'));
+    const [seenText,setSeenText]=useState(mode!=='listen');
+    const [discover,setDiscover]=useState(false),[finished,setFinished]=useState(personal&&!!state.session?.finished);
+    const top=useRef<HTMLDivElement>(null),guide=FAHM_GUIDES[pathId]||DEFAULT_GUIDE;
+    const done=state.studied[id]||[],complete=targets.every(v=>done.includes(verseKey(v)));
+    const readerReturn=location.state?.readerReturn as {to?:string;label?:string;state?:unknown}|undefined;
+    const remember=state.move,saveMode=state.setMode;
+    useEffect(()=>{saveMode(id,mode);},[id,mode,saveMode]);
+    useEffect(()=>{remember(id,index);},[id,index,remember]);
+    function move(next:number){state.move(id,Math.max(0,Math.min(targets.length-1,next)));top.current?.scrollIntoView({block:'start'});}
+    function finish(){if(!targets.every(v=>useFahmLearningStore.getState().studied[id]?.includes(verseKey(v))))return;if(personal)state.finishSession();else if(day)fahm.completePathDay(pathId,day);setFinished(true);}
+    function studied(){state.study(id,target);const next=targets.findIndex((v,i)=>i>index&&!useFahmLearningStore.getState().studied[id]?.includes(verseKey(v)));if(next>=0)move(next);else if(targets.every(v=>useFahmLearningStore.getState().studied[id]?.includes(verseKey(v))))finish();else move(targets.findIndex(v=>!useFahmLearningStore.getState().studied[id]?.includes(verseKey(v))));}
+    return <main className="fahm-shell fahm-course" ref={top}>
+        <header className="fahm-course-header"><Link to="/fahm" state={location.state}>← Mes parcours</Link>{readerReturn?.to?.startsWith('/read')&&<button onClick={()=>navigate(readerReturn.to!,{state:readerReturn.state})}>Retour au Mushaf ↗</button>}<span className="fahm-eyebrow">{personal?'MA SÉANCE':day?`ÉTAPE ${day}`:'SOURATE GUIDÉE'} · FAHM</span><h1>{title}</h1><p>{guide.goal}</p><progress aria-label="Versets étudiés" value={targets.filter(v=>done.includes(verseKey(v))).length} max={targets.length}/><small>{targets.filter(v=>done.includes(verseKey(v))).length} / {targets.length} versets étudiés</small></header>
+        {finished?<><FahmSurahMap surah={target.surah} ayah={target.ayah} studied={done} complete onSelect={ayah=>{const i=targets.findIndex(v=>v.ayah===ayah&&v.surah===target.surah);if(i>=0){setFinished(false);move(i);}else navigate(`/fahm/surah/${target.surah}`);}}/><section className="fahm-card fahm-complete"><span aria-hidden="true">🌿</span><h2>{personal?'Séance terminée':'Étape terminée'}</h2><p>Vos réponses et vos notes sont enregistrées. Les difficultés reviendront dans vos séances personnelles.</p><Link className="fahm-primary" to="/fahm" state={location.state}>Retrouver mes parcours</Link><button onClick={()=>{setFinished(false);move(0);}}>Relire le passage</button></section></>:<>
+        {mode==='study'&&<FahmSurahMap surah={target.surah} ayah={target.ayah} studied={done} onSelect={ayah=>{const i=targets.findIndex(v=>v.surah===target.surah&&v.ayah===ayah);if(i>=0)move(i);else navigate(`/fahm/surah/${target.surah}`);}}/>}
+        <details className="fahm-card fahm-guide"><summary>Comment étudier ce passage</summary><ol>{guide.steps.map(step=><li key={step}>{step}</li>)}</ol><p>{guide.reflection}</p></details>
+        <nav className="fahm-pager" aria-label="Versets du passage"><button disabled={index===0} onClick={()=>move(index-1)}>←</button><label>Verset<select aria-label="Choisir le verset à étudier" value={index} onChange={e=>move(Number(e.target.value))}>{targets.map((v,i)=><option key={`${verseKey(v)}-${i}`} value={i}>{verseKey(v)} {done.includes(verseKey(v))?'✓':''}</option>)}</select></label><span>{index+1} / {targets.length}</span><button disabled={index===targets.length-1} onClick={()=>move(index+1)}>→</button></nav>
+        <div className="fahm-mode-switch" role="group" aria-label="Façon d’étudier"><button aria-pressed={mode==='study'} onClick={()=>{setMode('study');setSeenText(true);}}>Lire et comprendre</button><button aria-pressed={mode==='listen'} onClick={()=>setMode('listen')}>Comprendre à l’écoute</button></div>
+        {mode==='study'?<><label className="fahm-discovery-switch"><input type="checkbox" checked={discover} onChange={e=>setDiscover(e.target.checked)}/> Essayer de comprendre avant la traduction</label>
+        {target&&<FahmVerseStudy key={`${verseKey(target)}-${discover}`} lessonId={id} target={target} discover={discover} onDone={studied}/>}</>:<FahmListeningStudy key={verseKey(target)} target={target} seenText={seenText} onDone={studied} onRead={()=>{setMode('study');setSeenText(true);}}/>}
+        {complete&&<button className="fahm-primary" onClick={finish}>Terminer {personal?'la séance':'cette étape'} ✓</button>}
+        </>}
+    </main>;
 }

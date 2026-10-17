@@ -5,6 +5,7 @@ import { HADITH_CATEGORIES, EXPANDED_HADITHS, type HadithCategory, type HadithEn
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { useTranslation } from 'react-i18next';
 import { formatDivineNames } from '../lib/divineNames';
+import { ReligiousReference } from '../components/ReligiousReference';
 import './HadithsPage.css';
 
 const BULUGH_CHAPTERS: { id: BulughChapter; name: string; nameAr: string; emoji: string; color: string }[] = [
@@ -258,11 +259,11 @@ function HadithCard({ hadith, isFav, onFav, onShare }: {
     return (
         <div className="hadith-card">
             <div className="hadith-card__arabic" dir="rtl">{formatDivineNames(hadith.ar)}</div>
-            <div className="hadith-card__french">{formatDivineNames(hadith.fr)}</div>
+            <div className="hadith-card__french" aria-label="Traduction du sens en français">{formatDivineNames(hadith.fr)}</div>
             <div className="hadith-card__meta">
-                <span className="hadith-card__source">📕 {hadith.src}</span>
                 <span className="hadith-card__narrator">🗣️ {hadith.nar}</span>
             </div>
+            <ReligiousReference kind="Hadith" source={hadith.src} sourceUrl={hadith.sourceUrl}/>
 
             {hadith.commentaryFr && (
                 <div className="hadith-card__commentary-section">

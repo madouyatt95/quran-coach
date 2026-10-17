@@ -19,7 +19,7 @@ export async function fetchWithCache<T>(url: string, forceRefresh: boolean = fal
 
     if (!forceRefresh && typeof caches !== 'undefined') {
         try {
-            const packed = await (await caches.open('quran-coach-content-v1')).match(url);
+            const packed = await (await caches.open('quran-coach-journeys-v1')).match(url) || await (await caches.open('quran-coach-content-v1')).match(url);
             if (packed) return await packed.json() as T;
         } catch { /* Try IndexedDB and the network if browser storage is unavailable. */ }
     }

@@ -3,15 +3,17 @@ import { useLocation } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
 import { useLiveFollowStore } from '../stores/liveFollowStore';
+import { useAdhanPlayback } from '../lib/adhanPlayback';
 import { isSessionRoute, watchAppUpdates } from '../lib/appUpdates';
 
 export function UpdateBanner() {
     const [available, setAvailable] = useState(false);
     const {pathname} = useLocation();
     const playing = useAudioPlayerStore(s => s.isPlaying);
+    const adhanPlaying = useAdhanPlayback(s => s.status === 'playing' || s.status === 'loading');
     const following = useLiveFollowStore(s => s.active);
     // Preserve the whole session, including pauses between verses and recording preparation.
-    const protectedSession = isSessionRoute(pathname) || playing || following;
+    const protectedSession = isSessionRoute(pathname) || playing || adhanPlaying || following;
     const protectedRef = useRef(protectedSession);
     const watcher = useRef<ReturnType<typeof watchAppUpdates> | null>(null);
     useEffect(() => {

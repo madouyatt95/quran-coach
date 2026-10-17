@@ -1,0 +1,39 @@
+import {EXTRA_DUELS,EXTRA_INQUIRIES} from './challengeVariants';
+import {SURAH_JOURNEYS} from './journeyData';
+export const MISSIONS=SURAH_JOURNEYS.flatMap(j=>j.verses);
+export const MISSION_LABELS=['Écouter','Repérer','Construire','Expliquer','Retrouver'];
+export const MISSION_ANALYSES:Record<string,{clue:string;parts:string[];decoy:string}>={
+ '112:1':{clue:'Repérez le mot qui demande de dire.',parts:['Verbe','Impératif','Demande adressée au destinataire'],decoy:'Nom au génitif'},
+ '112:2':{clue:'Repérez le mot qui apporte une information sur le premier nom.',parts:['Nom','Attribut','Nominatif'],decoy:'Verbe accompli'},
+ '112:3':{clue:'Repérez le verbe à la voix passive.',parts:['Verbe inaccompli','Voix passive','Jussif après lam'],decoy:'Impératif'},
+ '112:4':{clue:'Repérez le groupe qui réunit lām et un pronom.',parts:['Préposition lām','Pronom -hu','Complément de la préposition'],decoy:'Sujet de kāna'},
+ '113:1':{clue:'Repérez le verbe qui porte le sujet « je ».',parts:['Verbe inaccompli','Voix active','Première personne du singulier'],decoy:'Première personne du pluriel'},
+ '113:2':{clue:'Repérez le verbe accompli.',parts:['Verbe accompli','Voix active','Troisième personne du singulier'],decoy:'Nom défini'},
+ '113:3':{clue:'Repérez l’unité contenant wāw et min.',parts:['Conjonction wāw','Préposition min','Nom suivant au génitif'],decoy:'Attribut de inna'},
+ '113:4':{clue:'Repérez la préposition fī.',parts:['Préposition fī','Introduit un nom','Nom au génitif'],decoy:'Verbe impératif'},
+ '113:5':{clue:'Repérez le participe actif, un nom, avant idhā.',parts:['Nom','Participe actif','Forme I'],decoy:'Verbe au passif'},
+ '114:1':{clue:'Repérez le mot contenant la préposition bi-.',parts:['Préposition bi-','Nom rabb','Nom au génitif'],decoy:'Verbe inaccompli'},
+ '114:2':{clue:'Repérez le nom qui complète le premier.',parts:['Nom','Complément du nom','Génitif'],decoy:'Impératif'},
+ '114:3':{clue:'Repérez le complément du nom.',parts:['Nom','Complément du nom','Génitif'],decoy:'Attribut de kāna'},
+ '114:4':{clue:'Repérez l’épithète qui décrit le nom précédent.',parts:['Nom adjectival','Épithète','Génitif'],decoy:'Verbe accompli'},
+ '114:5':{clue:'Repérez le verbe qui suit le relatif.',parts:['Verbe inaccompli','Voix active','Troisième personne du singulier'],decoy:'Première personne du singulier'},
+ '114:6':{clue:'Repérez l’unité qui commence par la conjonction wāw.',parts:['Conjonction wāw','Nom défini','Nom au génitif'],decoy:'Verbe à l’impératif'},
+};
+export interface Duel {id:string;title:string;lesson:string;words:[string[],string[]];changed:number[];prompt:string;answer:0|1;explanation:string;meanings:[string,string];family?:string}
+export const DUELS:Duel[]=[
+ {id:'voice',title:'Qui accomplit l’action ?',lesson:'passive',words:[['فَتَحَ','الطَّالِبُ','الْبَابَ'],['فُتِحَ','الْبَابُ']],changed:[0,1,2],prompt:'Dans quelle phrase celui qui ouvre n’est-il pas nommé ?',answer:1,explanation:'La seconde phrase est passive. La porte devient le substitut du sujet, au nominatif ; l’agent n’est pas exprimé.',meanings:['L’élève a ouvert la porte.','La porte a été ouverte.'],family:'fth'},
+ {id:'negative',title:'Une particule change la phrase',lesson:'negation',words:[['يَكْتُبُ'],['لَا','يَكْتُبُ']],changed:[0],prompt:'Quelle phrase nie l’action d’écrire ?',answer:1,explanation:'Lā exprime ici la négation de l’inaccompli. Le verbe reste à l’indicatif.',meanings:['Il écrit.','Il n’écrit pas.'],family:'ktb'},
+ {id:'owner',title:'À qui appartient le livre ?',lesson:'attached',words:[['كِتَابُهُ'],['كِتَابُهُمْ']],changed:[0],prompt:'Quel groupe signifie « leur livre » ?',answer:1,explanation:'Le suffixe -hum renvoie ici à plusieurs possesseurs ; -hu à un possesseur masculin singulier.',meanings:['Son livre.','Leur livre.']},
+ {id:'nominal',title:'Décrire ou affirmer ?',lesson:'nominal',words:[['الْبَيْتُ','كَبِيرٌ'],['الْبَيْتُ','الْكَبِيرُ']],changed:[1],prompt:'Quelle construction affirme « la maison est grande » ?',answer:0,explanation:'Dans le premier exemple, kabīrun est un attribut indéfini. Dans le second groupe isolé, al-kabīru est une épithète définie : « la grande maison ».',meanings:['La maison est grande.','La grande maison.']},
+ {id:'time',title:'Un état dans le passé',lesson:'kana',words:[['الْبَابُ','مَفْتُوحٌ'],['كَانَ','الْبَابُ','مَفْتُوحًا']],changed:[0,2],prompt:'Quelle phrase situe ici l’ouverture dans le passé ?',answer:1,explanation:'Kāna situe l’état dans le passé dans cet exemple ; maftūḥan est son attribut à l’accusatif.',meanings:['La porte est ouverte.','La porte était ouverte.']},
+ {id:'person',title:'Une lettre, une autre personne',lesson:'conjugation',words:[['أَسْمَعُ'],['نَسْمَعُ']],changed:[0],prompt:'Dans quelle forme le sujet est-il « je » ?',answer:0,explanation:'Le préfixe a- porte « je » ; na- porte « nous ». La famille du verbe reste la même.',meanings:['J’entends.','Nous entendons.'],family:'sm3'},
+ ...EXTRA_DUELS,
+];
+export interface Inquiry {id:string;title:string;lesson:string;words:string[];claim:string;clues:{word:number;label:string;detail:string}[];required:number[];solutions:string[];answer:number;explanation:string}
+export const INQUIRIES:Inquiry[]=[
+ {id:'subject',title:'Le sujet a changé de place',lesson:'verbal',words:['فَتَحَ','الْبَابَ','الطَّالِبُ'],claim:'Un lecteur propose : « La porte a ouvert l’élève. » Trouvez qui agit réellement.',clues:[{word:0,label:'Le verbe',detail:'Fataḥa : il a ouvert, verbe accompli.'},{word:1,label:'La fatḥa',detail:'Al-bāba porte l’accusatif, marque de l’objet ici.'},{word:2,label:'La ḍamma',detail:'Aṭ-ṭālibu porte le nominatif, marque du sujet ici.'}],required:[1,2],solutions:['La porte a ouvert l’élève.','L’élève a ouvert la porte.','Le sujet n’est pas exprimé.'],answer:1,explanation:'L’ordre des mots ne suffit pas : les marques de cas distinguent ici l’élève, sujet, de la porte, objet.'},
+ {id:'ownership',title:'Deux noms, une relation',lesson:'idafa',words:['كِتَابُ','الطَّالِبِ'],claim:'Est-ce une phrase qui affirme quelque chose sur un livre, ou un groupe qui indique son possesseur ?',clues:[{word:0,label:'Le premier nom',detail:'Kitābu est le premier terme de l’iḍāfa, sans article ni tanwīn.'},{word:1,label:'Le second nom',detail:'Aṭ-ṭālibi est défini et au génitif ; il précise le livre.'}],required:[0,1],solutions:['Le livre est un élève.','L’élève a écrit.','Le livre de l’élève.'],answer:2,explanation:'Les deux noms forment une iḍāfa. La relation rend le groupe défini sans ajouter al- au premier nom.'},
+ {id:'future',title:'Le temps de la négation',lesson:'negation',words:['لَنْ','يَكْتُبَ'],claim:'Quelqu’un comprend « il n’a pas écrit ». Quel indice permet de corriger cette lecture ?',clues:[{word:0,label:'La particule',detail:'Lan exprime ici une négation future.'},{word:1,label:'La terminaison',detail:'Yaktuba est un inaccompli au subjonctif après lan.'}],required:[0,1],solutions:['Il n’écrira pas.','Il n’a pas écrit.','Écris !'],answer:0,explanation:'Lan + inaccompli au subjonctif exprime cette négation future. Lam aurait une autre valeur et commanderait le jussif.'},
+ {id:'attribute',title:'Un attribut qui ressemble à un objet',lesson:'kana',words:['كَانَ','الْبَابُ','مَفْتُوحًا'],claim:'Le dernier mot est à l’accusatif. Cela suffit-il à en faire un objet ?',clues:[{word:0,label:'Le verbe kāna',detail:'Kāna prend un nom et un attribut dans cette construction.'},{word:1,label:'Le nom',detail:'Al-bābu reste au nominatif.'},{word:2,label:'L’attribut',detail:'Maftūḥan décrit l’état de la porte ; l’attribut de kāna est à l’accusatif.'}],required:[0,2],solutions:['Oui, tout accusatif est un objet.','Non, c’est l’attribut de kāna.','C’est une préposition.'],answer:1,explanation:'Un cas ne correspond pas à une seule fonction. Il faut identifier la construction de kāna pour analyser maftūḥan.'},
+ ...EXTRA_INQUIRIES,
+];
