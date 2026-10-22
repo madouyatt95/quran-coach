@@ -4,6 +4,7 @@ import {libraryAudioSource} from '../lib/audioLibrary';
 import {useAudioLibraryStore} from './audioLibraryStore';
 import {useAudioPlayerStore} from './audioPlayerStore';
 import {bindNarrationMedia,clearNarrationMedia,updateNarrationMedia} from '../lib/narrationMediaSession';
+import {claimMediaSession} from '../lib/mediaSessionOwner';
 import {unlockAudio} from '../lib/audioUnlock';
 interface Player {item:LibraryAudio|null;playing:boolean;loading:boolean;position:number;duration:number;rate:number;error:string;deadline:number;play:(item:LibraryAudio)=>Promise<void>;toggle:()=>void;seek:(seconds:number)=>void;setRate:(rate:number)=>void;sleep:(minutes:number)=>void;close:()=>void}
 let audio:HTMLAudioElement|undefined,sequence=0,blob:string|undefined,lastSave=0;
@@ -27,7 +28,7 @@ function ensure(){
  window.addEventListener('pagehide',save);
  return audio;
 }
-function bind(item:LibraryAudio){bindNarrationMedia(owner,'Bibliothèque Quran Coach',item.title,{artist:item.narrator,play:()=>useLibraryPlayer.getState().toggle(),pause,seek:(value,relative)=>useLibraryPlayer.getState().seek(relative?useLibraryPlayer.getState().position+value:value)});}
+function bind(item:LibraryAudio){claimMediaSession(owner);bindNarrationMedia(owner,'Bibliothèque Quran Coach',item.title,{artist:item.narrator,play:()=>useLibraryPlayer.getState().toggle(),pause,seek:(value,relative)=>useLibraryPlayer.getState().seek(relative?useLibraryPlayer.getState().position+value:value)});}
 export const useLibraryPlayer=create<Player>((set,get)=>({item:null,playing:false,loading:false,position:0,duration:0,rate:1,error:'',deadline:0,
  play:async item=>{
   void unlockAudio();pause();window.dispatchEvent(new Event('quran-stop-playback'));const q=useAudioPlayerStore.getState();if(q.isPlaying)q.togglePlay();
