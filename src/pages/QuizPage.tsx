@@ -23,6 +23,7 @@ import './QuizPage.css';
 import '../components/Quiz/QuizExperience.css';
 import {QuizStudy} from '../components/Quiz/QuizStudy';
 import {QuizInvestigations} from '../components/Quiz/QuizInvestigations';
+import {DuelChoice,LocalDuelSetup} from '../components/Quiz/DuelChoice';
 import {QuizStudio} from '../components/Quiz/QuizStudio';
 
 // ─── Main Quiz Page ──────────────────────────────────────
@@ -51,6 +52,8 @@ export function QuizPage() {
         case 'study': return <QuizStudy/>;
         case 'investigations': return <QuizInvestigations/>;
         case 'studio': return <QuizStudio/>;
+        case 'duel-choice': return <DuelChoice/>;
+        case 'local-duel': return <LocalDuelSetup/>;
         case 'home':
             return <HomeView />;
         case 'daily':

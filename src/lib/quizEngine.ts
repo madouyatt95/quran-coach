@@ -893,7 +893,7 @@ function generateFiqhQuestions(): QuizQuestion[] {
 
 // ─── Audio Questions ────────────────────────────────────
 
-function generateAudioQuestions(): QuizQuestion[] {
+export function generateAudioQuestions(): QuizQuestion[] {
     // cdn.islamic.network uses GLOBAL ayah numbers (1-6236)
     // SURAH_STARTS[i] = global ayah number of FIRST ayah of surah (i+1)
     // Computed from official Quran structure: 7+286+200+176+120+...

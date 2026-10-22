@@ -14,3 +14,15 @@ describe('saved quiz sessions',()=>{
 
 it('preserves adaptive settings and authored feedback across reload, without adapting shared games',async()=>{const {learningBank}=await import('../lib/quizLearning');const all=learningBank().filter(q=>q.context?.id==='sabirin-tawhid-1'&&q.format==='choice'&&!q.investigation);const q=all.find(q=>q.stage==='apply')!,other=all.find(q=>q.stage==='discover')!;const s=()=>useQuizLearningStore.getState();s().start('Adaptation',[q,other],'learn',[],{poolIds:all.map(q=>q.id)});s().answer(false,true,q.choices[0],{choice:0});await useQuizLearningStore.persist.rehydrate();expect(s().session?.answers[0].detail?.choice).toBe(0);s().next();expect(s().session?.support).toBe(true);expect(s().session?.questions[0]).toEqual(q);s().start('Partagé',[q,other],'shared',[],{poolIds:all.map(q=>q.id)});s().answer(false,true,'');s().next();expect(s().session?.questions).toEqual([q,other]);expect(s().session?.adaptationNote).toBe('');});
 it('does not schedule isolated investigation steps as unplayable revision questions',async()=>{const {learningBank}=await import('../lib/quizLearning');const q=learningBank().find(q=>q.investigation)!;useQuizLearningStore.getState().start('Enquête',[q]);useQuizLearningStore.getState().answer(true,true,q.choices[q.correctIndex]);expect(useQuizLearningStore.getState().recalls[q.id]).toBeUndefined();useQuizLearningStore.getState().next();expect(useQuizLearningStore.getState().completed).toBe(1);});
+
+it('gives both local duel players identical questions and hides answers between turns, including after reload',async()=>{
+ const s=()=>useQuizLearningStore.getState();const questions=buildLearningSession({recalls:{},count:2});
+ s().start('Duel',questions,'local-duel',['A','B']);expect(s().session?.questions.map(q=>q.id)).toEqual([questions[0].id,questions[0].id,questions[1].id,questions[1].id]);
+ expect(s().session?.adaptive).toBe(false);
+ for(let i=0;i<4;i++){
+  expect(s().session?.handoff).toBe(true);s().answer(true,true,'too early');expect(s().session?.answers).toHaveLength(i);
+  s().ready();s().answer(i%2===0,true,'response');s().answer(true,true,'duplicate');s().next();
+  await useQuizLearningStore.persist.rehydrate();
+ }
+ expect(s().session?.finished).toBe(true);expect(s().session?.answers.map(a=>a.player)).toEqual([0,1,0,1]);expect(s().recalls).toEqual({});
+});

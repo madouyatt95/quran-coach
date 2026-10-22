@@ -8,6 +8,7 @@ export function HomeView() {
     const q = useQuizStore();
     const study = useQuizLearningStore();
     const navigate = useNavigate();
+    const recentStudy = study.session && (study.session.startedAt || 0) > (q.lastGame?.at || 0);
     const hasSession = study.session && !study.session.finished;
     const daily = () => {
         if (!hasSession) {
@@ -19,7 +20,7 @@ export function HomeView() {
     };
     const modes = [
         { icon: '🎯', title: 'Quiz solo', description: 'Choisir un thème', action: q.startSolo },
-        { icon: '⚔️', title: 'Duel en ligne', description: 'Défier un autre joueur', action: () => q.setView('lobby') },
+        { icon: '⚔️', title: 'Duel', description: 'Sur un téléphone ou en ligne', action: () => q.setView('duel-choice') },
         { icon: '⚡', title: 'Sprint', description: '60 secondes pour jouer', action: q.startSprint },
         { icon: '🎧', title: 'Quiz audio', description: 'Reconnaître une sourate', action: q.startAudio },
         { icon: '📅', title: 'Défi du jour', description: '10 questions communes', action: () => q.setView('daily') },
@@ -49,6 +50,12 @@ export function HomeView() {
                     <button onClick={() => q.setView('custom-duel')}>🎓 Duel sur mesure</button>
                 </div>
             </section>
+
+            {(hasSession || recentStudy || q.lastGame) && <section className="qx-last-game" aria-label="Ma dernière partie">
+                {hasSession ? <><span>En pause : {study.session!.title}</span><button onClick={()=>q.setView('study')}>Continuer →</button></>
+                    : recentStudy ? <><span>Dernière partie : {study.session!.title}</span><button onClick={()=>{const s=study.session!;study.start(s.title,[...new Map(s.questions.map(item=>[item.id,item])).values()],s.mode,s.names,{adaptive:s.adaptive,poolIds:s.poolIds});q.setView('study');}}>Rejouer →</button></>
+                    : <><span>Dernière partie : {{solo:'Quiz solo',audio:'Quiz audio',sprint:'Sprint',daily:'Défi du jour',sira:'Parcours Sira',revision:'Révision',duel:'Duel'}[q.lastGame!.kind]}</span><button onClick={q.replayLast}>Rejouer →</button></>}
+            </section>}
 
             <section className="qx-card qx-progress-links" aria-labelledby="quiz-progress-title">
                 <div className="qx-section-heading">

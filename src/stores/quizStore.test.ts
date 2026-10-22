@@ -18,3 +18,13 @@ describe('quiz reliability',()=>{
  it('finishes the sprint after its last question rather than counting it repeatedly',()=>{const s=()=>useQuizStore.getState();s().startSprint();useQuizStore.setState({questions:s().questions.slice(0,1)});s().submitAnswer(s().questions[0].correctIndex);expect(s().view).toBe('result');const count=s().totalCorrect;s().submitAnswer(0);expect(s().totalCorrect).toBe(count);});
  it('migrates stats without wiping accumulated progress',async()=>{localStorage.setItem('quiz-store',JSON.stringify({version:1,state:{totalXP:24000,totalPlayed:42,level:25,title:'Hafidh',wrongQuestions:[],siraProgression:{sira_1:{completed:true,stars:3}}}}));await useQuizStore.persist.rehydrate();expect(useQuizStore.getState().totalXP).toBe(24000);expect(useQuizStore.getState().totalPlayed).toBe(42);expect(useQuizStore.getState().title).toBe('Persévérant');expect(useQuizStore.getState().siraProgression.sira_1.completed).toBe(true);});
 });
+
+it('persists audio as the last mode and replays it after reload without mixing in the previous theme',async()=>{
+ const s=()=>useQuizStore.getState();s().selectTheme('fiqh');s().startAudio();s().resetQuiz();
+ await useQuizStore.persist.rehydrate();expect(s().lastGame?.kind).toBe('audio');s().replayLast();
+ expect(s().view).toBe('playing');expect(s().questions.every(q=>q.audioUrl)).toBe(true);expect(s().theme).toBeNull();
+});
+it('replays solo with its original difficulty and theme',()=>{
+ const s=()=>useQuizStore.getState();s().setDifficulty('easy');s().selectTheme('fiqh');s().resetQuiz();s().setDifficulty('hard');s().replayLast();
+ expect(s().difficulty).toBe('easy');expect(s().theme).toBe('fiqh');expect(s().questions.every(q=>q.choices.length===2)).toBe(true);
+});

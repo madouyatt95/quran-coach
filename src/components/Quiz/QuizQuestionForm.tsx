@@ -19,7 +19,7 @@ export function QuestionForm({q,learning,onAnswer,support=false}:{q:LearningQues
  };
  return <section className="qx-card">
   <h1>{q.questionFr}</h1>
-  {q.format==='audio'&&q.verseRef&&<><StudyAudio target={q.verseRef} onListened={()=>setHeard(true)}/><button onClick={()=>setAssisted(true)}>M’aider du texte</button></>}
+  {q.format==='audio'&&q.verseRef&&<>{q.audioUrl?<AudioPlayer url={q.audioUrl} onListened={()=>setHeard(true)}/>:<StudyAudio target={q.verseRef} onListened={()=>setHeard(true)}/>}{learning&&q.questionAr&&<button onClick={()=>setAssisted(true)}>M’aider du texte</button>}</>}
   {q.questionAr&&(q.format!=='audio'||assisted)&&<p className="qx-ar" lang="ar" dir="rtl">{q.questionAr}</p>}
   {q.passage&&<blockquote>{q.passage}</blockquote>}
   {learning&&!q.investigation&&q.format!=='audio'&&(q.hint||q.explanation)&&<div className="qx-hint"><button aria-expanded={assisted} onClick={()=>setAssisted(true)}>{support?'Un rappel pour t’aider':'Besoin d’un indice ?'}</button>{assisted&&<p role="status">{q.hint||q.explanation}</p>}</div>}
@@ -34,7 +34,7 @@ export function QuestionForm({q,learning,onAnswer,support=false}:{q:LearningQues
   <button className="qx-primary" disabled={!ready} onClick={submit}>Valider ma réponse</button>
  </section>;
 }
-function StudyAudio({target,onListened}:{target:{surah:number;ayah:number};onListened:()=>void}){
+export function StudyAudio({target,onListened}:{target:{surah:number;ayah:number};onListened?:()=>void}){
  const [url,setUrl]=useState<string|null>(null),[failed,setFailed]=useState(false),[attempt,setAttempt]=useState(0);
  useEffect(()=>{let active=true;void fetchAyahAudioUrl(target.surah,target.ayah).then(value=>{if(active){setUrl(value);setFailed(!value);}}).catch(()=>{if(active)setFailed(true);});return()=>{active=false;};},[target.surah,target.ayah,attempt]);
  return url?<AudioPlayer url={url} onListened={onListened}/>:failed?<div role="status"><p>L’extrait n’est pas accessible pour le moment.</p><button onClick={()=>{setFailed(false);setAttempt(attempt+1);}}>Réessayer</button></div>:<p role="status">Préparation de l’extrait…</p>;

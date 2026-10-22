@@ -42,3 +42,26 @@ it('shows the selected misconception and a different unscored checkpoint',async(
  expect(div.textContent).toContain('Tu as retrouvé la distinction');expect(useQuizLearningStore.getState().session?.answers).toHaveLength(1);
 });
 it('does not mark an answer assisted by a hint as certain',async()=>{const q=learningBank().find(q=>q.id==='apply-sabirin-tawhid-1')!;useQuizLearningStore.getState().start('Indice',[q]);await act(async()=>root.render(<MemoryRouter><QuizStudy/></MemoryRouter>));await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Besoin d’un indice ?')!.click());await act(async()=>[...div.querySelectorAll('.qx-choices button')].find(b=>b.textContent!.endsWith(q.choices[q.correctIndex]))!.dispatchEvent(new MouseEvent('click',{bubbles:true})));await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Valider ma réponse')!.click());expect(useQuizLearningStore.getState().session?.answers[0].certain).toBe(false);expect(useQuizLearningStore.getState().recalls[q.id].successes).toBe(0);});
+
+it('conceals all local duel feedback and resets the choice before the second player receives the same question',async()=>{
+ const q=learningBank().find(q=>q.format==='choice')!;const s=()=>useQuizLearningStore.getState();s().start('Duel',[q],'local-duel',['A','B']);
+ await act(async()=>root.render(<MemoryRouter><QuizStudy/></MemoryRouter>));expect(div.textContent).not.toContain(q.questionFr);
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Je suis prêt')!.click());
+ await act(async()=>[...div.querySelectorAll('.qx-choices button')].find(b=>b.textContent!.endsWith(q.choices[q.correctIndex]))!.dispatchEvent(new MouseEvent('click',{bubbles:true})));
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Valider ma réponse')!.click());
+ expect(div.textContent).not.toContain(q.explanation);expect(div.querySelector('.qx-answer')).toBeNull();
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Continuer')!.click());expect(div.textContent).toContain('À toi, B');expect(div.textContent).not.toContain(q.questionFr);
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Je suis prêt')!.click());
+ expect(div.textContent).toContain(q.questionFr);expect(div.querySelector('.qx-choices [aria-pressed=true]')).toBeNull();
+ expect(([...div.querySelectorAll('button')].find(b=>b.textContent==='Valider ma réponse') as HTMLButtonElement).disabled).toBe(true);
+});
+
+it('opens an incoming shared challenge in the actual quiz page and stays in the game when the link parameter is removed',async()=>{
+ const {QuizPage}=await import('../../pages/QuizPage');const {encodeQuizShare}=await import('../../lib/quizLearning');
+ const q=learningBank().find(q=>q.format==='choice')!;
+ useQuizStore.setState({view:'home',player:{id:'test',pseudo:'Test',avatar_emoji:'🌙',total_wins:0,total_played:0,total_xp:0,level:1}});
+ await act(async()=>root.render(<MemoryRouter initialEntries={['/quiz?challenge='+encodeURIComponent(encodeQuizShare([q]))]}><QuizPage/></MemoryRouter>));
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Relever ce défi')!.click());
+ expect(div.textContent).toContain(q.questionFr);expect(useQuizStore.getState().view).toBe('study');expect(useQuizLearningStore.getState().session?.mode).toBe('shared');
+ expect(div.textContent).not.toContain('Besoin d’un indice');
+});

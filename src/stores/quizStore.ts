@@ -16,6 +16,8 @@ interface QuizState {
     view: QuizView;
     setView: (v: QuizView) => void;
 
+    lastGame: {kind:'solo'|'audio'|'sprint'|'daily'|'sira'|'revision'|'duel';theme?:QuizThemeId;difficulty:QuizDifficulty;at:number} | null;
+    replayLast: () => void;
     // Game state
     mode: QuizMode;
     difficulty: QuizDifficulty;
@@ -247,6 +249,14 @@ export const useQuizStore = create<QuizState>()(
             wrongQuestions: [],
             sprintBest: 0,
             duelWins: 0,
+            lastGame: null,
+            replayLast: () => {
+                const last=get().lastGame;if(!last)return;get().setDifficulty(last.difficulty);
+                if(last.kind==='audio')get().startAudio();
+                else if(last.kind==='sprint')get().startSprint();
+                else if(last.kind==='solo'&&last.theme)get().selectTheme(last.theme);
+                else get().setView(last.kind==='sira'?'sira-map':last.kind==='daily'?'daily':last.kind==='revision'?'error-review':last.kind==='duel'?'duel-choice':'solo-themes');
+            },
             gameHistory: [],
             lastPowerUpGained: null,
 
@@ -263,7 +273,7 @@ export const useQuizStore = create<QuizState>()(
                 set({ siraProgression: { ...siraProgression, [id]: { completed: true, stars: Math.max(stars, siraProgression[id]?.stars || 0) } } });
             },
             startSiraLevel: (level) => {
-                set({
+                set({lastGame: {kind:'sira',difficulty:get().difficulty,at:Date.now()},
                     mode: 'sira',
                     siraCurrentLevel: level,
                     questions: level.questions,
@@ -314,7 +324,7 @@ export const useQuizStore = create<QuizState>()(
             setDifficulty: (d) => set({ difficulty: d }),
 
             selectTheme: (theme) => {
-                set({ theme });
+                set({lastGame: {kind:'solo',difficulty:get().difficulty,at:Date.now(),theme}, theme });
                 // Start solo immediately with selected theme
                 const { difficulty } = get();
                 const config = DIFFICULTY_CONFIG[difficulty];
@@ -344,7 +354,7 @@ export const useQuizStore = create<QuizState>()(
 
             startSprint: () => {
                 const questions = getSprintQuestions(50);
-                set({
+                set({lastGame: {kind:'sprint',difficulty:get().difficulty,at:Date.now()},
                     mode: 'sprint',
                     theme: null,
                     questions,
@@ -364,7 +374,7 @@ export const useQuizStore = create<QuizState>()(
                 const { wrongQuestions } = get();
                 if (wrongQuestions.length === 0) return;
                 const questions = wrongQuestions.slice(0, 10);
-                set({
+                set({lastGame: {kind:'revision',difficulty:get().difficulty,at:Date.now()},
                     mode: 'revision',
                     questions,
                     currentIndex: 0,
@@ -380,7 +390,7 @@ export const useQuizStore = create<QuizState>()(
             startAudio: () => {
                 const questions = getAudioQuestions(10);
                 if (questions.length === 0) return;
-                set({
+                set({lastGame: {kind:'audio',difficulty:get().difficulty,at:Date.now()},
                     mode: 'solo',
                     theme: null,
                     questions,
@@ -399,9 +409,10 @@ export const useQuizStore = create<QuizState>()(
                 const today = new Date().toISOString().split('T')[0];
                 if (get().dailyChallengeLastDate === today) return;
                 const draft = get().dailyDraft;
-                if(draft?.date === today) {set({...draft, dailySessionDate:today, mode:'daily', difficulty:'medium', view:draft.feedback?'feedback':'playing', timerStart:Date.now(), secondChance:false,freezeUntil:0});return;}
+                if(draft?.date === today) {set({lastGame: {kind:'daily',difficulty:'medium',at:Date.now()},...draft, dailySessionDate:today, mode:'daily', difficulty:'medium', view:draft.feedback?'feedback':'playing', timerStart:Date.now(), secondChance:false,freezeUntil:0});return;}
                 const questions = getDailyQuestions(today);
                 set({
+                    lastGame: {kind:'daily',difficulty:'medium',at:Date.now()},
                     mode: 'daily',
                     questions,
                     dailySessionDate: today,
@@ -455,6 +466,7 @@ export const useQuizStore = create<QuizState>()(
                     duelRoundOppScores: [0, 0, 0],
                     questions: roundQuestions[0],
                     theme: themes[0],
+                    lastGame: {kind:'duel',difficulty:get().difficulty,at:Date.now()},
                     mode: 'duel',
                     view: 'lobby',
                     currentIndex: 0,
@@ -507,6 +519,7 @@ export const useQuizStore = create<QuizState>()(
                 set({
                     matchId: match.id,
                     matchCode: code.toUpperCase(),
+                    lastGame: {kind:'duel',difficulty:get().difficulty,at:Date.now()},
                     mode: 'duel',
                     isDuelCreator: false,
                     opponent: {
@@ -1079,6 +1092,7 @@ export const useQuizStore = create<QuizState>()(
             name: 'quiz-store',
             version: 3,
             partialize: (state) => ({
+                lastGame: state.lastGame,
                 dailyDraft: state.dailyDraft,
                 reviewSchedule: state.reviewSchedule,
                 player: state.player,

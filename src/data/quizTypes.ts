@@ -2,7 +2,7 @@
 
 export type QuizView =
     | 'study'
-    | 'investigations' | 'studio'
+    | 'investigations' | 'studio' | 'duel-choice' | 'local-duel'
     | 'home'        // Mode Selection (Solo, Duel, etc.) + Difficulty
     | 'solo-themes' // Theme selection (only for Solo)
     | 'custom-duel' // Theme selection for custom duel (Teacher mode)

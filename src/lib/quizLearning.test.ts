@@ -10,3 +10,17 @@ describe('quiz learning',()=>{
  it('provides explanatory context for every Sira stage',()=>{for(const level of generateSiraLevels()){expect(level.questions.length).toBe(10);expect(level.questions.every(q=>q.explanation&&q.explanation.length>100)).toBe(true);}});
  it('daily questions including choices and IDs survive independent module loads',async()=>{vi.resetModules();const first=(await import('./quizEngine')).getDailyQuestions('2026-10-15');vi.resetModules();const second=(await import('./quizEngine')).getDailyQuestions('2026-10-15');expect(second).toEqual(first);});
 });
+
+it('shares the exact easy-mode choices and audio reference across independent loads',async()=>{
+ const {getQuestions,generateAudioQuestions}=await import('./quizEngine');
+ const {encodeClassicShare}=await import('./quizLearning');
+ const questions=[...getQuestions('fiqh',3,'easy'),generateAudioQuestions()[0]];
+ const code=encodeClassicShare(questions)!;expect(code).toMatch(/^3\./);
+ vi.resetModules();const decoded=(await import('./quizLearning')).decodeQuizShare(code)!;
+ expect(decoded.map(q=>q.choices)).toEqual(questions.map(q=>q.choices));
+ expect(decoded.map(q=>q.correctIndex)).toEqual(questions.map(q=>q.correctIndex));
+ expect(decoded.at(-1)?.audioUrl).toBe(questions.at(-1)?.audioUrl);
+ expect(decoded.at(-1)?.format).toBe('audio');
+ expect(decodeQuizShare(code.replace(/\.\d+\./,'.9999.'))).toBeNull();
+ expect(decodeQuizShare(code+'~'+code.slice(2).split('~')[0])).toBeNull();
+});

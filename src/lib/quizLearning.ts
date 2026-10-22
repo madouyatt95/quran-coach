@@ -1,4 +1,4 @@
-import { getQuestionBank, stableQuestionId,generateSiraLevels } from './quizEngine';
+import { getQuestionBank, stableQuestionId,generateSiraLevels,generateAudioQuestions } from './quizEngine';
 import type { QuizQuestion, QuizThemeId } from '../data/quizTypes';
 import {QURAN_THEMES} from '../data/themesData';
 import { COURSE_LEVELS } from '../academy/data/courseLibrary';
@@ -96,7 +96,28 @@ export function buildLearningSession(options:LearningOptions):LearningQuestion[]
 function fingerprint(q:LearningQuestion){let hash=2166136261;for(const c of JSON.stringify([q.questionFr,q.questionAr,q.choices,q.correctIndex,q.items,q.pairs,q.passage,q.format])){hash=Math.imul(hash^c.charCodeAt(0),16777619);}return (hash>>>0).toString(36);}
 export function encodeQuizShare(questions:LearningQuestion[]):string{return `2.${questions.map(q=>encodeURIComponent(q.id)+'.'+fingerprint(q)).join('~')}`;}
 export function decodeQuizShare(value:string):LearningQuestion[]|null {
+ if(value.startsWith('3.'))return decodeClassicShare(value);
  if(value.length>6000||!value.startsWith('2.'))return null;
  try{const tokens=value.slice(2).split('~');if(tokens.length<1||tokens.length>12||new Set(tokens).size!==tokens.length)return null;const bank=new Map(learningBank().map(q=>[q.id,q]));const result=tokens.map(token=>{const dot=token.lastIndexOf('.');const q=bank.get(decodeURIComponent(token.slice(0,dot)));return q&&fingerprint(q)===token.slice(dot+1)?q:undefined;});return result.every(Boolean)?result as LearningQuestion[]:null;}catch{return null;}
 }
-export function legacyLearningQuestion(q:QuizQuestion):LearningQuestion{return {...q,id:stableQuestionId(q),stage:'discover',format:'choice'};}
+export function legacyLearningQuestion(q:QuizQuestion):LearningQuestion{return {...q,id:stableQuestionId(q),stage:'discover',format:q.audioUrl?'audio':'choice'};}
+
+/** Share references and choice indexes only. All wording/answers come from the local bank. */
+function classicShareBank(){return new Map([...Object.values(getQuestionBank()).flat(),...generateAudioQuestions(),...generateSiraLevels().flatMap(level=>level.questions)].map(q=>[stableQuestionId(q),q]));}
+export function encodeClassicShare(questions:QuizQuestion[]):string|null {
+ const bank=classicShareBank();
+ const entries=questions.map(q=>{const base=bank.get(stableQuestionId(q));if(!base)return null;const indices=q.choices.map(choice=>base.choices.indexOf(choice));if(indices.some(i=>i<0))return null;return `${stableQuestionId(q)}.${indices.join('')}.${fingerprint(legacyLearningQuestion(base))}`;});
+ if(!entries.length||entries.length>50||entries.some(e=>!e)||new Set(entries).size!==entries.length)return null;
+ return `3.${entries.join('~')}`;
+}
+function decodeClassicShare(value:string):LearningQuestion[]|null {
+ if(value.length>6000)return null;
+ const bank=classicShareBank(),tokens=value.slice(2).split('~');
+ if(!tokens.length||tokens.length>50||new Set(tokens).size!==tokens.length)return null;
+ const questions:LearningQuestion[]=[];
+ for(const token of tokens){const [id,order,hash,...extra]=token.split('.');const base=bank.get(id);if(!base||extra.length||!order||!/^\d{2,4}$/.test(order)||hash!==fingerprint(legacyLearningQuestion(base)))return null;
+ const indices=[...order].map(Number);if(new Set(indices).size!==indices.length||indices.some(i=>i>=base.choices.length)||!indices.includes(base.correctIndex))return null;
+ questions.push({...legacyLearningQuestion(base),choices:indices.map(i=>base.choices[i]),correctIndex:indices.indexOf(base.correctIndex)});
+ }
+ return new Set(questions.map(q=>q.id)).size===questions.length?questions:null;
+}

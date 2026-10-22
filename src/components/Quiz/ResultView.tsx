@@ -1,3 +1,4 @@
+import {QuizResultReview} from './QuizResultReview';
 import { useState } from 'react';
 import { Trophy, Zap, Share2, RotateCcw, CheckCircle, Clock } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
@@ -143,6 +144,7 @@ export function ResultView() {
                 </div>
             )}
 
+            <QuizResultReview/>
             <div className="quiz-result-actions">
                 <button className="quiz-btn-primary" onClick={resetQuiz}>
                     <RotateCcw size={18} />
