@@ -1,3 +1,6 @@
+import {GAME_CATALOG} from '../../data/quizGames';
+import {useQuizGamesStore} from '../../stores/quizGamesStore';
+import './Games/QuizGames.css';
 import {QUIZ_ACTIVITIES} from '../../lib/quizLaunch';
 import { useNavigate } from 'react-router-dom';
 import { useQuizStore } from '../../stores/quizStore';
@@ -7,6 +10,7 @@ import { QUIZ_THEMES, DIFFICULTY_CONFIG, type QuizDifficulty } from '../../data/
 
 export function HomeView() {
     const q = useQuizStore();
+    const games = useQuizGamesStore(s=>s.games);
     const study = useQuizLearningStore();
     const navigate = useNavigate();
     const recentStudy = study.session && (study.session.startedAt || 0) > (q.lastGame?.at || 0);
@@ -87,6 +91,7 @@ export function HomeView() {
                 <button className="qx-primary" onClick={daily}>{hasSession ? 'Reprendre' : 'C’est parti'} →</button>
             </section>
 
+            <section aria-labelledby="quiz-games-title"><h2 id="quiz-games-title">Jouer autrement</h2><div className="qx-game-grid">{GAME_CATALOG.map(game=><button key={game.id} onClick={()=>navigate(`/quiz?game=${game.id}`)}><span aria-hidden="true">{game.icon}</span><strong>{game.title}</strong><small>{game.description}</small><em>{games[game.id]&&!games[game.id]?.finished?'▶ Partie en cours':game.tag}</em></button>)}</div></section>
             <section aria-labelledby="quiz-formats-title"><h2 id="quiz-formats-title">Une autre façon de jouer</h2><div className="qx-activity-grid">{QUIZ_ACTIVITIES.map(activity=><button key={activity.id} onClick={()=>navigate(`/quiz?exercise=${activity.id}`)}><span aria-hidden="true">{activity.icon}</span><strong>{activity.title}</strong><small>{activity.description}</small></button>)}</div></section>
             <section aria-labelledby="quiz-learn-title">
                 <h2 id="quiz-learn-title">Apprendre à mon rythme</h2>

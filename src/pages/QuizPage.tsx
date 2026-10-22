@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useQuizStore } from '../stores/quizStore';
 import { PseudoSetup } from '../components/Quiz/PseudoSetup';
 import { HomeView } from '../components/Quiz/HomeView';
@@ -27,6 +27,8 @@ import {QuizInvestigations} from '../components/Quiz/QuizInvestigations';
 import {DuelChoice,LocalDuelSetup} from '../components/Quiz/DuelChoice';
 import {QuizStudio} from '../components/Quiz/QuizStudio';
 
+const QuizGames=lazy(()=>import('../components/Quiz/Games/QuizGames').then(m=>({default:m.QuizGames})));
+
 // ─── Main Quiz Page ──────────────────────────────────────
 export function QuizPage() {
     const { view, player, matchId, channel, syncMatch } = useQuizStore();
@@ -44,6 +46,7 @@ export function QuizPage() {
         }
     }, [player, matchId, channel, syncMatch]);
 
+    if(params.has('game'))return <Suspense fallback={<main className="quiz-container qx"><p role="status">Ouverture du jeu…</p></main>}><QuizGames/></Suspense>;
     if(params.has('source')||params.has('exercise'))return <QuizLaunch/>;
     if(params.has('challenge'))return <QuizStudio/>;
     if(view==='study')return <QuizStudy/>;

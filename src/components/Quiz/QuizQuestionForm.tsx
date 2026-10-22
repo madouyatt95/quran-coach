@@ -36,6 +36,6 @@ export function QuestionForm({q,learning,onAnswer,support=false}:{q:LearningQues
 }
 export function StudyAudio({target,onListened}:{target:{surah:number;ayah:number};onListened?:()=>void}){
  const [url,setUrl]=useState<string|null>(null),[failed,setFailed]=useState(false),[attempt,setAttempt]=useState(0);
- useEffect(()=>{let active=true;void fetchAyahAudioUrl(target.surah,target.ayah).then(value=>{if(active){setUrl(value);setFailed(!value);}}).catch(()=>{if(active)setFailed(true);});return()=>{active=false;};},[target.surah,target.ayah,attempt]);
+ useEffect(()=>{let active=true;setUrl(null);setFailed(false);const timer=setTimeout(()=>{if(active){active=false;setFailed(true);}},12000);void fetchAyahAudioUrl(target.surah,target.ayah).then(value=>{if(active){clearTimeout(timer);setUrl(value);setFailed(!value);}}).catch(()=>{if(active){clearTimeout(timer);setFailed(true);}});return()=>{active=false;clearTimeout(timer);};},[target.surah,target.ayah,attempt]);
  return url?<AudioPlayer url={url} onListened={onListened}/>:failed?<div role="status"><p>L’extrait n’est pas accessible pour le moment.</p><button onClick={()=>{setFailed(false);setAttempt(attempt+1);}}>Réessayer</button></div>:<p role="status">Préparation de l’extrait…</p>;
 }
