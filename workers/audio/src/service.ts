@@ -32,10 +32,14 @@ export function configuredAccounts(env: Env) {
   return Object.keys(keys).filter(id => /^[a-z0-9_-]{1,40}$/.test(id) && typeof keys[id]==='string' && String(keys[id]).length>=10);
 }
 export async function providerVoices(env: Env, id: string) {
-  const response=await eleven(env,id,'voices?language=fr&page_size=100',{},'v2');
+  const response=await eleven(env,id,'voices?page_size=100',{},'v2');
   if(!response.ok)throw new HttpError(503,'Les voix de ce compte sont momentanément indisponibles.');
-  const result=await response.json() as {voices:{voice_id:string;name:string;category:string;description?:string;preview_url?:string}[]};
-  return result.voices.map(v=>({id:v.voice_id,name:v.name,category:v.category,description:v.description||'',preview:/^https:\/\//.test(v.preview_url||'')?v.preview_url:''}));
+  const result=await response.json() as {voices:{voice_id:string;name:string;category:string;description?:string;preview_url?:string;labels?:{language?:string};verified_languages?:{language:string;preview_url?:string}[]}[]};
+  const french=(v:typeof result.voices[number])=>v.labels?.language==='fr'||v.verified_languages?.some(l=>l.language==='fr');
+  return result.voices.sort((a,b)=>Number(!!french(b))-Number(!!french(a))).map(v=>{
+    const preview=v.verified_languages?.find(l=>l.language==='fr')?.preview_url||v.preview_url||'';
+    return {id:v.voice_id,name:v.name,category:v.category,description:v.description||'',preview:/^https:\/\//.test(preview)?preview:''};
+  });
 }
 export async function quota(env: Env, id: string) {
   const r = await eleven(env,id,'user/subscription');
