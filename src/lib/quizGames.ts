@@ -1,3 +1,4 @@
+import {createExploration,reduceExploration,type ExplorationGame,type ExplorationAction} from './quizExploration';
 import {FAMILY_BOARDS,MEMORY_PACKS,DESCRIBE_CARDS,STORY_GAMES,escapeSteps,type GameKind} from '../data/quizGames';
 import {chapterBooks} from '../data/storyChapters';
 import {generateAudioQuestions} from './quizEngine';
@@ -13,8 +14,8 @@ export interface EscapeGame extends Base {kind:'escape';order:number[];cards:num
 export const mysteryBank=generateAudioQuestions;
 export interface MysteryGame extends Base {kind:'mystery';rounds:number[];index:number;level:number;heard:boolean;guesses:number[];solved:boolean;revealed:boolean;results:{surah:number;correct:boolean;attempts:number;hints:number}[];advanced:boolean;choices:number[][]}
 export interface DescribeGame extends Base {kind:'describe';deck:number[];index:number;phase:'handoff'|'active'|'review';remaining:number|null;lastTick:number|null;found:boolean;results:{card:number;found:boolean;reason:string}[];seconds:number}
-export type SavedGame=FamiliesGame|MemoryGame|StoryGame|EscapeGame|MysteryGame|DescribeGame;
-export type GameAction=
+export type SavedGame=ExplorationGame|FamiliesGame|MemoryGame|StoryGame|EscapeGame|MysteryGame|DescribeGame;
+export type GameAction=ExplorationAction
  |{type:'toggle';index:number}|{type:'check'}|{type:'hint'}|{type:'reset-selection'}
  |{type:'answer';index:number}|{type:'next'}|{type:'reveal'}|{type:'heard'}
  |{type:'ready';now:number}|{type:'tick';now:number}|{type:'pause';now:number}|{type:'describe-result';found:boolean;reason:string;now:number};
@@ -22,6 +23,7 @@ function base(kind:GameKind,id:string):Base{return {edition:GAME_EDITION,kind,id
 export function createGame(kind:GameKind,id:string,options:{advanced?:boolean;seconds?:number}={},random=Math.random):SavedGame|null{
  const b=base(kind,id);
  switch(kind){
+ case 'roots':case 'sentences':case 'expedition':return createExploration(kind,id,random);
  case 'families':{const board=FAMILY_BOARDS.find(b=>b.id===id);return board?{...b,kind,cards:mix(board.groups.flatMap(g=>g.ids),random),selected:[],solved:[],hinted:[]}:null;}
  case 'memory':{const pack=MEMORY_PACKS.find(p=>p.id===id);return pack?{...b,kind,cards:mix(pack.ids.flatMap(word=>[{word,side:'ar' as const},{word,side:'fr' as const}]),random),open:[],matched:[]}:null;}
  case 'story':{const book=chapterBooks[id];return book&&STORY_GAMES.some(g=>g.id===id)?{...b,kind,cards:mix(book.chapters.map((_,i)=>i),random),order:[],stage:'order',index:0,choice:null,unlocked:false,choices:book.chapters.map(c=>shuffledIndices(c.options.length,random))}:null;}
@@ -44,6 +46,7 @@ function describeTick(g:DescribeGame,now:number):DescribeGame{
 export function reduceGame(game:SavedGame,action:GameAction):SavedGame{
  if(game.finished||game.edition!==GAME_EDITION)return game;
  switch(game.kind){
+ case 'roots':case 'sentences':case 'expedition':return reduceExploration(game,action);
  case 'families':{
   const g=game,board=FAMILY_BOARDS.find(b=>b.id===g.id)!;
   if(action.type==='toggle'&&g.cards.includes(action.index)&&!g.solved.some(i=>board.groups[i].ids.includes(action.index))){const selected=g.selected.includes(action.index)?g.selected.filter(i=>i!==action.index):g.selected.length<4?[...g.selected,action.index]:g.selected;return {...g,selected,message:''};}
@@ -88,7 +91,7 @@ export function reduceGame(game:SavedGame,action:GameAction):SavedGame{
   if(action.type==='hint'&&!done&&g.level<mysteryMaxLevel(g))return {...g,level:g.level+1,hints:g.hints+1,heard:false,message:'Écoute le verset suivant en entier.'};
   if(action.type==='reveal'&&!done)return {...g,revealed:true,message:'Découvre la sourate, puis réécoute ce passage.'};
   if(action.type==='answer'&&g.heard&&!done&&validIndex(action.index-1,114)&&!g.guesses.includes(action.index)&&(g.advanced||g.choices[g.index].includes(action.index))){const correct=action.index===q.verseRef!.surah;const guesses=[...g.guesses,action.index];const advance=!correct&&g.level<mysteryMaxLevel(g);return {...g,guesses,attempts:g.attempts+1,solved:correct,revealed:!correct&&guesses.length>=3,level:advance?g.level+1:g.level,heard:advance?false:g.heard,message:correct?'Tu as reconnu la sourate !':guesses.length>=3?'Trois essais : découvrons ce passage.':advance?'Ce n’est pas cette sourate. Un nouveau verset est disponible.':'Ce n’est pas cette sourate. Tu peux réécouter le dernier verset.'};}
-  if(action.type==='next'&&done)return {...g,results:[...g.results,{surah:q.verseRef!.surah,correct:g.solved,attempts:g.guesses.length,hints:g.hints}],index:Math.min(g.rounds.length-1,g.index+1),finished:g.index+1===g.rounds.length,level:0,heard:false,guesses:[],solved:false,revealed:false,hints:0,message:''};return g;
+  if(action.type==='next'&&done)return {...g,results:[...g.results,{surah:q.verseRef!.surah,correct:g.solved,attempts:g.guesses.length,hints:g.level}],index:Math.min(g.rounds.length-1,g.index+1),finished:g.index+1===g.rounds.length,level:0,heard:false,guesses:[],solved:false,revealed:false,hints:0,message:''};return g;
  }
  case 'describe':{
   let g=game;

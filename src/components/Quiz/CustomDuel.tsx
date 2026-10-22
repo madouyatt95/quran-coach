@@ -8,6 +8,7 @@ export function CustomDuel() {
     const { createDuel, setView } = useQuizStore();
     const [selected, setSelected] = useState<QuizThemeId[]>([]);
     const [creating, setCreating] = useState(false);
+    const [error,setError]=useState('');
 
     const toggleTheme = (id: QuizThemeId) => {
         if (selected.includes(id)) {
@@ -18,10 +19,12 @@ export function CustomDuel() {
     };
 
     const handleCreate = async () => {
-        if (selected.length !== 3) return;
+        if (selected.length !== 3 || creating) return;
         setCreating(true);
-        await createDuel(selected);
-        setCreating(false);
+        setError('');
+        try {if(!await createDuel(selected))setError('La partie n’a pas pu être créée. Vérifie ta connexion puis réessaie.');}
+        catch {setError('Connexion interrompue. Tu peux réessayer.');}
+        finally {setCreating(false);}
     };
 
     return (
@@ -36,7 +39,7 @@ export function CustomDuel() {
             <p className="quiz-subtitle">Sélectionne 3 thèmes pour ce duel ({selected.length}/3)</p>
             <div className="quiz-theme-grid">
                 {QUIZ_THEMES.map(theme => (
-                    <div
+                    <button type="button" aria-pressed={selected.includes(theme.id)}
                         key={theme.id}
                         className={`quiz-theme-card ${selected.includes(theme.id) ? 'active' : ''}`}
                         onClick={() => toggleTheme(theme.id)}
@@ -48,10 +51,12 @@ export function CustomDuel() {
                             <p>{theme.nameAr}</p>
                         </div>
                         {selected.includes(theme.id) && <div className="quiz-theme-check">✓</div>}
-                    </div>
+                    </button>
                 ))}
             </div>
 
+            {error&&<p role="alert">{error}</p>}
+            <p>Les deux joueurs ont la même difficulté et le même temps de réponse.</p>
             <button
                 className="quiz-btn-primary"
                 style={{ marginTop: '24px', width: '100%', opacity: selected.length === 3 ? 1 : 0.5 }}

@@ -16,6 +16,7 @@ export function PlayingView() {
     const untimed = mode==='revision'||mode==='sira';
     const [heardId,setHeardId]=useState<string|null>(null);
     const [retry,setRetry]=useState(false);
+    const submittedRef=useRef<number|null>(null);
     const waitingAudio=!!question?.audioUrl&&heardId!==question.id;
     const maxTime = isSprint ? 10 : DIFFICULTY_CONFIG[difficulty].timerSeconds;
 
@@ -23,17 +24,20 @@ export function PlayingView() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [sprintTime, setSprintTime] = useState(60);
     const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+    const remainingRef=useRef(maxTime*1000);
     const sprintTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
-    useEffect(()=>{setSelectedIndex(null);setRetry(false);},[currentIndex]);
+    useEffect(()=>{setSelectedIndex(null);setRetry(false);submittedRef.current=null;},[currentIndex]);
     // Keep countdown paused until the complete excerpt has been heard.
     useEffect(() => {
         if (isSprint || untimed || waitingAudio) return;
         setTimeLeft(maxTime);
+        let previous=Date.now();remainingRef.current=maxTime*1000;
         const interval=setInterval(()=>{
-            if(useQuizStore.getState().freezeUntil>Date.now())return;
-            setTimeLeft(prev=>Math.max(0,prev-1));
-        },1000);
+            const now=Date.now(),freeze=useQuizStore.getState().freezeUntil;
+            remainingRef.current=Math.max(0,remainingRef.current-Math.max(0,now-Math.max(previous,freeze)));
+            previous=now;setTimeLeft(Math.ceil(remainingRef.current/1000));
+        },200);
         timerRef.current=interval;
         return()=>clearInterval(interval);
     },[currentIndex,maxTime,isSprint,untimed,waitingAudio]);
@@ -55,7 +59,7 @@ export function PlayingView() {
     }, [currentIndex, isSprint]);
 
     const handleChoice = (index: number) => {
-        if (selectedIndex !== null && !isSprint || waitingAudio) return;
+        if (submittedRef.current===currentIndex || selectedIndex !== null && !isSprint || waitingAudio) return;
         if(useQuizStore.getState().secondChance && index!==question.correctIndex){submitAnswer(index);setRetry(true);return;}
 
         if (Capacitor.isNativePlatform()) {
@@ -66,6 +70,7 @@ export function PlayingView() {
             }
         }
 
+        submittedRef.current=currentIndex;
         setSelectedIndex(index);
         if (!isSprint) {
             clearInterval(timerRef.current);
@@ -98,7 +103,8 @@ export function PlayingView() {
 
             if (e.type === 'timer-bomb') {
                 // Apply bomb only once per receipt
-                setTimeLeft(prev => Math.max(1, prev - 5));
+                remainingRef.current=Math.max(1000,remainingRef.current-5000);
+                setTimeLeft(Math.ceil(remainingRef.current/1000));
             }
 
             if (e.type === 'shield') {

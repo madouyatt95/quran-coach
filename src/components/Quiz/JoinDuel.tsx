@@ -9,14 +9,12 @@ export function JoinDuel() {
     const [error, setError] = useState('');
 
     const handleJoin = async () => {
-        if (code.length < 6) return;
+        if (code.length !== 6 || joining) return;
         setJoining(true);
         setError('');
-        const success = await joinDuel(code);
-        if (!success) {
-            setError('Partie introuvable ou déjà commencée');
-            setJoining(false);
-        }
+        try {if (!await joinDuel(code))setError('Partie introuvable, déjà commencée ou créée par toi.');}
+        catch {setError('Connexion interrompue. Tu peux réessayer.');}
+        finally {setJoining(false);}
     };
 
     return (
@@ -34,7 +32,7 @@ export function JoinDuel() {
                     type="text"
                     className="quiz-join-input"
                     value={code}
-                    onChange={e => setCode(e.target.value.toUpperCase().slice(0, 6))}
+                    onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0, 6))}
                     placeholder="ABC123"
                     maxLength={6}
                     autoFocus

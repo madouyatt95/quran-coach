@@ -1,11 +1,11 @@
 import {QuizResultReview} from './QuizResultReview';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trophy, Zap, Share2, RotateCcw, CheckCircle, Clock } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
 import { QUIZ_THEMES, BADGES } from '../../data/quizTypes';
 
 export function ResultView() {
-    const { score, answers, mode, opponent, opponentScore, resetQuiz, theme, player, sprintCorrect, sprintBest, unlockedBadges, lastPowerUpGained } = useQuizStore();
+    const { duelResultStatus, nextQuestion, score, answers, mode, opponent, opponentScore, resetQuiz, theme, player, sprintCorrect, sprintBest, unlockedBadges, lastPowerUpGained } = useQuizStore();
     const correctCount = answers.filter(a => a.correct).length;
     const total = answers.length;
     const themeData = QUIZ_THEMES.find(t => t.id === theme);
@@ -23,6 +23,12 @@ export function ResultView() {
         return unlockedBadges.slice(-3);
     });
 
+    useEffect(()=>{
+        if(mode!=='duel'||duelResultStatus!=='waiting')return;
+        const timer=setInterval(()=>{if(document.visibilityState!=='hidden')void nextQuestion();},3000);
+        return()=>clearInterval(timer);
+    },[mode,duelResultStatus,nextQuestion]);
+    if(mode==='duel'&&duelResultStatus!=='ready')return <main className="quiz-container qx"><h1>Tu as terminé tes questions</h1><p role="status">{duelResultStatus==='loading'?'Vérification du résultat…':'En attente de la fin de la partie de ton adversaire ou de sa synchronisation.'}</p><p>Ton score : {score} points. Le résultat final sera affiché quand les deux joueurs auront terminé.</p><button disabled={duelResultStatus==='loading'} onClick={()=>void nextQuestion()}>Actualiser le résultat</button><button onClick={resetQuiz}>Quitter le duel</button><small>En quittant maintenant, ce duel ne sera pas ajouté à ton bilan de victoires.</small></main>;
     return (
         <div className="quiz-container quiz-result">
             <div className="quiz-result-top">

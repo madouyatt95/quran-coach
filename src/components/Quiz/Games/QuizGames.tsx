@@ -1,3 +1,5 @@
+import {ROOT_PACKS,SENTENCE_PACKS,EXPEDITIONS} from '../../../data/quizExploration';
+import {RootsBoard,SentenceBoard,ExpeditionBoard} from './ExplorationGames';
 import {useCallback,useEffect,useState} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {GAME_CATALOG,FAMILY_BOARDS,MEMORY_PACKS,STORY_GAMES,ESCAPE_GAMES,type GameKind} from '../../../data/quizGames';
@@ -12,7 +14,7 @@ import './QuizGames.css';
 export function QuizGames(){
  const [params,setParams]=useSearchParams();const kind=params.get('game');const item=GAME_CATALOG.find(g=>g.id===kind);
  const home=()=>{useQuizStore.getState().setView('home');setParams({}, {replace:true});};
- if(!item)return <main className="quiz-container qx qg"><button onClick={home}>← Quiz & défis</button><h1>Choisis un jeu</h1><p>Ce jeu n’existe pas. Retrouve les six jeux dans Quiz & défis.</p></main>;
+ if(!item)return <main className="quiz-container qx qg"><button onClick={home}>← Quiz & défis</button><h1>Choisis un jeu</h1><p>Ce jeu n’existe pas. Retrouve les jeux dans Quiz & défis.</p></main>;
  return <GameScreen key={item.id} kind={item.id} home={home}/>;
 }
 function GameScreen({kind,home}:{kind:GameKind;home:()=>void}){
@@ -23,7 +25,7 @@ function GameScreen({kind,home}:{kind:GameKind;home:()=>void}){
  // Leaving the screen always masks a secret card, including via global navigation/back.
  useEffect(()=>()=>{dispatch(kind,{type:'pause',now:Date.now()});},[dispatch,kind]);
  useEffect(()=>{window.scrollTo({top:0});},[playing,game?.finished]);
- const packs=kind==='families'?FAMILY_BOARDS:kind==='memory'?MEMORY_PACKS:kind==='story'?STORY_GAMES:kind==='escape'?ESCAPE_GAMES:[{id:'session',title:kind==='mystery'?'Cinq sourates à découvrir':'Dix mots à faire deviner'}];
+ const packs=kind==='roots'?ROOT_PACKS:kind==='sentences'?SENTENCE_PACKS:kind==='expedition'?EXPEDITIONS:kind==='families'?FAMILY_BOARDS:kind==='memory'?MEMORY_PACKS:kind==='story'?STORY_GAMES:kind==='escape'?ESCAPE_GAMES:[{id:'session',title:kind==='mystery'?'Cinq sourates à découvrir':'Dix mots à faire deviner'}];
  const begin=(id:string)=>{start(kind,id,{advanced,seconds});setPlaying(true);};
  return <main className={`quiz-container qx qg qg-${kind}`}><header className="qx-header"><button onClick={()=>{pause();home();}}>← Quiz & défis</button>{playing&&<button onClick={()=>{pause();setPlaying(false);}}>Changer de partie</button>}</header><div className="qg-title"><span aria-hidden="true">{item.icon}</span><div><small>{item.tag}</small><h1>{item.title}</h1></div></div>
  {!playing||!game?<><p>{item.description}</p>{game&&<button className="qx-primary" onClick={()=>setPlaying(true)}>{game.finished?'Revoir mon dernier résultat':'Reprendre ma partie'}</button>}
@@ -32,7 +34,7 @@ function GameScreen({kind,home}:{kind:GameKind;home:()=>void}){
  {game&&!game.finished&&<p>Commencer une nouvelle partie remplacera celle en pause dans ce jeu. Tes autres jeux restent conservés.</p>}
  <div className="qg-pack-grid">{packs.map(pack=><button key={pack.id} onClick={()=>begin(pack.id)}><strong>{pack.title}</strong><span>{game&&!game.finished?'Remplacer ma partie et jouer':'Commencer'} →</span></button>)}</div><p className="qx-muted">Parties enregistrées sur cet appareil. Les résultats de jeu ne valident pas automatiquement tes cours.</p></>:<>
  {game.finished&&<section className="qg-finished" role="status"><span aria-hidden="true">✨</span><strong>Partie terminée</strong><button onClick={()=>setPlaying(false)}>Une nouvelle partie →</button></section>}
- <section className="qx-card qg-board">{game.kind==='families'?<FamiliesBoard game={game} act={act}/>:game.kind==='memory'?<MemoryBoard game={game} act={act}/>:game.kind==='story'?<StoryBoard game={game} act={act}/>:game.kind==='mystery'?<ListeningGame game={game} act={act}/>:game.kind==='escape'?<EscapeBoard game={game} act={act}/>:<DescribeBoard game={game} act={act}/>}</section>
+ <section className="qx-card qg-board">{game.kind==='roots'?<RootsBoard game={game} act={act}/>:game.kind==='sentences'?<SentenceBoard game={game} act={act}/>:game.kind==='expedition'?<ExpeditionBoard game={game} act={act}/>:game.kind==='families'?<FamiliesBoard game={game} act={act}/>:game.kind==='memory'?<MemoryBoard game={game} act={act}/>:game.kind==='story'?<StoryBoard game={game} act={act}/>:game.kind==='mystery'?<ListeningGame game={game} act={act}/>:game.kind==='escape'?<EscapeBoard game={game} act={act}/>:<DescribeBoard game={game} act={act}/>}</section>
  </>}
  </main>;
 }

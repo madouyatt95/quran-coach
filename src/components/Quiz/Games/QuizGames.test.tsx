@@ -60,3 +60,12 @@ it('opening another game does not replace the saved one and changing a pack requ
  useQuizGamesStore.getState().start('memory','nature');const before=useQuizGamesStore.getState().games.memory;await render('families');expect(useQuizGamesStore.getState().games.memory).toBe(before);await click('Les mots du quotidien');await click('Changer de partie');expect(div.textContent).toContain('Remplacer ma partie');expect(useQuizGamesStore.getState().games.families?.id).toBe('everyday');
 });
 it('an unknown game has an exit back to the legacy quiz home',async()=>{await render('unknown');await click('Quiz & défis');expect(useQuizStore.getState().view).toBe('home');});
+it('plays a complete domino chain with undo and sources',async()=>{
+ await render('roots');await click('Premiers liens');expect(div.textContent).toContain('même racine');for(const id of [0,1,2,3,4,5]){await act(async()=>useQuizGamesStore.getState().act('roots',{type:'toggle',index:id}));}expect(div.textContent).toContain('Trois familles reliées');expect(div.querySelectorAll('.qg-proof a')).toHaveLength(3);
+});
+it('builds a phrase through actual touch controls and displays roles after checking',async()=>{
+ await render('sentences');await click('Décrire :');await click('الْبَابُ');await click('مَفْتُوحٌ');await click('Vérifier la construction');expect(div.textContent).toContain('les deux sont au nominatif');expect(div.textContent).toContain('Écouter la phrase');await click('Construction suivante');expect(div.textContent).toContain('L’étudiant est présent');
+});
+it('expeditions lock later stages, preserve chosen paths and offer readable audio assistance',async()=>{
+ await render('expedition');await click('À la découverte');expect(div.querySelectorAll('.qg-pack-grid button')).toHaveLength(2);await click('Al-Ikhlas');expect([...div.querySelectorAll('.qx-choices button')].every(b=>(b as HTMLButtonElement).disabled)).toBe(true);await click('Continuer avec le texte');expect([...div.querySelectorAll('.qx-choices button')].every(b=>!(b as HTMLButtonElement).disabled)).toBe(true);await click('Un impératif');expect(div.textContent).toContain('Découverte réussie');await click('Étape suivante');expect(div.textContent).toContain('Étape 2');expect(div.querySelectorAll('.qg-map .is-visited')).toHaveLength(1);
+});

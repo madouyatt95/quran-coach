@@ -1,3 +1,4 @@
+import {quizDay} from '../lib/quizDate';
 // Quiz Store — Zustand state management for solo + duel + sprint + revision modes
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -40,6 +41,7 @@ interface QuizState {
     sprintCorrect: number;
 
     // Duel state
+    duelResultStatus: 'idle'|'loading'|'waiting'|'ready';
     matchId: string | null;
     matchCode: string | null;
     isDuelCreator: boolean;
@@ -216,6 +218,7 @@ export const useQuizStore = create<QuizState>()(
             sprintCorrect: 0,
 
             // Duel
+            duelResultStatus: 'idle',
             matchId: null,
             matchCode: null,
             isDuelCreator: false,
@@ -406,7 +409,7 @@ export const useQuizStore = create<QuizState>()(
             },
 
             startDaily: () => {
-                const today = new Date().toISOString().split('T')[0];
+                const today = quizDay();
                 if (get().dailyChallengeLastDate === today) return;
                 const draft = get().dailyDraft;
                 if(draft?.date === today) {set({lastGame: {kind:'daily',difficulty:'medium',at:Date.now()},...draft, dailySessionDate:today, mode:'daily', difficulty:'medium', view:draft.feedback?'feedback':'playing', timerStart:Date.now(), secondChance:false,freezeUntil:0});return;}
@@ -456,6 +459,7 @@ export const useQuizStore = create<QuizState>()(
                 }
 
                 set({
+                    duelResultStatus: 'idle',
                     matchId: data.id,
                     matchCode: code,
                     isDuelCreator: true,
@@ -467,7 +471,7 @@ export const useQuizStore = create<QuizState>()(
                     questions: roundQuestions[0],
                     theme: themes[0],
                     lastGame: {kind:'duel',difficulty:get().difficulty,at:Date.now()},
-                    mode: 'duel',
+                    mode: 'duel', difficulty: 'medium',
                     view: 'lobby',
                     currentIndex: 0,
                     answers: [],
@@ -490,13 +494,13 @@ export const useQuizStore = create<QuizState>()(
                     .eq('status', 'waiting')
                     .single();
 
-                if (error || !match) {
+                if (error || !match || match.player1_id === player.id) {
                     console.error('[Quiz] Join error:', error);
                     return false;
                 }
 
                 // Update match
-                const { error: updateError } = await supabase
+                const { data: claimed, error: updateError } = await supabase
                     .from('quiz_matches')
                     .update({
                         player2_id: player.id,
@@ -504,9 +508,12 @@ export const useQuizStore = create<QuizState>()(
                         player2_emoji: player.avatar_emoji,
                         status: 'playing',
                     })
-                    .eq('id', match.id);
+                    .eq('id', match.id)
+                    .eq('status', 'waiting')
+                    .is('player2_id', null)
+                    .select('id').maybeSingle();
 
-                if (updateError) {
+                if (updateError || !claimed) {
                     console.error('[Quiz] Join update error:', updateError);
                     return false;
                 }
@@ -517,10 +524,11 @@ export const useQuizStore = create<QuizState>()(
                 const rebuiltThemes = rebuiltRounds.map(r => r[0]?.theme || 'prophets') as QuizThemeId[];
 
                 set({
+                    duelResultStatus: 'idle',
                     matchId: match.id,
                     matchCode: code.toUpperCase(),
                     lastGame: {kind:'duel',difficulty:get().difficulty,at:Date.now()},
-                    mode: 'duel',
+                    mode: 'duel', difficulty: 'medium',
                     isDuelCreator: false,
                     opponent: {
                         id: match.player1_id,
@@ -572,6 +580,7 @@ export const useQuizStore = create<QuizState>()(
                     return;
                 }
 
+                if(get().matchId!==matchId)return;
                 const isPlayer1 = match.player1_id === player.id;
                 const oppId = isPlayer1 ? match.player2_id : match.player1_id;
 
@@ -596,7 +605,8 @@ export const useQuizStore = create<QuizState>()(
                         opponentAnswers: isPlayer1 ? (match.player2_answers || []) : (match.player1_answers || []),
                         duelAllQuestions: rebuiltRounds,
                         duelRounds: rebuiltThemes,
-                        mode: 'duel',
+                        mode: 'duel', difficulty: 'medium',
+                        timerStart: ['lobby','home','join'].includes(get().view)?Date.now():get().timerStart,
                         view: get().view === 'lobby' || get().view === 'home' || get().view === 'join' ? 'playing' : get().view,
                     });
                 }
@@ -613,7 +623,7 @@ export const useQuizStore = create<QuizState>()(
                         const m = payload.new as any;
                         const state = get();
                         const myId = state.player?.id;
-                        if (!myId) return;
+                        if (!myId || state.matchId!==matchId) return;
 
                         const isP1 = m.player1_id === myId;
                         const oId = isP1 ? m.player2_id : m.player1_id;
@@ -746,6 +756,7 @@ export const useQuizStore = create<QuizState>()(
                 const { questions, currentIndex, answers, score, timerStart, mode, matchId, player, difficulty, currentStreak, wrongQuestions, totalCorrect, sprintCorrect } = get();
                 const question = questions[currentIndex];
                 if (!question || get().view !== 'playing' || answers.some(a=>a.questionId===question.id)) return;
+                if (!Number.isInteger(chosenIndex) || chosenIndex < -1 || chosenIndex >= question.choices.length) return;
                 if(chosenIndex>=0 && chosenIndex!==question.correctIndex && get().secondChance){set({secondChance:false});return;}
 
                 const maxTimeMs = mode === 'sprint' ? 10000 : DIFFICULTY_CONFIG[difficulty].timerSeconds * 1000;
@@ -868,7 +879,7 @@ export const useQuizStore = create<QuizState>()(
 
             nextQuestion: async () => {
                 const state = get();
-                if(!['feedback','playing'].includes(state.view)||!state.questions.length)return;
+                if((!['feedback','playing'].includes(state.view)&&!(state.view==='result'&&state.mode==='duel'&&state.duelResultStatus==='waiting'))||!state.questions.length)return;
                 if(state.mode!=='sprint'&&!state.answers.some(a=>a.questionId===state.questions[state.currentIndex]?.id))return;
                 const { currentIndex, questions, mode, score, totalPlayed, totalWins, soloHighScores, theme, matchId, channel, duelWins, sprintCorrect, sprintBest, duelRound, duelRounds, duelRoundScores, siraCurrentLevel } = state;
 
@@ -887,22 +898,26 @@ export const useQuizStore = create<QuizState>()(
 
                 if (currentIndex + 1 >= questions.length || mode === 'sprint') {
                     // Close synchronously before awaiting remote results to prevent duplicate awards.
-                    set({view:'result'});
+                    set({view:'result',duelResultStatus:mode==='duel'?'loading':'idle'});
                     // End of match
                     const isDuelMatch = mode === 'duel';
 
-                    // For duel: fetch final opponent score
+                    // Both players must finish before awarding a victory or recording a loss.
                     if (isDuelMatch && matchId) {
                         const isP1 = get().isDuelCreator;
-                        const { data: finalMatch } = await supabase
-                            .from('quiz_matches')
-                            .select('player1_score,player1_answers,player2_score,player2_answers')
-                            .eq('id', matchId)
-                            .single();
-                        if (finalMatch) {
-                            const finalOppScore = isP1 ? (finalMatch.player2_score || 0) : (finalMatch.player1_score || 0);
-                            const finalOppAnswers = isP1 ? (finalMatch.player2_answers || []) : (finalMatch.player1_answers || []);
-                            set({ opponentScore: finalOppScore, opponentAnswers: finalOppAnswers });
+                        try {
+                            const { data: finalMatch } = await supabase.from('quiz_matches')
+                                .select('player1_score,player1_answers,player2_score,player2_answers')
+                                .eq('id', matchId).single();
+                            if(get().matchId!==matchId)return;
+                            const expected=state.duelAllQuestions.flat().length||state.answers.length;
+                            const finalOppAnswers=finalMatch?(isP1?finalMatch.player2_answers:finalMatch.player1_answers)||[]:[];
+                            if(finalMatch)set({opponentScore:(isP1?finalMatch.player2_score:finalMatch.player1_score)||0,opponentAnswers:finalOppAnswers});
+                            if(!finalMatch||finalOppAnswers.length<expected){set({duelResultStatus:'waiting'});return;}
+                            set({duelResultStatus:'ready'});
+                        } catch {
+                            if(get().matchId===matchId)set({duelResultStatus:'waiting'});
+                            return;
                         }
                     }
 
@@ -1068,7 +1083,8 @@ export const useQuizStore = create<QuizState>()(
                     currentIndex: 0,
                     answers: [],
                     score: 0,
-                    matchId: null,
+                    duelResultStatus: 'idle',
+            matchId: null,
                     matchCode: null,
                     isDuelCreator: false,
                     opponent: null,

@@ -22,3 +22,9 @@ it('ignores an old verse response after switching to the next complete verse',as
 it('offers a retry after an audio lookup stalls instead of waiting forever',async()=>{
  vi.useFakeTimers();fetchAudio.mockImplementation(()=>new Promise(()=>{}));await act(async()=>root.render(<StudyAudio target={{surah:1,ayah:2}}/>));await act(async()=>vi.advanceTimersByTime(12000));expect(div.textContent).toContain('Réessayer');expect(div.querySelector('audio')).toBeNull();
 });
+it('stops on a global playback request and avoids preloading every hidden correction audio',async()=>{
+ await act(async()=>root.render(<AudioPlayer url="https://example.test/verse.mp3"/>));expect(div.querySelector('audio')?.preload).toBe('none');await act(async()=>window.dispatchEvent(new Event('quran-stop-playback')));expect(HTMLMediaElement.prototype.pause).toHaveBeenCalled();
+});
+it('lets a stalled audio request time out with a retry',async()=>{
+ vi.useFakeTimers();vi.mocked(HTMLMediaElement.prototype.play).mockImplementation(()=>new Promise(()=>{}));await act(async()=>root.render(<AudioPlayer url="https://example.test/stalled.mp3"/>));await act(async()=>div.querySelector('button')!.click());await act(async()=>vi.advanceTimersByTime(15000));expect(div.textContent).toContain('n’a pas pu être chargé');expect(div.querySelector('button')?.getAttribute('aria-label')).toBe('Réessayer l’audio');
+});

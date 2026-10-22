@@ -110,3 +110,15 @@ it('an incoming challenge takes precedence over an already-open study session wi
  await act(async()=>root.render(<MemoryRouter initialEntries={['/quiz?challenge='+encodeURIComponent(encodeQuizShare([q]))]}><QuizPage/></MemoryRouter>));
  expect(div.textContent).toContain('Relever ce défi');expect(useQuizLearningStore.getState().session?.title).toBe('Ancienne séance');
 });
+it('a double click in sprint answers one question, not the next unseen question',async()=>{
+ useQuizStore.getState().startSprint();await render();const button=div.querySelector('.quiz-choices button') as HTMLButtonElement;await act(async()=>{button.click();button.click();});expect(useQuizStore.getState().answers).toHaveLength(1);expect(useQuizStore.getState().currentIndex).toBe(1);
+});
+it('a throttled tab consumes elapsed countdown time rather than a single tick',async()=>{
+ useQuizStore.getState().selectTheme('fiqh');await render();vi.setSystemTime(Date.now()+60000);await advance(200);expect(useQuizStore.getState().view).toBe('feedback');expect(useQuizStore.getState().answers[0].chosenIndex).toBe(-1);
+});
+it('a failed online lobby creation stops and requires an explicit retry',async()=>{
+ const {DuelLobby}=await import('./DuelLobby');const create=vi.fn().mockResolvedValue('');useQuizStore.setState({view:'lobby',createDuel:create});await act(async()=>root.render(<MemoryRouter><DuelLobby/></MemoryRouter>));await advance(20000);expect(create).toHaveBeenCalledTimes(1);expect(div.textContent).toContain('n’a pas pu être créée');await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Réessayer')!.click());expect(create).toHaveBeenCalledTimes(2);
+});
+it('keeps a received timer penalty after the next clock tick',async()=>{
+ useQuizStore.getState().selectTheme('fiqh');useQuizStore.setState({mode:'duel',player:{id:'me',pseudo:'Me',avatar_emoji:'🌙',total_wins:0,total_played:0,total_xp:0,level:1}});await render();const before=Number(div.querySelector('.quiz-timer-text')?.textContent);await act(async()=>useQuizStore.setState({activeEffects:[{id:'bomb',type:'timer-bomb',targetId:'me',startTime:Date.now(),durationMs:5000}]}));await advance(400);expect(Number(div.querySelector('.quiz-timer-text')?.textContent)).toBeLessThanOrEqual(before-5);
+});

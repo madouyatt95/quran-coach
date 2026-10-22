@@ -1,0 +1,22 @@
+// @vitest-environment jsdom
+import {it,expect,vi,beforeEach} from 'vitest';
+const remote=vi.hoisted(()=>({from:vi.fn(),removeChannel:vi.fn(),channel:vi.fn()}));
+vi.mock('../lib/supabase',()=>({supabase:remote}));
+import {useQuizStore} from './quizStore';
+import {createJSONStorage} from 'zustand/middleware';
+import {createMemoryStorage} from '../test/memoryStorage';
+import {getDuelRoundQuestions} from '../lib/quizEngine';
+const initial=useQuizStore.getState();
+const player={id:'me',pseudo:'Me',avatar_emoji:'🌙',total_wins:0,total_played:0,total_xp:0,level:1};
+function query(result:unknown){const b={select:vi.fn(),eq:vi.fn(),is:vi.fn(),update:vi.fn(),insert:vi.fn(),single:vi.fn(async()=>result),maybeSingle:vi.fn(async()=>result)};for(const method of ['select','eq','is','update','insert'] as const)b[method].mockReturnValue(b);return b;}
+beforeEach(()=>{vi.clearAllMocks();vi.stubGlobal('localStorage',createMemoryStorage());useQuizStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});useQuizStore.setState({...initial,player},true);const ch={on:vi.fn(),subscribe:vi.fn()};ch.on.mockReturnValue(ch);ch.subscribe.mockReturnValue(ch);remote.channel.mockReturnValue(ch);});
+it('refuses joining one’s own match before any update',async()=>{remote.from.mockReturnValue(query({data:{id:'room',player1_id:'me'},error:null}));expect(await useQuizStore.getState().joinDuel('ABC123')).toBe(false);expect(remote.from).toHaveBeenCalledTimes(1);});
+it('a concurrent claimant cannot overwrite a match already claimed',async()=>{const lookup=query({data:{id:'room',player1_id:'other'},error:null}),claim=query({data:null,error:null});remote.from.mockReturnValueOnce(lookup).mockReturnValueOnce(claim);expect(await useQuizStore.getState().joinDuel('ABC123')).toBe(false);expect(claim.eq).toHaveBeenCalledWith('status','waiting');expect(claim.is).toHaveBeenCalledWith('player2_id',null);expect(useQuizStore.getState().matchId).toBeNull();});
+it('creator polling starts play with a fresh answer clock and a shared difficulty',async()=>{const questions=getDuelRoundQuestions().questions.flat();remote.from.mockReturnValue(query({data:{id:'room',player1_id:'me',player2_id:'other',status:'playing',questions},error:null}));useQuizStore.setState({matchId:'room',view:'lobby',difficulty:'hard',timerStart:1});await useQuizStore.getState().syncMatch();const s=useQuizStore.getState();expect(s.view).toBe('playing');expect(s.opponent?.id).toBe('other');expect(s.timerStart).toBeGreaterThan(1);expect(s.difficulty).toBe('medium');});
+it('ignores an old poll after the user leaves the room',async()=>{let resolve!:(value:unknown)=>void;const b=query(null);b.single.mockImplementation(()=>new Promise(r=>{resolve=r;}));remote.from.mockReturnValue(b);useQuizStore.setState({matchId:'room',view:'lobby'});const request=useQuizStore.getState().syncMatch();useQuizStore.getState().resetQuiz();resolve({data:{id:'room',player1_id:'me',player2_id:'other',status:'playing',questions:[]},error:null});await request;expect(useQuizStore.getState().view).toBe('home');expect(remote.channel).not.toHaveBeenCalled();});
+it('never awards a duel win before the opponent finishes and finalizes exactly once afterwards',async()=>{
+ const rounds=getDuelRoundQuestions(),all=rounds.questions.flat();const answers=all.map(q=>({questionId:q.id,chosenIndex:q.correctIndex,correct:true,timeMs:1000,theme:q.theme}));
+ useQuizStore.setState({player:null,mode:'duel',view:'feedback',matchId:'room',isDuelCreator:true,duelRound:2,duelRounds:rounds.themes,duelAllQuestions:rounds.questions,questions:rounds.questions[2],currentIndex:2,answers,score:1200,duelRoundScores:[400,400,0]});
+ remote.from.mockReturnValue(query({data:{player2_answers:answers.slice(0,5),player2_score:500},error:null}));await useQuizStore.getState().nextQuestion();expect(useQuizStore.getState().duelResultStatus).toBe('waiting');expect(useQuizStore.getState().totalPlayed).toBe(0);expect(useQuizStore.getState().duelWins).toBe(0);
+ const final=query({data:{player2_answers:answers,player2_score:900},error:null});Object.assign(final,{then:vi.fn(()=>Promise.resolve({error:null}))});remote.from.mockReturnValue(final);await useQuizStore.getState().nextQuestion();expect(useQuizStore.getState().duelResultStatus).toBe('ready');expect(useQuizStore.getState().totalPlayed).toBe(1);expect(useQuizStore.getState().duelWins).toBe(1);await useQuizStore.getState().nextQuestion();expect(useQuizStore.getState().totalPlayed).toBe(1);
+});

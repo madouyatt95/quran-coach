@@ -28,3 +28,6 @@ it('replays solo with its original difficulty and theme',()=>{
  const s=()=>useQuizStore.getState();s().setDifficulty('easy');s().selectTheme('fiqh');s().resetQuiz();s().setDifficulty('hard');s().replayLast();
  expect(s().difficulty).toBe('easy');expect(s().theme).toBe('fiqh');expect(s().questions.every(q=>q.choices.length===2)).toBe(true);
 });
+it('rejects out-of-range and fractional answers without changing score or consuming a question',()=>{
+ const s=()=>useQuizStore.getState();s().selectTheme('fiqh');for(const invalid of [NaN,Infinity,-2,0.5,999])s().submitAnswer(invalid);expect(s().answers).toHaveLength(0);expect(s().view).toBe('playing');
+});

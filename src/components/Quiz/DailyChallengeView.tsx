@@ -1,9 +1,12 @@
+import {useEffect,useState} from 'react';
+import {quizDay} from '../../lib/quizDate';
 import { ArrowLeft, Zap, Trophy, CheckCircle } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
 
 export function DailyChallengeView() {
     const { startDaily, dailyChallengeLastDate, dailyDraft, setView } = useQuizStore();
-    const today = new Date().toISOString().split('T')[0];
+    const [today,setToday]=useState(()=>quizDay());
+    useEffect(()=>{const update=()=>setToday(quizDay());const interval=setInterval(update,60000);document.addEventListener('visibilitychange',update);return()=>{clearInterval(interval);document.removeEventListener('visibilitychange',update);};},[]);
     const hasPlayedToday = dailyChallengeLastDate === today;
 
     return (
@@ -20,7 +23,7 @@ export function DailyChallengeView() {
                 <h2>Le Défi du Jour</h2>
                 <p>
                     Chaque jour, un nouveau quiz de 10 questions est généré.
-                    Tout le monde reçoit les mêmes questions !
+                    Une même date donne les mêmes questions.
                 </p>
 
                 <div className="quiz-daily-perks">
@@ -30,7 +33,7 @@ export function DailyChallengeView() {
                     </div>
                     <div className="quiz-perk">
                         <Trophy size={18} color="#FFD700" />
-                        <span>Même défi pour tous · renouvelé à 00 h UTC</span>
+                        <span>Nouveau défi à minuit · heure de ton appareil</span>
                     </div>
                 </div>
 

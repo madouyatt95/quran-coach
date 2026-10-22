@@ -1,6 +1,9 @@
 import {QURAN_VOCABULARY} from './quranVocabulary';
 import {investigationQuestions} from './quizInvestigations';
 export const GAME_CATALOG=[
+ {id:"roots",icon:"🧩",title:"Le domino des racines",tag:"Ṣarf",description:"Relie des mots de même racine pour former une chaîne."},
+ {id:"sentences",icon:"🧱",title:"L’atelier des phrases",tag:"Naḥw",description:"Donne leur place aux mots et comprends leurs relations."},
+ {id:"expedition",icon:"🗺️",title:"Les expéditions",tag:"Parcours",description:"Choisis tes chemins et garde un carnet de découvertes."},
  {id:'families',icon:'🟨',title:'Les quatre familles',tag:'Logique',description:'16 cartes. Quatre liens cachés à découvrir.'},
  {id:'story',icon:'🧩',title:'Le récit à reconstruire',tag:'Histoire',description:'Replace les scènes et retrouve leur enseignement.'},
  {id:'mystery',icon:'🎧',title:'La sourate mystère',tag:'Écoute',description:'Reconnais une sourate, un verset après l’autre.'},
