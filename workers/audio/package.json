@@ -1,0 +1,1 @@
+{"name":"quran-coach-audio-production","private":true,"type":"module","scripts":{"check":"tsc --noEmit","dev":"wrangler dev","build":"wrangler deploy --dry-run","deploy":"wrangler deploy","types":"wrangler types"},"devDependencies":{"@cloudflare/workers-types":"^5.20261022.1","@electric-sql/pglite":"^0.5.11","typescript":"~5.9.3","wrangler":"^4.152.0"}}

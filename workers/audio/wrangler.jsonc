@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "quran-coach-audio",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-22",
+  "workflows": [
+    {
+      "name": "quran-coach-audio-production",
+      "binding": "PRODUCTION",
+      "class_name": "AudioProduction"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "AUDIO",
+      "bucket_name": "quran-coach-audio-private"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://www.quran-coach.fr,https://quran-coach.fr,capacitor://localhost",
+    "GENERATION_ENABLED": "false",
+    "SUPABASE_URL": "https://zuyhuqpafjtasoedtyai.supabase.co"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

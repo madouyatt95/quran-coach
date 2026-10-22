@@ -14,6 +14,7 @@ import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { SideMenu } from './components/Navigation/SideMenu';
 import { MiniPlayer } from './components/MiniPlayer/MiniPlayer';
+import { LibraryPlayer } from './components/Listen/LibraryPlayer';
 import { HomePage } from './pages/HomePage';
 import { useSettingsStore } from './stores/settingsStore';
 import { useQuranStore } from './stores/quranStore';
@@ -37,6 +38,8 @@ const PrayerTimesPage = lazy(() => import('./pages/PrayerTimesPage').then(m => (
 const AdhkarPage = lazy(() => import('./pages/AdhkarPage').then(m => ({ default: m.AdhkarPage })));
 const ListeningExperiencePage = lazy(() => import('./pages/ListeningExperiencePage').then(m => ({ default: m.ListeningExperiencePage })));
 const ListenPage = lazy(() => import('./pages/ListenPage').then(m => ({ default: m.ListenPage })));
+const AudioLibraryPage = lazy(() => import('./pages/AudioLibraryPage').then(m => ({ default: m.AudioLibraryPage })));
+const AudioStudioPage = lazy(() => import('./pages/AudioStudioPage').then(m => ({ default: m.AudioStudioPage })));
 const ReciterDetailPage = lazy(() => import('./pages/ReciterDetailPage').then(m => ({ default: m.ReciterDetailPage })));
 const PlaylistDetailPage = lazy(() => import('./pages/PlaylistDetailPage').then(m => ({ default: m.PlaylistDetailPage })));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage').then(m => ({ default: m.AdminAnalyticsPage })));
@@ -230,6 +233,8 @@ function AppContent() {
             <Route path="/prayer-settings" element={<PrayerSettingsPage />} />
             <Route path="/adhkar" element={<AdhkarPage />} />
             <Route path="/listen" element={<ListenPage />} />
+            <Route path="/listen/library" element={<AudioLibraryPage />} />
+            <Route path="/admin/audio" element={<AudioStudioPage />} />
             <Route path="/listen/experience" element={<ListeningExperiencePage key={location.search} />} />
             <Route path="/listen/:id" element={<ReciterDetailPage />} />
             <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
@@ -267,6 +272,7 @@ function AppContent() {
       {location.pathname !== "/listen/experience" && !location.pathname.startsWith("/journeys/") && !location.pathname.startsWith("/fahm/") && <InstallPrompt />}
       <UpdateBanner />
       <MiniPlayer />
+      <LibraryPlayer />
       <InvisibleCoachLayer />
       <BottomNav />
     </AutomaticMosqueContext.Provider>

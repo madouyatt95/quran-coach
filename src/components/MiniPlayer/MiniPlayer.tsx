@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useAudioPlayerStore } from "../../stores/audioPlayerStore";
 import { useListenStore } from "../../stores/listenStore";
+import { useLibraryPlayer } from "../../stores/libraryPlayerStore";
+import { mediaSessionOwner } from "../../lib/mediaSessionOwner";
 import { DownloadButton } from "../DownloadButton";
 import { LearnFromAudio } from "../Listen/LearnFromAudio";
 import { downloadId, formatListeningTime as time } from "../../lib/listening";
@@ -19,13 +21,15 @@ import "./MiniPlayer.css";
 
 export function MiniPlayer() {
   const p = useAudioPlayerStore();
+  const library = useLibraryPlayer(s => s.item);
+  const libraryPlaying = useLibraryPlayer(s => s.playing);
   const [expanded, setExpanded] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [learn, setLearn] = useState(false);
   const [shareStatus, setShareStatus] = useState("");
   const [shareUrl, setShareUrl] = useState("");
   const [saved, setSaved] = useState(false);
-  if (!p.currentSurahNumber || p.immersiveControlsVisible) return null;
+  if (!p.currentSurahNumber || p.immersiveControlsVisible || (library && (libraryPlaying || mediaSessionOwner()==='audio-library'))) return null;
   const item = p.playlist[p.currentPlaylistIndex];
   const progress =
     p.duration > 0 ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;

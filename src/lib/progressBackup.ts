@@ -7,6 +7,7 @@ export interface BackupStore { key:string; label:string; version:number; default
 export const BACKUP_LIMIT=24*1024*1024;
 export const RECOVERY_KEY='qc-backup-recovery-v1';
 export const BACKUP_LABELS:Record<string,string>={
+ 'qc-audio-library-v1':'Bibliothèque audio, favoris et reprises',
  'quran-coach-quran':'Position de lecture', 'quran-coach-reading-bookmark':'Signets du Mushaf',
  'quran-coach-favorites':'Favoris, collections et annotations', 'quran-coach-reader-notes':'Notes du Mushaf',
  'quran-coach-khatm':'Progression du Khatm', 'quran-coach-stats':'Activité et régularité',
@@ -25,7 +26,7 @@ export const BACKUP_LABELS:Record<string,string>={
  'quran-coach-challenges':'Défis personnels', 'quran-coach-settings':'Préférences de lecture',
  'quran-coach-interactive-reader':'Préférences du Mushaf', 'quran-coach-reader-coach-v1':'Accompagnement de lecture'
 };
-const modules=import.meta.glob(["../stores/academyStore.ts", "../stores/mushafStudyStore.ts", "../stores/listeningJourneyStore.ts", "../stores/editorialJourneyStore.ts", "../stores/settingsStore.ts", "../stores/memorizationTestStore.ts", "../stores/listeningNotebookStore.ts", "../stores/fahmStore.ts", "../stores/learningStore.ts", "../stores/playlistsStore.ts", "../stores/challengesStore.ts", "../stores/listeningEvidenceStore.ts", "../stores/adhkarExperienceStore.ts", "../stores/readingBookmarkStore.ts", "../stores/arabicAdventureStore.ts", "../stores/khatmStore.ts", "../stores/academyExperienceStore.ts", "../stores/progressStore.ts", "../stores/dailyAdhkarStore.ts", "../stores/arabicLearningStore.ts", "../stores/statsStore.ts", "../stores/quizLearningStore.ts", "../stores/academyKnowledgeStore.ts", "../stores/favoritesStore.ts", "../stores/readerCoachStore.ts", "../stores/fahmLearningStore.ts", "../stores/hifdhJourneyStore.ts", "../stores/listenStore.ts", "../stores/readerNotesStore.ts", "../stores/interactiveReaderStore.ts", "../stores/srsStore.ts", "../stores/storyLibraryStore.ts", "../stores/quranStore.ts", "../stores/arabicPracticeStore.ts"]);
+const modules=import.meta.glob(["../stores/audioLibraryStore.ts","../stores/academyStore.ts", "../stores/mushafStudyStore.ts", "../stores/listeningJourneyStore.ts", "../stores/editorialJourneyStore.ts", "../stores/settingsStore.ts", "../stores/memorizationTestStore.ts", "../stores/listeningNotebookStore.ts", "../stores/fahmStore.ts", "../stores/learningStore.ts", "../stores/playlistsStore.ts", "../stores/challengesStore.ts", "../stores/listeningEvidenceStore.ts", "../stores/adhkarExperienceStore.ts", "../stores/readingBookmarkStore.ts", "../stores/arabicAdventureStore.ts", "../stores/khatmStore.ts", "../stores/academyExperienceStore.ts", "../stores/progressStore.ts", "../stores/dailyAdhkarStore.ts", "../stores/arabicLearningStore.ts", "../stores/statsStore.ts", "../stores/quizLearningStore.ts", "../stores/academyKnowledgeStore.ts", "../stores/favoritesStore.ts", "../stores/readerCoachStore.ts", "../stores/fahmLearningStore.ts", "../stores/hifdhJourneyStore.ts", "../stores/listenStore.ts", "../stores/readerNotesStore.ts", "../stores/interactiveReaderStore.ts", "../stores/srsStore.ts", "../stores/storyLibraryStore.ts", "../stores/quranStore.ts", "../stores/arabicPracticeStore.ts"]);
 let registryPromise:Promise<BackupStore[]>|undefined;
 export function backupRegistry():Promise<BackupStore[]>{
  return registryPromise??=Promise.all(Object.values(modules).map(load=>load())).then(loaded=>{
@@ -76,6 +77,7 @@ function validateProgressRecords(key:string,state:ObjectValue){
  const eachMap=(name:string,check:(v:Json)=>boolean)=>{if(state[name]!==undefined&&(!record(state[name])||Object.values(state[name]).some(v=>!check(v))))fail();};
  const eachArray=(name:string,check:(v:Json)=>boolean)=>{if(state[name]!==undefined&&(!Array.isArray(state[name])||state[name].some(v=>!check(v))))fail();};
  const position=(v:Json)=>record(v)&&Number.isInteger(v.surah)&&Number(v.surah)>=1&&Number(v.surah)<=114&&Number.isInteger(v.ayah)&&Number(v.ayah)>=1&&Number(v.ayah)<=286;
+ if(key==='qc-audio-library-v1'){eachArray('favorites',v=>typeof v==='string');eachMap('positions',v=>fields(v,{seconds:'number',updatedAt:'number'})&&Number((v as ObjectValue).seconds)>=0);}
  if(key==='quran-coach-reader-notes')eachMap('notes',v=>position(v)&&fields(v,{text:'string',kind:'string',updatedAt:'number',page:'number'}));
  if(key==='quran-coach-reading-bookmark'){
   const valid=(v:Json)=>position(v)&&fields(v,{view:'string',precision:'string',savedAt:'number',page:'number'})&&Number((v as ObjectValue).page)>=1&&Number((v as ObjectValue).page)<=604;

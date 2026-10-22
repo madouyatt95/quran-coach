@@ -27,7 +27,7 @@ registerRoute(({url}) => url.origin === 'https://api.alquran.cloud', async ({req
 });
 registerRoute(({url}) => url.origin === 'https://quranenc.com', async ({request}) => (await (await caches.open('quran-coach-journeys-v1')).match(request)) || fetch(request));
 registerRoute(({url}) => /\.(mp3|wav)$/i.test(url.pathname), async ({request}) => {
-    const packed = await (await caches.open('quran-coach-journeys-v1')).match(request.url) || await (await caches.open('quran-coach-audio-v1')).match(request.url);
+    const packed = await (await caches.open('quran-coach-audio-library-v1')).match(request.url) || await (await caches.open('quran-coach-journeys-v1')).match(request.url) || await (await caches.open('quran-coach-audio-v1')).match(request.url);
     if (!packed) return fetch(request);
     return request.headers.has('range') ? createPartialResponse(request, packed) : packed;
 });
