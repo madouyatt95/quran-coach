@@ -21,6 +21,7 @@ import { SiraMapView } from '../components/Quiz/SiraMapView';
 import { ErrorReviewView } from '../components/Quiz/ErrorReviewView';
 import './QuizPage.css';
 import '../components/Quiz/QuizExperience.css';
+import {QuizLaunch} from '../components/Quiz/QuizLaunch';
 import {QuizStudy} from '../components/Quiz/QuizStudy';
 import {QuizInvestigations} from '../components/Quiz/QuizInvestigations';
 import {DuelChoice,LocalDuelSetup} from '../components/Quiz/DuelChoice';
@@ -43,13 +44,14 @@ export function QuizPage() {
         }
     }, [player, matchId, channel, syncMatch]);
 
+    if(params.has('source')||params.has('exercise'))return <QuizLaunch/>;
+    if(params.has('challenge'))return <QuizStudio/>;
+    if(view==='study')return <QuizStudy/>;
     if (showSetup || !player) {
         return <PseudoSetup onDone={() => setShowSetup(false)} />;
     }
 
-    if(params.has('challenge'))return <QuizStudio/>;
     switch (view) {
-        case 'study': return <QuizStudy/>;
         case 'investigations': return <QuizInvestigations/>;
         case 'studio': return <QuizStudio/>;
         case 'duel-choice': return <DuelChoice/>;

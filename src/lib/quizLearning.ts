@@ -5,10 +5,12 @@ import { COURSE_LEVELS } from '../academy/data/courseLibrary';
 import { courseChallenge } from '../academy/data/courseChallenges';
 import { chapterBooks } from '../data/storyChapters';
 import { investigationQuestions } from '../data/quizInvestigations';
+import { practiceQuestions } from '../data/quizPractice';
 import { HISNUL_MUSLIM_DATA } from '../data/hisnulMuslim';
 export type LearningStage = 'discover'|'understand'|'apply';
 export interface LearningQuestion extends QuizQuestion {
- stage:LearningStage; format:'choice'|'order'|'match'|'passage'|'audio';
+ stage:LearningStage; format:'choice'|'order'|'match'|'passage'|'audio'|'spot';
+ activity?:'vocabulary'|'invocation'; pairRefs?:Array<{surah:number;ayah:number}>;
  passage?:string; items?:string[]; pairs?:Array<[string,string]>;
  feedbacks?:string[]; hint?:string; checkpointId?:string;
  investigation?:{id:string;title:string;step:'Observer'|'Trouver l’indice'|'Justifier'};
@@ -42,7 +44,7 @@ export function learningBank():LearningQuestion[]{
   const challenge=courseChallenge(module.id);
   if(challenge){
    if(challenge.kind==='order')bank.push({id:`apply-${module.id}`,theme,questionFr:challenge.prompt,choices:['Ordre exact'],correctIndex:0,items:challenge.steps,format:'order',stage:'apply',explanation:challenge.explanation,sourceLink,context});
-   else bank.push({id:`apply-${module.id}`,theme,questionFr:challenge.prompt,choices:challenge.options,correctIndex:challenge.correct,format:'choice',stage:'apply',explanation:challenge.reasons[challenge.correct],feedbacks:challenge.reasons,hint,sourceLink,context});
+   else bank.push({id:`apply-${module.id}`,theme,questionFr:challenge.prompt,choices:challenge.options,correctIndex:challenge.correct,format:challenge.kind==='spot'?'spot':'choice',stage:'apply',explanation:challenge.reasons[challenge.correct],feedbacks:challenge.reasons,hint,sourceLink,context});
   }
   const sections=module.content.flatMap(c=>c.type==='lesson'?c.sections:[]).slice(0,3);
   if(sections.length===3)bank.push({id:`match-${module.id}`,theme,questionFr:'Associe chaque notion à son explication.',choices:['Associations exactes'],correctIndex:0,format:'match',stage:'understand',pairs:sections.map(s=>[s.title,s.body.match(/^.*?[.!?](?:\s|$)/)?.[0].trim()||s.body]),explanation:sections.map(s=>`${s.title} : ${s.body}`).join('\n'),sourceLink,context});
@@ -55,10 +57,10 @@ export function learningBank():LearningQuestion[]{
  for(const chapter of chapters){const dua=chapter.duas[0];if(!dua||!chapter.title.trim()||!dua.translation.trim())continue;
   const choices=[chapter.title,...chapters.filter(c=>c.id!==chapter.id&&c.title.trim()).slice(0,3).map(c=>c.title)];
   const shift=chapter.id.length%choices.length;const mixed=[...choices.slice(shift),...choices.slice(0,shift)];
-  bank.push({id:`situation-${chapter.id}`,theme:'invocations',questionFr:'À quelle situation cette invocation est-elle associée ?',questionAr:dua.arabic,passage:dua.translation,choices:mixed,correctIndex:mixed.indexOf(chapter.title),explanation:`${chapter.title} — ${dua.translation}`,stage:'apply',format:'passage',context:{type:'invocation',id:chapter.id},sourceLink:{label:`Invocations : ${chapter.title}`,href:`/adhkar?cat=hisn_${chapter.id}`}});
+  bank.push({id:`situation-${chapter.id}`,theme:'invocations',questionFr:'À quelle situation cette invocation est-elle associée ?',questionAr:dua.arabic,passage:dua.translation,choices:mixed,correctIndex:mixed.indexOf(chapter.title),explanation:`${chapter.title} — ${dua.translation}`,stage:'apply',format:'passage',activity:'invocation',context:{type:'invocation',id:chapter.id},sourceLink:{label:`Invocations : ${chapter.title}`,href:`/adhkar?cat=hisn_${chapter.id}`}});
  }
  for(const q of bank)if(q.context?.type==='academy'){q.checkpointId=bank.find(other=>other.id!==q.id&&other.context?.id===q.context!.id&&other.format==='choice'&&(q.stage==='apply'?other.stage==='discover':other.stage==='apply'))?.id;}
- bank.push(...investigationQuestions());
+ bank.push(...investigationQuestions(),...practiceQuestions(),...generateAudioQuestions().map(legacyLearningQuestion));
  cache=[...new Map(bank.map(q=>[q.id,q])).values()];return cache;
 }
 export interface QuizContext {academy:string[];stories:string[];invocations:string[];verses:string[];surah:number}

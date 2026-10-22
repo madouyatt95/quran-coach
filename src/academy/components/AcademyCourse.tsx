@@ -1,3 +1,4 @@
+import {QuizBridge} from '../../components/Quiz/QuizBridge';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Check, List, PencilLine } from 'lucide-react';
@@ -73,7 +74,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
   {application?<section className="academy-course-article academy-course-application">
    <button className="academy-course-link" onClick={onRead}><BookOpen size={16}/> Revenir aux explications</button>
    <h2>Mettre le cours en pratique</h2><p>Les explications restent accessibles. Prends le temps de réfléchir, puis compare ton raisonnement avec la correction.</p>
-   <CourseExercise moduleId={course.id}/>
+   <CourseExercise moduleId={course.id}/><QuizBridge source="academy" id={course.id}/>
    <h2>Faire le lien avec sa vie</h2><p>{prompt?.body}</p><label htmlFor="course-reflection">{prompt?.reflection}</label><textarea id="course-reflection" placeholder="Mon raisonnement, ma question ou mon exemple…" value={note} onChange={event=>saveNote(`${course.id}:reflection:3`,event.target.value)}/><small>Note personnelle enregistrée sur cet appareil. Tu peux la compléter plus tard.</small>
    <button className="academy-course-primary" onClick={onPractice}>Vérifier ma compréhension <ArrowRight size={17}/></button>
   </section>:<>
@@ -86,7 +87,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
      <span className="academy-course-section-number">{String(index+1).padStart(2,'0')} / COMPRENDRE</span><h2>{section.title}</h2><p className="academy-course-lead"><CourseReferenceText text={section.body}/></p><Paragraphs text={teaching.developments[index]}/><CourseReasoning id={course.id} index={index} onPractice={()=>document.getElementById(`course-practice-${index}`)?.scrollIntoView({block:'center',behavior:'smooth'})}/><div id={`course-practice-${index}`}><CoursePractice id={course.id} index={index}/></div><CourseExplore id={course.id} index={index} onListen={()=>listen(index)}/>
     </section>)}
     <CourseCases id={course.id} onRead={jump} onAnswer={(index,correct)=>useAcademyKnowledgeStore.getState().answer(course.id,index,'case',correct?1:0,correct)}/><CourseConnections id={course.id}/><button className="academy-course-link" onClick={onReview}>Préparer ma séance de révision →</button>
-    <CourseProject id={course.id}/>
+    <QuizBridge source="academy" id={course.id}/><CourseProject id={course.id}/>
     <section className="academy-course-takeaway"><h2><Check size={20}/> Ce qu’il faut retenir</h2><p><CourseReferenceText text={teaching.takeaway}/></p></section>
     <CourseReferenceList texts={[teaching.introduction,...teaching.developments,...sections.map(section=>section.body)]}/>
     <section className="academy-course-questions"><h2><PencilLine size={20}/> Une question à éclaircir ?</h2><CourseQuestion moduleId={course.id}/></section>

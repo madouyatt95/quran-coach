@@ -65,3 +65,48 @@ it('opens an incoming shared challenge in the actual quiz page and stays in the 
  expect(div.textContent).toContain(q.questionFr);expect(useQuizStore.getState().view).toBe('study');expect(useQuizLearningStore.getState().session?.mode).toBe('shared');
  expect(div.textContent).not.toContain('Besoin d’un indice');
 });
+
+it('shows authored reasons for each choice and identifies incomplete explanations honestly',async()=>{
+ const {AnswerReasons}=await import('./QuizStudy');const q=learningBank().find(q=>q.id==='apply-sabirin-hadith-3')!;
+ await act(async()=>root.render(<MemoryRouter><AnswerReasons q={q}/></MemoryRouter>));
+ expect(div.querySelector('summary')?.textContent).toBe('Pourquoi cette réponse ?');
+ for(const reason of q.feedbacks!)expect(div.textContent).toContain(reason);
+ expect(div.querySelectorAll('.qx-reasons article')).toHaveLength(q.choices.length);
+ await act(async()=>root.render(<MemoryRouter><AnswerReasons q={{...q,feedbacks:undefined}}/></MemoryRouter>));
+ expect(div.querySelectorAll('.qx-reasons article')).toHaveLength(1);expect(div.textContent).toContain('pas encore disponible');
+});
+it('starts an exact Fahm bridge without a profile, preserves origin after reload and does not mark the lesson completed',async()=>{
+ const {QuizPage}=await import('../../pages/QuizPage');
+ await act(async()=>root.render(<MemoryRouter initialEntries={['/quiz?source=fahm&scope=1%3A2%2C1%3A6&return=%2Ffahm%2Fsurah%2F1']}><QuizPage/></MemoryRouter>));
+ expect(div.textContent).toContain('2 exercices');
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Commencer les exercices')!.click());
+ expect(useQuizLearningStore.getState().session?.questions).toHaveLength(2);expect(useQuizLearningStore.getState().session?.adaptive).toBe(false);
+ expect(useQuizLearningStore.getState().session?.returnTo).toBe('/fahm/surah/1');
+ expect(div.querySelector('a[href="/fahm/surah/1"]')?.textContent).toBe('Ma lecture');
+ await act(async()=>useQuizLearningStore.persist.rehydrate());expect(useQuizLearningStore.getState().session?.returnTo).toBe('/fahm/surah/1');
+});
+it('requires one deliberate choice in spot-the-error and records its canonical answer despite shuffling',async()=>{
+ const q=learningBank().find(q=>q.format==='spot')!;useQuizLearningStore.getState().start('Trouver l’erreur',[q]);
+ await act(async()=>root.render(<MemoryRouter><QuizStudy/></MemoryRouter>));
+ expect(div.textContent).toContain('Cherche la proposition');
+ expect(([...div.querySelectorAll('button')].find(b=>b.textContent==='Valider ma réponse') as HTMLButtonElement).disabled).toBe(true);
+ await act(async()=>[...div.querySelectorAll('.qx-choices button')].find(b=>b.textContent!.endsWith(q.choices[q.correctIndex]))!.dispatchEvent(new MouseEvent('click',{bubbles:true})));
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent==='Valider ma réponse')!.click());
+ expect(useQuizLearningStore.getState().session?.answers[0].correct).toBe(true);expect(div.textContent).toContain(q.feedbacks![q.correctIndex]);
+});
+it('keeps source links lightweight and carries the exact reader URL without replacing a paused session',async()=>{
+ const {QuizBridge}=await import('./QuizBridge');const q=learningBank()[0];useQuizLearningStore.getState().start('En pause',[q]);
+ await act(async()=>root.render(<MemoryRouter initialEntries={['/academy?module=sabirin-tawhid-1&section=2']}><QuizBridge source="academy" id="sabirin-tawhid-1"/></MemoryRouter>));
+ const href=new URL(div.querySelector('a')!.href);expect(href.searchParams.get('source')).toBe('academy');expect(href.searchParams.get('scope')).toBe('sabirin-tawhid-1');expect(href.searchParams.get('return')).toBe('/academy?module=sabirin-tawhid-1&section=2');expect(useQuizLearningStore.getState().session?.title).toBe('En pause');
+});
+it('renders vocabulary cards in Arabic direction and keeps paired Quran examples in the correction',async()=>{
+ const {QuestionForm}=await import('./QuizQuestionForm');const {AnswerReasons}=await import('./QuizStudy');const q=learningBank().find(q=>q.activity==='vocabulary')!;
+ await act(async()=>root.render(<MemoryRouter><QuestionForm q={q} learning onAnswer={()=>{}}/><AnswerReasons q={q}/></MemoryRouter>));
+ expect(div.querySelectorAll('.qx-word[lang="ar"][dir="rtl"]')).toHaveLength(3);for(const ref of q.pairRefs!)expect([...div.querySelectorAll('a')].map(a=>a.getAttribute('href'))).toContain(`/passage?surah=${ref.surah}&ayah=${ref.ayah}&from=quiz`);
+});
+it('an incoming challenge takes precedence over an already-open study session without replacing it on arrival',async()=>{
+ const {QuizPage}=await import('../../pages/QuizPage');const {encodeQuizShare}=await import('../../lib/quizLearning');const q=learningBank()[0];
+ useQuizLearningStore.getState().start('Ancienne séance',[q]);useQuizStore.setState({view:'study'});
+ await act(async()=>root.render(<MemoryRouter initialEntries={['/quiz?challenge='+encodeURIComponent(encodeQuizShare([q]))]}><QuizPage/></MemoryRouter>));
+ expect(div.textContent).toContain('Relever ce défi');expect(useQuizLearningStore.getState().session?.title).toBe('Ancienne séance');
+});

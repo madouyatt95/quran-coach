@@ -1,3 +1,4 @@
+import {QUIZ_ACTIVITIES} from '../../lib/quizLaunch';
 import { useNavigate } from 'react-router-dom';
 import { useQuizStore } from '../../stores/quizStore';
 import { useQuizLearningStore } from '../../stores/quizLearningStore';
@@ -53,7 +54,7 @@ export function HomeView() {
 
             {(hasSession || recentStudy || q.lastGame) && <section className="qx-last-game" aria-label="Ma dernière partie">
                 {hasSession ? <><span>En pause : {study.session!.title}</span><button onClick={()=>q.setView('study')}>Continuer →</button></>
-                    : recentStudy ? <><span>Dernière partie : {study.session!.title}</span><button onClick={()=>{const s=study.session!;study.start(s.title,[...new Map(s.questions.map(item=>[item.id,item])).values()],s.mode,s.names,{adaptive:s.adaptive,poolIds:s.poolIds});q.setView('study');}}>Rejouer →</button></>
+                    : recentStudy ? <><span>Dernière partie : {study.session!.title}</span><button onClick={()=>{const s=study.session!;study.start(s.title,[...new Map(s.questions.map(item=>[item.id,item])).values()],s.mode,s.names,{adaptive:s.adaptive,poolIds:s.poolIds,returnTo:s.returnTo});q.setView('study');}}>Rejouer →</button></>
                     : <><span>Dernière partie : {{solo:'Quiz solo',audio:'Quiz audio',sprint:'Sprint',daily:'Défi du jour',sira:'Parcours Sira',revision:'Révision',duel:'Duel'}[q.lastGame!.kind]}</span><button onClick={q.replayLast}>Rejouer →</button></>}
             </section>}
 
@@ -86,6 +87,7 @@ export function HomeView() {
                 <button className="qx-primary" onClick={daily}>{hasSession ? 'Reprendre' : 'C’est parti'} →</button>
             </section>
 
+            <section aria-labelledby="quiz-formats-title"><h2 id="quiz-formats-title">Une autre façon de jouer</h2><div className="qx-activity-grid">{QUIZ_ACTIVITIES.map(activity=><button key={activity.id} onClick={()=>navigate(`/quiz?exercise=${activity.id}`)}><span aria-hidden="true">{activity.icon}</span><strong>{activity.title}</strong><small>{activity.description}</small></button>)}</div></section>
             <section aria-labelledby="quiz-learn-title">
                 <h2 id="quiz-learn-title">Apprendre à mon rythme</h2>
                 <button className="qx-card qx-launch" onClick={() => q.setView('studio')}>

@@ -1,3 +1,4 @@
+import {QuizBridge} from '../components/Quiz/QuizBridge';
 import {SURAH_JOURNEYS} from '../lib/fahm/surahJourneys';
 import {FahmSurahMap} from '../components/Fahm/FahmSurahMap';
 import {FahmListeningStudy} from '../components/Fahm/FahmListeningStudy';
@@ -47,5 +48,6 @@ function FahmLesson({id,title,targets,pathId,day,personal=false}:{id:string;titl
         {target&&<FahmVerseStudy key={`${verseKey(target)}-${discover}`} lessonId={id} target={target} discover={discover} onDone={studied}/>}</>:<FahmListeningStudy key={verseKey(target)} target={target} seenText={seenText} onDone={studied} onRead={()=>{setMode('study');setSeenText(true);}}/>}
         {complete&&<button className="fahm-primary" onClick={finish}>Terminer {personal?'la séance':'cette étape'} ✓</button>}
         </>}
+        <QuizBridge source="fahm" id={targets.filter(v=>done.includes(verseKey(v))||verseKey(v)===verseKey(target)).map(verseKey).join(',')}/>
     </main>;
 }
