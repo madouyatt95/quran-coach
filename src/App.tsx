@@ -269,7 +269,7 @@ function AppContent() {
         </Suspense>
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
-      {location.pathname !== "/listen/experience" && !location.pathname.startsWith("/journeys/") && !location.pathname.startsWith("/fahm/") && <InstallPrompt />}
+      {location.pathname !== "/listen/experience" && location.pathname !== "/listen/library" && location.pathname !== "/admin/audio" && !location.pathname.startsWith("/journeys/") && !location.pathname.startsWith("/fahm/") && <InstallPrompt />}
       <UpdateBanner />
       <MiniPlayer />
       <LibraryPlayer />

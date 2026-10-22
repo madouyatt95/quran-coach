@@ -40,7 +40,7 @@ Le navigateur reçoit seulement l'URL publique `VITE_AUDIO_PRODUCTION_URL`. Les 
 
 ## Bibliothèque
 
-Recherche dans titre/texte/références, catégories, favoris, reprise, lecteur flottant persistant, vitesse, minuterie, commandes Media Session, texte et provenance. Les positions et favoris rejoignent la sauvegarde existante. Le studio peut lire les voix françaises du compte et écouter leurs aperçus existants sans lancer de synthèse. Le téléchargement vérifie taille et SHA-256 avant de conserver le fichier. Il reprend par épisode entier, pas par octets. Les données du cache peuvent être supprimées par le système si l'espace manque.
+Recherche dans titre/texte/références, catégories, favoris, reprise, lecteur flottant persistant, vitesse, minuterie, commandes Media Session, texte et provenance. Les positions et favoris rejoignent la sauvegarde existante. Le studio peut lire les voix du compte, avec priorité aux aperçus français, et écouter leurs aperçus existants sans lancer de synthèse. Une mise à jour PWA attend la fin de la lecture ; la proposition d’installation est masquée dans la bibliothèque et le studio. Le téléchargement vérifie taille et SHA-256 avant de conserver le fichier. Il reprend par épisode entier, pas par octets. Les données du cache peuvent être supprimées par le système si l'espace manque.
 
 Les narrations publiées remplacent les narrations existantes dans les lecteurs uniquement si le texte correspond exactement. Les scripts modifiés restent disponibles dans la bibliothèque ; ils ne sont jamais associés approximativement à un cours existant.
 
