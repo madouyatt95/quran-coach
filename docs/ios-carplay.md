@@ -3,7 +3,9 @@
 ## Version native
 
 La cible `ios/App/App.xcodeproj` embarque le résultat de `npm run build` après `npx cap sync ios`.
-La version native soumise ici est `1.4 (11)` et requiert iOS 17 ou plus, conformément au paquet Swift généré par Capacitor 8. Le site ajouté à l’écran d’accueil est une PWA distincte : une compilation Xcode ne la met pas à jour.
+La mise à jour native préparée le 23 octobre est `1.5 (12)` et requiert iOS 17 ou plus, conformément au paquet Swift généré par Capacitor 8. Le site ajouté à l’écran d’accueil est une PWA distincte : une compilation Xcode ne la met pas à jour.
+
+Utiliser `npm run prepare:ios` pour reconstruire et synchroniser les ressources natives avec la bibliothèque audio publiée et la synchronisation des progrès activées. La configuration ne contient que des paramètres publics ; les secrets restent sur les serveurs. Le catalogue audio utilise directement le Worker HTTPS dans Capacitor, car le proxy web `/book-audio` n’y existe pas.
 
 La PWA vérifie maintenant immédiatement la présence d’une nouvelle version à son ouverture puis lorsqu’elle redevient visible. Elle l’applique automatiquement sur les écrans où aucune séance audio, récitation ou apprentissage actif ne risque d’être interrompu. La version précédente peut encore nécessiter une dernière validation de sa bannière « Mettre à jour » avant de recevoir ce comportement.
 
@@ -78,3 +80,11 @@ Le build 1.4 (11) ajoute Reprendre ma lecture, Invocations du moment et Ma mémo
 Après accord explicite de l’utilisateur, la politique publiée et la fiche de confidentialité Apple ont été corrigées pour refléter les services déjà utilisés par l’application. Le build **1.4 (11)** a été soumis à la vérification publique App Store le **16 octobre 2026 à 13:57 (Paris)**. L’état affiché est **« En attente de vérification »**. Identifiant : `baecc5f6-93b3-4884-b5a2-aaa8f20d7045`. Publication automatique après approbation configurée. Le build 10 reste l’historique de la demande TestFlight précédente ; il n’est plus le build de la soumission publique.
 
 Livraison et preuve : `../../outputs/ios-1.4-11/` (IPA, archive, journaux, empreinte et capture de la soumission). L’approbation Apple et la publication effective restent à venir.
+
+## Mise à jour 1.5 (12) — 23 octobre 2026
+
+Les dernières ressources web sont embarquées : livres à lire et écouter, décors et ambiances optionnelles, quiz enrichis et modes pupitre/côte à côte dans les écrans compatibles. La synchronisation facultative est activée. Le catalogue audio a été raccordé directement au Worker public pour Capacitor ; son contrôle HTTP confirme 69 enregistrements et l’autorisation de l’origine native.
+
+32 tests TypeScript ciblés et 20 contrôles Swift réussis. Compilation web, synchronisation, archive, export et vérification des signatures réussis ; app et widgets portent 1.5 (12), sans serveur de développement. Envoi App Store Connect confirmé par Xcode le 23 octobre à 16:12:21 (Paris). Le transfert ne vaut pas approbation ni disponibilité TestFlight. Dossier : `../../outputs/ios-1.5-12/`.
+
+L’iPhone associé est indisponible : les interactions, notifications, widgets et audio en arrière-plan de ce build restent à valider physiquement. Le pupitre est sélectionnable manuellement ; aucune détection automatique de pliure non vérifiée sur iOS n’est promise. La capacité CarPlay Audio reste inchangée.

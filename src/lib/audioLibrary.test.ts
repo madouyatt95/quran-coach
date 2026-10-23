@@ -1,6 +1,17 @@
 // @vitest-environment node
 import {afterEach,expect,it,vi} from 'vitest';
-afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();vi.resetModules();});
+const platform=vi.hoisted(()=>({native:false}));
+vi.mock('@capacitor/core',()=>({Capacitor:{isNativePlatform:()=>platform.native}}));
+afterEach(()=>{platform.native=false;vi.unstubAllGlobals();vi.unstubAllEnvs();vi.resetModules();});
+it('loads the published catalogue on iOS without relying on the web reverse proxy',async()=>{
+ platform.native=true;vi.stubEnv('VITE_AUDIO_PRODUCTION_URL','/book-audio');
+ const episode={id:'native-book',title:'Livre',text:'Chapitre'};
+ const read=vi.fn(async(input:string)=>Response.json(input==='https://quran-coach-audio.madouyatt95.workers.dev/catalog'?[episode]:[]));
+ vi.stubGlobal('fetch',read);
+ const {loadAudioLibrary}=await import('./audioLibrary');
+ expect(await loadAudioLibrary()).toEqual([episode]);
+ expect(read).not.toHaveBeenCalledWith('/book-audio/catalog');
+});
 it('discovers newly published audio after visiting the library again, including narration lookups cached before publication',async()=>{
  vi.stubEnv('VITE_AUDIO_PRODUCTION_URL','https://audio.test');
  vi.resetModules();

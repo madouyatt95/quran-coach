@@ -1,7 +1,11 @@
 import type {LibraryAudio} from './audioProduction';
 import {sha256} from './audioProduction';
+import {Capacitor} from '@capacitor/core';
 export const AUDIO_LIBRARY_CACHE='quran-coach-audio-library-v1';
-export const AUDIO_API=(import.meta.env.VITE_AUDIO_PRODUCTION_URL||'').replace(/\/$/,'');
+// A native bundle has no Vercel reverse proxy at /book-audio.
+export const AUDIO_API=(Capacitor.isNativePlatform()
+ ? 'https://quran-coach-audio.madouyatt95.workers.dev'
+ : import.meta.env.VITE_AUDIO_PRODUCTION_URL||'').replace(/\/$/,'');
 let catalogue:Promise<LibraryAudio[]>|undefined;
 let published:Promise<LibraryAudio[]>|undefined;
 export async function publishedNarration(text:string){
