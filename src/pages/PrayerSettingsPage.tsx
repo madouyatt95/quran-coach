@@ -1,10 +1,11 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { AdhanSettings } from '../components/Prayer/AdhanSettings';
 /**
  * PrayerSettingsPage — Advanced prayer calculation settings.
  */
 
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { ChevronLeft, RotateCcw } from 'lucide-react';
 import { usePrayerStore } from '../stores/prayerStore';
 import { useNotificationStore } from '../stores/notificationStore';
@@ -33,7 +34,8 @@ const PRAYER_ADJ_KEYS = [
 
 export function PrayerSettingsPage() {
     const { t } = useTranslation();
-    const navigate = useNavigate();
+
+    const goBack=useSmartBack('/prayers');
     const store = usePrayerStore();
     const notifStore = useNotificationStore();
     const s = store.settings;
@@ -68,7 +70,7 @@ export function PrayerSettingsPage() {
         <div className="prayer-settings-page">
             {/* Header */}
             <div className="ps-header">
-                <button className="ps-header__back" onClick={() => navigate(-1)}>
+                <button className="ps-header__back" onClick={goBack}>
                     <ChevronLeft size={20} />
                 </button>
                 <span className="ps-header__title">{t('prayerSettings.title', 'Réglages Prières')}</span>

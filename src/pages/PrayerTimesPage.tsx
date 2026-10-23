@@ -1,3 +1,4 @@
+import {usePageState,useSmartBack} from '../hooks/usePageState';
 import { useFavoriteMosqueSchedule } from '../hooks/useFavoriteMosqueSchedule';
 import { publishedDay, publishedNext, prayerCountdown } from '../lib/publishedPrayerClock';
 import { PublishedPrayerList } from '../components/Prayer/PublishedPrayerList';
@@ -187,7 +188,7 @@ function ExpressQibla({ lat, lng }: { lat: number, lng: number }) {
 // ─── Component ───────────────────────────────────────────
 
 export function PrayerTimesPage() {
-    const navigate = useNavigate();
+    const navigate = useNavigate();const goBack=useSmartBack('/');
     const location = useLocation();
     const { t } = useTranslation();
 
@@ -211,7 +212,7 @@ export function PrayerTimesPage() {
     const [showComparator, setShowComparator] = useState(false);
     const [showTransparency, setShowTransparency] = useState(false);
     const sunnan = useSunnanTracker();
-    const [showNawafil, setShowNawafil] = useState(false);
+    const [showNawafil, setShowNawafil] = usePageState('nawafil',false);
     const [showSideMenu, setShowSideMenu] = useState(false);
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [dayResult, setDayResult] = useState<DayResult | null>(null);
@@ -223,7 +224,7 @@ export function PrayerTimesPage() {
     const {timetable:mosqueTimetable,favorite:activeMosque}=useFavoriteMosqueSchedule(nowMs);
     const mosqueDay=publishedDay(mosqueTimetable,nowMs,formatDate(selectedDate));
     const mosqueNext=publishedNext(mosqueTimetable,nowMs);
-    const [prayerView, setPrayerView] = useState<'times'|'mosques'>('times');
+    const [prayerView, setPrayerView] = usePageState<'times'|'mosques'>('tab','times');
     const [selectedMosque, setSelectedMosque] = useState<Mosque|null>(null);
     const calendarMethod = useIslamicCalendarStore(s=>s.method);
     const calendarOffset = useIslamicCalendarStore(s=>s.offset);
@@ -451,7 +452,7 @@ export function PrayerTimesPage() {
             {/* Header / Hero */}
             <div className="prayer-hero">
                 <div className="prayer-hero__top">
-                    <button className="prayer-hero__back" aria-label="Revenir à l’accueil" onClick={() => navigate('/')}>
+                    <button className="prayer-hero__back" aria-label="Revenir à la page précédente" onClick={goBack}>
                         <ChevronLeft size={24} />
                     </button>
                     <button className="prayer-hero__location" onClick={() => setShowLocationModal(true)}>

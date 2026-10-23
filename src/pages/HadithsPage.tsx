@@ -1,6 +1,7 @@
+import {usePageState,useSmartBack} from '../hooks/usePageState';
 import { useState, useMemo, useCallback } from 'react';
 import { ArrowLeft, Heart, Share2, Search, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { HADITH_CATEGORIES, EXPANDED_HADITHS, type HadithCategory, type HadithEntry, type BulughChapter } from '../data/hadithsExpanded';
 import { useFavoritesStore } from '../stores/favoritesStore';
 import { useTranslation } from 'react-i18next';
@@ -21,16 +22,16 @@ const BULUGH_CHAPTERS: { id: BulughChapter; name: string; nameAr: string; emoji:
 export function HadithsPage() {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
-    const [selectedCat, setSelectedCat] = useState<HadithCategory | null>(() => {
+    const [selectedCat, setSelectedCat] = usePageState<HadithCategory | null>('category:'+searchParams.toString(), () => {
         const catParam = searchParams.get('cat') as HadithCategory | null;
         if (catParam && HADITH_CATEGORIES.some(c => c.id === catParam)) {
             return catParam;
         }
         return null;
     });
-    const [selectedSubcat, setSelectedSubcat] = useState<BulughChapter | null>(null);
-    const [search, setSearch] = useState(() => searchParams.get('search') || '');
-    const navigate = useNavigate();
+    const [selectedSubcat, setSelectedSubcat] = usePageState<BulughChapter | null>('subcategory',null);
+    const [search, setSearch] = usePageState('search:'+searchParams.toString(),() => searchParams.get('search') || '');
+    const goBack=useSmartBack('/');
     const { toggleFavoriteHadith, isFavoriteHadith } = useFavoritesStore();
 
     const filteredHadiths = useMemo(() => {
@@ -83,7 +84,7 @@ export function HadithsPage() {
         return (
             <div className="hadiths-page">
                 <div className="hadiths-header">
-                    <button className="hadiths-back" onClick={() => navigate(-1)}>
+                    <button className="hadiths-back" onClick={goBack}>
                         <ArrowLeft size={22} />
                     </button>
                     <h1 className="hadiths-title">📜 {t('sideMenu.hadiths', 'Hadiths')}</h1>

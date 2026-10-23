@@ -1,5 +1,6 @@
+import {usePageState} from '../hooks/usePageState';
 import { ListenDiscover } from '../components/Listen/ListenDiscover';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useListenStore } from "../stores/listenStore";
 import { useAssetsStore } from "../stores/assetsStore";
@@ -43,12 +44,12 @@ export function ListenPage() {
   const playlists = usePlaylistsStore((s) => s.playlists);
   const surahs = useQuranStore((s) => s.surahs);
   const resume = useAudioPlayerStore((s) => s.resume);
-  const [tab, setTab] = useState<"explore" | "favorites" | "offline">(
+  const [tab, setTab] = usePageState<"explore" | "favorites" | "offline">('tab:'+params.toString(),
     params.get("library") === "offline" ? "offline" : "explore",
   );
-  const [filter, setFilter] = useState("all");
-  const [voice, setVoice] = useState("123");
-  const [limit, setLimit] = useState(24);
+  const [filter, setFilter] = usePageState('filter', "all");
+  const [voice, setVoice] = usePageState('voice', "123");
+  const [limit, setLimit] = usePageState('limit', 24);
   useEffect(() => {
     void fetchReciters();
     void fetchAssets();

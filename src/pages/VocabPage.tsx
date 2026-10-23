@@ -1,8 +1,9 @@
+import {useSmartBack,usePageState} from '../hooks/usePageState';
 import {FahmVocabularyExample} from '../components/Fahm/FahmVocabularyExample';
 // ─── Vocab Page — Flashcards SRS pour le vocabulaire coranique ─
 
 import { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { ArrowLeft, RotateCcw, Check, X, Hash, Filter, ChevronDown } from 'lucide-react';
 import { QURAN_VOCABULARY } from '../data/quranVocabulary';
 import { useFahmStore } from '../stores/fahmStore';
@@ -12,10 +13,11 @@ type ViewMode = 'browse' | 'review' | 'learn';
 type FilterCategory = 'all' | 'noun' | 'verb' | 'particle' | 'name' | 'adjective';
 
 export function VocabPage() {
-    const navigate = useNavigate();
+
+    const goBack=useSmartBack('/fahm');
     const fahm = useFahmStore();
     const [mode, setMode] = useState<ViewMode>('browse');
-    const [filterCat, setFilterCat] = useState<FilterCategory>('all');
+    const [filterCat, setFilterCat] = usePageState<FilterCategory>('category','all');
     const [showFilter, setShowFilter] = useState(false);
 
     // Flashcard state
@@ -144,7 +146,7 @@ export function VocabPage() {
     return (
         <div className="vocab-page">
             <header className="vocab-page__header">
-                <button className="vocab-page__back" onClick={() => navigate(-1)}>
+                <button className="vocab-page__back" onClick={goBack}>
                     <ArrowLeft size={20} />
                 </button>
                 <h1>Vocabulaire</h1>

@@ -1,5 +1,6 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { Compass, Navigation, AlertTriangle, Loader2, MapPin, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import './QiblaPage.css';
@@ -26,7 +27,8 @@ function calculateQiblaDirection(lat: number, lng: number): number {
 
 export function QiblaPage() {
     const { t } = useTranslation();
-    const navigate = useNavigate();
+
+    const goBack=useSmartBack('/prayers');
     const [qiblaAngle, setQiblaAngle] = useState<number | null>(null);
     const [compassHeading, setCompassHeading] = useState<number>(0);
     const [locationError, setLocationError] = useState<string | null>(null);
@@ -126,7 +128,7 @@ export function QiblaPage() {
     return (
         <div className="qibla-page">
             {/* Back button */}
-            <button className="page-back-btn" onClick={() => navigate(-1)}>
+            <button className="page-back-btn" onClick={goBack}>
                 <ArrowLeft size={22} />
             </button>
 

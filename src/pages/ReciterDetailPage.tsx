@@ -1,7 +1,7 @@
+import {useSmartBack,usePageState} from '../hooks/usePageState';
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
-  Link,
   useParams,
   useSearchParams,
   useNavigate,
@@ -38,7 +38,7 @@ function ReciterDetailContent() {
   const { id: routeId = "" } = useParams();
   const id = reciterKey(routeId);
   const [params, setParams] = useSearchParams();
-  const navigate = useNavigate();
+  const navigate = useNavigate();const goBack=useSmartBack('/listen');
   const {
     reciters,
     isLoading,
@@ -58,7 +58,7 @@ function ReciterDetailContent() {
       setPlaylist: s.setPlaylist,
     })),
   );
-  const [query, setQuery] = useState(params.get("surah") || "");
+  const [query, setQuery] = usePageState('query:'+params.toString(),params.get("surah") || "");
   const [selection, setSelection] = useState<number[]>([]);
   const [selecting, setSelecting] = useState(false);
   const [name, setName] = useState("Ma séance d’écoute");
@@ -83,7 +83,7 @@ function ReciterDetailContent() {
   if (!custom && !reciter)
     return (
       <div className="listen-hub">
-        <Link to="/listen">← Écoute</Link>
+        <button className="listen-back" onClick={goBack}>← Retour</button>
         <h1>
           {isLoading
             ? "Chargement du récitant…"
@@ -116,7 +116,7 @@ function ReciterDetailContent() {
   return (
     <div className="listen-hub">
       <header className="listen-section-heading">
-        <Link to="/listen">← Écoute</Link>
+        <button className="listen-back" onClick={goBack}>← Retour</button>
         <button
           className="listen-secondary"
           aria-pressed={favoriteReciters.includes(id)}

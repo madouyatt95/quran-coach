@@ -36,7 +36,7 @@ export function QuizPage() {
     useEffect(()=>{if(player && params.get('companion')==='revision'){useQuizStore.getState().setView('error-review');const next=new URLSearchParams(params);next.delete('companion');setParams(next,{replace:true});}},[player,params,setParams]);
     const [showSetup, setShowSetup] = useState(!player);
 
-    useEffect(()=>{window.scrollTo({top:0});},[view]);
+
 
     // Auto-sync duel on mount or recovery
     useEffect(() => {

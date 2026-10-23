@@ -99,7 +99,7 @@ export function ReadPage() {
     return (
         <div className="reader-route" style={{ '--reader-entry-space': `${showEntry ? entryHeight : 0}px` } as CSSProperties}>
             {location.pathname === '/read' && !liveActive && (entryStatus || location.state?.readerReturn) && <div className="reader-entry" ref={entryRef}>
-                {location.state?.readerReturn?.to?.startsWith('/') && !location.state.readerReturn.to.startsWith('//') && <button onClick={() => navigate(location.state.readerReturn.to, { state: location.state.readerReturn.state })}>← {location.state.readerReturn.label || 'Retour'}</button>}
+                {location.state?.readerReturn?.to?.startsWith('/') && !location.state.readerReturn.to.startsWith('//') && <button onClick={() => {const target=location.state.readerReturn,index=window.history.state?.idx;if(Number.isInteger(target.index)&&target.index>=0&&Number.isInteger(index)&&index>target.index)navigate(target.index-index);else navigate(target.to,{replace:true,state:target.state});}}>← {location.state.readerReturn.label || 'Retour'}</button>}
                 {entryStatus && <span role={entryError ? 'alert' : 'status'}>{entryStatus}</span>}
                 {entryError && <button onClick={() => setRetry(value => value + 1)}>Réessayer</button>}
             </div>}

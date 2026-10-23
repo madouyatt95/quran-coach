@@ -1,3 +1,4 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePlaylistsStore } from '../stores/playlistsStore';
 import { useAudioPlayerStore } from '../stores/audioPlayerStore';
@@ -10,6 +11,7 @@ export function PlaylistDetailPage() {
     const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
+    const goBack=useSmartBack('/listen');
     const { playlists, deletePlaylist, removeItemFromPlaylist, reorderItem } = usePlaylistsStore();
     const { setPlaylist, isPlaying, playlist: activePlaylist, currentPlaylistIndex } = useAudioPlayerStore();
 
@@ -55,7 +57,7 @@ export function PlaylistDetailPage() {
     return (
         <div className="playlist-detail-page">
             <header className="playlist-header-nav">
-                <button className="back-btn" onClick={() => navigate(-1)}>
+                <button className="back-btn" onClick={goBack}>
                     <ChevronLeft size={24} />
                 </button>
                 <button className="delete-plist-btn" onClick={handleDeletePlaylist}>

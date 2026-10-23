@@ -1,3 +1,4 @@
+import {BackButton} from '../components/Navigation/BackButton';
 import { useListeningJourneyStore } from "../stores/listeningJourneyStore";
 import { useDownloadStore } from "../stores/downloadStore";
 import {
@@ -7,7 +8,7 @@ import {
 } from "../lib/listeningJourney";
 import { JourneyDownload } from "../components/Listen/JourneyDownload";
 import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import DOMPurify from "dompurify";
 import type { PlaylistItem } from "../types";
 import { useAudioPlayerStore } from "../stores/audioPlayerStore";
@@ -555,7 +556,7 @@ export function ListeningExperiencePage() {
   return (
     <div className="listen-hub experience-page">
       <header className="experience-header">
-        <Link to="/listen">← Écoute</Link>
+        <BackButton fallback="/listen"/>
         <button aria-pressed={notebook} onClick={() => setNotebook((v) => !v)}>
           ♡ Mon carnet{notes.length ? ` · ${notes.length}` : ""}
         </button>

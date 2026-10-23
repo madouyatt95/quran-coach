@@ -1,3 +1,4 @@
+import {usePageState} from '../../hooks/usePageState';
 import {useEffect,useState} from 'react';
 import {Link} from 'react-router-dom';
 import {BookOpen,Headphones,Search} from 'lucide-react';
@@ -10,7 +11,7 @@ import './Books.css';
 export interface LegacyBookEntry {id:string;title:string;subtitle:string;href:string;keywords?:string}
 const themes=[{id:'all',label:'Tous les livres'},{id:'patience',label:'Patience et confiance',books:['adam','nuh','yusuf','musa','maryam-isa','cave','sira-confiance','voix-epreuve']},{id:'wisdom',label:'Sagesse et parole',books:['khidr','luqman-conseils','parole-juste','appels-et-mesure']},{id:'justice',label:'Biens et justice',books:['biens-et-coeur','royaumes-et-justice','sulayman','ibrahim','musa-apres-la-mer']}];
 export function BookShelf({kind,originId,legacyEntries=[]}:{kind:'prophet'|'story'|'all';originId?:string;legacyEntries?:LegacyBookEntry[]}){
- const {items}=useBookCatalog(),positions=useAudioLibraryStore(s=>s.positions),[theme,setTheme]=useState('all'),[query,setQuery]=useState(''),[filter,setFilter]=useState('all'),[downloads,setDownloads]=useState<string[]>([]);
+ const {items}=useBookCatalog(),positions=useAudioLibraryStore(s=>s.positions),[theme,setTheme]=usePageState(`shelf-${kind}-theme`,'all'),[query,setQuery]=usePageState(`shelf-${kind}-query`,''),[filter,setFilter]=usePageState(`shelf-${kind}-filter`,'all'),[downloads,setDownloads]=useState<string[]>([]);
  const favorites=useAudioLibraryStore(s=>s.favorites);
  useEffect(()=>{let live=true;void downloadedAudioIds(items).then(ids=>{if(live)setDownloads(ids);}).catch(()=>{});return()=>{live=false;};},[items]);
  const available=originId&&kind!=='all'?booksForOrigin(kind,originId):books.filter(b=>kind==='all'||(kind==='prophet'?bookOrigins[b.id]?.some(url=>url.startsWith('/prophets')):b.category!=='prophet'||bookOrigins[b.id]?.some(url=>url.startsWith('/stories'))));

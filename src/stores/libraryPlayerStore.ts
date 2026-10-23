@@ -8,7 +8,7 @@ import {claimMediaSession} from '../lib/mediaSessionOwner';
 import {unlockAudio} from '../lib/audioUnlock';
 import {bookForAudio,chapterForAudio,chapterPlayback} from '../lib/bookLibrary';
 interface PlayOptions {queue?:LibraryAudio[];fromStart?:boolean;startAt?:number}
-interface Player {queue:LibraryAudio[];stopAtChapter:boolean;completedChapter:string;setStopAtChapter:(value:boolean)=>void;item:LibraryAudio|null;playing:boolean;loading:boolean;position:number;duration:number;rate:number;error:string;deadline:number;play:(item:LibraryAudio,options?:PlayOptions)=>Promise<void>;toggle:()=>void;seek:(seconds:number)=>void;seekChapter:(seconds:number)=>void;setRate:(rate:number)=>void;sleep:(minutes:number)=>void;close:()=>void}
+interface Player {queue:LibraryAudio[];stopAtChapter:boolean;completedChapter:string;setStopAtChapter:(value:boolean)=>void;item:LibraryAudio|null;playing:boolean;loading:boolean;position:number;duration:number;rate:number;error:string;deadline:number;play:(item:LibraryAudio,options?:PlayOptions)=>Promise<void>;pause:()=>void;toggle:()=>void;seek:(seconds:number)=>void;seekChapter:(seconds:number)=>void;setRate:(rate:number)=>void;sleep:(minutes:number)=>void;close:()=>void}
 let audio:HTMLAudioElement|undefined,sequence=0,blob:string|undefined,lastSave=0;
 const owner='audio-library';
 function save(){const s=useLibraryPlayer.getState();if(s.item&&audio)useAudioLibraryStore.getState().savePosition(s.item.id,audio.currentTime);}
@@ -45,12 +45,13 @@ export const useLibraryPlayer=create<Player>((set,get)=>({queue:[],stopAtChapter
   try{
    const source=await libraryAudioSource(item);if(token!==sequence){if(source.startsWith('blob:'))URL.revokeObjectURL(source);return;}
    if(blob)URL.revokeObjectURL(blob);blob=source.startsWith('blob:')?source:undefined;
-   const saved=options?.startAt??(options?.fromStart?0:useAudioLibraryStore.getState().positions[item.id]?.seconds||0),start=saved<item.duration-2?saved:0;
+   const saved=options?.startAt??(options?.fromStart?0:useAudioLibraryStore.getState().positions[item.id]?.seconds||0),start=options?.startAt!==undefined?Math.max(0,Math.min(saved,item.duration)):saved<item.duration-2?saved:0;
    player.src=source;player.playbackRate=get().rate;
    player.onloadedmetadata=()=>{if(token===sequence)player.currentTime=Math.min(start,Number.isFinite(player.duration)?player.duration:0);};
    bind(item);await player.play();if(token!==sequence)return;set({playing:true,loading:false});
   }catch{if(token===sequence)set({error:'Lecture indisponible. Réessayez avec une connexion.',playing:false,loading:false});}
  },
+ pause,
  toggle:()=>{const s=get();if(s.loading){pause();return;}if(s.playing){pause();return;}if(!s.item)return;void s.play(s.item,{queue:s.queue});},
  seek:seconds=>{if(audio&&get().item&&Number.isFinite(seconds)){audio.currentTime=Math.max(0,Math.min(seconds,get().duration));set({position:audio.currentTime});save();}},
  seekChapter:seconds=>{const s=get();if(!s.item)return;const chapter=chapterPlayback(s.item,s.queue,s.position);let remaining=Math.max(0,Math.min(seconds,chapter.duration));for(const [i,part] of chapter.parts.entries()){if(remaining<part.duration||i===chapter.parts.length-1){if(part.id===s.item.id)s.seek(remaining);else void s.play(part,{queue:s.queue,startAt:remaining});break;}remaining-=part.duration;}},

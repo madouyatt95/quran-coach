@@ -1,18 +1,20 @@
-import { useState } from 'react';
+import {useSmartBack,usePageState} from '../hooks/usePageState';
+
 import { Search, BookOpen, ChevronRight, ArrowLeft } from 'lucide-react';
 import { QURAN_THEMES, type QuranTheme } from '../data/themesData';
 import { useOpenReader } from '../hooks/useOpenReader';
-import { useNavigate } from 'react-router-dom';
+
 import { useTranslation } from 'react-i18next';
 import { formatDivineNames } from '../lib/divineNames';
 import './ThemesPage.css';
 
 export function ThemesPage() {
     const { t } = useTranslation();
-    const [selectedTheme, setSelectedTheme] = useState<QuranTheme | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedTheme, setSelectedTheme] = usePageState<QuranTheme | null>('theme',null);
+    const [searchQuery, setSearchQuery] = usePageState('query','');
     const openReader = useOpenReader('Thèmes');
-    const navigate = useNavigate();
+
+    const goBack=useSmartBack('/');
 
     const filteredThemes = QURAN_THEMES.filter(t =>
         t.nameFr.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -61,7 +63,7 @@ export function ThemesPage() {
     return (
         <div className="themes-page">
             <div className="themes-header">
-                <button className="themes-back" onClick={() => navigate(-1)}>
+                <button className="themes-back" onClick={goBack}>
                     <ArrowLeft size={20} />
                 </button>
                 <h1 className="themes-title">

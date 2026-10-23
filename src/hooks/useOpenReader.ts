@@ -13,7 +13,7 @@ export function useOpenReader(label = 'Retour') {
     const location = useLocation();
     return (target: ReaderTarget) => navigate(readerUrl(target), {
         state: location.pathname === '/read' ? location.state : {
-            readerReturn: { to: location.pathname + location.search, label, state: location.state },
+            readerReturn: { index: window.history.state?.idx, to: location.pathname + location.search, label, state: location.state },
         },
     });
 }

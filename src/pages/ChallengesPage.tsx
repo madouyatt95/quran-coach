@@ -1,5 +1,6 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import {
     ArrowRight,
     Plus,
@@ -40,7 +41,8 @@ function getProgressPercent(challenge: ActiveReadingChallenge): number {
 
 export function ChallengesPage() {
     const { t } = useTranslation();
-    const navigate = useNavigate();
+
+    const goBack=useSmartBack('/quiz');
     const {
         activeReadingChallenges,
         startReadingChallenge,
@@ -70,7 +72,7 @@ export function ChallengesPage() {
         <div className="challenges-page">
             {/* Header */}
             <div className="challenges-header">
-                <button className="challenges-back" onClick={() => navigate(-1)}>
+                <button className="challenges-back" onClick={goBack}>
                     <ArrowRight size={24} />
                 </button>
                 <h1>🏆 {t('challenges.title', 'Mes Défis')}</h1>

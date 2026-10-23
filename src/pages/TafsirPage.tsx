@@ -1,7 +1,8 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { useState, useEffect } from 'react';
 import { BookOpen, ChevronDown, ChevronLeft, Loader2, Users, MessageCircle, Volume2, Share2 } from 'lucide-react';
 import { useQuranStore } from '../stores/quranStore';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { parsePassage } from '../lib/learning';
 import { fetchTafsir, fetchVerseText, AVAILABLE_TAFSIRS } from '../lib/tafsirApi';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +48,8 @@ const NARRATIVE_SURAHS = [12, 18, 19, 20, 26, 27, 28]; // Yusuf, Kahf, Maryam, T
 export function TafsirPage() {
     const { t } = useTranslation();
     const { surahs } = useQuranStore();
-    const navigate = useNavigate();
+
+    const goBack=useSmartBack('/read');
     const [searchParams] = useSearchParams();
     const incoming = parsePassage(searchParams);
 
@@ -169,7 +171,7 @@ export function TafsirPage() {
         <div className="tafsir-page">
             {/* Header */}
             <div className="tafsir-header">
-                <button className="tafsir-back-btn" onClick={() => navigate(-1)}>
+                <button className="tafsir-back-btn" onClick={goBack}>
                     <ChevronLeft size={24} />
                 </button>
                 <h1 className="tafsir-title">

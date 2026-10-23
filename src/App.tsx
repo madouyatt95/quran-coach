@@ -1,3 +1,4 @@
+import {NavigationMemory} from './components/Navigation/NavigationMemory';
 import { startCarMediaBridge } from './lib/carExperience';
 import { startActivityWidgetBridge } from './lib/widgetService';
 import { useWidgetNavigation } from './hooks/useWidgetNavigation';
@@ -198,6 +199,7 @@ function AppContent() {
 
   return (
     <AutomaticMosqueContext.Provider value={automaticMosque}>
+      <NavigationMemory />
       <AdhanPlayer />
       {/* Global burger menu button – hidden on Lecture and Lesson pages */}
       {!isLecturePage && (

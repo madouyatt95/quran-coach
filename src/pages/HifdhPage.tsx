@@ -1,7 +1,8 @@
+import {usePageState} from '../hooks/usePageState';
 import {Pupitre,PupitreTop,PupitreBottom,PupitreOnly} from '../components/Pupitre/Pupitre';
 import { useHifdhWordStudy } from '../components/Hifdh/useHifdhWordStudy';
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, useNavigationType, Link } from 'react-router-dom';
 import { parsePassage, passageUrl } from '../lib/learning';
 import {
     Mic,
@@ -48,13 +49,15 @@ export function HifdhPage() {
     const { t } = useTranslation();
     const [journeyActive,setJourneyActive] = useState(false);
     const location = useLocation();
+    const navigationType=useNavigationType();
+    const restoringSelection=useRef((()=>{try{return !!sessionStorage.getItem(`qc-page:${location.pathname}:selectedSurah:${location.search}`);}catch{return false;}})());
     const resumeMode = new URLSearchParams(location.search).get('resume');
-    const [view, setView] = useState<HifdhView>((location.search && resumeMode !== 'journey') || location.state ? 'training' : 'session');
+    const [view, setView] = usePageState<HifdhView>('view:'+location.search,(location.search && resumeMode !== 'journey') || location.state ? 'training' : 'session');
     const incoming = parsePassage(new URLSearchParams(location.search));
     const { surahs } = useQuranStore();
     const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const [savedSession,setSavedSession] = useState(()=>readHifdhSession(localStorage));
-    const [step,setStep] = useState<HifdhStep>('listen');
+    const [step,setStep] = usePageState<HifdhStep>('step:'+location.search,'listen');
     const wordStudyHost=useRef<HTMLDivElement>(null);
     const [revealedHints,setRevealedHints]=useState<Set<string>>(()=>new Set());
     const [settingsOpen,setSettingsOpen] = useState(false);
@@ -89,12 +92,13 @@ export function HifdhPage() {
     }, []);
 
     // Selection state
-    const [selectedSurah, setSelectedSurah] = useState(incoming.surah);
-    const [startAyah, setStartAyah] = useState(incoming.ayah);
-    const [endAyah, setEndAyah] = useState(location.search ? incoming.ayah : 5);
+    const [selectedSurah, setSelectedSurah] = usePageState('selectedSurah:'+location.search,incoming.surah);
+    const [startAyah, setStartAyah] = usePageState('startAyah:'+location.search,incoming.ayah);
+    const [endAyah, setEndAyah] = usePageState('endAyah:'+location.search,location.search ? incoming.ayah : 5);
     const [maxAyahs, setMaxAyahs] = useState(5);
     const [ayahs, setAyahs] = useState<Ayah[]>([]);
-    const [currentAyahIndex, setCurrentAyahIndex] = useState(0);
+    const [currentAyahIndex, setCurrentAyahIndex] = usePageState('ayah:'+location.search,0);
+    const initialAyahIndex=useRef(currentAyahIndex);
 
     // Partial selection (Word loop)
     const [selectionStart, setSelectionStart] = useState<{ ayahIndex: number; wordIndex: number } | null>(null);
@@ -188,7 +192,7 @@ export function HifdhPage() {
 
     // Handle incoming verse from navigation state (Deep link)
     useEffect(() => {
-        if (new URLSearchParams(location.search).has('resume')) return;
+        if ((navigationType==='POP'&&restoringSelection.current)||new URLSearchParams(location.search).has('resume')) return;
         const state = location.search ? parsePassage(new URLSearchParams(location.search)) : location.state as { surah?: number; ayah?: number };
         if (state?.surah && state?.ayah) {
             setView('training');
@@ -283,7 +287,7 @@ export function HifdhPage() {
             setAyahs(filtered);
             setMaxAyahs(surahData.surah.numberOfAyahs);
             const resumed=filtered.findIndex(a=>a.numberInSurah===resumeAyah.current);
-            setCurrentAyahIndex(Math.max(0,resumed));resumeAyah.current=null;
+            setCurrentAyahIndex(resumed>=0?resumed:Math.min(initialAyahIndex.current,filtered.length-1));initialAyahIndex.current=0;resumeAyah.current=null;
             setCurrentRepeat(1);
             setSelectionStart(null);
             setSelectionEnd(null);

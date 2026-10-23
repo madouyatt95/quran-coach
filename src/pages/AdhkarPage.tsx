@@ -1,3 +1,4 @@
+import {usePageState,useSmartBack} from '../hooks/usePageState';
 import {InvocationReviewShelf} from '../components/Adhkar/InvocationReviewShelf';
 import {useEffect,useMemo,useState} from 'react';
 import {Link,useSearchParams} from 'react-router-dom';
@@ -13,7 +14,7 @@ import {DownloadButton} from '../components/DownloadButton';
 import {getAdhkarAudioUrl} from '../lib/adhkarAudioService';
 import './AdhkarPage.css';
 export function AdhkarPage(){
- const [params,setParams]=useSearchParams(),[query,setQuery]=useState(''),[now,setNow]=useState(()=>new Date()),[name,setName]=useState(''),[autoStart,setAutoStart]=useState(false);
+ const [params,setParams]=useSearchParams(),[query,setQuery]=usePageState('query:'+params.toString(),''),[now,setNow]=useState(()=>new Date()),[name,setName]=useState(''),[autoStart,setAutoStart]=useState(false);
  const experience=useAdhkarExperienceStore(),daily=useDailyAdhkarStore(),favorites=useFavoritesStore();
  useEffect(()=>{
   const previous=favorites.favoriteDuas.find(f=>f.chapterId==='hisn_chap_130'&&f.duaId===276&&f.arabic===invocationByKey.get('hisn_chap_130:100276')?.arabic);
@@ -33,13 +34,15 @@ export function AdhkarPage(){
  const items=[...list].sort((a,b)=>{const x=order.indexOf(a.key),y=order.indexOf(b.key);return (x<0?1e6:x)-(y<0?1e6:y);});
  const title=session==='review'?'Mes révisions':timed?`Ma séance de ${timed.minutes} minutes`:collection?favorites.collections.find(c=>c.id===collection)?.name||'Recueil':session==='favorites'?'Mes favoris':selectedCategory?.name||'Invocations';
  const active=params.get('dua');const index=active?items.findIndex(d=>d.key===active||String(d.id)===active):-1;
+ const parentParams=new URLSearchParams(params);parentParams.delete('dua');
+ const goBack=useSmartBack(index>=0?`/adhkar?${parentParams}`:'/adhkar');
  const results=useMemo(()=>searchInvocations(query),[query]);
  const today=localAdhkarDay();
  const getCount=(d:Invocation)=>isDailyInvocation(d)?daily.day===today?daily.counts[invocationCountKey(d)]||0:0:experience.counts[invocationCountKey(d)]||0;
  const target=(d:Invocation)=>countEvidence(d)?d.count:experience.targets[d.key]||d.count||1;
- const open=(cat:string,key?:string)=>{setAutoStart(false);setQuery('');const next=new URLSearchParams(cat.startsWith('collection:')?{collection:cat.slice(11)}:{cat});if(key)next.set('dua',key);setParams(next);};
+ const open=(cat:string,key?:string)=>{setAutoStart(false);const next=new URLSearchParams(cat.startsWith('collection:')?{collection:cat.slice(11)}:{cat});if(key)next.set('dua',key);setParams(next);};
  const view=(d:Invocation)=>open(d.categoryId,d.key);
- const select=(n:number,auto=false)=>{setAutoStart(auto);const next=new URLSearchParams(params);next.set('dua',items[n].key);setParams(next,{replace:true});window.scrollTo({top:0,behavior:'instant'});};
+ const select=(n:number,auto=false)=>{setAutoStart(auto);const next=new URLSearchParams(params);next.set('dua',items[n].key);setParams(next,{replace:index>=0});window.scrollTo({top:0,behavior:'instant'});};
  const period=now.getHours()>=4&&now.getHours()<16?'morning':'evening';const suggested=categoryById.get(period)!;
  const completed=suggested.items.filter(d=>getCount(d)>=target(d)).length;
  const nextDaily=suggested.items.find(d=>getCount(d)<target(d))||suggested.items[0];
@@ -57,10 +60,10 @@ export function AdhkarPage(){
  const collectionView=!!session||!!collection;
  return <main className={`inv-page${index>=0?' inv-page-reading':''}`}>
  <header className="inv-header"><div><span className="inv-eyebrow">UN MOMENT POUR SE RECENTRER</span><h1>Invocations</h1></div><span className="inv-header-ar" lang="ar" dir="rtl">حصن المسلم</span></header>
- {index>=0?<InvocationReader key={`${currentId}:${items[index].key}`} session={currentId} items={items} index={index} autoStart={autoStart} onAdvance={()=>select(index+1,true)} onSelect={select} onBack={()=>{const next=new URLSearchParams(params);next.delete('dua');setParams(next);}}/>:<>
+ {index>=0?<InvocationReader key={`${currentId}:${items[index].key}`} session={currentId} items={items} index={index} autoStart={autoStart} onAdvance={()=>select(index+1,true)} onSelect={select} onBack={goBack}/>:<>
  <label className="inv-search"><Search size={19}/><input aria-label="Rechercher une invocation" placeholder="Un mot, une situation, une invocation…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button aria-label="Effacer la recherche" onClick={()=>setQuery('')}><X size={18}/></button>}</label>
  {query?<section><div className="inv-section-heading"><h2>Résultats</h2><span>{results.length}</span></div><p className="inv-muted">Arabe, phonétique, traduction et situations.</p>{results.length?results.map(d=><InvocationTile key={d.key} d={d} open={()=>view(d)}/>):<p className="inv-empty">Aucune invocation trouvée. Essayez un mot comme « pardon », « voyage » ou une expression de la traduction.</p>}</section>:collectionView?<section>
- <button className="inv-back" onClick={()=>setParams({})}>← Toutes les invocations</button><div className="inv-section-heading"><h2>{title}</h2><span>{items.length} invocations</span>{availableUrls.length>0&&<DownloadButton id={`adhkar-${currentId}`} title={title} urls={availableUrls} sampleUrlForCheck={availableUrls[0]}/>}</div>
+ <button className="inv-back" onClick={goBack}>← Retour</button><div className="inv-section-heading"><h2>{title}</h2><span>{items.length} invocations</span>{availableUrls.length>0&&<DownloadButton id={`adhkar-${currentId}`} title={title} urls={availableUrls} sampleUrlForCheck={availableUrls[0]}/>}</div>
  {timed&&<p className="inv-muted">Sélection de {items.length} invocations · environ {Math.floor(timed.seconds/60)} min {timed.seconds%60} s à la préparation. Cette sélection ne remplace pas le recueil complet. Aucun texte n’est interrompu pour respecter la durée.</p>}
  {availableUrls.length>0&&<p className="inv-muted">Téléchargement : {availableUrls.length} enregistrements arabes disponibles. La narration française est lue en ligne.</p>}
  {items.length>0?<><button className="inv-primary" onClick={()=>{const saved=resume?.session===currentId?items.find(d=>d.key===resume.key):undefined;open(currentId,(saved||items.find(d=>getCount(d)<target(d))||items[0]).key);}}>Accompagne-moi · {resume?.session===currentId?'reprendre':'commencer'}</button><p className="inv-muted">{items.filter(d=>getCount(d)>=target(d)).length} compteurs terminés sur {items.length}{['morning','evening'].includes(session)?' aujourd’hui':''}</p>

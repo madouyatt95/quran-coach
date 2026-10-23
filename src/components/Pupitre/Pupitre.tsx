@@ -13,6 +13,6 @@ export function Pupitre({title,children,enabled=true,layoutState,...props}:HTMLA
   </div>{children}
  </div></LayoutContext.Provider>;
 }
-export function PupitreTop({children,...props}:HTMLAttributes<HTMLElement>){return <section {...props} className={`pupitre-upper ${props.className||''}`}>{children}</section>;}
-export function PupitreBottom({children,...props}:HTMLAttributes<HTMLElement>){return <section {...props} className={`pupitre-lower ${props.className||''}`}>{children}</section>;}
+export function PupitreTop({children,...props}:HTMLAttributes<HTMLElement>){return <section data-scroll-key="pupitre-upper" {...props} className={`pupitre-upper ${props.className||''}`}>{children}</section>;}
+export function PupitreBottom({children,...props}:HTMLAttributes<HTMLElement>){return <section data-scroll-key="pupitre-lower" {...props} className={`pupitre-lower ${props.className||''}`}>{children}</section>;}
 export function PupitreOnly({children}:{children:ReactNode}){return <div className="pupitre-only">{children}</div>;}

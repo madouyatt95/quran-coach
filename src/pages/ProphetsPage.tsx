@@ -1,3 +1,4 @@
+import {usePageState} from '../hooks/usePageState';
 import { chapterBooks } from '../data/storyChapters';
 import { ChapterPreview } from '../components/Journeys/ChapterPreview';
 import {BookShelf} from '../components/Books/BookShelf';
@@ -402,7 +403,7 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
 
 export function ProphetsPage(){
  const [params,setParams]=useSearchParams(),navigate=useNavigate();
- const [tab,setTab]=useState<TabMode>('prophets'),[search,setSearch]=useState(''),[graph,setGraph]=useState(false),[companion,setCompanion]=useState<Companion|null>(null);
+ const [tab,setTab]=usePageState<TabMode>('tab','prophets'),[search,setSearch]=usePageState('search', ''),[graph,setGraph]=usePageState('graph', false),[companion,setCompanion]=useState<Companion|null>(null);
  const prophet=prophets.find(p=>p.id===params.get('prophet'))||null;
  const entry=prophet?bookEntryForOrigin('prophet',prophet.id):null;
  const entryHref=entry?bookHref(entry.book.id,entry.chapter):null;

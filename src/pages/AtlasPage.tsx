@@ -1,3 +1,4 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet';
@@ -157,6 +158,7 @@ type AtlasItem = {
 export function AtlasPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+    const goBack=useSmartBack('/');
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [activeEra, setActiveEra] = useState<Era | 'all'>('all');
   const [mapStyle, setMapStyle] = useState<keyof typeof MAP_STYLES>('dark');
@@ -354,7 +356,7 @@ export function AtlasPage() {
       {/* Header */}
       <div className="atlas-header">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
-          <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer' }}>
+          <button onClick={goBack} style={{ background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer' }}>
             <ArrowLeft size={22} />
           </button>
           <h1>🗺️ Atlas du Coran</h1>

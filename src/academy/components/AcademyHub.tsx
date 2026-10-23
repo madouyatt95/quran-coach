@@ -1,3 +1,4 @@
+import {usePageState,useSmartBack} from '../../hooks/usePageState';
 import {ArabicEntry} from '../../arabic/ArabicEntry';
 // ─── Academy Hub — Premium Redesign ──────────────────────
 import { useState, useCallback, useMemo, useEffect, useEffectEvent } from 'react';
@@ -84,7 +85,10 @@ export function AcademyHub() {
     const store = useAcademyStore();
 
     // Navigation state
-    const [selectedLevel, setSelectedLevel] = useState<AcademyLevel | null>(null);
+    const goBack=useSmartBack('/');
+    const [levelId,setLevelId]=usePageState<string|null>('level',null);
+    const selectedLevel=LEVELS.find(level=>level.id===levelId)||null;
+    const setSelectedLevel=(level:AcademyLevel|null)=>setLevelId(level?.id||null);
     const [activeModule, setActiveModule] = useState<AcademyModule | null>(null);
     const [contentIdx, setContentIdx] = useState(0);  // which content block (lesson/quiz)
     const [sectionIdx, setSectionIdx] = useState(0);   // within a lesson, which section
@@ -94,7 +98,7 @@ export function AcademyHub() {
     const [showResult, setShowResult] = useState(false);
     const [showTajweed, setShowTajweed] = useState(false);
     // Feature 8: Search
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = usePageState('searchQuery', '');
     // Feature 7: Tajwid practice mode
     const [tajwidPractice, setTajwidPractice] = useState(false);
     const [tajwidAnswer, setTajwidAnswer] = useState<number | null>(null);
@@ -123,7 +127,7 @@ export function AcademyHub() {
         if (!isModuleUnlocked(mod.id)) {setLockedNotice('Pour ouvrir ce cours, termine d’abord son parcours de fondations. Tu peux aussi adapter ton parcours depuis le repérage de niveau.');return;}
         setLockedNotice('');store.setCurrentModule(mod.id);
         setActiveModule(mod);
-        if(mod.sourceDocument && new URLSearchParams(location.search).get('module')!==mod.id)navigate(`/academy?module=${mod.id}`,{replace:true});
+        if(new URLSearchParams(location.search).get('module')!==mod.id)navigate(`/academy?module=${mod.id}`);
         // Feature 1: Resume from saved position
         const saved = store.progress[mod.id];
         const explicitSection=new URLSearchParams(location.search).get('section');
@@ -152,7 +156,7 @@ export function AcademyHub() {
       if(result.complete&&result.passed){if(store.progress[activeModule.id]?.completed)store.markReviewed(activeModule.id);else store.completeModule(activeModule.id,result.score);}
       setShowResult(true);
     },[activeModule,store]);
-    const openLinkedModule=useEffectEvent(()=>{const id=new URLSearchParams(location.search).get('module');const mod=LEVELS.flatMap(l=>l.modules).find(m=>m.id===id);if(mod&&(mod.id!==activeModule?.id||new URLSearchParams(location.search).has('section')))startModule(mod);});
+    const openLinkedModule=useEffectEvent(()=>{const id=new URLSearchParams(location.search).get('module');const mod=LEVELS.flatMap(l=>l.modules).find(m=>m.id===id);if(mod&&(mod.id!==activeModule?.id||new URLSearchParams(location.search).has('section')))startModule(mod);else if(!id&&activeModule)setActiveModule(null);});
     useEffect(()=>{openLinkedModule();},[location.key]);
 
     // Feature 1: Save position on navigation
@@ -645,7 +649,7 @@ export function AcademyHub() {
     return (
         <div className="academy-hub">
             <header className="academy-header">
-                <button className="academy-back-btn" onClick={() => navigate(-1)}>
+                <button className="academy-back-btn" onClick={goBack}>
                     <ChevronLeft size={22} />
                 </button>
                 <h1>📚 Académie</h1>

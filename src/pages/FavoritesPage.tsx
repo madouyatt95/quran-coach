@@ -1,3 +1,4 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useFavoritesStore, verseFavoriteKey, hadithFavoriteKey, duaFavoriteKey } from '../stores/favoritesStore';
@@ -20,6 +21,7 @@ function LibraryCard({ item }: { item: LibraryItem }) {
     const [saved, setSaved] = useState(false);
     const openReader = useOpenReader('Ma bibliothèque');
     const navigate = useNavigate();
+
     const selected = annotation?.collectionIds ?? [];
     return <article className="library-card">
         <div className="library-card__heading"><span>{item.title}</span><time dateTime={new Date(item.addedAt).toISOString()}>{new Date(item.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</time></div>
@@ -48,6 +50,7 @@ export function FavoritesPage() {
     const store = useFavoritesStore();
     const surahs = useQuranStore(state => state.surahs);
     const navigate = useNavigate();
+    const goBack=useSmartBack('/');
     const [params, setParams] = useSearchParams();
     const query = params.get('q') ?? '';
     const kind = params.get('type') ?? 'all';
@@ -80,7 +83,7 @@ export function FavoritesPage() {
         setComposer(null); setName(''); setMessage('Collection enregistrée. Vous pouvez maintenant y classer vos favoris.');
     };
     return <div className="favorites-page">
-        <header className="library-header"><button aria-label="Retour" onClick={() => navigate(-1)}>←</button><div><span className="library-eyebrow">VOTRE ESPACE PERSONNEL</span><h1>Ma bibliothèque</h1><p>{items.length} favori{items.length !== 1 ? 's' : ''} · Vos collections et vos notes</p></div><span className="library-emblem" aria-hidden="true">📚</span></header>
+        <header className="library-header"><button aria-label="Retour" onClick={goBack}>←</button><div><span className="library-eyebrow">VOTRE ESPACE PERSONNEL</span><h1>Ma bibliothèque</h1><p>{items.length} favori{items.length !== 1 ? 's' : ''} · Vos collections et vos notes</p></div><span className="library-emblem" aria-hidden="true">📚</span></header>
         <div className="library-tools"><label className="library-search"><span aria-hidden="true">🔎</span><input type="search" aria-label="Rechercher dans ma bibliothèque" placeholder="Un mot, une référence, une note…" value={query} onChange={event => update('q', event.target.value)} /></label><button className="library-new" onClick={() => { setComposer('new'); setName(''); setMessage(''); }}>＋ Nouvelle collection</button></div>
         {composer && <form className="library-composer" onSubmit={saveCollection}><label>{composer === 'new' ? 'Nom de la collection' : 'Renommer la collection'}<input autoFocus maxLength={60} value={name} onChange={event => setName(event.target.value)} placeholder="Ex. À mémoriser" /></label><div><button type="submit" className="library-primary" disabled={!name.trim()}>Enregistrer</button><button type="button" onClick={() => setComposer(null)}>Annuler</button></div></form>}
         {message && <p className="library-message" role="status">{message}</p>}

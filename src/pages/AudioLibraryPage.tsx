@@ -1,3 +1,4 @@
+import {usePageState} from '../hooks/usePageState';
 import {BookShelf} from '../components/Books/BookShelf';
 import {bookForAudio,canonicalBookForSource,audioOrigin} from '../lib/bookLibrary';
 import {useEffect,useRef,useState} from 'react';
@@ -9,7 +10,7 @@ import {useAudioLibraryStore} from '../stores/audioLibraryStore';
 import {useLibraryPlayer} from '../stores/libraryPlayerStore';
 import './AudioLibrary.css';
 export function AudioLibraryPage(){
- const [items,setItems]=useState<LibraryAudio[]>([]),[error,setError]=useState(''),[query,setQuery]=useState(''),[category,setCategory]=useState('all'),[mode,setMode]=useState('all'),[limit,setLimit]=useState(24),[downloads,setDownloads]=useState<string[]>([]),[busy,setBusy]=useState(''),[loading,setLoading]=useState(true);
+ const [items,setItems]=useState<LibraryAudio[]>([]),[error,setError]=useState(''),[query,setQuery]=usePageState('query', ''),[category,setCategory]=usePageState('category', 'all'),[mode,setMode]=usePageState('mode', 'all'),[limit,setLimit]=usePageState('limit', 24),[downloads,setDownloads]=useState<string[]>([]),[busy,setBusy]=useState(''),[loading,setLoading]=useState(true);
  const controller=useRef<AbortController|null>(null),favorites=useAudioLibraryStore(s=>s.favorites),toggleFavorite=useAudioLibraryStore(s=>s.toggleFavorite),positions=useAudioLibraryStore(s=>s.positions);
  const play=useLibraryPlayer(s=>s.play);
  useEffect(()=>{let live=true;loadAudioLibrary(true).then(async rows=>{if(live)setItems(rows);const ids=await downloadedAudioIds(rows);if(live)setDownloads(ids);}).catch(e=>{if(live)setError(e.message);}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;controller.current?.abort();};},[]);

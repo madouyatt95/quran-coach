@@ -1,7 +1,8 @@
+import {usePageState} from '../hooks/usePageState';
 import {ArabicEntry} from '../arabic/ArabicEntry';
 import {SURAH_JOURNEYS} from '../lib/fahm/surahJourneys';
 import {FahmKnowledge} from '../components/Fahm/FahmKnowledge';
-import {useState} from 'react';
+
 import {Link,useLocation,useNavigate,useSearchParams} from 'react-router-dom';
 import {READING_PATHS} from '../data/readingPaths';
 import {QURAN_VOCABULARY} from '../data/quranVocabulary';
@@ -14,7 +15,7 @@ import {useHomeClock} from '../components/Home/useHomeClock';
 import './FahmExperience.css';
 export function FahmPage(){
  const fahm=useFahmStore(),learning=useFahmLearningStore(),quran=useQuranStore(),navigate=useNavigate(),location=useLocation();
- const [params]=useSearchParams();const [minutes,setMinutes]=useState<5|10|20>(10),[filter,setFilter]=useState('all'),[tab,setTab]=useState('paths');
+ const [params]=useSearchParams();const [minutes,setMinutes]=usePageState<5|10|20>('minutes',10),[filter,setFilter]=usePageState('filter','all'),[tab,setTab]=usePageState('tab','paths');
  const now=useHomeClock().getTime(),streak=useStatsStore(s=>s.readingStreak);
  const s=Number(params.get('surah')),a=Number(params.get('ayah'));
  const current=validTarget(s,a)?{surah:s,ayah:a}:{surah:quran.currentSurah||1,ayah:quran.currentAyah||1};

@@ -1,5 +1,6 @@
+import {useSmartBack} from '../hooks/usePageState';
 import { useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { ChevronLeft, Plus, Users, BookOpen, Trophy, Copy, Check, LogOut, Clock, Sparkles, RefreshCw, X } from 'lucide-react';
 import { useCircleStore, MEMBER_EMOJIS, type ReadingCircle } from '../stores/circleStore';
 import { useKhatmStore } from '../stores/khatmStore';
@@ -80,7 +81,8 @@ function AutoSyncButton({ circleId, myPages }: { circleId: string; myPages: numb
 }
 
 export function CirclePage() {
-    const navigate = useNavigate();
+
+    const goBack=useSmartBack('/');
     const store = useCircleStore();
 
     const [view, setView] = useState<CircleView>('list');
@@ -557,7 +559,7 @@ export function CirclePage() {
     return (
         <div className="circle-page">
             <div className="circle-list-header">
-                <button className="circle-back" onClick={() => navigate(-1)}>
+                <button className="circle-back" onClick={goBack}>
                     <ChevronLeft size={20} />
                 </button>
                 <div>
