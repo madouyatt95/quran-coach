@@ -18,6 +18,7 @@ import { menuResumeOptions, type MenuResume } from '../../lib/menuResume';
 import { MENU_FAVORITES_KEY, MENU_SECTIONS_KEY, moveMenuFavorite, replaceMenuFavorite, type MenuSections, readMenuFavorites, readMenuSections, toggleMenuFavorite } from '../../lib/menuFavorites';
 import { requestNotificationPermission, subscribeToPush, unsubscribeFromPush } from '../../lib/notificationService';
 import { searchMenuDestinations } from '../../lib/menuSearch';
+import { useAudioStudioAccess } from '../../hooks/useAudioStudioAccess';
 import { Capacitor } from '@capacitor/core';
 import './SideMenu.css';
 
@@ -37,6 +38,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+    const audioStudioAccess = useAudioStudioAccess(isOpen);
     const notif = useNotificationStore();
     const prayer = usePrayerStore();
     const bookmark = useReadingBookmarkStore(s => s.bookmark);
@@ -149,6 +151,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         { path: '/voice-search', icon: '🎙️', label: 'Identifier' }, { path: '/listen', icon: '🎧', label: 'Écoute' },
         { path: '/hifdh', icon: '🧠', label: 'Mémorisation' }, { path: '/learning', icon: '✦', label: 'Ma séance du jour' },
         { path: '/settings', icon: '⚙️', label: 'Réglages' },
+        ...(audioStudioAccess ? [{path:'/admin/audio?tab=review',icon:'🎙️',label:'Studio audio'}] : []),
     ], query);
     const surahName = (number: number) => surahs.find(surah => surah.number === number)?.englishName || `Sourate ${number}`;
 
@@ -336,6 +339,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 </>}
             </nav>
             <footer className="side-menu-footer">
+                {audioStudioAccess && <NavLink to="/admin/audio?tab=review" onClick={onClose}><Mic size={19} aria-hidden="true" />Studio audio<span aria-hidden="true">→</span></NavLink>}
                 <div className="side-menu-notification-row">
                 <button className="side-menu-notification" type="button" role="switch" aria-checked={notif.enabled}
                     aria-label={t('sideMenu.notifications')} disabled={isLoading} onClick={handleToggleNotifications}>

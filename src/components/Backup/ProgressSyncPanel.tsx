@@ -1,8 +1,11 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { Link } from 'react-router-dom';
+import { useAudioStudioAccess } from '../../hooks/useAudioStudioAccess';
 import { progressClient } from '../../lib/progressVault';
 import { getProgressSync, lockProgressSync, subscribeProgressSync, syncProgress, unlockProgressSync, type SyncChoice } from '../../lib/progressSync';
 
 export function ProgressSyncPanel(){
+ const audioStudioAccess=useAudioStudioAccess();
  const sync=useSyncExternalStore(subscribeProgressSync,getProgressSync);
  const [email,setEmail]=useState(''),[code,setCode]=useState(''),[sent,setSent]=useState(false),[account,setAccount]=useState<string|null>(null);
  const [phrase,setPhrase]=useState(''),[consent,setConsent]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[retryAt,setRetryAt]=useState(0);
@@ -16,6 +19,7 @@ export function ProgressSyncPanel(){
  <button disabled={busy} type="submit">{sent?'Renvoyer un code':'Recevoir mon code de connexion'}</button>
  {sent&&<><p>Consultez votre messagerie puis saisissez le code reçu ici.</p><label>Code de connexion<input inputMode="numeric" autoComplete="one-time-code" value={code} maxLength={10} onChange={e=>setCode(e.target.value.replace(/\D/g,''))}/></label><button type="button" disabled={busy||code.length<6} onClick={()=>void run(async()=>{const {error}=await progressClient().auth.verifyOtp({email:email.trim(),token:code,type:'email'});if(error)throw new Error('Code incorrect ou expiré. Demandez un nouveau code.');setCode('');})}>Valider le code</button></>}
  </form>:<><p>Connecté : {account}</p>
+ {audioStudioAccess&&<Link className="progress-sync-studio" to="/admin/audio?tab=review"><strong>Studio audio</strong><span>Écouter et valider mes narrations →</span></Link>}
  {sync.status==='locked'&&<form onSubmit={e=>{e.preventDefault();void run(async()=>{if(!consent)throw new Error('Confirmez l’activation de la synchronisation.');await unlockProgressSync(phrase);setPhrase('');});}}>
  <label>Phrase secrète de votre sauvegarde<input type="password" minLength={12} required autoComplete="off" value={phrase} onChange={e=>setPhrase(e.target.value)}/></label>
  <p>Première utilisation : choisissez au moins 12 caractères et conservez cette phrase. Sur vos autres appareils, saisissez exactement la même. Elle ne sera pas envoyée au serveur. Sans elle, une sauvegarde chiffrée ne peut pas être récupérée.</p>

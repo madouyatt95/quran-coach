@@ -46,6 +46,7 @@ async function handle(request:Request,env:Env) {
   if(publicMedia&&['GET','HEAD'].includes(request.method))return media(env,request,publicMedia[1]);
   if(!path.startsWith('/admin/'))throw new HttpError(404,'Route introuvable.');
   const actor=await admin(env,request);
+  if(path==='/admin/access'&&request.method==='GET')return json({audioStudio:true});
   const preview=/^\/admin\/preview\/([0-9a-f-]{36})$/.exec(path);
   if(preview&&request.method==='GET')return media(env,request,preview[1],true);
   if(path==='/admin/state'&&request.method==='GET'){

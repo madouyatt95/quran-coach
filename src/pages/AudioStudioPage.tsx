@@ -14,8 +14,11 @@ const blank:AudioScript={id:'',title:'',category:'story',text:'',original_text:'
 const defaultVoice:VoiceProfile={id:'',name:'Récits · voix française',voice_id:'',model_id:'eleven_multilingual_v2',stability:.6,similarity:.75,style:.15,credits_per_character:1};
 const statuses:Record<string,string>={queued:'En attente',generating:'Génération en cours',uncertain:'Résultat à vérifier',review:'À écouter',published:'Publié',rejected:'À corriger',cancelled:'Annulé'};
 export function AudioStudioPage(){
- const [params]=useSearchParams();
- const [state,setState]=useState<State|null>(null),[catalog,setCatalog]=useState<LibraryAudio[]>([]),[query,setQuery]=useState(''),[section,setSection]=useState(()=>params.has('book')?'books':'scripts'),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
+ const [params,setParams]=useSearchParams();
+ const tab=params.get('tab');
+ const section=tab&&['books','scripts','voices','production','review','accounts','logs'].includes(tab)?tab:params.has('book')?'books':'scripts';
+ const setSection=(next:string)=>setParams(previous=>{const updated=new URLSearchParams(previous);updated.set('tab',next);return updated;},{replace:true});
+ const [state,setState]=useState<State|null>(null),[catalog,setCatalog]=useState<LibraryAudio[]>([]),[query,setQuery]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
  const [script,setScript]=useState(blank),[reviewed,setReviewed]=useState(false),[voice,setVoice]=useState(defaultVoice),[voiceId,setVoiceId]=useState(''),[account,setAccount]=useState(''),[selected,setSelected]=useState<string[]>([]),[quote,setQuote]=useState<Quote|null>(null),[confirmed,setConfirmed]=useState(false);
  const [providerVoices,setProviderVoices]=useState<ProviderVoice[]>([]);
  const [accountForm,setAccountForm]=useState({id:'primary',label:'Compte pilote ElevenLabs',until:'',limit:1000,termsConfirmed:false,noOverageConfirmed:false});
