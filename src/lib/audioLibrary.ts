@@ -15,7 +15,7 @@ async function publicJson(url:string):Promise<LibraryAudio[]>{
  catch{const stored=await cache?.match(url);if(stored)return stored.json();throw new Error('La bibliothèque est indisponible. Réessayez avec une connexion.');}
 }
 export async function loadAudioLibrary(refresh=false){
- if(refresh)catalogue=undefined;
+ if(refresh){catalogue=undefined;published=undefined;}
  return catalogue??=Promise.all([publicJson('/audio/library.json'),AUDIO_API?publicJson(`${AUDIO_API}/catalog`).catch(()=>[]):Promise.resolve([])]).then(([local,published])=>{
   const seen=new Set<string>();return [...published,...local].filter(i=>{if(seen.has(i.text))return false;seen.add(i.text);return true;});
  }).catch(e=>{catalogue=undefined;throw e;});
