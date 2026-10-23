@@ -39,10 +39,38 @@ export function estimatedCredits(text: string, voice: VoiceProfile) {
   return {estimate, reserved: Math.ceil(estimate * 1.15)};
 }
 export interface Alignment {characters: string[]; character_start_times_seconds: number[]; character_end_times_seconds: number[]}
-export function sentenceTimings(text: string, alignment: Alignment | null) {
-  if (!alignment || alignment.characters.join('') !== text || alignment.characters.length !== alignment.character_start_times_seconds.length || alignment.characters.length !== alignment.character_end_times_seconds.length) return [];
+function matchingAlignment(text: string, alignment: Alignment | null): alignment is Alignment {
+  return !!alignment && Array.isArray(alignment.characters) && Array.isArray(alignment.character_start_times_seconds)
+    && Array.isArray(alignment.character_end_times_seconds) && alignment.characters.join('') === text
+    && alignment.characters.every(character => typeof character === 'string' && Array.from(character).length === 1)
+    && alignment.characters.length === Array.from(text).length
+    && alignment.characters.length === alignment.character_start_times_seconds.length
+    && alignment.characters.length === alignment.character_end_times_seconds.length;
+}
+export function alignmentDuration(text: string, alignment: Alignment | null): number {
+  if (!matchingAlignment(text, alignment)) return 0;
   const starts = alignment.character_start_times_seconds, ends = alignment.character_end_times_seconds;
-  if (starts.some((v,i) => !Number.isFinite(v) || v < 0 || !Number.isFinite(ends[i]) || ends[i] < v || (i > 0 && v < starts[i-1]))) return [];
+  if (starts.some((v,i) => !Number.isFinite(v) || v < 0 || !Number.isFinite(ends[i]) || ends[i] < v
+    || (i > 0 && (v < starts[i-1] || ends[i] < ends[i-1])))) return 0;
+  return ends.at(-1) || 0;
+}
+/** History recovery has returned character durations in the end-times field.
+ * Accept that encoding only when every duration agrees with the next absolute
+ * start (within the provider's millisecond rounding). Never guess missing marks.
+ */
+export function historyAlignment(text: string, alignment: Alignment | null): Alignment | null {
+  if (alignmentDuration(text, alignment)) return alignment;
+  if (!matchingAlignment(text, alignment) || alignment.characters.length < 2) return null;
+  const starts = alignment.character_start_times_seconds, durations = alignment.character_end_times_seconds;
+  if (starts.some((start,i) => !Number.isFinite(start) || start < 0 || !Number.isFinite(durations[i]) || durations[i] < 0
+    || (i > 0 && start < starts[i-1])
+    || (i < starts.length-1 && Math.abs(start + durations[i] - starts[i+1]) > 0.002))) return null;
+  const absolute = {...alignment, character_end_times_seconds: starts.map((start,i) => start + durations[i])};
+  return alignmentDuration(text, absolute) ? absolute : null;
+}
+export function sentenceTimings(text: string, alignment: Alignment | null) {
+  if (!alignment || !alignmentDuration(text, alignment)) return [];
+  const starts = alignment.character_start_times_seconds, ends = alignment.character_end_times_seconds;
   let offset = 0;
   return text.split(/(?<=[.!?])\s+/).filter(Boolean).map((sentence, i) => {
     const start = text.indexOf(sentence, offset); offset = start + sentence.length;

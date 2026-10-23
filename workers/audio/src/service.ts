@@ -1,4 +1,4 @@
-import { AUDIO_CATEGORIES, assertFrenchScript, assertVoice, estimatedCredits, productionIdentity, sentenceTimings, sha256, type Alignment, type AudioScript, type VoiceProfile } from '../../../src/lib/audioProduction';
+import { AUDIO_CATEGORIES, alignmentDuration, assertFrenchScript, assertVoice, estimatedCredits, historyAlignment, productionIdentity, sentenceTimings, sha256, type Alignment, type AudioScript, type VoiceProfile } from '../../../src/lib/audioProduction';
 
 export interface Env {
   AUDIO: R2Bucket; PRODUCTION: Workflow<{batch: string}>;
@@ -102,12 +102,11 @@ export async function storeResult(env: Env, job: Job, result: Result, script: Au
   if(!result.audio_base64||result.audio_base64.length>16000000)throw new Error('Audio absent ou trop volumineux.');
   const audio=Uint8Array.from(atob(result.audio_base64),c=>c.charCodeAt(0));
   if(audio.length<512)throw new Error('Audio incomplet.');
+  const duration=alignmentDuration(script.text,result.alignment);
+  if(duration<=0)throw new Error('Durée ou alignement absent. Résultat conservé pour vérification.');
   const key=`recordings/${job.fingerprint}.mp3`,digest=await sha256(audio.buffer);
   await env.AUDIO.put(key,audio,{httpMetadata:{contentType:'audio/mpeg'},customMetadata:{sha256:digest,job:job.id}});
   const sentences=sentenceTimings(script.text,result.alignment);
-  const ends=result.alignment?.character_end_times_seconds||[];
-  const duration=ends.length?ends[ends.length-1]:0;
-  if(!Number.isFinite(duration)||duration<=0)throw new Error('Durée ou alignement absent. Audio conservé pour vérification.');
   const artifact={id:job.id,title:script.title,category:script.category,text:script.text,original_text:script.original_text,sourceUrl:script.source_url,reference:script.reference,key,duration,bytes:audio.length,sha256:digest,sentences,narrator:`ElevenLabs · ${job.voice.name}`};
   await patch(env,'jobs',job.id,{request_id:result.request_id||job.request_id||null,history_id:result.history_id||job.history_id||null});
   await db(env,'rpc/qc_audio_finish','POST',{p_job:job.id,p_artifact:artifact,p_actual:result.actual??null});
@@ -136,11 +135,18 @@ export async function reconcile(env: Env, job: Job, suppliedHistory?: string) {
       receipt={audio_base64:btoa(binary),alignment:h.alignments?.alignment||null,request_id:h.request_id,history_id:historyId};
     }
     receipt.history_id=historyId;receipt.actual=actual;
-    await env.AUDIO.put(`receipts/${job.id}.json`,JSON.stringify(receipt),{httpMetadata:{contentType:'application/json'}});
   }
   requireValue(receipt,'Aucun fichier récupérable. Retrouvez l’identifiant dans l’historique ElevenLabs. Aucune nouvelle génération n’a été lancée.');
-  if(job.artifact&&actual!==null)await db(env,'rpc/qc_audio_settle','POST',{p_job:job.id,p_actual:actual});
-  else await storeResult(env,job,receipt!,script);
+  receipt!.alignment=historyAlignment(script.text,receipt!.alignment);
+  const duration=alignmentDuration(script.text,receipt!.alignment);
+  requireValue(duration>0,'Horodatages récupérés incohérents. Le fichier est conservé ; aucune nouvelle génération lancée.');
+  await env.AUDIO.put(`receipts/${job.id}.json`,JSON.stringify(receipt),{httpMetadata:{contentType:'application/json'}});
+  if(job.artifact){
+    if(actual!==null)await db(env,'rpc/qc_audio_settle','POST',{p_job:job.id,p_actual:actual});
+    // Metadata repair is independent of idempotent billing: a recovered file may
+    // already be in review. Keep its bytes, digest and publication status intact.
+    await patch(env,'jobs',job.id,{artifact:{...job.artifact,duration,sentences:sentenceTimings(script.text,receipt!.alignment)}});
+  }else await storeResult(env,job,receipt!,script);
   return {recovered:true,actual};
 }
 export async function produceOne(env: Env, jobId: string): Promise<boolean> {
