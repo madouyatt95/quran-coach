@@ -1,3 +1,4 @@
+import {Pupitre,PupitreTop,PupitreBottom,PupitreOnly} from '../components/Pupitre/Pupitre';
 import { useHifdhWordStudy } from '../components/Hifdh/useHifdhWordStudy';
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useLocation, Link } from 'react-router-dom';
@@ -54,6 +55,8 @@ export function HifdhPage() {
     const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
     const [savedSession,setSavedSession] = useState(()=>readHifdhSession(localStorage));
     const [step,setStep] = useState<HifdhStep>('listen');
+    const wordStudyHost=useRef<HTMLDivElement>(null);
+    const [revealedHints,setRevealedHints]=useState<Set<string>>(()=>new Set());
     const [settingsOpen,setSettingsOpen] = useState(false);
     const [libraryOpen,setLibraryOpen] = useState(false);
     const [queue,setQueue] = useState<ReviewPassage[]>([]);
@@ -315,7 +318,7 @@ export function HifdhPage() {
 
     const wordStudy = useHifdhWordStudy(`${selectedSurah}:${startAyah}:${endAyah}:${view}:${step}:${journeyActive}:${isWordSelectionMode}`, () => {
         stopPlayback(); setPokeEndTime(null); void coach.stopCoachListening();
-    });
+    }, wordStudyHost);
 
     // Load audio and fetch current timings
     useEffect(() => {
@@ -927,7 +930,7 @@ export function HifdhPage() {
             {audioError && <p className="hifdh-audio-error" role="alert">{audioError}</p>}
 <div className="hifdh-step-hint">                <p>{step==='listen'?'Écoutez le passage, puis récitez à votre rythme.':step==='recite'?'Récitez le passage. Le suivi vocal vous aide à repérer les mots à retravailler.':'Évaluez votre rappel et préparez votre prochaine séance.'}</p></div>
             {/* Main Player Area */}
-            <div className="hifdh-main-card">
+            <div className="hifdh-main-card"><Pupitre title="Mémorisation" className="hifdh-pupitre" enabled={!journeyActive&&view==='training'}><PupitreTop aria-label="Passage à mémoriser">
                 <audio
                     ref={audioRef}
                     onEnded={handleAudioEnded}
@@ -968,7 +971,7 @@ export function HifdhPage() {
                                         }
 
                                         const isBlind = coach.isCoachMode && coach.blindMode;
-                                        const isRevealed = wordState === 'correct';
+                                        const isRevealed = wordState === 'correct' || revealedHints.has(`${selectedSurah}:${ayah.numberInSurah}:${wIdx}`);
                                         const showText = !isBlind || isRevealed;
 
                                         return (
@@ -1007,7 +1010,7 @@ export function HifdhPage() {
                                         }
 
                                         const isBlind = coach.isCoachMode && coach.blindMode;
-                                        const isRevealed = wordState === 'correct';
+                                        const isRevealed = wordState === 'correct' || revealedHints.has(`${selectedSurah}:${ayah.numberInSurah}:${wIdx}`);
                                         const showText = !isBlind || isRevealed;
 
                                         return (
@@ -1116,6 +1119,7 @@ export function HifdhPage() {
                     {/* Phonetics Display moved per card */}
                 </div>
 
+            </PupitreTop><PupitreBottom aria-label="Récitation, répétitions et bilan"><div ref={wordStudyHost}/><PupitreOnly><nav className="pupitre-study-actions" aria-label="Étapes de mémorisation">{(['listen','recite','review'] as const).map((value,i)=><button key={value} aria-pressed={step===value} onClick={()=>{stopPlayback();void coach.stopCoachListening();setStep(value);}}>{['Écouter','Réciter','Bilan'][i]}</button>)}</nav><div className="pupitre-study-actions"><button aria-pressed={coach.blindMode} onClick={()=>{if(!coach.isCoachMode)coach.selectCoachMode('magic_reveal');else coach.toggleBlindMode();}}>Masquer / afficher le passage</button><button disabled={!coach.blindMode} onClick={()=>{const a=ayahs[currentAyahIndex];if(!a)return;const words=recitationWords(a.text);const next=words.findIndex((_,i)=>coach.wordStates.get(`${currentAyahIndex}-${i}`)!=='correct'&&!revealedHints.has(`${selectedSurah}:${a.numberInSurah}:${i}`));if(next>=0)setRevealedHints(old=>new Set([...old,`${selectedSurah}:${a.numberInSurah}:${next}`]));}}>Révéler le prochain mot</button></div></PupitreOnly>
             <div className="hifdh-command-dock" role="region" aria-label="Lecteur flottant de mémorisation">
             <section id="hifdh-floating-settings" className="hifdh-dock-settings" hidden={!settingsOpen} onClickCapture={()=>{sessionTouched.current=true;}}>
                 <h2>Réglages de lecture</h2>
@@ -1227,7 +1231,6 @@ export function HifdhPage() {
                 </div>
             </div>
 
-            </div>
             {/* Bottom Actions — Selection info */}
             {selectionStart !== null && !coach.isCoachMode && (
                 <div className="hifdh-selection-bar">
@@ -1257,8 +1260,9 @@ export function HifdhPage() {
 
             <div style={{padding:"0 16px"}}><Link className="learning-btn" to={passageUrl({surah:selectedSurah,ayah:ayahs[currentAyahIndex]?.numberInSurah || startAyah}) + '&from=hifdh' + (new URLSearchParams(location.search).get('step') ? '&step=' + encodeURIComponent(new URLSearchParams(location.search).get('step')!) : '')}>Fiche du verset · comprendre et progresser</Link></div>
 
-            </div>
             {wordStudy.card}
+            </PupitreBottom></Pupitre></div>
+            </div>
         </div >
     );
 }

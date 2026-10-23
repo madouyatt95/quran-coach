@@ -1,3 +1,5 @@
+import {usePupitreLayout} from '../../components/Pupitre/usePupitreLayout';
+import {Pupitre,PupitreTop,PupitreBottom,PupitreOnly} from '../../components/Pupitre/Pupitre';
 import {QuizBridge} from '../../components/Quiz/QuizBridge';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -41,6 +43,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
  const article=useRef<HTMLElement>(null);
  const top=useRef<HTMLDivElement>(null);
  const [outline,setOutline]=useState(false);
+ const [practiceIndex,setPracticeIndex]=useState(0);const pupitre=usePupitreLayout();
  const audio=useRef<CourseAudioHandle>(null);
  const listen=(index:number)=>audio.current?.play(index);
  const narration=courseNarration(course.id);
@@ -67,7 +70,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
  },[application,course.id,savePosition]);
  const applicationLesson=course.content[2];
  const prompt=applicationLesson.type==='lesson'?applicationLesson.sections[0]:null;
- return <CourseReferencesProvider moduleId={course.id}><div ref={top} className="academy-hub academy-course-shell">
+ return <CourseReferencesProvider moduleId={course.id}><div ref={top} className="academy-hub academy-course-shell"><Pupitre title={course.title} className="academy-pupitre" layoutState={pupitre}><PupitreTop aria-label="Cours et explications">
   <nav className="academy-course-nav" aria-label="Navigation du cours"><button onClick={onBack}><ArrowLeft size={17}/> Tous les chapitres</button><span>{source.doc.subject==='aqidah'?'Aqidah':'Hadith'} · {source.chapter.number}/{source.doc.chapters.length-1}</span></nav>
   <div className="academy-course-backlink"><CourseReturnLink id={course.id}/></div>
   <header className="academy-course-cover"><span className="academy-course-eyebrow">{application?'MISE EN PRATIQUE':'COURS DE '+(source.doc.subject==='aqidah'?'AQIDAH':'HADITH')} · CHAPITRE {String(source.chapter.number).padStart(2,'0')}</span><h1>{course.title}</h1><p><CourseReferenceText text={teaching.introduction}/></p><div className="academy-course-byline"><BookOpen size={16}/><span>Cours de {source.doc.author} · Masjid Sabirin</span></div></header>
@@ -84,7 +87,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
    <article className="academy-course-article" ref={article}>
     {narration&&<section className="academy-course-narration"><span className="academy-course-eyebrow">LE RÉCIT ÉTUDIÉ · TRADUCTION DU COURS</span><h2>{source.chapter.number===12?'Lire le récit de Umar':'Lire le hadith dans son contexte'}</h2>{narrationBlocks(narration).map((block,index)=>block.type==='speaker'?<h3 className="academy-course-speaker" key={index}>{block.text}</h3>:<p key={index}><CourseReferenceText text={block.text}/></p>)}<small>Texte et attributions reproduits du chapitre {source.chapter.number}, à partir de la page {source.chapter.start} du cours.</small></section>}
     {sections.map((section,index)=><section className="academy-course-section" id={`course-section-${index}`} data-section={index} key={section.title}>
-     <span className="academy-course-section-number">{String(index+1).padStart(2,'0')} / COMPRENDRE</span><h2>{section.title}</h2><p className="academy-course-lead"><CourseReferenceText text={section.body}/></p><Paragraphs text={teaching.developments[index]}/><CourseReasoning id={course.id} index={index} onPractice={()=>document.getElementById(`course-practice-${index}`)?.scrollIntoView({block:'center',behavior:'smooth'})}/><div id={`course-practice-${index}`}><CoursePractice id={course.id} index={index}/></div><CourseExplore id={course.id} index={index} onListen={()=>listen(index)}/>
+     <span className="academy-course-section-number">{String(index+1).padStart(2,'0')} / COMPRENDRE</span><h2>{section.title}</h2><p className="academy-course-lead"><CourseReferenceText text={section.body}/></p><Paragraphs text={teaching.developments[index]}/><CourseReasoning id={course.id} index={index} onPractice={()=>{if(pupitre.layout!=='plain'){setPracticeIndex(index);document.getElementById('pupitre-course-practice')?.scrollIntoView({block:'start'});}else document.getElementById(`course-practice-${index}`)?.scrollIntoView({block:'center',behavior:'smooth'});}}/><div className="pupitre-classic-only" id={`course-practice-${index}`}><CoursePractice id={course.id} index={index}/></div><CourseExplore id={course.id} index={index} onListen={()=>listen(index)}/>
     </section>)}
     <CourseCases id={course.id} onRead={jump} onAnswer={(index,correct)=>useAcademyKnowledgeStore.getState().answer(course.id,index,'case',correct?1:0,correct)}/><CourseConnections id={course.id}/><button className="academy-course-link" onClick={onReview}>Préparer ma séance de révision →</button>
     <QuizBridge source="academy" id={course.id}/><CourseProject id={course.id}/>
@@ -95,8 +98,9 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
     <footer className="academy-course-finish"><span>LE COURS EST TERMINÉ</span><h2>Passons de la lecture à la compréhension.</h2><p>Retrouve les notions dans quelques questions, puis travaille une situation concrète. Le cours reste accessible pendant les exercices.</p><button className="academy-course-primary" onClick={onPractice}>Passer aux exercices <ArrowRight size={18}/></button>{onNextChapter&&<button className="academy-course-link" onClick={onNextChapter}>Continuer la lecture au chapitre suivant →</button>}</footer>
    </article>
   </>}
+</PupitreTop><PupitreBottom aria-label="Exercices et commandes du cours"><PupitreOnly><section className="pupitre-practice" id="pupitre-course-practice"><label>Notion à travailler<select aria-label="Notion à travailler" value={practiceIndex} onChange={e=>{setPracticeIndex(Number(e.target.value));jump(Number(e.target.value));}}>{sections.map((section,index)=><option value={index} key={index}>{index+1}. {section.title}</option>)}</select></label><CoursePractice key={practiceIndex} id={course.id} index={practiceIndex}/><button onClick={()=>jump(practiceIndex)}>Retrouver l’explication en haut</button></section></PupitreOnly>
  {!application&&<CourseAudio id={course.id} ref={audio} onRead={jump} onQuestion={()=>{document.getElementById('course-question')?.scrollIntoView({block:'center',behavior:'instant'});document.getElementById('course-question')?.focus({preventScroll:true});}}/>}
- </div></CourseReferencesProvider>;
+ </PupitreBottom></Pupitre></div></CourseReferencesProvider>;
 }
 function CourseQuestion({moduleId}:{moduleId:string}) {
  const key=`${moduleId}:course-question`;

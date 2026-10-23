@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type HTMLAttributes } from 'react';
+import { useEffect, useRef, useState, type RefObject, type HTMLAttributes } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import type { Ayah } from '../../types';
@@ -11,7 +11,7 @@ import { useAudioPlayerStore } from '../../stores/audioPlayerStore';
 import '../Mushaf/InteractiveTajweed/InteractiveTajweedPage.css';
 import './HifdhWordStudy.css';
 
-export function useHifdhWordStudy(scope: string, onOpen: () => void) {
+export function useHifdhWordStudy(scope: string, onOpen: () => void, host?: RefObject<HTMLDivElement|null>) {
     const navigate = useNavigate();
     const [target, setTarget] = useState<{ ayah: Ayah; index: number; displayed: string[]; scope: string } | null>(null);
     const [items, setItems] = useState<HifdhStudyWord[]>([]);
@@ -73,6 +73,6 @@ export function useHifdhWordStudy(scope: string, onOpen: () => void) {
             onTranslation={() => { close(); navigate(`/passage?surah=${active.ayah.surah}&ayah=${active.ayah.numberInSurah}&from=hifdh`); }}/>
             : <aside className="iq-word-card" role="dialog" aria-label="Prononciation du mot"><button aria-label="Fermer la fiche du mot" onClick={close}>Fermer</button>
                 <p role={error ? 'alert' : 'status'}>{error || 'Chargement du mot…'}</p>{error && <button onClick={() => { setError(''); setRetry(n => n + 1); }}>Réessayer</button>}</aside>}
-    </div>, document.body) : null;
+    </div>, host?.current || document.body) : null;
     return { bind, card };
 }

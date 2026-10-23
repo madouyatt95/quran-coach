@@ -1,3 +1,4 @@
+import {Pupitre,PupitreTop,PupitreBottom} from '../Pupitre/Pupitre';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useQuizStore } from '../../stores/quizStore';
@@ -124,7 +125,7 @@ export function PlayingView() {
     const displayTime = isSprint ? sprintTime : timeLeft;
 
     return (
-        <div className="quiz-container quiz-playing">
+        <Pupitre title="Quiz · répondre" className="quiz-container quiz-playing"><PupitreTop aria-label="Question et progression">
             {/* Exit button */}
             <button className="quiz-exit-btn" onClick={resetQuiz} title="Quitter le quiz">
                 <ArrowLeft size={24} />
@@ -194,6 +195,7 @@ export function PlayingView() {
                 <p className="quiz-question-fr">{question.questionFr}</p>
             </div>
 
+            </PupitreTop><PupitreBottom aria-label="Réponses et aides">
             {/* Power-Ups */}
             {!isSprint && (mode === 'solo' || mode === 'duel') && (
                 <div className="quiz-powerups" style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
@@ -248,6 +250,6 @@ export function PlayingView() {
                     <span>{opponentAnswers.length}/{questions.length} réponses</span>
                 </div>
             )}
-        </div>
+        </PupitreBottom></Pupitre>
     );
 }
