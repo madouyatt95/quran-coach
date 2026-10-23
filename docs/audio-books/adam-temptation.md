@@ -1,6 +1,6 @@
 # Adam — Le commencement et le chemin du retour
 
-Version adam-conte-2026-10-23-v1 · Manuscrit à valider avant génération audio.
+Version adam-conte-2026-10-23-v1 · Manuscrit à relire avant publication audio.
 
 Manuscrit original proposé à la relecture. Le récit suit des passages coraniques identifiés pour chaque scène. Les paroles rapportées sont reformulées au discours indirect ; aucun dialogue supplémentaire, lieu d’arrivée sur terre ou détail matériel absent de ces passages n’est ajouté. Les rapprochements entre sourates constituent un ordre de narration pédagogique, sans datation des événements. Un épisode de salutation est également adapté de Sahih al-Bukhari 3326 : son emplacement dans le chapitre est pédagogique et ne fixe pas sa chronologie par rapport à l’enseignement des noms. Aucun récit secondaire non référencé n’est utilisé.
 
@@ -37,4 +37,4 @@ Adam avait reçu les noms et les avait fait connaître. Il a également reçu un
 - [Coran 20:120-121](https://quran.com/20/120-121) — La promesse de durée et de pouvoir, puis la faute. Consultation : 2026-10-23.
 - [Coran 7:23-25](https://quran.com/7/23-25) — La demande de pardon et la vie sur terre. Consultation : 2026-10-23.
 
-La narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. Aucun audio n’a été produit pour ce manuscrit.
+La narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. L’état de production et de publication des enregistrements se consulte dans le studio.

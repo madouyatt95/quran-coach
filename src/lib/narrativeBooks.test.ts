@@ -56,7 +56,8 @@ describe('livres racontés : texte et sources', () => {
     const book = narrativeBooks[0], full = bookMarkdown(book), first = bookMarkdown(book, book.chapters[0]);
     for (const chapter of book.chapters) expect(full).toContain(chapterNarrative(chapter));
     expect(first).not.toContain(book.chapters[1].title);
-    expect(full).toContain('Manuscrit à valider avant génération audio');
+    expect(full).toContain('Manuscrit à relire avant publication audio');
+    expect(full).not.toContain('Aucun audio n’a été produit');
     expect(full).toContain('https://sunnah.com/bukhari:3326');
     expect(sourceLabel(book.sources.find(source => source.type === 'hadith')!)).not.toContain('Coran');
   });

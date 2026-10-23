@@ -23,7 +23,7 @@ export function assertFrenchScript(text: string) {
 export function assertVoice(v: VoiceProfile) {
   if (!/^[a-zA-Z0-9_-]{8,80}$/.test(v.voice_id) || v.model_id !== 'eleven_multilingual_v2') throw new Error('Voix ou modèle non autorisé.');
   for (const n of [v.stability, v.similarity, v.style]) if (!Number.isFinite(n) || n < 0 || n > 1) throw new Error('Réglages vocaux invalides.');
-  if (!Number.isFinite(v.credits_per_character) || v.credits_per_character < 1 || v.credits_per_character > 10) throw new Error('Tarif de la voix à vérifier (1 à 10 crédits/caractère).');
+  if (!Number.isFinite(v.credits_per_character) || v.credits_per_character < 0.1 || v.credits_per_character > 10) throw new Error('Tarif de la voix à vérifier (0,1 à 10 crédits/caractère).');
 }
 export async function sha256(value: string | ArrayBuffer) {
   const result = await crypto.subtle.digest('SHA-256', typeof value === 'string' ? new TextEncoder().encode(value) : value);

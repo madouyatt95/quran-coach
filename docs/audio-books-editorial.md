@@ -41,13 +41,23 @@ Les durées affichées sont des estimations de lecture fondées sur 135 à 165 m
 
 ## Préparation et limites de production
 
-Le manuscrit ne remplace pas encore les textes ou audios des parcours publics : le propriétaire doit d’abord valider son style. Le pilote de 33 secondes précédemment produit reste une version distincte. Il n’est jamais associé au nouveau texte par approximation.
+Le style du premier livre a été validé par le propriétaire, puis la continuation des lots autorisée dans un plafond cumulé explicite. Les enregistrements produits restent privés jusqu’à leur écoute et à leur publication dans le studio. Le pilote de 33 secondes reste une version distincte ; il n’est jamais associé au nouveau texte par approximation.
 
 La préparation utilise les routes existantes du studio. Chaque segment est enregistré avec `approve: false` et `approved_by: null`. Une reprise utilise les mêmes textes et empreintes, sans créer une seconde version identique. Aucune API ElevenLabs n’est appelée par l’atelier ou l’exporteur de manuscrits.
 
 Pour les chapitres dépassant 4 000 caractères, le découpage respecte les paragraphes, puis les phrases et enfin les espaces si nécessaire. Les segments sont des tranches contiguës du texte original : leur concaténation restitue chaque caractère. Les titres et numéros de segments ne sont pas prononcés. La limite serveur de 4 000 caractères et l’ensemble des validations de production restent actifs.
 
-**Étape suivante, après validation du manuscrit :** établir un devis avec le compte et la voix choisis, vérifier les plafonds réellement disponibles, obtenir l’accord sur ce lot, puis produire et écouter les chapitres. L’assemblage et la diffusion d’un livre audio complet ne sont pas déclarés testés tant que ces enregistrements n’existent pas. La génération côté serveur reste désactivée.
+Chaque production passe par un devis avec compte, voix et plafonds disponibles. Une autorisation du propriétaire peut couvrir plusieurs lots dans un plafond cumulé ; les réservations atomiques du serveur restent obligatoires. La génération est désactivée par défaut dans le dépôt et doit être refermée à la fin d’une session de production. L’atelier ne déduit jamais l’état d’un audio d’un texte statique : cet état provient du studio distant.
+
+## Collection étendue
+
+Le sélecteur **Livres** réunit les récits d’Adam, Nuh, Ibrahim, Yusuf, Musa, Maryam et Isa, Dawud et Sulayman, le voyage de Moussa et du serviteur instruit, les compagnons de la caverne, les biens et le cœur, Musa après la mer, les royaumes et la justice, Hud/Salih/Shuayb, un parcours de Sira, des voix dans l’épreuve et deux parcours pédagogiques : les conseils de Luqman et la parole qui préserve.
+
+Les textes complets et les chapitres se trouvent dans `docs/audio-books/`. Les passages coraniques ont été comparés au texte arabe public des sourates concernées via l’API AlQuran Cloud et aux liens Quran.com du dossier. Les noms absents des passages, chronologies incertaines, conversations et décors non établis ne sont pas ajoutés. Chaque ouvrage donne ses limites dans sa note éditoriale. Les leçons et situations contemporaines sont annoncées comme applications pédagogiques.
+
+Trois textes plus courts, adaptés au menu Invocations, expliquent en français la demande de Moussa avant sa mission (20:24-35), sa reconnaissance du besoin à Madyan (28:23-24) et la demande du bien dans les deux vies (2:201-202). Leurs scripts figurent dans [audio-books/invocations-sens.md](audio-books/invocations-sens.md). Ces capsules suivent les mêmes validations que les livres et ne synthétisent pas les formules arabes.
+
+Les MP3 de production, reçus, identifiants privés et relevés du compte ne sont pas versionnés dans le dépôt. Ils restent dans R2/Supabase et dans les dossiers privés de vérification de la session. Les tests de structure et les contrôles techniques des fichiers ne remplacent pas l’écoute et la relecture religieuse avant publication.
 
 ## Vérifications reproductibles
 

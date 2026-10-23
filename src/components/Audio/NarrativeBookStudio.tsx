@@ -26,7 +26,7 @@ export function NarrativeBookStudio({ busy, onOpenScript, onSaveDrafts }: Props)
   const openReader = useOpenReader(`${book.title} · Manuscrit`);
   const chapterIndex = book.chapters.indexOf(chapter);
   const manuscriptRef = useRef<HTMLDivElement>(null);
-  const view = `${chapter.id}:${wholeBook}`;
+  const view = `${book.id}:${chapter.id}:${wholeBook}`;
   const lastView = useRef(view);
   useEffect(() => {
     if (lastView.current !== view) manuscriptRef.current?.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
@@ -49,21 +49,26 @@ export function NarrativeBookStudio({ busy, onOpenScript, onSaveDrafts }: Props)
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
-  const saveDrafts = async () => {
+  const saveDrafts = async (entireBook = false) => {
     setSaving(true);
     setError('');
-    try { await onSaveDrafts(drafts); }
+    try { await onSaveDrafts(entireBook ? book.chapters.flatMap((item,index) => chapterDrafts(book,item,false,index === book.chapters.length-1)) : drafts); }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'Enregistrement interrompu. Les segments déjà enregistrés sont conservés.'); }
     finally { setSaving(false); }
   };
 
   return <section className="narrative-workshop" aria-label="Atelier des livres audio">
+    {narrativeBooks.length > 1 && <label className="audio-card">Choisir un livre<select value={book.id} onChange={event => {
+      const next = narrativeBooks.find(item => item.id === event.target.value)!;
+      setWholeBook(false); setIncludeRecap(false);
+      setParams(previous => { const updated = new URLSearchParams(previous); updated.set('book',next.id); updated.set('chapter',next.chapters[0].id); return updated; }, {replace:true});
+    }}>{narrativeBooks.map(item => <option key={item.id} value={item.id}>{item.title} — {item.subtitle}</option>)}</select></label>}
     <header className="audio-card narrative-book-cover">
       <span className="audio-kicker">LES LIVRES RACONTÉS · MANUSCRIT</span>
       <h2>{book.title}</h2>
       <p className="narrative-subtitle">{book.subtitle}</p>
       <p>{book.chapters.length} chapitres · voix retenue : {book.voice}</p>
-      <p className="narrative-status">À relire avant production · aucun nouvel audio généré</p>
+      <p className="narrative-status">Manuscrit de narration · références consultables dans le dossier</p>
       <details><summary>Note éditoriale et sources</summary><p>{book.editorialNote}</p></details>
     </header>
 
@@ -107,7 +112,7 @@ export function NarrativeBookStudio({ busy, onOpenScript, onSaveDrafts }: Props)
       {!!chapter.recap && <label className="audio-check"><input type="checkbox" checked={includeRecap} onChange={event => setIncludeRecap(event.target.checked)}/>Inclure le rappel bref pour une écoute séparée de ce chapitre</label>}
       {chapterIndex === book.chapters.length - 1 && <label className="audio-check"><input type="checkbox" checked={includeEpilogue} onChange={event => setIncludeEpilogue(event.target.checked)}/>Ajouter le court épilogue après le récit</label>}
       <p>{characters.toLocaleString('fr')} caractères à prononcer. Le devis du studio utilisera le tarif du profil vocal sélectionné.</p>
-      <div className="audio-card-actions"><button className="audio-primary" disabled={busy || saving} onClick={() => void saveDrafts()}>{saving ? 'Enregistrement…' : 'Enregistrer ce chapitre en brouillons'}</button></div>
+      <div className="audio-card-actions"><button className="audio-primary" disabled={busy || saving} onClick={() => void saveDrafts()}>{saving ? 'Enregistrement…' : 'Enregistrer ce chapitre en brouillons'}</button><button disabled={busy || saving} onClick={() => void saveDrafts(true)}>Enregistrer tout le livre en brouillons</button></div>
       <div className="narrative-segments">{drafts.map((draft, index) => <button key={index} disabled={busy || saving} onClick={() => onOpenScript(draft)}>Relire le segment {index + 1}/{drafts.length} · {draft.text.length.toLocaleString('fr')} caractères</button>)}</div>
       <small>Ces actions enregistrent ou ouvrent des textes. La validation éditoriale et l’approbation du devis restent nécessaires avant toute synthèse.</small>
       {error && <p role="alert">{error}</p>}

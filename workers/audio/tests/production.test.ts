@@ -1,6 +1,7 @@
 // @vitest-environment node
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {admin, produceOne, media, providerVoices, type Env, type Job} from '../src/service';
+import {admin, decodeAudioBase64, encodeAudioBase64, discoverHistory, produceOne, media, providerVoices, type Env, type Job} from '../src/service';
+import type {AudioScript} from '../../../src/lib/audioProduction';
 
 function fixture() {
  const job: Job = {id:'job',batch_id:'batch',account_id:'primary',script_id:'script',fingerprint:'hash',state:'queued',reserved:100,actual:null,started_at:new Date().toISOString(),voice:{id:'voice',name:'Cours',voice_id:'abcdefgh12345678',model_id:'eleven_multilingual_v2',stability:.5,similarity:.7,style:.1,credits_per_character:1}};
@@ -25,6 +26,32 @@ function fixture() {
 }
 afterEach(()=>vi.unstubAllGlobals());
 describe('paid production boundaries',()=>{
+ it('preserves every byte of a long MP3-size binary without per-byte callback or concatenation overhead',()=>{
+  const audio=new Uint8Array(3500001);for(let i=0;i<audio.length;i++)audio[i]=i%256;
+  const base64=encodeAudioBase64(audio);
+  expect(base64).toBe(Buffer.from(audio).toString('base64'));
+  expect(Buffer.from(decodeAudioBase64(base64)).equals(Buffer.from(audio))).toBe(true);
+  expect(decodeAudioBase64('')).toHaveLength(0);
+ });
+ it('finds a lost result by exact text, voice, settings and time without another TTS call',async()=>{
+  const f=fixture(),script={text:'Bonjour.'} as AudioScript;
+  const match={history_item_id:'existing',text:script.text,voice_id:f.job.voice.voice_id,model_id:f.job.voice.model_id,date_unix:Math.floor(Date.parse(f.job.started_at)/1000),settings:{stability:.5,similarity_boost:.7,style:.1}};
+  const read=vi.fn(async()=>Response.json({history:[{...match,voice_id:'another-voice'},match],has_more:false}));
+  vi.stubGlobal('fetch',read);
+  expect(await discoverHistory(f.env,f.job,script)).toBe('existing');
+  expect(String(read.mock.calls[0][0])).toContain('/v1/history?');
+  expect(String(read.mock.calls[0][0])).toContain('date_after_unix=');
+  expect(f.tts).not.toHaveBeenCalled();
+ });
+ it('does not choose an ambiguous, incomplete or mismatching history result',async()=>{
+  const f=fixture(),script={text:'Bonjour.'} as AudioScript;
+  const match={history_item_id:'one',text:script.text,voice_id:f.job.voice.voice_id,model_id:f.job.voice.model_id,date_unix:Math.floor(Date.parse(f.job.started_at)/1000),settings:{stability:.5,similarity_boost:.7,style:.1}};
+  for(const result of [{history:[match,{...match,history_item_id:'two'}],has_more:false},{history:[match],has_more:true},{history:[{...match,text:'Un autre texte.'}],has_more:false}]){
+   vi.stubGlobal('fetch',vi.fn(async()=>Response.json(result)));
+   await expect(discoverHistory(f.env,f.job,script)).rejects.toThrow();
+  }
+  expect(f.tts).not.toHaveBeenCalled();
+ });
  it('rejects anonymous and non-allowlisted admin sessions',async()=>{const f=fixture();await expect(admin(f.env,new Request('https://audio.test/admin/state'))).rejects.toMatchObject({status:401});expect(f.fetchMock).not.toHaveBeenCalled();vi.stubGlobal('fetch',vi.fn(async()=>Response.json({id:'someone-else'})));f.env.AUDIO_ADMIN_IDS='owner-id';await expect(admin(f.env,new Request('https://audio.test/admin/state',{headers:{Authorization:'Bearer session'}}))).rejects.toMatchObject({status:403});});
  it('accepts only the verified Supabase user selected by the owner',async()=>{const f=fixture();vi.stubGlobal('fetch',vi.fn(async()=>Response.json({id:'owner-id'})));f.env.AUDIO_ADMIN_IDS='owner-id';expect(await admin(f.env,new Request('https://audio.test/admin/state',{headers:{Authorization:'Bearer session'}}))).toBe('owner-id');});
  it('lists multilingual voice choices without returning private provider metadata',async()=>{const f=fixture();const read=vi.fn(async()=>Response.json({voices:[{voice_id:'a-voice',name:'Narrateur',category:'professional',preview_url:'https://cdn.test/preview.mp3',sharing:{whitelisted_emails:['private@test']},samples:[{private:true}]}]}));vi.stubGlobal('fetch',read);const voices=await providerVoices(f.env,'primary');expect(read.mock.calls[0][0]).toBe('https://api.elevenlabs.io/v2/voices?page_size=100');expect(JSON.stringify(voices)).not.toContain('private@test');expect(voices[0].name).toBe('Narrateur');});

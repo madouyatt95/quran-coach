@@ -1,14 +1,27 @@
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from 'cloudflare:workers';
 import { admin, accountKey, configuredAccounts, db, event, HttpError, makeQuote, media, patch, produceOne, providerVoices, quota, reconcile, row, saveScript, saveVoice, type Account, type Env, type Job } from './service';
 import type { AudioScript, VoiceProfile } from '../../../src/lib/audioProduction';
+import { continueProduction, productionWindow, type ProductionRun } from './productionWindow';
 
-export class AudioProduction extends WorkflowEntrypoint<Env,{batch:string}> {
-  async run(input:WorkflowEvent<{batch:string}>,step:WorkflowStep) {
-    const jobs=await step.do('load-jobs',()=>db<{id:string}[]>(this.env,`qc_audio_jobs?batch_id=eq.${encodeURIComponent(input.payload.batch)}&select=id&order=created_at.asc`));
-    for(const job of jobs){
+export class AudioProduction extends WorkflowEntrypoint<Env,ProductionRun> {
+  async run(input:WorkflowEvent<ProductionRun>,step:WorkflowStep) {
+    const jobs=await step.do('load-jobs',()=>db<{id:string}[]>(this.env,`qc_audio_jobs?batch_id=eq.${encodeURIComponent(input.payload.batch)}&select=id&order=created_at.asc,id.asc`));
+    const window=productionWindow(jobs,input.payload.offset);
+    for(const job of window.jobs){
       // Disable retries for the entire paid step. DB claims also prevent duplicates after a crash.
       const proceed=await step.do(`produce-${job.id}`,{retries:{limit:0,delay:'1 second'},timeout:'5 minutes'},()=>produceOne(this.env,job.id));
       if(!proceed)return {paused:true};
+    }
+    if(window.next!==null){
+      // Continue the same approved batch in a fresh invocation. The deterministic
+      // ID and atomic DB claims protect against duplicate charges after a crash.
+      const offset=window.next;
+      await step.do('continue-approved-batch',{retries:{limit:4,delay:'15 seconds',backoff:'exponential'}},async()=>{
+        if(this.env.GENERATION_ENABLED!=='true')throw new Error('Génération désactivée.');
+        const params={...input.payload,offset};
+        await continueProduction(this.env.PRODUCTION,params);
+      });
+      return {continued:true,offset};
     }
     return {complete:true};
   }
@@ -18,7 +31,8 @@ function check(value:unknown,message:string):asserts value {if(!value)throw new 
 async function dispatch(env:Env,batch:string) {
   check(env.GENERATION_ENABLED==='true','La génération réelle est désactivée. Le raccordement doit être validé avant le premier lot.');
   // An interrupted dispatch can be repeated safely: every job is atomically claimed in Postgres.
-  const instance=await env.PRODUCTION.create({id:`${batch}-${crypto.randomUUID()}`,params:{batch}});
+  const run=crypto.randomUUID();
+  const instance=await env.PRODUCTION.create({id:`${batch}-${run}`,params:{batch,run,offset:0}});
   return {batch,workflow:instance.id};
 }
 async function handle(request:Request,env:Env) {

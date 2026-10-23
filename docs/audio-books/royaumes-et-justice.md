@@ -1,0 +1,118 @@
+# Les royaumes et la justice — Talout, Dawoud et Dhoul-Qarnayn
+
+Version royaumes-et-justice-conte-2026-10-23-v1 · Manuscrit à relire avant publication audio.
+
+Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Deux récits distincts : 2:246-252 et 18:83-98. Le prophète de Talout n’est pas nommé ; aucun nombre de soldats ni détail du combat de Dawoud n’est ajouté. Dhoul-Qarnayn n’est identifié à aucun souverain historique ; les horizons de ses voyages et la barrière ne sont pas placés sur une carte moderne. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
+
+## 1. Le roi que les notables n’attendaient pas
+
+Après Moussa, des notables parmi les enfants d’Israël demandent à leur prophète de leur désigner un roi afin de combattre dans la voie d’Allah. Ils ont été chassés de leurs demeures et séparés des leurs. Leur demande paraît décidée. Ils souhaitent qu’une direction leur soit donnée pour répondre à la situation qu’ils décrivent. Le prophète les interroge pourtant sur ce qu’ils feront lorsque le combat leur sera réellement prescrit.
+
+Il leur demande s’ils ne risquent pas alors de refuser de combattre. Ils lui répondent qu’ils n’ont pas de raison de se dérober, après ce qui leur est arrivé. Mais lorsque l’ordre vient, beaucoup se détournent, à l’exception d’un petit nombre. La scène distingue ainsi l’affirmation d’une intention et la réponse donnée lorsqu’elle devient une responsabilité. La force d’une demande n’assure pas encore la fidélité à ce qu’elle engage.
+
+Le récit ne nous conduit pas à glorifier un affrontement pour lui-même. Il montre des personnes qui ont demandé une direction et qui sont ensuite placées devant leur propre parole. Le prophète n’avait pas seulement entendu leur enthousiasme. Il avait interrogé la suite, ce moment où l’intention rencontre le poids de l’action. La désignation du roi va faire apparaître une autre difficulté dans leur réponse.
+
+Leur prophète leur annonce qu’Allah a établi Talout comme roi. Ils contestent ce choix : pourquoi aurait-il autorité sur eux alors qu’ils s’estiment plus dignes de régner et qu’il ne possède pas une grande richesse ? La demande d’un roi se trouve immédiatement limitée par l’image qu’ils se font de celui qui devrait les diriger. Ils acceptent le principe d’une direction, mais veulent en déterminer eux-mêmes la légitimité par le rang et les biens.
+
+La réponse rappelle le choix d’Allah et les dons de Talout : une ampleur de savoir et de force physique. Allah donne Sa royauté à qui Il veut et possède le savoir. La richesse qu’ils invoquent n’est donc pas le seul critère de la responsabilité annoncée. Leur préférence sociale rencontre une mesure qu’ils n’avaient pas choisie.
+
+Un signe de sa royauté leur est également annoncé : le retour du coffre, porteur d’un apaisement venant de leur Seigneur et de restes laissés par les familles de Moussa et de Haroun, porté par les anges. Le texte relie ce signe à la foi, sans nous demander d’en dresser un inventaire supplémentaire. La direction de Talout n’est pas laissée à la seule affirmation d’un homme face à leurs objections.
+
+Le groupe va maintenant se mettre en route. Le récit nous a déjà fait entendre plusieurs manières de se dérober : demander avec assurance puis reculer, souhaiter un roi puis rejeter celui qui est désigné. La prochaine étape déplacera l’épreuve vers une chose très concrète, une rivière à traverser et une limite à respecter avant même que l’adversaire ne soit devant eux.
+
+### Repères de lecture
+
+- **Une demande qui engage** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le savoir et le rang** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 2. La rivière et le petit nombre
+
+Talout part avec ses troupes et leur annonce qu’Allah va les éprouver par une rivière. Celui qui en boira ne sera pas des siens ; celui qui n’y goûtera pas sera avec lui, à l’exception de celui qui prendra une seule poignée dans sa main. La règle est donnée avant le passage. Le lieu où l’on pourrait simplement se désaltérer devient ainsi une épreuve de fidélité à une indication claire.
+
+La plupart boivent, sauf un petit nombre. Talout poursuit avec ceux qui ont cru et traversé avec lui. La force que le groupe imaginait peut se trouver diminuée par une épreuve qui ne ressemble pas encore à une bataille. Le récit ne donne pas ici un nombre à retenir ni une description de l’armée. Il fait apparaître la différence entre ce qui a été demandé et la manière dont chacun y répond.
+
+Lorsqu’ils sont de l’autre côté, certains estiment qu’ils n’auront pas la force d’affronter Djalout et ses troupes. La limite de leurs moyens est présente dans leur parole. D’autres, certains de rencontrer Allah, rappellent combien de petits groupes ont vaincu des groupes nombreux par Sa permission, et qu’Allah est avec les patients. Leur confiance ne consiste pas à prétendre que le nombre serait soudain devenu égal. Elle repose sur autre chose que le seul calcul visible.
+
+Nous retrouvons alors la question de la patience qui traverse le récit. La demande d’une direction, le choix du roi et la rivière ont successivement éprouvé leur réponse. Maintenant, l’adversaire est devant eux. Il ne reste pas seulement à se souvenir des paroles échangées ; il faut se tenir dans la situation pour laquelle ils avaient demandé cette direction.
+
+Quand ils se présentent devant Djalout et ses troupes, ils demandent à leur Seigneur de répandre sur eux la patience, d’affermir leurs pas et de leur accorder le secours. Ils ne demandent pas seulement une issue. Ils demandent aussi la qualité intérieure et la fermeté nécessaires pour traverser l’épreuve. La patience devient une supplication au moment où leur responsabilité doit être portée.
+
+Ils l’emportent par la permission d’Allah. Dawoud tue Djalout, puis reçoit d’Allah la royauté, la sagesse et un enseignement qu’Il lui accorde selon Sa volonté. Le texte ne détaille ni son âge ni une arme ou une série de gestes que nous pourrions ajouter. Il fait apparaître Dawoud dans l’issue du combat, puis rattache les dons qu’il recevra à son Seigneur.
+
+La conclusion élargit la scène : sans qu’Allah ne repousse les hommes les uns par les autres, la terre se corromprait, mais Il est plein de faveur envers les mondes. Le récit ne s’arrête donc pas à l’admiration d’une force qui aurait simplement remplacé l’autre. Il rappelle une protection contre la corruption et la faveur qui permet que le mal ne dispose pas de tout sans résistance.
+
+Talout avait été contesté parce qu’il n’était pas assez riche aux yeux des notables. Dawoud reçoit ensuite royauté et sagesse après une épreuve où le nombre visible n’avait pas suffi à rassurer. La manière de reconnaître une responsabilité s’est déplacée au fil du récit. Nous allons maintenant quitter cette histoire et en rejoindre une autre, celle d’un pouvoir auquel des moyens ont été donnés pour voyager et protéger des peuples menacés.
+
+### Repères de lecture
+
+- **La limite avant la rencontre** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Demander la patience** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 3. Des moyens pour parcourir la terre
+
+Dhoul-Qarnayn a reçu une position sur terre et des moyens pour agir. Il suit une voie jusqu’à l’horizon du soleil couchant. Le récit le montre trouvant le soleil se coucher, à son regard, dans une source sombre, et rencontrant un peuple auprès de ce lieu. Cette description appartient au parcours qu’il voit ; elle ne nous donne pas une carte cosmologique où le soleil entrerait physiquement dans une source de la terre.
+
+Une responsabilité lui est présentée concernant ces personnes. Il peut les châtier ou adopter envers elles une conduite bienfaisante. Le pouvoir reçu n’est pas réduit à la possibilité de se déplacer. Il touche la manière de traiter les hommes rencontrés. La route confronte ainsi Dhoul-Qarnayn à une décision dans laquelle la force ne doit pas être séparée de la justice.
+
+Il distingue celui qui commet l’injustice de celui qui croit et accomplit le bien. Le premier sera sanctionné, puis ramené vers son Seigneur, qui le jugera. Pour le second, il annonce une belle récompense et des indications faciles à recevoir. Dans sa réponse, son propre jugement ne prend pas la place du jugement final. Il reconnaît un retour vers Allah au-delà de ce qu’il peut décider dans le monde.
+
+Le récit commence donc les voyages par cette différence entre posséder une capacité et en faire un usage juste. Dhoul-Qarnayn ne rencontre pas seulement des reliefs et des horizons. Il rencontre des personnes qui seront touchées par ses choix. À la suite de Talout, nous retrouvons une autre manière d’interroger la direction : ce qui compte n’est pas seulement d’occuper une place, mais de répondre de la manière dont elle est exercée.
+
+Il suit de nouveau une voie et atteint l’horizon du soleil levant. Il trouve un peuple auquel aucun abri contre le soleil n’a été donné. Le texte nous conduit ainsi à une situation différente de celle rencontrée à l’ouest. Il ne décrit pas le nom de cette population, son vêtement ou ses usages. Il rappelle que le savoir d’Allah embrasse ce qui concerne Dhoul-Qarnayn et les moyens dont il dispose.
+
+La brièveté de cette étape a sa place dans l’histoire. Elle nous empêche de croire que chaque voyage devrait être prolongé par des péripéties pour avoir un sens. Des moyens lui ont été accordés, il les utilise, et la connaissance divine dépasse tout ce que le récit nous donne à voir. Nous le suivons d’un horizon à l’autre sans prétendre connaître chaque journée de son parcours.
+
+Puis il prend une autre voie jusqu’à l’espace entre deux reliefs. Il y rencontre un peuple qui comprend difficilement la parole. La différence de compréhension ne met pas fin à la rencontre. Une demande va pouvoir être exprimée : ces personnes connaissent un danger qui les touche et souhaitent une protection. Le voyageur qui dispose de moyens se trouve devant ceux qui ont besoin d’en recevoir l’usage.
+
+Le prochain épisode ne sera donc pas celui d’un souverain qui accumule un territoire supplémentaire dans notre récit. Il sera celui d’un ouvrage à construire avec un peuple. La force qui peut parcourir les routes va être appelée à rendre un lieu plus sûr. Ce déplacement de l’attention, du pouvoir reçu au service demandé, donnera sa forme à la dernière partie du voyage.
+
+### Repères de lecture
+
+- **Une autorité devant les hommes** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un autre horizon** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 4. Construire avec ceux que l’on protège
+
+Les habitants expliquent que Yajouj et Majouj répandent la corruption sur terre. Ils proposent une contribution à Dhoul-Qarnayn afin qu’il établisse une barrière entre eux et ces peuples. Leur demande porte sur une protection concrète. Ils ne lui demandent pas seulement une parole rassurante. Ils ont besoin d’un ouvrage qui puisse répondre au danger qu’ils décrivent.
+
+Dhoul-Qarnayn leur répond que ce dont son Seigneur l’a pourvu est meilleur. Il leur demande de l’aider par leur force et annonce qu’il établira une protection. Les moyens qu’il possède ne conduisent donc pas à rendre les habitants entièrement passifs. Il ne leur demande pas d’attendre pendant qu’un sauveur ferait tout sans eux. Leur participation entre dans la manière dont l’aide sera donnée.
+
+Il demande des blocs de fer. Lorsqu’il comble l’espace entre les deux versants, il ordonne de souffler jusqu’à ce que le fer soit porté au feu. Puis il demande du métal fondu pour le verser dessus. Le texte retient ces étapes du travail, les matériaux et la participation nécessaire. L’ouvrage est construit avec des moyens reçus et un effort collectif, sans devenir une puissance indépendante de Celui qui les a accordés.
+
+Nous n’avons pas à inventer la dimension de la barrière ni à lui attribuer un site actuel. La scène est déjà précise dans ce qu’elle veut nous faire voir : des personnes exposent leur besoin, un homme pourvu de moyens répond, et leur force est engagée dans une construction. La capacité de protéger ne devient pas seulement un titre possédé par Dhoul-Qarnayn. Elle prend la forme d’un service accompli auprès d’eux.
+
+L’ouvrage achevé ne peut être ni escaladé ni percé par ceux contre lesquels il a été construit. La protection répond à la demande des habitants. Dhoul-Qarnayn ne transforme pourtant pas ce résultat en une déclaration d’invulnérabilité éternelle. Il reconnaît une miséricorde de son Seigneur et rappelle que, lorsque viendra Sa promesse, Il réduira cet ouvrage en poussière. La réussite garde la mémoire de sa limite.
+
+L’homme qui avait reçu tant de moyens n’annonce donc pas avoir construit contre la volonté d’Allah ou au-delà du temps. Il a travaillé, organisé et protégé. Puis il rattache l’issue à la miséricorde de Celui qui lui a donné sa capacité. Le mur qu’il voit debout ne lui appartient pas comme une garantie sur tout l’avenir. La promesse de son Seigneur demeure vraie au-delà de son ouvrage.
+
+Cette conclusion rejoint les premières scènes du livre. Les notables avaient mesuré Talout par la richesse et le rang. Les hommes arrivés devant Djalout avaient demandé la patience plutôt que de se fier seulement au nombre. Dhoul-Qarnayn emploie à présent ses moyens pour protéger, puis reconnaît la source du bien et la limite de ce qu’il a bâti. Chaque récit a placé le pouvoir auprès d’une responsabilité.
+
+Nous pouvons fermer cette partie sans prétendre résoudre ce que les sources ne nomment pas. L’identité historique de Dhoul-Qarnayn n’est pas ce qui donne sa valeur au service accompli. Ce que nous avons suivi est un usage de la force : distinguer les conduites, écouter un besoin, faire participer ceux que l’on aide et ne pas s’attribuer une maîtrise sans fin. Une œuvre peut être solide tout en restant reçue comme une miséricorde et confiée à son terme.
+
+### Repères de lecture
+
+- **La demande du peuple** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La limite de la construction** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## Épilogue
+
+La plupart de nos responsabilités ne portent pas sur un royaume. Elles touchent une équipe, une famille, une compétence ou un projet. Ces récits peuvent nous aider à y regarder autrement : reconnaître une personne pour son savoir et sa fiabilité, ne pas promettre une action avant d’en accepter le poids, et associer les personnes concernées à l’aide que nous voulons leur apporter. La réussite d’un ouvrage ne nous donne pas la maîtrise de tout son avenir. Elle peut nous rendre plus reconnaissants et plus attentifs à ce qui dépend encore de nous.
+
+- Ne pas réduire la légitimité d’une responsabilité au rang social.
+- Accepter le poids des engagements que l’on demande.
+- Faire participer les personnes concernées à leur protection.
+
+Dans quel projet peux-tu remplacer une promesse vague par une aide concrète, construite avec les personnes concernées ?
+
+## Sources et périmètre
+
+- [Coran 2:246](https://quran.com/2/246) — Une demande qui engage. Consultation : 2026-10-23.
+- [Coran 2:247-248](https://quran.com/2/247-248) — Le savoir et le rang. Consultation : 2026-10-23.
+- [Coran 2:249](https://quran.com/2/249) — La limite avant la rencontre. Consultation : 2026-10-23.
+- [Coran 2:250-252](https://quran.com/2/250-252) — Demander la patience. Consultation : 2026-10-23.
+- [Coran 18:83-88](https://quran.com/18/83-88) — Une autorité devant les hommes. Consultation : 2026-10-23.
+- [Coran 18:89-93](https://quran.com/18/89-93) — Un autre horizon. Consultation : 2026-10-23.
+- [Coran 18:94-96](https://quran.com/18/94-96) — La demande du peuple. Consultation : 2026-10-23.
+- [Coran 18:97-98](https://quran.com/18/97-98) — La limite de la construction. Consultation : 2026-10-23.
+
+La narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. L’état de production et de publication des enregistrements se consulte dans le studio.

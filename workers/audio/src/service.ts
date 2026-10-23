@@ -1,7 +1,8 @@
 import { AUDIO_CATEGORIES, alignmentDuration, assertFrenchScript, assertVoice, estimatedCredits, historyAlignment, productionIdentity, sentenceTimings, sha256, type Alignment, type AudioScript, type VoiceProfile } from '../../../src/lib/audioProduction';
+import type { ProductionRun } from './productionWindow';
 
 export interface Env {
-  AUDIO: R2Bucket; PRODUCTION: Workflow<{batch: string}>;
+  AUDIO: R2Bucket; PRODUCTION: Workflow<ProductionRun>;
   SUPABASE_URL: string; SUPABASE_SERVICE_ROLE_KEY: string; AUDIO_ADMIN_IDS: string;
   ELEVENLABS_ACCOUNTS: string; ALLOWED_ORIGINS: string; GENERATION_ENABLED: string;
 }
@@ -98,9 +99,47 @@ export async function saveVoice(env: Env, actor: string, voice: VoiceProfile) {
 }
 
 interface Result {audio_base64:string;alignment:Alignment|null;request_id?:string;history_id?:string;actual?:number|null}
+interface HistoryMatch {
+  history_item_id: string; text: string; voice_id: string; model_id: string; date_unix: number; request_id?: string;
+  settings?: {stability?: number; similarity_boost?: number; style?: number};
+}
+/** Read-only recovery. A lost workflow must never cause a second paid request. */
+export async function discoverHistory(env: Env, job: Job, script: AudioScript) {
+  const started = Math.floor(Date.parse(job.started_at) / 1000);
+  requireValue(Number.isFinite(started), 'Date de production introuvable. Vérification manuelle requise.');
+  const query = new URLSearchParams({page_size:'50',source:'TTS',voice_id:job.voice.voice_id,model_id:job.voice.model_id,
+    date_after_unix:String(started-5),date_before_unix:String(started+301),search:script.text.slice(0,80)});
+  const response = await eleven(env,job.account_id,`history?${query}`);
+  requireValue(response.ok, 'Historique temporairement inaccessible. Aucune nouvelle génération lancée.');
+  const result = await response.json() as {history:HistoryMatch[];has_more:boolean};
+  requireValue(Array.isArray(result.history) && result.has_more === false, 'Historique incomplet. Indiquez l’identifiant exact du résultat.');
+  const matches = result.history.filter(item => item.text === script.text && item.voice_id === job.voice.voice_id
+    && item.model_id === job.voice.model_id && item.date_unix >= started-5 && item.date_unix <= started+300
+    && (!job.request_id || item.request_id === job.request_id)
+    && item.settings?.stability === job.voice.stability && item.settings?.similarity_boost === job.voice.similarity
+    && item.settings?.style === job.voice.style);
+  requireValue(matches.length === 1, matches.length ? 'Plusieurs résultats correspondent. Choisissez l’identifiant exact.' : 'Aucun résultat exact retrouvé. Aucune nouvelle génération lancée.');
+  return matches[0].history_item_id;
+}
+// Prefer the native byte codecs. Iterating a multi-megabyte string through
+// Uint8Array.from called millions of JS callbacks and exhausted Worker CPU.
+export function decodeAudioBase64(value: string): Uint8Array<ArrayBuffer> {
+  const bytes = Uint8Array as typeof Uint8Array & {fromBase64?: (value: string) => Uint8Array<ArrayBuffer>};
+  if(bytes.fromBase64)return bytes.fromBase64(value);
+  const binary=atob(value),audio=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)audio[i]=binary.charCodeAt(i);
+  return audio;
+}
+export function encodeAudioBase64(bytes: Uint8Array): string {
+  const native=bytes as Uint8Array & {toBase64?:()=>string};
+  if(native.toBase64)return native.toBase64();
+  const chunks:string[]=[];
+  for(let i=0;i<bytes.length;i+=32768)chunks.push(String.fromCharCode(...bytes.subarray(i,i+32768)));
+  return btoa(chunks.join(''));
+}
 export async function storeResult(env: Env, job: Job, result: Result, script: AudioScript) {
   if(!result.audio_base64||result.audio_base64.length>16000000)throw new Error('Audio absent ou trop volumineux.');
-  const audio=Uint8Array.from(atob(result.audio_base64),c=>c.charCodeAt(0));
+  const audio=decodeAudioBase64(result.audio_base64);
   if(audio.length<512)throw new Error('Audio incomplet.');
   const duration=alignmentDuration(script.text,result.alignment);
   if(duration<=0)throw new Error('Durée ou alignement absent. Résultat conservé pour vérification.');
@@ -116,7 +155,8 @@ export async function reconcile(env: Env, job: Job, suppliedHistory?: string) {
   const script=await row<AudioScript>(env,'scripts',job.script_id);
   const saved=await env.AUDIO.get(`receipts/${job.id}.json`);
   let receipt=saved?await saved.json<Result>():null;
-  const historyId=suppliedHistory||receipt?.history_id||job.history_id;
+  let historyId=suppliedHistory||receipt?.history_id||job.history_id;
+  if(!historyId&&(!receipt||receipt.actual==null))historyId=await discoverHistory(env,job,script);
   let actual=receipt?.actual??null;
   if(historyId){
     requireValue(/^[\w-]{1,100}$/.test(historyId),'Identifiant historique invalide.');
@@ -131,8 +171,8 @@ export async function reconcile(env: Env, job: Job, suppliedHistory?: string) {
     if(Number.isSafeInteger(delta)&&delta>=0)actual=delta;
     if(!receipt){
       const r=await eleven(env,job.account_id,`history/${historyId}/audio`);requireValue(r.ok,'Téléchargement de l’historique indisponible.');
-      const bytes=new Uint8Array(await r.arrayBuffer());let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
-      receipt={audio_base64:btoa(binary),alignment:h.alignments?.alignment||null,request_id:h.request_id,history_id:historyId};
+      const bytes=new Uint8Array(await r.arrayBuffer());
+      receipt={audio_base64:encodeAudioBase64(bytes),alignment:h.alignments?.alignment||null,request_id:h.request_id,history_id:historyId};
     }
     receipt.history_id=historyId;receipt.actual=actual;
   }

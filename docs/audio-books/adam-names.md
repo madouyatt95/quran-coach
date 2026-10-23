@@ -1,6 +1,6 @@
 # Adam — Le commencement et le chemin du retour
 
-Version adam-conte-2026-10-23-v1 · Manuscrit à valider avant génération audio.
+Version adam-conte-2026-10-23-v1 · Manuscrit à relire avant publication audio.
 
 Manuscrit original proposé à la relecture. Le récit suit des passages coraniques identifiés pour chaque scène. Les paroles rapportées sont reformulées au discours indirect ; aucun dialogue supplémentaire, lieu d’arrivée sur terre ou détail matériel absent de ces passages n’est ajouté. Les rapprochements entre sourates constituent un ordre de narration pédagogique, sans datation des événements. Un épisode de salutation est également adapté de Sahih al-Bukhari 3326 : son emplacement dans le chapitre est pédagogique et ne fixe pas sa chronologie par rapport à l’enseignement des noms. Aucun récit secondaire non référencé n’est utilisé.
 
@@ -46,4 +46,4 @@ Adam et son épouse vont habiter le Jardin. Ils pourront y manger avec abondance
 - [Coran 7:19-22](https://quran.com/7/19-22) — La tentation, le serment trompeur et les feuilles du Jardin. Consultation : 2026-10-23.
 - [Sahih al-Bukhari 3326](https://sunnah.com/bukhari:3326) — Extrait consacré à la salutation d’Adam aux anges et à leur réponse ; les autres thèmes du hadith ne sont pas développés ici (Sahih — recueil de Sahih al-Bukhari). Consultation : 2026-10-23.
 
-La narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. Aucun audio n’a été produit pour ce manuscrit.
+La narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. L’état de production et de publication des enregistrements se consulte dans le studio.

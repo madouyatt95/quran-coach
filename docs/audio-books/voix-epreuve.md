@@ -1,0 +1,96 @@
+# Des voix dans l’épreuve — Yunus, Ayyub et l’homme venu de la ville
+
+Version voix-epreuve-conte-2026-10-23-v1 · Manuscrit à relire avant publication audio.
+
+Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Trois récits distincts, sans chronologie commune. Le poisson de Yunus n’est pas identifié à une espèce. Aucun nombre de jours, symptôme ou durée de maladie d’Ayyub n’est ajouté. L’homme de Ya-Sin et sa ville restent anonymes ; son martyre n’est pas mis en scène lorsque le passage ne le décrit pas. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
+
+## 1. L’appel dans les ténèbres
+
+Younous est parmi les messagers. Le récit le montre quittant les siens et gagnant un bateau chargé. Un tirage au sort le place parmi ceux qui sont désignés, puis le poisson l’avale tandis qu’il est blâmable. Ces indications brèves nous conduisent d’un départ à une situation où les moyens habituels ne sont plus à sa portée. Le Coran ne nous donne ni le nom du bateau ni l’espèce de l’animal.
+
+Dans Al-Anbiya, celui qui est associé au poisson est évoqué lorsqu’il part en colère, pensant qu’il ne sera pas mis à l’étroit. Puis il appelle dans les ténèbres. Il reconnaît qu’il n’y a pas de divinité en dehors d’Allah, Le glorifie et avoue avoir été parmi les injustes. Sa parole ne cherche pas d’abord à expliquer pourquoi les autres auraient dû agir autrement. Elle revient vers son Seigneur avec la reconnaissance de son propre tort.
+
+Les ténèbres n’empêchent pas cet appel d’être entendu. Allah lui répond et le délivre de la détresse. La conclusion d’Al-Anbiya rappelle le salut accordé aux croyants. As-Saffat souligne aussi sa glorification : sans elle, il serait demeuré dans le ventre du poisson jusqu’au jour de la résurrection. L’histoire rattache ainsi la délivrance à une relation qui demeure lorsque le regard ne peut plus chercher une sortie autour de lui.
+
+Nous pouvons écouter cette invocation sans la transformer en une promesse de disparition immédiate de chaque difficulté. Le récit rapporte le salut accordé à Younous. Il nous fait aussi entendre une manière de s’adresser à Allah : reconnaître Sa grandeur et reconnaître ce qui, dans notre propre conduite, demande un retour. Le secours reçu ne donnera pas seulement fin à l’épreuve. Il ouvrira encore une mission et une vie à poursuivre.
+
+Younous est rejeté sur la terre découverte, malade. Une plante de courge pousse au-dessus de lui. Après le lieu où il était enfermé, le récit nous montre le besoin de celui qui a été délivré. Être sauvé ne signifie pas que le corps n’a plus aucune faiblesse. Le soin accordé accompagne cette nouvelle étape. L’histoire ne se ferme pas à l’instant où le poisson le laisse.
+
+Il est envoyé vers cent mille personnes ou davantage. Elles croient et reçoivent une jouissance pour un temps. La sourate Younous rappelle également que la foi de son peuple lui a été profitable et que le châtiment humiliant lui a été retiré. Ce retour des personnes vers lesquelles il est envoyé appartient à la suite, après ce départ dont nous avons suivi les conséquences.
+
+Al-Qalam rappelle la faveur de son Seigneur qui l’a rejoint, puis le choix et la place parmi les justes qui lui ont été accordés. Nous quittons donc cette histoire sans enfermer Younous dans le seul moment où il a été blâmé. La faute a été reconnue, l’appel a été entendu, la faveur l’a rejoint et une mission demeure. Le prochain récit nous fera entendre une autre parole dans la peine, celle d’Ayyoub, qui nomme sa souffrance devant le plus miséricordieux des miséricordieux.
+
+### Repères de lecture
+
+- **Le départ et le poisson** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La faveur qui rejoint encore** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 2. Nommer la peine sans rompre le lien
+
+Ayyoub appelle son Seigneur. Il dit que le mal l’a touché et reconnaît qu’Allah est le plus miséricordieux des miséricordieux. La peine est présente dans ses mots. Il ne prétend pas que son corps serait resté sans épreuve. La patience que le récit reconnaîtra en lui n’exige pas de taire toute souffrance. Elle demeure auprès d’une parole adressée à son Seigneur.
+
+Dans la sourate Sad, il évoque aussi la fatigue et le tourment qui l’atteignent. Nous ne recevons pas ici un inventaire de ses symptômes ni le nombre des années passées dans cette situation. Il n’est pas nécessaire de les inventer pour entendre ce qu’il dit. Une épreuve le touche, et son invocation garde ensemble la vérité de ce qu’il traverse et la reconnaissance de la miséricorde à laquelle il s’adresse.
+
+Allah lui répond et retire le mal qui l’atteint. Sa famille lui est accordée, avec autant encore, par miséricorde et comme rappel pour ceux qui adorent. La réponse vient de Celui qu’Ayyoub avait invoqué. La sourate Sad rapporte aussi l’ordre de frapper le sol du pied et l’eau fraîche donnée pour se laver et boire. La délivrance est liée à un geste demandé et à un moyen accordé.
+
+La scène ne nous donne pas un protocole que nous pourrions prescrire à une personne malade à la place de ses soins. Elle rapporte un secours particulier accordé à Ayyoub. Nous pouvons recevoir sa parole comme l’exemple d’une relation dans laquelle la plainte adressée à Allah ne signifie pas l’abandon de la confiance. Reconnaître un besoin ne retire pas sa dignité à celui qui le porte.
+
+La famille et le bien accordés sont présentés comme une miséricorde et un rappel pour ceux qui réfléchissent. Ayyoub reçoit aussi une indication concernant un serment : prendre une poignée de brindilles et en frapper sans manquer à ce qu’il avait juré. Le passage ne raconte pas ici l’ensemble des circonstances de ce serment. Nous n’en faisons pas une scène ajoutée à sa vie ni une consigne pour traiter une personne aujourd’hui.
+
+La conclusion reconnaît sa patience et le présente comme un excellent serviteur revenant sans cesse vers Allah. La louange finale éclaire sa parole du commencement. Celui qui a dit qu’il souffrait est aussi celui dont la patience est reconnue. Ces deux éléments ne s’annulent pas. Ils nous empêchent de confondre la fidélité avec l’obligation de paraître insensible.
+
+Nous ne savons pas tout ce qui a traversé la durée de son épreuve. Nous savons qu’il a invoqué, qu’une réponse lui a été accordée et que son retour vers son Seigneur est honoré. Ce cadre suffit à recevoir un enseignement sans multiplier des détails destinés à rendre la peine plus spectaculaire. Le récit ne dépend pas de notre capacité à mesurer combien Ayyoub aurait souffert par comparaison avec quelqu’un d’autre.
+
+Après l’appel dans les ténèbres et la peine nommée devant Allah, nous allons écouter une voix différente. Elle ne demandera pas d’abord une délivrance pour elle-même. Elle se fera entendre dans une ville où des messagers sont refusés. Un homme viendra vers les siens pour les appeler à écouter, sans attendre de posséder un rang ou une récompense qui donnerait à sa parole son importance.
+
+### Repères de lecture
+
+- **Une souffrance confiée** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La patience reconnue** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 3. L’homme qui vient en hâte
+
+Des messagers viennent auprès des habitants d’une cité. Deux sont d’abord rejetés, puis un troisième les renforce. Ils annoncent qu’ils sont envoyés vers eux. Les habitants leur opposent qu’ils ne sont que des hommes semblables à eux et refusent que le Tout Miséricordieux ait fait descendre quoi que ce soit. La parole transmise rencontre un refus qui vise sa provenance même.
+
+Les messagers rappellent que leur Seigneur sait leur mission et que leur responsabilité est de transmettre clairement. Les habitants les traitent de mauvais présage et les menacent de lapidation et de châtiment s’ils ne cessent pas. Le désaccord devient ainsi une menace contre ceux qui parlent. Ceux-ci leur renvoient leur présage et les interrogent sur leur réaction au rappel qui leur est adressé.
+
+Un homme arrive en hâte du bout de la ville. Il appelle son peuple à suivre les messagers, qui ne leur demandent pas de salaire et sont bien guidés. Il ne commence pas par exiger une place pour lui-même. Il désigne une parole juste à écouter et une manière de la porter qui ne cherche pas leur richesse. Sa voix se joint à celle des envoyés dans la scène de leur refus.
+
+Il demande pourquoi il n’adorerait pas Celui qui l’a créé et vers qui tous reviendront. D’autres divinités ne pourraient ni le sauver ni intercéder utilement si le Tout Miséricordieux voulait qu’un mal le touche. Prendre ces divinités le placerait dans un égarement manifeste. Sa parole est personnelle : il ne se contente pas de commenter ce que les autres devraient croire, il expose vers qui lui-même se tourne.
+
+Il affirme sa foi en leur Seigneur et demande qu’on l’écoute. Puis le récit rapporte qu’il lui est dit d’entrer au Jardin. Il souhaite que son peuple sache le pardon que son Seigneur lui a accordé et l’honneur dans lequel Il l’a placé. Le texte passe à cette parole sans détailler une scène de mort. Nous n’ajoutons pas à ce passage une manière de le tuer ou un échange que nous ne possédons pas.
+
+Ce qu’il souhaite après l’honneur reçu reste tourné vers les siens : qu’ils sachent. Il les avait appelés à écouter les messagers ; il voudrait encore qu’ils connaissent la grâce accordée. Sa parole continue de chercher le bien de son peuple. Cet homme n’est pas décrit par la place qu’il occupait dans la cité, mais par ce qu’il a choisi de soutenir lorsqu’il a entendu les messagers. Le récit de la cité se conclut ensuite par le cri qui la saisit, puis le regret devant les serviteurs qui tournent leurs messagers en dérision.
+
+Trois histoires nous ont fait entendre trois voix. Younous a appelé dans les ténèbres en reconnaissant son tort. Ayyoub a nommé sa peine auprès du plus miséricordieux des miséricordieux. L’homme de la ville a exposé sa foi et souhaité que les siens connaissent le pardon reçu. Aucun de ces récits ne donne à notre parole la maîtrise des cœurs. Chacun nous montre ce que peut devenir une voix lorsqu’elle se tourne avec vérité vers son Seigneur.
+
+### Repères de lecture
+
+- **Les messagers et la menace** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Souhaiter qu’ils sachent** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## Épilogue
+
+Il n’est pas nécessaire d’attendre de trouver une formule parfaite pour confier sa peine à Allah. Il est possible de nommer ce que l’on traverse, de reconnaître un tort et de demander une aide. Il est aussi possible d’adresser un conseil juste sans vouloir acheter la réponse de l’autre. Ces histoires ne nous donnent pas la connaissance de l’issue particulière de chaque épreuve. Elles nous invitent à garder un lien, une parole sincère et une conduite qui ne retire pas aux autres leurs droits.
+
+- Reconnaître son tort sans se croire enfermé pour toujours dans une faute.
+- Ne pas opposer patience et souffrance exprimée.
+- Porter une parole juste sans vouloir contrôler la réponse.
+
+Quelle parole sincère peux-tu adresser aujourd’hui à Allah, et quel conseil peux-tu donner avec respect à quelqu’un ?
+
+## Sources et périmètre
+
+- [Coran 37:139-144](https://quran.com/37/139-144) — Le départ et le poisson. Consultation : 2026-10-23.
+- [Coran 21:87-88](https://quran.com/21/87-88) — Le départ et le poisson. Consultation : 2026-10-23.
+- [Coran 37:145-148](https://quran.com/37/145-148) — La faveur qui rejoint encore. Consultation : 2026-10-23.
+- [Coran 10:98](https://quran.com/10/98) — La faveur qui rejoint encore. Consultation : 2026-10-23.
+- [Coran 68:48-50](https://quran.com/68/48-50) — La faveur qui rejoint encore. Consultation : 2026-10-23.
+- [Coran 21:83-84](https://quran.com/21/83-84) — Une souffrance confiée. Consultation : 2026-10-23.
+- [Coran 38:41-43](https://quran.com/38/41-43) — Une souffrance confiée. Consultation : 2026-10-23.
+- [Coran 38:43-44](https://quran.com/38/43-44) — La patience reconnue. Consultation : 2026-10-23.
+- [Coran 21:84](https://quran.com/21/84) — La patience reconnue. Consultation : 2026-10-23.
+- [Coran 36:13-24](https://quran.com/36/13-24) — Les messagers et la menace. Consultation : 2026-10-23.
+- [Coran 36:25-30](https://quran.com/36/25-30) — Souhaiter qu’ils sachent. Consultation : 2026-10-23.
+
+La narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. L’état de production et de publication des enregistrements se consulte dans le studio.

@@ -4,8 +4,9 @@
 
 - Bibliothèque `/listen/library` et studio `/admin/audio` implémentés.
 - Catalogue importé : 749 narrations existantes (61 prophètes, 141 histoires, 90 Académie, 457 invocations), environ 277 minutes. Les MP3 existants restent servis par Quran Coach.
-- Infrastructure distante : bucket privé R2 créé, Workflow et Worker déployés sur `https://quran-coach-audio.madouyatt95.workers.dev`, `/health` répond avec `generationEnabled: false`. Les sept tables Supabase sont installées, RLS active et lecture refusée aux rôles anon/authenticated (vérifié dans la base distante). Les clés ElevenLabs et Supabase sont enregistrées en secrets Cloudflare. L’accès studio est limité au compte administrateur autorisé. La clé pilote ElevenLabs est plafonnée à 1 000 crédits par période, avec une expiration à 30 jours.
-- Aucune génération ElevenLabs lancée par cette livraison. La génération réelle est désactivée par défaut.
+- Infrastructure distante : bucket privé R2, Workflow et Worker sur `https://quran-coach-audio.madouyatt95.workers.dev`. Les sept tables Supabase sont installées, RLS active et lecture refusée aux rôles anon/authenticated. Les clés restent en secrets Cloudflare ; l’accès studio est limité à l’administrateur autorisé.
+- Un pilote puis des livres longs ont été produits réellement avec George. Les narrations restent privées en attente d’écoute ; elles ne sont pas publiées du seul fait de leur production. Le plafond de session a été autorisé explicitement par le propriétaire, avec un plafond de clé correspondant et les dépassements payants désactivés. Les coûts détaillés sont consultables dans le studio privé.
+- La configuration du dépôt laisse la génération désactivée. L’état réel est donné par `/health` ; une session autorisée l’active temporairement puis la désactive à son terme.
 - Le contrôle des références et droits de chaque script reste obligatoire : l'importation ne vaut pas validation religieuse ou autorisation de redistribution.
 
 ## Architecture
@@ -34,6 +35,9 @@ Le navigateur reçoit seulement l'URL publique `VITE_AUDIO_PRODUCTION_URL`. Les 
 - Les réservations et la prise en charge d'une tâche sont atomiques dans Postgres. Une seule génération en cours par compte.
 - Le budget du compte est un plafond de production cumulé, pas un compteur automatiquement remis à zéro au renouvellement ElevenLabs.
 - Après réponse perdue, la tâche passe en vérification. Aucun nouvel appel TTS automatique. Récupérer le reçu R2 ou l'historique ElevenLabs ; la correspondance texte/voix/modèle/requête est vérifiée.
+- Si l’identifiant a été perdu, le rapprochement lit l’historique dans la fenêtre de la requête et exige une correspondance unique du texte complet, de la voix, du modèle, des réglages et de l’heure. Il refuse les réponses ambiguës ou incomplètes. Une récupération n’appelle jamais la synthèse.
+- Les lots sont parcourus par unités de trois tâches pour rester sous la limite de requêtes de l’offre Cloudflare existante. Le relais non payant peut être repris par identifiant déterministe. Les étapes payantes ne sont jamais relancées automatiquement, et les prises terminées sont ignorées lors d’une reprise.
+- Les conversions binaires des MP3 utilisent les codecs natifs disponibles ou une boucle/chunks bornés, sans callback JavaScript par octet. Les alignements récupérés ne sont acceptés que s’ils correspondent au texte et à des horodatages cohérents.
 - Le coût réel provient du fournisseur. S'il manque, le studio affiche « en cours de rapprochement » et conserve la réserve ; il ne remplace pas le réel par l'estimation.
 - Le transfert vers un autre compte autorisé ne concerne que les tâches non commencées, reste en pause et exige une reprise explicite. Aucun contournement automatique de quota ou des conditions d'une offre étudiante.
 - L'empreinte du texte et des réglages est indépendante du compte. Une production identique déjà réservée ou créée est refusée. Un audio rejeté exige un script ou des réglages corrigés pour une nouvelle production ; aucune régénération identique forcée n'est proposée.
