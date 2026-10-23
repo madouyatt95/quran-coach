@@ -1,13 +1,14 @@
 import { chapterBooks } from '../data/storyChapters';
 import { ChapterPreview } from '../components/Journeys/ChapterPreview';
-import { StoryLibrary } from '../components/Journeys/StoryLibrary';
+import {BookShelf} from '../components/Books/BookShelf';
+import {bookEntryForOrigin,bookHref} from '../lib/bookLibrary';
 import { prophetEpisodes } from '../data/editorialExpansion';
 import { JourneyLinks } from '../components/Journeys/JourneyShelf';
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Search, BookOpen, Lightbulb, Sparkles, ChevronRight, Zap, GitBranch, MessageCircle, Clock, Quote, Share2, MapPin, X } from 'lucide-react';
+import { Search, GitBranch, ChevronRight, BookOpen, Lightbulb, Sparkles, Zap, MessageCircle, Clock, Quote, Share2, MapPin, X } from 'lucide-react';
 import { prophets } from '../data/prophets';
 import type { Prophet } from '../data/prophets';
 import { companions } from '../data/companions';
@@ -399,255 +400,16 @@ function CompanionDetail({ companion, onClose }: { companion: Companion; onClose
     );
 }
 
-export function ProphetsPage() {
-    const { t } = useTranslation();
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [search, setSearch] = useState('');
-    const [selectedProphet, setSelectedProphet] = useState<Prophet | null>(null);
-    const [selectedCompanion, setSelectedCompanion] = useState<Companion | null>(null);
-
-    useEffect(() => {
-        const prophetId = searchParams.get('prophet');
-        if (prophetId) {
-            const prophet = prophets.find(p => p.id === prophetId);
-            if (prophet && (!selectedProphet || selectedProphet.id !== prophetId)) {
-                setSelectedProphet(prophet);
-            }
-        }
-    }, [searchParams]);
-
-    const handleCloseModal = () => {
-        setSelectedProphet(null);
-        setSelectedCompanion(null);
-        if (searchParams.has('prophet')) {
-            searchParams.delete('prophet');
-            setSearchParams(searchParams, { replace: true });
-        }
-    };
-    const [tab, setTab] = useState<TabMode>('prophets');
-    const [viewMode, setViewMode] = useState<'grid' | 'graph'>('grid');
-    const [viewModeCompanions, setViewModeCompanions] = useState<'grid' | 'graph'>('grid');
-
-    const filteredProphets = useMemo(() => {
-        if (!search.trim()) return prophets;
-        const q = search.toLowerCase();
-        return prophets.filter(
-            (p) =>
-                p.nameFr.toLowerCase().includes(q) ||
-                p.nameEn.toLowerCase().includes(q) ||
-                p.nameIslamic.toLowerCase().includes(q) ||
-                p.nameAr.includes(q) ||
-                p.title.toLowerCase().includes(q)
-        );
-    }, [search]);
-
-    const filteredCompanions = useMemo(() => {
-        if (!search.trim()) return companions;
-        const q = search.toLowerCase();
-        return companions.filter(
-            (c) =>
-                c.nameFr.toLowerCase().includes(q) ||
-                c.nameEn.toLowerCase().includes(q) ||
-                c.nameAr.includes(q) ||
-                c.title.toLowerCase().includes(q)
-        );
-    }, [search]);
-
-    const asharaCount = companions.filter(c => c.category === 'ashara').length;
-    const otherCount = companions.filter(c => c.category !== 'ashara').length;
-
-    return (
-        <div className="prophets-page">
-            {/* Hero */}
-            <div className="prophets-hero">
-                <span className="prophets-hero__icon">{tab === 'prophets' ? '📖' : '⭐'}</span>
-                <h1 className="prophets-hero__title">
-                    {tab === 'prophets' ? 'قَصَصُ الأَنْبِيَاء' : 'الصَّحَابَة'}
-                </h1>
-                <p className="prophets-hero__subtitle">
-                    {tab === 'prophets'
-                        ? t('prophets.prophetsSubtitle', 'Histoires des Prophètes dans le Coran')
-                        : `${asharaCount} ${t('prophets.promisedParadise', 'promis au Paradis')} · ${otherCount} ${t('prophets.otherCompanions', 'autres compagnons')}`
-                    }
-                </p>
-                <span className="prophets-hero__count">
-                    {tab === 'prophets' ? `${prophets.length} ${t('prophets.title', 'prophètes')}` : `${companions.length} ${t('prophets.companions', 'compagnons')}`}
-                </span>
-                {tab === 'prophets' && (
-                    <span className="prophets-hero__source">Synthèses pédagogiques · références précises dans les fiches</span>
-                )}
-            </div>
-
-            <StoryLibrary kind="prophet"/>
-            {/* Tabs */}
-            <div className="prophets-tabs">
-                <button
-                    className={`prophets-tabs__btn ${tab === 'prophets' ? 'prophets-tabs__btn--active' : ''}`}
-                    onClick={() => { setTab('prophets'); setSearch(''); }}
-                >
-                    <span>📜</span> Prophètes
-                </button>
-                <button
-                    className={`prophets-tabs__btn ${tab === 'companions' ? 'prophets-tabs__btn--active' : ''}`}
-                    onClick={() => { setTab('companions'); setSearch(''); }}
-                >
-                    <span>⭐</span> Compagnons
-                </button>
-            </div>
-
-            {/* Search and View Toggle */}
-            <div className="prophets-search" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <div className="prophets-search__wrapper" style={{ flex: 1 }}>
-                    <Search size={18} className="prophets-search__icon" />
-                    <input
-                        className="prophets-search__input"
-                        type="text"
-                        placeholder={tab === 'prophets' ? t('prophets.searchProphet', 'Rechercher un prophète…') : t('prophets.searchCompanion', 'Rechercher un compagnon…')}
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
-                {tab === 'prophets' ? (
-                    <div style={{ display: 'flex', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '4px' }}>
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewMode === 'grid' ? 'var(--color-primary)' : 'transparent', color: viewMode === 'grid' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewMode === 'grid' ? 'bold' : 'normal' }}
-                        >
-                            Liste
-                        </button>
-                        <button
-                            onClick={() => setViewMode('graph')}
-                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewMode === 'graph' ? 'var(--color-primary)' : 'transparent', color: viewMode === 'graph' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewMode === 'graph' ? 'bold' : 'normal' }}
-                        >
-                            Arbre
-                        </button>
-                    </div>
-                ) : (
-                    <div style={{ display: 'flex', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '4px' }}>
-                        <button
-                            onClick={() => setViewModeCompanions('grid')}
-                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewModeCompanions === 'grid' ? 'var(--color-primary)' : 'transparent', color: viewModeCompanions === 'grid' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewModeCompanions === 'grid' ? 'bold' : 'normal' }}
-                        >
-                            Liste
-                        </button>
-                        <button
-                            onClick={() => setViewModeCompanions('graph')}
-                            style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: '6px', cursor: 'pointer', background: viewModeCompanions === 'graph' ? 'var(--color-primary)' : 'transparent', color: viewModeCompanions === 'graph' ? '#fff' : 'var(--color-text-muted)', border: 'none', fontWeight: viewModeCompanions === 'graph' ? 'bold' : 'normal' }}
-                        >
-                            Sanad (Le Lien)
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            {/* Content */}
-            <div className={`prophets-timeline ${(tab==='prophets'?viewMode:viewModeCompanions)==='graph'?'prophets-timeline--graph':''}`}>
-                {tab === 'prophets' ? (
-                    viewMode === 'graph' ? (
-                        <ProphetsGraph search={search} onSelectProphet={p=>{setSelectedProphet(p);setSearchParams({prophet:p.id});}} />
-                    ) : (
-                        filteredProphets.length === 0 ? (
-                            <div className="prophets-empty">
-                                <div className="prophets-empty__icon">🔍</div>
-                                <p className="prophets-empty__text">Aucun prophète trouvé</p>
-                            </div>
-                        ) : (
-                            filteredProphets.map((prophet, index) => (
-                                <motion.div
-                                    key={prophet.id}
-                                    className="prophet-card"
-                                    onClick={() => { setSelectedProphet(prophet); setSearchParams({ prophet: prophet.id }); }}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.03, duration: 0.3 }}
-                                >
-                                    <div
-                                        className="prophet-card__dot"
-                                        style={{ borderColor: prophet.color, color: prophet.color }}
-                                    />
-                                    <div className="prophet-card__body">
-                                        <div className="prophet-card__header">
-                                            <span className="prophet-card__emoji">{prophet.icon}</span>
-                                            <div className="prophet-card__names">
-                                                <div className="prophet-card__name-islamic">{prophet.nameIslamic}</div>
-                                                <div className="prophet-card__name-ar">{prophet.nameAr}</div>
-                                            </div>
-                                            <div className="prophet-card__meta">
-                                                <span className="prophet-card__mentions">📖 {prophet.mentionCount}×</span>
-                                                <span className="prophet-card__period">{prophet.period}</span>
-                                            </div>
-                                        </div>
-                                        <div className="prophet-card__title">{prophet.titleAr} — {prophet.title}</div>
-                                        <p className="prophet-card__summary">{prophet.summary}</p>
-                                    </div>
-                                </motion.div>
-                            ))
-                        )
-                    )
-                ) : (
-                    viewModeCompanions === 'graph' ? (
-                        <SanadGraph />
-                    ) : (
-                        filteredCompanions.length === 0 ? (
-                            <div className="prophets-empty">
-                                <div className="prophets-empty__icon">🔍</div>
-                                <p className="prophets-empty__text">Aucun compagnon trouvé</p>
-                            </div>
-                        ) : (
-                            filteredCompanions.map((companion, index) => (
-                                <motion.div
-                                    key={companion.id}
-                                    className="prophet-card"
-                                    onClick={() => setSelectedCompanion(companion)}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.03, duration: 0.3 }}
-                                >
-                                    <div
-                                        className="prophet-card__dot"
-                                        style={{ borderColor: companion.color, color: companion.color }}
-                                    />
-                                    <div className="prophet-card__body">
-                                        <div className="prophet-card__header">
-                                            <span className="prophet-card__emoji">{companion.icon}</span>
-                                            <div className="prophet-card__names">
-                                                <div className="prophet-card__name-islamic">{companion.nameFr}</div>
-                                                <div className="prophet-card__name-ar">{companion.nameAr}</div>
-                                            </div>
-                                            <div className="prophet-card__meta">
-                                                {companion.category === 'ashara' && (
-                                                    <span className="prophet-card__mentions">⭐ Paradis</span>
-                                                )}
-                                                {companion.category === 'sahabiyyah' && (
-                                                    <span className="prophet-card__mentions">🌹</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="prophet-card__title">{companion.titleAr} — {companion.title}</div>
-                                        <p className="prophet-card__summary">{companion.summary}</p>
-                                    </div>
-                                </motion.div>
-                            ))
-                        )
-                    )
-                )}
-            </div>
-
-            {/* Detail Modals */}
-            <AnimatePresence>
-                {selectedProphet && (
-                    <ProphetDetail
-                        prophet={selectedProphet}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {selectedCompanion && (
-                    <CompanionDetail
-                        companion={selectedCompanion}
-                        onClose={handleCloseModal}
-                    />
-                )}
-            </AnimatePresence>
-        </div>
-    );
+export function ProphetsPage(){
+ const [params,setParams]=useSearchParams(),navigate=useNavigate();
+ const [tab,setTab]=useState<TabMode>('prophets'),[search,setSearch]=useState(''),[graph,setGraph]=useState(false),[companion,setCompanion]=useState<Companion|null>(null);
+ const prophet=prophets.find(p=>p.id===params.get('prophet'))||null;
+ const entry=prophet?bookEntryForOrigin('prophet',prophet.id):null;
+ const entryHref=entry?bookHref(entry.book.id,entry.chapter):null;
+ useEffect(()=>{if(entryHref)navigate(entryHref,{replace:true});},[entryHref,navigate]);
+ const filtered=useMemo(()=>companions.filter(c=>`${c.nameFr} ${c.nameEn} ${c.nameAr} ${c.title}`.toLowerCase().includes(search.toLowerCase())),[search]);
+ const close=()=>{setCompanion(null);setParams({}, {replace:true});};
+ return <div className="prophets-page book-catalogue"><header className="book-catalogue-header"><span className="book-eyebrow">DES VIES, DES ENSEIGNEMENTS</span><h1>{tab==='prophets'?'Les Prophètes':'Les Compagnons'}</h1><p>Parcourir leur histoire. Écouter, comprendre et garder ce qui nous éclaire.</p></header><nav className="book-themes" aria-label="Prophètes et compagnons"><button aria-pressed={tab==='prophets'} onClick={()=>{setTab('prophets');setSearch('');setGraph(false);}}>Prophètes</button><button aria-pressed={tab==='companions'} onClick={()=>{setTab('companions');setSearch('');setGraph(false);}}>Compagnons</button><button aria-pressed={graph} onClick={()=>setGraph(v=>!v)}>Explorer les liens</button></nav>
+ {tab==='prophets'?(graph?<ProphetsGraph search="" onSelectProphet={p=>setParams({prophet:p.id})}/>:<BookShelf kind="prophet" legacyEntries={prophets.map(p=>({id:p.id,title:p.nameIslamic,subtitle:p.title,href:`/prophets?prophet=${p.id}`,keywords:`${p.nameAr} ${p.nameFr} ${p.nameEn}`}))}/>):<><label className="book-search"><Search size={18}/><input aria-label="Rechercher un compagnon" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher un compagnon…"/></label>{graph?<SanadGraph/>:<div className="book-companions">{filtered.map(c=><button key={c.id} onClick={()=>setCompanion(c)}><span>{c.icon}</span><strong>{c.nameFr}</strong><small>{c.title}</small></button>)}</div>}</>}
+ <AnimatePresence>{prophet&&!entry&&<ProphetDetail prophet={prophet} onClose={close}/>} {companion&&<CompanionDetail companion={companion} onClose={close}/>}</AnimatePresence></div>;
 }

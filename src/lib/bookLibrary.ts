@@ -1,0 +1,96 @@
+import {narrationSentences} from './narrationText';
+import catalog from '../data/bookCatalog.json';
+import type {LibraryAudio} from './audioProduction';
+import {chapterNarrative,type NarrativeBook,type NarrativeChapter} from './narrativeBooks';
+export type BookScene='dawn'|'desert'|'water'|'garden'|'night'|'cave';
+export type BookAmbience='silence'|'wind'|'water'|'rain';
+export const books=catalog;
+export type BookSummary=typeof books[number];
+const P=(id:string)=>`/prophets?prophet=${id}`;
+const S=(id:string)=>`/stories?story=${id}`;
+/** Explicit editorial links, never fuzzy name matching. Arrays correspond to chapters. */
+export const bookOrigins:Record<string,string[]>={
+ adam:[P('adam')],nuh:[P('nuh')],ibrahim:[P('ibrahim')],yusuf:[P('yusuf')],musa:[P('musa')],
+ 'maryam-isa':[P('zakariyya'),S('maryam'),S('maryam'),P('isa')],
+ sulayman:[P('dawud'),S('fourmi'),S('huppe'),S('bilqis'),P('sulayman')],
+ khidr:[S('khidr')],cave:[S('ashab-al-kahf')],
+ 'biens-et-coeur':[S('qarun'),S('deux-jardins'),S('jardin-avares')],
+ 'musa-apres-la-mer':[P('musa'),P('musa'),S('vache-baqara'),P('musa')],
+ 'royaumes-et-justice':[S('talut-jalut'),S('talut-jalut'),S('dhul-qarnayn'),S('dhul-qarnayn')],
+ 'appels-et-mesure':[P('hud'),P('salih'),P('shuayb')],
+ 'sira-confiance':[P('muhammad'),S('badr'),S('uhud'),S('khandaq'),S('hudaybiyya')],
+ 'voix-epreuve':[P('yunus'),P('ayyub'),'/read?surah=36&ayah=13'],
+ 'luqman-conseils':[S('luqman')],'parole-juste':['/read?surah=49&ayah=6','/read?surah=49&ayah=11','/read?surah=49&ayah=9'],
+};
+const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sulayman:['sulayman'],isa:['maryam-isa'],muhammad:['sira-confiance'],dawud:['sulayman','royaumes-et-justice']};
+export function originForChapter(bookId:string,chapter:number){const links=bookOrigins[bookId]||[];return links[chapter]||links[0]||'/stories';}
+export function booksForOrigin(kind:'prophet'|'story',id:string){const url=kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
+export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
+ return books.find(b=>item.reference?.includes(`Manuscrit ${b.version}, chapitre `)&&item.title.startsWith(`${b.title} · `));
+}
+export function chapterForAudio(item:Pick<LibraryAudio,'reference'|'title'>,book=bookForAudio(item)){
+ return book?.chapters.findIndex(c=>item.reference.includes(`, chapitre ${c.id}, segment `))??-1;
+}
+export function recordingsForBook(items:LibraryAudio[],book:BookSummary){
+ return items.filter(item=>bookForAudio(item)?.id===book.id&&chapterForAudio(item,book)>=0).sort((a,b)=>chapterForAudio(a,book)-chapterForAudio(b,book)||segmentNumber(a)-segmentNumber(b));
+}
+export function segmentNumber(item:Pick<LibraryAudio,'reference'>){return Number(item.reference?.match(/, segment (\d+)\/\d+/)?.[1]||1);}
+export function audioOrigin(item:LibraryAudio){const book=bookForAudio(item);return book?originForChapter(book.id,chapterForAudio(item,book)):item.sourceUrl;}
+export function bookHref(bookId:string,chapter?:string){return `/books/${bookId}${chapter?`?chapter=${encodeURIComponent(chapter)}`:''}`;}
+export function resumeRecording(items:LibraryAudio[],positions:Record<string,{seconds:number;updatedAt:number}>){
+ const recent=[...items].filter(i=>positions[i.id]?.seconds>0).sort((a,b)=>positions[b.id].updatedAt-positions[a.id].updatedAt)[0];
+ if(!recent)return items[0];
+ return positions[recent.id].seconds>=recent.duration-2?items[items.indexOf(recent)+1]||items[0]:recent;
+}
+const sceneDefaults:Record<string,BookScene>={adam:'dawn',nuh:'water',ibrahim:'desert',yusuf:'night',musa:'water','maryam-isa':'garden',sulayman:'desert',khidr:'water',cave:'cave','biens-et-coeur':'garden','musa-apres-la-mer':'desert','royaumes-et-justice':'desert','appels-et-mesure':'desert','sira-confiance':'night','voix-epreuve':'night','luqman-conseils':'garden','parole-juste':'dawn'};
+export function coverScene(id:string):BookScene{return sceneDefaults[id]||'dawn';}
+/** Scene cues are editorial atmospheres, never reconstructions of unseen events. */
+export function sceneTreatment(bookId:string,chapter:number,scene:number):{decor:BookScene;ambience:BookAmbience}{
+ if(bookId==='adam')return chapter===0?{decor:'dawn',ambience:'silence'}:chapter===1?{decor:'garden',ambience:scene===0?'wind':'silence'}:{decor:'dawn',ambience:'wind'};
+ if(bookId==='biens-et-coeur')return chapter===0?{decor:'desert',ambience:scene===0?'wind':'silence'}:chapter===1?{decor:'garden',ambience:scene===0?'water':'wind'}:{decor:scene===0?'night':'dawn',ambience:scene===0?'silence':'wind'};
+ const treatments:Record<string,[BookScene,BookAmbience][]>={
+  nuh:[['desert','wind'],['dawn','wind'],['water','rain'],['water','wind']],
+  ibrahim:[['desert','wind'],['desert','silence'],['dawn','silence'],['desert','wind'],['desert','wind']],
+  yusuf:[['night','silence'],['cave','wind'],['dawn','silence'],['garden','wind'],['desert','wind'],['night','silence'],['dawn','wind']],
+  musa:[['water','water'],['desert','wind'],['night','silence'],['desert','silence'],['water','wind']],
+  'maryam-isa':[['garden','silence'],['dawn','silence'],['garden','wind'],['dawn','silence']],
+  sulayman:[['dawn','silence'],['desert','wind'],['desert','wind'],['garden','wind'],['dawn','silence']],
+  khidr:[['water','water'],['desert','wind'],['dawn','silence']],cave:[['cave','wind'],['night','silence'],['dawn','wind']],
+  'musa-apres-la-mer':[['desert','wind'],['dawn','silence'],['garden','wind'],['desert','wind']],
+  'royaumes-et-justice':[['desert','wind'],['water','water'],['desert','wind'],['desert','wind']],
+  'appels-et-mesure':[['desert','wind'],['cave','wind'],['desert','wind']],
+  'sira-confiance':[['cave','wind'],['desert','wind'],['dawn','silence'],['night','wind'],['dawn','wind']],
+  'voix-epreuve':[['water','water'],['dawn','silence'],['desert','wind']],
+  'luqman-conseils':[['garden','wind'],['dawn','silence'],['garden','wind']],
+  'parole-juste':[['dawn','silence'],['garden','wind'],['dawn','silence']],
+ };
+ const cue=treatments[bookId]?.[chapter];return cue?{decor:cue[0],ambience:scene%2===1?'silence':cue[1]}:{decor:coverScene(bookId),ambience:'silence'};
+}
+/** Match the exact recorded slice; do not estimate timing from narration speed. */
+export function activeBookScene(book:NarrativeBook,chapter:NarrativeChapter,item:LibraryAudio|null,position:number){
+ if(!item||bookForAudio(item)?.id!==book.id||chapterForAudio(item)!==book.chapters.indexOf(chapter))return 0;
+ const text=narratedChapterText(book,chapter);
+ const partStart=text.indexOf(item.text);if(partStart<0)return 0;
+ const sentences=narrationSentences(item.text);let cursor=0;const offsets=sentences.map(sentence=>{const index=item.text.indexOf(sentence,cursor);cursor=index+sentence.length;return Math.max(0,index);});
+ const marker=item.sentences.filter(s=>position>=s.start).at(-1);
+ const offset=partStart+(marker===undefined?0:(offsets[marker.sentence]||0));
+ let start=0,result=0;chapter.scenes.forEach((s,i)=>{if(offset>=start)result=i;start+=s.paragraphs.map(p=>p.text).join('\n\n').length+2;});return result;
+}
+/** Legacy entry points resolve to the canonical manuscript, with its matching chapter. */
+export function bookEntryForOrigin(kind:'prophet'|'story',id:string){
+ const related=booksForOrigin(kind,id),primary=related.find(b=>b.id===id)||related[0];if(!primary)return null;
+ const origin=kind==='prophet'?P(id):S(id),chapter=Math.max(0,(bookOrigins[primary.id]||[]).indexOf(origin));
+ return {book:primary,chapter:primary.chapters[chapter]?.id||primary.chapters[0].id};
+}
+
+export function narratedChapterText(book:NarrativeBook,chapter:NarrativeChapter){return chapterNarrative(chapter)+(book.chapters.at(-1)?.id===chapter.id?'\n\n'+book.epilogue.text:'');}
+export function chapterPlayback(item:LibraryAudio,queue:LibraryAudio[],position:number){
+ const book=bookForAudio(item),index=chapterForAudio(item,book),parts=book&&index>=0?queue.filter(p=>bookForAudio(p)?.id===book.id&&chapterForAudio(p,book)===index):[item];
+ if(!parts.some(p=>p.id===item.id))parts.push(item);
+ const at=parts.findIndex(p=>p.id===item.id);
+ return {title:book&&index>=0?`${book.title} · ${index+1}. ${book.chapters[index].title}`:item.title,parts,seconds:parts.slice(0,at).reduce((sum,p)=>sum+p.duration,0)+position,duration:parts.reduce((sum,p)=>sum+p.duration,0)};
+}
+
+export function canonicalBookForSource(sourceUrl:string){
+ try{const url=new URL(sourceUrl,'https://www.quran-coach.fr');if(!['www.quran-coach.fr','quran-coach.fr'].includes(url.hostname))return null;const kind=url.pathname==='/prophets'?'prophet':url.pathname==='/stories'?'story':null;return kind?bookEntryForOrigin(kind,url.searchParams.get(kind)||''):null;}catch{return null;}
+}

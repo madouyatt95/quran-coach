@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  server: { proxy: { '/verse-audio/': { target:'https://cdn.islamic.network',changeOrigin:true,rewrite:path=>path.replace('/verse-audio/','/quran/audio/') }, '/offline-audio/': { target: 'https://cdn.islamic.network', changeOrigin: true, rewrite: path => path.replace('/offline-audio/', '/quran/audio/128/ar.alafasy/') } } },
+  server: { proxy: { '/book-audio/catalog': {target:'https://quran-coach-audio.madouyatt95.workers.dev',changeOrigin:true,rewrite:path=>path.replace('/book-audio',''),configure:proxy=>{proxy.on('proxyReq',request=>request.removeHeader('origin'));}}, '/verse-audio/': { target:'https://cdn.islamic.network',changeOrigin:true,rewrite:path=>path.replace('/verse-audio/','/quran/audio/') }, '/offline-audio/': { target: 'https://cdn.islamic.network', changeOrigin: true, rewrite: path => path.replace('/offline-audio/', '/quran/audio/128/ar.alafasy/') } } },
   worker: { format: 'es' },
   plugins: [
     react(),
@@ -34,7 +34,7 @@ export default defineConfig({
         theme_color: '#0D1117',
         background_color: '#0D1117',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'any',
         start_url: '/',
         icons: [
           {

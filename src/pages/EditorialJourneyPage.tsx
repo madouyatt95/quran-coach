@@ -1,3 +1,4 @@
+import {bookEntryForOrigin,bookHref} from '../lib/bookLibrary';
 import {QuizBridge} from '../components/Quiz/QuizBridge';
 import {NarrationReport} from '../components/Journeys/NarrationReport';
 import {JourneyInvocationBridge} from '../components/Journeys/JourneyInvocationBridge';
@@ -5,7 +6,7 @@ import {EditorialDownload} from '../components/Journeys/EditorialDownload';
 import { StoryReview } from '../components/Journeys/StoryReview';
 import { StoryVerseMap } from '../components/Journeys/StoryVerseMap';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Navigate, Link, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { getJourney,narrativeSentences,type EditorialJourney, type JourneyStep } from '../lib/editorialJourneys';
 import { useEditorialJourneyStore } from '../stores/editorialJourneyStore';
@@ -14,7 +15,7 @@ import { fetchSurah,fetchSurahTranslation } from '../lib/quranApi';
 import { useOpenReader } from '../hooks/useOpenReader';
 import { JourneyReflection } from '../components/Journeys/JourneyReflection';
 import '../components/Journeys/Journeys.css';
-export function EditorialJourneyPage(){const {kind,id}=useParams();const [params]=useSearchParams();const journey=useMemo(()=>getJourney(kind||'',id||''),[kind,id]);return journey?<JourneyReader key={`${journey.id}:${params.get('mode')}`} journey={journey} mode={params.get('mode')||'story'} entry={params.get('step')||''} from={params.get('from')||''}/>:<main className="journey-page"><h1>Ce parcours n’est pas disponible</h1><Link to="/stories">Retrouver les histoires</Link></main>;}
+export function EditorialJourneyPage(){const {kind,id}=useParams();const [params]=useSearchParams();const bookEntry=(kind==='prophet'||kind==='story')?bookEntryForOrigin(kind,id||''):null;const journey=useMemo(()=>getJourney(kind||'',id||''),[kind,id]);return bookEntry?<Navigate to={bookHref(bookEntry.book.id,bookEntry.chapter)} replace/>:journey?<JourneyReader key={`${journey.id}:${params.get('mode')}`} journey={journey} mode={params.get('mode')||'story'} entry={params.get('step')||''} from={params.get('from')||''}/>:<main className="journey-page"><h1>Ce parcours n’est pas disponible</h1><Link to="/stories">Retrouver les histoires</Link></main>;}
 function JourneyReader({journey,mode,entry,from}:{journey:EditorialJourney;mode:string;entry:string;from:string}){
  const [routeParams,setRouteParams]=useSearchParams();
  const [immersive,setImmersive]=useState(false),[showText,setShowText]=useState(false);

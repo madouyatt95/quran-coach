@@ -1,19 +1,18 @@
 import { chapterBooks } from '../data/storyChapters';
 import { ChapterPreview } from '../components/Journeys/ChapterPreview';
-import { StoryLibrary } from '../components/Journeys/StoryLibrary';
-import { LIFE_THEMES } from '../lib/editorialJourneys';
+import {BookShelf} from '../components/Books/BookShelf';
+import {bookEntryForOrigin,bookHref} from '../lib/bookLibrary';
 import { JourneyLinks } from '../components/Journeys/JourneyShelf';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, BookOpen, Lightbulb, ChevronRight, Share2, Volume2, Loader2, Square, Sparkles, MapPin, X } from 'lucide-react';
-import { stories, STORY_CATEGORIES, type Story, type StoryCategory } from '../data/storiesData';
+import { ChevronRight, BookOpen, Lightbulb, Share2, Volume2, Loader2, Square, Sparkles, MapPin, X } from 'lucide-react';
+import { stories, STORY_CATEGORIES, type Story } from '../data/storiesData';
 import { useOpenReader } from '../hooks/useOpenReader';
 import { playTts, stopTts } from '../lib/ttsService';
 import { ReligiousReference } from '../components/ReligiousReference';
 import './StoriesPage.css';
 
-type FilterMode = 'all' | StoryCategory;
 
 function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) {
     const navigate = useNavigate();
@@ -200,198 +199,10 @@ function StoryDetail({ story, onClose }: { story: Story; onClose: () => void }) 
     );
 }
 
-export function StoriesPage() {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [search, setSearch] = useState('');
-    const [lifeTheme,setLifeTheme]=useState('');
-    const theme=LIFE_THEMES.find(t=>t.id===lifeTheme);
-    const [filter, setFilter] = useState<FilterMode>('all');
-    const [selectedStory, setSelectedStory] = useState<Story | null>(null);
-
-    useEffect(() => {
-        const storyId = searchParams.get('story');
-        if (storyId) {
-            const story = stories.find(s => s.id === storyId);
-            if (story && (!selectedStory || selectedStory.id !== story.id)) {
-                setSelectedStory(story);
-            }
-        }
-    }, [searchParams]);
-
-    const handleCloseModal = () => {
-        setSelectedStory(null);
-        if (searchParams.has('story')) {
-            searchParams.delete('story');
-            setSearchParams(searchParams, { replace: true });
-        }
-    };
-
-    const handleOpenModal = (story: Story) => {
-        setSelectedStory(story);
-        setSearchParams({ story: story.id });
-    };
-
-    const filteredStories = useMemo(() => {
-        let result = stories;
-        if(theme)result=result.filter(s=>(theme.stories as readonly string[]).includes(s.id));
-
-        if (filter !== 'all') {
-            result = result.filter(s => s.category === filter);
-        }
-
-        if (search.trim()) {
-            const q = search.toLowerCase();
-            result = result.filter(
-                s =>
-                    s.title.toLowerCase().includes(q) ||
-                    s.titleAr.includes(q) ||
-                    s.summary.toLowerCase().includes(q) ||
-                    s.morals.some(m => m.toLowerCase().includes(q))
-            );
-        }
-
-        return result;
-    }, [search, filter, theme]);
-
-    // Group by category for display
-    const groupedStories = useMemo(() => {
-        if (filter !== 'all') {
-            return [{ category: filter as StoryCategory, stories: filteredStories }];
-        }
-
-        const groups: { category: StoryCategory; stories: Story[] }[] = [];
-        const categoryOrder: StoryCategory[] = ['peuples', 'personnages', 'paraboles', 'evenements', 'divers', 'sira', 'duas'];
-
-        for (const cat of categoryOrder) {
-            const catStories = filteredStories.filter(s => s.category === cat);
-            if (catStories.length > 0) {
-                groups.push({ category: cat, stories: catStories });
-            }
-        }
-
-        return groups;
-    }, [filteredStories, filter]);
-
-    const categoryCounts = useMemo(() => {
-        const counts: Record<string, number> = { all: stories.length };
-        for (const s of stories) {
-            counts[s.category] = (counts[s.category] || 0) + 1;
-        }
-        return counts;
-    }, []);
-
-    return (
-        <div className="stories-page">
-            {/* Hero */}
-            <div className="stories-hero">
-                <span className="stories-hero__icon">📖</span>
-                <h1 className="stories-hero__title">قِصَصٌ وَعِبَر</h1>
-                <p className="stories-hero__subtitle">Histoires et Moralités du Coran</p>
-                <span className="stories-hero__count">
-                    {stories.length} récits coraniques
-                </span>
-            </div>
-
-            <StoryLibrary kind="story"/>
-            {/* Search */}
-            <div className="stories-search">
-                <div className="stories-search__wrapper">
-                    <Search size={18} className="stories-search__icon" />
-                    <input
-                        className="stories-search__input"
-                        type="text"
-                        placeholder="Rechercher une histoire, un thème…"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
-            </div>
-
-            <section className="journey-themes"><h2>Une histoire pour aujourd’hui</h2><div className="journey-theme-chips"><button aria-pressed={!lifeTheme} onClick={()=>setLifeTheme('')}>Tous les récits</button>{LIFE_THEMES.map(t=><button key={t.id} aria-pressed={t.id===lifeTheme} onClick={()=>{setLifeTheme(t.id);setFilter('all');setSearch('');}}>{t.icon} {t.label}</button>)}</div>{theme&&<div className="journey-theme-description"><p>{theme.description}</p><strong>{theme.question}</strong><p>{theme.action}</p><small>Pistes de réflexion personnelles, facultatives.</small></div>}</section>
-            {/* Category Filters */}
-            <div className="stories-filters">
-                <button
-                    className={`stories-filter-btn ${filter === 'all' ? 'active' : ''}`}
-                    onClick={() => setFilter('all')}
-                >
-                    📚 Tout
-                    <span className="stories-filter-btn__count">{categoryCounts.all}</span>
-                </button>
-                {(Object.entries(STORY_CATEGORIES) as [StoryCategory, typeof STORY_CATEGORIES[StoryCategory]][]).map(([key, cat]) => (
-                    <button
-                        key={key}
-                        className={`stories-filter-btn ${filter === key ? 'active' : ''}`}
-                        onClick={() => setFilter(key)}
-                    >
-                        {cat.icon} {cat.label}
-                        <span className="stories-filter-btn__count">{categoryCounts[key] || 0}</span>
-                    </button>
-                ))}
-            </div>
-
-            {/* Stories List */}
-            {filteredStories.length === 0 ? (
-                <div className="stories-empty">
-                    <div className="stories-empty__icon">🔍</div>
-                    <p className="stories-empty__text">Aucune histoire trouvée</p>
-                </div>
-            ) : (
-                groupedStories.map(group => {
-                    const catInfo = STORY_CATEGORIES[group.category];
-                    return (
-                        <div key={group.category}>
-                            {/* Category Header */}
-                            <div className="stories-category-header">
-                                <span className="stories-category-header__icon">{catInfo.icon}</span>
-                                <div className="stories-category-header__text">
-                                    <h2>{catInfo.label}</h2>
-                                    <span>{catInfo.labelAr}</span>
-                                </div>
-                            </div>
-
-                            {/* Story Cards */}
-                            {group.stories.map((story, index) => (
-                                <motion.div
-                                    key={story.id}
-                                    className="story-card"
-                                    style={{ '--card-accent': story.color } as React.CSSProperties}
-                                    onClick={() => handleOpenModal(story)}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.03, duration: 0.3 }}
-                                >
-                                    <div className="story-card__header">
-                                        <div className="story-card__icon">{story.icon}</div>
-                                        <div className="story-card__titles">
-                                            <h3 className="story-card__title">{story.title}</h3>
-                                            <div className="story-card__title-ar">{story.titleAr}</div>
-                                        </div>
-                                    </div>
-                                    <p className="story-card__summary">{story.summary}</p>
-                                    <div className="story-card__footer">
-                                        <span className="story-card__surah-count">
-                                            📖 {story.surahs.length} sourate{story.surahs.length > 1 ? 's' : ''}
-                                        </span>
-                                        <span className="story-card__moral-count">
-                                            💡 {story.morals.length} leçon{story.morals.length > 1 ? 's' : ''}
-                                        </span>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    );
-                })
-            )}
-
-            {/* Detail Modal */}
-            <AnimatePresence>
-                {selectedStory && (
-                    <StoryDetail
-                        story={selectedStory}
-                        onClose={handleCloseModal}
-                    />
-                )}
-            </AnimatePresence>
-        </div>
-    );
+export function StoriesPage(){
+ const [params,setParams]=useSearchParams(),navigate=useNavigate();
+ const story=stories.find(s=>s.id===params.get('story'))||null,entry=story?bookEntryForOrigin('story',story.id):null;
+ const entryHref=entry?bookHref(entry.book.id,entry.chapter):null;
+ useEffect(()=>{if(entryHref)navigate(entryHref,{replace:true});},[entryHref,navigate]);
+ return <div className="stories-page book-catalogue"><header className="book-catalogue-header"><span className="book-eyebrow">DES RÉCITS QUI NOUS ACCOMPAGNENT</span><h1>Histoires et moralités</h1><p>La patience, la confiance, la justice. Des histoires à lire et à écouter.</p></header><BookShelf kind="story" legacyEntries={stories.map(s=>({id:s.id,title:s.title,subtitle:s.summary,href:`/stories?story=${s.id}`,keywords:`${s.titleAr} ${STORY_CATEGORIES[s.category].label} ${s.morals.join(' ')}`}))}/><AnimatePresence>{story&&!entry&&<StoryDetail story={story} onClose={()=>setParams({}, {replace:true})}/>}</AnimatePresence></div>;
 }

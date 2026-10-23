@@ -50,7 +50,7 @@ import { PageOrnaments } from './PageOrnaments';
 import { usePageGestures } from './usePageGestures';
 import { useBookPageTurn } from './useBookPageTurn';
 import {bookTurnPages} from './bookTurnMotion';
-import {readerPageScale} from './readerPageScale';
+import {readerPageScale,canShowBookSpread} from './readerPageScale';
 import { useReadingBookmarkStore } from '../../../stores/readingBookmarkStore';
 import type { Ayah, ViewMode } from '../../../types';
 import {fallbackRuleColor} from './glyphStyle';
@@ -126,7 +126,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const notes=useReaderNotesStore(s=>s.notes);
     const pendingFacing=useRef<{page:number;word:MushafWord;action:'play'|'options';selection?:VerseSelection}|null>(null);
     const [size,setSize]=useState({width:600,height:860});
-    const spread=bookSpread&&size.width>=900&&window.innerWidth>window.innerHeight&&!practice&&!lessonExercise;
+    const spread=bookSpread&&canShowBookSpread(size.width,size.height)&&!practice&&!lessonExercise;
     const facingPage=page%2===1?page+1:page-1;
     const viewport=useRef<HTMLDivElement>(null);
     const favorites=useFavoritesStore();

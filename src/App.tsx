@@ -38,6 +38,7 @@ const PrayerTimesPage = lazy(() => import('./pages/PrayerTimesPage').then(m => (
 const AdhkarPage = lazy(() => import('./pages/AdhkarPage').then(m => ({ default: m.AdhkarPage })));
 const ListeningExperiencePage = lazy(() => import('./pages/ListeningExperiencePage').then(m => ({ default: m.ListeningExperiencePage })));
 const ListenPage = lazy(() => import('./pages/ListenPage').then(m => ({ default: m.ListenPage })));
+const BookPage = lazy(() => import('./pages/BookPage').then(m => ({ default: m.BookPage })));
 const AudioLibraryPage = lazy(() => import('./pages/AudioLibraryPage').then(m => ({ default: m.AudioLibraryPage })));
 const AudioStudioPage = lazy(() => import('./pages/AudioStudioPage').then(m => ({ default: m.AudioStudioPage })));
 const ReciterDetailPage = lazy(() => import('./pages/ReciterDetailPage').then(m => ({ default: m.ReciterDetailPage })));
@@ -234,6 +235,7 @@ function AppContent() {
             <Route path="/adhkar" element={<AdhkarPage />} />
             <Route path="/listen" element={<ListenPage />} />
             <Route path="/listen/library" element={<AudioLibraryPage />} />
+            <Route path="/books/:bookId" element={<BookPage />} />
             <Route path="/admin/audio" element={<AudioStudioPage />} />
             <Route path="/listen/experience" element={<ListeningExperiencePage key={location.search} />} />
             <Route path="/listen/:id" element={<ReciterDetailPage />} />
@@ -269,7 +271,7 @@ function AppContent() {
         </Suspense>
       </main>
       <SideMenu isOpen={showSideMenu} onClose={() => setShowSideMenu(false)} />
-      {location.pathname !== "/listen/experience" && location.pathname !== "/listen/library" && location.pathname !== "/admin/audio" && !location.pathname.startsWith("/journeys/") && !location.pathname.startsWith("/fahm/") && <InstallPrompt />}
+      {location.pathname !== "/listen/experience" && location.pathname !== "/listen/library" && location.pathname !== "/admin/audio" && !location.pathname.startsWith("/books/") && !location.pathname.startsWith("/journeys/") && !location.pathname.startsWith("/fahm/") && <InstallPrompt />}
       <UpdateBanner />
       <MiniPlayer />
       <LibraryPlayer />

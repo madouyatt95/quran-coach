@@ -1,0 +1,423 @@
+[
+  {
+    "id": "adam",
+    "title": "Adam",
+    "subtitle": "Le commencement et le chemin du retour",
+    "version": "adam-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "names",
+        "title": "Le savoir et le refus"
+      },
+      {
+        "id": "temptation",
+        "title": "La promesse trompeuse"
+      },
+      {
+        "id": "guidance",
+        "title": "Le chemin du retour"
+      }
+    ]
+  },
+  {
+    "id": "nuh",
+    "title": "Nuh",
+    "subtitle": "L’appel, l’arche et la promesse",
+    "version": "nuh-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "appel",
+        "title": "Une parole qui cherche encore un chemin"
+      },
+      {
+        "id": "arche",
+        "title": "Construire malgré les moqueries"
+      },
+      {
+        "id": "vague",
+        "title": "L’appel au fils et la vague"
+      },
+      {
+        "id": "promesse",
+        "title": "Une question, une limite et un nouveau départ"
+      }
+    ]
+  },
+  {
+    "id": "ibrahim",
+    "title": "Ibrahim",
+    "subtitle": "Quitter, recevoir, transmettre",
+    "version": "ibrahim-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "pere",
+        "title": "La parole adressée à un père"
+      },
+      {
+        "id": "idoles",
+        "title": "Ce qui ne peut répondre"
+      },
+      {
+        "id": "annonce",
+        "title": "Des visiteurs et une bonne nouvelle"
+      },
+      {
+        "id": "epreuve",
+        "title": "La confiance au cœur de l’épreuve"
+      },
+      {
+        "id": "maison",
+        "title": "Bâtir sans cesser de demander"
+      }
+    ]
+  },
+  {
+    "id": "yusuf",
+    "title": "Yusuf",
+    "subtitle": "Du puits aux retrouvailles",
+    "version": "yusuf-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "reve",
+        "title": "Le rêve et le puits"
+      },
+      {
+        "id": "maison",
+        "title": "De l’eau du puits à la porte fermée"
+      },
+      {
+        "id": "prison",
+        "title": "Une parole utile derrière les murs"
+      },
+      {
+        "id": "roi",
+        "title": "Sept années à préparer"
+      },
+      {
+        "id": "retour",
+        "title": "Des frères devant un visage qu’ils ne reconnaissent pas"
+      },
+      {
+        "id": "esperance",
+        "title": "Ne pas fermer la porte de l’espérance"
+      },
+      {
+        "id": "reunion",
+        "title": "Le rêve retrouve son sens"
+      }
+    ]
+  },
+  {
+    "id": "musa",
+    "title": "Musa",
+    "subtitle": "De l’enfant menacé à la traversée",
+    "version": "musa-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "enfant",
+        "title": "L’enfant que le fleuve ramène"
+      },
+      {
+        "id": "exil",
+        "title": "Quitter la ville, aider au bord de l’eau"
+      },
+      {
+        "id": "appel",
+        "title": "Le feu aperçu, la mission reçue"
+      },
+      {
+        "id": "confrontation",
+        "title": "Le pouvoir qui exige une permission de croire"
+      },
+      {
+        "id": "mer",
+        "title": "Là où l’issue ne se voit pas encore"
+      }
+    ]
+  },
+  {
+    "id": "maryam-isa",
+    "title": "Maryam et Isa",
+    "subtitle": "L’annonce, l’épreuve et la parole",
+    "version": "maryam-isa-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "vocation",
+        "title": "Une enfant confiée, une demande entendue"
+      },
+      {
+        "id": "annonce",
+        "title": "Une annonce qu’elle n’avait pas imaginée"
+      },
+      {
+        "id": "naissance",
+        "title": "Le palmier et le retour parmi les siens"
+      },
+      {
+        "id": "mission",
+        "title": "Les signes et Celui qui les accorde"
+      }
+    ]
+  },
+  {
+    "id": "sulayman",
+    "title": "Dawud et Sulayman",
+    "subtitle": "Le pouvoir, le savoir et la gratitude",
+    "version": "sulayman-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "justice",
+        "title": "Le juge qui revient vers son Seigneur"
+      },
+      {
+        "id": "fourmi",
+        "title": "Une armée entend l’avertissement d’une fourmi"
+      },
+      {
+        "id": "nouvelle",
+        "title": "Une nouvelle venue de Saba"
+      },
+      {
+        "id": "lettre",
+        "title": "La souveraine consulte avant d’agir"
+      },
+      {
+        "id": "trone",
+        "title": "Devant le trône, reconnaître le bienfait"
+      }
+    ]
+  },
+  {
+    "id": "khidr",
+    "title": "Moussa et le serviteur instruit",
+    "subtitle": "Le voyage et la limite du regard",
+    "version": "khidr-conte-2026-10-23-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "rencontre",
+        "title": "Revenir sur ses pas pour apprendre"
+      },
+      {
+        "id": "questions",
+        "title": "Trois scènes que Moussa ne peut laisser passer"
+      },
+      {
+        "id": "explication",
+        "title": "Ce que le premier regard ne montrait pas"
+      }
+    ]
+  },
+  {
+    "id": "cave",
+    "title": "Les compagnons de la caverne",
+    "subtitle": "Un refuge au-delà du temps",
+    "version": "cave-conte-2026-10-23-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "refuge",
+        "title": "Choisir le refuge"
+      },
+      {
+        "id": "reveil",
+        "title": "Un jour, ou une partie d’un jour"
+      },
+      {
+        "id": "signe",
+        "title": "Ce que la découverte doit rappeler"
+      }
+    ]
+  },
+  {
+    "id": "biens-et-coeur",
+    "title": "Les biens et le cœur",
+    "subtitle": "Trois récits sur ce que nous possédons",
+    "version": "biens-et-coeur-conte-2026-10-23-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "qarun",
+        "title": "Celui dont on enviait la place"
+      },
+      {
+        "id": "deux-jardins",
+        "title": "Le jardin que l’on croyait indestructible"
+      },
+      {
+        "id": "recolte",
+        "title": "La récolte que l’on voulait garder pour soi"
+      }
+    ]
+  },
+  {
+    "id": "musa-apres-la-mer",
+    "title": "Moussa · Après la mer",
+    "subtitle": "Apprendre à répondre après la délivrance",
+    "version": "musa-apres-la-mer-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "absence",
+        "title": "L’adoration ne se choisit pas par imitation"
+      },
+      {
+        "id": "retour",
+        "title": "Entendre avant de conclure"
+      },
+      {
+        "id": "vache",
+        "title": "Les questions qui retardent une réponse"
+      },
+      {
+        "id": "terre",
+        "title": "Ne pas demander à un autre d’agir à sa place"
+      }
+    ]
+  },
+  {
+    "id": "royaumes-et-justice",
+    "title": "Les royaumes et la justice",
+    "subtitle": "Talout, Dawoud et Dhoul-Qarnayn",
+    "version": "royaumes-et-justice-conte-2026-10-23-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "talout",
+        "title": "Le roi que les notables n’attendaient pas"
+      },
+      {
+        "id": "riviere",
+        "title": "La rivière et le petit nombre"
+      },
+      {
+        "id": "horizons",
+        "title": "Des moyens pour parcourir la terre"
+      },
+      {
+        "id": "barriere",
+        "title": "Construire avec ceux que l’on protège"
+      }
+    ]
+  },
+  {
+    "id": "appels-et-mesure",
+    "title": "L’appel et la mesure",
+    "subtitle": "Hud, Salih et Shuayb",
+    "version": "appels-et-mesure-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "hud",
+        "title": "Une force qui ne suffit pas"
+      },
+      {
+        "id": "salih",
+        "title": "La limite que le peuple connaissait"
+      },
+      {
+        "id": "shuayb",
+        "title": "La balance et la prière"
+      }
+    ]
+  },
+  {
+    "id": "sira-confiance",
+    "title": "La Sira · Tenir dans l’épreuve",
+    "subtitle": "Cinq moments à la lumière du Coran",
+    "version": "sira-confiance-conte-2026-10-23-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "secours",
+        "title": "Deux hommes dans une grotte, puis une communauté"
+      },
+      {
+        "id": "retournement",
+        "title": "Lorsque la situation se renverse"
+      },
+      {
+        "id": "douceur",
+        "title": "Rester auprès des siens après l’épreuve"
+      },
+      {
+        "id": "coalises",
+        "title": "Quand la peur gagne les regards"
+      },
+      {
+        "id": "ouverture",
+        "title": "L’ouverture que l’on ne voit pas encore"
+      }
+    ]
+  },
+  {
+    "id": "voix-epreuve",
+    "title": "Des voix dans l’épreuve",
+    "subtitle": "Yunus, Ayyub et l’homme venu de la ville",
+    "version": "voix-epreuve-conte-2026-10-23-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "yunus",
+        "title": "L’appel dans les ténèbres"
+      },
+      {
+        "id": "ayyub",
+        "title": "Nommer la peine sans rompre le lien"
+      },
+      {
+        "id": "ville",
+        "title": "L’homme qui vient en hâte"
+      }
+    ]
+  },
+  {
+    "id": "luqman-conseils",
+    "title": "Les conseils de Luqman",
+    "subtitle": "Une sagesse à faire entrer dans sa vie",
+    "version": "luqman-conseils-conte-2026-10-23-v1",
+    "category": "academy",
+    "chapters": [
+      {
+        "id": "gratitude",
+        "title": "Recevoir avant de transmettre"
+      },
+      {
+        "id": "grain",
+        "title": "Le grain caché et la prière"
+      },
+      {
+        "id": "mesure",
+        "title": "L’humilité jusque dans la voix"
+      }
+    ]
+  },
+  {
+    "id": "parole-juste",
+    "title": "La parole qui préserve",
+    "subtitle": "Vérifier, respecter et réparer",
+    "version": "parole-juste-conte-2026-10-23-v1",
+    "category": "academy",
+    "chapters": [
+      {
+        "id": "verifier",
+        "title": "Une nouvelle n’est pas encore un savoir"
+      },
+      {
+        "id": "dignite",
+        "title": "Le mot qui réduit une personne"
+      },
+      {
+        "id": "reparer",
+        "title": "Réparer sans faire disparaître la justice"
+      }
+    ]
+  }
+]

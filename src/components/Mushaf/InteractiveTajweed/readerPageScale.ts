@@ -6,3 +6,6 @@ export function readerPageScale(width:number,height:number,spread:boolean,immers
     if(immersive)return Math.min(width/484,height/860,1.6)*zoom/1.15;
     return Math.min(width/600,height/860,1.25)*zoom;
 }
+
+/** Two readable leaves on square unfolded screens, without shrinking short landscape phones. */
+export function canShowBookSpread(width:number,height:number){return width>=700&&height>=430;}
