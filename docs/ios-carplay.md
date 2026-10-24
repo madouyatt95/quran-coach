@@ -92,3 +92,15 @@ L’iPhone associé est indisponible : les interactions, notifications, widgets 
 ## Mise à jour du 24 octobre 2026 — 1.5 (13)
 
 Le build 13 embarque le catalogue de 36 livres (19 nouveaux), leurs textes complets, les liens depuis Prophètes et Histoires et moralités, et les filtres thématiques. La préparation Capacitor et l’archive Release signée ont réussi. Xcode a confirmé l’envoi à App Store Connect le 24 octobre à 03:33, heure de Paris (`Upload succeeded`, `EXPORT SUCCEEDED`). Le traitement Apple a commencé ; cette confirmation ne signifie ni approbation App Store ni validation sur un iPhone physique. Les nouveaux fichiers audio sont distribués par le catalogue publié du serveur et ne sont pas embarqués dans le binaire.
+
+## Mise à jour du 24 octobre 2026 — 1.5 (16)
+
+Le build 16 embarque les commandes pupitre des lecteurs, livres, mémorisation, quiz, cours et ateliers arabes. Il inclut le correctif web `9ff8cb5` : pochettes avant les anciens récits, restauration de la face arrière des pages tournées dans le conteneur pupitre, suppression du décalage de l’en-tête et choix manuel de disposition dans le lecteur normal et immersif.
+
+22 tests ciblés, TypeScript, compilation web et synchronisation Capacitor réussis. Archive Release signée et envoi App Store Connect confirmés le 24 octobre à 12:59:13 (Paris), avec `Upload succeeded` et `EXPORT SUCCEEDED`. App et widgets : 1.5 (16). Point d’entrée web identique à `dist/index.html`, aucun serveur de développement embarqué. Livraison conservée dans `../../outputs/ios-1.5-16/`.
+
+Vérifications navigateur HTTPS : en-tête à 8 px du haut sur viewport mobile, choix manuel du pupitre, changement page 4 → 5 → 4 sans calque résiduel, pochettes avant les récits. Huit captures de l’interface publique ont été préparées à 626 × 890 pour étudier le format déplié. Elles ne constituent pas des captures d’un appareil Duo physique ni une preuve de détection automatique de charnière. Le Mac ne dispose pas du simulateur Duo/iOS 27.
+
+L’envoi ne vaut pas approbation App Store ou mise à disposition TestFlight. Le contrat Apple Design Resources a été présenté dans TextEdit puis accepté par l’utilisateur. Neuf visuels ont été exportés dans les gabarits officiels entrouverts : huit modes pupitre et le Mushaf en double page. Les formats acceptés du formulaire Duo sont 2007 × 2853 et 2853 × 2007, sans transparence. Le build 16 est désormais visible et sélectionnable dans App Store Connect, puis rattaché au brouillon de la version 1.5. Les nouveautés enregistrées mentionnent le pupitre, la double page et les corrections. La validation sur un appareil Duo physique et de sa charnière reste à faire.
+
+Les neuf visuels finaux ont été chargés dans la catégorie iPhone Duo de la fiche française 1.5. Le gestionnaire Apple confirme « 9 sur 10 captures d’écran d’app » ; la double page figure en premier, suivie du pupitre. Les captures iPhone classiques existantes sont conservées. Preuve et archive des neuf PNG : `../../outputs/pupitre-appstore-2026-10-24/`.
