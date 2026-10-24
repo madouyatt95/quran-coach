@@ -1,16 +1,18 @@
-/** Original French portraits. References identify the exact episode, not an entire biography. */
+import {companionLifeStories,type CompanionLifeSection} from './companionLifeStories';
+/** Original French biographies, with separate hadith and historical references. */
 export interface CompanionReference { label: string; url: string; description: string }
 export interface CompanionPortrait {
  id: string; nameFr: string; nameAr: string; aliases: string; title: string;
  group: 'caliphs' | 'companions' | 'women'; theme: 'faith' | 'knowledge' | 'solidarity';
  scene: 'dawn' | 'desert' | 'water' | 'garden' | 'night' | 'cave';
  paragraphs: string[]; references: CompanionReference[]; bookId?: string;
+ lifeSections?:CompanionLifeSection[];
 }
 const B=(number:string,description:string):CompanionReference=>({label:`Sahih al-Bukhari ${number}`,url:`https://sunnah.com/bukhari:${number}`,description});
 const M=(number:string,description:string):CompanionReference=>({label:`Sahih Muslim ${number}`,url:`https://sunnah.com/muslim:${number}`,description});
 const T=(number:string,description:string):CompanionReference=>({label:`Jami‘ at-Tirmidhi ${number}`,url:`https://sunnah.com/tirmidhi:${number}`,description});
 
-export const companionPortraits:CompanionPortrait[]=[
+const portraitEntries:CompanionPortrait[]=[
  {id:'abu-bakr',nameFr:'Abu Bakr as-Siddiq',nameAr:'أبو بكر الصديق',aliases:'Abou Bakr Aboubakr',title:'La confiance dans les moments décisifs',group:'caliphs',theme:'faith',scene:'cave',bookId:'abu-bakr-confiance',paragraphs:[
   'Dans la grotte, Abu Bakr voit le danger tout près. Son inquiétude est rapportée dans un témoignage précis, avec la réponse du Prophète qui lui rappelle la présence et le secours d’Allah. L’Hégire se découvre ici à hauteur d’un compagnon exposé, et non comme une route dont l’arrivée serait déjà acquise.',
   'D’autres passages le montrent capable de regretter une parole trop dure, puis de chercher le pardon. Après la mort du Prophète, il rappelle à la communauté une vérité coranique au milieu du bouleversement. Ces épisodes dessinent une fidélité qui n’efface ni l’émotion ni la responsabilité de réparer.'
@@ -180,6 +182,20 @@ export const companionPortraits:CompanionPortrait[]=[
   'Un autre passage montre le poids d’une dette laissée par son père et l’aide reçue pour la rembourser. Ces scènes relient la bienveillance à des situations matérielles concrètes.'
  ],references:[B('2718','Le chameau de Jabir et la condition posée lors de la vente.'),B('2396','La dette du père et la récolte des dattes.')]},
 ];
+
+const extraReferences:Record<string,CompanionReference[]>={
+ zubayr:[B('3129','Abdullah rapporte les dettes de son père et le règlement de son héritage.')],
+ khalid:[B('4339','Le Prophète désavoue l’acte de Khalid auprès des Banu Jadhima.')],
+ safiyya:[B('5086','Anas rapporte l’affranchissement de Safiyya et sa dot.')],
+};
+export const companionPortraits:CompanionPortrait[]=portraitEntries.map(p=>{
+ const life=companionLifeStories[p.id];
+ if(!life)return p;
+ return {...p,lifeSections:life.sections,paragraphs:life.sections.flatMap(s=>s.text.split(/\n\s*\n/u)),references:[
+  ...p.references,...extraReferences[p.id]||[],
+  {label:`Adh-Dhahabi · Siyar alam an-nubala · ${p.nameFr}`,url:`https://ar.wikisource.org/wiki/سير_أعلام_النبلاء/${life.arabicNotice.replaceAll(' ','_')}`,description:'Notice biographique ancienne : origines, parcours et dernières années. Les dates divergentes restent signalées ; les récits historiques ne sont pas assimilés à un hadith authentifié.'},
+ ]};
+});
 
 export const companionThemes={all:'Tous les portraits',faith:'Foi et persévérance',knowledge:'Savoir et transmission',solidarity:'Entraide et responsabilité'} as const;
 export const companionPortraitById=(id:string)=>companionPortraits.find(p=>p.id===id);

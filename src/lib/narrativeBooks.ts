@@ -18,7 +18,16 @@ export interface HadithNarrativeSource extends SourceDetails {
   url: string;
   grade: string;
 }
-export type NarrativeSource = QuranNarrativeSource | HadithNarrativeSource;
+export interface HistoricalNarrativeSource extends SourceDetails {
+  type: 'history';
+  author: string;
+  work: string;
+  location: string;
+  url: string;
+  assessment: string;
+  rights: string;
+}
+export type NarrativeSource = QuranNarrativeSource | HadithNarrativeSource | HistoricalNarrativeSource;
 export interface NarrativeParagraph { text: string; sources: string[] }
 export interface NarrativeScene {
   id: string;
@@ -41,6 +50,7 @@ export interface NarrativeBook {
   category: AudioCategory;
   collection?: 'companions';
   companionIds?: string[];
+  scope?: { kind: 'biography' | 'quranic-life' | 'episode' | 'anthology'; description: string };
   voice: string;
   editorialNote: string;
   sources: NarrativeSource[];
@@ -51,13 +61,14 @@ export interface NarrationPart { index: number; start: number; end: number; text
 
 export function sourceReference(source: NarrativeSource) {
   if (source.type === 'hadith') return `${source.collection} ${source.number}`;
+  if (source.type === 'history') return `${source.author}, ${source.work}, ${source.location}`;
   return `${source.surah}:${source.first}${source.last === source.first ? '' : `-${source.last}`}`;
 }
 export function sourceLabel(source: NarrativeSource) {
   return `${source.type === 'quran' ? 'Coran ' : ''}${sourceReference(source)}`;
 }
 export function sourceUrl(source: NarrativeSource) {
-  if (source.type === 'hadith') return source.url;
+  if (source.type !== 'quran') return source.url;
   return `https://quran.com/${source.surah}/${source.first}${source.last === source.first ? '' : `-${source.last}`}`;
 }
 export function chapterNarrative(chapter: NarrativeChapter, includeRecap = false) {
@@ -138,5 +149,5 @@ export function bookMarkdown(book: NarrativeBook, onlyChapter?: NarrativeChapter
   const sourceIds = new Set(chapters.flatMap(chapter => chapterSources(book, chapter).map(source => source.id)));
   const sources = book.sources.filter(source => !onlyChapter || sourceIds.has(source.id));
   const body = chapters.map(chapter => `## ${book.chapters.indexOf(chapter) + 1}. ${chapter.title}\n\n${chapterNarrative(chapter)}\n\n### Repères de lecture\n\n${chapter.scenes.map(scene => `- **${scene.title}** — ${scene.studyNote}`).join('\n')}`).join('\n\n');
-  return `# ${book.title} — ${book.subtitle}\n\nVersion ${book.version} · Manuscrit à relire avant publication audio.\n\n${book.editorialNote}\n\n${body}${onlyChapter ? '' : `\n\n## Épilogue\n\n${book.epilogue.text}\n\n${book.epilogue.lessons.map(lesson => `- ${lesson}`).join('\n')}\n\n${book.epilogue.question}`}\n\n## Sources et périmètre\n\n${sources.map(source => `- [${sourceLabel(source)}](${sourceUrl(source)}) — ${source.description}${source.type === 'hadith' ? ` (${source.grade})` : ''}. Consultation : ${source.checkedAt}.`).join('\n')}\n\nLa narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. L’état de production et de publication des enregistrements se consulte dans le studio.\n`;
+  return `# ${book.title} — ${book.subtitle}\n\nVersion ${book.version} · Manuscrit à relire avant publication audio.\n\n${book.editorialNote}\n\n${body}${onlyChapter ? '' : `\n\n## Épilogue\n\n${book.epilogue.text}\n\n${book.epilogue.lessons.map(lesson => `- ${lesson}`).join('\n')}\n\n${book.epilogue.question}`}\n\n## Sources et périmètre\n\n${sources.map(source => `- [${sourceLabel(source)}](${sourceUrl(source)}) — ${source.description}${source.type === 'hadith' ? ` (${source.grade})` : source.type === 'history' ? ` (${source.assessment}). Droits : ${source.rights}` : ''}. Consultation : ${source.checkedAt}.`).join('\n')}\n\nLa narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. L’état de production et de publication des enregistrements se consulte dans le studio.\n`;
 }

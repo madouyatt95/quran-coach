@@ -5,6 +5,12 @@
     "subtitle": "Le commencement et le chemin du retour",
     "version": "adam-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 1860,
+      "minMinutes": 12,
+      "maxMinutes": 14
+    },
     "chapters": [
       {
         "id": "names",
@@ -26,6 +32,12 @@
     "subtitle": "L’appel, l’arche et la promesse",
     "version": "nuh-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2121,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
     "chapters": [
       {
         "id": "appel",
@@ -51,6 +63,12 @@
     "subtitle": "Quitter, recevoir, transmettre",
     "version": "ibrahim-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2759,
+      "minMinutes": 17,
+      "maxMinutes": 21
+    },
     "chapters": [
       {
         "id": "pere",
@@ -80,6 +98,12 @@
     "subtitle": "Du puits aux retrouvailles",
     "version": "yusuf-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 3853,
+      "minMinutes": 24,
+      "maxMinutes": 29
+    },
     "chapters": [
       {
         "id": "reve",
@@ -117,6 +141,12 @@
     "subtitle": "De l’enfant menacé à la traversée",
     "version": "musa-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2949,
+      "minMinutes": 18,
+      "maxMinutes": 22
+    },
     "chapters": [
       {
         "id": "enfant",
@@ -146,6 +176,12 @@
     "subtitle": "L’annonce, l’épreuve et la parole",
     "version": "maryam-isa-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2372,
+      "minMinutes": 15,
+      "maxMinutes": 18
+    },
     "chapters": [
       {
         "id": "vocation",
@@ -171,6 +207,12 @@
     "subtitle": "Le pouvoir, le savoir et la gratitude",
     "version": "sulayman-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2708,
+      "minMinutes": 17,
+      "maxMinutes": 21
+    },
     "chapters": [
       {
         "id": "justice",
@@ -200,6 +242,12 @@
     "subtitle": "Le voyage et la limite du regard",
     "version": "khidr-conte-2026-10-23-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1698,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "rencontre",
@@ -221,6 +269,12 @@
     "subtitle": "Un refuge au-delà du temps",
     "version": "cave-conte-2026-10-23-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1684,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "refuge",
@@ -242,6 +296,12 @@
     "subtitle": "Trois récits sur ce que nous possédons",
     "version": "biens-et-coeur-conte-2026-10-23-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1727,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "qarun",
@@ -263,6 +323,12 @@
     "subtitle": "Apprendre à répondre après la délivrance",
     "version": "musa-apres-la-mer-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2242,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "chapters": [
       {
         "id": "absence",
@@ -288,6 +354,12 @@
     "subtitle": "Talout, Dawoud et Dhoul-Qarnayn",
     "version": "royaumes-et-justice-conte-2026-10-23-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 2172,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "chapters": [
       {
         "id": "talout",
@@ -313,6 +385,12 @@
     "subtitle": "Hud, Salih et Shuayb",
     "version": "appels-et-mesure-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 1706,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "hud",
@@ -334,6 +412,12 @@
     "subtitle": "Cinq moments à la lumière du Coran",
     "version": "sira-confiance-conte-2026-10-23-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2789,
+      "minMinutes": 17,
+      "maxMinutes": 21
+    },
     "chapters": [
       {
         "id": "secours",
@@ -363,6 +447,12 @@
     "subtitle": "Yunus, Ayyub et l’homme venu de la ville",
     "version": "voix-epreuve-conte-2026-10-23-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1618,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
     "chapters": [
       {
         "id": "yunus",
@@ -384,6 +474,12 @@
     "subtitle": "Une sagesse à faire entrer dans sa vie",
     "version": "luqman-conseils-conte-2026-10-23-v1",
     "category": "academy",
+    "scope": null,
+    "length": {
+      "words": 1650,
+      "minMinutes": 10,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "gratitude",
@@ -405,6 +501,12 @@
     "subtitle": "Vérifier, respecter et réparer",
     "version": "parole-juste-conte-2026-10-23-v1",
     "category": "academy",
+    "scope": null,
+    "length": {
+      "words": 1738,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "verifier",
@@ -426,6 +528,12 @@
     "subtitle": "La nuit du départ",
     "version": "lut-conte-2026-10-24-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 1790,
+      "minMinutes": 11,
+      "maxMinutes": 14
+    },
     "chapters": [
       {
         "id": "appel",
@@ -444,14 +552,27 @@
   {
     "id": "kaab-verite",
     "title": "Kaab ibn Malik",
-    "subtitle": "Cinquante nuits pour une parole vraie",
-    "version": "kaab-verite-conte-2026-10-24-v1",
+    "subtitle": "Le témoin d’al-Aqaba, le poète et les années après Tabouk",
+    "version": "kaab-verite-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines médinoises, engagement d’al-Aqaba, Uhud, poésie, épreuve de Tabouk et transmission dans la famille."
+    },
+    "length": {
+      "words": 2938,
+      "minMinutes": 18,
+      "maxMinutes": 22
+    },
     "collection": "companions",
     "companionIds": [
       "kaab-malik"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Un Médinois engagé avant l’Hégire"
+      },
       {
         "id": "demain",
         "title": "Le départ que l’on remet à demain"
@@ -471,20 +592,37 @@
       {
         "id": "annonce",
         "title": "La voix qui arrive avant le cavalier"
+      },
+      {
+        "id": "transmission",
+        "title": "Après les cinquante nuits, une vie qui continue"
       }
     ]
   },
   {
     "id": "aicha-innocence",
     "title": "Aïcha",
-    "subtitle": "La vérité au milieu des voix",
-    "version": "aicha-innocence-conte-2026-10-24-v1",
+    "subtitle": "Une vie de savoir, d’épreuves et de transmission",
+    "version": "aicha-innocence-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille mecquoise, vie médinoise, épreuve de la calomnie, enseignement, événements du Chameau et dernières années."
+    },
+    "length": {
+      "words": 3046,
+      "minMinutes": 19,
+      "maxMinutes": 23
+    },
     "collection": "companions",
     "companionIds": [
       "aicha"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "La fille d’Abu Bakr dans les premières années de l’islam"
+      },
       {
         "id": "collier",
         "title": "Le collier et le campement vide"
@@ -504,6 +642,14 @@
       {
         "id": "apres",
         "title": "Réparer ce que la parole a abîmé"
+      },
+      {
+        "id": "savoir",
+        "title": "Entendre, demander et corriger"
+      },
+      {
+        "id": "derniers-jours",
+        "title": "Les crises de la communauté et les années de Médine"
       }
     ]
   },
@@ -513,6 +659,12 @@
     "subtitle": "Une foi que le pouvoir ne possède pas",
     "version": "garcon-et-roi-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 2228,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "chapters": [
       {
         "id": "chemin",
@@ -538,6 +690,12 @@
     "subtitle": "Ce qui reste lorsque la sortie se ferme",
     "version": "trois-et-rocher-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1656,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "fermeture",
@@ -559,6 +717,12 @@
     "subtitle": "Se souvenir lorsque l’abondance arrive",
     "version": "trois-bienfaits-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1697,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "dons",
@@ -580,6 +744,12 @@
     "subtitle": "Celui qui croyait avoir fermé toutes les portes",
     "version": "route-du-retour-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1673,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
     "chapters": [
       {
         "id": "question",
@@ -601,6 +771,12 @@
     "subtitle": "L’eau au creux de la vallée",
     "version": "hajar-zamzam-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 2252,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "chapters": [
       {
         "id": "vallee",
@@ -626,6 +802,12 @@
     "subtitle": "La confiance et les chemins préparés",
     "version": "hijra-route-conte-2026-10-24-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 2699,
+      "minMinutes": 17,
+      "maxMinutes": 20
+    },
     "chapters": [
       {
         "id": "protection",
@@ -655,6 +837,12 @@
     "subtitle": "Le don qui revient chaque jour",
     "version": "ascension-priere-conte-2026-10-24-v1",
     "category": "prophet",
+    "scope": null,
+    "length": {
+      "words": 1602,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
     "chapters": [
       {
         "id": "accueil",
@@ -676,6 +864,12 @@
     "subtitle": "La route du pacte",
     "version": "hudaybiyya-pacte-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 2544,
+      "minMinutes": 16,
+      "maxMinutes": 19
+    },
     "chapters": [
       {
         "id": "approche",
@@ -705,6 +899,12 @@
     "subtitle": "Une parole reçue, une parole qui voyage",
     "version": "revelation-lettre-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 2608,
+      "minMinutes": 16,
+      "maxMinutes": 20
+    },
     "chapters": [
       {
         "id": "hira",
@@ -731,14 +931,27 @@
   {
     "id": "abou-dharr-recherche",
     "title": "Abou Dharr",
-    "subtitle": "Chercher avant de répéter",
-    "version": "abou-dharr-recherche-conte-2026-10-24-v1",
+    "subtitle": "La recherche, l’apprentissage et les exigences d’une conscience",
+    "version": "abou-dharr-recherche-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, quête du Prophète, retour vers les Ghifar, vie médinoise, enseignements, séjour en Syrie et mort à ar-Rabadha."
+    },
+    "length": {
+      "words": 2585,
+      "minMinutes": 16,
+      "maxMinutes": 20
+    },
     "collection": "companions",
     "companionIds": [
       "abu-dharr"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Un homme des Ghifar avant le voyage"
+      },
       {
         "id": "nouvelle",
         "title": "Une nouvelle qui mérite un voyage"
@@ -750,6 +963,14 @@
       {
         "id": "retour",
         "title": "Revenir avec une responsabilité"
+      },
+      {
+        "id": "apprendre",
+        "title": "Une exigence qui doit aussi se retourner vers soi"
+      },
+      {
+        "id": "rabadha",
+        "title": "Les biens, le désaccord et les dernières années"
       }
     ]
   },
@@ -759,6 +980,12 @@
     "subtitle": "Trois récits sur la ferveur et la mesure",
     "version": "equilibre-droits-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1582,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
     "chapters": [
       {
         "id": "salman",
@@ -780,6 +1007,12 @@
     "subtitle": "Une lampe, une coupe et des dattes",
     "version": "portes-hospitalite-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1592,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
     "chapters": [
       {
         "id": "lampe",
@@ -801,6 +1034,12 @@
     "subtitle": "Jourayj et les paroles d’un enfant",
     "version": "jourayj-apparences-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1568,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
     "chapters": [
       {
         "id": "appel",
@@ -822,6 +1061,12 @@
     "subtitle": "L’eau, le chemin et le jardin",
     "version": "gestes-qui-comptent-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1581,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
     "chapters": [
       {
         "id": "eau",
@@ -840,14 +1085,27 @@
   {
     "id": "jabir-attention",
     "title": "Jabir",
-    "subtitle": "Celui qui remarque le voyageur resté derrière",
-    "version": "jabir-attention-conte-2026-10-24-v1",
+    "subtitle": "Le fils d’un martyr, le compagnon et l’enseignant de Médine",
+    "version": "jabir-attention-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, al-Aqaba et la famille, mort du père, obligations, vie auprès du Prophète, pèlerinage et transmission."
+    },
+    "length": {
+      "words": 2253,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "collection": "companions",
     "companionIds": [
       "jabir"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Un fils de Médine avant les grands voyages"
+      },
       {
         "id": "route",
         "title": "La monture qui n’avance plus"
@@ -859,6 +1117,10 @@
       {
         "id": "dattes",
         "title": "Le jardin et la dette du père"
+      },
+      {
+        "id": "pelerinage",
+        "title": "Un témoin du pèlerinage et un maître de la génération suivante"
       }
     ]
   },
@@ -868,6 +1130,12 @@
     "subtitle": "Deux hommes et une parole à tenir",
     "version": "bois-confie-mer-conte-2026-10-24-v1",
     "category": "story",
+    "scope": null,
+    "length": {
+      "words": 1546,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
     "chapters": [
       {
         "id": "engagement",
@@ -886,17 +1154,34 @@
   {
     "id": "abu-bakr-confiance",
     "title": "Abu Bakr",
-    "subtitle": "La confiance quand tout vacille",
-    "version": "abu-bakr-confiance-conte-2026-10-24-v1",
+    "subtitle": "Les premiers temps de l’islam, l’Hégire et le premier califat",
+    "version": "abu-bakr-confiance-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines mecquoises, conversion, protection du Prophète, migration, vie médinoise, califat et décès."
+    },
+    "length": {
+      "words": 2593,
+      "minMinutes": 16,
+      "maxMinutes": 20
+    },
     "collection": "companions",
     "companionIds": [
       "abu-bakr"
     ],
     "chapters": [
       {
+        "id": "origines",
+        "title": "Un homme de La Mecque parmi les premiers croyants"
+      },
+      {
         "id": "proteger",
         "title": "S’approcher quand le danger grandit"
+      },
+      {
+        "id": "medine",
+        "title": "Une famille et une fidélité dans les années médinoises"
       },
       {
         "id": "reparer",
@@ -905,20 +1190,41 @@
       {
         "id": "tenir",
         "title": "Quand une communauté perd sa voix"
+      },
+      {
+        "id": "califat",
+        "title": "Maintenir la communauté après la disparition du Messager"
       }
     ]
   },
   {
     "id": "bilal-dignite",
     "title": "Bilal",
-    "subtitle": "Une voix, une dignité, une fidélité",
-    "version": "bilal-dignite-conte-2026-10-24-v1",
+    "subtitle": "De l’esclavage à La Mecque à la voix de la communauté",
+    "version": "bilal-dignite-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, persécutions, affranchissement, Hégire, adhan, vie auprès du Prophète et dernières années en Syrie."
+    },
+    "length": {
+      "words": 2442,
+      "minMinutes": 15,
+      "maxMinutes": 19
+    },
     "collection": "companions",
     "companionIds": [
       "bilal"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "La foi d’un homme que l’on voudrait réduire au silence"
+      },
+      {
+        "id": "hijra",
+        "title": "Recommencer à Médine"
+      },
       {
         "id": "dignite",
         "title": "Le nom que l’on prononce avec respect"
@@ -930,20 +1236,41 @@
       {
         "id": "constance",
         "title": "La fatigue et les gestes discrets"
+      },
+      {
+        "id": "syrie",
+        "title": "Après le Prophète, la route vers la Syrie"
       }
     ]
   },
   {
     "id": "musab-transmettre",
     "title": "Musab ibn Umayr",
-    "subtitle": "Ce que l’on laisse ne se pèse pas en biens",
-    "version": "musab-transmettre-conte-2026-10-24-v1",
+    "subtitle": "De la jeunesse mecquoise à l’enseignement de Médine et à Uhud",
+    "version": "musab-transmettre-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Milieu familial, conversion, épreuves mecquoises, migration et enseignement, Uhud et témoignages laissés."
+    },
+    "length": {
+      "words": 2350,
+      "minMinutes": 15,
+      "maxMinutes": 18
+    },
     "collection": "companions",
     "companionIds": [
       "musab"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Un jeune Mecquois choisit une autre vie"
+      },
+      {
+        "id": "mission",
+        "title": "Préparer des personnes à recevoir le message"
+      },
       {
         "id": "enseigner",
         "title": "Avant les jours de joie"
@@ -955,20 +1282,37 @@
       {
         "id": "memoire",
         "title": "Le repas et le souvenir"
+      },
+      {
+        "id": "parcours",
+        "title": "Une vie courte, une transmission qui demeure"
       }
     ]
   },
   {
     "id": "zayd-thabit-confie",
     "title": "Zayd ibn Thabit",
-    "subtitle": "La parole confiée et le travail de la transmettre",
-    "version": "zayd-thabit-confie-conte-2026-10-24-v1",
+    "subtitle": "Un jeune Médinois, le scribe et le savant de la transmission",
+    "version": "zayd-thabit-confie-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines médinoises, apprentissage, écriture de la révélation, recueils du Coran, savoir juridique et dernières années."
+    },
+    "length": {
+      "words": 2188,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "collection": "companions",
     "companionIds": [
       "zayd-thabit"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Un enfant de Médine au commencement d’une nouvelle époque"
+      },
       {
         "id": "apprendre",
         "title": "Apprendre pour rendre un service"
@@ -980,23 +1324,44 @@
       {
         "id": "transmettre",
         "title": "Les feuillets que l’on rend"
+      },
+      {
+        "id": "savant",
+        "title": "Le savoir ne s’arrête pas à la dernière copie"
       }
     ]
   },
   {
     "id": "asma-liens",
     "title": "Asma bint Abi Bakr",
-    "subtitle": "Les gestes qui portent les autres",
-    "version": "asma-liens-conte-2026-10-24-v1",
+    "subtitle": "De la maison d’Abu Bakr aux dernières années d’une mère",
+    "version": "asma-liens-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille, premiers temps de l’islam, préparation de l’Hégire, migration, maternité, vie médinoise et épreuve d’Abdullah ibn az-Zubayr."
+    },
+    "length": {
+      "words": 2388,
+      "minMinutes": 15,
+      "maxMinutes": 18
+    },
     "collection": "companions",
     "companionIds": [
       "asma"
     ],
     "chapters": [
       {
+        "id": "origines",
+        "title": "Deux sœurs, une maison et des chemins différents"
+      },
+      {
         "id": "provisions",
         "title": "Ce qui rend un départ possible"
+      },
+      {
+        "id": "maternite",
+        "title": "Traverser enceinte et faire sa place à Médine"
       },
       {
         "id": "mere",
@@ -1005,20 +1370,37 @@
       {
         "id": "travail",
         "title": "La charge et le soulagement"
+      },
+      {
+        "id": "derniers-jours",
+        "title": "Une mère face au sort de son fils"
       }
     ]
   },
   {
     "id": "umm-salama-sagesse",
     "title": "Umm Salama",
-    "subtitle": "Quand l’écoute ouvre un chemin",
-    "version": "umm-salama-sagesse-conte-2026-10-24-v1",
+    "subtitle": "Les exils, le deuil et une vie de transmission",
+    "version": "umm-salama-sagesse-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille mecquoise, migrations, enfants, veuvage, mariage avec le Prophète, Hudaybiyya et enseignement."
+    },
+    "length": {
+      "words": 2238,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "collection": "companions",
     "companionIds": [
       "umm-salama"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Une première famille au temps des départs"
+      },
       {
         "id": "perdre",
         "title": "Quand une présence s’en va"
@@ -1030,70 +1412,137 @@
       {
         "id": "conseiller",
         "title": "Le conseil de Hudaybiyya"
+      },
+      {
+        "id": "transmission",
+        "title": "Une mère des croyants que l’on vient interroger"
       }
     ]
   },
   {
     "id": "umar-responsabilite",
     "title": "Umar ibn al-Khattab",
-    "subtitle": "La force devant ce qui lui est confié",
-    "version": "umar-responsabilite-conte-2026-10-24-v1",
+    "subtitle": "De La Mecque au califat : une vie de responsabilité",
+    "version": "umar-responsabilite-biographie-2026-10-24-v3",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Parcours chronologique : origines, conversion, Hégire, entourage du Prophète, succession d’Abu Bakr, gouvernement, crises et mort."
+    },
+    "length": {
+      "words": 3390,
+      "minMinutes": 21,
+      "maxMinutes": 26
+    },
     "collection": "companions",
     "companionIds": [
       "umar"
     ],
     "chapters": [
       {
+        "id": "origines",
+        "title": "La Mecque, puis le choix de l’islam"
+      },
+      {
+        "id": "medine",
+        "title": "L’Hégire et les années auprès du Prophète"
+      },
+      {
         "id": "revenir",
-        "title": "Revenir vers celui que l’on a blessé"
+        "title": "Une fermeté qui doit aussi apprendre"
+      },
+      {
+        "id": "succession",
+        "title": "Du deuil du Prophète à la succession d’Abu Bakr"
+      },
+      {
+        "id": "gouverner",
+        "title": "Un califat qui change d’échelle"
       },
       {
         "id": "charge",
-        "title": "Ce que les autres peuvent supporter"
+        "title": "La faim, l’épidémie et la décision de consulter"
       },
       {
         "id": "confier",
-        "title": "Demander avant de laisser sa place"
+        "title": "Les derniers jours et ce qui doit continuer"
       }
     ]
   },
   {
     "id": "uthman-transmission",
     "title": "Uthman ibn Affan",
-    "subtitle": "Regarder les faits jusqu’au bout",
-    "version": "uthman-transmission-conte-2026-10-24-v1",
+    "subtitle": "Des premières migrations au troisième califat",
+    "version": "uthman-transmission-biographie-2026-10-24-v4",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, conversion, famille, exils, vie médinoise, copies du Mushaf, califat et siège de Médine."
+    },
+    "length": {
+      "words": 2388,
+      "minMinutes": 15,
+      "maxMinutes": 18
+    },
     "collection": "companions",
     "companionIds": [
       "uthman"
     ],
     "chapters": [
       {
-        "id": "questions",
-        "title": "Trois questions qui ne suffisent pas"
+        "id": "origines",
+        "title": "Une foi nouvelle et deux migrations"
       },
       {
         "id": "donner",
         "title": "Ce que le don laisse derrière lui"
       },
       {
+        "id": "califat",
+        "title": "Le choix d’Uthman et les années de gouvernement"
+      },
+      {
         "id": "copies",
         "title": "Une équipe pour transmettre"
+      },
+      {
+        "id": "questions",
+        "title": "Trois questions qui ne suffisent pas"
+      },
+      {
+        "id": "siege",
+        "title": "Le siège de Médine et la mémoire laissée"
       }
     ]
   },
   {
     "id": "ali-proximite",
     "title": "Ali ibn Abi Talib",
-    "subtitle": "Le courage, la place et la proximité",
-    "version": "ali-proximite-conte-2026-10-24-v1",
+    "subtitle": "De la maison prophétique au quatrième califat",
+    "version": "ali-proximite-biographie-2026-10-24-v4",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Enfance et conversion, famille, Hégire, service du Prophète, savoir, califat, conflits et décès."
+    },
+    "length": {
+      "words": 2540,
+      "minMinutes": 16,
+      "maxMinutes": 19
+    },
     "collection": "companions",
     "companionIds": [
       "ali"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Grandir auprès du Prophète"
+      },
+      {
+        "id": "foyer",
+        "title": "Quand le récit entre dans la maison"
+      },
       {
         "id": "etendard",
         "title": "L’étendard et la parole"
@@ -1103,22 +1552,39 @@
         "title": "La responsabilité de rester"
       },
       {
-        "id": "foyer",
-        "title": "Quand le récit entre dans la maison"
+        "id": "savoir",
+        "title": "Transmettre et conseiller après le décès du Prophète"
+      },
+      {
+        "id": "califat",
+        "title": "Gouverner au milieu de la première grande crise"
       }
     ]
   },
   {
     "id": "khadija-soutien",
     "title": "Khadija",
-    "subtitle": "La présence qui accueille la peur",
-    "version": "khadija-soutien-conte-2026-10-24-v1",
+    "subtitle": "Une vie à La Mecque, une confiance au commencement de la révélation",
+    "version": "khadija-soutien-biographie-2026-10-24-v4",
     "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, commerce et mariage, famille, premiers temps de la révélation, difficultés mecquoises, mort et souvenir."
+    },
+    "length": {
+      "words": 2236,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
     "collection": "companions",
     "companionIds": [
       "khadija"
     ],
     "chapters": [
+      {
+        "id": "origines",
+        "title": "Une femme de La Mecque avant la révélation"
+      },
       {
         "id": "accueillir",
         "title": "Le retour de Hira"
@@ -1129,7 +1595,15 @@
       },
       {
         "id": "demeurer",
-        "title": "Le salut et le souvenir"
+        "title": "Le salut transmis à Khadija"
+      },
+      {
+        "id": "mecque",
+        "title": "Accompagner la mission dans les années difficiles"
+      },
+      {
+        "id": "memoire",
+        "title": "Une fidélité qui traverse les années"
       }
     ]
   }

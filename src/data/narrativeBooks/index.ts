@@ -1,5 +1,5 @@
-import activeCompanionEditions from '../activeCompanionEditions.json';
 import {revisedCompanionEdition} from './companionRevisions';
+import {completeCompanionBiography} from './companionBiographies';
 import { adamBook } from './adam';
 import { nuhBook } from './nuh';
 import { ibrahimBook } from './ibrahim';
@@ -51,11 +51,6 @@ import {khadijaBook} from './khadija';
 const authoredBooks = [adamBook, nuhBook, ibrahimBook, yusufBook, musaBook, maryamIsaBook, sulaymanBook, khidrBook, caveBook, wealthBook, musaAfterBook, kingsBook, callsBook, siraBook, voicesBook, luqmanBook, speechBook,
  lutBook,kaabBook,aishaBook,boyKingBook,rockBook,threeTestedBook,repentanceBook,hajarBook,hijraBook,nightJourneyBook,hudaybiyyaBook,revelationBook,abuDharrBook,balanceBook,hospitalityBook,appearancesBook,mercyBook,jabirBook,seaTrustBook,abuBakrBook,bilalBook,musabBook,zaydThabitBook,asmaBook,ummSalamaBook,umarBook,uthmanBook,aliBook,khadijaBook];
 /** New recordings are prepared against these editions in the studio. */
-export const narrativeProductionBooks=authoredBooks.map(revisedCompanionEdition);
-/** Activate a replacement only after all its new recordings have been verified and published. */
-const activatedEditions=new Set<string>(activeCompanionEditions);
-export const narrativeBooks=authoredBooks.map(book=>{
- const revision=revisedCompanionEdition(book);
- if(revision===book||activatedEditions.has(book.id))return revision;
- return {...book,collection:revision.collection,companionIds:revision.companionIds};
-});
+export const narrativeProductionBooks=authoredBooks.map(revisedCompanionEdition).map(completeCompanionBiography);
+/** The current written edition is canonical. Audio is exposed only for its exact manuscript version. */
+export const narrativeBooks=narrativeProductionBooks;

@@ -43,7 +43,8 @@ const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sul
 export function originForChapter(bookId:string,chapter:number){const links=bookOrigins[bookId]||[];return links[chapter]||links[0]||'/stories';}
 export function booksForOrigin(kind:'prophet'|'story'|'companion',id:string){const url=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
 export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
- return books.find(b=>item.reference?.includes(`Manuscrit ${b.version}, chapitre `)&&item.title.startsWith(`${b.title} · `));
+ const title=item.title.replace(/^Édition chronologique · /u,'');
+ return books.find(b=>item.reference?.includes(`Manuscrit ${b.version}, chapitre `)&&title.startsWith(`${b.title} · `));
 }
 export function chapterForAudio(item:Pick<LibraryAudio,'reference'|'title'>,book=bookForAudio(item)){
  return book?.chapters.findIndex(c=>item.reference.includes(`, chapitre ${c.id}, segment `))??-1;
@@ -61,7 +62,7 @@ export function resumeRecording(items:LibraryAudio[],positions:Record<string,{se
 }
 const sceneDefaults:Record<string,BookScene>={adam:'dawn',nuh:'water',ibrahim:'desert',yusuf:'night',musa:'water','maryam-isa':'garden',sulayman:'desert',khidr:'water',cave:'cave','biens-et-coeur':'garden','musa-apres-la-mer':'desert','royaumes-et-justice':'desert','appels-et-mesure':'desert','sira-confiance':'night','voix-epreuve':'night','luqman-conseils':'garden','parole-juste':'dawn',
  lut:'night','kaab-verite':'night','aicha-innocence':'dawn','garcon-et-roi':'dawn','trois-et-rocher':'cave','trois-bienfaits':'garden','route-du-retour':'desert','hajar-zamzam':'water','hijra-route':'desert','ascension-priere':'night','hudaybiyya-pacte':'desert','revelation-lettre':'cave','abou-dharr-recherche':'water','equilibre-droits':'dawn','portes-hospitalite':'night','jourayj-apparences':'dawn','gestes-qui-comptent':'garden','jabir-attention':'garden','bois-confie-mer':'water'};
-export function coverScene(id:string):BookScene{return sceneDefaults[id]||'dawn';}
+export function coverScene(id:string):BookScene{return sceneDefaults[id]||companionPortraits.find(p=>p.bookId===id)?.scene||'dawn';}
 /** Scene cues are editorial atmospheres, never reconstructions of unseen events. */
 export function sceneTreatment(bookId:string,chapter:number,scene:number):{decor:BookScene;ambience:BookAmbience}{
  if(bookId==='adam')return chapter===0?{decor:'dawn',ambience:'silence'}:chapter===1?{decor:'garden',ambience:scene===0?'wind':'silence'}:{decor:'dawn',ambience:'wind'};
@@ -143,6 +144,6 @@ export function canonicalBookForSource(sourceUrl:string){
 
 /** Superseded manuscript versions must never appear as unrelated standalone audios. */
 export function isSupersededBookAudio(item:Pick<LibraryAudio,'reference'|'title'>){
- return !bookForAudio(item)&&books.some(b=>item.reference?.includes(`Manuscrit ${b.id}-conte-`));
+ return !bookForAudio(item)&&books.some(b=>item.reference?.includes(`Manuscrit ${b.id}-`));
 }
 export function isCompanionBook(book:BookSummary){return companionPortraits.some(p=>p.bookId===book.id);}

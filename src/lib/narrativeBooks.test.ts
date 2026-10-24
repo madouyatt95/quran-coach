@@ -13,19 +13,27 @@ describe('livres racontés : texte et sources', () => {
       expect(narrationLength(bookNarrative(book)).words).toBeGreaterThan(1500);
       const sourceIds = new Set(book.sources.map(source => source.id));
       for (const source of book.sources) {
-        expect(sourceUrl(source)).toMatch(/^https:\/\/(quran\.com|sunnah\.com)\//);
+        expect(sourceUrl(source)).toMatch(/^https:\/\//);
         if (source.type === 'quran') {
           expect(source.first).toBeGreaterThan(0);
           expect(source.last).toBeGreaterThanOrEqual(source.first);
           expect(source.last).toBeLessThanOrEqual(chapters[source.surah - 1].count);
-        } else {
-          expect(source.grade).toContain('Sahih');
+        } else if (source.type === 'hadith') {
+          expect(sourceUrl(source)).toMatch(/^https:\/\/sunnah\.com\//);
+          expect(source.grade).toMatch(/Sahih|Hasan/);
           // A combined reference (2731–2732) links to its first hadith, whose page contains both.
           expect(sourceUrl(source)).toContain(source.number.split(/[–-]/u)[0]);
+        } else {
+          expect(source.author).not.toBe('');
+          expect(source.work).not.toBe('');
+          expect(source.location).not.toBe('');
+          expect(source.assessment).toContain('Chronique historique');
+          expect(source.rights).toContain('domaine public');
         }
       }
       for (const chapter of book.chapters) {
-        expect(narrationLength(chapterNarrative(chapter)).words).toBeGreaterThan(450);
+        // Shorter factual transitions belong in a biography; padding each to 450 words obscures its chronology.
+        expect(narrationLength(chapterNarrative(chapter)).words).toBeGreaterThan(book.scope?.kind === 'biography' ? 150 : 450);
         for (const scene of chapter.scenes) {
           expect(scene.studyNote).not.toBe('');
           for (const paragraph of scene.paragraphs) {
