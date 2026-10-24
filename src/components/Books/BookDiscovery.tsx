@@ -6,7 +6,7 @@ import {useAudioLibraryStore} from '../../stores/audioLibraryStore';
 import {useLibraryPlayer} from '../../stores/libraryPlayerStore';
 import {Pupitre,PupitreTop,PupitreBottom} from '../Pupitre/Pupitre';
 import {BookLandscape} from './BookLandscape';
-import {bookHref,bookOrigins,coverScene,recordingsForBook,resumeRecording,chapterForAudio,type BookSummary} from '../../lib/bookLibrary';
+import {bookHref,bookOrigins,isCompanionBook,coverScene,recordingsForBook,resumeRecording,chapterForAudio,type BookSummary} from '../../lib/bookLibrary';
 import type {LibraryAudio} from '../../lib/audioProduction';
 import './BookDiscovery.css';
 
@@ -24,8 +24,9 @@ export function BookDiscovery({books,items,children,afterBooks,kind}:{books:Book
  const selected=books.find(b=>b.id===selection)||books[0];
  const tracks=selected?recordingsForBook(items,selected):[],resume=resumeRecording(tracks,store.positions),duration=tracks.reduce((n,t)=>n+t.duration,0);
  const continued=books.filter(b=>store.bookReading[b.id]||recordingsForBook(items,b).some(t=>store.positions[t.id]?.seconds>0));
- const prophets=books.filter(b=>bookOrigins[b.id]?.some(url=>url.startsWith('/prophets')));
- const stories=books.filter(b=>!prophets.includes(b));
+ const companions=books.filter(isCompanionBook);
+ const prophets=books.filter(b=>!companions.includes(b)&&bookOrigins[b.id]?.some(url=>url.startsWith('/prophets?prophet=')));
+ const stories=books.filter(b=>!prophets.includes(b)&&!companions.includes(b));
  const short=books.filter(b=>{const t=recordingsForBook(items,b),d=t.reduce((n,t)=>n+t.duration,0);return d>0&&d<=20*60;});
  const enter=(mode:'read'|'listen')=>{if(!selected)return;let chapter=store.bookReading[selected.id];if(mode==='listen'){if(!resume)return;chapter=selected.chapters[chapterForAudio(resume,selected)]?.id;void player.play(resume,{queue:tracks});}else player.pause();navigate(bookHref(selected.id,chapter),{state:{bookView:mode}});};
  return <Pupitre title="Les livres de Quran Coach" activity="catalogue" className="book-discovery"><PupitreTop aria-label="Présentation du livre sélectionné">
@@ -33,6 +34,7 @@ export function BookDiscovery({books,items,children,afterBooks,kind}:{books:Book
  </PupitreTop><PupitreBottom aria-label="Choisir votre prochaine histoire">{children}
  <BookRail id={`${kind}-continue`} title="Continuer votre voyage" books={continued} selected={selected?.id||''} onSelect={choose} items={items}/>
  <BookRail id={`${kind}-prophets`} title="Histoires des prophètes" books={prophets} selected={selected?.id||''} onSelect={choose} items={items}/>
+ <BookRail id={`${kind}-companions`} title="Compagnons et compagnes" books={companions} selected={selected?.id||''} onSelect={choose} items={items}/>
  <BookRail id={`${kind}-stories`} title="Histoires et moralités" books={stories} selected={selected?.id||''} onSelect={choose} items={items}/>
  <BookRail id={`${kind}-short`} title="Un récit en moins de 20 minutes" books={short} selected={selected?.id||''} onSelect={choose} items={items}/>
  {afterBooks}</PupitreBottom></Pupitre>;

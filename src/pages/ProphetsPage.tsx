@@ -5,15 +5,15 @@ import {BookShelf} from '../components/Books/BookShelf';
 import {bookEntryForOrigin,bookHref} from '../lib/bookLibrary';
 import { prophetEpisodes } from '../data/editorialExpansion';
 import { JourneyLinks } from '../components/Journeys/JourneyShelf';
-import { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Search, GitBranch, ChevronRight, BookOpen, Lightbulb, Sparkles, Zap, MessageCircle, Clock, Quote, Share2, MapPin, X } from 'lucide-react';
+import { GitBranch, ChevronRight, BookOpen, Lightbulb, Sparkles, Zap, MessageCircle, Share2, MapPin, X } from 'lucide-react';
 import { prophets } from '../data/prophets';
 import type { Prophet } from '../data/prophets';
-import { companions } from '../data/companions';
-import type { Companion } from '../data/companions';
+import {companionPortraitById} from '../data/companionPortraits';
+import {CompanionCollection,CompanionPortraitDialog} from '../components/Companions/CompanionCollection';
 import { useOpenReader } from '../hooks/useOpenReader';
 import { ProphetsGraph } from '../components/Prophets/ProphetsGraph';
 import { SanadGraph } from '../components/Companions/SanadGraph';
@@ -230,187 +230,19 @@ function ProphetDetail({ prophet, onClose }: { prophet: Prophet; onClose: () => 
     );
 }
 
-function CompanionDetail({ companion, onClose }: { companion: Companion; onClose: () => void }) {
-    const { t } = useTranslation();
-
-    const handleShare = async () => {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `Histoire de ${companion.nameFr}`,
-                    text: `${companion.nameAr} - ${companion.nameFr}\n\n${companion.summary}\n\nSachez que vous pouvez trouver cette histoire et bien plus sur l'application Quran Coach 🕌\nhttps://www.quran-coach.fr/prophets`
-                });
-            } catch (err) {
-                console.log("Partage annulé ou échoué", err);
-            }
-        }
-    };
-
-    return (
-        <motion.div
-            className="prophet-modal__overlay"
-            onClick={(e) => e.target === e.currentTarget && onClose()}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-        >
-            <motion.div
-                className="prophet-modal"
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            >
-                <div className="prophet-modal__topbar"><div className="prophet-modal__handle" /><button type="button" className="prophet-modal__dismiss" onClick={onClose} aria-label="Fermer la fiche"><X size={20} /></button></div>
-
-                {/* Hero */}
-                <div className="prophet-modal__hero">
-                    <span className="prophet-modal__emoji">{companion.icon}</span>
-                    <div className="prophet-modal__name-ar">{companion.nameAr}</div>
-                    <div className="prophet-modal__name-fr">{companion.nameFr}</div>
-                    <div className="prophet-modal__title-ar">{companion.titleAr}</div>
-                    <div className="prophet-modal__title-fr">{companion.title}</div>
-                    <div className="prophet-modal__badges">
-                        {companion.category === 'ashara' && (
-                            <span className="companion-badge companion-badge--ashara">
-                                ⭐ Promis au Paradis
-                            </span>
-                        )}
-                        {companion.category === 'sahabiyyah' && (
-                            <span className="companion-badge companion-badge--sahabiyyah">
-                                🌹 Compagnonne
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                {/* Summary */}
-                <div className="prophet-modal__section">
-                    <h3 className="prophet-modal__section-title">
-                        <BookOpen size={16} />
-                        {t('prophets.details', 'Son histoire')}
-                    </h3>
-                    <p className="prophet-modal__text">{companion.summary}</p>
-                </div>
-
-                {/* Timeline */}
-                <div className="prophet-modal__section">
-                    <h3 className="prophet-modal__section-title">
-                        <Clock size={16} />
-                        {t('prophets.timeline', 'Chronologie')}
-                    </h3>
-                    <div className="companion-timeline">
-                        <div className="companion-timeline__item">
-                            <span className="companion-timeline__dot companion-timeline__dot--birth" />
-                            <div>
-                                <div className="companion-timeline__label">Naissance</div>
-                                <div className="companion-timeline__value">{companion.timeline.birth}</div>
-                            </div>
-                        </div>
-                        <div className="companion-timeline__item">
-                            <span className="companion-timeline__dot companion-timeline__dot--conversion" />
-                            <div>
-                                <div className="companion-timeline__label">Conversion</div>
-                                <div className="companion-timeline__value">{companion.timeline.conversion}</div>
-                            </div>
-                        </div>
-                        {companion.timeline.keyEvents.map((event, i) => (
-                            <div key={i} className="companion-timeline__item">
-                                <span className="companion-timeline__dot companion-timeline__dot--event" />
-                                <div>
-                                    <div className="companion-timeline__value">{event}</div>
-                                </div>
-                            </div>
-                        ))}
-                        <div className="companion-timeline__item">
-                            <span className="companion-timeline__dot companion-timeline__dot--death" />
-                            <div>
-                                <div className="companion-timeline__label">Décès</div>
-                                <div className="companion-timeline__value">{companion.timeline.death}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Key Verses */}
-                {companion.keyVerses && companion.keyVerses.length > 0 && (
-                    <div className="prophet-modal__section">
-                        <h3 className="prophet-modal__section-title">
-                            <Sparkles size={16} />
-                            Versets clés
-                        </h3>
-                        <div className="prophet-modal__verses">
-                            {companion.keyVerses.map((v, i) => (
-                                <div key={i} className="prophet-modal__verse">
-                                    <div className="prophet-modal__verse-arabic">{v.arabic}</div>
-                                    <div className="prophet-modal__verse-translation">{v.translation}</div>
-                                    <ReligiousReference kind="Verset" source={v.reference}/>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Hadiths */}
-                {companion.hadiths.length > 0 && (
-                    <div className="prophet-modal__section">
-                        <h3 className="prophet-modal__section-title">
-                            <Quote size={16} />
-                            Hadiths
-                        </h3>
-                        <div className="prophet-modal__duas">
-                            {companion.hadiths.map((h, i) => (
-                                <div key={i} className="prophet-modal__dua">
-                                    <div className="prophet-modal__dua-arabic">{h.arabic}</div>
-                                    <div className="prophet-modal__dua-translation">{h.translation}</div>
-                                    <ReligiousReference kind="Hadith" source={h.source}/>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Lessons */}
-                <div className="prophet-modal__section">
-                    <h3 className="prophet-modal__section-title">
-                        <Lightbulb size={16} />
-                        Traits & Leçons
-                    </h3>
-                    <div className="prophet-modal__lessons">
-                        {companion.lessons.map((lesson, i) => (
-                            <div key={i} className="prophet-modal__lesson">
-                                <span className="prophet-modal__lesson-icon">✦</span>
-                                {lesson}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Close */}
-                <div className="prophet-modal__close" style={{ display: 'flex', gap: '1rem' }}>
-                    <button className="prophet-modal__close-btn" onClick={onClose} style={{ flex: 1 }}>
-                        {t('common.close', 'Fermer')}
-                    </button>
-                    <button className="prophet-modal__close-btn" onClick={handleShare} style={{ flex: 1, background: 'var(--color-primary)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                        <Share2 size={18} />
-                        {t('common.share', 'Partager')}
-                    </button>
-                </div>
-            </motion.div>
-        </motion.div>
-    );
-}
-
 export function ProphetsPage(){
  const [params,setParams]=useSearchParams(),navigate=useNavigate();
- const [tab,setTab]=usePageState<TabMode>('tab','prophets'),[search,setSearch]=usePageState('search', ''),[graph,setGraph]=usePageState('graph', false),[companion,setCompanion]=useState<Companion|null>(null);
+ const location=useLocation(),[graph,setGraph]=usePageState('graph',false);
+ const tab:TabMode=location.pathname==='/companions'||params.get('tab')==='companions'||params.has('companion')?'companions':'prophets';
+ const companion=companionPortraitById(params.get('companion')||'');
+ useEffect(()=>{if(location.pathname==='/prophets'&&(params.get('tab')==='companions'||params.has('companion')))navigate(`/companions${params.has('companion')?`?companion=${encodeURIComponent(params.get('companion')!)}`:''}`,{replace:true});},[location.pathname,params,navigate]);
  const prophet=prophets.find(p=>p.id===params.get('prophet'))||null;
  const entry=prophet?bookEntryForOrigin('prophet',prophet.id):null;
  const entryHref=entry?bookHref(entry.book.id,entry.chapter):null;
  useEffect(()=>{if(entryHref)navigate(entryHref,{replace:true});},[entryHref,navigate]);
- const filtered=useMemo(()=>companions.filter(c=>`${c.nameFr} ${c.nameEn} ${c.nameAr} ${c.title}`.toLowerCase().includes(search.toLowerCase())),[search]);
- const close=()=>{setCompanion(null);setParams({}, {replace:true});};
- return <div className="prophets-page book-catalogue"><header className="book-catalogue-header"><span className="book-eyebrow">DES VIES, DES ENSEIGNEMENTS</span><h1>{tab==='prophets'?'Les Prophètes':'Les Compagnons'}</h1><p>Parcourir leur histoire. Écouter, comprendre et garder ce qui nous éclaire.</p></header><nav className="book-themes" aria-label="Prophètes et compagnons"><button aria-pressed={tab==='prophets'} onClick={()=>{setTab('prophets');setSearch('');setGraph(false);}}>Prophètes</button><button aria-pressed={tab==='companions'} onClick={()=>{setTab('companions');setSearch('');setGraph(false);}}>Compagnons</button><button aria-pressed={graph} onClick={()=>setGraph(v=>!v)}>Explorer les liens</button></nav>
- {tab==='prophets'?(graph?<ProphetsGraph search="" onSelectProphet={p=>setParams({prophet:p.id})}/>:<BookShelf kind="prophet" legacyEntries={prophets.map(p=>({id:p.id,title:p.nameIslamic,subtitle:p.title,href:`/prophets?prophet=${p.id}`,keywords:`${p.nameAr} ${p.nameFr} ${p.nameEn}`}))}/>):<><label className="book-search"><Search size={18}/><input aria-label="Rechercher un compagnon" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher un compagnon…"/></label>{graph?<SanadGraph/>:<div className="book-companions">{filtered.map(c=><button key={c.id} onClick={()=>setCompanion(c)}><span>{c.icon}</span><strong>{c.nameFr}</strong><small>{c.title}</small></button>)}</div>}</>}
- <AnimatePresence>{prophet&&!entry&&<ProphetDetail prophet={prophet} onClose={close}/>} {companion&&<CompanionDetail companion={companion} onClose={close}/>}</AnimatePresence></div>;
+ const close=()=>setParams({}, {replace:true});
+ const chooseTab=(next:TabMode)=>{setGraph(false);navigate(next==='companions'?'/companions':'/prophets');};
+ return <div className="prophets-page book-catalogue"><header className="book-catalogue-header"><span className="book-eyebrow">DES VIES, DES ENSEIGNEMENTS</span><h1>{tab==='prophets'?'Les Prophètes':'Les Compagnons'}</h1><p>Parcourir leur histoire. Écouter, comprendre et garder ce qui nous éclaire.</p></header><nav className="book-themes" aria-label="Prophètes et compagnons"><button aria-pressed={tab==='prophets'} onClick={()=>chooseTab('prophets')}>Prophètes</button><button aria-pressed={tab==='companions'} onClick={()=>chooseTab('companions')}>Compagnons</button><button aria-pressed={graph} onClick={()=>setGraph(v=>!v)}>Explorer les liens</button></nav>
+ {tab==='prophets'?(graph?<ProphetsGraph search="" onSelectProphet={p=>setParams({prophet:p.id})}/>:<BookShelf kind="prophet" legacyEntries={prophets.map(p=>({id:p.id,title:p.nameIslamic,subtitle:p.title,href:`/prophets?prophet=${p.id}`,keywords:`${p.nameAr} ${p.nameFr} ${p.nameEn}`}))}/>):<>{graph?<SanadGraph/>:<CompanionCollection/>}</>}
+ <AnimatePresence>{prophet&&!entry&&<ProphetDetail prophet={prophet} onClose={close}/>} {companion&&<CompanionPortraitDialog key={companion.id} portrait={companion} onClose={close}/>}</AnimatePresence></div>;
 }

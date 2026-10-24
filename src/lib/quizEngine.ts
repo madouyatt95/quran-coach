@@ -169,7 +169,7 @@ function generateCompanionQuestions(): QuizQuestion[] {
         if (c.title) {
             const q = buildMCQ(
                 'companions',
-                `Quel compagnon porte le titre : "${c.title}" ?`,
+                `À quel compagnon correspond ce portrait : « ${c.title} » ?`,
                 c.nameFr,
                 namePool,
                 c.titleAr,
@@ -182,7 +182,7 @@ function generateCompanionQuestions(): QuizQuestion[] {
         if (c.title && titlePool.length >= 4) {
             const q = buildMCQ(
                 'companions',
-                `Quel est le titre de ${c.nameFr} ?`,
+                `Quelle présentation correspond au portrait de ${c.nameFr} ?`,
                 c.title,
                 titlePool,
                 c.nameAr,

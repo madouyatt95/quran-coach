@@ -120,6 +120,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     const sections: { id: keyof MenuSections; title: string; items: MenuDestination[] }[] = [
         { id: 'discover', title: 'Lire et apprendre', items: [
             { path: '/prophets', icon: '📜', label: 'Histoires des prophètes' },
+            { path: '/companions', icon: '🕯️', label: 'Compagnons et compagnes' },
             { path: '/stories', icon: '📚', label: 'Histoires et moralités' },
             { path: '/atlas', icon: '🗺️', label: t('sideMenu.atlas') },
             { path: '/themes', icon: '📖', label: t('sideMenu.themes') },
@@ -281,7 +282,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                     {searchResults.map(item => <div className="side-menu-destination" key={item.path}><NavLink to={item.path} onClick={onClose}><span aria-hidden="true">{item.icon}</span><span>{item.label}</span></NavLink></div>)}
                     <FindButton expanded query={query} onClick={onClose} />
                 </div> : <>
-                <section className="side-menu-stories" aria-label="Lire et apprendre"><h2>Lire et apprendre</h2><NavLink to="/prophets" onClick={onClose}><span aria-hidden="true">📜</span>Histoires des prophètes</NavLink><NavLink to="/stories" onClick={onClose}><span aria-hidden="true">📚</span>Histoires et moralités</NavLink></section>
+                <section className="side-menu-stories" aria-label="Lire et apprendre"><h2>Lire et apprendre</h2><NavLink to="/prophets" onClick={onClose}><span aria-hidden="true">📜</span>Histoires des prophètes</NavLink><NavLink to="/companions" onClick={onClose}><span aria-hidden="true">🕯️</span>Compagnons et compagnes</NavLink><NavLink to="/stories" onClick={onClose}><span aria-hidden="true">📚</span>Histoires et moralités</NavLink></section>
                 <div className="side-menu-priority">
                     <button className="side-menu-resume" type="button" onClick={() => handleResume(resume)}>
                         {resume?.kind === 'listening' ? <Headphones size={21} aria-hidden="true" /> : resume?.kind === 'memorizing' ? <Mic size={21} aria-hidden="true" /> : <BookOpen size={21} aria-hidden="true" />}
@@ -325,10 +326,10 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                     {favorites.length < 4 && <button className="side-menu-empty-favorite" type="button" onClick={() => setEditing(true)}>＋ {t('sideMenu.addFavorite')}</button>}
                 </div>
                 <div className="side-menu-sections">
-                    {sections.map(section => <MenuSection key={section.id} title={section.title} count={section.items.filter(item=>!['/prophets','/stories'].includes(item.path)).length}
+                    {sections.map(section => <MenuSection key={section.id} title={section.title} count={section.items.filter(item=>!['/prophets','/companions','/stories'].includes(item.path)).length}
                         expanded={sectionsOpen[section.id] ?? section.items.some(item => item.path === location.pathname)}
                         onToggle={expanded => updateSection(section.id, expanded)}>
-                            {section.items.filter(item=>!['/prophets','/stories'].includes(item.path)).map(item => {
+                            {section.items.filter(item=>!['/prophets','/companions','/stories'].includes(item.path)).map(item => {
                                 return <div className="side-menu-destination" key={item.path}>
                                     <NavLink to={item.path} onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                                         <span aria-hidden="true">{item.icon}</span><span>{item.label}</span>

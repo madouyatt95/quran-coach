@@ -1,4 +1,5 @@
 const aliases: Record<string, string> = {
+  '/companions': 'sahaba sahabiyyat compagnons compagnes biographies portraits histoires',
   '/prayers': 'salat salah horaires adhan', '/adhkar': 'doua dhikr matin soir',
   '/storage': 'telechargement telechargements hors ligne packs offline',
   '/favorites': 'favoris signet signets notes collections sauvegarde',

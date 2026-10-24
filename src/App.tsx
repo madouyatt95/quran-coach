@@ -248,6 +248,7 @@ function AppContent() {
             <Route path="/journeys/notebook" element={<JourneyNotebookPage />} />
             <Route path="/journeys/:kind/:id" element={<EditorialJourneyPage />} />
             <Route path="/prophets" element={<ProphetsPage />} />
+            <Route path="/companions" element={<ProphetsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/themes" element={<ThemesPage />} />
             <Route path="/qibla" element={<QiblaPage />} />

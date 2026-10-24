@@ -39,6 +39,8 @@ export interface NarrativeBook {
   title: string;
   subtitle: string;
   category: AudioCategory;
+  collection?: 'companions';
+  companionIds?: string[];
   voice: string;
   editorialNote: string;
   sources: NarrativeSource[];

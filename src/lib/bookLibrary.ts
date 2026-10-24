@@ -1,3 +1,4 @@
+import {companionPortraits,companionHref} from '../data/companionPortraits';
 import {narrationSentences} from './narrationText';
 import catalog from '../data/bookCatalog.json';
 import type {LibraryAudio} from './audioProduction';
@@ -37,9 +38,10 @@ export const bookOrigins:Record<string,string[]>={
  'jabir-attention':['https://sunnah.com/bukhari:2097','https://sunnah.com/bukhari:2718','https://sunnah.com/bukhari:2396'],
  'bois-confie-mer':['https://sunnah.com/bukhari:2291'],
 };
+for(const p of companionPortraits){if(p.bookId&&books.some(b=>b.id===p.bookId)){const links=bookOrigins[p.bookId]||=[];const url=companionHref(p.id);if(!links.includes(url))links.push(url);}}
 const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sulayman:['sulayman'],isa:['maryam-isa'],muhammad:['sira-confiance','hijra-route','revelation-lettre','ascension-priere','hudaybiyya-pacte'],dawud:['sulayman','royaumes-et-justice'],ibrahim:['hajar-zamzam']};
 export function originForChapter(bookId:string,chapter:number){const links=bookOrigins[bookId]||[];return links[chapter]||links[0]||'/stories';}
-export function booksForOrigin(kind:'prophet'|'story',id:string){const url=kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
+export function booksForOrigin(kind:'prophet'|'story'|'companion',id:string){const url=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
 export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
  return books.find(b=>item.reference?.includes(`Manuscrit ${b.version}, chapitre `)&&item.title.startsWith(`${b.title} · `));
 }
@@ -113,10 +115,10 @@ export function activeBookScene(book:NarrativeBook,chapter:NarrativeChapter,item
  let start=0,result=0;chapter.scenes.forEach((s,i)=>{if(offset>=start)result=i;start+=s.paragraphs.map(p=>p.text).join('\n\n').length+2;});return result;
 }
 /** Legacy entry points resolve to the canonical manuscript, with its matching chapter. */
-export function bookEntryForOrigin(kind:'prophet'|'story',id:string){
+export function bookEntryForOrigin(kind:'prophet'|'story'|'companion',id:string){
  const preferred=kind==='story'?({hudaybiyya:'hudaybiyya-pacte'} as Record<string,string>)[id]:undefined;
  const related=booksForOrigin(kind,id),primary=related.find(b=>b.id===(preferred||id))||related[0];if(!primary)return null;
- const origin=kind==='prophet'?P(id):S(id),chapter=Math.max(0,(bookOrigins[primary.id]||[]).indexOf(origin));
+ const origin=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id),chapter=kind==='companion'?0:Math.max(0,(bookOrigins[primary.id]||[]).indexOf(origin));
  return {book:primary,chapter:primary.chapters[chapter]?.id||primary.chapters[0].id};
 }
 
@@ -132,9 +134,15 @@ export function canonicalBookForSource(sourceUrl:string){
  try{
   const url=new URL(sourceUrl,'https://www.quran-coach.fr');
   if(!['www.quran-coach.fr','quran-coach.fr'].includes(url.hostname))return null;
-  const kind=url.pathname==='/prophets'?'prophet':url.pathname==='/stories'?'story':null;
+  const kind=url.pathname==='/companions'?'companion':url.pathname==='/prophets'?(url.searchParams.has('companion')?'companion':'prophet'):url.pathname==='/stories'?'story':null;
   if(kind)return bookEntryForOrigin(kind,url.searchParams.get(kind)||'');
   const legacy=url.pathname.match(/^\/journeys\/(prophet|story)\/([^/]+)$/);
   return legacy?bookEntryForOrigin(legacy[1] as 'prophet'|'story',decodeURIComponent(legacy[2])):null;
  }catch{return null;}
 }
+
+/** Superseded manuscript versions must never appear as unrelated standalone audios. */
+export function isSupersededBookAudio(item:Pick<LibraryAudio,'reference'|'title'>){
+ return !bookForAudio(item)&&books.some(b=>item.reference?.includes(`Manuscrit ${b.id}-conte-`));
+}
+export function isCompanionBook(book:BookSummary){return companionPortraits.some(p=>p.bookId===book.id);}

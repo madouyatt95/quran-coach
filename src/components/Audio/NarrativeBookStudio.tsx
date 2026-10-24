@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { BookOpen, ChevronLeft, ChevronRight, Download, FileText } from 'lucide-react';
-import { narrativeBooks } from '../../data/narrativeBooks';
+import { narrativeProductionBooks as narrativeBooks } from '../../data/narrativeBooks';
 import { useOpenReader } from '../../hooks/useOpenReader';
 import type { AudioScript } from '../../lib/audioProduction';
 import { bookMarkdown, bookNarrative, chapterDrafts, chapterNarrative, chapterSources, narrationLength, sourceLabel, sourceUrl, type NarrativeChapter } from '../../lib/narrativeBooks';

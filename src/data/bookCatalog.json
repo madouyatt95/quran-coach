@@ -447,6 +447,10 @@
     "subtitle": "Cinquante nuits pour une parole vraie",
     "version": "kaab-verite-conte-2026-10-24-v1",
     "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "kaab-malik"
+    ],
     "chapters": [
       {
         "id": "demain",
@@ -476,6 +480,10 @@
     "subtitle": "La vérité au milieu des voix",
     "version": "aicha-innocence-conte-2026-10-24-v1",
     "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "aicha"
+    ],
     "chapters": [
       {
         "id": "collier",
@@ -726,6 +734,10 @@
     "subtitle": "Chercher avant de répéter",
     "version": "abou-dharr-recherche-conte-2026-10-24-v1",
     "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "abu-dharr"
+    ],
     "chapters": [
       {
         "id": "nouvelle",
@@ -831,6 +843,10 @@
     "subtitle": "Celui qui remarque le voyageur resté derrière",
     "version": "jabir-attention-conte-2026-10-24-v1",
     "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "jabir"
+    ],
     "chapters": [
       {
         "id": "route",
@@ -864,6 +880,256 @@
       {
         "id": "rencontre",
         "title": "Les mille dinars que l’on ne prend pas deux fois"
+      }
+    ]
+  },
+  {
+    "id": "abu-bakr-confiance",
+    "title": "Abu Bakr",
+    "subtitle": "La confiance quand tout vacille",
+    "version": "abu-bakr-confiance-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "abu-bakr"
+    ],
+    "chapters": [
+      {
+        "id": "proteger",
+        "title": "S’approcher quand le danger grandit"
+      },
+      {
+        "id": "reparer",
+        "title": "La fidélité sait demander pardon"
+      },
+      {
+        "id": "tenir",
+        "title": "Quand une communauté perd sa voix"
+      }
+    ]
+  },
+  {
+    "id": "bilal-dignite",
+    "title": "Bilal",
+    "subtitle": "Une voix, une dignité, une fidélité",
+    "version": "bilal-dignite-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "bilal"
+    ],
+    "chapters": [
+      {
+        "id": "dignite",
+        "title": "Le nom que l’on prononce avec respect"
+      },
+      {
+        "id": "appel",
+        "title": "Une voix pour se retrouver"
+      },
+      {
+        "id": "constance",
+        "title": "La fatigue et les gestes discrets"
+      }
+    ]
+  },
+  {
+    "id": "musab-transmettre",
+    "title": "Musab ibn Umayr",
+    "subtitle": "Ce que l’on laisse ne se pèse pas en biens",
+    "version": "musab-transmettre-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "musab"
+    ],
+    "chapters": [
+      {
+        "id": "enseigner",
+        "title": "Avant les jours de joie"
+      },
+      {
+        "id": "etoffe",
+        "title": "L’étoffe trop courte"
+      },
+      {
+        "id": "memoire",
+        "title": "Le repas et le souvenir"
+      }
+    ]
+  },
+  {
+    "id": "zayd-thabit-confie",
+    "title": "Zayd ibn Thabit",
+    "subtitle": "La parole confiée et le travail de la transmettre",
+    "version": "zayd-thabit-confie-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "zayd-thabit"
+    ],
+    "chapters": [
+      {
+        "id": "apprendre",
+        "title": "Apprendre pour rendre un service"
+      },
+      {
+        "id": "rassembler",
+        "title": "Plus lourd qu’une montagne"
+      },
+      {
+        "id": "transmettre",
+        "title": "Les feuillets que l’on rend"
+      }
+    ]
+  },
+  {
+    "id": "asma-liens",
+    "title": "Asma bint Abi Bakr",
+    "subtitle": "Les gestes qui portent les autres",
+    "version": "asma-liens-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "asma"
+    ],
+    "chapters": [
+      {
+        "id": "provisions",
+        "title": "Ce qui rend un départ possible"
+      },
+      {
+        "id": "mere",
+        "title": "La mère à qui l’on ouvre"
+      },
+      {
+        "id": "travail",
+        "title": "La charge et le soulagement"
+      }
+    ]
+  },
+  {
+    "id": "umm-salama-sagesse",
+    "title": "Umm Salama",
+    "subtitle": "Quand l’écoute ouvre un chemin",
+    "version": "umm-salama-sagesse-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "umm-salama"
+    ],
+    "chapters": [
+      {
+        "id": "perdre",
+        "title": "Quand une présence s’en va"
+      },
+      {
+        "id": "avenir",
+        "title": "L’avenir que l’on ne voyait pas"
+      },
+      {
+        "id": "conseiller",
+        "title": "Le conseil de Hudaybiyya"
+      }
+    ]
+  },
+  {
+    "id": "umar-responsabilite",
+    "title": "Umar ibn al-Khattab",
+    "subtitle": "La force devant ce qui lui est confié",
+    "version": "umar-responsabilite-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "umar"
+    ],
+    "chapters": [
+      {
+        "id": "revenir",
+        "title": "Revenir vers celui que l’on a blessé"
+      },
+      {
+        "id": "charge",
+        "title": "Ce que les autres peuvent supporter"
+      },
+      {
+        "id": "confier",
+        "title": "Demander avant de laisser sa place"
+      }
+    ]
+  },
+  {
+    "id": "uthman-transmission",
+    "title": "Uthman ibn Affan",
+    "subtitle": "Regarder les faits jusqu’au bout",
+    "version": "uthman-transmission-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "uthman"
+    ],
+    "chapters": [
+      {
+        "id": "questions",
+        "title": "Trois questions qui ne suffisent pas"
+      },
+      {
+        "id": "donner",
+        "title": "Ce que le don laisse derrière lui"
+      },
+      {
+        "id": "copies",
+        "title": "Une équipe pour transmettre"
+      }
+    ]
+  },
+  {
+    "id": "ali-proximite",
+    "title": "Ali ibn Abi Talib",
+    "subtitle": "Le courage, la place et la proximité",
+    "version": "ali-proximite-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "ali"
+    ],
+    "chapters": [
+      {
+        "id": "etendard",
+        "title": "L’étendard et la parole"
+      },
+      {
+        "id": "rester",
+        "title": "La responsabilité de rester"
+      },
+      {
+        "id": "foyer",
+        "title": "Quand le récit entre dans la maison"
+      }
+    ]
+  },
+  {
+    "id": "khadija-soutien",
+    "title": "Khadija",
+    "subtitle": "La présence qui accueille la peur",
+    "version": "khadija-soutien-conte-2026-10-24-v1",
+    "category": "story",
+    "collection": "companions",
+    "companionIds": [
+      "khadija"
+    ],
+    "chapters": [
+      {
+        "id": "accueillir",
+        "title": "Le retour de Hira"
+      },
+      {
+        "id": "accompagner",
+        "title": "Chercher quelqu’un qui puisse entendre"
+      },
+      {
+        "id": "demeurer",
+        "title": "Le salut et le souvenir"
       }
     ]
   }

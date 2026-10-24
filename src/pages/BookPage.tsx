@@ -13,7 +13,7 @@ import {Link,useLocation,useParams,useSearchParams} from 'react-router-dom';
 import {ArrowLeft,Heart,BookOpen,Download,Headphones,Maximize,Minimize,Pause,Play,Volume2,VolumeX,ChevronLeft,ChevronRight} from 'lucide-react';
 import {BookLandscape} from '../components/Books/BookLandscape';
 import {useBookCatalog} from '../hooks/useBookCatalog';
-import {books,bookHref,bookForAudio,chapterForAudio,coverScene,recordingsForBook,resumeRecording,activeBookScene,sceneTreatment} from '../lib/bookLibrary';
+import {books,bookHref,bookForAudio,chapterForAudio,coverScene,recordingsForBook,resumeRecording,activeBookScene,sceneTreatment,isCompanionBook} from '../lib/bookLibrary';
 import {chapterSources,sourceLabel,type NarrativeBook,type NarrativeSource} from '../lib/narrativeBooks';
 import {narrationSentences} from '../lib/narrationText';
 import {downloadLibraryAudio,downloadedAudioIds,removeLibraryDownload} from '../lib/audioLibrary';
@@ -29,7 +29,7 @@ function BookReader({bookId}:{bookId:string}){
  const recordings=useMemo(()=>recordingsForBook(items,summary),[items,summary]),store=useAudioLibraryStore(),player=useLibraryPlayer(),[params,setParams]=useSearchParams();
  const [readChapter,setReadChapter]=useState(()=>params.get('chapter')||store.bookReading[bookId]||summary.chapters[0].id),[view,setView]=usePageState<'read'|'listen'>('view','read'),[immersive,setImmersive]=usePageState('immersive',false),[animated,setAnimated]=useState(true),[ambience,setAmbience]=useState(false),[volume,setVolume]=useState(.12),[notice,setNotice]=useState(''),[downloaded,setDownloaded]=useState<string[]>([]),[downloadProgress,setDownloadProgress]=useState(''),[loadError,setLoadError]=useState('');
  const saveReading=store.saveBookReading;
- const location=useLocation(),goBack=useSmartBack(summary.category==='prophet'?'/prophets':'/stories');
+ const location=useLocation(),goBack=useSmartBack(isCompanionBook(summary)?'/companions':summary.category==='prophet'?'/prophets':'/stories');
  const notebook=useBookNotebook(),[selected,setSelected]=usePageState('passage',''),[reference,setReference]=useState<NarrativeSource|null>(null),[focusTarget,setFocusTarget]=useState<{id:string}|null>(null);
  const referenceResume=useRef<{item:NonNullable<typeof player.item>;seconds:number;queue:typeof recordings}|null>(null);
  const controller=useRef<AbortController|null>(null),article=useRef<HTMLElement>(null);

@@ -1,3 +1,4 @@
+import {companionPortraits,companionHref} from '../data/companionPortraits';
 import { COURSE_LEVELS } from '../academy/data/courseLibrary';
 import { LEVEL_1_FONDATIONS } from '../academy/data/level1-fondations';
 import { LEVEL_2_PRATIQUE } from '../academy/data/level2-pratique';
@@ -21,6 +22,7 @@ const moduleTitle=(id:string)=>modules.find(m=>m.id===id)?.title||'Mon cours';
 type Entry=Omit<SearchResult,'score'>;
 // Index existing explanations, not answer keys or generated religious content.
 const publicEntries:Entry[]=[
+ ...companionPortraits.map(p=>({id:`companion:${p.id}`,type:'story' as const,title:p.nameFr,textAr:p.nameAr,textFr:[p.aliases,p.title,...p.paragraphs,...p.references.map(r=>r.label)].join('\n'),source:'Compagnons et compagnes',link:companionHref(p.id),emoji:'🕯️'})),
  ...modules.map(m=>{const teaching=chapterTeaching(m.id);return {id:`course:${m.id}`,type:'course' as const,title:m.title,textAr:m.titleAr,textFr:[m.description,...m.content.flatMap(c=>c.type==='lesson'?c.sections.map(s=>`${s.title}\n${s.body}`):[]),teaching?.introduction,...(teaching?.developments||[]),teaching?.takeaway].filter(Boolean).join('\n'),source:'Académie · cours et explications',link:`/academy?module=${encodeURIComponent(m.id)}`,emoji:m.icon};}),
  ...ARABIC_LESSONS.map(l=>({id:`arabic:${l.id}`,type:'arabic' as const,title:l.title,textAr:l.arabic,textFr:[l.track,l.goal,...l.paragraphs,l.advanced,l.takeaway,l.translation,...l.example.map(e=>`${e.text} ${e.label} ${e.detail}`)].join('\n'),source:`Arabe · ${l.track}`,link:`/academy/arabic/${encodeURIComponent(l.id)}?view=read`,emoji:'✍️'})),
  ...[...prophets.map(p=>({kind:'prophet' as const,id:p.id})),...stories.map(s=>({kind:'story' as const,id:s.id}))].flatMap(({kind,id})=>{const j=getJourney(kind,id);return j?[{id:`story:${j.id}`,type:'story' as const,title:j.title,textAr:'',textFr:[j.intro,...j.steps.filter(s=>s.kind==='narrative').map(s=>`${s.title}\n${s.text}`),...j.lessons].filter(Boolean).join('\n'),source:kind==='prophet'?'Prophètes · parcours':'Histoires et moralités',link:journeyUrl(kind,id),emoji:j.icon}]:[];})

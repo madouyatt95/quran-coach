@@ -1,0 +1,35 @@
+import {useEffect,useRef} from 'react';
+import {createPortal} from 'react-dom';
+import {Link,useNavigate} from 'react-router-dom';
+import {BookOpen,Headphones,Heart,Search,X,ArrowUpRight} from 'lucide-react';
+import {companionPortraits,companionThemes,companionHref,type CompanionPortrait} from '../../data/companionPortraits';
+import {BookDiscovery} from '../Books/BookDiscovery';
+import {BookLandscape} from '../Books/BookLandscape';
+import {usePageState} from '../../hooks/usePageState';
+import {useBookCatalog} from '../../hooks/useBookCatalog';
+import {useAudioLibraryStore} from '../../stores/audioLibraryStore';
+import {useLibraryPlayer} from '../../stores/libraryPlayerStore';
+import {books,bookHref,recordingsForBook,resumeRecording,chapterForAudio} from '../../lib/bookLibrary';
+import {audioSearch} from '../../lib/audioLibrary';
+import './CompanionCollection.css';
+
+export function CompanionCollection(){
+ const [query,setQuery]=usePageState('companion-search',''),[group,setGroup]=usePageState('companion-group','all'),[theme,setTheme]=usePageState('companion-theme','all'),[favoritesOnly,setFavoritesOnly]=usePageState('companion-favorites',false);
+ const {items}=useBookCatalog(),favorites=useAudioLibraryStore(s=>s.favorites),toggleFavorite=useAudioLibraryStore(s=>s.toggleFavorite);
+ const visible=companionPortraits.filter(p=>(group==='all'||p.group===group)&&(theme==='all'||p.theme===theme)&&(!favoritesOnly||favorites.includes(`companion:${p.id}`)||!!p.bookId&&favorites.includes(`book:${p.bookId}`))&&audioSearch(`${p.nameFr} ${p.nameAr} ${p.aliases} ${p.title} ${p.paragraphs.join(' ')}`).includes(audioSearch(query)));
+ const selectedBooks=[...new Set(visible.flatMap(p=>{const book=books.find(b=>b.id===p.bookId);return book?[book]:[];}))];
+ const portraits=visible.filter(p=>!selectedBooks.some(b=>b.id===p.bookId));
+ const filters=<section className="companion-filters" aria-label="Rechercher et choisir les compagnons"><label className="book-search"><Search size={19}/><input aria-label="Rechercher un compagnon ou une compagnonne" placeholder="Un nom, un enseignement…" value={query} onChange={e=>setQuery(e.target.value)}/></label><div className="companion-filter-row"><label>Collection<select value={group} onChange={e=>setGroup(e.target.value)}><option value="all">Tous les compagnons</option><option value="caliphs">Les quatre califes</option><option value="companions">Les compagnons</option><option value="women">Les compagnes</option></select></label><label>Un enseignement<select value={theme} onChange={e=>setTheme(e.target.value)}>{Object.entries(companionThemes).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label><button aria-pressed={favoritesOnly} onClick={()=>setFavoritesOnly(v=>!v)}><Heart size={17} fill={favoritesOnly?'currentColor':'none'}/>Mes favoris</button></div><p className="companion-count" role="status">{visible.length} portrait{visible.length>1?'s':''} · {selectedBooks.length} livre{selectedBooks.length>1?'s':''} à lire</p></section>;
+ const remaining=<section className="companion-portraits" aria-label="Portraits des compagnons">{portraits.length>0&&<header><span className="book-eyebrow">RENCONTRER ET COMPRENDRE</span><h2>Leurs paroles, leurs engagements</h2><p>Des repères et les témoignages qui nous les font connaître.</p></header>}<div className="companion-portrait-grid">{portraits.map(p=><article className="companion-portrait-card" key={p.id}><BookLandscape scene={p.scene}/><button className="companion-favorite" aria-label={`${favorites.includes(`companion:${p.id}`)?'Retirer':'Ajouter'} ${p.nameFr} ${favorites.includes(`companion:${p.id}`)?'des':'aux'} favoris`} aria-pressed={favorites.includes(`companion:${p.id}`)} onClick={()=>toggleFavorite(`companion:${p.id}`)}><Heart size={18} fill={favorites.includes(`companion:${p.id}`)?'currentColor':'none'}/></button><Link to={companionHref(p.id)}><span lang="ar" dir="rtl">{p.nameAr}</span><h3>{p.nameFr}</h3><p>{p.title}</p><small>Lire le portrait <ArrowUpRight size={15}/></small></Link></article>)}</div>{visible.length===0&&<div className="companion-empty"><h2>Aucun portrait trouvé</h2><p>Essayez une autre orthographe ou élargissez les filtres.</p><button onClick={()=>{setQuery('');setGroup('all');setTheme('all');setFavoritesOnly(false);}}>Afficher tous les compagnons</button></div>}</section>;
+ return selectedBooks.length?<BookDiscovery kind="companion" books={selectedBooks} items={items} afterBooks={remaining}>{filters}</BookDiscovery>:<>{filters}{remaining}</>;
+}
+
+/** Native dialog keeps focus and prevents the document behind it from receiving taps. */
+export function CompanionPortraitDialog({portrait,onClose}:{portrait:CompanionPortrait;onClose:()=>void}){
+ const dialog=useRef<HTMLDialogElement>(null),navigate=useNavigate(),{items}=useBookCatalog();
+ const store=useAudioLibraryStore(),player=useLibraryPlayer(),book=books.find(b=>b.id===portrait.bookId);
+ const recordings=book?recordingsForBook(items,book):[],resume=resumeRecording(recordings,store.positions);
+ useEffect(()=>{const el=dialog.current!,focus=document.activeElement as HTMLElement|null;el.showModal();const previous=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{el.close();document.body.style.overflow=previous;focus?.focus({preventScroll:true});};},[]);
+ const enter=(mode:'read'|'listen')=>{if(!book)return;let chapter=store.bookReading[book.id];if(mode==='listen'){if(!resume)return;chapter=book.chapters[chapterForAudio(resume,book)]?.id;void player.play(resume,{queue:recordings});}else player.pause();navigate(bookHref(book.id,chapter),{state:{bookView:mode}});};
+ return createPortal(<dialog ref={dialog} className="companion-portrait-dialog" aria-labelledby="companion-portrait-title" onClick={e=>{if(e.target===dialog.current)onClose();}} onCancel={e=>{e.preventDefault();onClose();}}><header><BookLandscape scene={portrait.scene}/><button autoFocus onClick={onClose} aria-label="Fermer le portrait"><X size={21}/></button><span lang="ar" dir="rtl">{portrait.nameAr}</span><h2 id="companion-portrait-title">{portrait.nameFr}</h2><p>{portrait.title}</p></header><div className="companion-portrait-body">{book&&<div className="book-featured-actions"><button onClick={()=>enter('read')}><BookOpen size={18}/>Lire le livre</button><button disabled={!resume} onClick={()=>enter('listen')}><Headphones size={18}/>Écouter</button></div>}{portrait.paragraphs.map(p=><p key={p}>{p}</p>)}<section className="companion-source-list"><h3>Retrouver les témoignages</h3>{portrait.references.map(ref=><a key={ref.url} href={ref.url} target="_blank" rel="noopener noreferrer"><strong>{ref.label}<ArrowUpRight size={16}/></strong><span>{ref.description}</span></a>)}</section><button className="companion-close" onClick={onClose}>Revenir aux compagnons</button></div></dialog>,document.body);
+}

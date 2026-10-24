@@ -3,7 +3,7 @@ export const MENU_SECTIONS_KEY = 'quran-coach-menu-sections-v1';
 export const MENU_SECTION_IDS = ['discover', 'practice', 'daily', 'progress'] as const;
 
 export const MENU_DESTINATIONS = [
-  '/quiz', '/test-memorization', '/prophets', '/stories', '/atlas',
+  '/quiz', '/test-memorization', '/prophets', '/companions', '/stories', '/atlas',
   '/qibla', '/prayers', '/themes', '/adhkar', '/hadiths', '/tafsir',
   '/academy', '/circles', '/fahm', '/sentinel', '/dashboard', '/favorites', '/storage',
 ] as const;
