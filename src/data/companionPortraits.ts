@@ -97,7 +97,7 @@ const portraitEntries:CompanionPortrait[]=[
   'Aicha raconte une accusation, le bouleversement qu’elle provoque et une longue attente avant que son innocence soit déclarée. Sa propre parole nous fait approcher une épreuve qui touche toute sa vie.',
   'La lecture est accompagnée des passages d’An-Nur sur la rumeur et la responsabilité de transmettre une accusation. L’épisode ne devient pas un prétexte pour exposer la vie privée d’autrui ; il aide à reconnaître les conséquences d’une parole sans preuve.'
  ],references:[B('4141','Le témoignage d’Aicha sur l’épreuve de la calomnie.'),{label:'Coran 24:11-20',url:'https://quran.com/24/11-20',description:'La responsabilité devant la rumeur et la calomnie.'}]},
- {id:'fatima',nameFr:'Fatima az-Zahra',nameAr:'فاطمة الزهراء',aliases:'Fatimah Fatma',title:'La proximité et la fatigue du quotidien',group:'women',theme:'solidarity',scene:'night',paragraphs:[
+ {id:'fatima',nameFr:'Fatima az-Zahra',nameAr:'فاطمة الزهراء',aliases:'Fatimah Fatma',title:'De La Mecque aux derniers mois de Médine',group:'women',theme:'solidarity',scene:'night',bookId:'fatima-proximite',paragraphs:[
   'Fatima vient demander une aide face à la fatigue du travail. Le témoignage d’Ali suit cette démarche et le rappel reçu avant le sommeil, en laissant apparaître la réalité des tâches domestiques.',
   'Un autre passage conserve une confidence de son père et le changement de son émotion : des larmes, puis un sourire. La proximité familiale apparaît dans cette parole donnée et gardée.'
  ],references:[B('5361','La demande d’aide et le rappel avant le sommeil.'),B('3624','La confidence du Prophète à Fatima.')]},

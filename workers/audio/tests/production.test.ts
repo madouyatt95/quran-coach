@@ -1,13 +1,13 @@
 // @vitest-environment node
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {admin, accountKey, configuredAccounts, decodeAudioBase64, encodeAudioBase64, discoverHistory, produceOne, reconcile, media, providerVoices, publishVerified, type Env, type Job} from '../src/service';
+import {admin, accountKey, configuredAccounts, decodeAudioBase64, encodeAudioBase64, boundedProviderBody, discoverHistory, produceOne, reconcile, media, providerVoices, publishVerified, type Env, type Job} from '../src/service';
 import type {AudioScript} from '../../../src/lib/audioProduction';
 
 function fixture() {
  const job: Job = {id:'job',batch_id:'batch',account_id:'primary',script_id:'script',fingerprint:'hash',state:'queued',reserved:100,actual:null,started_at:new Date().toISOString(),voice:{id:'voice',name:'Cours',voice_id:'abcdefgh12345678',model_id:'eleven_multilingual_v2',stability:.5,similarity:.7,style:.1,credits_per_character:1}};
  const puts = new Map<string,unknown>();
  const metadata=new Map<string,Record<string,string>>();
- const bucket = {put:vi.fn(async(key:string,value:unknown,options?:{customMetadata?:Record<string,string>})=>{puts.set(key,value instanceof ReadableStream?await new Response(value).text():value);if(options?.customMetadata)metadata.set(key,options.customMetadata);}),head:vi.fn(async()=>({size:1000,httpEtag:'"etag"'})),get:vi.fn(async(key:string)=>puts.has(key)?{body:new Response(String(puts.get(key))).body,json:async()=>JSON.parse(String(puts.get(key))),customMetadata:metadata.get(key)}:null)};
+ const bucket = {put:vi.fn(async(key:string,value:unknown,options?:{customMetadata?:Record<string,string>})=>{puts.set(key,value instanceof ArrayBuffer?new TextDecoder().decode(value):value instanceof ReadableStream?await new Response(value).text():value);if(options?.customMetadata)metadata.set(key,options.customMetadata);}),head:vi.fn(async()=>({size:1000,httpEtag:'"etag"'})),get:vi.fn(async(key:string)=>puts.has(key)?{body:new Response(String(puts.get(key))).body,json:async()=>JSON.parse(String(puts.get(key))),customMetadata:metadata.get(key)}:null)};
  const env = {GENERATION_ENABLED:'true',SUPABASE_URL:'https://db.test',SUPABASE_SERVICE_ROLE_KEY:'test-only',ELEVENLABS_ACCOUNTS:JSON.stringify({primary:'test-only-key'}),AUDIO:bucket} as unknown as Env;
  let remaining = 1000;
  const tts = vi.fn(async()=>new Response('unavailable',{status:503}));
@@ -27,6 +27,12 @@ function fixture() {
 }
 afterEach(()=>vi.unstubAllGlobals());
 describe('paid production boundaries',()=>{
+ it('bounds chunked provider bytes before creating a known-length R2 body',async()=>{
+  const response=()=>new Response(new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('abc'));c.enqueue(new TextEncoder().encode('def'));c.close();}}));
+  expect(new TextDecoder().decode(await boundedProviderBody(response(),6))).toBe('abcdef');
+  await expect(boundedProviderBody(response(),5)).rejects.toThrow('trop volumineux');
+  await expect(boundedProviderBody(new Response('abc',{headers:{'Content-Length':'99'}}),5)).rejects.toThrow('trop volumineux');
+ });
  it('requires an explicit owner waiver and records that no human listening is attested',async()=>{
   const f=fixture(),id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
   Object.assign(f.job,{id,state:'review',actual:50,artifact:{text:'Bonjour.',key:'recordings/hash.mp3',duration:8,bytes:1000,sha256:'digest',sentences:[{sentence:0,start:0,end:8}]}});

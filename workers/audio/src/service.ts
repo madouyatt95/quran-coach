@@ -152,6 +152,20 @@ export function encodeAudioBase64(bytes: Uint8Array): string {
   for(let i=0;i<bytes.length;i+=32768)chunks.push(String.fromCharCode(...bytes.subarray(i,i+32768)));
   return btoa(chunks.join(''));
 }
+/** R2 requires a known-length body. Bound a chunked provider response before
+ * storing its bytes, and postpone JSON/base64 processing until it is durable. */
+export async function boundedProviderBody(response:Response,maximum=18_000_000):Promise<ArrayBuffer>{
+  const declared=Number(response.headers.get('Content-Length'));
+  if(declared>maximum){await response.body?.cancel();throw new Error('Résultat fournisseur trop volumineux.');}
+  if(!response.body)throw new Error('Réponse fournisseur vide.');
+  let bytes=0;
+  const bounded=response.body.pipeThrough(new TransformStream<Uint8Array,Uint8Array>({transform(chunk,controller){
+    bytes+=chunk.byteLength;
+    if(bytes>maximum)throw new Error('Résultat fournisseur trop volumineux.');
+    controller.enqueue(chunk);
+  }}));
+  return new Response(bounded).arrayBuffer();
+}
 export async function storeResult(env: Env, job: Job, result: Result, script: AudioScript) {
   if(!result.audio_base64||result.audio_base64.length>16000000)throw new Error('Audio absent ou trop volumineux.');
   const audio=decodeAudioBase64(result.audio_base64);
@@ -238,9 +252,10 @@ export async function produceOne(env: Env, jobId: string): Promise<boolean> {
     if(!response.ok)throw new Error(`ElevenLabs HTTP ${response.status}. Vérification requise avant toute reprise.`);
     const cost=response.headers.get('character-cost');
     const requestId=response.headers.get('request-id')||undefined,historyId=response.headers.get('history-item-id')||undefined;
-    // Stream the paid result to durable storage before parsing megabytes of
-    // base64. A hard runtime/CPU interruption still leaves a recoverable file.
-    await env.AUDIO.put(`receipts/${job.id}.json`,response.body,{httpMetadata:{contentType:'application/json'},customMetadata:{
+    // Save bounded raw bytes before parsing megabytes of base64. R2 requires a
+    // known length; a later CPU interruption still leaves a recoverable file.
+    const providerBody=await boundedProviderBody(response);
+    await env.AUDIO.put(`receipts/${job.id}.json`,providerBody,{httpMetadata:{contentType:'application/json'},customMetadata:{
       ...(requestId?{request_id:requestId}:{}),...(historyId?{history_id:historyId}:{}),
       ...(cost!==null&&/^\d+$/.test(cost)?{actual:cost}:{}),
     }});
@@ -250,10 +265,10 @@ export async function produceOne(env: Env, jobId: string): Promise<boolean> {
     result.request_id=requestId;result.history_id=historyId;
     result.actual=cost!==null&&/^\d+$/.test(cost)?Number(cost):null;
     await storeResult(env,job,result,script);return true;
-  } catch {
+  } catch(error) {
     await patch(env,'jobs',job.id,{state:'uncertain',error:'Résultat à vérifier. Reprendre par récupération, sans nouvelle dépense.'});
     await patch(env,'batches',job.batch_id,{paused:true});
-    await event(env,'worker','uncertain',job.id);return false;
+    await event(env,'worker','uncertain',job.id,{reason:error instanceof Error?error.message.slice(0,240):'Échec non détaillé'});return false;
   }
 }
 

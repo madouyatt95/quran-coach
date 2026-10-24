@@ -1606,5 +1606,43 @@
         "title": "Une fidélité qui traverse les années"
       }
     ]
+  },
+  {
+    "id": "fatima-proximite",
+    "title": "Fatima az-Zahra",
+    "subtitle": "De La Mecque aux derniers mois de Médine",
+    "version": "fatima-proximite-biographie-2026-10-24-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, épreuves mecquoises, foyer avec Ali, maternité, présence à Uhud, liens avec le Prophète et derniers mois."
+    },
+    "length": {
+      "words": 1940,
+      "minMinutes": 12,
+      "maxMinutes": 15
+    },
+    "collection": "companions",
+    "companionIds": [
+      "fatima"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Une fille de La Mecque dans les premières épreuves"
+      },
+      {
+        "id": "foyer",
+        "title": "Avec Ali, construire une famille à Médine"
+      },
+      {
+        "id": "quotidien",
+        "title": "Une fatigue entendue, une parole transmise"
+      },
+      {
+        "id": "derniers-mois",
+        "title": "La confidence, le deuil et les derniers mois"
+      }
+    ]
   }
 ]
