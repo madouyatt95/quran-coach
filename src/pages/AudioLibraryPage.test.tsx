@@ -1,0 +1,23 @@
+// @vitest-environment jsdom
+import {act} from 'react';
+import {createRoot,type Root} from 'react-dom/client';
+import {MemoryRouter} from 'react-router-dom';
+import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+vi.hoisted(()=>{const data=new Map<string,string>();Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(key:string)=>data.get(key)||null,setItem:(key:string,v:string)=>data.set(key,v),removeItem:(key:string)=>data.delete(key)}});});
+import type {LibraryAudio} from '../lib/audioProduction';
+const state=vi.hoisted(()=>({items:[] as LibraryAudio[],downloads:[] as string[]}));
+vi.mock('../hooks/useBookCatalog',()=>({useBookCatalog:()=>({items:state.items,loading:false,error:''})}));
+vi.mock('../lib/audioLibrary',()=>({loadAudioLibrary:async()=>state.items,downloadedAudioIds:async()=>state.downloads,audioSearch:(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''),downloadLibraryAudio:vi.fn(),removeLibraryDownload:vi.fn()}));
+vi.mock('../stores/libraryPlayerStore',()=>({useLibraryPlayer:(selector:(s:{play:()=>void})=>unknown)=>selector({play:vi.fn()})}));
+import {AudioLibraryPage} from './AudioLibraryPage';
+import {useAudioLibraryStore} from '../stores/audioLibraryStore';
+import {narrativeBooks} from '../data/narrativeBooks';
+import {chapterDrafts} from '../lib/narrativeBooks';
+Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
+let host:HTMLDivElement,root:Root;
+const click=async(text:string)=>{await act(async()=>{const b=[...host.querySelectorAll('button')].find(x=>x.textContent===text);expect(b).toBeDefined();b!.click();});};
+beforeEach(()=>{vi.stubGlobal('sessionStorage',window.sessionStorage);sessionStorage.clear();useAudioLibraryStore.setState({favorites:[],positions:{},bookReading:{},bookReadingUpdatedAt:{}});const b=narrativeBooks.find(b=>b.id==='adam')!;state.items=chapterDrafts(b,b.chapters[0],false,false).map((s,i)=>({id:`adam-${i}`,title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:[]}));state.items.push({id:'guide',title:'Après l’écoute',text:'Un conseil',reference:'Guide',sourceUrl:'/listen/library',category:'academy',narrator:'George',url:'/guide.mp3',bytes:100,duration:100,sentences:[]});state.downloads=state.items.map(x=>x.id);host=document.createElement('div');document.body.append(host);root=createRoot(host);});
+afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.unstubAllGlobals();});
+const render=async()=>{await act(async()=>{root.render(<MemoryRouter initialEntries={['/listen/library']}><AudioLibraryPage/></MemoryRouter>);});};
+it('shares favorites and downloaded filters between books and standalone episodes',async()=>{useAudioLibraryStore.setState({favorites:['book:adam','guide']});await render();expect(host.querySelectorAll('input')).toHaveLength(1);await click('Mes favoris');expect(host.querySelectorAll('.book-cover')).toHaveLength(1);expect(host.querySelector('.book-cover')?.getAttribute('href')).toContain('/books/adam');expect(host.querySelectorAll('.audio-card')).toHaveLength(1);await click('Téléchargés');expect(host.querySelectorAll('.book-cover')).toHaveLength(1);expect(host.querySelectorAll('.audio-card')).toHaveLength(1);});
+it('uses the same search for books and capsules without duplicating narrated chapters',async()=>{await render();expect(host.querySelectorAll('.audio-card')).toHaveLength(1);const input=host.querySelector('input')!;await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!.call(input,'Adam');input.dispatchEvent(new Event('input',{bubbles:true}));});expect(host.querySelectorAll('.book-cover')).toHaveLength(1);expect(host.querySelector('.book-cover')?.getAttribute('href')).toContain('/books/adam');expect(host.querySelectorAll('.audio-card')).toHaveLength(0);});

@@ -1,3 +1,4 @@
+import {ListenSections} from '../components/Listen/ListenSections';
 import {usePageState} from '../hooks/usePageState';
 import { ListenDiscover } from '../components/Listen/ListenDiscover';
 import { useEffect } from "react";
@@ -145,11 +146,7 @@ export function ListenPage() {
           ⌂
         </Link>
       </header>
-      <Link to="/listen/library" className="listen-resume" style={{display:'block',textDecoration:'none',color:'inherit'}}>
-        <span className="listen-eyebrow">LA BIBLIOTHÈQUE RACONTÉE</span>
-        <h2>Des histoires à écouter, des idées à comprendre</h2>
-        <p>Prophètes, cours et sens des invocations · Découvrir →</p>
-      </Link>
+      <ListenSections />
       {lastListened && !query && tab === "explore" && (
         <section className="listen-resume">
           <span className="listen-eyebrow">REPRENDRE MON ÉCOUTE</span>

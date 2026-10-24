@@ -88,3 +88,7 @@ Les dernières ressources web sont embarquées : livres à lire et écouter, dé
 32 tests TypeScript ciblés et 20 contrôles Swift réussis. Compilation web, synchronisation, archive, export et vérification des signatures réussis ; app et widgets portent 1.5 (12), sans serveur de développement. Envoi App Store Connect confirmé par Xcode le 23 octobre à 16:12:21 (Paris). Le transfert ne vaut pas approbation ni disponibilité TestFlight. Dossier : `../../outputs/ios-1.5-12/`.
 
 L’iPhone associé est indisponible : les interactions, notifications, widgets et audio en arrière-plan de ce build restent à valider physiquement. Le pupitre est sélectionnable manuellement ; aucune détection automatique de pliure non vérifiée sur iOS n’est promise. La capacité CarPlay Audio reste inchangée.
+
+## Mise à jour du 24 octobre 2026 — 1.5 (13)
+
+Le build 13 embarque le catalogue de 36 livres (19 nouveaux), leurs textes complets, les liens depuis Prophètes et Histoires et moralités, et les filtres thématiques. La préparation Capacitor et l’archive Release signée ont réussi. Xcode a confirmé l’envoi à App Store Connect le 24 octobre à 03:33, heure de Paris (`Upload succeeded`, `EXPORT SUCCEEDED`). Le traitement Apple a commencé ; cette confirmation ne signifie ni approbation App Store ni validation sur un iPhone physique. Les nouveaux fichiers audio sont distribués par le catalogue publié du serveur et ne sont pas embarqués dans le binaire.

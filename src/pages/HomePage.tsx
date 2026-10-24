@@ -16,10 +16,10 @@ import { Share2, RotateCcw, Heart, Plus, X, ChevronUp, ChevronDown, ChevronLeft,
 import { getHadithOfDay, getHijriDate, formatHijriDate, formatHijriDateAr, getGreeting, getSeasonalTags, getUpcomingIslamicEvent } from '../lib/hadithEngine';
 import { getHadithPhonetic } from '../lib/hadithPhonetics';
 import { formatDivineNames } from '../lib/divineNames';
-import { localDay } from '../lib/learning';
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
+import {BookCollections} from '../components/Books/BookCollections';
 import { SmartSentinel, SentinelShortcut } from '../components/Home/SmartSentinel';
 import { useSmartCoaching } from '../hooks/useSmartCoaching';
 import { ReligiousReference } from '../components/ReligiousReference';
@@ -134,7 +134,7 @@ function loadUserDhikrs(): DhikrItem[] {
             try {
                 const parsedLegacy = JSON.parse(legacyCustom);
                 return [...DHIKR_LIST, ...parsedLegacy];
-            } catch (e) { /* ignore */ }
+            } catch { /* ignore */ }
         }
     } catch (e) { console.error(e); }
 
@@ -190,7 +190,7 @@ function useDhikr(now:Date) {
             }
             window.location.reload();
         }
-    }, [allItems]);
+    }, []);
 
     const completedCount = allItems.filter(d => d.target > 0 && (counts[d.id] || 0) >= d.target).length;
     const targetedCount = allItems.filter(d => d.target > 0).length;
@@ -281,8 +281,7 @@ export function HomePage() {
     const bookmark = useReadingBookmarkStore(s => s.bookmark);
     const { t } = useTranslation();
     const now = useHomeClock();
-    const hadithDay = localDay(now);
-    const hadith = useMemo(() => getHadithOfDay(now), [hadithDay]);
+    const hadith = useMemo(() => getHadithOfDay(now), [now]);
     const hijri = useMemo(() => getHijriDate(now), [now]);
     const greeting = useMemo(() => getGreeting(now), [now]);
     const seasonalTags = useMemo(() => getSeasonalTags(now), [now]);
@@ -338,7 +337,7 @@ export function HomePage() {
         const [item] = newList.splice(oldIndex, 1);
         newList.splice(newIndex, 0, item);
         dhikr.reorderDhikrs(newList);
-    }, [dhikr.allItems, dhikr.reorderDhikrs]);
+    }, [dhikr]);
     const [newDuaa, setNewDuaa] = useState({ text: '', textFr: '', descFr: '', target: 0, emoji: '🤲' });
     const [showIslamicCalendar, setShowIslamicCalendar] = useState(false);
 
@@ -636,6 +635,7 @@ quick:<HomeQuickLinks favorites={shortcuts.favorites} onEdit={()=>setShowCustomi
 
             <HomeResume readingTitle={bookmark?'Reprendre mon signet':'Reprendre ma lecture'} readingDetail={`${bookmark?.precision==='page'?'':`${SURAH_NAMES[displaySurah]||`Sourate ${displaySurah}`} · `}Page ${displayPage}${bookmark?.precision==='verse'?` · verset ${bookmark.ayah}`:''}`} onRead={handleContinueReading} streak={readingStreak}/>
             <SmartSentinel feed={sentinelFeed}/>
+            <BookCollections home/>
             {sectionOrder.map(id=><React.Fragment key={id}>{sections[id]}</React.Fragment>)}
 
 
