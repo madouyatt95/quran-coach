@@ -28,6 +28,7 @@ import {DuelChoice,LocalDuelSetup} from '../components/Quiz/DuelChoice';
 import {QuizStudio} from '../components/Quiz/QuizStudio';
 
 const QuizGames=lazy(()=>import('../components/Quiz/Games/QuizGames').then(m=>({default:m.QuizGames})));
+const FaceToFaceGame=lazy(()=>import('../components/Quiz/Games/FaceToFaceGame').then(m=>({default:m.FaceToFaceGame})));
 
 // ─── Main Quiz Page ──────────────────────────────────────
 export function QuizPage() {
@@ -46,6 +47,7 @@ export function QuizPage() {
         }
     }, [player, matchId, channel, syncMatch]);
 
+    if(params.get('table')==='1')return <Suspense fallback={<main className="quiz-container qx"><p role="status">Préparation de la table…</p></main>}><FaceToFaceGame/></Suspense>;
     if(params.has('game'))return <Suspense fallback={<main className="quiz-container qx"><p role="status">Ouverture du jeu…</p></main>}><QuizGames/></Suspense>;
     if(params.has('source')||params.has('exercise'))return <QuizLaunch/>;
     if(params.has('challenge'))return <QuizStudio/>;

@@ -32,3 +32,9 @@ it('exposes lesson details on expansion and applies looping to the word audio',a
  await click('Prononcer le mot');expect(sounds[0].loop).toBe(true);
  await act(async()=>window.dispatchEvent(new Event('quran-stop-playback')));expect(sounds[0].pause).toHaveBeenCalled();expect(div.textContent).toContain('Prononcer');
 });
+it('keeps pronunciation, expansion and closing available in the embedded study pane',async()=>{
+ const close=vi.fn();await act(async()=>root.render(<MemoryRouter><WordStudyCard embedded word={word} font={UNICODE_PAGE_FONT} paper="sepia" page={3} previous next onAdjacent={()=>{}} onClose={close} onTranslation={()=>{}} onBeforePlay={beforePlay} rules={{}}/></MemoryRouter>));
+ await click('Prononcer le mot');expect(sounds).toHaveLength(1);
+ await act(async()=>[...div.querySelectorAll('button')].find(b=>b.textContent?.includes('Translittération et Tajwid'))!.click());expect(div.textContent).toContain('Boucle désactivée');
+ await click('Fermer l’étude de ce mot');expect(close).toHaveBeenCalledOnce();expect(sounds[0].pause).toHaveBeenCalled();
+});

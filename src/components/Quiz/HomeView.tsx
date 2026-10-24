@@ -26,6 +26,7 @@ export function HomeView() {
     const modes = [
         { icon: '🎯', title: 'Quiz solo', description: 'Choisir un thème', action: q.startSolo },
         { icon: '⚔️', title: 'Duel', description: 'Sur un téléphone ou en ligne', action: () => q.setView('duel-choice') },
+        { icon: '🤝', title: 'Face à face', description: 'Chacun joue sur sa moitié', action: () => navigate('/quiz?table=1') },
         { icon: '⚡', title: 'Sprint', description: '60 secondes pour jouer', action: q.startSprint },
         { icon: '🎧', title: 'Quiz audio', description: 'Reconnaître une sourate', action: q.startAudio },
         { icon: '📅', title: 'Défi du jour', description: '10 questions communes', action: () => q.setView('daily') },

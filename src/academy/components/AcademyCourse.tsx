@@ -43,7 +43,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
  const article=useRef<HTMLElement>(null);
  const top=useRef<HTMLDivElement>(null);
  const [outline,setOutline]=useState(false);
- const [practiceIndex,setPracticeIndex]=useState(0);const pupitre=usePupitreLayout();
+ const [practiceIndex,setPracticeIndex]=useState(0);const pupitre=usePupitreLayout(true,'course');
  const audio=useRef<CourseAudioHandle>(null);
  const listen=(index:number)=>audio.current?.play(index);
  const narration=courseNarration(course.id);
@@ -86,7 +86,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
    <nav className="academy-course-outline" aria-label="Sommaire du chapitre"><button onClick={()=>setOutline(value=>!value)} aria-expanded={outline}><List size={18}/> Dans ce chapitre <span>{outline?'−':'+'}</span></button>{outline&&<ol>{sections.map((section,index)=><li key={section.title}><button onClick={()=>jump(index)}>{section.title}</button></li>)}</ol>}</nav>
    <article className="academy-course-article" ref={article}>
     {narration&&<section className="academy-course-narration"><span className="academy-course-eyebrow">LE RÉCIT ÉTUDIÉ · TRADUCTION DU COURS</span><h2>{source.chapter.number===12?'Lire le récit de Umar':'Lire le hadith dans son contexte'}</h2>{narrationBlocks(narration).map((block,index)=>block.type==='speaker'?<h3 className="academy-course-speaker" key={index}>{block.text}</h3>:<p key={index}><CourseReferenceText text={block.text}/></p>)}<small>Texte et attributions reproduits du chapitre {source.chapter.number}, à partir de la page {source.chapter.start} du cours.</small></section>}
-    {sections.map((section,index)=><section className="academy-course-section" id={`course-section-${index}`} data-section={index} key={section.title}>
+    {sections.map((section,index)=><section className="academy-course-section" id={`course-section-${index}`} data-pupitre-anchor={`${course.id}:${index}`} data-section={index} key={section.title}>
      <span className="academy-course-section-number">{String(index+1).padStart(2,'0')} / COMPRENDRE</span><h2>{section.title}</h2><p className="academy-course-lead"><CourseReferenceText text={section.body}/></p><Paragraphs text={teaching.developments[index]}/><CourseReasoning id={course.id} index={index} onPractice={()=>{if(pupitre.layout!=='plain'){setPracticeIndex(index);document.getElementById('pupitre-course-practice')?.scrollIntoView({block:'start'});}else document.getElementById(`course-practice-${index}`)?.scrollIntoView({block:'center',behavior:'smooth'});}}/><div className="pupitre-classic-only" id={`course-practice-${index}`}><CoursePractice id={course.id} index={index}/></div><CourseExplore id={course.id} index={index} onListen={()=>listen(index)}/>
     </section>)}
     <CourseCases id={course.id} onRead={jump} onAnswer={(index,correct)=>useAcademyKnowledgeStore.getState().answer(course.id,index,'case',correct?1:0,correct)}/><CourseConnections id={course.id}/><button className="academy-course-link" onClick={onReview}>Préparer ma séance de révision →</button>

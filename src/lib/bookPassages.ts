@@ -27,3 +27,8 @@ export function passageAtAudio(passages:BookPassage[],marks:ReturnType<typeof bo
 export function audioAtPassage(passage:BookPassage,marks:ReturnType<typeof bookAudioMarks>){
  return marks.find(mark=>mark.start<passage.end&&mark.end>passage.start);
 }
+/** A scene may have text without a recorded cue. Never fabricate a timestamp. */
+export function bookSceneCues(book:NarrativeBook,chapter:NarrativeChapter,recordings:LibraryAudio[]){
+ const passages=bookPassages(book,chapter),marks=bookAudioMarks(book,chapter,recordings);
+ return chapter.scenes.map((scene,index)=>{const passage=passages.find(p=>p.scene===index);return {scene,index,passage,mark:passage?audioAtPassage(passage,marks):undefined};});
+}

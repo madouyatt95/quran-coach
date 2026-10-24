@@ -27,6 +27,7 @@ it('keeps audio nodes, selections and mount lifecycle intact across layout and o
   await click('Disposition de l’écran');
   await act(async()=>{const select=host.querySelector('select')!;select.value=choice;select.dispatchEvent(new Event('change',{bubbles:true}));window.dispatchEvent(new Event('resize'));});
   expect(host.querySelector('audio')).toBe(audio);expect(host.querySelector('output')!.textContent).toBe('1');expect(mount).toHaveBeenCalledTimes(1);expect(dispose).not.toHaveBeenCalled();
+  await act(async()=>Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='Terminé')!.click());
  }
  await act(async()=>root.unmount());host.remove();expect(dispose).toHaveBeenCalledTimes(1);
 });

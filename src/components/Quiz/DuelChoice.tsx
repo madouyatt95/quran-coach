@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {Link} from 'react-router-dom';
 import {QUIZ_THEMES,type QuizThemeId} from '../../data/quizTypes';
 import {getQuestions,getSprintQuestions} from '../../lib/quizEngine';
 import {legacyLearningQuestion} from '../../lib/quizLearning';
@@ -8,6 +9,7 @@ export function DuelChoice(){
  const setView=useQuizStore(s=>s.setView);
  return <main className="quiz-container qx"><header className="qx-header"><button onClick={()=>setView('home')}>← Quiz & défis</button></header><h1>Comment voulez-vous jouer ?</h1>
  <button className="qx-card qx-launch" onClick={()=>setView('local-duel')}>📱 <span><strong>Sur ce téléphone</strong><small>Deux joueurs · les mêmes questions · sans code</small></span><b>→</b></button>
+ <Link className="qx-card qx-launch" to="/quiz?table=1">🤝 <span><strong>Face à face</strong><small>Une moitié par joueur · réponses révélées ensemble</small></span><b>→</b></Link>
  <button className="qx-card qx-launch" onClick={()=>setView('lobby')}>⚔️ <span><strong>À distance</strong><small>Créer un duel en ligne et inviter un ami</small></span><b>→</b></button>
  <button onClick={()=>setView('join')}>🔑 Rejoindre avec un code</button></main>;
 }

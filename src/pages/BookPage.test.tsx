@@ -15,7 +15,7 @@ vi.mock('../lib/audioLibrary',()=>({downloadedAudioIds:async()=>[],downloadLibra
 vi.mock('../lib/bookAmbience',()=>({stopBookAmbience:vi.fn(),setBookAmbience:vi.fn(async()=>{})}));
 vi.mock('../academy/data/courseEvidence',()=>({loadEvidenceVerses:mocks.load}));
 vi.mock('../lib/quranApi',()=>({getAudioUrl:vi.fn(()=>'/test.mp3')}));
-vi.mock('../components/Pupitre/usePupitreLayout',()=>({usePupitreLayout:()=>({layout:'plain',choice:'plain',device:{width:900},choose:vi.fn()})}));
+vi.mock('../components/Pupitre/usePupitreLayout',async importOriginal=>({...await importOriginal<typeof import('../components/Pupitre/usePupitreLayout')>(),usePupitreLayout:()=>({layout:'plain',choice:'plain',ratio:50,device:{width:900},choose:vi.fn(),setRatio:vi.fn()})}));
 import {BookPage} from './BookPage';
 import {Routes,Route} from 'react-router-dom';
 import {useBookNotebook} from '../stores/bookNotebookStore';
