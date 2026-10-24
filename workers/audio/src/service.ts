@@ -169,8 +169,20 @@ export async function reconcile(env: Env, job: Job, suppliedHistory?: string) {
   requireValue(job.state!=='generating'||Date.parse(job.started_at)<Date.now()-180000,'La génération est encore en cours.');
   const script=await row<AudioScript>(env,'scripts',job.script_id);
   const saved=await env.AUDIO.get(`receipts/${job.id}.json`);
-  let receipt=saved?await saved.json<Result>():null;
-  let historyId=suppliedHistory||receipt?.history_id||job.history_id;
+  let receipt:Result|null=null;
+  try{receipt=saved?await saved.json<Result>():null;}catch{
+    // A truncated streamed response is evidence, not permission to synthesize
+    // again. Recover through the exact provider history below instead.
+  }
+  // New receipts are streamed provider responses. Billing headers live beside
+  // the body, so recovery does not depend on parsing a large response in time.
+  if(receipt&&saved?.customMetadata){
+    receipt.request_id ||= saved.customMetadata.request_id||undefined;
+    receipt.history_id ||= saved.customMetadata.history_id||undefined;
+    const cost=saved.customMetadata.actual;
+    if(receipt.actual==null&&cost&&/^\d+$/.test(cost))receipt.actual=Number(cost);
+  }
+  let historyId=suppliedHistory||receipt?.history_id||saved?.customMetadata?.history_id||job.history_id;
   if(!historyId&&(!receipt||receipt.actual==null))historyId=await discoverHistory(env,job,script);
   let actual=receipt?.actual??null;
   if(historyId){
@@ -179,7 +191,11 @@ export async function reconcile(env: Env, job: Job, suppliedHistory?: string) {
     requireValue(response.ok,'Historique introuvable sur ce compte.');
     const h=await response.json() as {text:string;voice_id:string;model_id:string;request_id:string;date_unix:number;character_count_change_to:number;character_count_change_from:number;alignments?:{alignment?:Alignment;normalized_alignment?:Alignment}};
     requireValue(h.text===script.text&&h.voice_id===job.voice.voice_id&&h.model_id===job.voice.model_id&&h.date_unix>=Math.floor(Date.parse(job.started_at)/1000)-5,'L’historique ne correspond pas exactement à cette production.');
-    requireValue(!job.request_id||h.request_id===job.request_id,'La requête ne correspond pas.');
+    const expectedRequest=job.request_id||saved?.customMetadata?.request_id;
+    requireValue(!expectedRequest||h.request_id===expectedRequest,'La requête ne correspond pas.');
+    // Keep provider metadata before decoding or validating a large recovered
+    // audio. A rejected alignment must not discard the only recovery evidence.
+    await env.AUDIO.put(`history/${job.id}.json`,JSON.stringify(h),{httpMetadata:{contentType:'application/json'}});
     const assigned=await db<Job[]>(env,`qc_audio_jobs?account_id=eq.${encodeURIComponent(job.account_id)}&history_id=eq.${encodeURIComponent(historyId)}&id=neq.${job.id}`);
     requireValue(!assigned.length,'Cet historique est déjà associé à un autre audio.');
     const delta=h.character_count_change_to-h.character_count_change_from;
@@ -187,11 +203,12 @@ export async function reconcile(env: Env, job: Job, suppliedHistory?: string) {
     if(!receipt){
       const r=await eleven(env,job.account_id,`history/${historyId}/audio`);requireValue(r.ok,'Téléchargement de l’historique indisponible.');
       const bytes=new Uint8Array(await r.arrayBuffer());
-      receipt={audio_base64:encodeAudioBase64(bytes),alignment:h.alignments?.alignment||null,request_id:h.request_id,history_id:historyId};
+      receipt={audio_base64:encodeAudioBase64(bytes),alignment:h.alignments?.alignment||h.alignments?.normalized_alignment||null,request_id:h.request_id,history_id:historyId};
     }
     receipt.history_id=historyId;receipt.actual=actual;
   }
   requireValue(receipt,'Aucun fichier récupérable. Retrouvez l’identifiant dans l’historique ElevenLabs. Aucune nouvelle génération n’a été lancée.');
+  await env.AUDIO.put(`receipts/${job.id}.json`,JSON.stringify(receipt),{httpMetadata:{contentType:'application/json'}});
   receipt!.alignment=historyAlignment(script.text,receipt!.alignment);
   const duration=alignmentDuration(script.text,receipt!.alignment);
   requireValue(duration>0,'Horodatages récupérés incohérents. Le fichier est conservé ; aucune nouvelle génération lancée.');
@@ -219,13 +236,19 @@ export async function produceOne(env: Env, jobId: string): Promise<boolean> {
     // No retry here: provider billing may have happened even if the response was lost.
     const response=await eleven(env,job.account_id,`text-to-speech/${job.voice.voice_id}/with-timestamps?output_format=mp3_44100_128`,{method:'POST',body:JSON.stringify({text:script.text,model_id:job.voice.model_id,language_code:'fr',voice_settings:{stability:job.voice.stability,similarity_boost:job.voice.similarity,style:job.voice.style,use_speaker_boost:true},apply_text_normalization:'auto'})});
     if(!response.ok)throw new Error(`ElevenLabs HTTP ${response.status}. Vérification requise avant toute reprise.`);
-    const result=await response.json() as Result;
-    result.request_id=response.headers.get('request-id')||undefined;
-    result.history_id=response.headers.get('history-item-id')||undefined;
     const cost=response.headers.get('character-cost');
+    const requestId=response.headers.get('request-id')||undefined,historyId=response.headers.get('history-item-id')||undefined;
+    // Stream the paid result to durable storage before parsing megabytes of
+    // base64. A hard runtime/CPU interruption still leaves a recoverable file.
+    await env.AUDIO.put(`receipts/${job.id}.json`,response.body,{httpMetadata:{contentType:'application/json'},customMetadata:{
+      ...(requestId?{request_id:requestId}:{}),...(historyId?{history_id:historyId}:{}),
+      ...(cost!==null&&/^\d+$/.test(cost)?{actual:cost}:{}),
+    }});
+    const stored=await env.AUDIO.get(`receipts/${job.id}.json`);
+    if(!stored)throw new Error('Reçu durable introuvable.');
+    const result=await stored.json<Result>();
+    result.request_id=requestId;result.history_id=historyId;
     result.actual=cost!==null&&/^\d+$/.test(cost)?Number(cost):null;
-    // Durable receipt first. A failed DB write or encoding step never requires a new paid call.
-    await env.AUDIO.put(`receipts/${job.id}.json`,JSON.stringify(result),{httpMetadata:{contentType:'application/json'}});
     await storeResult(env,job,result,script);return true;
   } catch {
     await patch(env,'jobs',job.id,{state:'uncertain',error:'Résultat à vérifier. Reprendre par récupération, sans nouvelle dépense.'});

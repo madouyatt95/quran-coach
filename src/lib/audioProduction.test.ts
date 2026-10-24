@@ -23,6 +23,14 @@ describe('production audio',()=>{
   const durations={characters:['a','b','c'],character_start_times_seconds:[0,.151,.245],character_end_times_seconds:[.151,.093,.081]};
   expect(alignmentDuration('abc',historyAlignment('abc',durations))).toBeCloseTo(.326,3);
  });
+ it('preserves a zero-duration paragraph break after decimal addition',()=>{
+  const raw={characters:Array.from('a\n\nb'),character_start_times_seconds:[0,43.212,43.723,43.723],character_end_times_seconds:[43.212,.511,0,.151]};
+  expect(43.212+.511).toBeGreaterThan(43.723);
+  const fixed=historyAlignment('a\n\nb',raw)!;
+  expect(fixed.character_start_times_seconds).toEqual(raw.character_start_times_seconds);
+  expect(fixed.character_end_times_seconds).toEqual([43.212,43.723,43.723,43.874]);
+  expect(alignmentDuration('a\n\nb',fixed)).toBe(43.874);
+ });
  it('rejects ambiguous or mismatched history marks and backwards ends',()=>{
   const invalid={characters:['a','b','c'],character_start_times_seconds:[0,1,2],character_end_times_seconds:[.2,.3,.4]};
   expect(historyAlignment('abc',invalid)).toBeNull();

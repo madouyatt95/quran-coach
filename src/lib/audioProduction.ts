@@ -65,7 +65,10 @@ export function historyAlignment(text: string, alignment: Alignment | null): Ali
   if (starts.some((start,i) => !Number.isFinite(start) || start < 0 || !Number.isFinite(durations[i]) || durations[i] < 0
     || (i > 0 && start < starts[i-1])
     || (i < starts.length-1 && Math.abs(start + durations[i] - starts[i+1]) > 0.002))) return null;
-  const absolute = {...alignment, character_end_times_seconds: starts.map((start,i) => start + durations[i])};
+  // Decimal timestamps can add to 43.723000000000006 immediately before a
+  // zero-duration line break at 43.723. Remove binary floating point residue;
+  // retain nanosecond precision without interpolating or creating any marks.
+  const absolute = {...alignment, character_end_times_seconds: starts.map((start,i) => Math.round((start + durations[i]) * 1e9) / 1e9)};
   return alignmentDuration(text, absolute) ? absolute : null;
 }
 export function sentenceTimings(text: string, alignment: Alignment | null) {
