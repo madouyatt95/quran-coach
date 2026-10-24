@@ -6,6 +6,9 @@ import {resolve} from 'node:path';
 // Preparation only: no credentials, API calls, approvals, publication or synthesis.
 const outArg=process.argv.find(x=>x.startsWith('--out='));
 const directory=resolve(outArg?.slice(6)||'outputs/companions-production');
+const ceilingArg=process.argv.find(x=>x.startsWith('--credit-ceiling='));
+const authorizedCreditCeiling=ceilingArg?Number(ceilingArg.split('=')[1]):100000;
+if(!Number.isSafeInteger(authorizedCreditCeiling)||authorizedCreditCeiling<=0||authorizedCreditCeiling>10000000)throw Error('Plafond autorisé invalide.');
 const rateArg=process.argv.find(x=>x.startsWith('--verified-rate='));
 const rate=rateArg?Number(rateArg.split('=')[1]):null;
 if(rate!==null&&(!Number.isFinite(rate)||rate<.1||rate>10))throw Error('Tarif vérifié invalide.');
@@ -24,6 +27,6 @@ for(const book of narrativeBooks.filter(b=>b.collection==='companions')){
  await writeFile(resolve(directory,`${book.id}.md`),bookMarkdown(book));
  plan.push({id:book.id,title:book.title,version:book.version,chapters:book.chapters.length,segments:scripts.length,words:narrationLength(bookNarrative(book,true)).words,characters:chars,estimate,reserve,scripts:file,sha256:checksum,sources:book.sources.map(s=>s.type!=='quran'?s.url:`https://quran.com/${s.surah}/${s.first}-${s.last}`)});
 }
-const manifest={schema:1,collection:'companions',authorizedCreditCeiling:100000,paidOverageAllowed:false,automaticAccountSwitching:false,rate,rateStatus:rate===null?'À vérifier sur le nouveau compte avant devis':'Tarif fourni par l’opérateur, à confirmer avec le devis serveur',generationStarted:false,books:plan,totalCharacters:plan.reduce((n,b)=>n+b.characters,0),totalEstimate:rate===null?null:plan.reduce((n,b)=>n+b.estimate,0),totalReserve:rate===null?null:plan.reduce((n,b)=>n+b.reserve,0),requirements:['Compte ElevenLabs identifié, éligible et raccordé par secret serveur.','Quota fournisseur, dépassements désactivés et budget cumulé à vérifier.','Scripts relus et devis atomique approuvé dans le studio.','Aucune reprise automatique d’un appel facturé ambigu.','Publication des éditions complètes après les contrôles de production, sans fausse attestation d’écoute.']};
+const manifest={schema:1,collection:'companions',authorizedCreditCeiling,paidOverageAllowed:false,automaticAccountSwitching:false,rate,rateStatus:rate===null?'À vérifier sur le nouveau compte avant devis':'Tarif fourni par l’opérateur, à confirmer avec le devis serveur',generationStarted:false,books:plan,totalCharacters:plan.reduce((n,b)=>n+b.characters,0),totalEstimate:rate===null?null:plan.reduce((n,b)=>n+b.estimate,0),totalReserve:rate===null?null:plan.reduce((n,b)=>n+b.reserve,0),requirements:['Compte ElevenLabs identifié, éligible et raccordé par secret serveur.','Quota fournisseur, dépassements désactivés et budget cumulé à vérifier.','Scripts relus et devis atomique approuvé dans le studio.','Aucune reprise automatique d’un appel facturé ambigu.','Publication des éditions complètes après les contrôles de production, sans fausse attestation d’écoute.']};
 await writeFile(resolve(directory,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 console.log(JSON.stringify({directory,books:plan.length,segments:plan.reduce((n,b)=>n+b.segments,0),characters:manifest.totalCharacters,estimate:manifest.totalEstimate,reserve:manifest.totalReserve,paidCalls:0}));

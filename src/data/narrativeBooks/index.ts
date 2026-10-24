@@ -47,11 +47,12 @@ import {uthmanBook} from './uthman';
 import {aliBook} from './ali';
 import {khadijaBook} from './khadija';
 import {fatimaBook} from './fatima';
+import {furtherCompanionBooks} from './companionFurtherBooks';
 
 /** Editorial manuscripts, loaded only by the administrator's book workshop. */
 const authoredBooks = [adamBook, nuhBook, ibrahimBook, yusufBook, musaBook, maryamIsaBook, sulaymanBook, khidrBook, caveBook, wealthBook, musaAfterBook, kingsBook, callsBook, siraBook, voicesBook, luqmanBook, speechBook,
  lutBook,kaabBook,aishaBook,boyKingBook,rockBook,threeTestedBook,repentanceBook,hajarBook,hijraBook,nightJourneyBook,hudaybiyyaBook,revelationBook,abuDharrBook,balanceBook,hospitalityBook,appearancesBook,mercyBook,jabirBook,seaTrustBook,abuBakrBook,bilalBook,musabBook,zaydThabitBook,asmaBook,ummSalamaBook,umarBook,uthmanBook,aliBook,khadijaBook,fatimaBook];
 /** New recordings are prepared against these editions in the studio. */
-export const narrativeProductionBooks=authoredBooks.map(revisedCompanionEdition).map(completeCompanionBiography);
+export const narrativeProductionBooks=[...authoredBooks,...furtherCompanionBooks].map(revisedCompanionEdition).map(completeCompanionBiography);
 /** The current written edition is canonical. Audio is exposed only for its exact manuscript version. */
 export const narrativeBooks=narrativeProductionBooks;

@@ -57,7 +57,7 @@ const portraitEntries:CompanionPortrait[]=[
   'Umar parle de Bilal avec un respect qui rapproche son nom de celui d’Abu Bakr, l’homme qui l’a affranchi. Le témoignage est bref, mais il refuse de laisser l’ancienne condition d’esclave définir sa valeur.',
   'Dans un autre passage, le Prophète interroge Bilal sur une pratique dont il espère la récompense. Sa réponse porte sur les ablutions et la prière. Le livre suit aussi l’installation de l’appel à la prière, pour retrouver le compagnon derrière une voix devenue familière.'
  ],references:[B('3754','Les paroles d’Umar sur Bilal et son affranchissement.'),B('1149','Les ablutions et la prière de Bilal.'),B('604','La consultation sur l’appel à la prière et le rôle de Bilal.')]},
- {id:'khalid',nameFr:'Khalid ibn al-Walid',nameAr:'خالد بن الوليد',aliases:'Khaled Walid',title:'Assumer le commandement dans l’épreuve',group:'companions',theme:'faith',scene:'desert',paragraphs:[
+ {id:'khalid',nameFr:'Khalid ibn al-Walid',nameAr:'خالد بن الوليد',aliases:'Khaled Walid',title:'De l’adversaire d’Uhud aux premiers califats',group:'companions',theme:'faith',scene:'desert',bookId:'khalid-parcours',paragraphs:[
   'À propos de Muta, Khalid rapporte que plusieurs épées se sont brisées dans sa main. Un autre témoignage suit la succession des chefs et la prise de l’étendard après leur mort. Ces sources présentent une situation éprouvante plutôt qu’une aventure sans danger.',
   'Après la mort de Zayd, Jafar et Abdullah ibn Rawaha, Khalid reprend l’étendard. La succession des chefs donne toute sa gravité à cette responsabilité confiée au milieu de l’épreuve.'
  ],references:[B('3757','Le souvenir de Khalid à Muta.'),B('4262','L’annonce du sort des chefs et la prise de l’étendard.')]},
@@ -65,7 +65,7 @@ const portraitEntries:CompanionPortrait[]=[
   'Abu Dharr raconte sa recherche du Prophète à La Mecque : les nouvelles entendues, le voyage, la prudence nécessaire et les rencontres. Son témoignage donne une place importante au temps de l’enquête et à l’attente.',
   'Le récit suit ensuite son engagement sans présenter chaque réaction comme une règle à reproduire. Le lecteur retrouve un chemin de recherche, un accueil et une responsabilité envers son peuple.'
  ],references:[M('2473a','Le long témoignage d’Abu Dharr sur sa venue à La Mecque.')]},
- {id:'salman',nameFr:'Salman al-Farisi',nameAr:'سلمان الفارسي',aliases:'Salmane Salman le Perse',title:'Donner à chaque droit sa place',group:'companions',theme:'solidarity',scene:'garden',paragraphs:[
+ {id:'salman',nameFr:'Salman al-Farisi',nameAr:'سلمان الفارسي',aliases:'Salmane Salman le Perse',title:'De la Perse à Médine, puis aux rives de l’Irak',group:'companions',theme:'solidarity',scene:'garden',bookId:'salman-recherche',paragraphs:[
   'Salman rend visite à Abu ad-Darda et découvre un foyer déséquilibré par une pratique qui néglige d’autres obligations. Il intervient au moment du repas puis de la nuit, avant de rappeler les droits du Seigneur, du corps et de la famille.',
   'Le Prophète confirme la justesse de son rappel. Cet épisode devient une entrée pour comprendre l’équilibre : une ferveur sincère ne dispense pas de regarder ceux qui vivent à nos côtés.'
  ],references:[B('1968','La visite de Salman à Abu ad-Darda et la confirmation prophétique.')]},
@@ -85,7 +85,7 @@ const portraitEntries:CompanionPortrait[]=[
   'À Muta, Jafar prend l’étendard après Zayd. Le Prophète annonce à la communauté la mort des chefs, les yeux remplis de larmes. L’affection et la peine ont toute leur place dans ce témoignage.',
   'Ibn Umar salue ensuite son fils en rappelant le surnom des deux ailes. Ce salut garde la mémoire de Jafar dans une relation qui se poursuit avec la génération suivante.'
  ],references:[B('3709','Le salut d’Ibn Umar au fils de Jafar.'),B('4262','Les chefs de Muta et l’annonce de leur mort.')]},
- {id:'abu-hurayra',nameFr:'Abu Hurayra',nameAr:'أبو هريرة',aliases:'Abou Hourayra Abu Hurairah',title:'Garder et transmettre ce que l’on reçoit',group:'companions',theme:'knowledge',scene:'night',paragraphs:[
+ {id:'abu-hurayra',nameFr:'Abu Hurayra',nameAr:'أبو هريرة',aliases:'Abou Hourayra Abu Hurairah',title:'Du pays des Daws à la mémoire transmise',group:'companions',theme:'knowledge',scene:'night',bookId:'abu-hurayra-memoire',paragraphs:[
   'Abu Hurayra rapporte une difficulté à retenir ce qu’il entend puis une invocation du Prophète. Son témoignage permet de parler de mémoire et de transmission sans réduire sa vie à un chiffre de hadiths.',
   'D’autres récits le montrent aussi dans le besoin, notamment autour d’une coupe de lait offerte puis partagée. Le transmetteur n’est pas séparé de l’homme qui a connu la faim et l’accueil.'
  ],references:[B('119','Le témoignage sur la mémoire.'),B('6452','La faim, l’accueil et le partage du lait.')]},
@@ -105,7 +105,7 @@ const portraitEntries:CompanionPortrait[]=[
   'Abu Bakr confie à Zayd une tâche qui lui paraît plus lourde que le déplacement d’une montagne : réunir les éléments écrits et les témoignages de mémorisation du Coran. Le récit ne dissimule pas sa première hésitation.',
   'Plus tard, il participe au travail demandé par Uthman. Le livre distingue ces deux étapes pour rendre compréhensible une transmission souvent racontée en une seule phrase.'
  ],references:[B('4986','Le rassemblement sous Abu Bakr raconté par Zayd.'),B('4987','La commission des copies sous Uthman.')]},
- {id:'ibn-abbas',nameFr:'Abdullah ibn Abbas',nameAr:'عبد الله بن عباس',aliases:'Ibn Abbâs Abdallah Abbas',title:'Grandir dans la compréhension',group:'companions',theme:'knowledge',scene:'night',paragraphs:[
+ {id:'ibn-abbas',nameFr:'Abdullah ibn Abbas',nameAr:'عبد الله بن عباس',aliases:'Ibn Abbâs Abdallah Abbas',title:'Une enfance mecquoise, une vie d’étude',group:'companions',theme:'knowledge',scene:'night',bookId:'ibn-abbas-comprendre',paragraphs:[
   'Ibn Abbas prépare de l’eau pour les ablutions du Prophète et reçoit une invocation pour sa compréhension de la religion. Le passage associe un service discret et un encouragement à apprendre.',
   'Dans le récit de la consultation autour de la sourate An-Nasr, Umar lui donne aussi la parole parmi des compagnons plus âgés. Le savoir se révèle dans une explication soumise à l’écoute des autres.'
  ],references:[B('143','L’eau préparée et l’invocation pour Ibn Abbas.'),B('4970','La compréhension de la sourate An-Nasr.')]},
@@ -113,11 +113,11 @@ const portraitEntries:CompanionPortrait[]=[
   'Un songe d’Abdullah est raconté au Prophète. La réponse comporte un encouragement à la prière nocturne, et le témoignage conserve la manière dont Abdullah en tient ensuite compte.',
   'Il transmet aussi le conseil de vivre en ce monde comme un étranger ou un voyageur. Ces passages permettent de rencontrer un compagnon à travers les conseils qu’il reçoit puis transmet.'
  ],references:[B('1122','Le songe et l’encouragement à la prière nocturne.'),B('6416','Le conseil du voyageur et le rappel d’Ibn Umar.')]},
- {id:'anas',nameFr:'Anas ibn Malik',nameAr:'أنس بن مالك',aliases:'Anass Anas Malek',title:'Grandir auprès de la douceur',group:'companions',theme:'solidarity',scene:'garden',paragraphs:[
+ {id:'anas',nameFr:'Anas ibn Malik',nameAr:'أنس بن مالك',aliases:'Anass Anas Malek',title:'L’enfant de Médine devenu témoin d’un siècle',group:'companions',theme:'solidarity',scene:'garden',bookId:'anas-presence',paragraphs:[
   'Anas se souvient des années passées au service du Prophète et décrit une relation sans humiliations pour ce qu’il avait fait ou laissé de faire. Son témoignage apporte un point de vue précieux sur l’éducation et la vie quotidienne.',
   'Le souvenir d’un enfant appelé Abu Umayr et de son petit oiseau fait aussi partie de cette mémoire. Une attention adressée à un enfant devient un enseignement transmis à des générations.'
  ],references:[M('2309a','Le souvenir d’Anas sur la douceur dans le service.'),B('6203','Abu Umayr et son oiseau.')]},
- {id:'muadh',nameFr:'Muadh ibn Jabal',nameAr:'معاذ بن جبل',aliases:'Mouadh Mu‘adh',title:'Enseigner sans décourager',group:'companions',theme:'knowledge',scene:'desert',paragraphs:[
+ {id:'muadh',nameFr:'Muadh ibn Jabal',nameAr:'معاذ بن جبل',aliases:'Mouadh Mu‘adh',title:'Le jeune Médinois envoyé enseigner au Yémen',group:'companions',theme:'knowledge',scene:'desert',bookId:'muadh-enseigner',paragraphs:[
   'Muadh reçoit un enseignement sur le droit d’Allah et la situation de Ses serviteurs alors qu’il accompagne le Prophète. Le récit garde la proximité du moment et la question qui lui est adressée.',
   'Lorsqu’il est envoyé au Yémen avec Abu Musa, les consignes portent aussi sur la manière de s’adresser aux gens : faciliter et annoncer de bonnes nouvelles sans repousser les personnes. La transmission engage donc autant la méthode que le contenu.'
  ],references:[B('2856','L’enseignement adressé à Muadh pendant le trajet.'),B('4341','Les consignes pour la mission au Yémen.')]},

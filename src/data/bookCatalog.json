@@ -1644,5 +1644,233 @@
         "title": "La confidence, le deuil et les derniers mois"
       }
     ]
+  },
+  {
+    "id": "salman-recherche",
+    "title": "Salman al-Farisi",
+    "subtitle": "De la Perse à Médine, puis aux rives de l’Irak",
+    "version": "salman-recherche-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines perses, recherche religieuse, asservissement, rencontre du Prophète, affranchissement, vie médinoise et dernières années à al-Madain."
+    },
+    "length": {
+      "words": 1685,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "collection": "companions",
+    "companionIds": [
+      "salman"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Quitter les certitudes de la maison"
+      },
+      {
+        "id": "medine",
+        "title": "Arriver sans être libre"
+      },
+      {
+        "id": "place",
+        "title": "Un croyant venu d’ailleurs dans la vie de Médine"
+      },
+      {
+        "id": "droits",
+        "title": "Les droits des vivants, puis les dernières années"
+      }
+    ]
+  },
+  {
+    "id": "khalid-parcours",
+    "title": "Khalid ibn al-Walid",
+    "subtitle": "De l’adversaire d’Uhud au commandant des premiers califats",
+    "version": "khalid-parcours-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, opposition initiale, conversion, Muta, conquête de La Mecque, actes désavoués, commandements des premiers califats et fin de vie."
+    },
+    "length": {
+      "words": 1738,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "collection": "companions",
+    "companionIds": [
+      "khalid"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "D’abord de l’autre côté"
+      },
+      {
+        "id": "muta",
+        "title": "Quand l’étendard change trois fois de mains"
+      },
+      {
+        "id": "limites",
+        "title": "Le mérite n’efface pas la responsabilité"
+      },
+      {
+        "id": "califats",
+        "title": "Servir, être relevé et laisser une histoire"
+      }
+    ]
+  },
+  {
+    "id": "abu-hurayra-memoire",
+    "title": "Abu Hurayra",
+    "subtitle": "Du pays des Daws à la mémoire transmise aux générations",
+    "version": "abu-hurayra-memoire-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines yéménites, arrivée à Khaybar, pauvreté médinoise, mère, apprentissage, responsabilités publiques et transmission jusqu’à sa mort."
+    },
+    "length": {
+      "words": 1899,
+      "minMinutes": 12,
+      "maxMinutes": 15
+    },
+    "collection": "companions",
+    "companionIds": [
+      "abu-hurayra"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Un nouvel arrivant du pays des Daws"
+      },
+      {
+        "id": "suffa",
+        "title": "La faim et la coupe de lait"
+      },
+      {
+        "id": "proches",
+        "title": "La mémoire reçue et la mère attendue"
+      },
+      {
+        "id": "transmettre",
+        "title": "Une vie qui se prolonge dans la transmission"
+      }
+    ]
+  },
+  {
+    "id": "ibn-abbas-comprendre",
+    "title": "Abdullah ibn Abbas",
+    "subtitle": "D’une enfance mecquoise à une vie d’étude et de transmission",
+    "version": "ibn-abbas-comprendre-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille, enfance à La Mecque, proximité avec la maison prophétique, apprentissage auprès des compagnons, consultation, Bassora, enseignement et décès à Taif."
+    },
+    "length": {
+      "words": 1788,
+      "minMinutes": 11,
+      "maxMinutes": 14
+    },
+    "collection": "companions",
+    "companionIds": [
+      "ibn-abbas"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Grandir dans une famille de La Mecque"
+      },
+      {
+        "id": "apprendre",
+        "title": "Une nuit chez Maymuna, puis des années de questions"
+      },
+      {
+        "id": "umar",
+        "title": "Être jeune et recevoir la parole"
+      },
+      {
+        "id": "enseigner",
+        "title": "Bassora, les élèves et les dernières années"
+      }
+    ]
+  },
+  {
+    "id": "anas-presence",
+    "title": "Anas ibn Malik",
+    "subtitle": "L’enfant de Médine devenu témoin d’un siècle",
+    "version": "anas-presence-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille médinoise, service du Prophète, souvenirs de la maison, événements de la communauté, dernier lundi, enseignement à Bassora et fin de vie."
+    },
+    "length": {
+      "words": 2078,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "anas"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Un enfant dans la ville qui accueille"
+      },
+      {
+        "id": "maison",
+        "title": "Dix années de service sans humiliation"
+      },
+      {
+        "id": "medine",
+        "title": "La famille éprouvée et le dernier lundi"
+      },
+      {
+        "id": "bassora",
+        "title": "À Bassora, vieillir avec un dépôt"
+      }
+    ]
+  },
+  {
+    "id": "muadh-enseigner",
+    "title": "Muadh ibn Jabal",
+    "subtitle": "Le jeune Médinois envoyé enseigner au Yémen",
+    "version": "muadh-enseigner-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines médinoises, al-Aqaba, étude du Coran, direction de la prière, enseignements reçus, mission au Yémen, Syrie et épidémie d’Amwas."
+    },
+    "length": {
+      "words": 2031,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "muadh"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Un jeune homme parmi ceux qui accueillent"
+      },
+      {
+        "id": "priere",
+        "title": "Quand l’application devient une charge pour les autres"
+      },
+      {
+        "id": "yemen",
+        "title": "Partir enseigner, avec des limites à respecter"
+      },
+      {
+        "id": "syrie",
+        "title": "Le retour, la Syrie et la transmission avant la mort"
+      }
+    ]
   }
 ]
