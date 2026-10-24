@@ -1,7 +1,7 @@
 import {expect,it} from 'vitest';
 import {narrativeBooks} from '../data/narrativeBooks';
 import {chapterDrafts,chapterNarrative} from './narrativeBooks';
-import {books,bookForAudio,chapterForAudio,recordingsForBook,bookEntryForOrigin,bookOrigins,resumeRecording,activeBookScene,narratedChapterText,canonicalBookForSource,isSupersededBookAudio} from './bookLibrary';
+import {books,bookForAudio,chapterForAudio,recordingsForBook,bookEntryForOrigin,bookOrigins,resumeRecording,activeBookScene,narratedChapterText,canonicalBookForSource,isSupersededBookAudio,audioOrigin,originForChapter} from './bookLibrary';
 import type {LibraryAudio} from './audioProduction';
 import {prophets} from '../data/prophets';
 import {stories} from '../data/storiesData';
@@ -11,6 +11,13 @@ it('maps every manuscript segment to its exact book and chapter, without loading
  for(const book of narrativeBooks){const summary=books.find(b=>b.id===book.id)!;expect(summary.chapters).toEqual(book.chapters.map(c=>({id:c.id,title:c.title})));const audio=recordingsForBook([...recordings].reverse(),summary);expect(audio.length).toBeGreaterThan(0);for(const [i,chapter] of book.chapters.entries()){const parts=audio.filter(a=>chapterForAudio(a,summary)===i);expect(parts.map(p=>p.text).join('')).toBe(narratedChapterText(book,chapter));}}
 });
 it('rejects similarly named pilot or unversioned recordings',()=>{expect(bookForAudio({title:'Adam · Un savoir reçu',reference:'2:30-34'})).toBeUndefined();});
+it('returns a full companion biography to its person instead of its former isolated episode',()=>{
+ expect(originForChapter('kaab-verite',0)).toBe('/companions?companion=kaab-malik');
+ expect(originForChapter('fatima-proximite',3)).toBe('/companions?companion=fatima');
+ const aicha=recordings.find(r=>bookForAudio(r)?.id==='aicha-innocence')!;
+ expect(audioOrigin(aicha)).toBe('/companions?companion=aicha');
+ expect(originForChapter('adam',0)).toBe('/prophets?prophet=adam');
+});
 it('requires the exact biography edition while allowing its production label',()=>{
  const current=recordings.find(r=>bookForAudio(r)?.id==='ali-proximite')!;
  expect(bookForAudio({...current,title:`Édition chronologique · ${current.title}`})?.id).toBe('ali-proximite');

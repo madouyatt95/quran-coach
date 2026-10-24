@@ -40,7 +40,11 @@ export const bookOrigins:Record<string,string[]>={
 };
 for(const p of companionPortraits){if(p.bookId&&books.some(b=>b.id===p.bookId)){const links=bookOrigins[p.bookId]||=[];const url=companionHref(p.id);if(!links.includes(url))links.push(url);}}
 const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sulayman:['sulayman'],isa:['maryam-isa'],muhammad:['sira-confiance','hijra-route','revelation-lettre','ascension-priere','hudaybiyya-pacte'],dawud:['sulayman','royaumes-et-justice'],ibrahim:['hajar-zamzam']};
-export function originForChapter(bookId:string,chapter:number){const links=bookOrigins[bookId]||[];return links[chapter]||links[0]||'/stories';}
+export function originForChapter(bookId:string,chapter:number){
+ const person=companionPortraits.find(p=>p.bookId===bookId);
+ if(person)return companionHref(person.id);
+ const links=bookOrigins[bookId]||[];return links[chapter]||links[0]||'/stories';
+}
 export function booksForOrigin(kind:'prophet'|'story'|'companion',id:string){const url=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
 export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
  const title=item.title.replace(/^Édition chronologique · /u,'');
