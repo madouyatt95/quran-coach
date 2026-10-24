@@ -1,8 +1,8 @@
 import {memo,useId,useRef,type MouseEvent} from 'react';
 import {Link,useNavigate} from 'react-router-dom';
 import {BookOpen,ChevronLeft,ChevronRight,Headphones} from 'lucide-react';
-import {BookLandscape} from './BookLandscape';
-import {bookHref,chapterForAudio,coverScene,isCompanionBook,recommendedBooks,recordingsForBook,resumeRecording,type BookSummary} from '../../lib/bookLibrary';
+import {BookCoverArt} from './BookCoverArt';
+import {bookHref,chapterForAudio,recommendationReason,isCompanionBook,recommendedBooks,recordingsForBook,resumeRecording,type BookSummary} from '../../lib/bookLibrary';
 import type {LibraryAudio} from '../../lib/audioProduction';
 import {useAudioLibraryStore} from '../../stores/audioLibraryStore';
 import {useLibraryPlayer} from '../../stores/libraryPlayerStore';
@@ -29,8 +29,8 @@ export const BookRecommendations=memo(function BookRecommendations({book,items,m
    const tracks=recordingsForBook(items,next),seconds=tracks.reduce((n,t)=>n+t.duration,0),destination=bookHref(next.id,reading[next.id]);
    const state={bookView:'read',bookImmersive:immersive};
    return <article className="book-recommendation" key={next.id}>
-    <Link className="book-cover book-recommendation-cover" to={destination} state={state} onClick={pauseForReading} aria-label={`Lire ${next.title}`}><BookLandscape scene={coverScene(next.id)}/><span className="book-cover-content"><span className="book-eyebrow">{next.chapters.length} CHAPITRES{seconds>0&&` · ${Math.ceil(seconds/60)} MIN`}</span><h3>{next.title}</h3><p>{next.subtitle}</p></span></Link>
-    <div className="book-recommendation-actions"><Link className={mode==='read'?'is-primary':undefined} to={destination} state={state} onClick={pauseForReading} aria-label={`Lire le livre ${next.title}`}><BookOpen size={16}/>Lire</Link><button type="button" className={mode==='listen'?'is-primary':undefined} disabled={!tracks.length} onClick={()=>listen(next)} aria-label={`Écouter le livre ${next.title}`}><Headphones size={16}/>Écouter</button></div>
+    <Link className="book-cover book-recommendation-cover" to={destination} state={state} onClick={pauseForReading} aria-label={`Lire ${next.title}`}><BookCoverArt bookId={next.id}/><span className="book-cover-content"><span className="book-eyebrow">{next.chapters.length} CHAPITRES{seconds>0&&` · ${Math.ceil(seconds/60)} MIN`}</span><h3>{next.title}</h3><p>{next.subtitle}</p></span></Link>
+    <p className="book-recommendation-reason">{recommendationReason(book.id,next.id)}</p><div className="book-recommendation-actions"><Link className={mode==='read'?'is-primary':undefined} to={destination} state={state} onClick={pauseForReading} aria-label={`Lire le livre ${next.title}`}><BookOpen size={16}/>Lire</Link><button type="button" className={mode==='listen'?'is-primary':undefined} disabled={!tracks.length} onClick={()=>listen(next)} aria-label={`Écouter le livre ${next.title}`}><Headphones size={16}/>Écouter</button></div>
    </article>;
   })}</div>
  </section>;

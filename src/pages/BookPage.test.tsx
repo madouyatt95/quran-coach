@@ -28,3 +28,18 @@ beforeEach(()=>{vi.stubGlobal('sessionStorage',window.sessionStorage);sessionSto
 afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
 it('keeps the chosen paragraph, saves its timestamp, and starts its matching recording',async()=>{await render();const paragraphs=host.querySelectorAll('[data-book-passage]');expect(paragraphs.length).toBeGreaterThan(3);await click(paragraphs[2].querySelector('p')!);await click([...paragraphs[2].querySelectorAll('button')].find(b=>b.textContent==='Je retiens')!);expect(useBookNotebook.getState().entries[0].text).toBe(paragraphs[2].querySelector('p')!.textContent);expect(useBookNotebook.getState().entries[0].seconds).toBeGreaterThan(0);await click([...paragraphs[2].querySelectorAll('button')].find(b=>b.textContent==='Écouter ici')!);expect(mocks.player.play).toHaveBeenCalledWith(expect.objectContaining({id:useBookNotebook.getState().entries[0].audioId}),expect.objectContaining({startAt:useBookNotebook.getState().entries[0].seconds}));});
 it('opens verified references over the text and resumes narration only when it was playing',async()=>{mocks.player.item=mocks.items[0];mocks.player.playing=true;mocks.player.position=36.25;mocks.player.queue=mocks.items;await render();await click(host.querySelector('[data-book-passage] p')!);const buttons=[...host.querySelectorAll('.book-passage-actions button')];await click(buttons.find(b=>b.textContent?.startsWith('Coran'))!);expect(document.querySelector('dialog[open]')).not.toBeNull();expect(mocks.player.pause).toHaveBeenCalled();expect(document.querySelector('dialog')?.textContent).toContain('Texte de test');await click(document.querySelector('[aria-label="Fermer la référence"]')!);expect(mocks.player.play).toHaveBeenCalledWith(mocks.items[0],{queue:mocks.items,startAt:36.25});expect(host.querySelector('.book-passage.is-selected')).not.toBeNull();});
+it('opens a person over the unchanged passage, pauses and resumes the exact recording',async()=>{
+ mocks.player.item=mocks.items[0];mocks.player.playing=true;mocks.player.position=42.5;mocks.player.queue=mocks.items;
+ await render();const paragraph=host.querySelector('[data-book-passage] p')!,text=paragraph.textContent;
+ await click(paragraph.querySelector('.book-person-name')!);
+ expect(document.querySelector('dialog[open]')?.textContent).toContain('Adam');expect(paragraph.textContent).toBe(text);expect(mocks.player.pause).toHaveBeenCalled();
+ await click(document.querySelector('[aria-label="Fermer les repères"]')!);
+ expect(mocks.player.play).toHaveBeenCalledWith(mocks.items[0],{queue:mocks.items,startAt:42.5});expect(document.querySelector('dialog[open]')).toBeNull();
+});
+it('jumps from a timeline step to its text without resuming the previous audio',async()=>{
+ mocks.player.item=mocks.items[0];mocks.player.playing=true;mocks.player.queue=mocks.items;await render();
+ await click([...host.querySelectorAll('button')].find(b=>b.textContent==='Fil du récit')!);
+ const steps=document.querySelectorAll('.book-life-timeline>li');expect(steps.length).toBe(book.chapters.length);
+ await click([...steps[1].querySelectorAll('button')].find(b=>b.textContent==='Lire')!);
+ expect(host.querySelector('.book-reading-heading h2')?.textContent).toBe(book.chapters[1].title);expect(mocks.player.play).not.toHaveBeenCalled();expect(document.querySelector('dialog[open]')).toBeNull();
+});

@@ -1,3 +1,4 @@
+import {editorialConnection} from '../data/bookEditorial';
 import {companionPortraits,companionHref} from '../data/companionPortraits';
 import {narrationSentences} from './narrationText';
 import catalog from '../data/bookCatalog.json';
@@ -158,8 +159,10 @@ export function recommendedBooks(bookId:string,items:LibraryAudio[],preferAudio=
  if(!current)return [];
  const collection=(book:BookSummary)=>isCompanionBook(book)?'companions':book.category;
  const origins=new Set(bookOrigins[bookId]||[]);
- const candidates=[...books.slice(at+1),...books.slice(0,at)].filter(b=>collection(b)===collection(current));
- const related=(book:BookSummary)=>Number(bookOrigins[book.id]?.some(url=>origins.has(url))||false);
+ const candidates=[...books.slice(at+1),...books.slice(0,at)].filter(b=>collection(b)===collection(current)||editorialConnection(bookId,b.id));
+ const related=(book:BookSummary)=>editorialConnection(bookId,book.id)?2:Number(bookOrigins[book.id]?.some(url=>origins.has(url))||false);
  const playable=(book:BookSummary)=>Number(recordingsForBook(items,book).length>0);
  return candidates.sort((a,b)=>(preferAudio?playable(b)-playable(a):0)||related(b)-related(a)).slice(0,limit);
 }
+
+export function recommendationReason(from:string,to:string){return editorialConnection(from,to)||'Pour poursuivre la découverte de cette collection.';}
