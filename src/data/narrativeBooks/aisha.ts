@@ -1,0 +1,93 @@
+import {defineBook} from './defineBook';
+import type {HadithNarrativeSource} from '../../lib/narrativeBooks';
+const report:HadithNarrativeSource={id:'bukhari-4141',type:'hadith',collection:'Sahih al-Bukhari',number:'4141',url:'https://sunnah.com/bukhari:4141',grade:'Sahih — recueil de Sahih al-Bukhari',description:'Témoignage de Aïcha sur la calomnie, son innocence et les événements qui suivent. Adaptation du texte arabe ancien, sans reprendre une traduction moderne.',checkedAt:'2026-10-24'};
+
+export const aishaBook=defineBook({
+ id:'aicha-innocence',title:'Aïcha',subtitle:'La vérité au milieu des voix',category:'story',checkedAt:'2026-10-24',
+ note:'Récit au discours indirect d’après Bukhari 4141 et 24:11-22. La calomnie est nommée sans répéter son accusation intime. Aucune scène privée ni pensée non rapportée n’est ajoutée. Les formulations de Aïcha et de ses parents sont distinguées du commentaire pédagogique. Le récit n’établit pas une règle juridique générale sur le témoignage ou les violences ; le passage de la sourate An-Nur concerne son contexte propre.',
+ chapters:[
+  {id:'collier',title:'Le collier et le campement vide',sections:[
+   {title:'Un départ annoncé dans la nuit',refs:[report],text:`Aïcha accompagne le Prophète, que la paix et les bénédictions soient sur lui, au cours d’un voyage. Lorsqu’il doit partir avec l’une de ses épouses, un tirage au sort les départage ; cette fois, le sort l’a désignée. Elle voyage dans un palanquin porté sur une monture. Au retour de l’expédition, alors qu’ils approchent de Médine, le départ est annoncé pendant la nuit.
+
+Elle s’éloigne un moment du campement. Lorsqu’elle revient vers sa monture, elle remarque que son collier a disparu. Elle retourne le chercher, et cette recherche la retarde. Pendant ce temps, les hommes chargés de son palanquin le soulèvent et le placent sur le chameau. Ils pensent qu’elle s’y trouve. Sa légèreté ne les étonne pas, et la caravane se remet en route sans qu’ils sachent qu’elle est restée en arrière.
+
+Aïcha retrouve son collier. Puis elle revient vers l’emplacement qu’occupaient les voyageurs. Il n’y a plus personne pour lui répondre. Elle choisit de rester à la place où elle était, pensant que l’on remarquera son absence et que l’on reviendra la chercher. Elle ne se met pas à suivre au hasard une route qu’elle devrait deviner. Elle attend là où l’on pourra la retrouver.
+
+Le sommeil la gagne. Safwan ibn al-Mouattal, qui se trouvait derrière l’armée, arrive au matin et aperçoit une personne endormie. Il reconnaît Aïcha, qu’il avait vue avant la prescription du voile. Elle s’éveille en l’entendant prononcer la formule de retour à Allah. Elle couvre son visage de son vêtement. Ce sont ces gestes que son témoignage rapporte, avant le retour vers les autres voyageurs.`},
+   {title:'Un retour qui ne contient pas ce qu’on lui fera dire',refs:[report],text:`Safwan fait agenouiller sa monture. Aïcha s’y installe, et il la conduit jusqu’à ce qu’ils rejoignent l’armée, arrêtée pendant la forte chaleur du milieu de la journée. Elle précise qu’ils n’ont échangé aucune parole. Elle n’a entendu de lui que la formule qu’il avait prononcée en la reconnaissant. Le détail est important : le récit de ce retour est simple, et c’est sur lui que d’autres vont construire une accusation.
+
+Une parole malveillante commence à circuler. Le témoignage désigne Abdallah ibn Oubayy comme celui qui en porte la part la plus lourde. D’autres personnes la répètent. Nous ne suivons pas une scène secrète à laquelle personne n’aurait eu accès : nous recevons le récit que Aïcha transmet de ce qu’elle a appris et traversé. La calomnie va circuler avant même qu’elle sache qu’elle en est la cible.
+
+L’épisode aurait pu demeurer ce qu’il était : une personne manquée au départ, retrouvée puis ramenée. Mais une autre histoire est désormais mise en circulation. Elle ne vient pas d’un fait établi. Elle prend appui sur ce que les gens ont vu de l’arrivée et ajoute ce qu’ils ne savent pas. Le dommage ne se limite pas à la bouche de celui qui a lancé l’accusation. Il gagne aussi les conversations de ceux qui la relaient.
+
+De retour à Médine, Aïcha tombe malade. Pendant un mois, elle ignore ce qui se dit. Autour d’elle, les paroles continuent de passer. Dans son témoignage, elle se souvient surtout de ne plus trouver auprès du Prophète les mêmes marques de douceur que lorsqu’elle était habituellement souffrante. Il vient, la salue et demande comment elle va. Elle perçoit un changement sans encore connaître ce qui en est la cause.`},
+  ]},
+  {id:'nouvelle',title:'Apprendre ce que l’on dit de soi',sections:[
+   {title:'La parole entendue au retour',refs:[report],text:`Lorsque son état s’améliore, Aïcha sort une nuit avec Oumm Mistah. À leur retour, sa compagne trébuche dans son vêtement et prononce une parole contre son fils. Aïcha la reprend : comment parler ainsi d’un homme qui a participé à Badr ? Elle défend celui dont elle connaît un mérite, sans savoir que son nom se trouve mêlé aux paroles qui circulent contre elle.
+
+Oumm Mistah lui demande si elle n’a pas entendu ce qu’il a dit. Aïcha interroge, puis apprend la calomnie. La nouvelle ajoute une douleur à sa maladie. Ce qui se propageait dans la ville entre désormais dans sa propre vie, avec les noms de personnes qui y ont pris part. Elle ne découvre pas seulement qu’une parole fausse existe. Elle apprend qu’elle a déjà été reçue et répétée pendant qu’elle l’ignorait.
+
+Le Prophète vient à nouveau la voir, la salue et demande comment elle va. Elle lui demande la permission de rejoindre ses parents. Elle veut vérifier auprès d’eux ce qu’elle vient d’apprendre. L’autorisation lui est donnée. Chez sa mère, elle demande ce que les gens racontent. Sa mère tente de l’apaiser. Aïcha comprend que la parole ne s’est pas arrêtée à l’échange qu’elle vient d’avoir dehors.
+
+La nuit qui suit est traversée de larmes. Elle ne parvient pas à dormir et continue de pleurer au matin. Nous n’avons pas besoin de prêter à son silence des pensées que son témoignage ne donnerait pas. Elle dit combien cette découverte l’a atteinte. La violence d’une rumeur se mesure aussi dans une nuit comme celle-ci : une personne se trouve contrainte de répondre à une histoire qu’elle n’a jamais vécue.`},
+   {title:'Ce que l’attente ne permet pas de savoir',refs:[report,[24,11,16]],text:`La révélation tarde à apporter une réponse sur cette affaire. Le Prophète consulte Oussama ibn Zayd et Ali ibn Abi Talib. Oussama parle à partir du bien qu’il connaît de sa famille et affirme ne savoir que du bien. Ali lui rappelle qu’Allah ne l’a pas placé dans une situation sans issue et lui conseille d’interroger la servante, qui lui dira la vérité sur ce qu’elle sait.
+
+Barira est appelée. Interrogée sur ce qu’elle aurait observé de suspect, elle affirme n’avoir rien vu qu’elle puisse reprocher à Aïcha, hormis une distraction domestique : il lui arrive de s’endormir en laissant la pâte, que l’animal de la maison vient manger. Ce détail ne vient pas nourrir l’accusation. Il montre au contraire la différence entre un petit fait réellement observé et la gravité d’un récit que l’on voudrait lui associer.
+
+La parole juste tient ici à une limite : dire ce que l’on sait. L’absence d’une révélation immédiate n’autorise pas à remplir l’attente par une invention. Le témoignage de Barira ne devient pas plus fort parce qu’il ajoute ce qu’elle n’a pas vu. Il est précieux parce qu’il refuse précisément de le faire. À l’intérieur d’une affaire où les mots se multiplient, certaines voix maintiennent cette limite.
+
+Le Coran rappellera que les croyants auraient dû accueillir la rumeur par une bonne opinion et reconnaître la calomnie manifeste. La fréquence avec laquelle une accusation est répétée ne lui donne pas des témoins. Le récit nous mène ainsi d’un campement quitté par erreur à la responsabilité de ceux qui parlent en l’absence d’un savoir. Pendant ce temps, Aïcha attend toujours auprès de ses parents.`},
+  ]},
+  {id:'voix',title:'Les paroles qui attisent, les paroles qui protègent',sections:[
+   {title:'Apaiser ceux qui s’emportent',refs:[report],text:`Le Prophète s’adresse aux musulmans depuis le minbar. Il évoque le tort qui lui est fait à travers sa famille et affirme ne connaître d’elle que du bien. Il dit aussi ne connaître que du bien de l’homme mis en cause. Il ne reprend pas une accusation pour lui donner la force de sa propre parole. Il rappelle ce qu’il sait de ceux dont les noms sont attaqués.
+
+Des hommes se lèvent et répondent. Bientôt, l’attachement au clan entre dans l’échange. Une parole en appelle une autre, les reproches s’élèvent, et les deux groupes sont sur le point de s’affronter. Le Prophète continue de les calmer jusqu’à ce qu’ils se taisent. L’affaire nous montre ainsi un autre dommage de la calomnie : une parole fausse peut devenir l’occasion de divisions qui touchent des personnes bien au-delà de sa première cible.
+
+Nous n’ajoutons pas un jugement sur chacun de ceux qui ont parlé. Le témoignage rapporte les paroles, l’emportement et l’effort pour apaiser. Le lien au groupe ne remplace pas la recherche du vrai. Défendre un honneur ne demande pas de laisser une autre injustice prendre sa place. Celui qui souffre du tort fait à sa famille retient aussi ceux qui risquent de se laisser emporter.
+
+Aïcha pleure pendant ce temps. Ses parents sont auprès d’elle. Une femme des Ansar demande à entrer ; elle s’assied et pleure avec elle. Au milieu des grandes paroles qui agitent la ville, le récit garde aussi ce geste de présence. Il ne résout pas encore l’affaire. Il laisse pourtant apparaître une personne qui vient partager la peine au lieu d’ajouter une voix à ce qui circule dehors.`},
+   {title:'Ne pas donner ce que l’on n’a pas vu',refs:[report],text:`Le témoignage de Aïcha rapporte également la réponse de Zaynab bint Jahsh, interrogée par le Prophète sur ce qu’elle savait ou avait vu. Zaynab protège son ouïe et sa vue : elle ne connaît que du bien. Aïcha souligne pourtant qu’elles pouvaient se trouver en rivalité parmi les épouses du Prophète. Elle reconnaît qu’Allah l’a préservée par sa piété.
+
+Cette parole ne cherche pas à gagner une place grâce au malheur d’une autre. Elle maintient la limite de ce qu’elle a entendu et observé. Dans une affaire où quelqu’un pourrait croire servir son intérêt en laissant le doute grandir, elle refuse de prêter à ses sens un savoir qu’ils ne possèdent pas. Le récit de l’épreuve conserve ainsi aussi le souvenir d’une droiture reconnue chez autrui.
+
+Ce que nous écoutons n’est donc pas une histoire où toutes les voix se ressemblent. Certaines répandent, d’autres s’emportent, d’autres encore disent le bien connu ou refusent de prétendre savoir. Le dommage est immense, mais le témoignage garde ces distinctions. Aïcha n’oublie pas la protection qu’une parole vraie peut apporter, même lorsqu’elle ne met pas encore fin à la souffrance.
+
+Nous allons maintenant retrouver la maison de ses parents. La réponse qu’elle attend n’est pas encore parvenue. Le Prophète entre, salue puis s’assied. L’attente va prendre la forme d’un échange direct. Celle qui a découvert tardivement ce que l’on disait d’elle va devoir parler devant les personnes les plus proches, sans pouvoir leur offrir la preuve qu’elle espère recevoir d’Allah.`},
+  ]},
+  {id:'maison',title:'Une innocence que l’on ne peut abandonner',sections:[
+   {title:'La réponse que personne ne trouve à sa place',refs:[report],text:`Le Prophète évoque ce qui lui est parvenu. Si Aïcha est innocente, Allah manifestera son innocence. Si elle a commis une faute, il l’invite à demander pardon et à se repentir, car Allah accueille le repentir de celui qui reconnaît et revient. La parole ne se présente pas comme une révélation déjà reçue sur son cas. Le mois d’attente se poursuit encore à cet instant.
+
+Aïcha se tourne vers son père et lui demande de répondre pour elle. Il ne sait pas quoi dire. Elle demande à sa mère de le faire ; elle répond de la même manière. Le témoignage garde ces demandes, puis l’impossibilité pour ses parents de trouver la parole qu’elle attend d’eux. Leur présence ne suffit pas à lui retirer le poids d’avoir à répondre elle-même à l’accusation.
+
+Elle explique alors ce que les paroles répétées ont produit. Si elle affirme son innocence, elle craint de ne pas être crue ; si elle reconnaissait ce qu’elle n’a pas fait, on la croirait. Allah, Lui, sait qu’elle en est innocente. Elle refuse donc de fabriquer un aveu pour obtenir la fin de l’échange. Le mensonge ne devient pas vrai parce que d’autres seraient prêts à l’accueillir plus facilement.
+
+Elle pense à la parole du père de Youssouf, à la belle patience et à l’aide demandée à Allah face à ce qui est raconté. Puis elle se détourne et se couche. Aïcha rapporte qu’elle espère qu’Allah manifestera son innocence. Elle ne s’imagine pourtant pas qu’une révélation récitée sera descendue à son sujet. Elle espère une réponse, sans en connaître la forme.`},
+   {title:'L’annonce dans la maison',refs:[report,[24,11,20]],text:`Personne n’a encore quitté la maison lorsque la révélation vient au Prophète. Aïcha décrit l’état qui l’accompagne et la sueur qui apparaît malgré le froid. Nous n’ajoutons à son témoignage ni parole entendue dans l’invisible ni scène que personne ne rapporte. Le moment est reçu par ceux qui se trouvent dans la maison, après les jours d’attente et l’échange qui vient d’avoir lieu.
+
+Lorsque cet état cesse, le Prophète sourit. Sa première parole à Aïcha lui annonce qu’Allah a manifesté son innocence. La réponse ne vient pas de l’aveu qu’on aurait obtenu d’elle ni d’une histoire qu’elle aurait dû construire pour se rendre plus convaincante. La révélation met fin à la calomnie qui l’a si longtemps atteinte.
+
+Sa mère lui demande de se lever pour aller vers le Prophète. Aïcha répond qu’elle ne louera qu’Allah pour cette délivrance. Le témoignage nous laisse entendre cette gratitude au terme de la souffrance. Son innocence n’a pas commencé à exister au moment de l’annonce. Elle était innocente lorsque le campement avait été quitté, lorsqu’elle était malade et lorsqu’elle pleurait auprès de ses parents. Ce qui change maintenant, c’est la réponse rendue publique au mensonge.
+
+Les versets d’An-Nur rappellent la faute de ceux qui ont apporté la calomnie et la part de responsabilité de chacun. Ils appellent les croyants à ne pas revenir à une telle conduite. L’affaire n’est donc pas seulement refermée sur le soulagement d’une personne. Elle devient aussi un enseignement adressé à ceux qui ont laissé leur langue participer à ce qu’ils ne savaient pas.`},
+  ]},
+  {id:'apres',title:'Réparer ce que la parole a abîmé',sections:[
+   {title:'Le pardon qui reprend un geste',refs:[report,[24,22,22]],text:`Abou Bakr aidait matériellement Mistah, en raison de leur parenté et de sa pauvreté. Lorsqu’il apprend la part que celui-ci a prise dans les paroles contre Aïcha, il jure de ne plus lui apporter cette aide. La blessure touche sa fille ; elle entre aussi dans la relation concrète par laquelle il soutenait un homme de ses proches.
+
+Le verset l’appelle, avec les personnes de mérite et de moyens, à ne pas jurer de cesser de donner aux proches, aux pauvres et aux émigrés. Il invite à pardonner et à passer outre, puis rappelle le désir de recevoir soi-même le pardon d’Allah. Abou Bakr répond qu’il aime qu’Allah lui pardonne. Il reprend l’aide qu’il apportait et affirme qu’il ne la retirera plus.
+
+Le récit se termine ainsi sur un geste qui recommence. Le pardon ne demande pas de prétendre que Mistah n’a pas parlé. La vérité de l’affaire demeure et la calomnie a été condamnée. Mais la blessure ne devient pas pour Abou Bakr le dernier mot sur toute la conduite à tenir envers cet homme. Il entend le rappel et transforme sa réponse en un acte de soutien retrouvé.
+
+Cela ne nous autorise pas à exiger d’une personne blessée qu’elle s’expose de nouveau à un danger. Nous recevons ici la manière dont Abou Bakr a répondu à un verset dans une affaire déterminée. Son geste nous permet de réfléchir à ce que signifie réellement réparer : parfois, la parole qui affirme pardonner trouve sa forme dans un bien que l’on recommence à faire.`},
+   {title:'La limite à garder après le récit',refs:[[24,11,22],report],text:`La sourate An-Nur décrit des langues qui reçoivent et des bouches qui parlent sans savoir, en prenant pour léger ce qui est grave auprès d’Allah. Cette image demeure après l’histoire. Entre la première accusation et la dernière personne qui la répète, chacun peut croire n’avoir ajouté qu’une parole. Pourtant, la peine atteint une maison, une famille et toute une communauté.
+
+Le témoignage de Aïcha nous a permis de suivre le côté que la rumeur efface. Il y avait une jeune femme cherchant son collier, un campement vide et une monture conduite jusqu’aux voyageurs. Il y a eu ensuite un mois de maladie, la découverte de ce qui se disait, des larmes, des questions et une attente. La personne visée par une accusation continue de vivre pendant que d’autres la racontent.
+
+Nous pouvons garder le souvenir de ceux qui n’ont pas prêté leur voix au mal : Oussama disant le bien qu’il connaît, Barira s’en tenant à ce qu’elle a vu, Zaynab protégeant son ouïe et sa vue, et le Prophète apaisant ceux qui s’emportent. La fidélité à la vérité ne se résume pas à avoir raison après que tout est établi. Elle commence aussi dans la retenue que l’on garde lorsqu’on ignore.
+
+Le récit s’achève sur une innocence manifestée et un bien qui reprend. Pour nous, il laisse une responsabilité immédiate. Avant de transmettre une accusation, nous pouvons nous arrêter. Avant de demander à une personne blessée de prouver ce que nous n’avons aucune raison de nier, nous pouvons examiner ce que nous savons réellement. Et lorsqu’une parole fausse a été répétée, la réparation demande de faire revenir la vérité auprès de ceux à qui nous avons fait parvenir le mensonge.`},
+  ]},
+ ],
+ epilogue:'Une accusation répétée ne devient pas une preuve. Il est possible de protéger quelqu’un par une parole juste, par le refus de relayer et par une correction apportée au même endroit que le mal. La retenue de la langue peut être un acte de fidélité et de miséricorde. Le récit de Aïcha nous appelle à cette responsabilité avant même qu’une autre personne soit contrainte d’en porter la peine.',
+ lessons:['Distinguer ce qui est observé de ce qui est seulement répété.','Protéger une personne au lieu d’ajouter une voix à la rumeur.','Faire parvenir la correction aux personnes qui ont reçu la parole fausse.'],
+ question:'Quelle information devrais-tu vérifier ou corriger avant de la transmettre de nouveau ?',
+});

@@ -21,8 +21,23 @@ export const bookOrigins:Record<string,string[]>={
  'sira-confiance':[P('muhammad'),S('badr'),S('uhud'),S('khandaq'),S('hudaybiyya')],
  'voix-epreuve':[P('yunus'),P('ayyub'),'/read?surah=36&ayah=13'],
  'luqman-conseils':[S('luqman')],'parole-juste':['/read?surah=49&ayah=6','/read?surah=49&ayah=11','/read?surah=49&ayah=9'],
+ lut:[P('lut')],'kaab-verite':[S('tabuk')],'aicha-innocence':[S('ifk')],
+ 'garcon-et-roi':[S('ashab-al-ukhdud')],
+ 'trois-et-rocher':['https://sunnah.com/bukhari:2272'],
+ 'trois-bienfaits':['https://sunnah.com/bukhari:3464'],
+ 'route-du-retour':['https://sunnah.com/muslim:2766a'],
+ 'hajar-zamzam':[P('ismail')],'hijra-route':[P('muhammad')],
+ 'ascension-priere':[S('isra-miraj')],'hudaybiyya-pacte':[S('hudaybiyya')],
+ 'revelation-lettre':[P('muhammad')],
+ 'abou-dharr-recherche':['https://sunnah.com/muslim:2473a'],
+ 'equilibre-droits':['https://sunnah.com/bukhari:1968','https://sunnah.com/bukhari:5199','https://sunnah.com/bukhari:5063'],
+ 'portes-hospitalite':['https://sunnah.com/bukhari:3798','https://sunnah.com/bukhari:6452','https://sunnah.com/muslim:2038a'],
+ 'jourayj-apparences':['https://sunnah.com/bukhari:3436'],
+ 'gestes-qui-comptent':['https://sunnah.com/bukhari:2363','https://sunnah.com/muslim:1914c','https://sunnah.com/muslim:2984a'],
+ 'jabir-attention':['https://sunnah.com/bukhari:2097','https://sunnah.com/bukhari:2718','https://sunnah.com/bukhari:2396'],
+ 'bois-confie-mer':['https://sunnah.com/bukhari:2291'],
 };
-const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sulayman:['sulayman'],isa:['maryam-isa'],muhammad:['sira-confiance'],dawud:['sulayman','royaumes-et-justice']};
+const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sulayman:['sulayman'],isa:['maryam-isa'],muhammad:['sira-confiance','hijra-route','revelation-lettre','ascension-priere','hudaybiyya-pacte'],dawud:['sulayman','royaumes-et-justice'],ibrahim:['hajar-zamzam']};
 export function originForChapter(bookId:string,chapter:number){const links=bookOrigins[bookId]||[];return links[chapter]||links[0]||'/stories';}
 export function booksForOrigin(kind:'prophet'|'story',id:string){const url=kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
 export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
@@ -42,7 +57,8 @@ export function resumeRecording(items:LibraryAudio[],positions:Record<string,{se
  if(!recent)return items[0];
  return positions[recent.id].seconds>=recent.duration-2?items[items.indexOf(recent)+1]||items[0]:recent;
 }
-const sceneDefaults:Record<string,BookScene>={adam:'dawn',nuh:'water',ibrahim:'desert',yusuf:'night',musa:'water','maryam-isa':'garden',sulayman:'desert',khidr:'water',cave:'cave','biens-et-coeur':'garden','musa-apres-la-mer':'desert','royaumes-et-justice':'desert','appels-et-mesure':'desert','sira-confiance':'night','voix-epreuve':'night','luqman-conseils':'garden','parole-juste':'dawn'};
+const sceneDefaults:Record<string,BookScene>={adam:'dawn',nuh:'water',ibrahim:'desert',yusuf:'night',musa:'water','maryam-isa':'garden',sulayman:'desert',khidr:'water',cave:'cave','biens-et-coeur':'garden','musa-apres-la-mer':'desert','royaumes-et-justice':'desert','appels-et-mesure':'desert','sira-confiance':'night','voix-epreuve':'night','luqman-conseils':'garden','parole-juste':'dawn',
+ lut:'night','kaab-verite':'night','aicha-innocence':'dawn','garcon-et-roi':'dawn','trois-et-rocher':'cave','trois-bienfaits':'garden','route-du-retour':'desert','hajar-zamzam':'water','hijra-route':'desert','ascension-priere':'night','hudaybiyya-pacte':'desert','revelation-lettre':'cave','abou-dharr-recherche':'water','equilibre-droits':'dawn','portes-hospitalite':'night','jourayj-apparences':'dawn','gestes-qui-comptent':'garden','jabir-attention':'garden','bois-confie-mer':'water'};
 export function coverScene(id:string):BookScene{return sceneDefaults[id]||'dawn';}
 /** Scene cues are editorial atmospheres, never reconstructions of unseen events. */
 export function sceneTreatment(bookId:string,chapter:number,scene:number):{decor:BookScene;ambience:BookAmbience}{
@@ -63,6 +79,26 @@ export function sceneTreatment(bookId:string,chapter:number,scene:number):{decor
   'voix-epreuve':[['water','water'],['dawn','silence'],['desert','wind']],
   'luqman-conseils':[['garden','wind'],['dawn','silence'],['garden','wind']],
   'parole-juste':[['dawn','silence'],['garden','wind'],['dawn','silence']],
+  lut:[['desert','wind'],['night','silence'],['dawn','wind']],
+  'kaab-verite':[['desert','wind'],['dawn','silence'],['night','silence'],['night','silence'],['dawn','wind']],
+  'aicha-innocence':[['desert','wind'],['night','silence'],['dawn','silence'],['night','silence'],['dawn','silence']],
+  'garcon-et-roi':[['desert','wind'],['dawn','silence'],['water','wind'],['dawn','silence']],
+  'trois-et-rocher':[['cave','wind'],['cave','silence'],['dawn','wind']],
+  'trois-bienfaits':[['garden','wind'],['desert','wind'],['dawn','silence']],
+  'route-du-retour':[['night','silence'],['desert','wind'],['dawn','silence']],
+  'hajar-zamzam':[['desert','wind'],['water','water'],['garden','wind'],['desert','wind']],
+  'hijra-route':[['night','silence'],['dawn','silence'],['cave','wind'],['desert','wind'],['dawn','wind']],
+  // Abstract night, no reconstruction or sound depiction of the unseen.
+  'ascension-priere':[['night','silence'],['night','silence'],['dawn','silence']],
+  'hudaybiyya-pacte':[['desert','wind'],['desert','wind'],['dawn','silence'],['night','silence'],['dawn','wind']],
+  'revelation-lettre':[['cave','wind'],['dawn','silence'],['desert','wind'],['dawn','silence'],['night','silence']],
+  'abou-dharr-recherche':[['desert','wind'],['water','water'],['dawn','wind']],
+  'equilibre-droits':[['night','silence'],['dawn','silence'],['dawn','silence']],
+  'portes-hospitalite':[['night','silence'],['dawn','silence'],['garden','wind']],
+  'jourayj-apparences':[['dawn','silence'],['desert','wind'],['dawn','silence']],
+  'gestes-qui-comptent':[['water','water'],['desert','wind'],['garden','rain']],
+  'jabir-attention':[['desert','wind'],['dawn','silence'],['garden','wind']],
+  'bois-confie-mer':[['desert','wind'],['water','water'],['dawn','wind']],
  };
  const cue=treatments[bookId]?.[chapter];return cue?{decor:cue[0],ambience:scene%2===1?'silence':cue[1]}:{decor:coverScene(bookId),ambience:'silence'};
 }
@@ -78,7 +114,8 @@ export function activeBookScene(book:NarrativeBook,chapter:NarrativeChapter,item
 }
 /** Legacy entry points resolve to the canonical manuscript, with its matching chapter. */
 export function bookEntryForOrigin(kind:'prophet'|'story',id:string){
- const related=booksForOrigin(kind,id),primary=related.find(b=>b.id===id)||related[0];if(!primary)return null;
+ const preferred=kind==='story'?({hudaybiyya:'hudaybiyya-pacte'} as Record<string,string>)[id]:undefined;
+ const related=booksForOrigin(kind,id),primary=related.find(b=>b.id===(preferred||id))||related[0];if(!primary)return null;
  const origin=kind==='prophet'?P(id):S(id),chapter=Math.max(0,(bookOrigins[primary.id]||[]).indexOf(origin));
  return {book:primary,chapter:primary.chapters[chapter]?.id||primary.chapters[0].id};
 }

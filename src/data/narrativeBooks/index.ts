@@ -15,6 +15,26 @@ import { siraBook } from './sira';
 import { voicesBook } from './voices';
 import { luqmanBook } from './luqman';
 import { speechBook } from './speech';
+import { lutBook } from './lut';
+import { kaabBook } from './kaab';
+import { aishaBook } from './aisha';
+import { boyKingBook } from './boyKing';
+import { rockBook } from './rock';
+import { threeTestedBook } from './threeTested';
+import { repentanceBook } from './repentance';
+import { hajarBook } from './hajar';
+import { hijraBook } from './hijra';
+import { nightJourneyBook } from './nightJourney';
+import { hudaybiyyaBook } from './hudaybiyya';
+import { revelationBook } from './revelation';
+import { abuDharrBook } from './abuDharr';
+import { balanceBook } from './balance';
+import { hospitalityBook } from './hospitality';
+import { appearancesBook } from './appearances';
+import { mercyBook } from './mercy';
+import { jabirBook } from './jabir';
+import { seaTrustBook } from './seaTrust';
 
 /** Editorial manuscripts, loaded only by the administrator's book workshop. */
-export const narrativeBooks = [adamBook, nuhBook, ibrahimBook, yusufBook, musaBook, maryamIsaBook, sulaymanBook, khidrBook, caveBook, wealthBook, musaAfterBook, kingsBook, callsBook, siraBook, voicesBook, luqmanBook, speechBook];
+export const narrativeBooks = [adamBook, nuhBook, ibrahimBook, yusufBook, musaBook, maryamIsaBook, sulaymanBook, khidrBook, caveBook, wealthBook, musaAfterBook, kingsBook, callsBook, siraBook, voicesBook, luqmanBook, speechBook,
+ lutBook,kaabBook,aishaBook,boyKingBook,rockBook,threeTestedBook,repentanceBook,hajarBook,hijraBook,nightJourneyBook,hudaybiyyaBook,revelationBook,abuDharrBook,balanceBook,hospitalityBook,appearancesBook,mercyBook,jabirBook,seaTrustBook];

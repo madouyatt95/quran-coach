@@ -20,7 +20,8 @@ describe('livres racontés : texte et sources', () => {
           expect(source.last).toBeLessThanOrEqual(chapters[source.surah - 1].count);
         } else {
           expect(source.grade).toContain('Sahih');
-          expect(sourceUrl(source)).toContain(source.number);
+          // A combined reference (2731–2732) links to its first hadith, whose page contains both.
+          expect(sourceUrl(source)).toContain(source.number.split(/[–-]/u)[0]);
         }
       }
       for (const chapter of book.chapters) {

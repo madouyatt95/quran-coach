@@ -419,5 +419,452 @@
         "title": "Réparer sans faire disparaître la justice"
       }
     ]
+  },
+  {
+    "id": "lut",
+    "title": "Lout",
+    "subtitle": "La nuit du départ",
+    "version": "lut-conte-2026-10-24-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "appel",
+        "title": "La parole que l’on veut faire taire"
+      },
+      {
+        "id": "visiteurs",
+        "title": "Des hôtes qu’il veut protéger"
+      },
+      {
+        "id": "aube",
+        "title": "Ce que l’aube laisse derrière elle"
+      }
+    ]
+  },
+  {
+    "id": "kaab-verite",
+    "title": "Kaab ibn Malik",
+    "subtitle": "Cinquante nuits pour une parole vraie",
+    "version": "kaab-verite-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "demain",
+        "title": "Le départ que l’on remet à demain"
+      },
+      {
+        "id": "reponse",
+        "title": "Ce qu’aucune excuse ne réparera"
+      },
+      {
+        "id": "silence",
+        "title": "Quand la ville semble changer"
+      },
+      {
+        "id": "quarante",
+        "title": "Dix nuits de plus"
+      },
+      {
+        "id": "annonce",
+        "title": "La voix qui arrive avant le cavalier"
+      }
+    ]
+  },
+  {
+    "id": "aicha-innocence",
+    "title": "Aïcha",
+    "subtitle": "La vérité au milieu des voix",
+    "version": "aicha-innocence-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "collier",
+        "title": "Le collier et le campement vide"
+      },
+      {
+        "id": "nouvelle",
+        "title": "Apprendre ce que l’on dit de soi"
+      },
+      {
+        "id": "voix",
+        "title": "Les paroles qui attisent, les paroles qui protègent"
+      },
+      {
+        "id": "maison",
+        "title": "Une innocence que l’on ne peut abandonner"
+      },
+      {
+        "id": "apres",
+        "title": "Réparer ce que la parole a abîmé"
+      }
+    ]
+  },
+  {
+    "id": "garcon-et-roi",
+    "title": "Le garçon et le roi",
+    "subtitle": "Une foi que le pouvoir ne possède pas",
+    "version": "garcon-et-roi-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "chemin",
+        "title": "Deux enseignements sur un même chemin"
+      },
+      {
+        "id": "cour",
+        "title": "Celui qui guérit et celui qui exige"
+      },
+      {
+        "id": "retours",
+        "title": "La montagne, puis la mer"
+      },
+      {
+        "id": "foule",
+        "title": "Lorsque d’autres voix se lèvent"
+      }
+    ]
+  },
+  {
+    "id": "trois-et-rocher",
+    "title": "Les trois hommes et le rocher",
+    "subtitle": "Ce qui reste lorsque la sortie se ferme",
+    "version": "trois-et-rocher-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "fermeture",
+        "title": "La pierre et la coupe de lait"
+      },
+      {
+        "id": "renoncer",
+        "title": "Le bien commence parfois par s’arrêter"
+      },
+      {
+        "id": "rendre",
+        "title": "La richesse que l’on rend tout entière"
+      }
+    ]
+  },
+  {
+    "id": "trois-bienfaits",
+    "title": "Les trois hommes et le bienfait",
+    "subtitle": "Se souvenir lorsque l’abondance arrive",
+    "version": "trois-bienfaits-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "dons",
+        "title": "Ce que chacun demande"
+      },
+      {
+        "id": "oubli",
+        "title": "La vie que l’on réécrit après le don"
+      },
+      {
+        "id": "memoire",
+        "title": "La richesse gardée par celui qui peut donner"
+      }
+    ]
+  },
+  {
+    "id": "route-du-retour",
+    "title": "La route du retour",
+    "subtitle": "Celui qui croyait avoir fermé toutes les portes",
+    "version": "route-du-retour-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "question",
+        "title": "La question qui ne disparaît pas"
+      },
+      {
+        "id": "marche",
+        "title": "Un voyage que la mort interrompt"
+      },
+      {
+        "id": "retour",
+        "title": "Une porte ouverte n’est pas une invitation à rester"
+      }
+    ]
+  },
+  {
+    "id": "hajar-zamzam",
+    "title": "Hajar et Ismail",
+    "subtitle": "L’eau au creux de la vallée",
+    "version": "hajar-zamzam-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "vallee",
+        "title": "Une question avant le départ"
+      },
+      {
+        "id": "eau",
+        "title": "Le secours que l’on n’avait pas aperçu"
+      },
+      {
+        "id": "habiter",
+        "title": "Une vallée où d’autres vies s’installent"
+      },
+      {
+        "id": "maison",
+        "title": "Les pierres que le fils apporte au père"
+      }
+    ]
+  },
+  {
+    "id": "hijra-route",
+    "title": "L’Hégire",
+    "subtitle": "La confiance et les chemins préparés",
+    "version": "hijra-route-conte-2026-10-24-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "protection",
+        "title": "La protection que l’on rend"
+      },
+      {
+        "id": "permission",
+        "title": "Une visite à l’heure inhabituelle"
+      },
+      {
+        "id": "thawr",
+        "title": "Trois nuits reliées à la ville"
+      },
+      {
+        "id": "souraqa",
+        "title": "Le poursuivant qui demande une protection"
+      },
+      {
+        "id": "accueil",
+        "title": "Le lieu où l’on commence à bâtir"
+      }
+    ]
+  },
+  {
+    "id": "ascension-priere",
+    "title": "L’Ascension",
+    "subtitle": "Le don qui revient chaque jour",
+    "version": "ascension-priere-conte-2026-10-24-v1",
+    "category": "prophet",
+    "chapters": [
+      {
+        "id": "accueil",
+        "title": "Un voyage rapporté, des portes ouvertes"
+      },
+      {
+        "id": "rencontres",
+        "title": "Les messagers et la Maison fréquentée"
+      },
+      {
+        "id": "prieres",
+        "title": "Cinq prières, un bien multiplié"
+      }
+    ]
+  },
+  {
+    "id": "hudaybiyya-pacte",
+    "title": "Hudaybiyya",
+    "subtitle": "La route du pacte",
+    "version": "hudaybiyya-pacte-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "approche",
+        "title": "La route qui ne va pas tout droit"
+      },
+      {
+        "id": "emissaires",
+        "title": "Ce que les visiteurs emportent avec eux"
+      },
+      {
+        "id": "ecrit",
+        "title": "Les mots difficiles de l’accord"
+      },
+      {
+        "id": "conseil",
+        "title": "La parole d’Oum Salama"
+      },
+      {
+        "id": "suites",
+        "title": "L’ouverture ne se juge pas au premier regard"
+      }
+    ]
+  },
+  {
+    "id": "revelation-lettre",
+    "title": "De Hira à la lettre",
+    "subtitle": "Une parole reçue, une parole qui voyage",
+    "version": "revelation-lettre-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "hira",
+        "title": "L’événement que l’on ne s’attribue pas"
+      },
+      {
+        "id": "khadija",
+        "title": "La maison où l’on peut raconter sa crainte"
+      },
+      {
+        "id": "temoin",
+        "title": "Un adversaire doit répondre"
+      },
+      {
+        "id": "lettre",
+        "title": "Ce que le message demande"
+      },
+      {
+        "id": "pouvoir",
+        "title": "Reconnaître et répondre"
+      }
+    ]
+  },
+  {
+    "id": "abou-dharr-recherche",
+    "title": "Abou Dharr",
+    "subtitle": "Chercher avant de répéter",
+    "version": "abou-dharr-recherche-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "nouvelle",
+        "title": "Une nouvelle qui mérite un voyage"
+      },
+      {
+        "id": "zamzam",
+        "title": "Les jours où l’on attend de rencontrer"
+      },
+      {
+        "id": "retour",
+        "title": "Revenir avec une responsabilité"
+      }
+    ]
+  },
+  {
+    "id": "equilibre-droits",
+    "title": "Donner à chaque droit sa place",
+    "subtitle": "Trois récits sur la ferveur et la mesure",
+    "version": "equilibre-droits-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "salman",
+        "title": "Le visiteur qui demande de dormir"
+      },
+      {
+        "id": "abdallah",
+        "title": "Le corps dont on a la charge"
+      },
+      {
+        "id": "trois",
+        "title": "Le modèle que l’on n’a pas à dépasser"
+      }
+    ]
+  },
+  {
+    "id": "portes-hospitalite",
+    "title": "Les portes de l’hospitalité",
+    "subtitle": "Une lampe, une coupe et des dattes",
+    "version": "portes-hospitalite-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "lampe",
+        "title": "Ce que la lampe ne doit pas montrer"
+      },
+      {
+        "id": "coupe",
+        "title": "La coupe qui passe de main en main"
+      },
+      {
+        "id": "bienfait",
+        "title": "Le repas dont on se souviendra"
+      }
+    ]
+  },
+  {
+    "id": "jourayj-apparences",
+    "title": "Ce que les apparences cachent",
+    "subtitle": "Jourayj et les paroles d’un enfant",
+    "version": "jourayj-apparences-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "appel",
+        "title": "L’appel qui arrive pendant la prière"
+      },
+      {
+        "id": "reparation",
+        "title": "La vérité et les murs de terre"
+      },
+      {
+        "id": "enfant",
+        "title": "Ce que la mère voudrait pour son fils"
+      }
+    ]
+  },
+  {
+    "id": "gestes-qui-comptent",
+    "title": "Ces gestes qui comptent",
+    "subtitle": "L’eau, le chemin et le jardin",
+    "version": "gestes-qui-comptent-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "eau",
+        "title": "Reconnaître la soif d’un autre"
+      },
+      {
+        "id": "chemin",
+        "title": "Ce que le prochain passant ne rencontrera pas"
+      },
+      {
+        "id": "jardin",
+        "title": "Le nom entendu dans le nuage"
+      }
+    ]
+  },
+  {
+    "id": "jabir-attention",
+    "title": "Jabir",
+    "subtitle": "Celui qui remarque le voyageur resté derrière",
+    "version": "jabir-attention-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "route",
+        "title": "La monture qui n’avance plus"
+      },
+      {
+        "id": "retour",
+        "title": "Le prix et la monture"
+      },
+      {
+        "id": "dattes",
+        "title": "Le jardin et la dette du père"
+      }
+    ]
+  },
+  {
+    "id": "bois-confie-mer",
+    "title": "Le bois confié à la mer",
+    "subtitle": "Deux hommes et une parole à tenir",
+    "version": "bois-confie-mer-conte-2026-10-24-v1",
+    "category": "story",
+    "chapters": [
+      {
+        "id": "engagement",
+        "title": "Le terme fixé avant le départ"
+      },
+      {
+        "id": "eau",
+        "title": "Une lettre à l’intérieur du bois"
+      },
+      {
+        "id": "rencontre",
+        "title": "Les mille dinars que l’on ne prend pas deux fois"
+      }
+    ]
   }
 ]

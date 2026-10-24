@@ -41,7 +41,7 @@ Les durées affichées sont des estimations de lecture fondées sur 135 à 165 m
 
 ## Préparation et limites de production
 
-Le style du premier livre a été validé par le propriétaire, puis la continuation des lots autorisée dans un plafond cumulé explicite. Les enregistrements produits restent privés jusqu’à leur écoute et à leur publication dans le studio. Le pilote de 33 secondes reste une version distincte ; il n’est jamais associé au nouveau texte par approximation.
+Le style du premier livre a été validé par le propriétaire, puis la continuation des lots autorisée dans un plafond cumulé explicite. Les enregistrements produits restent privés jusqu’à la décision de publication dans le studio. Le parcours habituel prévoit une écoute humaine. Le parcours distinct de publication directement autorisée par le propriétaire conserve les contrôles éditoriaux, de fichiers et de crédits et enregistre explicitement l’absence d’attestation d’écoute humaine. Le pilote de 33 secondes reste une version distincte ; il n’est jamais associé au nouveau texte par approximation.
 
 La préparation utilise les routes existantes du studio. Chaque segment est enregistré avec `approve: false` et `approved_by: null`. Une reprise utilise les mêmes textes et empreintes, sans créer une seconde version identique. Aucune API ElevenLabs n’est appelée par l’atelier ou l’exporteur de manuscrits.
 
@@ -68,3 +68,17 @@ npm run build
 ```
 
 Les tests contrôlent la cohérence des références et des identifiants, les limites de production, l’absence de perte ou de coupure de mot, la séparation entre récit et notes et la création exclusive de brouillons. Ils ne prouvent pas à eux seuls l’authenticité religieuse du texte ni sa qualité d’interprétation audio.
+
+## Deuxième collection — 24 octobre 2026
+
+Dix-neuf manuscrits supplémentaires, avec 69 chapitres : Lout, Kaab ibn Malik, Aïcha, Le garçon et le roi, Les trois hommes et le rocher, Les trois hommes et le bienfait, La route du retour, Hajar et Ismail, L’Hégire, L’Ascension, Hudaybiyya, De Hira à la lettre, Abou Dharr, Donner à chaque droit sa place, Les portes de l’hospitalité, Ce que les apparences cachent, Ces gestes qui comptent, Jabir et Le bois confié à la mer.
+
+Les références et limites de chaque version figurent dans son fichier de `audio-books/`. Les récits de hadith s’appuient sur les textes arabes anciens des recueils de Bukhari et Muslim, consultés sur Sunnah.com ; la narration française est originale et ne reprend pas les traductions modernes de ce site. Les paroles sont rapportées indirectement. Les épisodes d’une même vie sont distingués lorsqu’aucune chronologie relative n’est fournie. Les personnes, dates, dialogues et scènes manquants ne sont pas inventés.
+
+Les liens d’origine raccordent les nouveaux livres aux fiches Lout, Ismail, Muhammad, Tabouk, Ifk, Isra/Miraj et aux gens du fossé. La fiche Hudaybiyya ouvre le récit détaillé du pacte. Les autres livres conservent un lien direct vers leur hadith source. Les premiers livres restent accessibles dans leur édition et leurs enregistrements inchangés.
+
+Chaque livre possède des décors abstraits et des ambiances naturelles optionnelles selon les chapitres. Aucun personnage, événement de l’invisible ou voix historique n’est reconstitué. La reprise exacte, le carnet, les téléchargements et le passage entre texte et audio réutilisent le lecteur existant.
+
+Trois guides courts « Après l’écoute » prolongent la collection : retrouver la source, choisir un acte concret et transmettre fidèlement. Leurs textes français originaux et leurs références sont conservés dans `audio-books/apres-ecoute-guides.json`. Ils sont classés dans Parcours et restent distincts des chapitres narratifs.
+
+La publication de cette collection est autorisée directement par le propriétaire, sans préécoute. Les contrôles techniques comprennent empreinte SHA-256, taille R2, décodage intégral MP3, durée, texte exact, version et repères temporels fournis. L’événement de publication conserve `humanListened: false`. Ces contrôles ne constituent pas une écoute humaine ou une validation religieuse indépendante.

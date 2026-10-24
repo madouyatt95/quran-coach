@@ -1,0 +1,138 @@
+# L’Hégire — La confiance et les chemins préparés
+
+Version hijra-route-conte-2026-10-24-v1 · Manuscrit à relire avant publication audio.
+
+Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Récit au discours indirect d’après Bukhari 3905-3906 et 9:40. Aucune toile d’araignée, nid, chant d’accueil, date précise de départ ou itinéraire contemporain n’est ajouté. Le guide n’est pas nommé dans le manuscrit, puisque la version retenue donne son appartenance et sa compétence sans son nom. Les récits de Souraqa et de l’arrivée sont distingués dans leur provenance. L’ouvrage développe la préparation et la route ; le premier chapitre du parcours Sira déjà enregistré en donne un aperçu distinct. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
+
+## 1. La protection que l’on rend
+
+Aïcha raconte que ses parents étaient déjà attachés à l’islam lorsqu’elle a commencé à les connaître. Le Prophète, que la paix et les bénédictions soient sur lui, venait auprès d’eux le matin et le soir. Puis les musulmans sont éprouvés. Abou Bakr quitte La Mecque en direction de l’Abyssinie. Il cherche une terre où il pourra adorer son Seigneur sans subir ce que son peuple lui fait endurer.
+
+Sur la route, à Bark al-Ghimad, il rencontre Ibn ad-Daghina, un chef de la tribu des Qara. Celui-ci lui demande où il va. Abou Bakr lui explique qu’il a été contraint de partir et veut parcourir la terre pour adorer son Seigneur. Ibn ad-Daghina refuse qu’un homme comme lui soit chassé. Il rappelle son aide aux personnes démunies, son soin des liens familiaux, son hospitalité et le soutien qu’il apporte dans les difficultés.
+
+Il lui propose sa protection et l’accompagne à La Mecque. Devant les notables de Qouraych, il rappelle ces mêmes qualités. La protection est acceptée, mais avec des conditions : Abou Bakr devra prier et réciter chez lui, sans rendre sa pratique visible dehors. Les chefs craignent l’effet que sa récitation pourrait produire sur leurs femmes et leurs enfants. Ce qui est accordé demeure donc entouré d’une volonté de le tenir hors du regard public.
+
+Abou Bakr commence par adorer Allah dans sa maison. Puis il aménage un lieu de prière dans sa cour, où il prie et récite le Coran. Des femmes et des enfants viennent le regarder et l’écouter. Aïcha dit combien il pleurait en récitant. Le témoignage ne le présente pas comme un orateur fabriquant un spectacle pour vaincre ses adversaires. Il nous montre un homme dont la relation au Coran devient visible à ceux qui s’approchent.
+
+Les notables s’en inquiètent et font revenir Ibn ad-Daghina. Ils estiment que l’accord a été dépassé. Qu’Abou Bakr se tienne à la pratique dans sa maison, ou qu’il rende la protection reçue. Ils ne veulent pas porter publiquement le déshonneur d’avoir rompu la protection d’un autre homme, mais ils refusent de laisser cette prière et cette récitation se montrer ainsi.
+
+Ibn ad-Daghina présente ce choix à Abou Bakr. Il lui rappelle les termes de la protection et explique qu’il ne souhaite pas que les Arabes apprennent qu’elle a été violée contre un homme placé sous sa garde. Abou Bakr lui rend sa protection et se déclare satisfait de celle d’Allah. Le récit garde la netteté de cette réponse, sans nous faire croire que tous les dangers humains disparaissent aussitôt.
+
+Ce premier départ et ce retour éclairent l’attente qui va suivre. La route de l’exil n’est pas pour Abou Bakr une idée apparue au dernier moment. Il a déjà cherché un lieu où adorer son Seigneur, reçu un refuge, puis rendu ce refuge lorsqu’il ne pouvait plus le garder à ces conditions. La fidélité à sa foi traverse ces choix successifs.
+
+Pendant ce temps, le Prophète est toujours à La Mecque. Il annonce aux musulmans qu’il lui a été montré le lieu de leur émigration : une terre de palmiers entre deux étendues de pierres noires. Des croyants partent vers Médine. Ceux qui avaient émigré en Abyssinie les rejoignent en grand nombre. Abou Bakr se prépare lui aussi. Mais une parole va lui demander d’attendre encore, et son attente va désormais être celle d’un compagnon qui espère un départ partagé.
+
+### Repères de lecture
+
+- **Un premier départ interrompu** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La limite du refuge accordé** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 2. Une visite à l’heure inhabituelle
+
+Abou Bakr est prêt à partir vers Médine. Le Prophète lui demande de ne pas se hâter : il espère recevoir lui aussi la permission d’émigrer. Abou Bakr lui demande s’il l’espère réellement, et reçoit une réponse affirmative. Il choisit alors de rester pour l’accompagner. Il nourrit deux montures pendant quatre mois. L’attente n’a donc pas seulement la forme de journées qui passent. Elle prend aussi celle des moyens qu’il prépare.
+
+Un jour, vers le milieu de la journée, le Prophète vient à la maison d’Abou Bakr, la tête couverte. Ce n’est pas son heure habituelle de visite. Ceux qui sont dans la maison le remarquent. Abou Bakr comprend qu’un motif important l’a conduit à venir à cet instant. Le témoignage de Aïcha retient cette différence avant même de rapporter ce qui va être annoncé.
+
+Le Prophète demande la permission d’entrer, puis demande à Abou Bakr de faire sortir ceux qui sont auprès de lui. Abou Bakr lui répond qu’il n’y a que des membres de sa famille. La permission de partir a été donnée. Ce qu’Abou Bakr attendait n’est plus une possibilité lointaine. Il demande s’il l’accompagnera et reçoit la réponse qu’il espérait.
+
+Il lui propose l’une des deux montures. Le Prophète accepte de la prendre contre paiement. Le récit n’efface pas les engagements concrets au milieu de la confiance et de l’amitié. Une monture doit être préparée, un prix reconnu et de la nourriture emportée. Le départ attendu depuis des mois entre maintenant dans le temps de l’organisation immédiate.
+
+Aïcha et sa famille préparent rapidement les provisions. La nourriture est placée dans un sac de cuir. Asma, la fille d’Abou Bakr, coupe une partie de sa ceinture pour en attacher l’ouverture. Le récit relie ce geste au surnom qui lui restera. Au milieu d’un départ dont l’histoire retiendra les grandes étapes, un lien de tissu employé pour fermer un sac conserve ainsi sa place.
+
+Le Prophète et Abou Bakr ne confient pas la route à une simple estimation. Ils engagent un guide expérimenté, compétent pour reconnaître les chemins. Cet homme est encore sur la religion de Qouraych. Ils lui font confiance pour la mission convenue, lui remettent les montures et fixent un rendez-vous après trois nuits auprès de la grotte de Thawr. La compétence et l’engagement pris sont traités comme des moyens réels.
+
+Plusieurs personnes vont contribuer au départ et à sa protection. Le témoignage nous donnera leur nom et leur tâche : celui qui écoute les nouvelles, celui qui apporte le lait, le guide qui conduira la route. La confiance en Allah ne rend aucun de ces gestes inutile. Elle accompagne une préparation qui tient compte du danger, de la distance et du besoin de vivre pendant le voyage.
+
+La maison n’est donc pas seulement un lieu où une nouvelle a été annoncée. Elle est devenue le lieu d’un effort partagé. Chacun n’accomplira pas la même partie du trajet, mais des actes de plusieurs personnes rendront le départ possible. Nous allons maintenant suivre les deux voyageurs jusqu’à la grotte, où les préparatifs continueront de les relier à ceux qui sont restés dans la ville.
+
+### Repères de lecture
+
+- **L’attente qui prépare** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les mains qui préparent la route** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 3. Trois nuits reliées à la ville
+
+Le Prophète et Abou Bakr se réfugient dans une grotte du mont Thawr. Ils y demeurent trois nuits. Le récit ne nous demande pas d’ajouter à l’entrée des signes qu’il ne transmet pas. Il nous donne en revanche des liens précis entre ce refuge et la ville : des personnes qui viennent, écoutent, rapportent et apportent de quoi vivre.
+
+Abdallah, le fils d’Abou Bakr, passe la nuit auprès d’eux. C’est un jeune homme intelligent et attentif. Avant l’aube, il repart pour se trouver le matin parmi les gens de Qouraych, comme s’il avait dormi dans La Mecque. Il retient ce qu’il entend des projets dirigés contre les deux hommes. Lorsque la nuit revient, il leur en fait connaître les nouvelles.
+
+Amir ibn Fouhayra, affranchi d’Abou Bakr, fait paître un troupeau et l’amène auprès d’eux après la tombée de la nuit. Ils peuvent ainsi boire du lait. Il fait repartir les bêtes dans l’obscurité avant l’aube et répète ce service durant les trois nuits. Ce qui se prépare ne dépend donc pas seulement d’un homme qui surveillerait l’horizon. Il faut aussi répondre au besoin quotidien de ceux qui attendent dans le refuge.
+
+Le récit distingue ces tâches sans en faire de simples noms alignés autour d’une grande scène. Abdallah apporte une connaissance du danger. Amir apporte une subsistance. Le guide doit rejoindre le rendez-vous avec les montures. Le refuge demeure relié à un effort organisé, et chacun des engagements prend sa valeur dans la fidélité avec laquelle il est accompli.
+
+Le Coran évoque les deux hommes dans la grotte et la parole du Prophète à son compagnon : qu’il ne s’afflige pas, car Allah est avec eux. Le verset rapporte le secours accordé par Allah et la sérénité qu’Il fait descendre. Cette assistance ne doit pas être confondue avec l’idée que les hommes ne prendraient plus aucun moyen. Nous venons précisément d’entendre les préparatifs et les tâches qui accompagnent ces nuits.
+
+La confiance n’a pas annulé le rendez-vous, la discrétion ni le besoin d’un guide. Elle a permis de demeurer tourné vers Allah à l’intérieur de ce que la situation demandait. Les compagnons n’étaient pas les propriétaires de l’issue, mais cela ne les a pas empêchés d’organiser leur départ avec soin. Le secours d’Allah et la responsabilité humaine sont gardés ensemble dans l’histoire que nous recevons.
+
+Au terme des trois nuits, le guide rejoint les voyageurs avec les montures comme convenu. Amir ibn Fouhayra part avec eux. Ils prennent la route des côtes. Le temps de demeurer dans la grotte est achevé ; une autre forme de danger les attend sur le trajet. Ceux qui les recherchent ne sont pas devenus indifférents à leur départ.
+
+Le livre quitte maintenant le refuge. Nous gardons les noms de ceux qui ont rendu ces nuits possibles, puis suivons les voyageurs sur la route. Un homme va chercher à les rejoindre dans un tout autre but. À ses yeux, leur présence annonce d’abord une récompense. Le récit de cette rencontre nous sera transmis par celui qui était parti pour les saisir.
+
+### Repères de lecture
+
+- **La grotte et les nouvelles** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La confiance au milieu du danger** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 4. Le poursuivant qui demande une protection
+
+Souraqa ibn Malik raconte que des envoyés de Qouraych sont venus promettre une récompense pour celui qui tuerait ou capturerait le Prophète et Abou Bakr. Un jour, alors qu’il est assis parmi les siens, un homme annonce avoir aperçu des silhouettes près de la côte. Il pense qu’il peut s’agir de ceux qui sont recherchés. Souraqa comprend lui aussi de qui il pourrait être question.
+
+Il affirme pourtant devant les autres qu’il ne s’agit pas d’eux, mais d’hommes qu’ils auraient vus partir. Puis il attend un moment, se lève et se prépare discrètement. Il fait amener son cheval, prend sa lance et part. Le récit ne le présente pas déjà comme un protecteur. Il suit les voyageurs en cherchant la récompense qui a été promise.
+
+Son cheval trébuche et il tombe. Il se relève, consulte les flèches divinatoires auxquelles il recourait alors, puis reprend la poursuite malgré le résultat qui lui déplaît. Ces détails nous renseignent sur sa conduite au début de la rencontre ; ils ne sont pas proposés comme des pratiques à suivre. Il se rapproche jusqu’à entendre la récitation du Prophète, qui ne se retourne pas, tandis qu’Abou Bakr regarde fréquemment derrière lui.
+
+Les membres antérieurs de son cheval s’enfoncent alors dans le sol jusqu’aux genoux. Souraqa tombe de nouveau. Il parvient à faire relever sa monture, avec difficulté. Quand elle se tient debout, une poussière semblable à une fumée se lève de la trace qu’elle a laissée. Ce qu’il voulait obtenir par la vitesse et la poursuite lui échappe. La rencontre va prendre une direction différente de celle qu’il avait préparée.
+
+Souraqa les appelle en leur annonçant la sécurité. Les voyageurs s’arrêtent. Il les rejoint et leur dit que leur peuple a promis une récompense pour eux. Il les informe des intentions de ceux qui les recherchent et leur offre des provisions. Ils ne lui prennent rien et ne lui demandent que de ne pas révéler leur présence.
+
+Le poursuivant demande alors qu’un écrit de protection lui soit donné. Le Prophète demande à Amir ibn Fouhayra de le rédiger sur un morceau de cuir. Puis ils poursuivent leur route. Souraqa raconte qu’au milieu de ce qui l’avait empêché de les atteindre, il avait compris que la mission du Messager d’Allah triompherait. Nous recevons ce changement de perspective à travers son propre témoignage.
+
+L’histoire garde ainsi une transformation précise. Un homme avait quitté les siens pour capturer des voyageurs. Il les quitte avec une protection demandée et un engagement de discrétion. Les deux hommes qu’il cherchait à livrer ne l’ont pas traité comme la simple somme de son premier projet. La rencontre a laissé place à une autre relation, sans que le danger initial ait été nié.
+
+Sur la suite de la route, les voyageurs rencontrent Az-Zoubayr, qui revient de Syrie avec un groupe de marchands musulmans. Il leur donne des vêtements blancs. Pendant ce temps, à Médine, des croyants ont appris le départ du Prophète. Ils sortent chaque matin pour l’attendre, jusqu’à ce que la chaleur de midi les ramène chez eux. La route est encore devant les voyageurs ; pour d’autres, elle est devenue le temps d’un accueil qui se prépare.
+
+### Repères de lecture
+
+- **Une récompense recherchée** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une autre demande** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## 5. Le lieu où l’on commence à bâtir
+
+Un jour, les habitants ont longuement attendu, puis sont rentrés sous l’effet de la chaleur. Un homme juif, monté sur une hauteur pour regarder quelque chose, aperçoit alors le Prophète et ses compagnons en vêtements blancs, au milieu du mirage. Il les annonce d’une voix forte aux Arabes qui attendent leur arrivée. Le premier appel qui met les habitants en mouvement vient ainsi d’un homme dont le récit précise l’appartenance.
+
+Les musulmans sortent à leur rencontre. Le Prophète se dirige avec eux vers les habitations des Banu Amr ibn Awf. Certains de ceux qui n’ont jamais vu le Prophète saluent d’abord Abou Bakr. Puis, lorsque le soleil atteint le Messager, Abou Bakr se lève pour l’abriter de son vêtement. À ce geste, les gens reconnaissent celui qu’ils attendaient.
+
+Le récit ne fait pas de l’accueil une scène où chacun saurait déjà tout. Il garde le regard de ceux qui découvrent et le geste du compagnon qui protège du soleil. Après les montures préparées, les nouvelles de la ville, le lait dans la grotte et l’écrit remis à Souraqa, c’est encore un acte concret qui marque la rencontre : se lever pour faire de l’ombre.
+
+Le Prophète demeure plusieurs nuits auprès des Banu Amr ibn Awf. Une mosquée est fondée et il y prie. Puis il reprend sa monture et les gens marchent avec lui jusqu’à ce qu’elle s’agenouille au lieu où se trouvera sa mosquée à Médine. Le voyage n’est pas seulement achevé par le fait d’avoir atteint une ville. Il ouvre une vie à organiser et un lieu de prière à construire.
+
+Le terrain appartient à deux orphelins, Souhayl et Sahl, placés sous la garde d’Asad ibn Zourara. Il sert à faire sécher les dattes. Le Prophète fait venir les deux garçons et discute avec eux de ce lieu pour en faire une mosquée. Ils proposent de le lui donner. Le récit commence donc l’ouvrage en reconnaissant ceux à qui le terrain appartient ; l’importance du projet n’efface pas leur droit.
+
+La construction commence. Le Prophète porte les briques avec les autres. Les demandes adressées à Allah accompagnent le travail et évoquent la récompense de l’au-delà ainsi que la miséricorde pour les Ansar et les émigrés. Ceux qui ont quitté et ceux qui accueillent sont nommés dans un même mouvement. La ville qui reçoit devient le lieu d’un bien à accomplir ensemble.
+
+En revenant sur la route que nous avons écoutée, nous retrouvons une suite de responsabilités. Abou Bakr a attendu et préparé les montures. Asma a attaché les provisions. Abdallah a retenu les nouvelles. Amir a apporté le lait puis accompagné le voyage. Un guide a tenu le rendez-vous. Az-Zoubayr a offert des vêtements. Les habitants ont attendu, et des mains ont porté les briques.
+
+La confiance en Allah traverse cette histoire sans retirer leur place à ces gestes. L’Hégire n’est pas devenue sûre parce que les voyageurs auraient ignoré la route et les risques. Le secours d’Allah accompagne une fidélité, une préparation et des engagements. Le livre s’achève auprès d’un lieu que l’on bâtit. La route a conduit à une communauté où il faut maintenant continuer de tenir les droits, d’accueillir et d’agir ensemble.
+
+### Repères de lecture
+
+- **Une attente qui devient une rencontre** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un départ qui conduit à un travail partagé** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+## Épilogue
+
+Dans une entreprise importante, la confiance peut grandir avec le soin des moyens. Il est possible de demander l’aide d’Allah, de choisir une personne compétente, de tenir un rendez-vous et de reconnaître la contribution discrète d’un autre. Le récit de l’Hégire garde ces gestes avec le secours reçu. Ils peuvent éclairer nos propres projets sans réduire cette histoire à une méthode de réussite garantie.
+
+- Préparer les moyens sans croire posséder l’issue.
+- Reconnaître les contributions discrètes qui rendent un bien possible.
+- Respecter les engagements et les droits dans un projet partagé.
+
+Quelle contribution discrète devrais-tu reconnaître ou mieux préparer dans ton prochain projet ?
+
+## Sources et périmètre
+
+- [Sahih al-Bukhari 3905](https://sunnah.com/bukhari:3905) — Témoignage de Aïcha : protection d’Abou Bakr, préparation du départ, trois nuits à Thawr et route des côtes. (Sahih — recueil de Sahih al-Bukhari). Consultation : 2026-10-24.
+- [Coran 9:40](https://quran.com/9/40) — La confiance au milieu du danger. Consultation : 2026-10-24.
+- [Sahih al-Bukhari 3906](https://sunnah.com/bukhari:3906) — Récit de Souraqa, rencontre d’Az-Zoubayr, attente à Médine, accueil et début de la construction de la mosquée. Texte arabe ancien. (Sahih — recueil de Sahih al-Bukhari). Consultation : 2026-10-24.
+
+La narration française est une adaptation pédagogique originale, pas une traduction littérale. Les notes, références et questions ne font pas partie du texte à prononcer. L’état de production et de publication des enregistrements se consulte dans le studio.
