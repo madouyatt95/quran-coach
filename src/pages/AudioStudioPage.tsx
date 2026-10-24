@@ -4,6 +4,7 @@ import {AUDIO_CATEGORIES,type AudioScript,type LibraryAudio,type VoiceProfile} f
 import {loadAudioLibrary,AUDIO_API,audioSearch} from '../lib/audioLibrary';
 import {audioAdmin,audioPreview} from '../lib/audioAdmin';
 import './AudioLibrary.css';
+import {ScriptImport} from '../components/Audio/ScriptImport';
 const NarrativeBookStudio=lazy(()=>import('../components/Audio/NarrativeBookStudio').then(module=>({default:module.NarrativeBookStudio})));
 interface Account {id:string;label:string;configured:boolean;credit_limit:number;spent:number;reserved:number;enabled:boolean;authorized_until:string}
 interface Job {id:string;batch_id:string;script_id:string;account_id:string;state:string;actual:number|null;estimate:number;error:string|null;artifact:LibraryAudio|null}
@@ -21,6 +22,7 @@ export function AudioStudioPage(){
  const [state,setState]=useState<State|null>(null),[catalog,setCatalog]=useState<LibraryAudio[]>([]),[query,setQuery]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
  const [script,setScript]=useState(blank),[reviewed,setReviewed]=useState(false),[voice,setVoice]=useState(defaultVoice),[voiceId,setVoiceId]=useState(''),[account,setAccount]=useState(''),[selected,setSelected]=useState<string[]>([]),[quote,setQuote]=useState<Quote|null>(null),[confirmed,setConfirmed]=useState(false);
  const [providerVoices,setProviderVoices]=useState<ProviderVoice[]>([]);
+ const [publicationAccount,setPublicationAccount]=useState(''),[ownerPublication,setOwnerPublication]=useState(false);
  const [accountForm,setAccountForm]=useState({id:'primary',label:'Compte pilote ElevenLabs',until:'',limit:1000,termsConfirmed:false,noOverageConfirmed:false});
  const [preview,setPreview]=useState<{id:string;url:string}|null>(null),[listened,setListened]=useState(false),[history,setHistory]=useState(''),[transferConfirmed,setTransferConfirmed]=useState(false);
  const previewRef=useRef<string|null>(null);
@@ -31,11 +33,20 @@ export function AudioStudioPage(){
  const edit=(patch:Partial<AudioScript>)=>{setScript(s=>({...s,...patch}));setReviewed(false);};
  const choose=(item:LibraryAudio)=>{setScript({...blank,title:item.title,category:item.category,text:item.text.replaceAll('ﷺ','que la paix et les bénédictions soient sur lui').replaceAll('ﷻ',''),original_text:item.text,source_url:item.sourceUrl,reference:item.reference});setReviewed(false);};
  const previewJob=async(job:Job)=>{window.dispatchEvent(new Event('quran-stop-playback'));if(previewRef.current)URL.revokeObjectURL(previewRef.current);const url=await audioPreview(job.id);previewRef.current=url;setPreview({id:job.id,url});setListened(false);setHistory('');};
+ const exportProduction=()=>{if(!state)return;const href=URL.createObjectURL(new Blob([JSON.stringify({checked_at:new Date().toISOString(),accounts:state.accounts,jobs:state.jobs,scripts:state.scripts},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=href;a.download='quran-coach-production.json';a.click();setTimeout(()=>URL.revokeObjectURL(href),1000);};
  return <div className="audio-library audio-studio"><header className="audio-library-heading"><Link to="/listen/library">← Bibliothèque</Link><span className="audio-kicker">ADMINISTRATION</span><h1>Studio de narration</h1><p>Préparer les textes, maîtriser les crédits, écouter avant de publier.</p></header>
  {!AUDIO_API&&<div className="audio-notice"><strong>Raccordement serveur en attente.</strong><p>Le catalogue peut être consulté. L’enregistrement, la production et la publication seront disponibles après configuration sécurisée.</p></div>}
  <div className="audio-card-actions"><Link to="/settings#backup">Connexion administrateur</Link><button disabled={busy||!AUDIO_API} onClick={()=>void run(reload,'État actualisé.')}>Actualiser</button>{state&&<span>{state.generationEnabled?'Production activée':'Génération réelle désactivée'}</span>}</div>
  {error&&<p className="audio-notice" role="alert">{error}</p>}{notice&&<p className="audio-notice" role="status">{notice}</p>}
  <nav className="audio-tabs" aria-label="Studio">{[['books','Livres'],['scripts','Scripts'],['voices','Voix'],['production','Production'],['review','Validation'],['accounts','Comptes'],['logs','Journal']].map(([key,label])=><button key={key} aria-pressed={section===key} onClick={()=>setSection(key)}>{label}</button>)}</nav>
+ {state&&<button disabled={busy} onClick={exportProduction}>Exporter le relevé de production</button>}
+ {section==='scripts'&&state&&<ScriptImport busy={busy} onSave={async(drafts,approve)=>{
+  setBusy(true);setError('');setNotice('');let saved=0;
+  try{for(const draft of drafts){await audioAdmin('script',{script:draft,approve});saved++;}await reload();setNotice(`${saved} segments ${approve?'validés':'enregistrés en brouillons'}. Aucun crédit consommé.`);}
+  catch(cause){await reload().catch(()=>{});throw new Error(`${saved}/${drafts.length} segments conservés. ${cause instanceof Error?cause.message:'Import interrompu.'}`);}
+  finally{setBusy(false);}
+ }}/>}
+ {section==='review'&&state&&<section className="audio-card"><h2>Publication autorisée sans préécoute</h2><p>Cette option consigne une validation des textes et des fichiers sans attester d’une écoute humaine. Les audios doivent être terminés, leurs crédits rapprochés et leur intégrité contrôlée.</p><label>Compte de production à publier<select value={publicationAccount} onChange={e=>{setPublicationAccount(e.target.value);setOwnerPublication(false);}}><option value="">Choisir un compte</option>{state.accounts.map(a=><option key={a.id} value={a.id}>{a.label}</option>)}</select></label><p>{state.jobs.filter(j=>j.account_id===publicationAccount&&j.state==='review').length} audios à publier</p><label className="audio-check"><input type="checkbox" checked={ownerPublication} onChange={e=>setOwnerPublication(e.target.checked)}/>Le propriétaire a autorisé la publication directe ; les textes, les droits et les fichiers ont été contrôlés. Aucune écoute humaine intégrale n’est attestée.</label><button disabled={busy||!publicationAccount||!ownerPublication||!state.jobs.some(j=>j.account_id===publicationAccount&&j.state==='review')} onClick={()=>void run(async()=>{const jobs=state.jobs.filter(j=>j.account_id===publicationAccount&&j.state==='review');for(let i=0;i<jobs.length;i+=25)await audioAdmin('publish-verified',{jobs:jobs.slice(i,i+25).map(j=>j.id),ownerAuthorized:true,textsChecked:true,filesChecked:true});setOwnerPublication(false);return `${jobs.length} audios publiés avec validation documentaire et technique consignée.`;})}>Publier les audios vérifiés de ce compte</button></section>}
  {section==='books'&&(state?<Suspense fallback={<p role="status">Ouverture du manuscrit…</p>}><NarrativeBookStudio busy={busy} onOpenScript={draft=>{setScript(draft);setReviewed(false);setSection('scripts');invalidate();}} onSaveDrafts={async drafts=>{
   setBusy(true);setError('');setNotice('');let saved=0;
   try{for(const draft of drafts){await audioAdmin('script',{script:draft,approve:false});saved++;}await reload();setNotice(`${saved} segment${saved>1?'s':''} enregistré${saved>1?'s':''} en brouillon. Aucun crédit consommé.`);}

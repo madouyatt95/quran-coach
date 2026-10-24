@@ -5,6 +5,7 @@ export interface Env {
   AUDIO: R2Bucket; PRODUCTION: Workflow<ProductionRun>;
   SUPABASE_URL: string; SUPABASE_SERVICE_ROLE_KEY: string; AUDIO_ADMIN_IDS: string;
   ELEVENLABS_ACCOUNTS: string; ALLOWED_ORIGINS: string; GENERATION_ENABLED: string;
+  [binding: `ELEVENLABS_KEY_${string}`]: string | undefined;
 }
 export interface Account {id: string; label: string; enabled: boolean; authorized_until: string; credit_limit: number; spent: number; reserved: number}
 export interface Job {id: string; batch_id: string; account_id: string; script_id: string; fingerprint: string; state: string; voice: VoiceProfile; reserved: number; actual: number|null; started_at: string; history_id?: string; request_id?: string; artifact?: Record<string, unknown>}
@@ -22,15 +23,29 @@ export async function row<T>(env: Env, name: string, id: string): Promise<T> {
 export const patch = (env: Env, name: string, id: string, body: unknown) => db(env,table(name,id),'PATCH',body);
 export const event = (env: Env, actor: string, action: string, entity: string, detail = {}) => db(env,'qc_audio_events','POST',{actor,action,entity,detail});
 export function accountKey(env: Env, id: string): string {
-  const keys = JSON.parse(env.ELEVENLABS_ACCOUNTS || '{}') as Record<string,string>;
+  const keys = accountKeys(env);
   const key = keys[id]; if (typeof key !== 'string' || key.length < 10) throw new HttpError(409,'Clé serveur absente pour ce compte.'); return key;
 }
 export async function eleven(env: Env, account: string, path: string, init: RequestInit = {}, version='v1') {
   return fetch(`https://api.elevenlabs.io/${version}/${path}`, {...init, headers:{'xi-api-key':accountKey(env,account),'Content-Type':'application/json'}, signal:AbortSignal.timeout(120000)});
 }
 export function configuredAccounts(env: Env) {
-  const keys = JSON.parse(env.ELEVENLABS_ACCOUNTS || '{}') as Record<string,unknown>;
-  return Object.keys(keys).filter(id => /^[a-z0-9_-]{1,40}$/.test(id) && typeof keys[id]==='string' && String(keys[id]).length>=10);
+  return Object.keys(accountKeys(env));
+}
+/** Independent secrets let a new account be added without retrieving or replacing older keys. */
+function accountKeys(env: Env): Record<string,string> {
+  const keys: Record<string,string> = Object.create(null);
+  const legacy: unknown = JSON.parse(env.ELEVENLABS_ACCOUNTS || '{}');
+  if (legacy && typeof legacy === 'object' && !Array.isArray(legacy)) {
+    for (const [id,key] of Object.entries(legacy)) {
+      if (/^[a-z0-9_-]{1,40}$/.test(id) && typeof key === 'string' && key.length >= 10) keys[id] = key;
+    }
+  }
+  for (const [binding,key] of Object.entries(env)) {
+    const match = /^ELEVENLABS_KEY_([A-Z0-9_]{1,40})$/.exec(binding);
+    if (match && typeof key === 'string' && key.length >= 10) keys[match[1].toLowerCase()] = key;
+  }
+  return keys;
 }
 export async function providerVoices(env: Env, id: string) {
   const response=await eleven(env,id,'voices?page_size=100',{},'v2');
@@ -217,6 +232,32 @@ export async function produceOne(env: Env, jobId: string): Promise<boolean> {
     await patch(env,'batches',job.batch_id,{paused:true});
     await event(env,'worker','uncertain',job.id);return false;
   }
+}
+
+/** Deliberate owner waiver, separate from the human-listening review path. */
+export async function publishVerified(env:Env,actor:string,input:Record<string,unknown>){
+ requireValue(input.ownerAuthorized===true&&input.textsChecked===true&&input.filesChecked===true,'L’autorisation du propriétaire et les contrôles des textes et fichiers sont requis.');
+ requireValue(Array.isArray(input.jobs)&&input.jobs.length>0&&input.jobs.length<=25&&new Set(input.jobs).size===input.jobs.length,'Sélectionnez entre 1 et 25 audios distincts.');
+ const ids=input.jobs as unknown[];
+ requireValue(ids.every(id=>typeof id==='string'&&/^[0-9a-f-]{36}$/.test(id)),'Identifiant audio invalide.');
+ const jobs:Job[]=[];
+ for(const id of ids){
+  const job=await row<Job>(env,'jobs',String(id));
+  requireValue(['review','published'].includes(job.state)&&job.artifact&&Number.isSafeInteger(job.actual)&&Number(job.actual)>=0,'Un audio est inachevé ou ses crédits ne sont pas rapprochés.');
+  const script=await row<AudioScript>(env,'scripts',job.script_id),artifact=job.artifact!;
+  requireValue(script.approved_by&&artifact.text===script.text&&artifact.key===`recordings/${job.fingerprint}.mp3`,'Le texte validé ne correspond pas au fichier.');
+  requireValue(typeof artifact.duration==='number'&&artifact.duration>0&&Array.isArray(artifact.sentences)&&artifact.sentences.length>0,'Les repères de narration sont absents.');
+  const head=await env.AUDIO.head(String(artifact.key));
+  requireValue(head&&head.size===artifact.bytes&&head.customMetadata?.sha256===artifact.sha256,'Le fichier conservé ne correspond pas à son empreinte.');
+  jobs.push(job);
+ }
+ // Validate the whole bounded selection before changing any publication status.
+ for(const job of jobs){
+  if(job.state==='published')continue;
+  await event(env,actor,'publish_owner_authorized',job.id,{humanListened:false,textsChecked:true,filesChecked:true,ownerAuthorized:true});
+  await patch(env,'jobs',job.id,{state:'published',reviewed_by:actor,reviewed_at:new Date().toISOString()});
+ }
+ return {published:jobs.length,humanListened:false};
 }
 
 export async function media(env: Env, request: Request, id: string, preview=false) {

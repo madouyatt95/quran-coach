@@ -1,5 +1,5 @@
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from 'cloudflare:workers';
-import { admin, accountKey, configuredAccounts, db, event, HttpError, makeQuote, media, patch, produceOne, providerVoices, quota, reconcile, row, saveScript, saveVoice, type Account, type Env, type Job } from './service';
+import { admin, accountKey, configuredAccounts, db, event, HttpError, makeQuote, media, patch, produceOne, providerVoices, publishVerified, quota, reconcile, row, saveScript, saveVoice, type Account, type Env, type Job } from './service';
 import type { AudioScript, VoiceProfile } from '../../../src/lib/audioProduction';
 import { continueProduction, productionWindow, type ProductionRun } from './productionWindow';
 
@@ -74,6 +74,7 @@ async function handle(request:Request,env:Env) {
   }
   if(path==='/admin/quota')return json(await quota(env,String(b.account)));
   if(path==='/admin/provider-voices')return json(await providerVoices(env,String(b.account)));
+  if(path==='/admin/publish-verified')return json(await publishVerified(env,actor,b));
   if(path==='/admin/quote')return json(await makeQuote(env,actor,String(b.account),b.scripts as string[],String(b.voice)));
   if(path==='/admin/approve'){
     check(env.GENERATION_ENABLED==='true','La génération réelle est désactivée.');

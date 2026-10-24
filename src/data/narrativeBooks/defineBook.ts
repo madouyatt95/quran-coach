@@ -1,23 +1,31 @@
-import type { NarrativeBook, QuranNarrativeSource } from '../../lib/narrativeBooks';
+import type { NarrativeBook, HadithNarrativeSource, NarrativeSource } from '../../lib/narrativeBooks';
 
 export type Passage = readonly [surah: number, first: number, last: number];
-interface SectionInput { title: string; refs: Passage[]; text: string; note?: string }
+type SourceInput = Passage | HadithNarrativeSource;
+interface SectionInput { title: string; refs: SourceInput[]; text: string; note?: string }
 interface ChapterInput { id: string; title: string; sections: SectionInput[] }
 interface BookInput {
   id: string; title: string; subtitle: string; category?: NarrativeBook['category'];
   note: string; chapters: ChapterInput[]; epilogue: string; lessons: string[]; question: string;
+  checkedAt?: string;
 }
-const sourceId = ([surah, first, last]: Passage) => `q-${surah}-${first}-${last}`;
+const isPassage = (source: SourceInput): source is Passage => Array.isArray(source);
+const sourceId = (source: SourceInput) => isPassage(source) ? `q-${source[0]}-${source[1]}-${source[2]}` : source.id;
 
 /** Original French narration; the Quranic source text is never sent to TTS. */
 export function defineBook(input: BookInput): NarrativeBook {
-  const sources = new Map<string, QuranNarrativeSource>();
+  const sources = new Map<string, NarrativeSource>();
   for (const chapter of input.chapters) for (const section of chapter.sections) for (const passage of section.refs) {
-    const [surah, first, last] = passage, id = sourceId(passage);
-    if (!sources.has(id)) sources.set(id, {id, type:'quran', surah, first, last, checkedAt:'2026-10-23', description:section.title});
+    const id = sourceId(passage);
+    if (!sources.has(id)) {
+      if (isPassage(passage)) {
+        const [surah,first,last] = passage;
+        sources.set(id, {id,type:'quran',surah,first,last,checkedAt:input.checkedAt || '2026-10-23',description:section.title});
+      } else sources.set(id,passage);
+    }
   }
   return {
-    id:input.id, version:`${input.id}-conte-2026-10-23-v1`, status:'draft', title:input.title, subtitle:input.subtitle,
+    id:input.id, version:`${input.id}-conte-${input.checkedAt || '2026-10-23'}-v1`, status:'draft', title:input.title, subtitle:input.subtitle,
     category:input.category || 'prophet', voice:'George',
     editorialNote:`Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. ${input.note} La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.`,
     sources:[...sources.values()],

@@ -16,6 +16,8 @@ Le Worker écrit les reçus et MP3 dans un bucket R2 privé et les métadonnées
 
 Le navigateur reçoit seulement l'URL publique `VITE_AUDIO_PRODUCTION_URL`. Les secrets `SUPABASE_SERVICE_ROLE_KEY`, `ELEVENLABS_ACCOUNTS` et la liste `AUDIO_ADMIN_IDS` restent dans les secrets du Worker. Aucun fichier `.dev.vars` ou `.env` réel ne doit être versionné.
 
+Un compte supplémentaire peut recevoir son propre secret `ELEVENLABS_KEY_<IDENTIFIANT_EN_MAJUSCULES>` (lettres, chiffres et underscores). Par exemple, `ELEVENLABS_KEY_LIVRES_COMPTE_2` correspond à `livres_compte_2`. Cela préserve l'ancien secret collectif sans en extraire les clés. Le secret individuel est prioritaire pour le même identifiant ; l'autorisation datée et le plafond en base restent nécessaires, et aucun changement automatique de compte n'est effectué.
+
 ## Installation opérateur
 
 1. Installer `workers/audio` avec `npm ci`.

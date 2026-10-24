@@ -1,6 +1,6 @@
 // @vitest-environment node
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {admin, decodeAudioBase64, encodeAudioBase64, discoverHistory, produceOne, media, providerVoices, type Env, type Job} from '../src/service';
+import {admin, accountKey, configuredAccounts, decodeAudioBase64, encodeAudioBase64, discoverHistory, produceOne, media, providerVoices, publishVerified, type Env, type Job} from '../src/service';
 import type {AudioScript} from '../../../src/lib/audioProduction';
 
 function fixture() {
@@ -26,6 +26,44 @@ function fixture() {
 }
 afterEach(()=>vi.unstubAllGlobals());
 describe('paid production boundaries',()=>{
+ it('requires an explicit owner waiver and records that no human listening is attested',async()=>{
+  const f=fixture(),id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  Object.assign(f.job,{id,state:'review',actual:50,artifact:{text:'Bonjour.',key:'recordings/hash.mp3',duration:8,bytes:1000,sha256:'digest',sentences:[{sentence:0,start:0,end:8}]}});
+  f.bucket.head.mockResolvedValue({size:1000,httpEtag:'etag',customMetadata:{sha256:'digest'}});
+  const writes:Record<string,unknown>[]=[];
+  vi.stubGlobal('fetch',vi.fn(async(input:string|URL|Request,init?:RequestInit)=>{
+   const url=String(input);
+   if(init?.method==='POST'||init?.method==='PATCH'){writes.push(JSON.parse(String(init.body)));return Response.json([]);}
+   if(url.includes('qc_audio_jobs?'))return Response.json([f.job]);
+   if(url.includes('qc_audio_scripts?'))return Response.json([{text:'Bonjour.',approved_by:'admin'}]);
+   return Response.json([]);
+  }));
+  const approval={jobs:[id],ownerAuthorized:true,textsChecked:true,filesChecked:true};
+  await expect(publishVerified(f.env,'admin',{...approval,ownerAuthorized:false})).rejects.toThrow();
+  expect(writes).toHaveLength(0);
+  await expect(publishVerified(f.env,'admin',approval)).resolves.toEqual({published:1,humanListened:false});
+  expect(writes[0]).toMatchObject({action:'publish_owner_authorized',detail:{humanListened:false}});
+  expect(writes[1]).toMatchObject({state:'published'});
+ });
+ it('refuses publication of incomplete, unsettled or mismatching audio before writing',async()=>{
+  const f=fixture(),id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  Object.assign(f.job,{id,state:'review',actual:null});
+  const calls=vi.fn(async(input:string|URL|Request)=>Response.json(String(input).includes('qc_audio_jobs?')?[f.job]:[]));
+  vi.stubGlobal('fetch',calls);
+  await expect(publishVerified(f.env,'admin',{jobs:[id],ownerAuthorized:true,textsChecked:true,filesChecked:true})).rejects.toThrow();
+  expect(calls.mock.calls).toHaveLength(1);
+  expect(f.bucket.head).not.toHaveBeenCalled();
+ });
+ it('adds an independent account secret without exposing or replacing the first account',()=>{
+  const {env}=fixture();
+  env.ELEVENLABS_KEY_LIVRES_COMPTE_2='test-only-second-key';
+  expect(configuredAccounts(env)).toEqual(['primary','livres_compte_2']);
+  expect(accountKey(env,'primary')).toBe('test-only-key');
+  expect(accountKey(env,'livres_compte_2')).toBe('test-only-second-key');
+  expect(()=>accountKey(env,'SUPABASE_SERVICE_ROLE_KEY')).toThrow();
+  expect(()=>accountKey(env,'constructor')).toThrow();
+  expect(()=>accountKey(env,'__proto__')).toThrow();
+ });
  it('preserves every byte of a long MP3-size binary without per-byte callback or concatenation overhead',()=>{
   const audio=new Uint8Array(3500001);for(let i=0;i<audio.length;i++)audio[i]=i%256;
   const base64=encodeAudioBase64(audio);
