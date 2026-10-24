@@ -16,7 +16,7 @@ function BookRail({id,title,books,selected,onSelect,items}:{id:string;title:stri
  if(!books.length)return null;
  return <section className="book-rail"><header><h3>{title}</h3><div><button aria-label={`Faire défiler ${title} vers la gauche`} onClick={()=>ref.current?.scrollBy({left:-300,behavior:'smooth'})}><ChevronLeft size={18}/></button><button aria-label={`Faire défiler ${title} vers la droite`} onClick={()=>ref.current?.scrollBy({left:300,behavior:'smooth'})}><ChevronRight size={18}/></button></div></header><div ref={ref} className="book-rail-track" onScroll={e=>setOffset(e.currentTarget.scrollLeft)}>{books.map((b,i)=>{const tracks=recordingsForBook(items,b),duration=tracks.reduce((n,t)=>n+t.duration,0);return <button key={b.id} className="book-jacket" aria-pressed={selected===b.id} aria-label={`Présenter ${b.title}`} onClick={()=>onSelect(b.id)}><BookLandscape scene={coverScene(b.id)}/><span className="book-jacket-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span><span className="book-jacket-copy"><small>{b.chapters.length} CHAPITRES</small><strong>{b.title}</strong><span>{duration?`${Math.ceil(duration/60)} min · Audio & texte`:'Texte intégral'}</span></span></button>;})}</div></section>;
 }
-export function BookDiscovery({books,items,children,kind}:{books:BookSummary[];items:LibraryAudio[];children:ReactNode;kind:string}){
+export function BookDiscovery({books,items,children,afterBooks,kind}:{books:BookSummary[];items:LibraryAudio[];children:ReactNode;afterBooks?:ReactNode;kind:string}){
  const hero=useRef<HTMLElement>(null);
  const choose=(id:string)=>{setSelection(id);if(hero.current?.closest('[data-pupitre-layout=plain]'))hero.current.scrollIntoView({block:'start',behavior:'smooth'});};
  const [selection,setSelection]=usePageState(`book-featured-${kind}`,''),navigate=useNavigate();
@@ -35,5 +35,5 @@ export function BookDiscovery({books,items,children,kind}:{books:BookSummary[];i
  <BookRail id={`${kind}-prophets`} title="Histoires des prophètes" books={prophets} selected={selected?.id||''} onSelect={choose} items={items}/>
  <BookRail id={`${kind}-stories`} title="Histoires et moralités" books={stories} selected={selected?.id||''} onSelect={choose} items={items}/>
  <BookRail id={`${kind}-short`} title="Un récit en moins de 20 minutes" books={short} selected={selected?.id||''} onSelect={choose} items={items}/>
- </PupitreBottom></Pupitre>;
+ {afterBooks}</PupitreBottom></Pupitre>;
 }

@@ -80,3 +80,22 @@ it('attaches a late-loading verso before completing the pending turn',async()=>{
  expect(document.querySelector('.iq-book-back')?.textContent).toContain('Real page 5');
  act(()=>vi.advanceTimersByTime(1600));expect(result.current.turning).toBe(false);
 });
+
+it.each([-1,1])('finds the verso across pupitre panes and completes the turn in direction %s',async direction=>{
+ const reader=document.createElement('div');reader.className='iq-reader';
+ const upper=document.createElement('section'),lower=document.createElement('section');
+ upper.className='pupitre-upper';lower.className='pupitre-lower';
+ upper.append(root);document.querySelectorAll('[data-book-verso]').forEach(node=>lower.append(node));
+ reader.append(upper,lower);document.body.append(reader);
+ const target=4+direction,late=lower.querySelector<HTMLElement>(`[data-book-verso="${target}"] .iq-scaled-page`)!;
+ late.removeAttribute('data-page-ready');
+ const {result,rerender}=renderHook(({page})=>useBookPageTurn({current:root},page,true),{initialProps:{page:4}});
+ act(()=>result.current.scrub(target,direction,.6));
+ expect(reader.querySelector('.iq-book-turn')?.parentElement).toBe(reader);
+ expect(upper.querySelector('.iq-book-turn')).toBeNull();
+ act(()=>{result.current.begin(target,direction);});rerender({page:target});
+ await act(async()=>{late.dataset.pageReady='true';await Promise.resolve();});
+ expect(reader.querySelector('.iq-book-back')?.textContent).toContain(`Real page ${target}`);
+ act(()=>vi.advanceTimersByTime(1600));
+ expect(result.current.turning).toBe(false);expect(reader.querySelector('.iq-book-turn')).toBeNull();
+});

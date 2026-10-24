@@ -59,6 +59,10 @@ export function useBookPageTurn(viewport:RefObject<HTMLDivElement|null>,page:num
         const open=root?.querySelector('.iq-book-spread.is-open');
         if(open){const sheets=Array.from(open.querySelectorAll<HTMLElement>('.iq-scaled-page')).sort((a,b)=>a.getBoundingClientRect().left-b.getBoundingClientRect().left);source=direction>0?sheets[0]:sheets.at(-1);}
         if(!root||!source||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return !manual;
+        // The viewport and verso cache live in separate pupitre panes. Keep the fixed
+        // animation outside their layout containment and observe the whole reader.
+        const host=root.closest<HTMLElement>('.iq-reader')||root.parentElement;
+        if(!host)return !manual;
         const rect=source.getBoundingClientRect(),view=root.getBoundingClientRect();
         const layer=document.createElement('div');layer.className='iq-book-turn';layer.inert=true;layer.setAttribute('aria-hidden','true');
         Object.assign(layer.style,{left:`${view.left}px`,top:`${view.top}px`,width:`${view.width}px`,height:`${view.height}px`,perspective:`${Math.max(2400,rect.width*5)}px`,perspectiveOrigin:`${rect.left-view.left+rect.width/2}px ${rect.top-view.top+rect.height/2}px`});
@@ -85,19 +89,19 @@ export function useBookPageTurn(viewport:RefObject<HTMLDivElement|null>,page:num
         layer.append(sheet);
         const binding=document.createElement('div');binding.className='iq-book-binding';
         Object.assign(binding.style,{left:`${rect.left-view.left+(direction>0?rect.width:0)-5}px`,top:`${rect.top-view.top}px`,height:`${rect.height}px`});
-        layer.append(binding);root.parentElement!.append(layer);
+        layer.append(binding);host.append(layer);
         const backNumber=open&&direction<0?target+1:target;
         const r:Turn={target,backPage:backNumber,source,layer,strips,fronts,backs,shades,shadow,width:rect.width,height:rect.height,direction,tilt:-direction*.25,velocity:0,frame:0,observer:null,backReady:false,timer:setTimeout(clear,manual?120000:5000),phase:manual?'drag':'wait',progress:0,requested:0};running.current=r;
         const attachBack=()=>{
             if(r.backReady||running.current!==r)return;
-            const backSource=root.parentElement?.querySelector<HTMLElement>(`[data-book-verso="${backNumber}"] .iq-scaled-page[data-page-ready="true"]`);
+            const backSource=host.querySelector<HTMLElement>(`[data-book-verso="${backNumber}"] .iq-scaled-page[data-page-ready="true"]`);
             if(!backSource)return;
             // Disconnect before cloning to avoid observing our own DOM writes.
             r.observer?.disconnect();
             strips.forEach(strip=>{const {copy}=pageCopy(backSource);strip.querySelector('.iq-book-back')!.append(copy);backs.push(copy);});
             r.backReady=true;paint(r,r.phase==='drag'?r.requested:r.progress);setRevision(v=>v+1);
         };
-        r.observer=new MutationObserver(attachBack);r.observer.observe(root.parentElement!,{childList:true,subtree:true,attributes:true,attributeFilter:['data-page-ready']});attachBack();
+        r.observer=new MutationObserver(attachBack);r.observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['data-page-ready']});attachBack();
         paint(r,0);setTurning(true);setDragging(manual);setBackPage(backNumber);
         if(manual){source.style.visibility='hidden';setPreview({page:bookTurnPages(page,direction,!!open).under,left:rect.left-view.left+root.scrollLeft,top:rect.top-view.top+root.scrollTop});}
         return true;

@@ -35,3 +35,11 @@ it('keeps reading available with no published audio and disables listening',asyn
  expect([...host.querySelectorAll('button')].find(b=>b.textContent==='Lire')?.disabled).toBe(false);
  expect(host.querySelector('[data-pupitre-activity="catalogue"]')).not.toBeNull();
 });
+
+it('presents all book covers before the additional written stories',async()=>{
+ await act(async()=>root.render(<MemoryRouter><BookDiscovery books={available} items={tracks} kind="all" afterBooks={<section className="book-legacy-links">Autres récits à lire</section>}>Filtres</BookDiscovery></MemoryRouter>));
+ const legacy=host.querySelector('.book-legacy-links')!;
+ const rails=[...host.querySelectorAll('.book-rail')];
+ expect(rails.length).toBeGreaterThan(0);
+ rails.forEach(rail=>expect(rail.compareDocumentPosition(legacy)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy());
+});
