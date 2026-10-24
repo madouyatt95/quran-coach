@@ -151,3 +151,15 @@ export function isSupersededBookAudio(item:Pick<LibraryAudio,'reference'|'title'
  return !bookForAudio(item)&&books.some(b=>item.reference?.includes(`Manuscrit ${b.id}-`));
 }
 export function isCompanionBook(book:BookSummary){return companionPortraits.some(p=>p.bookId===book.id);}
+
+/** Stay in the current collection and rotate the shelf, keeping related lives together. */
+export function recommendedBooks(bookId:string,items:LibraryAudio[],preferAudio=false,limit=6){
+ const at=books.findIndex(b=>b.id===bookId),current=books[at];
+ if(!current)return [];
+ const collection=(book:BookSummary)=>isCompanionBook(book)?'companions':book.category;
+ const origins=new Set(bookOrigins[bookId]||[]);
+ const candidates=[...books.slice(at+1),...books.slice(0,at)].filter(b=>collection(b)===collection(current));
+ const related=(book:BookSummary)=>Number(bookOrigins[book.id]?.some(url=>origins.has(url))||false);
+ const playable=(book:BookSummary)=>Number(recordingsForBook(items,book).length>0);
+ return candidates.sort((a,b)=>(preferAudio?playable(b)-playable(a):0)||related(b)-related(a)).slice(0,limit);
+}
