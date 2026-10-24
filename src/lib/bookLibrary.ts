@@ -129,5 +129,12 @@ export function chapterPlayback(item:LibraryAudio,queue:LibraryAudio[],position:
 }
 
 export function canonicalBookForSource(sourceUrl:string){
- try{const url=new URL(sourceUrl,'https://www.quran-coach.fr');if(!['www.quran-coach.fr','quran-coach.fr'].includes(url.hostname))return null;const kind=url.pathname==='/prophets'?'prophet':url.pathname==='/stories'?'story':null;return kind?bookEntryForOrigin(kind,url.searchParams.get(kind)||''):null;}catch{return null;}
+ try{
+  const url=new URL(sourceUrl,'https://www.quran-coach.fr');
+  if(!['www.quran-coach.fr','quran-coach.fr'].includes(url.hostname))return null;
+  const kind=url.pathname==='/prophets'?'prophet':url.pathname==='/stories'?'story':null;
+  if(kind)return bookEntryForOrigin(kind,url.searchParams.get(kind)||'');
+  const legacy=url.pathname.match(/^\/journeys\/(prophet|story)\/([^/]+)$/);
+  return legacy?bookEntryForOrigin(legacy[1] as 'prophet'|'story',decodeURIComponent(legacy[2])):null;
+ }catch{return null;}
 }

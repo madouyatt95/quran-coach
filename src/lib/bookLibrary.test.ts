@@ -1,7 +1,7 @@
 import {expect,it} from 'vitest';
 import {narrativeBooks} from '../data/narrativeBooks';
 import {chapterDrafts,chapterNarrative} from './narrativeBooks';
-import {books,bookForAudio,chapterForAudio,recordingsForBook,bookEntryForOrigin,bookOrigins,resumeRecording,activeBookScene,narratedChapterText} from './bookLibrary';
+import {books,bookForAudio,chapterForAudio,recordingsForBook,bookEntryForOrigin,bookOrigins,resumeRecording,activeBookScene,narratedChapterText,canonicalBookForSource} from './bookLibrary';
 import type {LibraryAudio} from './audioProduction';
 import {prophets} from '../data/prophets';
 import {stories} from '../data/storiesData';
@@ -21,6 +21,12 @@ it('retains valid source destinations and resolves old entries to their specific
  expect(bookEntryForOrigin('story','ifk')?.book.id).toBe('aicha-innocence');
  expect(bookEntryForOrigin('prophet','ismail')?.book.id).toBe('hajar-zamzam');
  expect(bookEntryForOrigin('prophet','lut')?.book.id).toBe('lut');
+});
+it('routes legacy journey audio into its canonical book instead of listing it twice',()=>{
+ expect(canonicalBookForSource('/journeys/prophet/adam')).toMatchObject({book:{id:'adam'},chapter:'names'});
+ expect(canonicalBookForSource('/journeys/story/ifk')).toMatchObject({book:{id:'aicha-innocence'}});
+ expect(canonicalBookForSource('/journeys/prophet/idris')).toBeNull();
+ expect(canonicalBookForSource('https://example.com/journeys/prophet/adam')).toBeNull();
 });
 it('resumes the exact segment and proceeds after a completed segment',()=>{const list=recordingsForBook(recordings,books[0]);expect(resumeRecording(list,{})).toBe(list[0]);expect(resumeRecording(list,{[list[0].id]:{seconds:100,updatedAt:10}})).toBe(list[1]);expect(resumeRecording(list,{[list[1].id]:{seconds:14,updatedAt:11}})).toBe(list[1]);});
 it('uses supplied timing markers and exact text offsets for scene changes',()=>{const book=narrativeBooks.find(b=>b.id==='biens-et-coeur')!,chapter=book.chapters[0],text=chapterNarrative(chapter);const item=recordings.find(r=>bookForAudio(r)?.id===book.id&&chapterForAudio(r)===0)!;const second=chapter.scenes[1].paragraphs[0].text;const offset=item.text.indexOf(second);expect(offset).toBeGreaterThan(0);const sentence=item.text.slice(0,offset).split(/(?<=[.!?])\s+/).filter(s=>s.trim()).length;expect(text.includes(item.text)).toBe(true);item.sentences=[{sentence,start:12,end:16}];expect(activeBookScene(book,chapter,item,13)).toBe(1);expect(activeBookScene(book,chapter,item,17)).toBe(1);});
