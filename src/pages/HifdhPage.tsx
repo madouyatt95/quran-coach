@@ -934,7 +934,7 @@ export function HifdhPage() {
             {audioError && <p className="hifdh-audio-error" role="alert">{audioError}</p>}
 <div className="hifdh-step-hint">                <p>{step==='listen'?'Écoutez le passage, puis récitez à votre rythme.':step==='recite'?'Récitez le passage. Le suivi vocal vous aide à repérer les mots à retravailler.':'Évaluez votre rappel et préparez votre prochaine séance.'}</p></div>
             {/* Main Player Area */}
-            <div className="hifdh-main-card"><Pupitre title="Mémorisation" className="hifdh-pupitre" enabled={!journeyActive&&view==='training'}><PupitreTop aria-label="Passage à mémoriser">
+            <div className="hifdh-main-card"><Pupitre activity="memorization" title="Mémorisation" className="hifdh-pupitre" enabled={!journeyActive&&view==='training'}><PupitreTop aria-label="Passage à mémoriser">
                 <audio
                     ref={audioRef}
                     onEnded={handleAudioEnded}

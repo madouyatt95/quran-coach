@@ -125,7 +125,7 @@ export function PlayingView() {
     const displayTime = isSprint ? sprintTime : timeLeft;
 
     return (
-        <Pupitre title="Quiz · répondre" className="quiz-container quiz-playing"><PupitreTop aria-label="Question et progression">
+        <Pupitre activity="quiz" title="Quiz · répondre" className="quiz-container quiz-playing"><PupitreTop aria-label="Question et progression">
             {/* Exit button */}
             <button className="quiz-exit-btn" onClick={resetQuiz} title="Quitter le quiz">
                 <ArrowLeft size={24} />
@@ -186,7 +186,7 @@ export function PlayingView() {
             {waitingAudio&&<p>Le temps de réponse commence à la fin de l’extrait.</p>}
             {retry&&<p role="status">Seconde chance : essaie une autre réponse.</p>}
             {/* Question */}
-            {question.audioUrl && <AudioPlayer key={question.id} url={question.audioUrl} onListened={()=>{setHeardId(question.id);useQuizStore.setState({timerStart:Date.now()});}} />}
+
 
             <div className="quiz-question-card">
                 {question.questionAr && (
@@ -196,6 +196,7 @@ export function PlayingView() {
             </div>
 
             </PupitreTop><PupitreBottom aria-label="Réponses et aides">
+            {question.audioUrl && <AudioPlayer key={question.id} url={question.audioUrl} onListened={()=>{setHeardId(question.id);useQuizStore.setState({timerStart:Date.now()});}} />}
             {/* Power-Ups */}
             {!isSprint && (mode === 'solo' || mode === 'duel') && (
                 <div className="quiz-powerups" style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>

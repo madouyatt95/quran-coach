@@ -70,7 +70,7 @@ export function AcademyCourse({course,application,onBack,onPractice,onRead,onNex
  },[application,course.id,savePosition]);
  const applicationLesson=course.content[2];
  const prompt=applicationLesson.type==='lesson'?applicationLesson.sections[0]:null;
- return <CourseReferencesProvider moduleId={course.id}><div ref={top} className="academy-hub academy-course-shell"><Pupitre title={course.title} className="academy-pupitre" layoutState={pupitre}><PupitreTop aria-label="Cours et explications">
+ return <CourseReferencesProvider moduleId={course.id}><div ref={top} className="academy-hub academy-course-shell"><Pupitre activity="course" title={course.title} className="academy-pupitre" layoutState={pupitre}><PupitreTop aria-label="Cours et explications">
   <nav className="academy-course-nav" aria-label="Navigation du cours"><button onClick={onBack}><ArrowLeft size={17}/> Tous les chapitres</button><span>{source.doc.subject==='aqidah'?'Aqidah':'Hadith'} · {source.chapter.number}/{source.doc.chapters.length-1}</span></nav>
   <div className="academy-course-backlink"><CourseReturnLink id={course.id}/></div>
   <header className="academy-course-cover"><span className="academy-course-eyebrow">{application?'MISE EN PRATIQUE':'COURS DE '+(source.doc.subject==='aqidah'?'AQIDAH':'HADITH')} · CHAPITRE {String(source.chapter.number).padStart(2,'0')}</span><h1>{course.title}</h1><p><CourseReferenceText text={teaching.introduction}/></p><div className="academy-course-byline"><BookOpen size={16}/><span>Cours de {source.doc.author} · Masjid Sabirin</span></div></header>
