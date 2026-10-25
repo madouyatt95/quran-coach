@@ -79,7 +79,7 @@ function validateProgressRecords(key:string,state:ObjectValue){
  const eachArray=(name:string,check:(v:Json)=>boolean)=>{if(state[name]!==undefined&&(!Array.isArray(state[name])||state[name].some(v=>!check(v))))fail();};
  const position=(v:Json)=>record(v)&&Number.isInteger(v.surah)&&Number(v.surah)>=1&&Number(v.surah)<=114&&Number.isInteger(v.ayah)&&Number(v.ayah)>=1&&Number(v.ayah)<=286;
  if(key==='qc-book-notebook-v1')eachArray('entries',v=>fields(v,{id:'string',bookId:'string',version:'string',chapterId:'string',passageId:'string',text:'string',note:'string',createdAt:'number'})&&record(v)&&Array.isArray(v.sources)&&v.sources.every(x=>typeof x==='string')&&(v.audioId===undefined||typeof v.audioId==='string')&&(v.seconds===undefined||(typeof v.seconds==='number'&&v.seconds>=0)));
- if(key==='qc-audio-library-v1'){eachArray('favorites',v=>typeof v==='string');eachMap('positions',v=>fields(v,{seconds:'number',updatedAt:'number'})&&Number((v as ObjectValue).seconds)>=0);}
+ if(key==='qc-audio-library-v1'){eachMap('bookReadingPoints',v=>fields(v,{chapterId:'string',passageId:'string',version:'string',updatedAt:'number'})&&record(v)&&(v.previousPassageId===undefined||typeof v.previousPassageId==='string'));eachArray('favorites',v=>typeof v==='string');eachMap('positions',v=>fields(v,{seconds:'number',updatedAt:'number'})&&Number((v as ObjectValue).seconds)>=0);}
  if(key==='quran-coach-reader-notes')eachMap('notes',v=>position(v)&&fields(v,{text:'string',kind:'string',updatedAt:'number',page:'number'}));
  if(key==='quran-coach-reading-bookmark'){
   const valid=(v:Json)=>position(v)&&fields(v,{view:'string',precision:'string',savedAt:'number',page:'number'})&&Number((v as ObjectValue).page)>=1&&Number((v as ObjectValue).page)<=604;

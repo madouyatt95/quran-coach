@@ -18,7 +18,7 @@ Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 let root:Root,host:HTMLDivElement;
 function App(){const location=useLocation(),navigate=useNavigate();return location.pathname==='/stories'?<BookDiscovery books={available} kind="all" items={tracks}><p>Filtres</p></BookDiscovery>:<><output>{location.pathname} · {location.state?.bookView}</output><button onClick={()=>navigate(-1)}>Retour</button></>;}
 async function click(label:string){const button=host.querySelector<HTMLButtonElement>(`[aria-label="${label}"]`)||[...host.querySelectorAll('button')].find(b=>b.textContent===label);expect(button).toBeTruthy();await act(async()=>button!.click());}
-beforeEach(()=>{vi.stubGlobal('sessionStorage',createMemoryStorage());useAudioLibraryStore.setState({positions:{},bookReading:{}});player.play.mockClear();player.pause.mockClear();host=document.createElement('div');document.body.append(host);root=createRoot(host);});
+beforeEach(()=>{vi.stubGlobal('sessionStorage',createMemoryStorage());useAudioLibraryStore.setState({positions:{},bookReading:{},bookReadingPoints:{},bookReadingUpdatedAt:{}});player.play.mockClear();player.pause.mockClear();host=document.createElement('div');document.body.append(host);root=createRoot(host);});
 afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.unstubAllGlobals();});
 it('selects a cover without playing or leaving, opens explicitly, then restores the selected book and rail',async()=>{
  await act(async()=>root.render(<MemoryRouter initialEntries={['/stories']}><App/></MemoryRouter>));
@@ -42,4 +42,18 @@ it('presents all book covers before the additional written stories',async()=>{
  const rails=[...host.querySelectorAll('.book-rail')];
  expect(rails.length).toBeGreaterThan(0);
  rails.forEach(rail=>expect(rail.compareDocumentPosition(legacy)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy());
+});
+
+it('offers a separate resume button on a cover without changing cover selection',async()=>{
+ const book=available[0],chapter=book.chapters[0];
+ useAudioLibraryStore.setState({bookReadingPoints:{[book.id]:{chapterId:chapter.id,passageId:'saved-paragraph',version:book.version,updatedAt:100}},positions:{}});
+ await act(async()=>root.render(<MemoryRouter initialEntries={['/stories']}><App/></MemoryRouter>));
+ const resumes=host.querySelectorAll<HTMLButtonElement>(`[aria-label="Reprendre la lecture de ${book.title}"]`);expect(resumes.length).toBeGreaterThan(0);expect(resumes[0].closest('.book-jacket-slot')).not.toBeNull();expect(resumes[0].parentElement?.closest('button')).toBeNull();
+ await act(async()=>resumes[0].click());expect(host.querySelector('output')?.textContent).toBe(`/books/${book.id} · read`);expect(player.play).not.toHaveBeenCalled();
+});
+it('starts the saved recording directly from its cover, preserving the recap snapshot',async()=>{
+ useAudioLibraryStore.setState({bookReading:{},bookReadingPoints:{},bookReadingUpdatedAt:{},positions:{[tracks[0].id]:{seconds:42.75,updatedAt:10}}});
+ await act(async()=>root.render(<MemoryRouter initialEntries={['/stories']}><App/></MemoryRouter>));
+ const button=host.querySelector<HTMLButtonElement>(`[aria-label="Reprendre l’écoute de ${available[0].title}"]`)!;await act(async()=>button.click());
+ expect(player.play).toHaveBeenCalledWith(tracks[0],{queue:[tracks[0]],startAt:42.75});expect(host.querySelector('output')?.textContent).toBe(`/books/${available[0].id} · listen`);
 });

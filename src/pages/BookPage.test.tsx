@@ -19,12 +19,14 @@ vi.mock('../components/Pupitre/usePupitreLayout',async importOriginal=>({...awai
 import {BookPage} from './BookPage';
 import {Routes,Route} from 'react-router-dom';
 import {useBookNotebook} from '../stores/bookNotebookStore';
+import {useAudioLibraryStore} from '../stores/audioLibraryStore';
+import {bookPassages} from '../lib/bookPassages';
 const book=narrativeBooks.find(b=>b.id==='adam')!;
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 let host:HTMLDivElement,root:Root;
 const render=async(path="/books/adam")=>{await act(async()=>{root.render(<MemoryRouter initialEntries={[path]}><Routes><Route path="/books/:bookId" element={<BookPage/>}/></Routes></MemoryRouter>);await new Promise(r=>setTimeout(r,20));});};
 const click=async(el:Element)=>{await act(async()=>{(el as HTMLElement).click();await Promise.resolve();});};
-beforeEach(()=>{vi.stubGlobal('sessionStorage',window.sessionStorage);sessionStorage.clear();useBookNotebook.setState({entries:[]});mocks.items=chapterDrafts(book,book.chapters[0],false,false).map((s,i)=>({id:String(i),title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))}));Object.assign(mocks.player,{item:null,playing:false,position:0,queue:[]});mocks.player.play.mockClear();mocks.player.pause.mockClear();vi.stubGlobal('requestAnimationFrame',(cb:FrameRequestCallback)=>setTimeout(()=>cb(0),0));vi.stubGlobal('cancelAnimationFrame',clearTimeout);Element.prototype.scrollIntoView=vi.fn();HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};vi.spyOn(HTMLMediaElement.prototype,'pause').mockImplementation(()=>{});host=document.createElement('div');document.body.append(host);root=createRoot(host);});
+beforeEach(()=>{vi.stubGlobal('sessionStorage',window.sessionStorage);sessionStorage.clear();useAudioLibraryStore.setState({bookReading:{},bookReadingUpdatedAt:{},bookReadingPoints:{},positions:{}});useBookNotebook.setState({entries:[]});mocks.items=chapterDrafts(book,book.chapters[0],false,false).map((s,i)=>({id:String(i),title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))}));Object.assign(mocks.player,{item:null,playing:false,position:0,queue:[]});mocks.player.play.mockClear();mocks.player.pause.mockClear();vi.stubGlobal('requestAnimationFrame',(cb:FrameRequestCallback)=>setTimeout(()=>cb(0),0));vi.stubGlobal('cancelAnimationFrame',clearTimeout);Element.prototype.scrollIntoView=vi.fn();HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};vi.spyOn(HTMLMediaElement.prototype,'pause').mockImplementation(()=>{});host=document.createElement('div');document.body.append(host);root=createRoot(host);});
 afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
 it('keeps the chosen paragraph, saves its timestamp, and starts its matching recording',async()=>{await render();const paragraphs=host.querySelectorAll('[data-book-passage]');expect(paragraphs.length).toBeGreaterThan(3);await click(paragraphs[2].querySelector('p')!);await click([...paragraphs[2].querySelectorAll('button')].find(b=>b.textContent==='Je retiens')!);expect(useBookNotebook.getState().entries[0].text).toBe(paragraphs[2].querySelector('p')!.textContent);expect(useBookNotebook.getState().entries[0].seconds).toBeGreaterThan(0);await click([...paragraphs[2].querySelectorAll('button')].find(b=>b.textContent==='Écouter ici')!);expect(mocks.player.play).toHaveBeenCalledWith(expect.objectContaining({id:useBookNotebook.getState().entries[0].audioId}),expect.objectContaining({startAt:useBookNotebook.getState().entries[0].seconds}));});
 it('opens verified references over the text and resumes narration only when it was playing',async()=>{mocks.player.item=mocks.items[0];mocks.player.playing=true;mocks.player.position=36.25;mocks.player.queue=mocks.items;await render();await click(host.querySelector('[data-book-passage] p')!);const buttons=[...host.querySelectorAll('.book-passage-actions button')];await click(buttons.find(b=>b.textContent?.startsWith('Coran'))!);expect(document.querySelector('dialog[open]')).not.toBeNull();expect(mocks.player.pause).toHaveBeenCalled();expect(document.querySelector('dialog')?.textContent).toContain('Texte de test');await click(document.querySelector('[aria-label="Fermer la référence"]')!);expect(mocks.player.play).toHaveBeenCalledWith(mocks.items[0],{queue:mocks.items,startAt:36.25});expect(host.querySelector('.book-passage.is-selected')).not.toBeNull();});
@@ -79,4 +81,20 @@ it.each([true,false])('restores the original audio at the exact second, preservi
  await click(host.querySelector('.book-topbar button')!);
  expect(mocks.player.play).toHaveBeenLastCalledWith(original,{queue,startAt:47.25,autoplay:playing});
  expect(host.querySelector('.book-listening')).not.toBeNull();mocks.player.play.mockReset();
+});
+
+it('offers a collapsed optional recap after 48 hours and only reveals an already traversed paragraph',async()=>{
+ const paragraphs=bookPassages(book,book.chapters[0]),saved=paragraphs[2];
+ useAudioLibraryStore.setState({bookReading:{adam:book.chapters[0].id},bookReadingPoints:{adam:{chapterId:book.chapters[0].id,passageId:saved.id,previousPassageId:paragraphs[1].id,version:book.version,updatedAt:Date.now()-3*86400000}}});
+ await render(`/books/adam?chapter=${book.chapters[0].id}&passage=${encodeURIComponent(saved.id)}`);
+ const recap=host.querySelector('.book-return-recap')!;expect(recap).not.toBeNull();expect(recap.querySelector('.book-recap-text')).toBeNull();
+ await click(recap.querySelector('button')!);
+ expect(recap.querySelector('.book-recap-text p')?.textContent).toBe(narrationSentences(paragraphs[1].text).slice(0,2).join(' '));
+ expect(host.querySelector('.book-passage.is-selected')?.getAttribute('data-book-passage')).toBe(saved.id);
+ await click(recap.querySelector('[aria-label="Masquer le rappel"]')!);expect(host.querySelector('.book-return-recap')).toBeNull();
+});
+it('does not propose a recap during a recent return',async()=>{
+ const paragraphs=bookPassages(book,book.chapters[0]);
+ useAudioLibraryStore.setState({bookReading:{adam:book.chapters[0].id},bookReadingPoints:{adam:{chapterId:book.chapters[0].id,passageId:paragraphs[2].id,previousPassageId:paragraphs[1].id,version:book.version,updatedAt:Date.now()-3600000}}});
+ await render();expect(host.querySelector('.book-return-recap')).toBeNull();
 });
