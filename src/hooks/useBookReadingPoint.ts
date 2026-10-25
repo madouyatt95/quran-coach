@@ -9,8 +9,9 @@ export function useBookReadingPoint(article:RefObject<HTMLElement|null>,bookId:s
   const inspect=()=>{
    if(document.visibilityState==='hidden')return;
    const upper=root.querySelector('.pupitre-upper'),split=root.querySelector('[data-pupitre-layout]:not([data-pupitre-layout="plain"])');
+   const toolbar=root.querySelector('.pupitre-toolbar')?.getBoundingClientRect();
    const bounds=upper?.getBoundingClientRect(),recap=root.querySelector('.book-return-recap')?.getBoundingClientRect();
-   const top=Math.max(split&&bounds?Math.max(0,bounds.top):90,recap&&recap.top<innerHeight?recap.bottom+8:0),bottom=split&&bounds?Math.min(innerHeight,bounds.bottom):innerHeight;
+   const top=Math.max(split&&bounds?Math.max(0,bounds.top,toolbar?.bottom||0):90,recap&&recap.top<innerHeight?recap.bottom+8:0),bottom=split&&bounds?Math.min(innerHeight,bounds.bottom):innerHeight;
    const nodes=[...root.querySelectorAll<HTMLElement>('[data-book-passage]')];
    const node=nodes.find(el=>{const b=el.getBoundingClientRect();return b.bottom>top+60&&b.top<bottom-60&&b.height>0;});
    const id=node?.dataset.bookPassage;if(!id||id===active)return;
