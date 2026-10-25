@@ -237,12 +237,12 @@ export function ProphetsPage(){
  const companion=companionPortraitById(params.get('companion')||'');
  useEffect(()=>{if(location.pathname==='/prophets'&&(params.get('tab')==='companions'||params.has('companion')))navigate(`/companions${params.has('companion')?`?companion=${encodeURIComponent(params.get('companion')!)}`:''}`,{replace:true});},[location.pathname,params,navigate]);
  const prophet=prophets.find(p=>p.id===params.get('prophet'))||null;
- const entry=prophet?bookEntryForOrigin('prophet',prophet.id):null;
+ const entry=companion?bookEntryForOrigin('companion',companion.id):prophet?bookEntryForOrigin('prophet',prophet.id):null;
  const entryHref=entry?bookHref(entry.book.id,entry.chapter):null;
  useEffect(()=>{if(entryHref)navigate(entryHref,{replace:true});},[entryHref,navigate]);
  const close=()=>setParams({}, {replace:true});
  const chooseTab=(next:TabMode)=>{setGraph(false);navigate(next==='companions'?'/companions':'/prophets');};
  return <div className="prophets-page book-catalogue"><header className="book-catalogue-header"><span className="book-eyebrow">DES VIES, DES ENSEIGNEMENTS</span><h1>{tab==='prophets'?'Les Prophètes':'Les Compagnons'}</h1><p>Parcourir leur histoire. Écouter, comprendre et garder ce qui nous éclaire.</p></header><nav className="book-themes" aria-label="Prophètes et compagnons"><button aria-pressed={tab==='prophets'} onClick={()=>chooseTab('prophets')}>Prophètes</button><button aria-pressed={tab==='companions'} onClick={()=>chooseTab('companions')}>Compagnons</button><button aria-pressed={graph} onClick={()=>setGraph(v=>!v)}>Explorer les liens</button></nav>
  {tab==='prophets'?(graph?<ProphetsGraph search="" onSelectProphet={p=>setParams({prophet:p.id})}/>:<BookShelf kind="prophet" legacyEntries={prophets.map(p=>({id:p.id,title:p.nameIslamic,subtitle:p.title,href:`/prophets?prophet=${p.id}`,keywords:`${p.nameAr} ${p.nameFr} ${p.nameEn}`}))}/>):<>{graph?<SanadGraph/>:<CompanionCollection/>}</>}
- <AnimatePresence>{prophet&&!entry&&<ProphetDetail prophet={prophet} onClose={close}/>} {companion&&<CompanionPortraitDialog key={companion.id} portrait={companion} onClose={close}/>}</AnimatePresence></div>;
+ <AnimatePresence>{prophet&&!entry&&<ProphetDetail prophet={prophet} onClose={close}/>} {companion&&!entry&&<CompanionPortraitDialog key={companion.id} portrait={companion} onClose={close}/>}</AnimatePresence></div>;
 }
