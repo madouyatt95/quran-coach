@@ -42,3 +42,7 @@ node scripts/prepare-companion-production.mjs --out=/chemin/de/production --cred
 L’option `--books` rejette les identifiants inconnus ou répétés. La préparation ne contacte pas ElevenLabs. Les devis réels, réservations, consommations et états sont enregistrés dans le studio. Les appels payants ambigus ne doivent jamais être relancés à l’aveugle.
 
 La publication directe autorisée par le propriétaire utilise la validation documentaire et technique existante. Elle conserve **humanListened: false** ; aucune écoute humaine intégrale n’est attestée.
+
+Les lots de cette production sont limités à 18 segments pour rester sous le budget de sous-requêtes du Worker gratuit. Un seul appel facturable peut être actif par compte : les lots sont enchaînés après la fin du précédent, sans supprimer cette protection contre les doubles dépenses.
+
+Avant publication, une formulation trop affirmative sur la durée des suites des blessures de Nusayba a été remplacée. Seul son sixième chapitre est régénéré. Le premier fichier est conservé à l’état `rejected`, avec une trace de correction éditoriale sans attestation d’écoute ; son coût reste inclus dans le total réel. Les cinq autres chapitres sont réutilisés à texte strictement identique.
