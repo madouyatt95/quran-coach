@@ -1,6 +1,6 @@
 # Talha ibn Ubayd Allah — La main d’Uhud, la générosité et l’épreuve de la division
 
-Version talha-engagement-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version talha-engagement-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Les circonstances de l’absence à Badr, les montants de dons et l’identité de l’archer à la bataille du Chameau varient selon les traditions. Aucun dialogue final ni jugement sur les intentions cachées n’est ajouté. Les violences de la première guerre civile sont exposées avec retenue. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -18,7 +18,9 @@ Son parcours ne sera pas celui d’un homme éloigné des affaires de ce monde. 
 
 ### Repères de lecture
 
-- **Les Banu Taym et les premiers musulmans** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un jeune homme des Banu Taym** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La pression des proches** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un engagement qui dure** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 2. S’installer auprès des émigrés
 
@@ -28,13 +30,15 @@ Talha participe à cette nouvelle vie. Les biographies rapportent les liens de f
 
 Badr survient en l’an deux de l’hégire. Talha n’est pas présent sur le champ de bataille. Les traditions anciennes donnent des explications différentes à cette absence, entre mission confiée et déplacement préalable. Elles s’accordent sur la place qui lui est reconnue : le Prophète lui accorde une part et le compte dans la récompense de ceux qui ont participé. Son absence physique ne se raconte donc pas comme un abandon.
 
-Cet épisode rappelle que la vie d’un compagnon ne se mesure pas seulement à une liste de présences militaires. Certains servent en un lieu tandis que d’autres reçoivent une charge ailleurs. La reconnaissance accordée à Talha appartient à cette histoire de responsabilités distribuées. Nous pouvons la retenir sans transformer une variante de chronique en certitude sur chacun de ses déplacements.
+Cet épisode rappelle que la vie d’un compagnon ne se mesure pas seulement à une liste de présences militaires. Certains servent en un lieu tandis que d’autres reçoivent une charge ailleurs. La reconnaissance accordée à Talha appartient à cette histoire de responsabilités distribuées. Sa tâche le tient loin du champ de bataille ; sa place parmi les compagnons demeure reconnue.
 
 L’année suivante, en revanche, son nom sera lié à une présence que les témoins n’oublieront pas. Quraysh revient vers Médine avec une nouvelle armée. À Uhud, le cours du combat met le Messager en danger. Talha se trouve auprès de lui. Ce moment fera passer son engagement de la mémoire des débuts à la trace visible d’une blessure qu’un homme, Qays ibn Abi Hazim, pourra encore observer des années plus tard.
 
 ### Repères de lecture
 
-- **Une communauté prend forme** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Recommencer à Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une mission loin de Badr** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **À l’approche d’Uhud** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 3. La main qui protège
 
@@ -42,7 +46,7 @@ L’année suivante, en revanche, son nom sera lié à une présence que les té
 
 La blessure ne reste donc pas enfermée dans le récit d’une journée ancienne. Elle accompagne le survivant. Talha revient d’Uhud, poursuit sa vie et porte dans son corps la conséquence de ce qu’il a fait. Les personnes qui le rencontrent peuvent voir cette main sans avoir elles-mêmes vécu la bataille. La mémoire passe d’un événement à un témoin, puis à ceux qui recueillent son observation.
 
-Défendre le Messager suppose ici une proximité immédiate avec le danger. Nous n’avons pas besoin d’inventer la trajectoire d’une flèche ou une pensée héroïque pour en comprendre le sens. Talha engage sa propre sécurité au moment où celle du Prophète est menacée. La trace observée ensuite par Qays donne un point d’appui solide au milieu de traditions plus développées.
+Défendre le Messager suppose ici une proximité immédiate avec le danger. Talha engage sa propre sécurité au moment où celle du Prophète est menacée. La trace observée ensuite par Qays donne un point d’appui solide au milieu de traditions plus développées.
 
 Les survivants rentrent dans une ville endeuillée. Hamza, Musab et d’autres ne reviendront pas. Le courage de Talha s’inscrit dans cette perte commune. Honorer ceux qui ont défendu le Messager ne rend pas Uhud moins douloureux ; cela permet de comprendre comment, au milieu de l’épreuve, des hommes ont tenu leur place. Talha appartient à ceux dont la communauté garde ce souvenir.
 
@@ -50,7 +54,15 @@ Mais il lui reste encore plus de trente ans à vivre. La main d’Uhud ne doit p
 
 ### Repères de lecture
 
-- **Ce que Qays a vu** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La main blessée** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous n’avons pas besoin d’inventer la trajectoire d’une flèche ou une pensée héroïque pour en comprendre le sens.
+- **Protéger au plus près du danger** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous n’avons pas besoin d’inventer la trajectoire d’une flèche ou une pensée héroïque pour en comprendre le sens.
+- **Les années qui restent** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous n’avons pas besoin d’inventer la trajectoire d’une flèche ou une pensée héroïque pour en comprendre le sens.
 
 ## 4. Une fortune au milieu des autres
 
@@ -58,7 +70,7 @@ La tradition biographique se souvient de Talha comme d’un homme généreux. El
 
 Cette générosité se déploie dans une société où les situations matérielles deviennent très différentes. Les premiers émigrés ont connu le manque ; certains acquièrent ensuite des biens considérables. La question de l’usage de la richesse devient alors une responsabilité quotidienne. Donner ne consiste pas seulement à accomplir un geste exceptionnel devant une assemblée. C’est aussi reconnaître les besoins de proches, de familles et de personnes dont la vie ne s’est pas améliorée au même rythme.
 
-Les notices de Talha évoquent cette attention à son entourage. Elles conservent le souvenir d’un homme dont les biens circulent vers les autres. Nous ne pouvons pas reconstituer la comptabilité exacte de sa maison ni confirmer chaque chiffre reproduit dans les compilations. Nous pouvons suivre ce que ces témoignages ont choisi de retenir : son aisance n’efface pas les obligations qu’il reconnaît autour de lui.
+Les notices de Talha évoquent cette attention à son entourage. Elles conservent le souvenir d’un homme dont les biens circulent vers les autres. Les chiffres transmis varient, mais les témoignages insistent sur le même trait : son aisance n’efface pas les obligations qu’il reconnaît autour de lui.
 
 Il est aussi père. Ses fils, parmi lesquels Musa et Muhammad, entrent dans les récits de sa vie et de ses dernières années. Sa famille transmettra une partie de sa mémoire. Le compagnon devient, pour une génération qui n’a pas vécu les premiers temps de La Mecque, un homme que l’on rencontre dans une maison, dont on reçoit une parole ou dont on connaît l’aide. L’histoire de l’islam s’allonge désormais au-delà des seuls témoins de ses débuts.
 
@@ -66,7 +78,15 @@ Talha poursuit sa route sous les premiers califes. Il appartient au cercle de ce
 
 ### Repères de lecture
 
-- **Talha dans la vie de Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les biens et le partage** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons pas reconstituer la comptabilité exacte de sa maison ni confirmer chaque chiffre reproduit dans les compilations.
+- **Les proches et la maison** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons pas reconstituer la comptabilité exacte de sa maison ni confirmer chaque chiffre reproduit dans les compilations.
+- **Sous les premiers califes** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons pas reconstituer la comptabilité exacte de sa maison ni confirmer chaque chiffre reproduit dans les compilations.
 
 ## 5. Parmi les six du conseil
 
@@ -74,31 +94,47 @@ Umar ne laisse pas la question de sa succession sans cadre. Il désigne six comp
 
 Dans le récit transmis par Amr ibn Maymun, les candidats réduisent leurs possibilités et confient des responsabilités de choix. Talha reporte la sienne sur Uthman. Abd ar-Rahman assume ensuite une consultation plus large avant que l’allégeance ne soit donnée au nouveau calife. La scène ne se comprend pas comme un concours de prestige personnel : le gouvernement d’une communauté devenue vaste et diverse est en jeu.
 
-Le califat d’Uthman dure près de douze ans. Les conquêtes ont élargi l’espace gouverné, les villes nouvelles possèdent leurs groupes et leurs attentes, et les discussions sur l’administration se multiplient. Les récits de cette période sont nombreux, parfois contradictoires, souvent transmis dans un contexte où la première guerre civile a déjà marqué les mémoires. Reconstituer chaque échange exige une enquête qui dépasse ce que permet une biographie continue.
+Le califat d’Uthman dure près de douze ans. Les conquêtes ont élargi l’espace gouverné, les villes nouvelles possèdent leurs groupes et leurs attentes, et les discussions sur l’administration se multiplient. Les récits de cette période sont nombreux, parfois contradictoires, souvent transmis dans un contexte où la première guerre civile a déjà marqué les mémoires. Les témoignages divergent sur plusieurs échanges et sur les responsabilités de chacun.
 
-Talha appartient à ce monde politique en transformation. Les sources ne lui attribuent pas une position simple qui resterait identique dans toutes les circonstances. Il connaît Uthman depuis longtemps ; il participe aussi aux discussions de la communauté. Nous ne pouvons ni effacer les tensions de cette période ni lui attribuer, à partir d’un seul récit partisan, une intention cachée qui expliquerait tous ses gestes.
+Talha appartient à ce monde politique en transformation. Les sources ne lui attribuent pas une position simple qui resterait identique dans toutes les circonstances. Il connaît Uthman depuis longtemps ; il participe aussi aux discussions de la communauté. Les tensions atteignent les compagnons eux-mêmes. Les récits de la crise portent des points de vue différents et ne livrent pas une explication unique de tous ses choix.
 
 Lorsque le siège de la maison d’Uthman se termine par son assassinat, en l’an trente-cinq de l’hégire, une rupture profonde se produit. La question n’est plus seulement celle de la conduite de l’administration. Le calife a été tué, les responsabilités sont contestées et la communauté doit à nouveau reconnaître un dirigeant. Ali reçoit l’allégeance. Talha et Az-Zubayr entreront bientôt dans un mouvement qui demande que justice soit rendue pour Uthman. Ce chemin les conduit vers Basra, puis vers une confrontation tragique.
 
 ### Repères de lecture
 
-- **La succession d’Umar** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un siège au conseil** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons ni effacer les tensions de cette période ni lui attribuer, à partir d’un seul récit partisan, une intention cachée qui expliquerait tous ses gestes.
+- **Le temps d’Uthman** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons ni effacer les tensions de cette période ni lui attribuer, à partir d’un seul récit partisan, une intention cachée qui expliquerait tous ses gestes.
+- **La rupture de l’assassinat** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons ni effacer les tensions de cette période ni lui attribuer, à partir d’un seul récit partisan, une intention cachée qui expliquerait tous ses gestes.
 
 ## 6. La route de Basra
 
 Talha et Az-Zubayr se retrouvent avec Aicha dans le mouvement dirigé vers Basra. Le meurtre d’Uthman et la demande de justice occupent une place centrale dans les récits de cette mobilisation. De son côté, Ali doit exercer l’autorité qui lui a été confiée au milieu de tensions déjà très fortes. Des compagnons anciens se trouvent désormais dans des ensembles qui vont se faire face.
 
-Cette situation ne peut être racontée comme si les personnes connaissaient d’avance l’issue de la journée. Les décisions se prennent parmi des groupes nombreux, des nouvelles contradictoires, des négociations et des craintes. Les chroniqueurs transmettent plusieurs explications du passage à l’affrontement. Nous n’avons pas à choisir celle qui transformerait tout le drame en une histoire commode, avec des intentions entièrement transparentes et des responsabilités réglées en quelques phrases.
+À Basra, l’issue demeure incertaine. Les décisions se prennent parmi des groupes nombreux, des nouvelles contradictoires, des négociations et des craintes. Les chroniqueurs transmettent plusieurs explications du passage à l’affrontement. Leurs versions ne s’accordent pas assez pour attribuer à chacun une intention certaine.
 
-La bataille appelée bataille du Chameau se déroule en l’an trente-six de l’hégire, près de Basra. Talha y est atteint par une flèche et meurt. Les sources ne s’accordent pas toutes sur l’identité de celui qui a tiré, ni sur l’ensemble des circonstances qui entourent sa dernière heure. Nous pouvons dire le fait de la mort sans inventer une confession finale ou une conversation destinée à fermer le récit.
+La bataille appelée bataille du Chameau se déroule en l’an trente-six de l’hégire, près de Basra. Talha y est atteint par une flèche et meurt. Les sources ne s’accordent pas toutes sur l’identité de celui qui a tiré, ni sur l’ensemble des circonstances qui entourent sa dernière heure.
 
 Le contraste avec Uhud est saisissant. La main de Talha avait protégé le Prophète d’un ennemi extérieur à la communauté croyante. Des décennies plus tard, sa vie s’achève dans une guerre entre musulmans. Cette différence appartient à l’histoire et doit être regardée avec gravité. Le souvenir de ses mérites n’oblige pas à présenter chaque décision comme infaillible ; l’épreuve de la division n’autorise pas non plus à effacer toute sa vie précédente.
 
-Talha laisse une famille, des compagnons qui l’ont connu et une mémoire faite de plusieurs strates. Les premiers croyants de La Mecque, le défenseur d’Uhud, l’homme généreux de Médine et le membre du conseil sont une seule personne. La biographie doit tenir ces années ensemble. La dernière bataille ne transforme pas les premiers engagements en fiction ; les premiers engagements ne rendent pas la dernière bataille moins tragique.
+Talha laisse une famille, des compagnons qui l’ont connu et une mémoire faite de plusieurs strates. Les premiers croyants de La Mecque, le défenseur d’Uhud, l’homme généreux de Médine et le membre du conseil sont une seule personne. Ces années appartiennent à la même vie. La dernière bataille ne transforme pas les premiers engagements en fiction ; les premiers engagements ne rendent pas la dernière bataille moins tragique.
 
 ### Repères de lecture
 
-- **La première guerre civile** — Les traditions sur les négociations, les responsabilités individuelles et l’archer qui atteignit Talha divergent. La narration retient le cadre commun sans transformer une version partisane en verdict.
+- **La route de Basra** — Les traditions sur les négociations, les responsabilités individuelles et l’archer qui atteignit Talha divergent. La narration retient le cadre commun sans transformer une version partisane en verdict.
+
+Nous pouvons dire le fait de la mort sans inventer une confession finale ou une conversation destinée à fermer le récit.
+- **La mort au Chameau** — Les traditions sur les négociations, les responsabilités individuelles et l’archer qui atteignit Talha divergent. La narration retient le cadre commun sans transformer une version partisane en verdict.
+
+Nous pouvons dire le fait de la mort sans inventer une confession finale ou une conversation destinée à fermer le récit.
+- **Une vie traversée par la division** — Les traditions sur les négociations, les responsabilités individuelles et l’archer qui atteignit Talha divergent. La narration retient le cadre commun sans transformer une version partisane en verdict.
+
+Nous pouvons dire le fait de la mort sans inventer une confession finale ou une conversation destinée à fermer le récit.
 
 ## Épilogue
 

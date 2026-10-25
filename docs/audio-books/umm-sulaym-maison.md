@@ -1,6 +1,6 @@
 # Umm Sulaym bint Milhan — La foi choisie, une maison ouverte et la force de demander
 
-Version umm-sulaym-maison-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version umm-sulaym-maison-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Le prénom connaît des variantes dans les notices ; la kunya est conservée. La mort du jeune enfant n’est pas transformée en prescription générale sur le deuil. La date du décès d’Umm Sulaym n’est pas inventée. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -18,23 +18,27 @@ Son choix ne consiste pas à traiter sa conviction comme une préférence second
 
 ### Repères de lecture
 
-- **Une femme des Banu Najjar** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La foi à Yathrib** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La proposition d’Abu Talha** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une ville qui change** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 2. Ce qu’elle demande à Abu Talha
 
 Anas rapporte la demande d’Abu Talha. Umm Sulaym lui reconnaît des qualités qui pourraient faire accueillir favorablement sa proposition, puis lui explique qu’elle ne peut l’épouser dans la différence religieuse où ils se trouvent. S’il entre dans l’islam, elle n’exigera pas une autre dot. Le récit souligne ainsi la valeur de ce qu’elle choisit, au-delà d’un montant ou d’un bien matériel.
 
-Abu Talha devient musulman et leur mariage a lieu. La tradition rattache à cette union une maison dont le souvenir reviendra souvent dans les hadiths. Il ne faut pas réduire sa conversion à une formalité commerciale destinée à obtenir une épouse. Le témoignage nous présente un changement de foi et un engagement familial ; nous n’avons pas à lui attribuer une intention cachée que le texte ne nous donne pas.
+Abu Talha devient musulman et leur mariage a lieu. La tradition rattache à cette union une maison dont le souvenir reviendra souvent dans les hadiths. Un changement de foi et un engagement familial se rejoignent dans ce témoignage. Leur foyer devient l’un des lieux familiers de la communauté médinoise.
 
 La place d’Umm Sulaym dans cette décision demeure centrale. Elle reçoit une proposition, y répond en son nom et fait connaître ce qu’elle ne veut pas abandonner. Sa conviction n’empêche pas l’ouverture d’un foyer ; elle en définit la possibilité. Le mariage rejoint ainsi le commencement de sa biographie : la foi reçue à Yathrib continue de déterminer des choix concrets.
 
 Avec Abu Talha, elle élève une famille qui comprend Anas, son fils du premier mariage, puis les enfants de leur union. Les récits ne décrivent pas une maison séparée de la communauté. Le Prophète y vient, des repas y sont partagés, des questions y sont posées. Les liens de parenté et d’amitié deviennent des chemins par lesquels un savoir et une attention circulent.
 
-Cette maison connaîtra la joie, le travail et un deuil profond. Il serait trop simple de ne conserver que le mariage comme une scène achevée où la fermeté serait immédiatement récompensée par une vie sans épreuve. La biographie d’Umm Sulaym suit autre chose : une femme qui choisit, puis continue de porter sa foi au milieu des événements. L’engagement initial ne lui évite pas les pertes ; il donne une direction aux responsabilités qui se présenteront.
+Cette maison connaîtra la joie, le travail et un deuil profond. Le mariage ouvre une nouvelle étape, sans mettre la famille à l’abri de l’épreuve. Umm Sulaym continue de porter sa foi au milieu des événements. L’engagement initial ne lui évite pas les pertes ; il donne une direction aux responsabilités qui se présenteront.
 
 ### Repères de lecture
 
-- **L’islam comme condition de l’union** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La condition d’Umm Sulaym** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une maison qui s’ouvre** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les années à venir** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 3. Confier Anas au Messager
 
@@ -50,7 +54,9 @@ Il faut mesurer le temps que ce choix ouvre. Anas a été le garçon de cette ma
 
 ### Repères de lecture
 
-- **Un enfant dans la vie médinoise** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Présenter Anas au Prophète** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La maison et la bénédiction** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Ce qu’un choix transmet** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. La vie qui se partage
 
@@ -66,7 +72,9 @@ Mais aucune maison ouverte n’est protégée de toute souffrance. Umm Sulaym et
 
 ### Repères de lecture
 
-- **L’hospitalité et l’attention aux enfants** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **L’accueil et les enfants** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Donner de l’eau, soigner** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une épreuve approche** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 5. La nuit du deuil
 
@@ -82,7 +90,9 @@ Dans la biographie entière, cette épreuve rejoint les séparations plus ancien
 
 ### Repères de lecture
 
-- **Une perte et une parole difficile** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La perte et son annonce** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le lendemain auprès du Messager** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Porter le deuil** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 6. Agir dans le danger, demander dans le savoir
 
@@ -92,13 +102,15 @@ Des années plus tard, à Hunayn, Umm Sulaym porte un poignard pour se défendre
 
 Le courage apparaît sous une autre forme lorsqu’elle pose une question relative à la purification. Elle commence en rappelant que la pudeur ne doit pas empêcher de chercher la vérité, puis demande ce qu’une femme doit faire après un rêve accompagné d’une émission. Le sujet touche à l’intimité. Elle le porte néanmoins devant celui qui peut l’enseigner, afin de ne pas rester dans l’incertitude.
 
-Cette question sera transmise dans les recueils de hadiths. Un savoir utile à de nombreuses femmes passe ainsi par l’initiative d’Umm Sulaym. La biographie ne doit donc pas la garder seulement dans l’image du courage physique ou du deuil supporté. Elle est aussi une personne qui parle pour apprendre, et dont la démarche bénéficie aux autres.
+Cette question sera transmise dans les recueils de hadiths. Un savoir utile à de nombreuses femmes passe ainsi par l’initiative d’Umm Sulaym. Après les gestes de secours et les épreuves du foyer, cette question laisse une autre trace durable de son initiative. Elle est aussi une personne qui parle pour apprendre, et dont la démarche bénéficie aux autres.
 
-La date précise de sa mort ne nous est pas solidement connue. Nous n’ajoutons pas une dernière scène pour fermer ce que les sources laissent ouvert. Sa présence se prolonge dans les récits d’Anas et dans les enseignements qu’elle a contribué à faire connaître. De Yathrib à Médine, de la maison aux campagnes, du choix du mariage à la question intime, sa vie nous laisse plusieurs manières d’être forte : décider, accueillir, secourir et demander avec clarté.
+La date précise de sa mort ne nous est pas solidement connue. Sa présence se prolonge dans les récits d’Anas et dans les enseignements qu’elle a contribué à faire connaître. De Yathrib à Médine, de la maison aux campagnes, du choix du mariage à la question intime, sa vie nous laisse plusieurs manières d’être forte : décider, accueillir, secourir et demander avec clarté.
 
 ### Repères de lecture
 
-- **Uhud, Hunayn et une question sans détour** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Secourir dans le danger** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Oser poser une question** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La trace de son initiative** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## Épilogue
 

@@ -1,8 +1,9 @@
+import {stageBiography} from './biographyScenes';
 import {defineBook} from './defineBook';
 import {B,H} from './biographySources';
 const history=H('abu-ubayda','Abu Ubayda ibn al-Jarrah','أبو عبيدة بن الجراح');
-export const abuUbaydaBook=defineBook({
- id:'abu-ubayda-confiance',title:'Abu Ubayda ibn al-Jarrah',subtitle:'La confiance reçue, les hommes accompagnés',category:'story',collection:'companions',companionIds:['abu-ubayda'],checkedAt:'2026-10-25',version:'abu-ubayda-confiance-biographie-2026-10-25-v1',
+export const abuUbaydaBook=stageBiography(defineBook({
+ id:'abu-ubayda-confiance',title:'Abu Ubayda ibn al-Jarrah',subtitle:'La confiance reçue, les hommes accompagnés',category:'story',collection:'companions',companionIds:['abu-ubayda'],checkedAt:'2026-10-25',version:'abu-ubayda-confiance-biographie-2026-10-25-v2',
  scope:{kind:'biography',description:'Origines, conversion, émigration, service du Prophète, mission de Najran, responsabilités en Syrie et mort pendant la peste d’Amwas.'},
  note:'L’épisode du père tué à Badr et les récits de blessures non solidement établis ne sont pas affirmés. Les campagnes de Syrie suivent le cadre des chroniques avec leurs incertitudes de détail. Le dialogue de Sargh est distingué des lettres conservées dans les biographies.',
  chapters:[
@@ -10,7 +11,7 @@ export const abuUbaydaBook=defineBook({
 
 La confiance qui sera attachée à son nom ne naît pas d’une charge administrative. Elle se construit d’abord dans cette fidélité ancienne. Il suit le Messager alors que l’adhésion peut provoquer l’hostilité de son propre milieu. La place d’un homme dans le clan et sa décision de croire ne conduisent plus nécessairement dans la même direction. Abu Ubayda choisit la communauté qui se forme autour de la révélation.
 
-Les débuts de sa vie sont moins abondamment documentés que les responsabilités de sa maturité. Nous ne disposons pas d’un récit détaillé de son enfance ni de toutes les étapes de sa conversion. Les notices nous donnent en revanche un itinéraire clair : un croyant ancien quitte La Mecque, s’établit à Médine et participe aux épreuves majeures de la communauté. Sa biographie commence avec ces engagements, plutôt qu’avec une scène spectaculaire qu’il faudrait inventer.
+Les débuts de sa vie sont moins abondamment documentés que les responsabilités de sa maturité. Les notices nous donnent en revanche un itinéraire clair : un croyant ancien quitte La Mecque, s’établit à Médine et participe aux épreuves majeures de la communauté. À partir de ces premiers engagements, son nom va accompagner les étapes de la communauté.
 
 À Médine, il rejoint les émigrés et les Ansar dans une vie collective nouvelle. Les personnes qui l’entourent ont laissé des biens, subi des séparations ou choisi d’accueillir des inconnus devenus leurs frères dans la foi. La confiance n’est pas seulement un mot honorifique : elle permet de remettre une provision, d’obéir à un responsable et de savoir qu’une parole sera tenue.
 
@@ -50,7 +51,7 @@ Abd ar-Rahman ibn Awf, absent au début de la consultation, rejoint le groupe. I
 
 Abu Ubayda apparaît ici dans un échange réel, où son interrogation n’est pas effacée au profit d’un portrait sans aspérité. Les compagnons discutent de la relation entre la confiance en Dieu et la décision pratique. Le récit ne nous donne pas une communauté où chaque personne posséderait d’emblée toutes les réponses. Il montre une recherche commune, puis l’accueil d’un témoignage qui éclaire l’action.
 
-Nous lisons cette scène comme un événement de leur histoire, dans ses circonstances propres. Elle ne remplace pas les connaissances et les recommandations nécessaires pour affronter une maladie aujourd’hui. Dans la vie d’Abu Ubayda, elle annonce surtout la proximité de la dernière épreuve. Umar repart ; lui demeure parmi les hommes dont il a la charge, dans cette Syrie où la maladie continue de se répandre.`}]},
+À Sargh, la décision a été prise au terme de consultations et à la lumière d’un enseignement transmis. Elle ne remplace pas les connaissances et les recommandations nécessaires pour affronter une maladie aujourd’hui. Dans la vie d’Abu Ubayda, elle annonce surtout la proximité de la dernière épreuve. Umar repart ; lui demeure parmi les hommes dont il a la charge, dans cette Syrie où la maladie continue de se répandre.`}]},
  {id:'amwas',title:'Demeurer parmi les siens',sections:[{title:'La fin d’une vie confiée',refs:[history],text:`La peste d’Amwas marque les premières années du gouvernement d’Umar. Les notices situent généralement la mort d’Abu Ubayda en l’an dix-huit de l’hégire, dans cette épidémie qui emporte de nombreuses personnes en Syrie. Le responsable qui avait accompagné les armées se trouve désormais confronté à un danger que le commandement ne lui permet pas d’écarter.
 
 Les biographies racontent qu’Umar cherche à le faire revenir, tandis qu’Abu Ubayda veut rester auprès des hommes. Elles conservent des lettres et des paroles dans lesquelles s’exprime cet attachement. Leur détail doit rester identifié comme tradition historique. La décision retenue par la mémoire est celle d’un chef qui ne considère pas sa sécurité comme indépendante de celle du groupe qu’il accompagne.
@@ -61,4 +62,4 @@ Les notices d’Abu Ubayda évoquent une vie sobre malgré l’importance de ses
 
 Pour revenir à ses débuts, mesurons la route parcourue. Un croyant ancien de La Mecque a quitté sa cité, défendu Médine, commandé un groupe affamé près de la mer et représenté le Prophète auprès de Najran. Après la mort du Messager, il a reçu des responsabilités en Syrie. Chacune de ces étapes lui a confié des personnes, des biens ou une parole. La fin de sa vie demeure liée aux hommes dont il avait accepté la charge, jusque dans l’épidémie qui les a frappés.`}]},
  ],epilogue:'Le titre d’homme de confiance pourrait sembler abstrait s’il restait seul. La vie d’Abu Ubayda lui donne des lieux et des visages : les compagnons qui partagent leurs dernières provisions, la délégation qui demande un représentant fiable, les armées de Syrie et les hommes atteints par la maladie. La confiance apparaît alors comme une charge qui se reçoit et se vérifie dans le temps, jusqu’aux circonstances où elle devient la plus difficile à porter.',lessons:['La confiance reconnue rend responsable envers des personnes précises.','Consulter et recevoir une information nouvelle font partie de la décision.','La mémoire historique doit distinguer les témoignages authentifiés des développements de chronique.'],question:'Pour les personnes qui comptent sur toi, à quoi se reconnaît concrètement ta fiabilité ?',
-});
+}));

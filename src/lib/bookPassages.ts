@@ -7,7 +7,7 @@ export function bookPassages(book:NarrativeBook,chapter:NarrativeChapter):BookPa
  let cursor=0;const text=narratedChapterText(book,chapter),result:BookPassage[]=[];
  for(const [sceneIndex,scene] of chapter.scenes.entries())for(const [index,p] of scene.paragraphs.entries()){
   const start=text.indexOf(p.text,cursor);if(start<0)continue;cursor=start+p.text.length;
-  result.push({id:`${chapter.id}:${scene.id}:${index}`,text:p.text,sources:p.sources,start,end:cursor,scene:sceneIndex});
+  result.push({id:p.id||`${chapter.id}:${scene.id}:${index}`,text:p.text,sources:p.sources,start,end:cursor,scene:sceneIndex});
  }
  if(book.chapters.at(-1)?.id===chapter.id){const start=text.indexOf(book.epilogue.text,cursor);if(start>=0)result.push({id:`${chapter.id}:epilogue`,text:book.epilogue.text,sources:book.epilogue.sources,start,end:start+book.epilogue.text.length,scene:chapter.scenes.length});}
  return result;

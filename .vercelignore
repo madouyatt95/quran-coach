@@ -2,3 +2,6 @@ ios/
 tmp/
 docs/
 *.log
+
+# Local production exports and verification artefacts
+/outputs/

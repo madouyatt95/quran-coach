@@ -1,6 +1,6 @@
 # Az-Zubayr ibn al-Awwam — Une jeunesse de foi, une vie de responsabilités
 
-Version zubayr-fidelite-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version zubayr-fidelite-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. L’âge à la conversion et les détails de ses derniers échanges varient. La narration distingue les témoignages du Sahih et le cadre des biographies. Aucun verdict sur les intentions des acteurs de la première guerre civile n’est inventé. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -18,7 +18,9 @@ Az-Zubayr connaîtra l’émigration en Abyssinie, puis l’installation à Méd
 
 ### Repères de lecture
 
-- **Choisir très jeune** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le fils de Safiyya** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La foi sous la pression** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les départs de La Mecque** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 2. Une maison à construire
 
@@ -26,7 +28,7 @@ Az-Zubayr épouse Asma bint Abi Bakr. Leur famille réunit deux maisons engagée
 
 Son témoignage donne une épaisseur quotidienne à l’émigration. Les déplacements des compagnons ne se limitent pas aux itinéraires entre La Mecque et Médine. Il y a aussi les chemins répétés entre une parcelle, un point d’eau et une maison. Asma porte des noyaux de dattes sur sa tête depuis un terrain éloigné. Ce sont des gestes concrets, à travers lesquels une famille s’installe et peut continuer à vivre.
 
-Elle se souvient d’une rencontre où le Prophète lui propose de monter derrière lui pour lui épargner le trajet à pied. Elle n’accepte pas, en tenant compte de sa situation et de ce qu’elle connaît de son mari. Le récit nous parvient par sa propre parole. Nous n’avons pas à la transformer en héroïne silencieuse ni à faire disparaître ce que son témoignage révèle du travail supporté par une femme dans cette maison.
+Elle se souvient d’une rencontre où le Prophète lui propose de monter derrière lui pour lui épargner le trajet à pied. Elle n’accepte pas, en tenant compte de sa situation et de ce qu’elle connaît de son mari. Le récit nous parvient par sa propre parole. Dans les paroles d’Asma demeure le poids du travail quotidien, que le souvenir des grands événements pourrait laisser dans l’ombre.
 
 Abu Bakr lui apportera ensuite une aide domestique. Asma accueille ce soulagement comme une véritable délivrance. L’indication est précieuse : le besoin d’aide est reconnu, et la vie pieuse n’est pas présentée comme l’obligation de porter seule toute la fatigue. L’histoire de la famille se construit avec les ressources qui manquent, les efforts accomplis et le soutien reçu.
 
@@ -34,7 +36,9 @@ Leur fils Abdullah naît après l’émigration et devient l’un des premiers e
 
 ### Repères de lecture
 
-- **L’émigration et la vie avec Asma** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le travail d’Asma** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le poids du quotidien** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La naissance d’Abdullah** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 3. Répondre lorsque l’on appelle
 
@@ -50,7 +54,9 @@ Les années se poursuivent jusqu’au retour à La Mecque et aux dernières camp
 
 ### Repères de lecture
 
-- **Badr, Uhud et le Fossé** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Répondre après Uhud** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Au temps du Fossé** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les dernières campagnes** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. La prudence de celui qui a beaucoup vu
 
@@ -66,13 +72,15 @@ Ses biens augmentent aussi au fil des années. Le jeune émigré dont Asma avait
 
 ### Repères de lecture
 
-- **Famille, parole et conseil** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Transmettre avec retenue** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La mémoire des enfants** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les biens et les responsabilités** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 5. Quand les compagnons se font face
 
 L’assassinat d’Uthman ouvre une crise profonde. Ali reçoit l’allégeance, tandis que des groupes réclament justice et contestent les conditions dans lesquelles l’autorité pourra s’exercer. Az-Zubayr et Talha rejoignent Aicha dans le mouvement qui gagne Basra. Les relations anciennes entre ces personnes n’empêchent plus qu’elles se retrouvent dans des camps opposés.
 
-Les chroniqueurs rapportent des négociations, des échanges et des tentatives pour éviter l’affrontement. Ils ne racontent pas tous de la même manière l’enchaînement exact des décisions. Les discours transmis après la guerre peuvent aussi porter les préoccupations de ceux qui les ont conservés. Une narration respectueuse doit reconnaître ces limites au lieu de transformer la première guerre civile en une scène dont chaque intention serait connue.
+Les chroniqueurs rapportent des négociations, des échanges et des tentatives pour éviter l’affrontement. Ils ne racontent pas tous de la même manière l’enchaînement exact des décisions. Les discours transmis après la guerre peuvent aussi porter les préoccupations de ceux qui les ont conservés. Ces versions différentes laissent une part d’incertitude sur les décisions qui conduisent à l’affrontement.
 
 La notice d’Az-Zubayr retient son retrait avant la fin du drame de la bataille du Chameau. Elle associe ce départ à un échange avec Ali et au souvenir d’une parole ancienne. Les formulations varient. Le fait à suivre est qu’Az-Zubayr quitte le lieu de confrontation, puis qu’il est tué sur sa route par un homme nommé Ibn Jurmuz. Il ne meurt donc pas simplement au premier rang d’une charge telle qu’on pourrait l’imaginer à partir du nom de la bataille.
 
@@ -82,7 +90,9 @@ Le retrait d’Az-Zubayr ne permet pas de recomposer toutes les responsabilités
 
 ### Repères de lecture
 
-- **Basra et le retrait** — Les paroles échangées avec Ali et les détails du retrait ont des versions différentes. Le cadre historique n’est pas transformé en discours certifié.
+- **La crise après Uthman** — Les paroles échangées avec Ali et les détails du retrait ont des versions différentes. Le cadre historique n’est pas transformé en discours certifié.
+- **Le retrait et la mort** — Les paroles échangées avec Ali et les détails du retrait ont des versions différentes. Le cadre historique n’est pas transformé en discours certifié.
+- **Une histoire qui demeure douloureuse** — Les paroles échangées avec Ali et les détails du retrait ont des versions différentes. Le cadre historique n’est pas transformé en discours certifié.
 
 ## 6. Ce qui doit être rendu
 
@@ -94,11 +104,13 @@ Abdullah entreprend le règlement. Il vend des biens, rencontre les personnes qu
 
 Les héritiers demandent ensuite le partage. Abdullah ne le précipite pas. Il annonce pendant quatre saisons du pèlerinage que les personnes ayant un droit sur les biens d’Az-Zubayr doivent se présenter. Ce temps accordé aux créanciers évite que la succession soit distribuée avant que les engagements connus ou encore ignorés aient pu être exposés. Le deuil s’accompagne d’un travail patient, bien moins spectaculaire qu’une bataille et pourtant nécessaire.
 
-C’est sur cette scène étendue dans le temps que nous pouvons terminer la biographie. Az-Zubayr a été le jeune fils de Safiyya, le compagnon d’Asma dans des débuts modestes, le soutien du Messager et un homme écouté dans la communauté. Il a traversé la division et laissé une fortune grevée de dettes. Son fils honore sa mémoire en rendant les droits d’autrui. La fidélité que l’on admire dans les grands dangers prend ici une forme durable : vérifier, vendre, attendre et restituer.
+Après la mort d’Az-Zubayr, cette responsabilité occupe encore des années de la vie de son fils. Az-Zubayr a été le jeune fils de Safiyya, le compagnon d’Asma dans des débuts modestes, le soutien du Messager et un homme écouté dans la communauté. Il a traversé la division et laissé une fortune grevée de dettes. Son fils honore sa mémoire en rendant les droits d’autrui. La fidélité que l’on admire dans les grands dangers prend ici une forme durable : vérifier, vendre, attendre et restituer.
 
 ### Repères de lecture
 
-- **Le long travail d’Abdullah** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les dettes confiées à Abdullah** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Rendre avant de partager** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La fidélité après la mort** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## Épilogue
 

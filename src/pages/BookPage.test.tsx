@@ -22,7 +22,7 @@ import {useBookNotebook} from '../stores/bookNotebookStore';
 const book=narrativeBooks.find(b=>b.id==='adam')!;
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 let host:HTMLDivElement,root:Root;
-const render=async()=>{await act(async()=>{root.render(<MemoryRouter initialEntries={['/books/adam']}><Routes><Route path="/books/:bookId" element={<BookPage/>}/></Routes></MemoryRouter>);await new Promise(r=>setTimeout(r,20));});};
+const render=async(path="/books/adam")=>{await act(async()=>{root.render(<MemoryRouter initialEntries={[path]}><Routes><Route path="/books/:bookId" element={<BookPage/>}/></Routes></MemoryRouter>);await new Promise(r=>setTimeout(r,20));});};
 const click=async(el:Element)=>{await act(async()=>{(el as HTMLElement).click();await Promise.resolve();});};
 beforeEach(()=>{vi.stubGlobal('sessionStorage',window.sessionStorage);sessionStorage.clear();useBookNotebook.setState({entries:[]});mocks.items=chapterDrafts(book,book.chapters[0],false,false).map((s,i)=>({id:String(i),title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))}));Object.assign(mocks.player,{item:null,playing:false,position:0,queue:[]});mocks.player.play.mockClear();mocks.player.pause.mockClear();vi.stubGlobal('requestAnimationFrame',(cb:FrameRequestCallback)=>setTimeout(()=>cb(0),0));vi.stubGlobal('cancelAnimationFrame',clearTimeout);Element.prototype.scrollIntoView=vi.fn();HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};vi.spyOn(HTMLMediaElement.prototype,'pause').mockImplementation(()=>{});host=document.createElement('div');document.body.append(host);root=createRoot(host);});
 afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
@@ -42,4 +42,15 @@ it('jumps from a timeline step to its text without resuming the previous audio',
  const steps=document.querySelectorAll('.book-life-timeline>li');expect(steps.length).toBe(book.chapters.length);
  await click([...steps[1].querySelectorAll('button')].find(b=>b.textContent==='Lire')!);
  expect(host.querySelector('.book-reading-heading h2')?.textContent).toBe(book.chapters[1].title);expect(mocks.player.play).not.toHaveBeenCalled();expect(document.querySelector('dialog[open]')).toBeNull();
+});
+
+it('opens the glossary without changing the passage and resumes the exact audio position',async()=>{
+ const b=narrativeBooks.find(b=>b.id==='nusayba-presence')!;
+ mocks.items=chapterDrafts(b,b.chapters[2],false,false).map((s,i)=>({id:`glossary:${i}`,title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))}));
+ Object.assign(mocks.player,{item:mocks.items[0],queue:mocks.items,position:47.5,playing:true});
+ await render('/books/nusayba-presence?chapter=uhud');const prose=host.querySelector('.book-prose')!,text=prose.textContent;
+ const trigger=host.querySelector<HTMLButtonElement>('.book-term-name')!;expect(trigger).not.toBeNull();await click(trigger);
+ expect(document.querySelector('dialog[open]')?.textContent).toContain('Les mots du récit');expect(host.querySelector('.book-prose')).toBe(prose);expect(prose.textContent).toBe(text);expect(mocks.player.pause).toHaveBeenCalled();
+ await click(document.querySelector('[aria-label="Fermer le glossaire"]')!);
+ expect(mocks.player.play).toHaveBeenCalledWith(mocks.items[0],{queue:mocks.items,startAt:47.5});
 });

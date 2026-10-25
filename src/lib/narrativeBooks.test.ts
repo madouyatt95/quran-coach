@@ -116,7 +116,7 @@ describe('préparation des chapitres sans dépense', () => {
         expect(draft.approved_by).toBeNull();
         expect(draft.id).toBe('');
         expect(draft.original_text).toBe(draft.text);
-        expect(draft.reference).toContain(book.version);
+        expect(draft.reference).toContain(chapter.audioVersion||book.version);
         expect(draft.rights).toContain('requise avant production');
       }
     }

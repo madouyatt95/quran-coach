@@ -1,6 +1,6 @@
 # Hamza ibn Abd al-Muttalib — De la protection familiale à l’engagement d’Uhud
 
-Version hamza-protection-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version hamza-protection-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Le récit de conversion relève de la tradition biographique. Le témoignage de Wahshi est identifié séparément. Les âges discutés, paroles théâtralisées et détails de mutilation ne sont pas ajoutés à la narration. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -12,29 +12,45 @@ La cité vit autour du sanctuaire. Les familles y possèdent des responsabilité
 
 Lorsque Muhammad commence à appeler à l’adoration d’un Dieu unique, les liens familiaux ne produisent pas tous le même choix. Certains membres de sa parenté croient en lui ; d’autres le protègent tout en demeurant dans la religion de leurs ancêtres ; d’autres encore le combattent. La maison des Banu Hashim n’est pas un bloc dont toutes les décisions seraient prises d’avance. Hamza aura lui aussi un chemin à parcourir.
 
-Nous ne connaissons pas son enfance jour après jour. Les textes ne nous autorisent pas à raconter les conversations qu’il aurait eues, enfant, avec son neveu, ni à lui attribuer une intuition secrète de ce qui arriverait. Mais la relation familiale est certaine et elle donne sa mesure à la suite. À La Mecque, défendre Muhammad signifie intervenir au milieu de personnes que Hamza connaît, dont il comprend les usages et dont il mesure le pouvoir.
+La parenté prend bientôt un sens nouveau. Le neveu de Hamza appelle sa cité à changer, et cet appel rencontre une opposition qui grandit. À La Mecque, défendre Muhammad signifie intervenir au milieu de personnes que Hamza connaît, dont il comprend les usages et dont il mesure le pouvoir.
 
-Le début de sa biographie place ainsi devant nous un homme déjà établi. Sa force et son appartenance peuvent lui assurer une place honorable sans exiger qu’il change de vie. Pourtant, l’appel de son neveu va transformer la destination de ces ressources. La protection qu’un clan réserve d’abord aux siens deviendra, pour Hamza, un engagement personnel dans une communauté où l’origine ne décide plus seule de la valeur d’un homme.
+Hamza est alors un homme établi parmi les siens. Sa force et son appartenance peuvent lui assurer une place honorable sans exiger qu’il change de vie. Pourtant, l’appel de son neveu va transformer la destination de ces ressources. La protection qu’un clan réserve d’abord aux siens deviendra, pour Hamza, un engagement personnel dans une communauté où l’origine ne décide plus seule de la valeur d’un homme.
 
 ### Repères de lecture
 
-- **Une parenté qui devient une responsabilité** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une place parmi les Banu Hashim** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne connaissons pas son enfance jour après jour. Les textes ne nous autorisent pas à raconter les conversations qu’il aurait eues, enfant, avec son neveu, ni à lui attribuer une intuition secrète de ce qui arriverait.
+- **L’appel traverse la famille** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne connaissons pas son enfance jour après jour. Les textes ne nous autorisent pas à raconter les conversations qu’il aurait eues, enfant, avec son neveu, ni à lui attribuer une intuition secrète de ce qui arriverait.
+- **Une force qui change de sens** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne connaissons pas son enfance jour après jour. Les textes ne nous autorisent pas à raconter les conversations qu’il aurait eues, enfant, avec son neveu, ni à lui attribuer une intuition secrète de ce qui arriverait.
 
 ## 2. Prendre parti à La Mecque
 
 La tradition biographique situe un tournant à La Mecque, pendant les années où les croyants demeurent minoritaires. Hamza revient de la chasse. Il apprend qu’Abu Jahl a insulté et maltraité Muhammad. Le récit associe cette nouvelle à une intervention publique de Hamza : il affronte l’homme qui a attaqué son neveu et se déclare attaché à sa religion. La scène explique pourquoi sa conversion est restée liée au souvenir d’une protection devenue visible.
 
-Il faut en conserver le sens sans fabriquer une pièce de théâtre. Les versions anciennes transmettent des paroles et des détails dont la force documentaire n’est pas uniforme. Ce que leur trame nous permet de suivre, c’est le passage d’une solidarité familiale à un choix de foi. Hamza ne demeure pas seulement un parent offensé au nom de l’honneur des Banu Hashim. Les biographies le comptent désormais parmi les musulmans, aux côtés de ceux dont la conviction expose la vie et les biens.
+Les détails de cette conversion varient selon les traditions anciennes. Toutes ces précautions prises, un tournant se dessine : la solidarité familiale devient un choix de foi. Hamza ne demeure pas seulement un parent offensé au nom de l’honneur des Banu Hashim. Les biographies le comptent désormais parmi les musulmans, aux côtés de ceux dont la conviction expose la vie et les biens.
 
 Son engagement compte pour cette petite communauté. La présence d’un homme respecté rend plus coûteuse une agression contre le Messager. Elle ne met toutefois pas fin aux mauvais traitements. Les premiers croyants ne vivent pas tous sous la même protection, et la sécurité d’un homme de clan ne devient pas, par magie, celle des esclaves ou des personnes isolées. Hamza rejoint une épreuve dont les conséquences restent profondément inégales.
 
 Il connaît maintenant les deux faces de la cité : celle où sa famille est reconnue et celle où les fidèles du Prophète sont rejetés pour leur religion. La foi lui demande de considérer autrement ceux qui l’entourent. Un homme dont la société admire la vigueur se tient auprès de croyants dont certains ne peuvent opposer aucune force à leurs persécuteurs. Leur lien commun se construit autour du message reçu.
 
-Les années mecquoises ne nous ont pas laissé une succession complète de ses journées. Nous pouvons suivre son adhésion et sa place parmi les premiers défenseurs ; nous ne pouvons pas remplir chaque silence par un nouvel exploit. Cette retenue rend son choix plus lisible. Ce qui change la direction de sa vie est déjà considérable : lorsqu’il faudra quitter La Mecque, Hamza partira avec les musulmans. La religion de son neveu est devenue la sienne, avec les déplacements et les risques qu’elle entraîne.
+Ce choix le lie désormais au destin des croyants. La protection apportée à Muhammad ne se limite plus à une intervention publique ; elle engage la direction de sa vie. Ce qui change la direction de sa vie est déjà considérable : lorsqu’il faudra quitter La Mecque, Hamza partira avec les musulmans. La religion de son neveu est devenue la sienne, avec les déplacements et les risques qu’elle entraîne.
 
 ### Repères de lecture
 
-- **Le choix de croire** — La scène du retour de chasse est une tradition de sira, conservée ici au discours indirect ; elle ne possède pas automatiquement le statut des récits du Sahih.
+- **Le retour de la chasse** — La scène du retour de chasse est une tradition de sira, conservée ici au discours indirect ; elle ne possède pas automatiquement le statut des récits du Sahih.
+
+Il faut en conserver le sens sans fabriquer une pièce de théâtre. Nous pouvons suivre son adhésion et sa place parmi les premiers défenseurs ; nous ne pouvons pas remplir chaque silence par un nouvel exploit.
+- **Auprès des croyants menacés** — La scène du retour de chasse est une tradition de sira, conservée ici au discours indirect ; elle ne possède pas automatiquement le statut des récits du Sahih.
+
+Il faut en conserver le sens sans fabriquer une pièce de théâtre. Nous pouvons suivre son adhésion et sa place parmi les premiers défenseurs ; nous ne pouvons pas remplir chaque silence par un nouvel exploit.
+- **Partir avec les musulmans** — La scène du retour de chasse est une tradition de sira, conservée ici au discours indirect ; elle ne possède pas automatiquement le statut des récits du Sahih.
+
+Il faut en conserver le sens sans fabriquer une pièce de théâtre. Nous pouvons suivre son adhésion et sa place parmi les premiers défenseurs ; nous ne pouvons pas remplir chaque silence par un nouvel exploit.
 
 ## 3. Une autre ville, une autre communauté
 
@@ -50,7 +66,9 @@ Dans cette période, le temps se resserre. Quelques années auparavant, l’isla
 
 ### Repères de lecture
 
-- **De La Mecque à Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Quitter La Mecque** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les responsabilités de Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Badr approche** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. Badr et le prix d’une victoire
 
@@ -62,17 +80,19 @@ La notice de Hamza conserve le souvenir de sa puissance au combat. Il serait fac
 
 Cet enchaînement rend l’année qui suit plus lourde. Les noms prononcés après Badr appartiennent à des familles qui pleurent et à des croyants qui savent que Quraysh n’abandonnera pas nécessairement le conflit. La joie de la victoire n’est donc pas la fin du danger. Pour les musulmans de Médine, elle ouvre aussi une période d’attente et de vigilance.
 
-Hamza poursuit sa vie dans cette communauté qui vient de traverser un événement décisif. Nous ne savons pas ce qu’il anticipait personnellement. Aucun récit intérieur ne peut être ajouté au témoignage des sources. Mais nous connaissons la suite des faits : les Mecquois rassemblent une nouvelle armée, et l’année suivante la menace atteint les abords de Médine. Le nom de Hamza, désormais attaché à Badr, entre dans les préparatifs de ceux qui veulent sa mort.
+Hamza poursuit sa vie dans cette communauté qui vient de traverser un événement décisif. Aucun récit intérieur ne peut être ajouté au témoignage des sources. Mais nous connaissons la suite des faits : les Mecquois rassemblent une nouvelle armée, et l’année suivante la menace atteint les abords de Médine. Le nom de Hamza, désormais attaché à Badr, entre dans les préparatifs de ceux qui veulent sa mort.
 
 ### Repères de lecture
 
-- **Des hommes connus de part et d’autre** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le duel de Badr** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La victoire et ses conséquences** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une année de menace** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 5. Uhud, le témoignage de Wahshi
 
 Uhud se déroule en l’an trois de l’hégire, près de Médine. Parmi les hommes venus avec les Mecquois se trouve Wahshi. Il est alors esclave et habile au maniement du javelot. Son propre témoignage, conservé dans le Sahih d’al-Bukhari, relie sa présence à une promesse d’affranchissement : s’il tue Hamza, son maître lui rendra la liberté. Cette fois, nous ne suivons pas seulement une notice rédigée longtemps après les événements. Le récit remonte à celui qui a porté le coup.
 
-Wahshi explique qu’il observe Hamza au milieu du combat et attend le moment de lancer son arme. Hamza est atteint et meurt. Le témoignage est bref au regard de tout ce qu’une narration pourrait imaginer. Il ne nous donne pas les dernières pensées de Hamza, ni une dernière conversation avec son neveu. Ces silences doivent demeurer. La force de la scène tient précisément au fait qu’une vie engagée depuis les années mecquoises s’interrompt dans la violence de cette journée.
+Wahshi explique qu’il observe Hamza au milieu du combat et attend le moment de lancer son arme. Hamza est atteint et meurt. Quelques mots suffisent au témoin pour raconter la mort de Hamza. Il ne nous donne pas les dernières pensées de Hamza, ni une dernière conversation avec son neveu. Ces silences doivent demeurer. La force de la scène tient précisément au fait qu’une vie engagée depuis les années mecquoises s’interrompt dans la violence de cette journée.
 
 Uhud coûte de nombreuses vies aux musulmans. La mort de Hamza est à la fois une perte pour le Prophète, qui perd son oncle, et pour une communauté qui reconnaît l’un de ses défenseurs. Les récits de cette bataille mentionnent les atteintes infligées à des corps. Il n’est pas nécessaire d’en faire un spectacle pour comprendre l’ampleur du deuil. Hamza ne rentre pas à Médine avec les survivants. Son corps reste auprès de ceux qui sont tombés près de la montagne.
 
@@ -82,7 +102,9 @@ Hamza, lui, est désormais confié à la mémoire des vivants. Son parcours n’
 
 ### Repères de lecture
 
-- **Une perte au milieu de la bataille** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le témoignage de Wahshi** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Médine porte ses morts** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **L’absence de Hamza** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 6. Ce qui reste dans les maisons
 
@@ -98,7 +120,9 @@ Nous arrivons ainsi au terme de son parcours connu. Les générations lui donner
 
 ### Repères de lecture
 
-- **Une fille accueillie, un souvenir qui fait pleurer** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une enfant à accueillir** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le souvenir d’un linceul** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Ce que les vivants préservent** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## Épilogue
 

@@ -1,6 +1,6 @@
 # Nusayba bint Kab — Umm Umara, une vie dans l’engagement de Médine
 
-Version nusayba-presence-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version nusayba-presence-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. La plupart des développements militaires proviennent de chroniques, avec des chaînes dont certaines passent par al-Waqidi. Les nombres de blessures et les longues paroles attribuées au Prophète ne sont pas certifiés. Ibn al-Athir discute l’identification de la narratrice du hadith 3211 ; cette limite figure dans le chapitre. La date de décès n’est pas connue avec assez de certitude pour être fixée. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -12,17 +12,19 @@ Cette rencontre ouvre une possibilité décisive à une communauté encore menac
 
 Les décomptes et certains noms transmis varient, comme il arrive dans les listes anciennes. La présence d’Umm Umara demeure dans plusieurs notices. Elle ne doit donc pas être imaginée comme une spectatrice ajoutée après coup à une histoire exclusivement masculine. Son nom appartient au souvenir de ceux qui ont répondu avant que Médine ne devienne le centre visible de la communauté.
 
-Nous ne possédons pas une enfance détaillée de Nusayba. La date de sa naissance et les scènes de ses premières années ne peuvent pas être reconstituées avec certitude. Son parcours connu s’ouvre par un engagement adulte, au milieu d’une société qui se transforme. Cette limite n’enlève rien à l’importance de ce qui suit. Elle nous permet de commencer là où les sources commencent réellement à la faire apparaître.
+C’est donc au milieu de cet engagement adulte que Nusayba entre dans les récits qui nous sont parvenus. Sa date de naissance reste incertaine. À al-Aqaba, en revanche, son nom accompagne une promesse qui va changer la vie de sa ville et de sa famille. Le temps de l’accueil approche.
 
 Lorsque le Prophète arrive à Médine, la promesse d’accueil doit devenir une vie commune. La mosquée, les liens avec les émigrés, les accords et la défense de la ville donnent un contenu quotidien à ce qui avait été accepté à al-Aqaba. Nusayba vivra cette transformation avec sa famille. L’engagement reçu ne restera pas seulement dans le souvenir d’une nuit de rencontre ; il la conduira sur les lieux où la communauté devra être aidée et protégée.
 
 ### Repères de lecture
 
-- **Les Banu Najjar et la rencontre d’al-Aqaba** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le pacte d’al-Aqaba** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un engagement avant l’émigration** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Faire vivre la promesse à Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 2. Une famille dans l’histoire de Médine
 
-Les notices présentent Nusayba comme la mère de Habib et d’Abdullah, fils de Zayd ibn Asim. Elles évoquent aussi son union avec Ghaziyya ibn Amr. Les traditions ne placent pas toujours les époux de la même manière dans le détail des événements. La biographie doit conserver cette réserve plutôt que faire correspondre de force toutes les versions à une seule scène familiale.
+Les notices présentent Nusayba comme la mère de Habib et d’Abdullah, fils de Zayd ibn Asim. Elles évoquent aussi son union avec Ghaziyya ibn Amr. Les traditions ne placent pas toujours les époux de la même manière dans le détail des événements.
 
 Ses fils entrent eux-mêmes dans l’histoire de la communauté. Ils grandissent dans un foyer où l’engagement auprès du Prophète ne se limite pas à une déclaration. Les récits d’Uhud associent la mère et les siens au service puis à la défense du Messager. Plus tard, le nom de Habib sera lié à une perte terrible, tandis qu’Abdullah survivra longtemps et transmettra des enseignements.
 
@@ -34,13 +36,15 @@ Nous nous approchons ainsi d’Uhud. Le nom de Nusayba y restera attaché parce 
 
 ### Repères de lecture
 
-- **Les fils d’Umm Umara** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Habib et Abdullah** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une maison dans la communauté** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Vers Uhud** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 3. D’Uhud à une longue convalescence
 
 En l’an trois de l’hégire, Nusayba se trouve à Uhud. La tradition la montre venue avec une outre pour donner de l’eau. Puis le cours du combat change, les musulmans se dispersent et le Prophète est menacé. Elle se rapproche de lui et participe à sa défense. Les biographies ont conservé cette transformation de sa place, du secours apporté aux autres à l’engagement direct au milieu du danger.
 
-Les récits développés décrivent sa présence avec des membres de sa famille, l’usage d’un bouclier et les blessures reçues. Leur transmission demande de la prudence : plusieurs passent par des narrateurs discutés, et les nombres de blessures ne coïncident pas toujours. Nous pouvons suivre le souvenir ancien d’une défense courageuse sans présenter chaque phrase et chaque mouvement comme un témoignage de même degré que les hadiths du Sahih.
+Les récits développés décrivent sa présence avec des membres de sa famille, l’usage d’un bouclier et les blessures reçues. Leur transmission demande de la prudence : plusieurs passent par des narrateurs discutés, et les nombres de blessures ne coïncident pas toujours. Le souvenir de sa défense nous parvient donc à travers des traditions de valeur inégale.
 
 Un élément revient avec force : Nusayba est gravement atteinte à l’épaule. La notice raconte une plaie dont les soins se prolongent. Elle ne sort pas du combat comme un personnage invulnérable. Le corps qui a protégé le Messager doit maintenant être soigné, et le temps de la convalescence devient une part de son engagement. La bataille s’est terminée, mais ses conséquences demeurent dans les jours ordinaires.
 
@@ -50,7 +54,9 @@ La tradition rapporte qu’elle souhaite répondre à l’appel qui suit Uhud, v
 
 ### Repères de lecture
 
-- **Rester quand le danger se rapproche** — Les récits développés d’Uhud sont des traditions de sira, notamment via al-Waqidi. La narration n’en fait pas des paroles prophétiques intégralement authentifiées et n’additionne pas leurs décomptes de blessures.
+- **De l’eau à la défense** — Les récits développés d’Uhud sont des traditions de sira, notamment via al-Waqidi. La narration n’en fait pas des paroles prophétiques intégralement authentifiées et n’additionne pas leurs décomptes de blessures.
+- **La blessure à l’épaule** — Les récits développés d’Uhud sont des traditions de sira, notamment via al-Waqidi. La narration n’en fait pas des paroles prophétiques intégralement authentifiées et n’additionne pas leurs décomptes de blessures.
+- **Le temps du soin** — Les récits développés d’Uhud sont des traditions de sira, notamment via al-Waqidi. La narration n’en fait pas des paroles prophétiques intégralement authentifiées et n’additionne pas leurs décomptes de blessures.
 
 ## 4. Continuer après Uhud
 
@@ -62,27 +68,37 @@ La présence de Nusayba dans cette période élargit son portrait. Il ne suffit 
 
 À Hunayn, après le retour à La Mecque, les musulmans traversent encore une journée de danger. La notice d’adh-Dhahabi mentionne Umm Umara parmi les personnes qui prennent part à ces événements. Elle appartient désormais à la génération qui a connu l’appel mecquois depuis Yathrib, l’accueil du Messager, les menaces contre Médine et l’élargissement de la communauté.
 
-Ces étapes ne nous autorisent pas à inventer une fonction précise pour elle à chaque déplacement. Elles donnent une continuité que les seuls épisodes célèbres ne montreraient pas. Nusayba demeure engagée dans le temps. Elle n’a pas été courageuse une seule fois, dans une scène qui suffirait à expliquer le reste de sa vie. Son nom revient parce qu’elle continue de se trouver auprès des siens lorsque des décisions et des épreuves nouvelles se présentent.
+Les notices ne précisent pas toujours son rôle dans ces déplacements. Elles donnent une continuité que les seuls épisodes célèbres ne montreraient pas. Nusayba demeure engagée dans le temps. Elle n’a pas été courageuse une seule fois, dans une scène qui suffirait à expliquer le reste de sa vie. Son nom revient parce qu’elle continue de se trouver auprès des siens lorsque des décisions et des épreuves nouvelles se présentent.
 
 ### Repères de lecture
 
-- **Hudaybiyya et les années suivantes** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Après Uhud, Hudaybiyya** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Ces étapes ne nous autorisent pas à inventer une fonction précise pour elle à chaque déplacement.
+- **Demeurer engagée** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Ces étapes ne nous autorisent pas à inventer une fonction précise pour elle à chaque déplacement.
+- **Une fidélité dans le temps** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Ces étapes ne nous autorisent pas à inventer une fonction précise pour elle à chaque déplacement.
 
 ## 5. Une question sur la place des femmes
 
 Une tradition conservée par at-Tirmidhi est transmise sous le nom d’Umm Umara. La narratrice demande pourquoi elle entend surtout mentionner les hommes et ne voit pas les femmes nommées de la même manière. Le récit rattache à cette question le verset de la sourate al-Ahzab qui énumère les croyants et les croyantes, les qualités de leur engagement et la récompense préparée pour eux.
 
-Cette tradition est souvent associée à Nusayba. Les anciens biographes ont toutefois discuté l’identification exacte de la narratrice portant cette kunya. Ibn al-Athir conserve cette hésitation. Il convient de la dire clairement : nous pouvons présenter la parole transmise sous le nom d’Umm Umara, tout en reconnaissant que son rattachement personnel à Nusayba n’est pas traité de manière identique dans toutes les notices.
+Cette tradition est souvent associée à Nusayba. Les anciens biographes ont toutefois discuté l’identification exacte de la narratrice portant cette kunya. Ibn al-Athir conserve cette hésitation. Le rattachement personnel de cette parole à Nusayba reste donc discuté.
 
 Le contenu du récit garde son intérêt. Une femme écoute, perçoit une question qui la concerne et la porte devant le Prophète. Elle ne se contente pas d’attendre que d’autres parlent de sa place à sa place. La réponse transmise rappelle l’engagement religieux des femmes avec celui des hommes, dans la foi, la vérité, la patience, la charité, le jeûne et le rappel de Dieu.
 
-Dans une collection de biographies, cette question empêche de chercher la valeur d’une femme uniquement dans les circonstances où elle accomplit une tâche généralement associée aux hommes. Le verset parle d’une vie de foi beaucoup plus large. Pour Nusayba elle-même, les récits de combat prennent place au milieu d’une maison, d’un pacte et de nombreuses années dont nous ne connaissons pas toutes les activités.
+La question porte l’attention vers l’ensemble de la vie des croyantes, bien au-delà des journées de combat. Le verset parle d’une vie de foi beaucoup plus large. Pour Nusayba elle-même, les récits de combat prennent place au milieu d’une maison, d’un pacte et de nombreuses années dont nous ne connaissons pas toutes les activités.
 
-Préserver la discussion sur l’identité de la narratrice ne diminue pas sa voix. Cela évite de donner à une attribution plus de certitude que les sources n’en portent. La fidélité historique demande parfois de laisser un lien ouvert. Le lecteur peut alors recevoir ensemble la force d’une question et la précision nécessaire à son attribution, sans que l’une soit sacrifiée à l’autre.
+L’identité exacte de la narratrice demeure discutée ; la question, elle, est transmise. Elle fait entendre une femme qui demande une place explicite dans la parole qu’elle reçoit. À côté des engagements publics, cette attention au sens appartient elle aussi à l’histoire de l’apprentissage et de la foi.
 
 ### Repères de lecture
 
-- **La tradition transmise sous le nom d’Umm Umara** — Ibn al-Athir rapporte que les biographes ne s’accordent pas tous pour identifier cette narratrice à Nusayba bint Kab. Le degré du récit et l’identification biographique sont deux questions distinctes.
+- **La question d’Umm Umara** — Ibn al-Athir rapporte que les biographes ne s’accordent pas tous pour identifier cette narratrice à Nusayba bint Kab. Le degré du récit et l’identification biographique sont deux questions distinctes.
+- **La place des croyantes** — Ibn al-Athir rapporte que les biographes ne s’accordent pas tous pour identifier cette narratrice à Nusayba bint Kab. Le degré du récit et l’identification biographique sont deux questions distinctes.
+- **Une attribution discutée** — Ibn al-Athir rapporte que les biographes ne s’accordent pas tous pour identifier cette narratrice à Nusayba bint Kab. Le degré du récit et l’identification biographique sont deux questions distinctes.
 
 ## 6. La perte de Habib et le retour blessé
 
@@ -90,15 +106,23 @@ Dans les dernières années du Prophète, Habib, le fils de Nusayba, est mis à 
 
 Lorsque le Prophète meurt, la communauté entre dans la période des conflits de l’apostasie sous Abu Bakr. La bataille de Yamama s’inscrit dans ce contexte. Les biographies y mentionnent Nusayba. Son engagement se poursuit donc au-delà de la vie du Messager et rejoint une épreuve dans laquelle la perte de Habib occupe une place familiale particulière.
 
-Elle revient de Yamama très gravement blessée, une main perdue selon les notices. Les décomptes de plaies diffèrent ; nous n’en choisissons pas un pour intensifier artificiellement le récit. Ce qui demeure est le retour d’une femme dont le corps porte une nouvelle atteinte durable. Le souvenir d’Uhud et celui de Yamama ne sont pas deux images héroïques sans lendemain : les blessures signalées dans les notices invitent aussi à penser aux soins nécessaires après les combats, sans inventer la durée ni les détails de son rétablissement.
+Elle revient de Yamama très gravement blessée, une main perdue selon les notices. Les décomptes de plaies diffèrent selon les traditions. Ce qui demeure est le retour d’une femme dont le corps porte une nouvelle atteinte durable. Le souvenir d’Uhud et celui de Yamama ne sont pas deux images héroïques sans lendemain : le retour laisse place au temps des soins, dont les notices ne précisent pas la durée.
 
-Une tradition conservée dans sa notice décrit Abu Bakr venant prendre de ses nouvelles à Médine. Le calife rend visite à une blessée ; l’histoire du gouvernement rencontre celle d’une maison où une personne se remet difficilement. Ce geste donne une conclusion plus juste que l’invention d’un dernier exploit. Nusayba reçoit aussi le soin et l’attention de la communauté qu’elle a servie.
+Une tradition conservée dans sa notice décrit Abu Bakr venant prendre de ses nouvelles à Médine. Le calife rend visite à une blessée ; l’histoire du gouvernement rencontre celle d’une maison où une personne se remet difficilement. Après les combats, une visite ramène l’attention vers la personne blessée. Nusayba reçoit aussi le soin et l’attention de la communauté qu’elle a servie.
 
-La date précise de sa mort n’est pas assez solidement établie pour être fixée ici. Nous laissons donc le récit au terme de ce que les notices permettent de suivre : une femme revenue blessée, dont la mémoire a traversé les générations. Son parcours relie al-Aqaba, la vie de Médine, Uhud, les engagements suivants, la mort d’un fils et Yamama. Il nous est parvenu de manière inégale, mais sa continuité demeure : Nusayba a pris part à l’histoire de sa communauté depuis ses promesses d’accueil jusqu’aux épreuves qui ont suivi la disparition du Messager.
+La date précise de sa mort n’est pas assez solidement établie pour être fixée ici. Les notices laissent le souvenir d’une femme revenue blessée, dont la mémoire traverse les générations. Son parcours relie al-Aqaba, la vie de Médine, Uhud, les engagements suivants, la mort d’un fils et Yamama. Il nous est parvenu de manière inégale, mais sa continuité demeure : Nusayba a pris part à l’histoire de sa communauté depuis ses promesses d’accueil jusqu’aux épreuves qui ont suivi la disparition du Messager.
 
 ### Repères de lecture
 
-- **Après la mort du Prophète** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La perte de Habib** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+les blessures signalées dans les notices invitent aussi à penser aux soins nécessaires après les combats, sans inventer la durée ni les détails de son rétablissement. Ce geste donne une conclusion plus juste que l’invention d’un dernier exploit.
+- **Yamama et le retour blessé** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+les blessures signalées dans les notices invitent aussi à penser aux soins nécessaires après les combats, sans inventer la durée ni les détails de son rétablissement. Ce geste donne une conclusion plus juste que l’invention d’un dernier exploit.
+- **La visite à Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+les blessures signalées dans les notices invitent aussi à penser aux soins nécessaires après les combats, sans inventer la durée ni les détails de son rétablissement. Ce geste donne une conclusion plus juste que l’invention d’un dernier exploit.
 
 ## Épilogue
 

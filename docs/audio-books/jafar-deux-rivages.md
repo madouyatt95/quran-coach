@@ -1,6 +1,6 @@
 # Jafar ibn Abi Talib — La Mecque, l’Abyssinie et le retour vers Médine
 
-Version jafar-deux-rivages-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version jafar-deux-rivages-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Le plaidoyer devant le Négus est suivi d’après la tradition d’Umm Salama conservée dans les biographies, sans recopier les discours. Les récits sur les deux émigrations, la fille de Hamza et Muta disposent aussi de références dans le Sahih. Les nombres de blessures et l’âge discuté au décès ne sont pas fixés. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -12,13 +12,21 @@ Les biographies comptent Jafar parmi les premiers croyants. Il entre dans une co
 
 Jafar se marie à Asma bint Umays, elle aussi croyante. Leur histoire ne pourra pas être racontée comme deux parcours qui se croisent seulement au moment du départ. L’exil sera leur vie commune pendant de longues années. Ils auront des enfants loin de leur cité d’origine ; ils porteront ensemble le souci de demeurer fidèles, alors que les nouvelles du Prophète viendront de l’autre rive de la mer.
 
-Nous ne possédons pas un journal de leur jeunesse. Les textes ne permettent pas d’assigner une conversation à chaque décision ni de deviner les pensées de Jafar. Ils donnent en revanche les contours d’un engagement précoce. Cet homme de la famille du Messager accepte de lier son avenir à la foi d’une minorité qui ne dispose pas encore d’une ville où vivre librement.
+À La Mecque, leur engagement commence bien avant que la communauté dispose d’un refuge durable. La parenté avec Muhammad ne suffit pas à rendre cet avenir sûr. Cet homme de la famille du Messager accepte de lier son avenir à la foi d’une minorité qui ne dispose pas encore d’une ville où vivre librement.
 
 Ce premier choix prépare le suivant. Lorsque certains musulmans reçoivent la possibilité de chercher refuge en Abyssinie, le départ exige autre chose que le désir d’un voyage. Il faut accepter une séparation dont personne ne peut annoncer la durée. Jafar et Asma quittent La Mecque pour une terre où ils espèrent être protégés de l’injustice. La mer les éloigne des persécuteurs ; elle les éloigne aussi du Prophète et de ceux qu’ils aiment.
 
 ### Repères de lecture
 
-- **Un cousin parmi les premiers croyants** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Dans la maison d’Abu Talib** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne possédons pas un journal de leur jeunesse. Les textes ne permettent pas d’assigner une conversation à chaque décision ni de deviner les pensées de Jafar.
+- **Jafar et Asma** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne possédons pas un journal de leur jeunesse. Les textes ne permettent pas d’assigner une conversation à chaque décision ni de deviner les pensées de Jafar.
+- **Quitter les siens** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne possédons pas un journal de leur jeunesse. Les textes ne permettent pas d’assigner une conversation à chaque décision ni de deviner les pensées de Jafar.
 
 ## 2. Trouver refuge de l’autre côté de la mer
 
@@ -30,15 +38,17 @@ Quraysh ne se satisfait pas de voir les musulmans vivre hors de sa portée. Des 
 
 Dans ce récit, la présence de Jafar devant le Négus marque un moment essentiel. Celui qui a quitté La Mecque pour protéger sa foi doit maintenant l’expliquer en public. Il présente la transformation apportée par le message : l’adoration de Dieu, l’abandon des pratiques injustes, la vérité dans la parole, le respect des liens et l’attention aux personnes vulnérables. La religion qu’il décrit se reconnaît aussi dans la conduite demandée aux croyants.
 
-Cette manière de parler donne une cohérence au départ. Les musulmans n’ont pas simplement fui une querelle de clans. Ils ont cherché la possibilité de vivre un engagement qui modifie leurs rapports avec Dieu et avec les autres. Leur demande d’asile rencontre alors l’obligation de justice d’un souverain. Les textes anciens nous transmettent le récit de cette rencontre ; leur parole ne nous autorise pas à ajouter les gestes, les regards ou les silences d’une audience dont nous n’avons pas été témoins.
+Cette manière de parler donne une cohérence au départ. Les musulmans n’ont pas simplement fui une querelle de clans. Ils ont cherché la possibilité de vivre un engagement qui modifie leurs rapports avec Dieu et avec les autres. Leur demande d’asile rencontre alors l’obligation de justice d’un souverain. Au terme de cette première présentation, le roi veut encore entendre ce que les réfugiés ont reçu du Messager. La rencontre se poursuit autour de la révélation elle-même.
 
 ### Repères de lecture
 
-- **Vivre en Abyssinie** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un refuge en Abyssinie** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les envoyés de Quraysh** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Être entendu par le Négus** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 3. Dire sa foi devant le Négus
 
-La discussion devant le souverain ne se limite pas à une présentation générale. Dans la tradition d’Umm Salama, le Négus demande à entendre quelque chose de la révélation reçue par le Prophète. Jafar lui présente un passage de la sourate Maryam. Pour notre narration, il suffit d’en rappeler le sujet : Marie, la naissance de Jésus et la puissance de Dieu. Le texte coranique conserve sa propre voix ; il n’est pas transformé ici en récitation synthétique.
+La discussion devant le souverain ne se limite pas à une présentation générale. Dans la tradition d’Umm Salama, le Négus demande à entendre quelque chose de la révélation reçue par le Prophète. Jafar lui présente un passage de la sourate Maryam. Ce passage évoque Marie, la naissance de Jésus et la puissance de Dieu. Devant le souverain chrétien, Jafar fait ainsi entendre la révélation à laquelle les exilés ont confié leur vie.
 
 Le récit décrit l’émotion du roi et de ceux qui l’entourent. Il présente cette écoute comme un moment où les réfugiés cessent d’être seulement les personnes accusées par les envoyés de Quraysh. Leur foi est entendue directement. Le souverain refuse de les livrer. Ils peuvent demeurer sous sa protection, malgré les demandes de leurs adversaires.
 
@@ -50,7 +60,9 @@ L’asile ne supprime pas toutes les inquiétudes. Umm Salama évoque aussi la c
 
 ### Repères de lecture
 
-- **Marie, Jésus et la protection accordée** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La sourate Maryam devant le roi** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La question sur Jésus** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Demeurer loin du Messager** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. Les années que la mer n’efface pas
 
@@ -66,13 +78,15 @@ Jafar retrouve donc une communauté transformée. Des compagnons sont morts depu
 
 ### Repères de lecture
 
-- **Revenir au temps de Khaybar** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Des nouvelles depuis l’Arabie** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La parole d’Asma** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Retrouver une communauté transformée** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 5. La générosité et les liens
 
 Abu Hurayra se souvient de Jafar comme d’un homme particulièrement attentif aux pauvres. Son témoignage ne nous conduit pas à une audience royale ni sur une grande route. Il nous fait entrer dans le partage de nourriture, jusque dans une maison où les ressources disponibles peuvent être modestes. Ceux qui ont faim trouvent auprès de Jafar une hospitalité dont le souvenir demeure.
 
-Il ne s’agit pas de présenter toute sa vie comme une suite de dons spectaculaires. Le témoignage retient justement une proximité : faire entrer les personnes, offrir ce qui existe, ne pas les tenir loin de sa maison. Pour quelqu’un qui a lui-même connu la dépendance de l’exil et la protection reçue d’un autre souverain, cette attention prend une résonance particulière. Nous ne pouvons lui attribuer un raisonnement intérieur, mais les faits dessinent une continuité entre refuge reçu et accueil offert.
+Il ne s’agit pas de présenter toute sa vie comme une suite de dons spectaculaires. Le témoignage retient justement une proximité : faire entrer les personnes, offrir ce qui existe, ne pas les tenir loin de sa maison. Pour quelqu’un qui a lui-même connu la dépendance de l’exil et la protection reçue d’un autre souverain, cette attention prend une résonance particulière. Le refuge reçu en Abyssinie et l’accueil offert à Médine se répondent dans les souvenirs laissés par les témoins.
 
 Un autre récit place sa famille devant une responsabilité. Après la visite des musulmans à La Mecque, la fille de Hamza rejoint leur groupe. Ali, Jafar et Zayd se préoccupent de son sort. Jafar rappelle que l’épouse auprès de laquelle il vit est la tante maternelle de l’enfant. Le Prophète confie la petite à cette tante. La maison de Jafar devient ainsi un lieu où une perte ancienne reçoit une réponse concrète.
 
@@ -82,7 +96,15 @@ Ces récits donnent au retour d’Abyssinie une épaisseur que la seule chronolo
 
 ### Repères de lecture
 
-- **Prendre soin de ceux qui sont là** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une maison ouverte aux pauvres** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons lui attribuer un raisonnement intérieur, mais les faits dessinent une continuité entre refuge reçu et accueil offert.
+- **Accueillir la fille de Hamza** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons lui attribuer un raisonnement intérieur, mais les faits dessinent une continuité entre refuge reçu et accueil offert.
+- **Les liens du retour** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne pouvons lui attribuer un raisonnement intérieur, mais les faits dessinent une continuité entre refuge reçu et accueil offert.
 
 ## 6. Le dernier départ
 
@@ -90,7 +112,7 @@ En l’an huit de l’hégire, une expédition part vers Muta, au nord de l’Ar
 
 À Muta, Zayd meurt en portant l’étendard. Jafar lui succède et tombe lui aussi, puis Abdullah ibn Rawaha. Le témoignage conservé par al-Bukhari montre le Prophète annonçant leurs morts, les larmes aux yeux. La succession des noms fait entendre le prix humain de l’expédition. Trois hommes connus de la communauté ne reviendront pas. Leurs responsabilités passent à d’autres, mais leurs places dans les maisons ne peuvent pas être remplacées de la même manière.
 
-Les biographies rapportent de nombreuses blessures au corps de Jafar. Les décomptes et les circonstances détaillées varient ; il n’est pas nécessaire de les additionner pour augmenter l’émotion. Son engagement et sa mort sont établis sans que chaque détail de combat doive être présenté comme également certain. La mémoire musulmane lui associe le surnom de l’homme aux deux ailes, que reprend aussi Ibn Umar lorsqu’il s’adresse à son fils.
+Les biographies rapportent de nombreuses blessures au corps de Jafar. Les décomptes et les circonstances détaillées varient. Au-delà de ces différences, les témoignages gardent la mémoire de son engagement et de sa mort. La mémoire musulmane lui associe le surnom de l’homme aux deux ailes, que reprend aussi Ibn Umar lorsqu’il s’adresse à son fils.
 
 Asma reste avec leurs enfants. Pour Abdullah, Awn et Muhammad, le retour d’Abyssinie aura été suivi d’une séparation définitive d’avec leur père. Une biographie attentive ne peut s’arrêter à l’étendard et oublier cette maison. La communauté qui avait reconnu les deux émigrations doit désormais entourer ceux que Jafar laisse derrière lui. Sa vie avait été faite de liens maintenus malgré les distances ; sa mort engage les vivants à poursuivre ce soin.
 
@@ -98,7 +120,9 @@ Le parcours s’achève donc après un bref retour auprès du Messager. Jafar a 
 
 ### Repères de lecture
 
-- **Muta et les enfants de Jafar** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La route de Muta** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le souvenir de Jafar** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Servir de plusieurs manières** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## Épilogue
 

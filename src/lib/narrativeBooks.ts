@@ -28,14 +28,16 @@ export interface HistoricalNarrativeSource extends SourceDetails {
   rights: string;
 }
 export type NarrativeSource = QuranNarrativeSource | HadithNarrativeSource | HistoricalNarrativeSource;
-export interface NarrativeParagraph { text: string; sources: string[] }
+export interface NarrativeParagraph { id?: string; text: string; sources: string[] }
 export interface NarrativeScene {
   id: string;
   title: string;
   paragraphs: NarrativeParagraph[];
   studyNote: string;
+  treatment?: {decor: 'dawn'|'desert'|'water'|'garden'|'night'|'cave'; ambience: 'silence'|'wind'|'water'|'rain'};
 }
 export interface NarrativeChapter {
+  audioVersion?: string;
   id: string;
   title: string;
   recap: string;
@@ -138,7 +140,7 @@ export function chapterDrafts(book: NarrativeBook, chapter: NarrativeChapter, in
     text: part.text,
     original_text: part.text,
     source_url: sourceUrl(sources[0]),
-    reference: `${sources.map(sourceReference).join(' ; ')} · Manuscrit ${book.version}, chapitre ${chapter.id}, segment ${index + 1}/${parts.length}`,
+    reference: `${sources.map(sourceReference).join(' ; ')} · Manuscrit ${chapter.audioVersion||book.version}, chapitre ${chapter.id}, segment ${index + 1}/${parts.length}`,
     rights: 'Texte pédagogique original préparé pour Quran Coach à partir des références coraniques indiquées. Manuscrit à relire : validation du texte et des droits de narration et redistribution requise avant production.',
     approved_by: null,
   }));

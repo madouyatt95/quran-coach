@@ -1,6 +1,6 @@
 # Abu Ubayda ibn al-Jarrah — La confiance reçue, les hommes accompagnés
 
-Version abu-ubayda-confiance-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version abu-ubayda-confiance-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. L’épisode du père tué à Badr et les récits de blessures non solidement établis ne sont pas affirmés. Les campagnes de Syrie suivent le cadre des chroniques avec leurs incertitudes de détail. Le dialogue de Sargh est distingué des lettres conservées dans les biographies. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -10,7 +10,7 @@ Son nom est Amir ibn Abdullah, mais la mémoire le connaît surtout comme Abu Ub
 
 La confiance qui sera attachée à son nom ne naît pas d’une charge administrative. Elle se construit d’abord dans cette fidélité ancienne. Il suit le Messager alors que l’adhésion peut provoquer l’hostilité de son propre milieu. La place d’un homme dans le clan et sa décision de croire ne conduisent plus nécessairement dans la même direction. Abu Ubayda choisit la communauté qui se forme autour de la révélation.
 
-Les débuts de sa vie sont moins abondamment documentés que les responsabilités de sa maturité. Nous ne disposons pas d’un récit détaillé de son enfance ni de toutes les étapes de sa conversion. Les notices nous donnent en revanche un itinéraire clair : un croyant ancien quitte La Mecque, s’établit à Médine et participe aux épreuves majeures de la communauté. Sa biographie commence avec ces engagements, plutôt qu’avec une scène spectaculaire qu’il faudrait inventer.
+Les débuts de sa vie sont moins abondamment documentés que les responsabilités de sa maturité. Les notices nous donnent en revanche un itinéraire clair : un croyant ancien quitte La Mecque, s’établit à Médine et participe aux épreuves majeures de la communauté. À partir de ces premiers engagements, son nom va accompagner les étapes de la communauté.
 
 À Médine, il rejoint les émigrés et les Ansar dans une vie collective nouvelle. Les personnes qui l’entourent ont laissé des biens, subi des séparations ou choisi d’accueillir des inconnus devenus leurs frères dans la foi. La confiance n’est pas seulement un mot honorifique : elle permet de remettre une provision, d’obéir à un responsable et de savoir qu’une parole sera tenue.
 
@@ -18,7 +18,15 @@ Abu Ubayda participe à Badr et aux événements qui suivent. Sa présence au te
 
 ### Repères de lecture
 
-- **Des Banu Fihr à la communauté des émigrés** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un nom parmi les premiers croyants** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne disposons pas d’un récit détaillé de son enfance ni de toutes les étapes de sa conversion. Sa biographie commence avec ces engagements, plutôt qu’avec une scène spectaculaire qu’il faudrait inventer.
+- **Rejoindre la vie de Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne disposons pas d’un récit détaillé de son enfance ni de toutes les étapes de sa conversion. Sa biographie commence avec ces engagements, plutôt qu’avec une scène spectaculaire qu’il faudrait inventer.
+- **Les premières responsabilités** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Nous ne disposons pas d’un récit détaillé de son enfance ni de toutes les étapes de sa conversion. Sa biographie commence avec ces engagements, plutôt qu’avec une scène spectaculaire qu’il faudrait inventer.
 
 ## 2. Conduire des hommes qui ont faim
 
@@ -34,7 +42,9 @@ Le souvenir de l’expédition demeure à travers les personnes qui l’ont véc
 
 ### Repères de lecture
 
-- **L’expédition de la côte** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Partager les provisions** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La nourriture sur le rivage** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Répondre des besoins de tous** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 3. Être envoyé parce que l’on est digne de confiance
 
@@ -50,7 +60,9 @@ Abu Ubayda quittera la vie du Prophète avec cette réputation déjà établie. 
 
 ### Repères de lecture
 
-- **La mission demandée par les gens de Najran** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La demande de Najran** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **L’homme de confiance** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une réputation qui demeure** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. Après la mort du Messager
 
@@ -66,7 +78,9 @@ Cette extension rend la confiance plus exigeante. Des personnes qui n’ont jama
 
 ### Repères de lecture
 
-- **De Médine aux premières campagnes de Syrie** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Après la mort du Messager** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les chefs des campagnes** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une charge qui grandit** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 5. La nouvelle de l’épidémie
 
@@ -78,11 +92,13 @@ Abd ar-Rahman ibn Awf, absent au début de la consultation, rejoint le groupe. I
 
 Abu Ubayda apparaît ici dans un échange réel, où son interrogation n’est pas effacée au profit d’un portrait sans aspérité. Les compagnons discutent de la relation entre la confiance en Dieu et la décision pratique. Le récit ne nous donne pas une communauté où chaque personne posséderait d’emblée toutes les réponses. Il montre une recherche commune, puis l’accueil d’un témoignage qui éclaire l’action.
 
-Nous lisons cette scène comme un événement de leur histoire, dans ses circonstances propres. Elle ne remplace pas les connaissances et les recommandations nécessaires pour affronter une maladie aujourd’hui. Dans la vie d’Abu Ubayda, elle annonce surtout la proximité de la dernière épreuve. Umar repart ; lui demeure parmi les hommes dont il a la charge, dans cette Syrie où la maladie continue de se répandre.
+À Sargh, la décision a été prise au terme de consultations et à la lumière d’un enseignement transmis. Elle ne remplace pas les connaissances et les recommandations nécessaires pour affronter une maladie aujourd’hui. Dans la vie d’Abu Ubayda, elle annonce surtout la proximité de la dernière épreuve. Umar repart ; lui demeure parmi les hommes dont il a la charge, dans cette Syrie où la maladie continue de se répandre.
 
 ### Repères de lecture
 
-- **La consultation de Sargh** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Umar s’arrête à Sargh** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **L’enseignement rapporté** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Décider dans l’épreuve** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 6. Demeurer parmi les siens
 
@@ -98,7 +114,9 @@ Pour revenir à ses débuts, mesurons la route parcourue. Un croyant ancien de L
 
 ### Repères de lecture
 
-- **La fin d’une vie confiée** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La peste d’Amwas** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les pertes de la communauté** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le chemin de la confiance** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## Épilogue
 

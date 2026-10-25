@@ -1,6 +1,6 @@
 # Hafsa bint Umar — Une vie d’apprentissage et un dépôt préservé
 
-Version hafsa-depositaire-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version hafsa-depositaire-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Les feuillets gardés par Hafsa ne sont pas présentés comme un Coran qu’elle aurait composé. Les variantes sur l’année du décès sont conservées. Les épisodes familiaux ne sont pas développés à partir de dialogues inventés ni de versions discutées sur leurs motifs. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -8,7 +8,7 @@ Narration française originale, au discours indirect, fondée sur les passages i
 
 Hafsa est la fille d’Umar ibn al-Khattab et de Zaynab bint Mazun. Elle naît à La Mecque avant le commencement de la révélation, dans une famille des Banu Adi. Son jeune frère Abdullah ibn Umar deviendra lui aussi un témoin important de la vie du Prophète. Avant d’être connue comme épouse du Messager et gardienne de feuillets coraniques, Hafsa appartient à cette maison dont l’histoire sera profondément transformée par l’islam.
 
-La conversion d’Umar change la place de la famille dans la communauté naissante. Mais la biographie de sa fille ne peut se réduire à celle de son père. Hafsa recevra elle-même la foi, traversera un premier mariage, l’émigration et le veuvage. Les sources la montrent ensuite capable d’apprendre, de questionner et de transmettre. Son parcours possède donc ses propres étapes, même lorsque les liens familiaux y tiennent une grande place.
+La conversion d’Umar change la place de la famille dans la communauté naissante. Pour sa fille aussi, des choix et des séparations se préparent. Hafsa recevra elle-même la foi, traversera un premier mariage, l’émigration et le veuvage. Les sources la montrent ensuite capable d’apprendre, de questionner et de transmettre. Son parcours possède donc ses propres étapes, même lorsque les liens familiaux y tiennent une grande place.
 
 Les notices anciennes situent sa jeunesse dans les années mecquoises, sans conserver le détail de toutes ses journées. Nous connaissons le monde qu’elle quitte : une ville où les familles de Quraysh doivent choisir leur position devant le message du Prophète. La vie des femmes se trouve elle aussi engagée dans ces choix. Les mariages, les maisons, les départs et la sécurité ne restent pas à l’écart de la transformation religieuse.
 
@@ -18,7 +18,9 @@ L’avenir d’Hafsa change à nouveau lorsque Khunays meurt. Elle est jeune et 
 
 ### Repères de lecture
 
-- **Grandir dans une famille qui se transforme** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La maison d’Umar** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le mariage avec Khunays** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une première perte** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 2. Après la mort de Khunays
 
@@ -28,13 +30,21 @@ Quelques jours plus tard, le Prophète demande Hafsa en mariage. Umar accepte ce
 
 Le mariage est généralement situé en l’an trois de l’hégire dans les notices. Hafsa devient l’une des épouses du Prophète, honorées dans la tradition comme les mères des croyants. Ce changement de place est immense, mais il ne transforme pas sa vie en une suite d’images solennelles. Elle entre dans un foyer où se vivent la prière, les questions, les affections, les tâches et les tensions ordinaires d’êtres humains.
 
-Le récit d’Umar ne nous donne pas toutes les paroles d’Hafsa ni le détail de ses sentiments à chacune de ces étapes. Sa biographie ne gagne rien à ce que nous les inventions. Nous pouvons en revanche reconnaître la réalité de son passage : le deuil n’est pas effacé de son passé, et un nouvel engagement se présente dans une communauté où les personnes cherchent des manières de prendre soin les unes des autres.
+Pour Hafsa, une autre vie commence : le deuil n’est pas effacé de son passé, et un nouvel engagement se présente dans une communauté où les personnes cherchent des manières de prendre soin les unes des autres.
 
 Dans la maison du Messager, Hafsa aura des occasions particulières d’observer des pratiques que les personnes présentes à la mosquée ne voient pas toujours. Cette proximité deviendra un savoir transmis. Son histoire entre alors dans un domaine où les femmes du foyer jouent un rôle irremplaçable : décrire avec précision la vie domestique et l’adoration du Prophète, afin que les croyants des générations suivantes puissent en recevoir quelque chose.
 
 ### Repères de lecture
 
-- **Umar cherche un avenir pour sa fille** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les démarches d’Umar** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Sa biographie ne gagne rien à ce que nous les inventions.
+- **Entrer dans la maison du Messager** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Sa biographie ne gagne rien à ce que nous les inventions.
+- **Observer et transmettre** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Sa biographie ne gagne rien à ce que nous les inventions.
 
 ## 3. Savoir lire, observer et demander
 
@@ -50,15 +60,17 @@ Hafsa est donc une personne qui reçoit et qui transmet, au sein d’un réseau 
 
 ### Repères de lecture
 
-- **Une femme dans la transmission** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Apprendre l’écriture** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les prières observées** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une place dans la transmission** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. La maison et la révélation
 
 La maison du Prophète n’est pas située hors de l’histoire des personnes. Les sources y décrivent des affections, des discussions et des tensions. Hafsa y vit avec une responsabilité particulière, mais aussi avec une condition humaine. Le Coran lui-même fait entendre des rappels adressés au foyer. La proximité du Messager ne supprime donc pas l’exigence de vérité, de discrétion et de retour vers Dieu.
 
-Les premiers versets de la sourate at-Tahrim évoquent un engagement du Prophète, une confidence et une révélation de ce qui avait été communiqué. Les traditions de commentaire rapportent plusieurs développements autour de ces circonstances. Leur diversité invite à la mesure. Nous n’avons pas à choisir une version détaillée pour transformer la vie d’Hafsa en intrigue de maison, alors que le texte porte d’abord un rappel et une responsabilité.
+Les premiers versets de la sourate at-Tahrim évoquent un engagement du Prophète, une confidence et une révélation de ce qui avait été communiqué. Les traditions de commentaire rapportent plusieurs développements autour de ces circonstances. Leur diversité invite à la mesure. Au milieu de ces traditions différentes, le rappel adressé au foyer demeure : une confidence engage la responsabilité de celui qui la reçoit.
 
-Reconnaître qu’une difficulté a existé permet aussi de respecter les personnes. Une biographie qui ne laisserait apparaître aucune fragilité fabriquerait des êtres éloignés de l’expérience humaine. Une narration qui ne retiendrait que les tensions ferait l’inverse : elle réduirait des années de foi, d’adoration et de transmission à un épisode particulier. Les deux déformations empêcheraient de suivre une vie entière.
+Les rappels adressés à la maison entrent dans le texte que la communauté reçoit. Ils rappellent aux proches du Messager leur responsabilité, au cœur même de leur vie commune. Pour Hafsa, ces années restent aussi celles de la foi, de l’adoration et de la transmission. Une difficulté ne fait pas disparaître tout ce qu’elle apprend et tout ce qu’elle transmet.
 
 Hafsa demeure dans la communauté, apprend et transmet. Les rappels adressés au foyer seront eux-mêmes récités publiquement et étudiés par les générations suivantes. La mémoire musulmane ne les a donc pas effacés pour conserver une image sans difficulté. Elle a préservé le texte, tout en honorant la place des épouses du Messager.
 
@@ -66,7 +78,15 @@ Pour Hafsa, les années auprès du Prophète s’achèvent avec sa mort. Elle pe
 
 ### Repères de lecture
 
-- **Une proximité qui n’efface pas l’exigence** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La confidence et le rappel** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Une biographie qui ne laisserait apparaître aucune fragilité fabriquerait des êtres éloignés de l’expérience humaine.
+- **Au fil de la vie commune** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Une biographie qui ne laisserait apparaître aucune fragilité fabriquerait des êtres éloignés de l’expérience humaine.
+- **Après la mort du Prophète** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+Une biographie qui ne laisserait apparaître aucune fragilité fabriquerait des êtres éloignés de l’expérience humaine.
 
 ## 5. Questionner pour comprendre
 
@@ -82,7 +102,9 @@ La vie d’Hafsa unit donc plusieurs relations au texte : l’observation d’un
 
 ### Repères de lecture
 
-- **Hafsa et le sens d’un passage** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La question de Hafsa** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Apprendre auprès du Messager** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Plusieurs liens avec le texte** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 6. Les feuillets confiés
 
@@ -98,7 +120,9 @@ Dans les années qui suivent, Hafsa demeure à Médine et continue de transmettr
 
 ### Repères de lecture
 
-- **De la collecte à la copie des mushafs** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le travail de collecte** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un dépôt confié à Hafsa** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les copies puis le retour des feuillets** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## Épilogue
 

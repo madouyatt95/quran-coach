@@ -1,6 +1,6 @@
 # Abd ar-Rahman ibn Awf — Le marché, le don et le poids d’un choix
 
-Version abdurrahman-confier-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version abdurrahman-confier-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Les chiffres de fortune et certains récits de caravanes sont variables ou insuffisamment établis ; ils ne servent pas à produire un portrait de réussite légendaire. La consultation est racontée à partir du témoignage d’al-Miswar. Le nom propre n’est pas raccourci dans les identifiants des sources. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -18,7 +18,9 @@ Ces années donnent à son parcours une profondeur que le seul récit d’une r�
 
 ### Repères de lecture
 
-- **La foi avant la fortune** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les débuts auprès d’Abu Bakr** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Deux terres d’émigration** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Arriver à Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 2. Le chemin du marché
 
@@ -34,13 +36,15 @@ Cette scène est restée célèbre parce qu’elle tient en quelques gestes lisi
 
 ### Repères de lecture
 
-- **La fraternité avec Saad** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **L’accueil de Saad** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Recommencer avec les autres** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une maison qui se construit** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 3. Une place dans la communauté
 
 Abd ar-Rahman participe à Badr. À Uhud, les biographies rapportent qu’il reçoit de nombreuses blessures et en garde des séquelles. Ses biens ne le placent pas à distance des dangers communs. Comme d’autres émigrés, il prend part à la défense d’une communauté dont l’existence reste menacée pendant une grande partie des années médinoises.
 
-Il faut donc résister à une image trop étroite : l’homme du marché n’est pas uniquement celui qui finance pendant que les autres agissent. Son corps porte aussi la mémoire des épreuves traversées. Les chroniqueurs rapportent des détails physiques et des décomptes de blessures qui peuvent varier ; le cadre de sa participation et de ses atteintes demeure dans la notice ancienne.
+L’homme du marché se trouve aussi auprès des autres dans le danger. Son corps porte aussi la mémoire des épreuves traversées. Les chroniqueurs rapportent des détails physiques et des décomptes de blessures qui peuvent varier ; le cadre de sa participation et de ses atteintes demeure dans la notice ancienne.
 
 Un témoignage d’al-Mughira nous transporte ensuite au cours d’un voyage, dans les dernières années du Prophète. Le Messager s’est éloigné pour un besoin, puis revient alors que les compagnons ont commencé la prière. Abd ar-Rahman la conduit. Al-Mughira envisage de le faire reculer, mais le Prophète lui demande de le laisser et rejoint la prière derrière lui.
 
@@ -50,11 +54,13 @@ Cette confiance se retrouve dans la manière dont sa parole sera reçue. Sous Um
 
 ### Repères de lecture
 
-- **Badr, les blessures et la prière** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Badr et Uhud** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Conduire la prière** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une confiance reconnue** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. Posséder sans oublier les premiers temps
 
-Au fil des années, les biens d’Abd ar-Rahman deviennent importants. Les sources anciennes mentionnent des terres, des revenus, des héritiers et des dons. Certaines traditions donnent des montants très élevés ; d’autres les transmettent différemment. La biographie n’a pas besoin de convertir ces chiffres en fortune moderne pour rendre visible sa situation. Il est l’un des compagnons aisés, et cette aisance l’expose à une question durable : que faire de ce qui lui a été confié ?
+Au fil des années, les biens d’Abd ar-Rahman deviennent importants. Les sources anciennes mentionnent des terres, des revenus, des héritiers et des dons. Certaines traditions donnent des montants très élevés ; d’autres les transmettent différemment. Sa situation matérielle a profondément changé depuis ses premiers pas sur le marché de Médine. Il est l’un des compagnons aisés, et cette aisance l’expose à une question durable : que faire de ce qui lui a été confié ?
 
 La notice d’adh-Dhahabi rassemble des souvenirs de sa générosité, notamment envers les familles et les personnes qui avaient partagé les premières épreuves. Les dons ne racontent pas à eux seuls l’ensemble d’une vie, mais ils montrent une manière de faire circuler le patrimoine. Dans une communauté où les conditions matérielles se sont transformées, Abd ar-Rahman peut apporter un secours que d’autres n’ont pas les moyens d’offrir.
 
@@ -66,7 +72,9 @@ Ce souvenir nous empêche de réduire Abd ar-Rahman à un personnage satisfait d
 
 ### Repères de lecture
 
-- **Les dons et le repas interrompu** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La prospérité et le don** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le repas interrompu** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La mémoire des premiers temps** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 5. Renoncer à être candidat
 
@@ -82,7 +90,9 @@ Cette étape donne un autre sens au verbe confier. Saad lui avait proposé des b
 
 ### Repères de lecture
 
-- **Le conseil des six** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Renoncer à la candidature** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le temps des consultations** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Porter une décision commune** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 6. Les dernières années à Médine
 
@@ -90,7 +100,7 @@ Abd ar-Rahman vit encore plusieurs années sous le califat d’Uthman. Il demeur
 
 Un enseignement conservé par Muslim rappelle la place singulière de ces premiers engagements. À l’occasion d’un différend entre Khalid ibn al-Walid et Abd ar-Rahman, le Prophète avait défendu le mérite de ceux qui l’avaient accompagné dans les commencements. La valeur d’un don ne se mesure pas uniquement à son poids. Le moment, l’épreuve et la fidélité dans laquelle il a été offert comptent aussi.
 
-Pour comprendre Abd ar-Rahman, il faut tenir cette dimension avec les récits de sa richesse. Une biographie qui ne regarderait que l’ampleur des biens manquerait le départ de La Mecque, les épreuves de Médine et le repas interrompu par les larmes. Inversement, une narration qui voudrait faire disparaître son aisance effacerait la manière particulière dont il a pu servir et les responsabilités matérielles de sa maison.
+Abd ar-Rahman a connu le départ de La Mecque, les épreuves de Médine et la prospérité. Ces années ne s’effacent pas les unes les autres. Au milieu de ses biens, le souvenir des premiers compagnons peut encore interrompre un repas et faire couler ses larmes. Son aisance lui ouvre des possibilités de service ; elle lui confie aussi les responsabilités matérielles de toute une maison.
 
 Il meurt à Médine, généralement en l’an trente-deux de l’hégire selon les notices, avant l’assassinat d’Uthman et la première guerre civile. Les variantes anciennes ne donnent pas toutes le même âge. Son inhumation à al-Baqi le place auprès de nombreux membres de cette communauté qu’il avait rejointe dans les premiers temps. Les survivants gardent le souvenir de son ancienneté, de ses dons et du rôle qu’il a tenu dans la succession d’Umar.
 
@@ -98,7 +108,9 @@ La route s’achève loin de la formule à laquelle on réduit parfois son histo
 
 ### Repères de lecture
 
-- **Une vie qui devient une mémoire** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Vivre sous Uthman** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La richesse et le souvenir** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La fin d’une longue route** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## Épilogue
 

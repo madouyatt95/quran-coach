@@ -1,6 +1,6 @@
 # Abdullah ibn Masud — Du jeune berger au maître de Kufa
 
-Version ibn-masud-parole-biographie-2026-10-25-v1 · Manuscrit à relire avant publication audio.
+Version ibn-masud-parole-biographie-2026-10-25-v2 · Manuscrit à relire avant publication audio.
 
 Narration française originale, au discours indirect, fondée sur les passages indiqués. Les titres, notes et références restent hors du texte à prononcer. Aucune parole ou scène historique n’est ajoutée pour allonger le récit. Les récits de sira sur la première récitation publique et certaines étapes de jeunesse sont distingués des hadiths du Sahih. Les désaccords relatifs à la copie des mushafs ne sont ni supprimés ni assimilés à une accusation contre le texte reçu. Les détails non établis de sa mort ne sont pas ajoutés. La vérification éditoriale des sources ne remplace pas la relecture religieuse ni l’écoute humaine avant publication.
 
@@ -10,7 +10,7 @@ Abdullah ibn Masud appartient à la tribu des Hudhayl et vit à La Mecque dans u
 
 Il entre très tôt dans l’islam. Les traditions ne s’accordent pas sur le nombre exact de personnes qui l’ont précédé, mais elles le situent avant l’élargissement de la communauté. Le jeune homme se rapproche du Messager et s’engage dans un apprentissage qui donnera une direction à toute sa vie. Celui qui gardait un bien confié par un autre recevra désormais une parole à retenir et à transmettre.
 
-La notice ancienne conserve le récit d’une rencontre autour d’un troupeau. Ibn Masud refuse de disposer librement d’un lait dont il n’est pas propriétaire. Le témoignage associe ensuite cette rencontre à un signe accordé au Prophète et au désir du jeune homme d’apprendre. Nous suivons ici la tradition biographique dans son cadre propre. Elle relie les débuts de son histoire à deux qualités qui reviendront : le respect de ce qui est confié et l’élan vers le savoir.
+La notice ancienne conserve le récit d’une rencontre autour d’un troupeau. Ibn Masud refuse de disposer librement d’un lait dont il n’est pas propriétaire. Le témoignage associe ensuite cette rencontre à un signe accordé au Prophète et au désir du jeune homme d’apprendre. Cet épisode appartient à la tradition biographique, dont les récits n’ont pas tous le même degré de certitude. Elle relie les débuts de son histoire à deux qualités qui reviendront : le respect de ce qui est confié et l’élan vers le savoir.
 
 La Mecque ne rend pas cet engagement facile. Les croyants sont peu nombreux et ne disposent pas tous d’un clan capable d’écarter les agressions. Ibn Masud appartient à ceux dont la foi ne peut s’appuyer sur une grande puissance personnelle. La faiblesse de sa condition sociale ne l’empêchera pourtant pas de prendre la parole.
 
@@ -18,13 +18,15 @@ Les premières années posent ainsi les fondations de son parcours. Un homme que
 
 ### Repères de lecture
 
-- **Entrer parmi les premiers croyants** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le jeune berger des Hudhayl** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Les premiers pas dans la foi** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un savoir qui commence** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 2. Une voix à La Mecque
 
 La tradition de sira rapporte qu’Ibn Masud récite publiquement du Coran à La Mecque, devant des personnes qui s’y opposent. Les croyants savent qu’un tel geste peut provoquer des violences. Lui-même ne possède pas une protection comparable à celle des principaux clans. Il s’avance pourtant et fait entendre le début de la sourate ar-Rahman.
 
-Le récit conserve l’agression qui suit. Les auditeurs hostiles le frappent, et il revient auprès des compagnons avec les traces de ce qu’il a subi. La scène ne doit pas être embellie par une foule inventée ou une bravade que le témoin n’aurait pas transmise. Sa portée se trouve déjà dans ce contraste : une personne sans grande force sociale fait entendre une parole que les puissants voudraient tenir à distance.
+Le récit conserve l’agression qui suit. Les auditeurs hostiles le frappent, et il revient auprès des compagnons avec les traces de ce qu’il a subi. La parole rendue publique lui a valu des coups. Malgré cette violence, son engagement se poursuit. Sa portée se trouve déjà dans ce contraste : une personne sans grande force sociale fait entendre une parole que les puissants voudraient tenir à distance.
 
 Cette récitation publique n’épuise pas son engagement mecquois. Les biographies le comptent parmi ceux qui connaissent l’émigration en Abyssinie, puis l’installation à Médine. Il prend part au mouvement par lequel les fidèles cherchent un lieu pour vivre et pratiquer leur foi. La voix entendue à La Mecque doit aussi apprendre à traverser les routes, les séparations et de nouveaux commencements.
 
@@ -34,7 +36,15 @@ Il participe aussi à Badr et aux événements de la période médinoise. Le lec
 
 ### Repères de lecture
 
-- **Réciter malgré le danger** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Réciter à La Mecque** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+La scène ne doit pas être embellie par une foule inventée ou une bravade que le témoin n’aurait pas transmise.
+- **Les chemins de l’émigration** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+La scène ne doit pas être embellie par une foule inventée ou une bravade que le témoin n’aurait pas transmise.
+- **Prendre place à Médine** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+
+La scène ne doit pas être embellie par une foule inventée ou une bravade que le témoin n’aurait pas transmise.
 
 ## 3. Auprès du Messager
 
@@ -50,7 +60,9 @@ Cette place comporte une exigence. Il ne suffit pas de parler avec assurance pou
 
 ### Repères de lecture
 
-- **Le service devient apprentissage** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La proximité quotidienne** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Reconnu pour son savoir** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La responsabilité de transmettre** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 4. Le jour où le Prophète écoute
 
@@ -66,7 +78,9 @@ Ces deux récits éclairent ce qu’il transmettra à Kufa. Il connaît des paro
 
 ### Repères de lecture
 
-- **Les larmes pendant la récitation** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Le Messager demande à écouter** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **La relation d’écoute** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Un savoir porté vers Kufa** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 5. Une ville nouvelle, des élèves nouveaux
 
@@ -82,13 +96,15 @@ Kufa gardera une trace profonde de son passage. Les traditions de lecture et de 
 
 ### Repères de lecture
 
-- **Enseigner en Irak** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Être envoyé à Kufa** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Autour des premiers élèves** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
+- **Une école qui demeure** — Les faits rapportés suivent ces passages ; les rapprochements et transitions relèvent de la narration pédagogique.
 
 ## 6. Le savoir, les désaccords et la fin du chemin
 
 Sous Uthman, la copie de mushafs destinés aux régions répond à la crainte de divergences dans les communautés. Zayd ibn Thabit et d’autres compagnons reçoivent cette charge. Les sources anciennes conservent aussi le désaccord initial d’Ibn Masud sur la manière dont cette opération est conduite et sur sa propre place dans le travail. Son ancienneté dans l’apprentissage fait partie des raisons qu’elles lui attribuent.
 
-Une biographie complète ne peut faire disparaître cet épisode. Elle doit cependant éviter de le transformer en accusation générale contre la transmission du Coran ou en querelle simplifiée entre deux hommes. Le dossier ancien comporte plusieurs témoignages, des formulations et des degrés de transmission différents. La notice d’adh-Dhahabi mentionne aussi des récits de rapprochement. Nous retenons le fait d’une difficulté historique, avec la prudence nécessaire devant ses développements.
+Cette difficulté marque aussi les dernières années d’Ibn Masud. Elle doit cependant éviter de le transformer en accusation générale contre la transmission du Coran ou en querelle simplifiée entre deux hommes. Le dossier ancien comporte plusieurs témoignages, des formulations et des degrés de transmission différents. La notice d’adh-Dhahabi mentionne aussi des récits de rapprochement. Les désaccords sont rapportés, mais leurs développements ne possèdent pas tous la même solidité documentaire.
 
 Ibn Masud retourne à Médine dans ses dernières années. Une tradition rapporte que des personnes de Kufa veulent le retenir et lui offrir leur protection. Il refuse d’ouvrir une rupture avec l’autorité et prend la route. Le maître laisse derrière lui des élèves désormais capables de poursuivre l’étude. Son départ rend visible l’un des fruits de sa vie : l’enseignement peut continuer quand l’enseignant n’est plus là.
 
@@ -98,7 +114,9 @@ Le parcours revient alors à son commencement. Un jeune homme des Hudhayl, sans 
 
 ### Repères de lecture
 
-- **Les dernières années** — La notice rapporte un désaccord sur la conduite de la copie des mushafs et plusieurs traditions sur sa résolution. Le récit ne prétend pas résoudre l’ensemble du dossier des variantes ni attribuer une intention doctrinale absente des témoignages.
+- **Les copies et le désaccord** — La notice rapporte un désaccord sur la conduite de la copie des mushafs et plusieurs traditions sur sa résolution. Le récit ne prétend pas résoudre l’ensemble du dossier des variantes ni attribuer une intention doctrinale absente des témoignages.
+- **Le retour à Médine** — La notice rapporte un désaccord sur la conduite de la copie des mushafs et plusieurs traditions sur sa résolution. Le récit ne prétend pas résoudre l’ensemble du dossier des variantes ni attribuer une intention doctrinale absente des témoignages.
+- **Du berger à l’enseignant** — La notice rapporte un désaccord sur la conduite de la copie des mushafs et plusieurs traditions sur sa résolution. Le récit ne prétend pas résoudre l’ensemble du dossier des variantes ni attribuer une intention doctrinale absente des témoignages.
 
 ## Épilogue
 

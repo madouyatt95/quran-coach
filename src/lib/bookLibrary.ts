@@ -6,8 +6,8 @@ import type {LibraryAudio} from './audioProduction';
 import {chapterNarrative,type NarrativeBook,type NarrativeChapter} from './narrativeBooks';
 export type BookScene='dawn'|'desert'|'water'|'garden'|'night'|'cave';
 export type BookAmbience='silence'|'wind'|'water'|'rain';
-export const books=catalog;
-export type BookSummary=typeof books[number];
+export type BookSummary=Omit<typeof catalog[number],'chapters'> & {chapters:{id:string;title:string;audioVersion?:string}[]};
+export const books:BookSummary[]=catalog;
 const P=(id:string)=>`/prophets?prophet=${id}`;
 const S=(id:string)=>`/stories?story=${id}`;
 /** Explicit editorial links, never fuzzy name matching. Arrays correspond to chapters. */
@@ -49,7 +49,7 @@ export function originForChapter(bookId:string,chapter:number){
 export function booksForOrigin(kind:'prophet'|'story'|'companion',id:string){const url=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
 export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
  const title=item.title.replace(/^Édition chronologique · /u,'');
- return books.find(b=>item.reference?.includes(`Manuscrit ${b.version}, chapitre `)&&title.startsWith(`${b.title} · `));
+ return books.find(b=>b.chapters.some(c=>item.reference?.includes(`Manuscrit ${c.audioVersion||b.version}, chapitre ${c.id}, segment `))&&title.startsWith(`${b.title} · `));
 }
 export function chapterForAudio(item:Pick<LibraryAudio,'reference'|'title'>,book=bookForAudio(item)){
  return book?.chapters.findIndex(c=>item.reference.includes(`, chapitre ${c.id}, segment `))??-1;
