@@ -35,3 +35,19 @@ it('presents published chapters and split recordings in reading order while keep
  const {loadAudioLibrary}=await import('./audioLibrary');
  expect((await loadAudioLibrary(true)).map(item=>item.title)).toEqual(['Livre · 1. Début · 1/2','Livre · 1. Début · 2/2','Livre · 2. Suite','Livre · 3. Fin','Ancien épisode']);
 });
+it('opens a recently cached catalogue without waiting for the network and refreshes on request',async()=>{
+ vi.stubEnv('VITE_AUDIO_PRODUCTION_URL','https://audio.test');vi.resetModules();
+ const episode={id:'cached',title:'Livre',text:'Texte'};
+ const match=vi.fn(async(url:string)=>Response.json(url.includes('audio.test')?[episode]:[],{headers:{'X-QC-Cached-At':String(Date.now())}}));
+ vi.stubGlobal('caches',{open:async()=>({match,put:vi.fn(async()=>{})})});
+ const fetch=vi.fn(async()=>Response.json([]));vi.stubGlobal('fetch',fetch);
+ const {loadAudioLibrary,audioLibrarySnapshot}=await import('./audioLibrary');
+ expect(await loadAudioLibrary()).toEqual([episode]);expect(fetch).not.toHaveBeenCalled();expect(audioLibrarySnapshot()).toEqual([episode]);
+ expect(await loadAudioLibrary(true)).toEqual([]);expect(fetch).toHaveBeenCalledTimes(2);
+});
+it('keeps successful network data when offline cache writes fail',async()=>{
+ vi.stubEnv('VITE_AUDIO_PRODUCTION_URL','');vi.resetModules();
+ vi.stubGlobal('caches',{open:async()=>({match:async()=>undefined,put:async()=>{throw new Error('Quota exceeded');}})});
+ vi.stubGlobal('fetch',vi.fn(async()=>Response.json([{id:'online',title:'Livre',text:'Texte'}])));
+ const {loadAudioLibrary}=await import('./audioLibrary');expect((await loadAudioLibrary())[0].id).toBe('online');
+});

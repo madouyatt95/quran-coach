@@ -44,3 +44,13 @@ it('routes legacy journey audio into its canonical book instead of listing it tw
 });
 it('resumes the exact segment and proceeds after a completed segment',()=>{const list=recordingsForBook(recordings,books[0]);expect(resumeRecording(list,{})).toBe(list[0]);expect(resumeRecording(list,{[list[0].id]:{seconds:100,updatedAt:10}})).toBe(list[1]);expect(resumeRecording(list,{[list[1].id]:{seconds:14,updatedAt:11}})).toBe(list[1]);});
 it('uses supplied timing markers and exact text offsets for scene changes',()=>{const book=narrativeBooks.find(b=>b.id==='biens-et-coeur')!,chapter=book.chapters[0],text=chapterNarrative(chapter);const item=recordings.find(r=>bookForAudio(r)?.id===book.id&&chapterForAudio(r)===0)!;const second=chapter.scenes[1].paragraphs[0].text;const offset=item.text.indexOf(second);expect(offset).toBeGreaterThan(0);const sentence=item.text.slice(0,offset).split(/(?<=[.!?])\s+/).filter(s=>s.trim()).length;expect(text.includes(item.text)).toBe(true);item.sentences=[{sentence,start:12,end:16}];expect(activeBookScene(book,chapter,item,13)).toBe(1);expect(activeBookScene(book,chapter,item,17)).toBe(1);});
+
+it('indexes a catalogue once, preserves chapter order, and isolates refreshed catalogues',()=>{
+ const b=books[0],make=(id:string,chapter:number,segment:number)=>({id,title:`${b.title} · Chapitre`,reference:`Manuscrit ${b.chapters[chapter].audioVersion||b.version}, chapitre ${b.chapters[chapter].id}, segment ${segment}/2`} as LibraryAudio);
+ const items=[make('second',1,1),make('one-b',0,2),make('one-a',0,1)];
+ const found=recordingsForBook(items,b);expect(found.map(i=>i.id)).toEqual(['one-a','one-b','second']);
+ expect(recordingsForBook(items,b)).toBe(found);
+ const refreshed=[...items,make('new',1,2)];expect(recordingsForBook(refreshed,b).map(i=>i.id)).toEqual(['one-a','one-b','second','new']);expect(recordingsForBook(items,b)).toHaveLength(3);
+ expect(bookForAudio({...items[0],reference:items[0].reference.replace('Manuscrit ','Manuscrit unapproved-')})).toBeUndefined();
+ expect(bookForAudio({...items[0],title:'Un autre livre · Chapitre'})).toBeUndefined();
+});

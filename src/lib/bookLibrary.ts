@@ -47,15 +47,29 @@ export function originForChapter(bookId:string,chapter:number){
  const links=bookOrigins[bookId]||[];return links[chapter]||links[0]||'/stories';
 }
 export function booksForOrigin(kind:'prophet'|'story'|'companion',id:string){const url=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id);return books.filter(b=>bookOrigins[b.id]?.includes(url)||(kind==='prophet'&&companions[id]?.includes(b.id)));}
+// Catalogue entries are immutable. Weak caches release superseded catalogues automatically.
+const manuscriptIndex=new Map<string,BookSummary>(books.flatMap(book=>book.chapters.map(chapter=>[`${chapter.audioVersion||book.version}, chapitre ${chapter.id}`,book] as const)));
+const recordingOwners=new WeakMap<object,{reference:string;title:string;book:BookSummary|undefined}>();
 export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
+ const cached=recordingOwners.get(item);if(cached&&cached.reference===item.reference&&cached.title===item.title)return cached.book;
+ const key=item.reference?.match(/Manuscrit (.+?), segment /u)?.[1],candidate=key?manuscriptIndex.get(key):undefined;
  const title=item.title.replace(/^Édition chronologique · /u,'');
- return books.find(b=>b.chapters.some(c=>item.reference?.includes(`Manuscrit ${c.audioVersion||b.version}, chapitre ${c.id}, segment `))&&title.startsWith(`${b.title} · `));
+ const book=candidate&&title.startsWith(`${candidate.title} · `)?candidate:undefined;
+ recordingOwners.set(item,{reference:item.reference,title:item.title,book});return book;
 }
 export function chapterForAudio(item:Pick<LibraryAudio,'reference'|'title'>,book=bookForAudio(item)){
  return book?.chapters.findIndex(c=>item.reference.includes(`, chapitre ${c.id}, segment `))??-1;
 }
+const groupedRecordings=new WeakMap<LibraryAudio[],Map<string,LibraryAudio[]>>();
+const noRecordings:LibraryAudio[]=[];
 export function recordingsForBook(items:LibraryAudio[],book:BookSummary){
- return items.filter(item=>bookForAudio(item)?.id===book.id&&chapterForAudio(item,book)>=0).sort((a,b)=>chapterForAudio(a,book)-chapterForAudio(b,book)||segmentNumber(a)-segmentNumber(b));
+ let groups=groupedRecordings.get(items);
+ if(!groups){
+  groups=new Map();for(const item of items){const owner=bookForAudio(item);if(!owner||chapterForAudio(item,owner)<0)continue;const group=groups.get(owner.id)||[];group.push(item);groups.set(owner.id,group);}
+  for(const [id,group] of groups){const owner=books.find(b=>b.id===id)!;group.sort((a,b)=>chapterForAudio(a,owner)-chapterForAudio(b,owner)||segmentNumber(a)-segmentNumber(b));}
+  groupedRecordings.set(items,groups);
+ }
+ return groups.get(book.id)||noRecordings;
 }
 export function segmentNumber(item:Pick<LibraryAudio,'reference'>){return Number(item.reference?.match(/, segment (\d+)\/\d+/)?.[1]||1);}
 export function audioOrigin(item:LibraryAudio){const book=bookForAudio(item);return book?originForChapter(book.id,chapterForAudio(item,book)):item.sourceUrl;}

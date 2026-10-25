@@ -1,4 +1,4 @@
-import {useId} from 'react';
+import {memo,useId} from 'react';
 /** Original symbolic jacket artwork. No human figures or historical reconstruction. */
 const identities:Record<string,[string,number]>={
  adam:['seed',30],nuh:['vessel',199],ibrahim:['arch',24],yusuf:['well',257],musa:['river',182],'maryam-isa':['palm',158],sulayman:['arch',40],khidr:['vessel',167],cave:['cave',231],
@@ -8,7 +8,7 @@ const identities:Record<string,[string,number]>={
  'hamza-protection':['mountain',8],'jafar-deux-rivages':['vessel',262],'talha-engagement':['seed',222],'zubayr-fidelite':['route',310],'abdurrahman-confier':['palm',67],'abu-ubayda-confiance':['stars',181],'ibn-masud-parole':['manuscript',95],'hafsa-depositaire':['manuscript',355],'umm-sulaym-maison':['arch',126],'nusayba-presence':['mountain',292],
 };
 export const bookCoverIdentity=(id:string)=>identities[id]||['arch',240];
-export function BookCoverArt({bookId}:{bookId:string}){
+function BookCoverArtView({bookId}:{bookId:string}){
  const id=useId().replace(/:/g,''),[motif,hue]=bookCoverIdentity(bookId),h=Number(hue);
  const seed=[...bookId].reduce((n,c)=>n+c.charCodeAt(0),0),light=`hsl(${h} 42% 74%)`,gold='#e8cc91';
  return <div className={`book-landscape book-cover-art motif-${motif}`} aria-hidden="true"><svg viewBox="0 0 600 900" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id={`${id}-paper`} x2=".8" y2="1"><stop stopColor={`hsl(${h} 38% 23%)`}/><stop offset=".6" stopColor={`hsl(${h} 32% 14%)`}/><stop offset="1" stopColor="#121020"/></linearGradient><radialGradient id={`${id}-halo`}><stop stopColor={light} stopOpacity=".28"/><stop offset="1" stopColor={light} stopOpacity="0"/></radialGradient><pattern id={`${id}-grain`} width="12" height="12" patternUnits="userSpaceOnUse"><path d="M0 1H12M1 0V12" stroke={gold} strokeWidth=".3" opacity=".13"/></pattern></defs>
@@ -28,3 +28,5 @@ export function BookCoverArt({bookId}:{bookId:string}){
  {motif==='stars'&&<><circle cx="300" cy="290" r="164" opacity=".5"/><circle cx="300" cy="290" r="146" opacity=".4"/><path d="M300 145L334 256 445 290 334 324 300 435 266 324 155 290 266 256Z" stroke={gold}/><circle cx="300" cy="290" r="54"/><path d="M160 150l12-24 12 24-12 24zM430 432l10-20 10 20-10 20z"/></>}
  </g><path d="M245 555H355M285 570h30" stroke={gold} opacity=".6"/></svg></div>;
 }
+
+export const BookCoverArt=memo(BookCoverArtView);

@@ -7,7 +7,7 @@ import {bindNarrationMedia,clearNarrationMedia,updateNarrationMedia} from '../li
 import {claimMediaSession} from '../lib/mediaSessionOwner';
 import {unlockAudio} from '../lib/audioUnlock';
 import {bookForAudio,chapterForAudio,chapterPlayback} from '../lib/bookLibrary';
-interface PlayOptions {queue?:LibraryAudio[];fromStart?:boolean;startAt?:number}
+interface PlayOptions {queue?:LibraryAudio[];fromStart?:boolean;startAt?:number;autoplay?:boolean}
 interface Player {queue:LibraryAudio[];stopAtChapter:boolean;completedChapter:string;setStopAtChapter:(value:boolean)=>void;item:LibraryAudio|null;playing:boolean;loading:boolean;position:number;duration:number;rate:number;error:string;deadline:number;play:(item:LibraryAudio,options?:PlayOptions)=>Promise<void>;pause:()=>void;toggle:()=>void;seek:(seconds:number)=>void;seekChapter:(seconds:number)=>void;setRate:(rate:number)=>void;sleep:(minutes:number)=>void;close:()=>void}
 let audio:HTMLAudioElement|undefined,sequence=0,blob:string|undefined,lastSave=0;
 const owner='audio-library';
@@ -48,7 +48,7 @@ export const useLibraryPlayer=create<Player>((set,get)=>({queue:[],stopAtChapter
    const saved=options?.startAt??(options?.fromStart?0:useAudioLibraryStore.getState().positions[item.id]?.seconds||0),start=options?.startAt!==undefined?Math.max(0,Math.min(saved,item.duration)):saved<item.duration-2?saved:0;
    player.src=source;player.playbackRate=get().rate;
    player.onloadedmetadata=()=>{if(token===sequence)player.currentTime=Math.min(start,Number.isFinite(player.duration)?player.duration:0);};
-   bind(item);await player.play();if(token!==sequence)return;set({playing:true,loading:false});
+   bind(item);if(options?.autoplay===false){set({position:start,playing:false,loading:false});useAudioLibraryStore.getState().savePosition(item.id,start);updateNarrationMedia(owner,false,start,item.duration,get().rate);return;}await player.play();if(token!==sequence)return;set({playing:true,loading:false});
   }catch{if(token===sequence)set({error:'Lecture indisponible. Réessayez avec une connexion.',playing:false,loading:false});}
  },
  pause,

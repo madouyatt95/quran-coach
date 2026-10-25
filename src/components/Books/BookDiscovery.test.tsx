@@ -6,7 +6,7 @@ import {beforeEach,afterEach,it,expect,vi} from 'vitest';
 import {createMemoryStorage} from '../../test/memoryStorage';
 vi.hoisted(()=>{const data=new Map<string,string>();Object.defineProperty(globalThis,'localStorage',{configurable:true,value:{getItem:(k:string)=>data.get(k)||null,setItem:(k:string,v:string)=>data.set(k,v),removeItem:(k:string)=>data.delete(k)}});});
 const player=vi.hoisted(()=>({play:vi.fn(),pause:vi.fn()}));
-vi.mock('../../stores/libraryPlayerStore',()=>({useLibraryPlayer:()=>player}));
+vi.mock('../../stores/libraryPlayerStore',()=>({useLibraryPlayer:Object.assign(()=>player,{getState:()=>player})}));
 vi.mock('../Pupitre/usePupitreLayout',()=>({usePupitreLayout:()=>({layout:'desk',choice:'desk',choose:vi.fn(),device:{width:800}})}));
 import {BookDiscovery} from './BookDiscovery';
 import {books} from '../../lib/bookLibrary';

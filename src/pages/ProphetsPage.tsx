@@ -5,7 +5,7 @@ import {BookShelf} from '../components/Books/BookShelf';
 import {bookEntryForOrigin,bookHref} from '../lib/bookLibrary';
 import { prophetEpisodes } from '../data/editorialExpansion';
 import { JourneyLinks } from '../components/Journeys/JourneyShelf';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,8 @@ import type { Prophet } from '../data/prophets';
 import {companionPortraitById} from '../data/companionPortraits';
 import {CompanionCollection,CompanionPortraitDialog} from '../components/Companions/CompanionCollection';
 import { useOpenReader } from '../hooks/useOpenReader';
-import { ProphetsGraph } from '../components/Prophets/ProphetsGraph';
-import { SanadGraph } from '../components/Companions/SanadGraph';
+const ProphetsGraph=lazy(()=>import('../components/Prophets/ProphetsGraph').then(m=>({default:m.ProphetsGraph})));
+const SanadGraph=lazy(()=>import('../components/Companions/SanadGraph').then(m=>({default:m.SanadGraph})));
 import { ReligiousReference } from '../components/ReligiousReference';
 import './ProphetsPage.css';
 
@@ -243,6 +243,6 @@ export function ProphetsPage(){
  const close=()=>setParams({}, {replace:true});
  const chooseTab=(next:TabMode)=>{setGraph(false);navigate(next==='companions'?'/companions':'/prophets');};
  return <div className="prophets-page book-catalogue"><header className="book-catalogue-header"><span className="book-eyebrow">DES VIES, DES ENSEIGNEMENTS</span><h1>{tab==='prophets'?'Les Prophètes':'Les Compagnons'}</h1><p>Parcourir leur histoire. Écouter, comprendre et garder ce qui nous éclaire.</p></header><nav className="book-themes" aria-label="Prophètes et compagnons"><button aria-pressed={tab==='prophets'} onClick={()=>chooseTab('prophets')}>Prophètes</button><button aria-pressed={tab==='companions'} onClick={()=>chooseTab('companions')}>Compagnons</button><button aria-pressed={graph} onClick={()=>setGraph(v=>!v)}>Explorer les liens</button></nav>
- {tab==='prophets'?(graph?<ProphetsGraph search="" onSelectProphet={p=>setParams({prophet:p.id})}/>:<BookShelf kind="prophet" legacyEntries={prophets.map(p=>({id:p.id,title:p.nameIslamic,subtitle:p.title,href:`/prophets?prophet=${p.id}`,keywords:`${p.nameAr} ${p.nameFr} ${p.nameEn}`}))}/>):<>{graph?<SanadGraph/>:<CompanionCollection/>}</>}
+ {tab==='prophets'?(graph?<Suspense fallback={<p role="status">Ouverture des liens entre prophètes…</p>}><ProphetsGraph search="" onSelectProphet={p=>setParams({prophet:p.id})}/></Suspense>:<BookShelf kind="prophet" legacyEntries={prophets.map(p=>({id:p.id,title:p.nameIslamic,subtitle:p.title,href:`/prophets?prophet=${p.id}`,keywords:`${p.nameAr} ${p.nameFr} ${p.nameEn}`}))}/>):<>{graph?<Suspense fallback={<p role="status">Ouverture des liens entre compagnons…</p>}><SanadGraph/></Suspense>:<CompanionCollection/>}</>}
  <AnimatePresence>{prophet&&!entry&&<ProphetDetail prophet={prophet} onClose={close}/>} {companion&&!entry&&<CompanionPortraitDialog key={companion.id} portrait={companion} onClose={close}/>}</AnimatePresence></div>;
 }

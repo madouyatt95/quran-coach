@@ -93,3 +93,12 @@ body:has(.book-immersive) .global-page-tools{visibility:hidden}
 .book-theatre .book-landscape{animation:book-scene-arrive 1.4s ease both}
 @keyframes book-scene-arrive{from{opacity:.35}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.book-theatre .book-landscape{animation:none}}
+
+.book-connections{margin:1.5rem 0;padding:1.1rem;border:1px solid #c5a76a35;border-radius:20px;background:linear-gradient(135deg,#30233e80,#171b3280)}
+.book-connections h3{font-size:1.35rem;margin:.3rem 0}.book-connections h4{margin:1.1rem 0 .35rem}.book-connections p{font-size:.88rem;line-height:1.55;color:var(--text-secondary,#b8b5c7);margin:.3rem 0 .8rem}
+.book-connections-strip{display:flex;gap:.75rem;overflow-x:auto;scroll-snap-type:x proximity;padding:.2rem .2rem .65rem}
+.book-connections-strip>article{display:flex;gap:.85rem;flex:0 0 min(345px,90%);scroll-snap-align:start;padding:.85rem;background:#151526b3;border:1px solid #ffffff12;border-radius:15px;min-width:0}
+.book-connection-cover{width:65px;height:96px;flex-shrink:0;overflow:hidden;border-radius:7px}.book-connection-cover .book-cover-art{height:100%;width:100%;position:relative}
+.book-connection-copy{min-width:0}.book-connection-copy strong{font-size:.95rem}.book-connection-copy>div{display:flex;gap:.45rem;flex-wrap:wrap}.book-connection-copy button{display:flex;align-items:center;gap:.3rem;padding:.5rem .6rem;min-height:44px;background:#d4b46a12;border:1px solid #d4b46a36;border-radius:9px;color:#ead7aa;font:inherit;font-size:.8rem}.book-connection-copy button:disabled{opacity:.5;cursor:default}
+.book-return-point{display:flex;align-items:center;gap:.65rem;text-align:left;width:100%;padding:.7rem 1rem;margin:0 0 .7rem;background:#d4b46a12;color:#ead7aa;border:1px solid #d4b46a40;border-radius:12px;font:inherit}.book-return-point small{display:block;margin-top:.2rem;font-size:.78rem;color:var(--text-secondary,#b8b5c7)}
+.book-connections button:focus-visible,.book-return-point:focus-visible{outline:2px solid #ead7aa;outline-offset:3px}

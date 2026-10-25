@@ -54,3 +54,29 @@ it('opens the glossary without changing the passage and resumes the exact audio 
  await click(document.querySelector('[aria-label="Fermer le glossaire"]')!);
  expect(mocks.player.play).toHaveBeenCalledWith(mocks.items[0],{queue:mocks.items,startAt:47.5});
 });
+
+it('opens a connected paragraph and returns to the exact selected reading passage',async()=>{
+ await render('/books/hamza-protection?chapter=memoire');
+ await click(host.querySelector('[data-book-passage="memoire:memoire-1:2"] p')!);
+ const card=host.querySelector('[data-connected-book="jafar-deux-rivages"]')!;expect(card).not.toBeNull();
+ expect(card.querySelector<HTMLButtonElement>('button[aria-label^="Écouter"]')!.disabled).toBe(true);
+ await click(card.querySelector('button[aria-label^="Lire"]')!);
+ expect(host.querySelector('.book-passage.is-selected')?.getAttribute('data-book-passage')).toBe('proximite:proximite-1:2');
+ expect(host.querySelector('.book-return-point')?.textContent).toContain('Hamza');
+ await click(host.querySelector('.book-return-point')!);
+ expect(host.querySelector('.book-passage.is-selected')?.getAttribute('data-book-passage')).toBe('memoire:memoire-1:2');
+ expect(host.querySelector('.book-return-point')).toBeNull();
+});
+it.each([true,false])('restores the original audio at the exact second, preserving playing=%s',async playing=>{
+ const source=narrativeBooks.find(b=>b.id==='nusayba-presence')!,destination=narrativeBooks.find(b=>b.id==='talha-engagement')!;
+ mocks.items=[source,destination].flatMap(b=>chapterDrafts(b,b.chapters[2],false,false).map((s,i)=>({id:`${b.id}:${i}`,title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))})));
+ const original=mocks.items[0],queue=[original];Object.assign(mocks.player,{item:original,queue,position:47.25,playing});
+ mocks.player.play.mockImplementation(async(item,options)=>{Object.assign(mocks.player,{item,queue:options.queue,position:options.startAt,playing:options.autoplay!==false});});
+ sessionStorage.setItem('qc-page:/books/nusayba-presence:view',JSON.stringify('listen'));
+ await render('/books/nusayba-presence?chapter=uhud');
+ await click(host.querySelector('[data-connected-book="talha-engagement"] button[aria-label^="Écouter"]')!);
+ expect(mocks.player.play).toHaveBeenLastCalledWith(expect.objectContaining({id:'talha-engagement:0'}),expect.objectContaining({startAt:expect.any(Number)}));
+ await click(host.querySelector('.book-topbar button')!);
+ expect(mocks.player.play).toHaveBeenLastCalledWith(original,{queue,startAt:47.25,autoplay:playing});
+ expect(host.querySelector('.book-listening')).not.toBeNull();mocks.player.play.mockReset();
+});
