@@ -1872,5 +1872,465 @@
         "title": "Le retour, la Syrie et la transmission avant la mort"
       }
     ]
+  },
+  {
+    "id": "hamza-protection",
+    "title": "Hamza ibn Abd al-Muttalib",
+    "subtitle": "De la protection familiale à l’engagement d’Uhud",
+    "version": "hamza-protection-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines dans les Banu Hashim, conversion mecquoise, émigration, Badr, mort à Uhud et mémoire familiale."
+    },
+    "length": {
+      "words": 2290,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
+    "collection": "companions",
+    "companionIds": [
+      "hamza"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Un homme des Banu Hashim"
+      },
+      {
+        "id": "conversion",
+        "title": "Prendre parti à La Mecque"
+      },
+      {
+        "id": "emigration",
+        "title": "Une autre ville, une autre communauté"
+      },
+      {
+        "id": "badr",
+        "title": "Badr et le prix d’une victoire"
+      },
+      {
+        "id": "uhud",
+        "title": "Uhud, le témoignage de Wahshi"
+      },
+      {
+        "id": "memoire",
+        "title": "Ce qui reste dans les maisons"
+      }
+    ]
+  },
+  {
+    "id": "jafar-deux-rivages",
+    "title": "Jafar ibn Abi Talib",
+    "subtitle": "La Mecque, l’Abyssinie et le retour vers Médine",
+    "version": "jafar-deux-rivages-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille, conversion, exil en Abyssinie, parole devant le Négus, retour à Khaybar, solidarité familiale et mort à Muta."
+    },
+    "length": {
+      "words": 2181,
+      "minMinutes": 14,
+      "maxMinutes": 17
+    },
+    "collection": "companions",
+    "companionIds": [
+      "jafar"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Grandir dans la maison d’Abu Talib"
+      },
+      {
+        "id": "asile",
+        "title": "Trouver refuge de l’autre côté de la mer"
+      },
+      {
+        "id": "parole",
+        "title": "Dire sa foi devant le Négus"
+      },
+      {
+        "id": "retour",
+        "title": "Les années que la mer n’efface pas"
+      },
+      {
+        "id": "proximite",
+        "title": "La générosité et les liens"
+      },
+      {
+        "id": "muta",
+        "title": "Le dernier départ"
+      }
+    ]
+  },
+  {
+    "id": "talha-engagement",
+    "title": "Talha ibn Ubayd Allah",
+    "subtitle": "La main d’Uhud, la générosité et l’épreuve de la division",
+    "version": "talha-engagement-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines mecquoises, conversion, émigration, Uhud, famille et générosité, conseil de succession et mort pendant la première guerre civile."
+    },
+    "length": {
+      "words": 2148,
+      "minMinutes": 14,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "talha"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Un jeune Mecquois choisit sa route"
+      },
+      {
+        "id": "medine",
+        "title": "S’installer auprès des émigrés"
+      },
+      {
+        "id": "uhud",
+        "title": "La main qui protège"
+      },
+      {
+        "id": "generosite",
+        "title": "Une fortune au milieu des autres"
+      },
+      {
+        "id": "conseil",
+        "title": "Parmi les six du conseil"
+      },
+      {
+        "id": "division",
+        "title": "La route de Basra"
+      }
+    ]
+  },
+  {
+    "id": "zubayr-fidelite",
+    "title": "Az-Zubayr ibn al-Awwam",
+    "subtitle": "Une jeunesse de foi, une vie de responsabilités",
+    "version": "zubayr-fidelite-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille, conversion précoce, émigrations, vie avec Asma, campagnes, conseil des six, retrait de la bataille du Chameau et règlement de ses dettes."
+    },
+    "length": {
+      "words": 2067,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "zubayr"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Le fils de Safiyya"
+      },
+      {
+        "id": "asma",
+        "title": "Une maison à construire"
+      },
+      {
+        "id": "defendre",
+        "title": "Répondre lorsque l’on appelle"
+      },
+      {
+        "id": "transmettre",
+        "title": "La prudence de celui qui a beaucoup vu"
+      },
+      {
+        "id": "epreuve",
+        "title": "Quand les compagnons se font face"
+      },
+      {
+        "id": "dettes",
+        "title": "Ce qui doit être rendu"
+      }
+    ]
+  },
+  {
+    "id": "abdurrahman-confier",
+    "title": "Abd ar-Rahman ibn Awf",
+    "subtitle": "Le marché, le don et le poids d’un choix",
+    "version": "abdurrahman-confier-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, conversion, émigrations, fraternité avec Saad ibn ar-Rabi, vie familiale, service, richesse, consultation de succession et dernières années."
+    },
+    "length": {
+      "words": 2101,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "abdurrahman"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Un homme des Banu Zuhra"
+      },
+      {
+        "id": "marche",
+        "title": "Le chemin du marché"
+      },
+      {
+        "id": "service",
+        "title": "Une place dans la communauté"
+      },
+      {
+        "id": "biens",
+        "title": "Posséder sans oublier les premiers temps"
+      },
+      {
+        "id": "consultation",
+        "title": "Renoncer à être candidat"
+      },
+      {
+        "id": "dernieres",
+        "title": "Les dernières années à Médine"
+      }
+    ]
+  },
+  {
+    "id": "abu-ubayda-confiance",
+    "title": "Abu Ubayda ibn al-Jarrah",
+    "subtitle": "La confiance reçue, les hommes accompagnés",
+    "version": "abu-ubayda-confiance-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines, conversion, émigration, service du Prophète, mission de Najran, responsabilités en Syrie et mort pendant la peste d’Amwas."
+    },
+    "length": {
+      "words": 2032,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "abu-ubayda"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Un homme que l’on peut croire"
+      },
+      {
+        "id": "mer",
+        "title": "Conduire des hommes qui ont faim"
+      },
+      {
+        "id": "najran",
+        "title": "Être envoyé parce que l’on est digne de confiance"
+      },
+      {
+        "id": "succession",
+        "title": "Après la mort du Messager"
+      },
+      {
+        "id": "sargh",
+        "title": "La nouvelle de l’épidémie"
+      },
+      {
+        "id": "amwas",
+        "title": "Demeurer parmi les siens"
+      }
+    ]
+  },
+  {
+    "id": "ibn-masud-parole",
+    "title": "Abdullah ibn Masud",
+    "subtitle": "Du jeune berger au maître de Kufa",
+    "version": "ibn-masud-parole-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines hudhaylites, premiers temps mecquois, émigrations, proximité du Prophète, apprentissage coranique, enseignement à Kufa et dernières années."
+    },
+    "length": {
+      "words": 2051,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "ibn-masud"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Le jeune homme des Hudhayl"
+      },
+      {
+        "id": "mecque",
+        "title": "Une voix à La Mecque"
+      },
+      {
+        "id": "proximite",
+        "title": "Auprès du Messager"
+      },
+      {
+        "id": "ecoute",
+        "title": "Le jour où le Prophète écoute"
+      },
+      {
+        "id": "kufa",
+        "title": "Une ville nouvelle, des élèves nouveaux"
+      },
+      {
+        "id": "retour",
+        "title": "Le savoir, les désaccords et la fin du chemin"
+      }
+    ]
+  },
+  {
+    "id": "hafsa-depositaire",
+    "title": "Hafsa bint Umar",
+    "subtitle": "Une vie d’apprentissage et un dépôt préservé",
+    "version": "hafsa-depositaire-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Famille mecquoise, premier mariage et veuvage, mariage avec le Prophète, apprentissage, vie du foyer, garde des feuillets et transmission à Médine."
+    },
+    "length": {
+      "words": 2073,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "hafsa"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "La fille d’Umar"
+      },
+      {
+        "id": "veuvage",
+        "title": "Après la mort de Khunays"
+      },
+      {
+        "id": "apprendre",
+        "title": "Savoir lire, observer et demander"
+      },
+      {
+        "id": "foyer",
+        "title": "La maison et la révélation"
+      },
+      {
+        "id": "question",
+        "title": "Questionner pour comprendre"
+      },
+      {
+        "id": "feuillets",
+        "title": "Les feuillets confiés"
+      }
+    ]
+  },
+  {
+    "id": "umm-sulaym-maison",
+    "title": "Umm Sulaym bint Milhan",
+    "subtitle": "La foi choisie, une maison ouverte et la force de demander",
+    "version": "umm-sulaym-maison-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines ansarites, conversion, famille et mariage avec Abu Talha, place d’Anas, hospitalité, deuil, participation aux campagnes et transmission."
+    },
+    "length": {
+      "words": 2063,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "umm-sulaym"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Choisir la foi à Yathrib"
+      },
+      {
+        "id": "mariage",
+        "title": "Ce qu’elle demande à Abu Talha"
+      },
+      {
+        "id": "anas",
+        "title": "Confier Anas au Messager"
+      },
+      {
+        "id": "maison",
+        "title": "La vie qui se partage"
+      },
+      {
+        "id": "deuil",
+        "title": "La nuit du deuil"
+      },
+      {
+        "id": "courage",
+        "title": "Agir dans le danger, demander dans le savoir"
+      }
+    ]
+  },
+  {
+    "id": "nusayba-presence",
+    "title": "Nusayba bint Kab",
+    "subtitle": "Umm Umara, une vie dans l’engagement de Médine",
+    "version": "nusayba-presence-biographie-2026-10-25-v1",
+    "category": "story",
+    "scope": {
+      "kind": "biography",
+      "description": "Origines médinoises, pacte d’al-Aqaba, famille, Uhud, Hudaybiyya, traditions sous la kunya Umm Umara, perte de Habib et Yamama."
+    },
+    "length": {
+      "words": 2057,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "collection": "companions",
+    "companionIds": [
+      "nusayba"
+    ],
+    "chapters": [
+      {
+        "id": "origines",
+        "title": "Une femme de Yathrib"
+      },
+      {
+        "id": "famille",
+        "title": "Une famille dans l’histoire de Médine"
+      },
+      {
+        "id": "uhud",
+        "title": "D’Uhud à une longue convalescence"
+      },
+      {
+        "id": "pactes",
+        "title": "Continuer après Uhud"
+      },
+      {
+        "id": "parole",
+        "title": "Une question sur la place des femmes"
+      },
+      {
+        "id": "yamama",
+        "title": "La perte de Habib et le retour blessé"
+      }
+    ]
   }
 ]

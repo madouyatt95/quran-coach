@@ -1,6 +1,7 @@
 import {companionPortraits} from '../data/companionPortraits';
 export interface BookPerson {id:string;name:string;aliases:string[];bookId?:string;chapterId?:string;portraitId?:string}
 const shortNames:Record<string,string[]>={
+ hamza:['Hamza'],jafar:['Jafar'],hafsa:['Hafsa'],'ibn-masud':['Ibn Masud','ibn Masud'],'abu-ubayda':['Abu Ubayda'],'umm-sulaym':['Umm Sulaym','Oum Soulaym'],nusayba:['Nusayba','Umm Umara'],
  'abu-bakr':['Abu Bakr','Abou Bakr'],umar:['Umar','Omar'],uthman:['Uthman','Othman'],ali:['Ali'],khadija:['Khadija'],fatima:['Fatima'],aicha:['Aicha','Aïcha'],bilal:['Bilal'],musab:['Musab'],asma:['Asma'], 'umm-salama':['Umm Salama','Oum Salama'],salman:['Salman'],khalid:['Khalid'], 'abu-hurayra':['Abu Hurayra','Abou Hourayra'], 'ibn-abbas':['Ibn Abbas','ibn Abbas','Abdullah ibn Abbas'],anas:['Anas'],muadh:['Muadh'], 'zayd-thabit':['Zayd ibn Thabit'], 'abu-dharr':['Abou Dharr','Abu Dharr'],'kaab-malik':['Kaab','Kab ibn Malik'],jabir:['Jabir'],talha:['Talha'],zubayr:['az-Zubayr','Az-Zubayr'],abdurrahman:['Abd ar-Rahman ibn Awf'],saad:['Saad ibn Abi Waqqas'],
 };
 const companions:BookPerson[]=companionPortraits.map(p=>({id:`companion:${p.id}`,name:p.nameFr,aliases:[p.nameFr,...shortNames[p.id]||[]],bookId:p.bookId,portraitId:p.id}));

@@ -29,15 +29,15 @@ const portraitEntries:CompanionPortrait[]=[
   'À Khaybar, les compagnons attendent de savoir à qui sera confié l’étendard. Ali, qui souffre des yeux, est appelé. Le récit associe cette responsabilité à une invitation à transmettre le message avant de combattre : le courage ne se réduit pas au rapport de force.',
   'Un autre témoignage ouvre la porte de son foyer avec Fatima. La fatigue du travail domestique conduit à demander une aide, puis à recevoir un enseignement de rappel avant le sommeil. Ces deux scènes rapprochent la responsabilité publique et la vie quotidienne.'
  ],references:[B('3701','L’étendard à Khaybar et l’appel adressé aux habitants.'),B('5361','Fatima, Ali et le rappel avant le sommeil.')]},
- {id:'talha',nameFr:'Talha ibn Ubaydillah',nameAr:'طلحة بن عبيد الله',aliases:'Talhah Talha ibn Oubaydillah',title:'La main qui a protégé',group:'companions',theme:'solidarity',scene:'desert',paragraphs:[
+ {id:'talha',nameFr:'Talha ibn Ubaydillah',nameAr:'طلحة بن عبيد الله',aliases:'Talhah Talha ibn Oubaydillah',title:'La main d’Uhud, la générosité et l’épreuve de la division',group:'companions',theme:'solidarity',scene:'desert',bookId:'talha-engagement',paragraphs:[
   'Qays ibn Abi Hazim rapporte avoir vu la main de Talha devenue paralysée, celle avec laquelle il avait protégé le Prophète. Cette trace visible fait revenir le geste par lequel il s’est exposé pour protéger le Messager.',
   'Ce portrait prend pour point de départ cette main. Il invite à regarder ce que signifie protéger quelqu’un lorsque cette protection a un coût durable, sans ajouter de dialogue ni de détail absent du passage.'
  ],references:[B('3724','Le témoignage de Qays sur la main de Talha.')]},
- {id:'zubayr',nameFr:'Az-Zubayr ibn al-Awwam',nameAr:'الزبير بن العوام',aliases:'Zoubayr Zubair',title:'Répondre présent',group:'companions',theme:'faith',scene:'desert',paragraphs:[
+ {id:'zubayr',nameFr:'Az-Zubayr ibn al-Awwam',nameAr:'الزبير بن العوام',aliases:'Zoubayr Zubair',title:'Une jeunesse de foi, une vie de responsabilités',group:'companions',theme:'faith',scene:'desert',bookId:'zubayr-fidelite',paragraphs:[
   'Jabir transmet la parole qui désigne Az-Zubayr comme le disciple du Prophète. Un autre témoignage, celui de son fils Abdullah, rapporte une mission d’observation auprès des Banu Qurayza. La fidélité apparaît dans une responsabilité acceptée et accomplie.',
   'Le lecteur peut rapprocher ces passages sans confondre un titre transmis et les circonstances particulières d’une mission. Leur intérêt est de donner un visage concret à la disponibilité au service des autres.'
  ],references:[B('3719','La désignation comme disciple.'),B('3720','Le souvenir d’Abdullah ibn az-Zubayr pendant une mission de son père.')]},
- {id:'abdurrahman',nameFr:'Abd ar-Rahman ibn Awf',nameAr:'عبد الرحمن بن عوف',aliases:'Abderrahmane Abdr Rahman Auf',title:'Recommencer sans oublier la générosité',group:'companions',theme:'solidarity',scene:'garden',paragraphs:[
+ {id:'abdurrahman',nameFr:'Abd ar-Rahman ibn Awf',nameAr:'عبد الرحمن بن عوف',aliases:'Abderrahmane Abdr Rahman Auf',title:'Le marché, le don et le poids d’un choix',group:'companions',theme:'solidarity',scene:'garden',bookId:'abdurrahman-confier',paragraphs:[
   'À Médine, Saad ibn ar-Rabi propose à Abd ar-Rahman une aide considérable. Celui-ci remercie, demande où se trouve le marché et se met à commercer. Le récit maintient ensemble la générosité de l’accueil et la recherche d’une activité.',
   'Un autre passage le montre après son mariage, interrogé sur sa situation puis invité à offrir un repas. Ces scènes éclairent une manière de recommencer sa vie en gardant une place pour la gratitude, le travail et les liens.'
  ],references:[B('2048','L’accueil à Médine et la demande du chemin du marché.'),B('5155','Le mariage et le repas de noces.')]},
@@ -49,7 +49,7 @@ const portraitEntries:CompanionPortrait[]=[
   'Le souvenir transmis par Ibn Umar présente Said et sa famille au temps où leur foi provoquait des persécutions. Ce témoignage permet d’évoquer les débuts difficiles sans transformer tous les récits populaires de conversion en faits également établis.',
   'Sa vie nous rejoint à travers ces liens familiaux mis à l’épreuve. La foi choisie a un coût immédiat, alors que son avenir demeure encore ouvert.'
  ],references:[B('3866','Le témoignage relatif à Said, sa famille et Umar avant sa conversion.')]},
- {id:'abu-ubayda',nameFr:'Abu Ubayda ibn al-Jarrah',nameAr:'أبو عبيدة بن الجراح',aliases:'Abou Oubayda Abu Ubaidah',title:'Être digne de confiance',group:'companions',theme:'solidarity',scene:'dawn',paragraphs:[
+ {id:'abu-ubayda',nameFr:'Abu Ubayda ibn al-Jarrah',nameAr:'أبو عبيدة بن الجراح',aliases:'Abou Oubayda Abu Ubaidah',title:'La confiance reçue, les hommes accompagnés',group:'companions',theme:'solidarity',scene:'dawn',bookId:'abu-ubayda-confiance',paragraphs:[
   'Le Prophète désigne Abu Ubayda comme l’homme de confiance de cette communauté. Quand une délégation demande qu’une personne digne de confiance l’accompagne, c’est à lui que la mission est confiée.',
   'Le rapprochement de ces deux témoignages donne du relief à cette qualité. La confiance est liée à une tâche à remplir pour d’autres personnes, et non à une réputation simplement proclamée.'
  ],references:[B('3744','La parole sur l’homme de confiance de la communauté.'),B('4380','La mission auprès de la délégation de Najran.')]},
@@ -69,7 +69,7 @@ const portraitEntries:CompanionPortrait[]=[
   'Salman rend visite à Abu ad-Darda et découvre un foyer déséquilibré par une pratique qui néglige d’autres obligations. Il intervient au moment du repas puis de la nuit, avant de rappeler les droits du Seigneur, du corps et de la famille.',
   'Le Prophète confirme la justesse de son rappel. Cet épisode devient une entrée pour comprendre l’équilibre : une ferveur sincère ne dispense pas de regarder ceux qui vivent à nos côtés.'
  ],references:[B('1968','La visite de Salman à Abu ad-Darda et la confirmation prophétique.')]},
- {id:'ibn-masud',nameFr:'Abdullah ibn Masud',nameAr:'عبد الله بن مسعود',aliases:'Ibn Massoud Ibn Mas‘ud',title:'Apprendre le Coran et l’écouter',group:'companions',theme:'knowledge',scene:'night',paragraphs:[
+ {id:'ibn-masud',nameFr:'Abdullah ibn Masud',nameAr:'عبد الله بن مسعود',aliases:'Ibn Massoud Ibn Mas‘ud',title:'Du jeune berger au maître de Kufa',group:'companions',theme:'knowledge',scene:'night',bookId:'ibn-masud-parole',paragraphs:[
   'Le Prophète recommande d’apprendre le Coran auprès de plusieurs compagnons, dont Ibn Masud. Cette recommandation le situe dans une transmission vivante, auprès d’autres personnes explicitement nommées.',
   'Un autre récit montre Ibn Masud récitant devant le Prophète, qui souhaite entendre le Coran de la bouche d’un autre. L’attention à l’écoute rejoint ainsi l’attention à la mémorisation et à l’enseignement.'
  ],references:[B('3806','Les quatre compagnons auprès desquels apprendre le Coran.'),B('5050','La récitation d’Ibn Masud devant le Prophète.')]},
@@ -77,11 +77,11 @@ const portraitEntries:CompanionPortrait[]=[
   'Al-Bara se souvient de Musab et d’Ibn Umm Maktum enseignant le Coran à Médine avant l’arrivée du Prophète. Le passage fait apparaître des apprenants et une transmission déjà commencée, avant les grandes scènes publiques de l’Hégire.',
   'Khabbab rapporte ensuite la mort de Musab à Uhud et le manque de tissu pour son linceul. Entre ces deux témoignages, le portrait suit ce qu’un homme peut laisser aux autres lorsque ses biens ne racontent pas la mesure de son œuvre.'
  ],references:[B('3925','Musab et Ibn Umm Maktum enseignent le Coran à Médine.'),B('1276','Le témoignage de Khabbab sur le linceul de Musab.')]},
- {id:'hamza',nameFr:'Hamza ibn Abd al-Muttalib',nameAr:'حمزة بن عبد المطلب',aliases:'Hamzah Abd al Mouttalib',title:'Une perte à Uhud',group:'companions',theme:'faith',scene:'desert',paragraphs:[
+ {id:'hamza',nameFr:'Hamza ibn Abd al-Muttalib',nameAr:'حمزة بن عبد المطلب',aliases:'Hamzah Abd al Mouttalib',title:'De la protection familiale à l’engagement d’Uhud',group:'companions',theme:'faith',scene:'desert',bookId:'hamza-protection',paragraphs:[
   'Le récit de Wahshi porte sur la mort de Hamza à Uhud. Il permet de lire un événement douloureux à partir d’un témoin identifié, tout en gardant la sobriété nécessaire devant la violence.',
   'Bien après, Abd ar-Rahman ibn Awf évoque encore Hamza devant un repas, avec Musab. La mémoire des compagnons morts demeure présente lorsque la communauté connaît davantage d’aisance.'
  ],references:[B('4072','Le témoignage de Wahshi sur la mort de Hamza.'),B('1275','Le souvenir de Hamza et de Musab dans la parole d’Abd ar-Rahman.')]},
- {id:'jafar',nameFr:'Jafar ibn Abi Talib',nameAr:'جعفر بن أبي طالب',aliases:'Jaafar Djaafar Ja‘far',title:'La fraternité au-delà de l’exil',group:'companions',theme:'solidarity',scene:'water',paragraphs:[
+ {id:'jafar',nameFr:'Jafar ibn Abi Talib',nameAr:'جعفر بن أبي طالب',aliases:'Jaafar Djaafar Ja‘far',title:'La Mecque, l’Abyssinie et le retour vers Médine',group:'companions',theme:'solidarity',scene:'water',bookId:'jafar-deux-rivages',paragraphs:[
   'À Muta, Jafar prend l’étendard après Zayd. Le Prophète annonce à la communauté la mort des chefs, les yeux remplis de larmes. L’affection et la peine ont toute leur place dans ce témoignage.',
   'Ibn Umar salue ensuite son fils en rappelant le surnom des deux ailes. Ce salut garde la mémoire de Jafar dans une relation qui se poursuit avec la génération suivante.'
  ],references:[B('3709','Le salut d’Ibn Umar au fils de Jafar.'),B('4262','Les chefs de Muta et l’annonce de leur mort.')]},
@@ -145,7 +145,7 @@ const portraitEntries:CompanionPortrait[]=[
   'Asma prépare les provisions du départ vers Médine. Faute d’un lien pour fermer le contenant, sa ceinture est partagée. Son témoignage fait apparaître le travail concret qui rend possible une route souvent racontée seulement à travers ceux qui la parcourent.',
   'Elle interroge aussi le Prophète sur l’accueil de sa mère, qui ne partage pas sa foi. Un autre récit suit les tâches difficiles de son foyer. Ces scènes donnent à voir des liens familiaux, du travail et des choix personnels.'
  ],references:[B('3907','La préparation des provisions de l’Hégire.'),B('2620','La question sur l’accueil de sa mère.'),B('5224','Le travail d’Asma et les noyaux de dattes.')]},
- {id:'hafsa',nameFr:'Hafsa bint Umar',nameAr:'حفصة بنت عمر',aliases:'Hafsa Hafsah Omar',title:'Les feuillets confiés',group:'women',theme:'knowledge',scene:'dawn',paragraphs:[
+ {id:'hafsa',nameFr:'Hafsa bint Umar',nameAr:'حفصة بنت عمر',aliases:'Hafsa Hafsah Omar',title:'Une vie d’apprentissage et un dépôt préservé',group:'women',theme:'knowledge',scene:'dawn',bookId:'hafsa-depositaire',paragraphs:[
   'Après le veuvage de Hafsa, Umar propose sa main à Uthman puis à Abu Bakr. Le premier réfléchit puis décline ; le second garde le silence. Lorsque le Prophète demande à l’épouser, Abu Bakr explique qu’il avait gardé confidentielle une intention dont il avait connaissance.',
   'Les feuillets réunis sous Abu Bakr passent ensuite à Umar puis à Hafsa. Lors du travail demandé par Uthman, ils sont empruntés puis rendus. Son nom occupe ainsi une place concrète dans la transmission écrite du Coran.'
  ],references:[B('5122','Le témoignage d’Umar sur le veuvage et le mariage de Hafsa.'),B('4986','La conservation des feuillets chez Hafsa.'),B('4987','L’emprunt des feuillets et leur restitution.')]},
@@ -153,13 +153,13 @@ const portraitEntries:CompanionPortrait[]=[
   'Umm Salama transmet une invocation reçue face au deuil et raconte sa propre perte. Le passage ne transforme pas la patience en absence de douleur ; il garde la place d’une personne qui ne voit pas encore comment son avenir pourrait se rouvrir.',
   'À Hudaybiyya, son conseil aide à traverser un moment où les compagnons peinent à agir. Elle propose une démarche concrète, et le récit montre ce qui suit. Son portrait donne toute leur place à l’écoute, au discernement et à l’action.'
  ],references:[M('918b','Umm Salama raconte le deuil d’Abu Salama et l’invocation reçue.'),B('2731','Le conseil d’Umm Salama à Hudaybiyya.')]},
- {id:'umm-sulaym',nameFr:'Umm Sulaym',nameAr:'أم سليم',aliases:'Oum Soulaym Roumaysa Rumaysa',title:'Prendre soin et transmettre',group:'women',theme:'solidarity',scene:'garden',paragraphs:[
+ {id:'umm-sulaym',nameFr:'Umm Sulaym',nameAr:'أم سليم',aliases:'Oum Soulaym Roumaysa Rumaysa',title:'La foi choisie, une maison ouverte et la force de demander',group:'women',theme:'solidarity',scene:'garden',bookId:'umm-sulaym-maison',paragraphs:[
   'Umm Sulaym demande une invocation pour Anas, son fils. Ce geste la situe dans la transmission de sa vie au service du Prophète et dans l’attention qu’une mère porte à son avenir.',
   'Le récit de la mort d’un enfant dans son foyer demande une lecture délicate. Il est proposé comme un événement transmis, sans en faire une obligation de cacher un deuil ni une manière imposée de traverser la peine.'
  ],references:[B('6380','La demande d’invocation pour Anas.'),B('1301','Le décès d’un enfant dans le foyer d’Abu Talha.')]},
- {id:'nusayba',nameFr:'Nusayba bint Kab',nameAr:'نسيبة بنت كعب',aliases:'Nousseiba Nusaybah Umm Umara Oum Oumara',title:'La place des croyantes dans le rappel',group:'women',theme:'faith',scene:'dawn',paragraphs:[
-  'Le témoignage transmis sous le nom d’Umm Umara al-Ansariyya rapporte une question sur la place des femmes dans le rappel adressé aux croyants. Il est associé au verset qui énumère ensemble les croyants et les croyantes et leurs qualités.',
-  'Sa question nous conduit à lire les qualités que le Coran énumère ensemble pour les hommes et les femmes : la foi, la sincérité, la patience, le don et le souvenir d’Allah.'
+ {id:'nusayba',nameFr:'Nusayba bint Kab',nameAr:'نسيبة بنت كعب',aliases:'Nousseiba Nusaybah Umm Umara Oum Oumara',title:'Umm Umara, une vie dans l’engagement de Médine',group:'women',theme:'faith',scene:'dawn',bookId:'nusayba-presence',paragraphs:[
+  'Le livre suit Nusayba depuis al-Aqaba jusqu’au retour blessé de Yamama, avec sa famille et les épreuves d’Uhud. Les traditions militaires y sont identifiées comme récits historiques.',
+  'Une tradition porte aussi la kunya Umm Umara. Le livre expose la discussion ancienne sur l’identité de cette narratrice, afin de ne pas présenter une attribution discutée comme certaine.'
  ],references:[T('3211','La question d’Umm Umara et le passage d’Al-Ahzab.'),{label:'Coran 33:35',url:'https://quran.com/33/35',description:'Les croyants et les croyantes dans les qualités énumérées.'}]},
  {id:'umm-habiba',nameFr:'Umm Habiba',nameAr:'أم حبيبة',aliases:'Oum Habiba Ramla Abi Sufyan',title:'Un enseignement gardé dans la durée',group:'women',theme:'faith',scene:'night',paragraphs:[
   'Umm Habiba transmet la promesse attachée à douze unités de prière volontaires accomplies dans la journée et la nuit. Son témoignage conserve aussi son attachement à cette pratique après l’avoir entendue.',

@@ -14,9 +14,14 @@ const rate=rateArg?Number(rateArg.split('=')[1]):null;
 if(rate!==null&&(!Number.isFinite(rate)||rate<.1||rate>10))throw Error('Tarif vérifié invalide.');
 const result=await build({stdin:{contents:"export {narrativeProductionBooks as narrativeBooks} from './src/data/narrativeBooks';export {chapterDrafts,bookMarkdown,bookNarrative,narrationLength} from './src/lib/narrativeBooks';",resolveDir:process.cwd(),loader:'ts'},bundle:true,write:false,platform:'node',format:'esm'});
 const {narrativeBooks,chapterDrafts,bookMarkdown,bookNarrative,narrationLength}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'));
+const idsArg=process.argv.find(x=>x.startsWith('--books='));
+const requested=idsArg?idsArg.slice(8).split(','):null;
+const candidates=narrativeBooks.filter(b=>b.collection==='companions');
+if(requested&&(new Set(requested).size!==requested.length||requested.some(id=>!candidates.some(b=>b.id===id))))throw Error('Sélection de livres inconnue ou répétée.');
+const selected=requested?candidates.filter(b=>requested.includes(b.id)):candidates;
 await mkdir(directory,{recursive:true});
 const plan=[];
-for(const book of narrativeBooks.filter(b=>b.collection==='companions')){
+for(const book of selected){
  const drafts=book.chapters.flatMap((chapter,index)=>chapterDrafts(book,chapter,false,index===book.chapters.length-1));
  const scripts=drafts.map(({id,approved_by,...script})=>({...script,rights:'Narration française originale de Quran Coach, adaptée des textes anciens arabes référencés. Aucun article de Sirayassira ni traduction moderne n’est reproduit. Relecture éditoriale requise avant synthèse et redistribution.'}));
  const lengths=scripts.map(s=>s.text.length),chars=lengths.reduce((n,x)=>n+x,0);

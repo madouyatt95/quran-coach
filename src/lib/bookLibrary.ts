@@ -107,6 +107,16 @@ export function sceneTreatment(bookId:string,chapter:number,scene:number):{decor
   'gestes-qui-comptent':[['water','water'],['desert','wind'],['garden','rain']],
   'jabir-attention':[['desert','wind'],['dawn','silence'],['garden','wind']],
   'bois-confie-mer':[['desert','wind'],['water','water'],['dawn','wind']],
+  'hamza-protection':[['desert','wind'],['desert','silence'],['dawn','wind'],['desert','wind'],['night','silence'],['dawn','silence']],
+  'jafar-deux-rivages':[['desert','wind'],['water','water'],['dawn','silence'],['water','wind'],['garden','wind'],['night','silence']],
+  'talha-engagement':[['desert','wind'],['dawn','wind'],['desert','silence'],['garden','wind'],['dawn','silence'],['night','silence']],
+  'zubayr-fidelite':[['desert','wind'],['garden','wind'],['desert','wind'],['dawn','silence'],['night','silence'],['dawn','silence']],
+  'abdurrahman-confier':[['desert','wind'],['garden','wind'],['dawn','silence'],['night','silence'],['dawn','silence'],['garden','wind']],
+  'abu-ubayda-confiance':[['desert','wind'],['water','water'],['dawn','silence'],['desert','wind'],['night','silence'],['dawn','silence']],
+  'ibn-masud-parole':[['garden','wind'],['desert','wind'],['dawn','silence'],['night','silence'],['dawn','wind'],['night','silence']],
+  'hafsa-depositaire':[['desert','wind'],['night','silence'],['dawn','silence'],['garden','silence'],['dawn','silence'],['night','silence']],
+  'umm-sulaym-maison':[['garden','wind'],['dawn','silence'],['garden','wind'],['garden','wind'],['night','silence'],['dawn','silence']],
+  'nusayba-presence':[['desert','wind'],['garden','wind'],['night','silence'],['desert','wind'],['dawn','silence'],['night','silence']],
  };
  const cue=treatments[bookId]?.[chapter];return cue?{decor:cue[0],ambience:scene%2===1?'silence':cue[1]}:{decor:coverScene(bookId),ambience:'silence'};
 }

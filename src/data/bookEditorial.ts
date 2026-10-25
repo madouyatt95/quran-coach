@@ -1,6 +1,12 @@
 /** Editorial bridges based on the subjects explicitly covered by the published manuscripts.
  * A shared theme is not a claim that the protagonists met or shared an event. */
 export const bookConnections = [
+ {ids:['hamza-protection','musab-transmettre','talha-engagement','zubayr-fidelite','nusayba-presence'],reason:'Retrouvez d’autres témoins d’Uhud dans le déroulement de leur vie.'},
+ {ids:['jafar-deux-rivages','umm-salama-sagesse','asma-liens'],reason:'Découvrez d’autres parcours de femmes et d’hommes qui ont connu l’exil.'},
+ {ids:['abdurrahman-confier','talha-engagement','zubayr-fidelite','umar-responsabilite','uthman-transmission'],reason:'Poursuivez avec les personnes présentes dans la consultation de succession d’Umar.'},
+ {ids:['hafsa-depositaire','zayd-thabit-confie','uthman-transmission','ibn-masud-parole'],reason:'Découvrez d’autres responsabilités dans l’apprentissage et la transmission du Coran.'},
+ {ids:['umm-sulaym-maison','anas-presence','umm-salama-sagesse'],reason:'Retrouvez la vie des foyers de Médine, les liens familiaux et la transmission.'},
+ {ids:['abu-ubayda-confiance','muadh-enseigner','umar-responsabilite'],reason:'Découvrez d’autres vies liées aux responsabilités en Syrie et à l’épidémie d’Amwas.'},
  {ids:['musa','musa-apres-la-mer','khidr'],reason:'Retrouvez Moussa à une autre étape de son parcours.'},
  {ids:['ibrahim','hajar-zamzam'],reason:'Poursuivez l’histoire de cette famille autour d’Ibrahim et d’Ismail.'},
  {ids:['sulayman','royaumes-et-justice'],reason:'Explorez un autre récit consacré au pouvoir et à la justice.'},
