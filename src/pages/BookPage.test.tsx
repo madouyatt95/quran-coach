@@ -26,7 +26,7 @@ Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 let host:HTMLDivElement,root:Root;
 const render=async(path="/books/adam")=>{await act(async()=>{root.render(<MemoryRouter initialEntries={[path]}><Routes><Route path="/books/:bookId" element={<BookPage/>}/></Routes></MemoryRouter>);await new Promise(r=>setTimeout(r,20));});};
 const click=async(el:Element)=>{await act(async()=>{(el as HTMLElement).click();await Promise.resolve();});};
-beforeEach(()=>{vi.stubGlobal('sessionStorage',window.sessionStorage);sessionStorage.clear();useAudioLibraryStore.setState({bookReading:{},bookReadingUpdatedAt:{},bookReadingPoints:{},positions:{}});useBookNotebook.setState({entries:[]});mocks.items=chapterDrafts(book,book.chapters[0],false,false).map((s,i)=>({id:String(i),title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))}));Object.assign(mocks.player,{item:null,playing:false,position:0,queue:[]});mocks.player.play.mockClear();mocks.player.pause.mockClear();vi.stubGlobal('requestAnimationFrame',(cb:FrameRequestCallback)=>setTimeout(()=>cb(0),0));vi.stubGlobal('cancelAnimationFrame',clearTimeout);Element.prototype.scrollIntoView=vi.fn();HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};vi.spyOn(HTMLMediaElement.prototype,'pause').mockImplementation(()=>{});host=document.createElement('div');document.body.append(host);root=createRoot(host);});
+beforeEach(()=>{vi.stubGlobal('sessionStorage',window.sessionStorage);sessionStorage.clear();useAudioLibraryStore.setState({bookReading:{},bookReadingUpdatedAt:{},bookReadingPoints:{},positions:{}});useBookNotebook.setState({entries:[],bookmarks:[]});mocks.items=chapterDrafts(book,book.chapters[0],false,false).map((s,i)=>({id:String(i),title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))}));Object.assign(mocks.player,{item:null,playing:false,position:0,queue:[]});mocks.player.play.mockClear();mocks.player.pause.mockClear();vi.stubGlobal('requestAnimationFrame',(cb:FrameRequestCallback)=>setTimeout(()=>cb(0),0));vi.stubGlobal('cancelAnimationFrame',clearTimeout);Element.prototype.scrollIntoView=vi.fn();HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};vi.spyOn(HTMLMediaElement.prototype,'pause').mockImplementation(()=>{});host=document.createElement('div');document.body.append(host);root=createRoot(host);});
 afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
 it('keeps the chosen paragraph, saves its timestamp, and starts its matching recording',async()=>{await render();const paragraphs=host.querySelectorAll('[data-book-passage]');expect(paragraphs.length).toBeGreaterThan(3);await click(paragraphs[2].querySelector('p')!);await click([...paragraphs[2].querySelectorAll('button')].find(b=>b.textContent==='Je retiens')!);expect(useBookNotebook.getState().entries[0].text).toBe(paragraphs[2].querySelector('p')!.textContent);expect(useBookNotebook.getState().entries[0].seconds).toBeGreaterThan(0);await click([...paragraphs[2].querySelectorAll('button')].find(b=>b.textContent==='Écouter ici')!);expect(mocks.player.play).toHaveBeenCalledWith(expect.objectContaining({id:useBookNotebook.getState().entries[0].audioId}),expect.objectContaining({startAt:useBookNotebook.getState().entries[0].seconds}));});
 it('opens verified references over the text and resumes narration only when it was playing',async()=>{mocks.player.item=mocks.items[0];mocks.player.playing=true;mocks.player.position=36.25;mocks.player.queue=mocks.items;await render();await click(host.querySelector('[data-book-passage] p')!);const buttons=[...host.querySelectorAll('.book-passage-actions button')];await click(buttons.find(b=>b.textContent?.startsWith('Coran'))!);expect(document.querySelector('dialog[open]')).not.toBeNull();expect(mocks.player.pause).toHaveBeenCalled();expect(document.querySelector('dialog')?.textContent).toContain('Texte de test');await click(document.querySelector('[aria-label="Fermer la référence"]')!);expect(mocks.player.play).toHaveBeenCalledWith(mocks.items[0],{queue:mocks.items,startAt:36.25});expect(host.querySelector('.book-passage.is-selected')).not.toBeNull();});
@@ -97,4 +97,41 @@ it('does not propose a recap during a recent return',async()=>{
  const paragraphs=bookPassages(book,book.chapters[0]);
  useAudioLibraryStore.setState({bookReading:{adam:book.chapters[0].id},bookReadingPoints:{adam:{chapterId:book.chapters[0].id,passageId:paragraphs[2].id,previousPassageId:paragraphs[1].id,version:book.version,updatedAt:Date.now()-3600000}}});
  await render();expect(host.querySelector('.book-return-recap')).toBeNull();
+});
+
+it('preserves the exact audio second when switching to text and back to the same passage',async()=>{
+ mocks.player.item=mocks.items[0];mocks.player.playing=true;mocks.player.position=42.5;mocks.player.queue=mocks.items;
+ sessionStorage.setItem('qc-page:/books/adam:view',JSON.stringify('listen'));
+ await render();await click(host.querySelector('.book-tabs button')!);
+ expect(host.querySelector('.book-passage.is-selected')).not.toBeNull();expect(mocks.player.pause).toHaveBeenCalled();
+ await click(host.querySelectorAll('.book-tabs button')[1]);
+ expect(mocks.player.play).toHaveBeenLastCalledWith(mocks.items[0],{queue:mocks.items,startAt:42.5});
+});
+it('saves a removable personal ribbon independently of the notebook and opens its passage',async()=>{
+ await render();const p=host.querySelectorAll('[data-book-passage]')[2];await click(p.querySelector('p')!);
+ await click([...p.querySelectorAll('button')].find(b=>b.textContent==='Marquer ce passage')!);
+ expect(useBookNotebook.getState().entries).toEqual([]);expect(useBookNotebook.getState().bookmarks).toHaveLength(1);expect(p.querySelector('.book-passage-ribbon')).not.toBeNull();
+ await click(p.querySelector('.book-passage-ribbon')!);await act(async()=>{await new Promise(r=>setTimeout(r,20));});
+ expect(document.querySelector('dialog[open]')?.textContent).toContain('Vos passages choisis');
+ await click([...document.querySelectorAll('dialog button')].find(b=>b.textContent?.includes('Retrouver ce passage'))!);
+ expect(host.querySelector('.book-passage.is-selected')?.getAttribute('data-book-passage')).toBe(p.getAttribute('data-book-passage'));
+ await click([...host.querySelectorAll('.book-passage-actions button')].find(b=>b.textContent==='Retirer le marque-page')!);expect(useBookNotebook.getState().bookmarks).toEqual([]);
+});
+it('offers three meaningful doors on the last chapter and opens the teaching sources',async()=>{
+ await render('/books/hamza-protection?chapter=memoire');const end=host.querySelector('.book-ending')!;expect(end).not.toBeNull();expect(end.querySelectorAll('.book-ending-choices>a').length).toBe(2);
+ expect(end.textContent).toContain('SUIVRE UNE PERSONNE');expect(end.textContent).toContain('Un autre éclairage'.toLocaleUpperCase('fr'));
+ await click(end.querySelector('summary')!);expect(end.querySelector('details[open] li')).not.toBeNull();
+ await click(end.querySelector('details button')!);expect(document.querySelector('dialog[open]')).not.toBeNull();
+});
+
+it('keeps exact audio handoff after arriving through a personal bookmark',async()=>{
+ await render();const p=host.querySelectorAll('[data-book-passage]')[2];await click(p.querySelector('p')!);
+ await click([...p.querySelectorAll('button')].find(b=>b.textContent==='Marquer ce passage')!);
+ await click(p.querySelector('.book-passage-ribbon')!);await act(async()=>{await new Promise(r=>setTimeout(r,20));});
+ await click([...document.querySelectorAll('dialog button')].find(b=>b.textContent?.includes('Retrouver ce passage'))!);
+ Object.assign(mocks.player,{item:mocks.items[0],queue:mocks.items,position:42.5,playing:true});
+ await click(host.querySelectorAll('.book-tabs button')[1]);
+ await click(host.querySelector('.book-tabs button')!);
+ await click(host.querySelectorAll('.book-tabs button')[1]);
+ expect(mocks.player.play).toHaveBeenLastCalledWith(mocks.items[0],{queue:mocks.items,startAt:42.5});
 });

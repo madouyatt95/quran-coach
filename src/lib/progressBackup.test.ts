@@ -50,3 +50,14 @@ it('rolls back earlier section writes if a later one fails',async()=>{
  vi.spyOn(localStorage,'setItem').mockImplementation((k,v)=>{if(k===second.key&&!failed){failed=true;throw new Error('Quota');}set(k,v);});
  await expect(restoreBackup(incoming,all,{[key]:'file',[second.key]:'file'})).rejects.toThrow();expect(localStorage.getItem(key)).toBe(old);expect(localStorage.getItem(second.key)).toBe(old);
 });
+
+it('roundtrips personal book bookmarks and rejects invalid notes without losing legacy notebooks',()=>{
+ const registry:BackupStore[]=[{key:'qc-book-notebook-v1',label:'Livres',version:0,defaults:{entries:[],bookmarks:[]},rehydrate:vi.fn()}];
+ const entry={id:'adam:v1:p1',bookId:'adam',version:'v1',chapterId:'names',passageId:'p1',text:'Un passage',sources:['quran'],note:'Ma note',createdAt:1,audioId:'audio',seconds:42.5};
+ localStorage.setItem(registry[0].key,JSON.stringify({version:0,state:{entries:[],bookmarks:[entry]}}));
+ const exported=createBackup(registry);expect(parseBackup(JSON.stringify(exported),registry).sections[registry[0].key].state.bookmarks).toEqual([entry]);
+ const invalid=JSON.parse(JSON.stringify(exported));invalid.sections[registry[0].key].state.bookmarks[0].note=123;
+ expect(()=>parseBackup(JSON.stringify(invalid),registry)).toThrow();
+ delete exported.sections[registry[0].key].state.bookmarks;
+ expect(()=>parseBackup(JSON.stringify(exported),registry)).not.toThrow();
+});
