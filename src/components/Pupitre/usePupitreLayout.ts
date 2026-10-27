@@ -2,6 +2,8 @@ import {useCallback,useEffect,useState} from 'react';
 import {create} from 'zustand';
 import {persist,createJSONStorage} from 'zustand/middleware';
 import {resolveLayout,type LayoutChoice,type Posture,type ReadingLayout,type PupitreActivity} from './posture';
+import {getNativeViewport} from '../../lib/nativeLayout';
+import {nativeFold} from '../../lib/nativeViewport';
 export type ConsoleTab='listen'|'understand'|'settings';
 export interface ActivityPreference {choice:LayoutChoice;ratio:number;tab:ConsoleTab;pins:string[]|null}
 const DEFAULT:ActivityPreference={choice:'auto',ratio:50,tab:'listen',pins:null};
@@ -19,11 +21,14 @@ export const useLayoutPreferences=create(persist<LayoutPreferences>((set)=>({pre
  name:'qc-reading-layout-v1',version:2,storage:createJSONStorage(()=>window.localStorage),migrate:value=>migrateLayoutPreferences(value) as LayoutPreferences,partialize:state=>({preferences:state.preferences}) as LayoutPreferences,
 }));
 const matches=(query:string)=>typeof window.matchMedia==='function'&&window.matchMedia(query).matches;
-const readPosture=():Posture=>({folded:matches('(device-posture: folded)'),vertical:matches('(vertical-viewport-segments: 2)'),horizontal:matches('(horizontal-viewport-segments: 2)'),width:innerWidth,height:innerHeight});
+const readPosture=():Posture=>{
+ const fold=nativeFold(getNativeViewport(),innerWidth,innerHeight);
+ return {folded:!!fold||matches('(device-posture: folded)'),vertical:fold?.layout==='desk'||matches('(vertical-viewport-segments: 2)'),horizontal:fold?.layout==='book'||matches('(horizontal-viewport-segments: 2)'),width:innerWidth,height:innerHeight,nativeFold:fold};
+};
 export function usePupitreLayout(enabled=true,activity:PupitreActivity='reader'){
  const preference=useLayoutPreferences(s=>s.preferences[activity]||DEFAULT),update=useLayoutPreferences(s=>s.update);
  const [device,setDevice]=useState<Posture>(()=>typeof window==='undefined'?{folded:false,vertical:false,horizontal:false,width:0,height:0}:readPosture());
- useEffect(()=>{const change=()=>setDevice(readPosture());const queries=['(device-posture: folded)','(vertical-viewport-segments: 2)','(horizontal-viewport-segments: 2)'].flatMap(q=>typeof window.matchMedia==='function'?[window.matchMedia(q)]:[]);queries.forEach(q=>q.addEventListener('change',change));window.addEventListener('resize',change);window.visualViewport?.addEventListener('resize',change);return()=>{queries.forEach(q=>q.removeEventListener('change',change));window.removeEventListener('resize',change);window.visualViewport?.removeEventListener('resize',change);};},[]);
+ useEffect(()=>{const change=()=>setDevice(readPosture());const queries=['(device-posture: folded)','(vertical-viewport-segments: 2)','(horizontal-viewport-segments: 2)'].flatMap(q=>typeof window.matchMedia==='function'?[window.matchMedia(q)]:[]);queries.forEach(q=>q.addEventListener('change',change));window.addEventListener('resize',change);window.addEventListener('qc-native-layout',change);window.visualViewport?.addEventListener('resize',change);change();return()=>{queries.forEach(q=>q.removeEventListener('change',change));window.removeEventListener('resize',change);window.removeEventListener('qc-native-layout',change);window.visualViewport?.removeEventListener('resize',change);};},[]);
  const choose=useCallback((choice:LayoutChoice)=>{window.dispatchEvent(new Event('qc-pupitre-before-layout'));update(activity,{choice});},[activity,update]);
  const setRatio=useCallback((ratio:number)=>{window.dispatchEvent(new Event('qc-pupitre-before-layout'));update(activity,{ratio});},[activity,update]);
  return {layout:enabled?resolveLayout(preference.choice,device):'plain' as ReadingLayout,...preference,choose,setRatio,device,activity};

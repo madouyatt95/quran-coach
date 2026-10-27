@@ -10,6 +10,10 @@
 body:has(.pupitre-root:not([data-pupitre-layout=plain])) .bottom-nav,body:has(.pupitre-root:not([data-pupitre-layout=plain])) .global-page-tools{display:none!important}
 @media(vertical-viewport-segments:2){.pupitre-root[data-pupitre-layout=desk]{--pupitre-split:env(viewport-segment-height 0 0);--pupitre-gap:calc(env(viewport-segment-top 0 1) - env(viewport-segment-bottom 0 0))}}
 @media(horizontal-viewport-segments:2){.pupitre-root[data-pupitre-layout=book]{grid-template-columns:env(viewport-segment-width 0 0) calc(env(viewport-segment-left 1 0) - env(viewport-segment-right 0 0)) minmax(0,1fr)!important}}
+
+/* Native UIKit divisions also work when WebKit's segment queries are unavailable. */
+.pupitre-root[data-pupitre-layout=desk][data-pupitre-native-fold=desk]{--pupitre-split:var(--native-fold-start);--pupitre-gap:var(--native-fold-size)}
+.pupitre-root[data-pupitre-layout=book][data-pupitre-native-fold=book]{grid-template-columns:minmax(0,var(--native-fold-start)) var(--native-fold-size) minmax(0,1fr)!important}
 body:has(.iq-reader:not([data-pupitre-layout=plain])) .iq-sheet{inset:var(--pupitre-sheet-top,50dvh) auto auto var(--pupitre-sheet-left,0px);width:var(--pupitre-sheet-width,100vw);height:var(--pupitre-sheet-height,50dvh);max-height:var(--pupitre-sheet-height,50dvh);margin:0;border-radius:20px 20px 0 0;overflow:auto}
 body:has(.iq-reader:not([data-pupitre-layout=plain])) .iq-tools-sheet .iq-sheet-content{max-height:var(--pupitre-sheet-height,50dvh);overflow:auto}
 /* Existing players retain their state and handlers; only their placement changes. */
