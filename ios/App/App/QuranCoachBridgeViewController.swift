@@ -6,6 +6,11 @@ final class QuranCoachBridgeViewController: CAPBridgeViewController {
     private var isVisible = false
     private let layoutPlugin = QuranCoachLayoutPlugin()
 
+    // The app owns horizontal HTML navigation and playback controls. Keep a
+    // stable horizontal system bar so the vertical status area cannot cover them.
+    @available(iOS 27.1, *)
+    override var preferredVerticalBarBehavior: UIVerticalBarBehavior { .disabled }
+
     override func capacitorDidLoad() {
         bridge?.registerPluginInstance(QuranCoachCarPlugin())
         bridge?.registerPluginInstance(SpeechRecognition())
