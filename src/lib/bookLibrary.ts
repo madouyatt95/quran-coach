@@ -1,4 +1,4 @@
-import {moralVolumes,moralMemberChapters,moralBookDestination} from '../data/moralBookEditions';
+import {moralVolumes,moralBookDestination} from '../data/moralBookEditions';
 import {editorialConnection} from '../data/bookEditorial';
 import {companionPortraits,companionHref} from '../data/companionPortraits';
 import {narrationSentences} from './narrationText';
@@ -53,11 +53,6 @@ export const bookOrigins:Record<string,string[]>={
  'jabir-attention':['https://sunnah.com/bukhari:2097','https://sunnah.com/bukhari:2718','https://sunnah.com/bukhari:2396'],
  'bois-confie-mer':['https://sunnah.com/bukhari:2291'],
 };
-// Assemble source destinations in the same order as the long manuscripts.
-for(const volume of moralVolumes){
- const entries=volume.members.flatMap(id=>(moralMemberChapters[id]||[]).map((_,i)=>bookOrigins[id]?.[i]||'/stories'));
- bookOrigins[volume.id]=entries;
-}
 for(const p of companionPortraits){if(p.bookId&&books.some(b=>b.id===p.bookId)){const links=bookOrigins[p.bookId]||=[];const url=companionHref(p.id);if(!links.includes(url))links.push(url);}}
 const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sulayman:['sulayman'],isa:['maryam-isa'],muhammad:['sira-confiance','hijra-route','revelation-lettre','ascension-priere','hudaybiyya-pacte'],dawud:['sulayman','royaumes-et-justice'],ibrahim:['hajar-zamzam']};
 export function originForChapter(bookId:string,chapter:number){

@@ -63,10 +63,16 @@ it('roundtrips personal book bookmarks and rejects invalid notes without losing 
 });
 
 it('upgrades only the supported old book backup while preserving notes and audio positions',()=>{
- const registry:BackupStore[]=[{key:'qc-audio-library-v1',label:'Livres',version:1,defaults:{favorites:[],bookReading:{},bookReadingUpdatedAt:{},bookReadingPoints:{},bookNotes:{},positions:{}},rehydrate:vi.fn()}];
+ const registry:BackupStore[]=[{key:'qc-audio-library-v1',label:'Livres',version:2,defaults:{favorites:[],bookReading:{},bookReadingUpdatedAt:{},bookReadingPoints:{},bookNotes:{},positions:{}},rehydrate:vi.fn()}];
  const file={format:'quran-coach-progress',version:1,createdAt:new Date().toISOString(),sections:{'qc-audio-library-v1':{version:0,state:{favorites:['book:coeur-eprouve'],bookReading:{'coeur-eprouve':'tombe'},bookNotes:{'coeur-eprouve':'Ne pas perdre'},positions:{old:{seconds:15,updatedAt:1}}}}}};
  const restored=parseBackup(JSON.stringify(file),registry).sections['qc-audio-library-v1'];
- expect(restored.version).toBe(1);expect(restored.state.bookReading).toMatchObject({'portes-de-misericorde':'tombe'});
+ expect(restored.version).toBe(2);expect(restored.state.bookReading).toEqual({'coeur-eprouve':'tombe'});
  expect(restored.state.bookNotes).toEqual({'coeur-eprouve':'Ne pas perdre'});expect(restored.state.positions).toEqual(file.sections['qc-audio-library-v1'].state.positions);
- file.sections['qc-audio-library-v1'].version=2;expect(()=>parseBackup(JSON.stringify(file),registry)).toThrow();
+ file.sections['qc-audio-library-v1'].version=3;expect(()=>parseBackup(JSON.stringify(file),registry)).toThrow();
+});
+
+it('imports the combined edition backup into independent books',()=>{
+ const registry:BackupStore[]=[{key:'qc-audio-library-v1',label:'Livres',version:2,defaults:{bookReading:{},bookReadingUpdatedAt:{},bookReadingPoints:{},favorites:[]},rehydrate:vi.fn()}];
+ const file={format:'quran-coach-progress',version:1,createdAt:new Date().toISOString(),sections:{'qc-audio-library-v1':{version:1,state:{bookReading:{'portes-de-misericorde':'tombe'},bookReadingUpdatedAt:{'portes-de-misericorde':10}}}}};
+ expect(parseBackup(JSON.stringify(file),registry).sections['qc-audio-library-v1']).toMatchObject({version:2,state:{bookReading:{'coeur-eprouve':'tombe'}}});
 });

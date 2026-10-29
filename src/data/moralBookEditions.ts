@@ -18,9 +18,13 @@ export function moralChapterId(bookId:string,chapterId:string){
  if(bookId==='force-de-douceur'&&chapterId==='mosquee')return 'mosquee-apprentissage';
  return chapterId;
 }
+/** Resolve links from the briefly published combined edition back to independent books. */
 export function moralBookDestination(bookId:string,chapterId?:string|null){
- const volume=moralVolumes.find(v=>v.members.includes(bookId));
- if(!volume)return null;
- const original=chapterId||moralMemberChapters[bookId][0];
- return {bookId:volume.id,chapterId:moralChapterId(bookId,original)};
+ const volume=moralVolumes.find(v=>v.id===bookId);
+ if(volume&&chapterId){
+  for(const member of volume.members)for(const original of moralMemberChapters[member]){
+   if(moralChapterId(member,original)===chapterId)return {bookId:member,chapterId:original};
+  }
+ }
+ return moralMemberChapters[bookId]?{bookId,chapterId:chapterId||moralMemberChapters[bookId][0]}:null;
 }

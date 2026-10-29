@@ -1,4 +1,3 @@
-import {longMoralEditions} from './moralCollection/longEdition';
 import {goldBook} from './moralCollection/gold';
 import {loveBook} from './moralCollection/love';
 import {mercyDoorsBook} from './moralCollection/mercy';
@@ -77,7 +76,7 @@ export const newCompanionBiographies=[hamzaBook,jafarBook,talhaBook,zubayrBook,a
 
 /** Editorial manuscripts, loaded only by the administrator's book workshop. */
 const authoredBooks = [adamBook, nuhBook, ibrahimBook, yusufBook, musaBook, maryamIsaBook, sulaymanBook, khidrBook, caveBook, wealthBook, musaAfterBook, kingsBook, callsBook, siraBook, voicesBook, luqmanBook, speechBook,
- lutBook,kaabBook,aishaBook,boyKingBook,rockBook,threeTestedBook,repentanceBook,hajarBook,hijraBook,nightJourneyBook,hudaybiyyaBook,revelationBook,abuDharrBook,balanceBook,hospitalityBook,appearancesBook,mercyBook,jabirBook,seaTrustBook,abuBakrBook,bilalBook,musabBook,zaydThabitBook,asmaBook,ummSalamaBook,umarBook,uthmanBook,aliBook,khadijaBook,fatimaBook,...longMoralEditions([goldBook,loveBook,mercyDoorsBook,tribulationBook,gentlenessBook,unseenBook,justiceBook,signsBook,discernmentBook,giftsBook,faithBook,listenedBook,parablesBook])];
+ lutBook,kaabBook,aishaBook,boyKingBook,rockBook,threeTestedBook,repentanceBook,hajarBook,hijraBook,nightJourneyBook,hudaybiyyaBook,revelationBook,abuDharrBook,balanceBook,hospitalityBook,appearancesBook,mercyBook,jabirBook,seaTrustBook,abuBakrBook,bilalBook,musabBook,zaydThabitBook,asmaBook,ummSalamaBook,umarBook,uthmanBook,aliBook,khadijaBook,fatimaBook,goldBook,loveBook,mercyDoorsBook,tribulationBook,gentlenessBook,unseenBook,justiceBook,signsBook,discernmentBook,giftsBook,faithBook,listenedBook,parablesBook];
 /** New recordings are prepared against these editions in the studio. */
 export const narrativeProductionBooks=[...authoredBooks,...furtherCompanionBooks,...newCompanionBiographies].map(revisedCompanionEdition).map(completeCompanionBiography);
 /** The current written edition is canonical. Audio is exposed only for its exact manuscript version. */

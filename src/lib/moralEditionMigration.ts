@@ -5,18 +5,23 @@ interface SavedLibrary {
  favorites?:string[];bookReading?:Record<string,string>;bookReadingUpdatedAt?:Record<string,number>;
  bookReadingPoints?:Record<string,BookReadingPoint>;
 }
-/** Add canonical pointers without deleting the original notes, positions or bookmarks. */
+/** Restore independent destinations without changing notes or audio offsets. */
 export function migrateMoralLibrary<T extends SavedLibrary>(state:T):T {
  const reading={...state.bookReading},dates={...state.bookReadingUpdatedAt},points={...state.bookReadingPoints};
  const favorites=new Set(state.favorites||[]);
  for(const volume of moralVolumes){
-  if(volume.members.some(id=>favorites.has(`book:${id}`)))favorites.add(`book:${volume.id}`);
-  const latest=volume.members.filter(id=>state.bookReading?.[id]).sort((a,b)=>(state.bookReadingUpdatedAt?.[b]||0)-(state.bookReadingUpdatedAt?.[a]||0))[0];
-  if(!latest)continue;
-  const target=moralBookDestination(latest,state.bookReading![latest])!;
-  reading[volume.id]=target.chapterId;dates[volume.id]=state.bookReadingUpdatedAt?.[latest]||0;
-  const point=state.bookReadingPoints?.[latest];
-  if(point)points[volume.id]={...point,chapterId:target.chapterId,passageId:remapPassage(point.passageId,point.chapterId,target.chapterId),previousPassageId:point.previousPassageId?remapPassage(point.previousPassageId,point.chapterId,target.chapterId):undefined};
+  const chapter=state.bookReading?.[volume.id];if(!chapter)continue;
+  const target=moralBookDestination(volume.id,chapter);
+  if(!target||target.bookId===volume.id)continue;
+  const date=dates[volume.id]||0;
+  if(!reading[target.bookId]||date>=(dates[target.bookId]||0)){
+   reading[target.bookId]=target.chapterId;dates[target.bookId]=date;
+   const point=points[volume.id];
+   if(point)points[target.bookId]={...point,chapterId:target.chapterId,passageId:remapPassage(point.passageId,point.chapterId,target.chapterId),previousPassageId:point.previousPassageId?remapPassage(point.previousPassageId,point.chapterId,target.chapterId):undefined};
+  }
+  if(favorites.has(`book:${volume.id}`))favorites.add(`book:${target.bookId}`);
+  // The moved chapter does not belong to this independent book. Do not redirect its cover forever.
+  delete reading[volume.id];delete dates[volume.id];delete points[volume.id];
  }
  return {...state,favorites:[...favorites],bookReading:reading,bookReadingUpdatedAt:dates,bookReadingPoints:points};
 }

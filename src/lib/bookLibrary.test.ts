@@ -32,9 +32,9 @@ it('retains valid source destinations and resolves old entries to their specific
  expect(bookEntryForOrigin('prophet','salih')?.chapter).toBe('salih');
  expect(bookEntryForOrigin('prophet','idris')).toBeNull();
  expect(bookEntryForOrigin('story','hudaybiyya')?.book.id).toBe('hudaybiyya-pacte');
- expect(bookEntryForOrigin('story','ashab-as-sabt')).toMatchObject({book:{id:'or-et-intention'},chapter:'sabbat'});
- expect(bookEntryForOrigin('story','habil-qabil')).toMatchObject({book:{id:'or-et-intention'},chapter:'freres'});
- expect(bookEntryForOrigin('story','corbeau')).toMatchObject({book:{id:'or-et-intention'},chapter:'freres'});
+ expect(bookEntryForOrigin('story','ashab-as-sabt')).toMatchObject({book:{id:'responsabilite-du-don'},chapter:'sabbat'});
+ expect(bookEntryForOrigin('story','habil-qabil')).toMatchObject({book:{id:'responsabilite-du-don'},chapter:'freres'});
+ expect(bookEntryForOrigin('story','corbeau')).toMatchObject({book:{id:'responsabilite-du-don'},chapter:'freres'});
  expect(bookEntryForOrigin('story','croyant-pharaon')).toMatchObject({book:{id:'croire-parmi-les-siens'},chapter:'croyant'});
  expect(bookEntryForOrigin('story','ifk')?.book.id).toBe('aicha-innocence');
  expect(bookEntryForOrigin('prophet','ismail')?.book.id).toBe('hajar-zamzam');

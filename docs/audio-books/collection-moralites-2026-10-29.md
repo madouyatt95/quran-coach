@@ -1,6 +1,6 @@
 # Collection Histoires et moralités — 29 octobre 2026
 
-Autorisation : production directe, compte raccordé `histoires_20261029`, plafond cumulé 130 000 crédits, aucun dépassement payant. Les 41 sujets, initialement répartis en 13 livres courts, sont désormais réunis en cinq volumes longs, enrichis sans inventer de faits. Narration française originale, sources Coran / Sahih al-Bukhari / Sahih Muslim uniquement. Les références ci-dessous ont été consultées durant la préparation éditoriale ; contrôler le manuscrit final contre les versions exactes avant génération. Aucun récit ne doit être présenté comme validé par un comité religieux ou intégralement écouté par une personne lorsque cela n’a pas eu lieu.
+Autorisation : production directe, compte raccordé `histoires_20261029`, plafond cumulé 130 000 crédits, aucun dépassement payant. État actuel : les 41 sujets sont de nouveau répartis dans leurs 13 livres indépendants, sur demande du propriétaire. Le regroupement en cinq volumes a été annulé ; son bilan historique est conservé ci-dessous. Narration française originale, sources Coran / Sahih al-Bukhari / Sahih Muslim uniquement. Les références ci-dessous ont été consultées durant la préparation éditoriale ; contrôler le manuscrit final contre les versions exactes avant génération. Aucun récit ne doit être présenté comme validé par un comité religieux ou intégralement écouté par une personne lorsque cela n’a pas eu lieu.
 
 | Livre prévu | Chapitres / sources |
 |---|---|
@@ -20,7 +20,7 @@ Autorisation : production directe, compte raccordé `histoires_20261029`, plafon
 
 B = Sahih al-Bukhari, M = Sahih Muslim ; numérotation consultable sur sunnah.com. Les paraboles sont identifiées comme telles, sans les transformer en événements historiques. Uways est un tabi‘i. Le genre de la personne qui nettoie la mosquée reste indéterminé selon la version retenue. Aucun ajout sur les noms des fils d’Adam, les circonstances de la mort de l’épouse de Pharaon ou l’identité du prophète du récit du soleil.
 
-## Livraison des éditions longues
+## Livraison antérieure des éditions longues (remplacée)
 
 Les treize manuscrits sources du tableau restent conservés dans les données éditoriales. La bibliothèque présente cinq volumes : ce sont des anthologies thématiques, pas 41 biographies longues indépendantes. Des introductions, transitions et conclusions originales développent les liens entre récits sans ajouter d'événement historique.
 
@@ -42,3 +42,15 @@ Les treize manuscrits sources du tableau restent conservés dans les données é
 - Tests des migrations et sauvegardes : 15/15 ; audit de l'intégralité du catalogue audio public : réussi ; compilation TypeScript et compilation Vercel : réussies. Tests du lecteur, de la bibliothèque, des textes et de l'enchaînement exécutés pendant l'intégration.
 - Livraison publique : `dpl_4Yf4NW7ghZmuxUYGHbvYpf8RHXEi`, état READY, alias `https://www.quran-coach.fr`. Vérification du livre à six chapitres et lecture audio effective, puis pause, dans le navigateur intégré.
 - Limites : pas de test sur iPhone physique dans cette livraison, pas d'écoute humaine intégrale ni validation par un comité religieux. Aucune nouvelle compilation iOS réalisée pour ce lot web/PWA.
+
+## Retour aux livres indépendants — 29 octobre 2026
+
+- Annulation ciblée du regroupement, sans réversion globale du commit `bb0e613`.
+- Les 13 manuscrits originaux et leurs 41 chapitres utilisent de nouveau leurs 41 audios originaux publiés, avec contrôle exact de la correspondance texte/repères audio. Les enregistrements longs ne sont pas supprimés du stockage ; ils sont exclus des résultats publics de la bibliothèque par leur version de manuscrit.
+- Enchaînement automatique entre chapitres et entre livres conservé, ainsi que l'annulation, la minuterie et l'arrêt de fin de chapitre.
+- Migration des stores de livres vers la version 2 : les reprises et extraits issus des volumes combinés retrouvent leur livre d'origine. Aucun décalage audio de l'édition longue n'est appliqué à un autre enregistrement. Les notes de collection restent consultables depuis les livres concernés.
+- Les sauvegardes de versions 0 et 1 restent importables ; les versions futures incompatibles restent refusées.
+- Les liens partagés vers un chapitre d'un volume combiné sont redirigés vers le livre indépendant correspondant, y compris les identifiants de chapitres renommés.
+- Aucune génération, aucun crédit ElevenLabs supplémentaire et aucun changement de la configuration serveur de production.
+- Contrôles : tests du lecteur, des sauvegardes, des migrations, des sources et de l'enchaînement ; audit du catalogue public et compilation TypeScript. La validation physique iPhone reste hors de ce contrôle web.
+- Déploiement de restauration : `dpl_AfY496A6yNZ7cobk7zbJMZjtouWt`, READY, alias `https://www.quran-coach.fr`. « La force de la douceur » vérifiée en production comme livre indépendant à trois chapitres, avec accès audio et suggestions des autres livres rétablis.

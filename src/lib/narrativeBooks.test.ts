@@ -1,3 +1,4 @@
+import {moralMemberChapters} from '../data/moralBookEditions';
 import { describe, expect, it } from 'vitest';
 import { narrativeBooks } from '../data/narrativeBooks';
 import chapters from './interactiveMushaf/chapters.json';
@@ -10,7 +11,7 @@ describe('livres racontés : texte et sources', () => {
       expect(book.status).toBe('draft');
       expect(new Set(book.sources.map(source => source.id)).size).toBe(book.sources.length);
       expect(new Set(book.chapters.map(chapter => chapter.id)).size).toBe(book.chapters.length);
-      expect(narrationLength(bookNarrative(book)).words).toBeGreaterThan(1500);
+      expect(narrationLength(bookNarrative(book)).words).toBeGreaterThan(moralMemberChapters[book.id]?500:1500);
       const sourceIds = new Set(book.sources.map(source => source.id));
       for (const source of book.sources) {
         expect(sourceUrl(source)).toMatch(/^https:\/\//);
@@ -32,8 +33,8 @@ describe('livres racontés : texte et sources', () => {
         }
       }
       for (const chapter of book.chapters) {
-        // Biographies and long anthologies may contain short sourced chapters; validate the complete book above.
-        expect(narrationLength(chapterNarrative(chapter)).words).toBeGreaterThan(['biography','anthology'].includes(book.scope?.kind||'') ? 150 : 450);
+        // Short canonical reports retain their original length in independent editions.
+        expect(narrationLength(chapterNarrative(chapter)).words).toBeGreaterThan(moralMemberChapters[book.id]||['biography','anthology'].includes(book.scope?.kind||'') ? 150 : 450);
         for (const scene of chapter.scenes) {
           expect(scene.studyNote).not.toBe('');
           for (const paragraph of scene.paragraphs) {

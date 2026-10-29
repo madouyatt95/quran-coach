@@ -57,7 +57,7 @@ function validateJson(value:unknown,depth=0,budget={left:250000}):asserts value 
 }
 function sameType(a:unknown,b:unknown){return a===null||a===undefined?true:Array.isArray(a)?Array.isArray(b):typeof a==='object'?record(b):typeof a===typeof b;}
 function cleanSection(section:unknown,store:BackupStore):BackupSection{
- const oldBooks=record(section)&&section.version===0&&store.version===1&&['qc-audio-library-v1','qc-book-notebook-v1'].includes(store.key);
+ const oldBooks=record(section)&&[0,1].includes(section.version as number)&&store.version===2&&['qc-audio-library-v1','qc-book-notebook-v1'].includes(store.key);
  if(!record(section)||!record(section.state)||(section.version!==store.version&&!oldBooks))throw new Error(`${store.label} : format incompatible. Mettez l’application à jour sur les deux appareils.`);
  const state:ObjectValue={};
  for(const [key,value] of Object.entries(section.state)){
@@ -74,7 +74,7 @@ function cleanSection(section:unknown,store:BackupStore):BackupSection{
  }
  validateProgressRecords(store.key,state);
  if(oldBooks){
-  if(store.key==='qc-audio-library-v1')return {state:JSON.parse(JSON.stringify(migrateMoralLibrary(state as Parameters<typeof migrateMoralLibrary>[0]))),version:1};
+  if(store.key==='qc-audio-library-v1')return {state:JSON.parse(JSON.stringify(migrateMoralLibrary(state as Parameters<typeof migrateMoralLibrary>[0]))),version:store.version};
   for(const key of ['entries','bookmarks'])if(Array.isArray(state[key]))state[key]=JSON.parse(JSON.stringify((state[key] as unknown as BookMemory[]).map(migrateMoralMemory)));
  }
  return {state,version:store.version};
