@@ -24,3 +24,22 @@ it('migrates the old default to 115 percent while preserving a saved custom zoom
  await useInteractiveReaderStore.persist.rehydrate();
  expect(useInteractiveReaderStore.getState()).toMatchObject({zoom:1.75,paper:'light'});
 });
+
+it('adds text framing to old preferences without discarding the theme or custom zoom',async()=>{
+ const {useInteractiveReaderStore}=await import('./interactiveReaderStore');
+ useInteractiveReaderStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
+ localStorage.setItem('quran-coach-interactive-reader',JSON.stringify({state:{zoom:1.75,paper:'dark'},version:2}));
+ await useInteractiveReaderStore.persist.rehydrate();
+ expect(useInteractiveReaderStore.getState()).toMatchObject({framing:'text',zoom:1.75,paper:'dark'});
+ useInteractiveReaderStore.getState().setFraming('page');
+ await useInteractiveReaderStore.persist.rehydrate();
+ expect(useInteractiveReaderStore.getState()).toMatchObject({framing:'page',zoom:1.15,paper:'dark'});
+});
+it('keeps screen wake opt-in across reloads without enabling it for existing users',async()=>{
+ const {useInteractiveReaderStore}=await import('./interactiveReaderStore');
+ expect(useInteractiveReaderStore.getState().keepScreenAwake).toBe(false);
+ useInteractiveReaderStore.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
+ useInteractiveReaderStore.getState().setKeepScreenAwake(true);
+ await useInteractiveReaderStore.persist.rehydrate();
+ expect(useInteractiveReaderStore.getState().keepScreenAwake).toBe(true);
+});

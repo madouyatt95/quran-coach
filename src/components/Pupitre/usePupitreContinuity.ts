@@ -24,7 +24,9 @@ export function restoreReadingAnchor(root:HTMLElement,anchor:Anchor|null){
  const target=[...upper.querySelectorAll<HTMLElement>(`[${anchor.attribute}]`)].find(el=>el.getAttribute(anchor.attribute)===anchor.key);
  if(!target)return false;
  const host=scrollHost(upper);host.scrollTop+=target.getBoundingClientRect().top-viewTop(host)-anchor.offset;
- host.scrollLeft+=target.getBoundingClientRect().left-(host===document.scrollingElement?0:host.getBoundingClientRect().left)-anchor.offsetX;return true;
+ // Fitted calligraphy remains centered; keep the semantic vertical anchor only.
+ if(root.matches('.iq-framing-text.iq-fit-width'))host.scrollLeft=Math.max(0,(host.scrollWidth-host.clientWidth)/2);
+ else host.scrollLeft+=target.getBoundingClientRect().left-(host===document.scrollingElement?0:host.getBoundingClientRect().left)-anchor.offsetX;return true;
 }
 /** Keep a semantic passage, rather than an obsolete pixel offset after a resize. */
 export function usePupitreContinuity(ref:RefObject<HTMLDivElement|null>,signature:string,documentKey:string){

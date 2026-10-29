@@ -8,7 +8,7 @@ export function edgeDrag(delta:number,left:number,max:number) {
     const next=Math.max(0,Math.min(max,left-delta));
     return {next,excess:delta-(left-next)};
 }
-export function usePageGestures(viewport:RefObject<HTMLDivElement|null>,zoom:number,setZoom:(z:number)=>void,onTurn:(d:number,velocity?:number)=>void,curl?:{preview:(direction:number,progress:number,tilt?:number)=>void;end:(direction:number,commit:boolean,velocity:number)=>void}) {
+export function usePageGestures(viewport:RefObject<HTMLDivElement|null>,zoom:number,setZoom:(z:number)=>void,onTurn:(d:number,velocity?:number)=>void,curl?:{preview:(direction:number,progress:number,tilt?:number)=>void;end:(direction:number,commit:boolean,velocity:number)=>void},baseZoom=1) {
     const points=useRef(new Map<number,{x:number;y:number}>());
     const drag=useRef<{x:number;y:number;lastX:number;lastY:number;excess:number;moved:boolean;multi:boolean;corner:number;progress:number;time:number;velocity:number}|null>(null);
     const pinch=useRef<{distance:number;zoom:number}|null>(null);
@@ -39,7 +39,7 @@ export function usePageGestures(viewport:RefObject<HTMLDivElement|null>,zoom:num
             if(d.corner){d.progress=Math.max(0,d.corner*(e.clientX-d.x)/travel);curl?.preview(d.corner,d.progress,dragTilt(e.clientX-d.x,e.clientY-d.y,d.corner));d.lastX=e.clientX;d.lastY=e.clientY;return;}
             if(d.moved){
                 const dx=e.clientX-d.lastX;
-                if(zoom>1){
+                if(zoom>baseZoom){
                     const step=edgeDrag(dx,el.scrollLeft,Math.max(0,el.scrollWidth-el.clientWidth));
                     el.scrollLeft=step.next;el.scrollTop-=e.clientY-d.lastY;
                     d.excess=step.excess===0?0:Math.sign(d.excess)===Math.sign(step.excess)?d.excess+step.excess:step.excess;
@@ -52,7 +52,7 @@ export function usePageGestures(viewport:RefObject<HTMLDivElement|null>,zoom:num
         onPointerUpCapture:(e:PointerEvent<HTMLDivElement>)=>{
             const d=drag.current;points.current.delete(e.pointerId);
             if(d?.corner){const velocity=releaseVelocity(d.velocity*d.corner,e.timeStamp-d.time);curl?.end(d.corner,shouldCommitTurn(d.progress,velocity),velocity);if(d.moved)suppress.current=true;try{viewport.current?.releasePointerCapture(e.pointerId);}catch{/* already released */}}
-            else if(d&&!d.multi){const delta=swipePageDelta(e.clientX-d.x,e.clientY-d.y,zoom,d.excess);if(delta)onTurn(delta,releaseVelocity(d.velocity*delta,e.timeStamp-d.time));}
+            else if(d&&!d.multi){const delta=swipePageDelta(e.clientX-d.x,e.clientY-d.y,zoom/baseZoom,d.excess);if(delta)onTurn(delta,releaseVelocity(d.velocity*delta,e.timeStamp-d.time));}
             if(!points.current.size)reset();
         },
         onPointerCancelCapture:()=>{if(drag.current?.corner)curl?.end(drag.current.corner,false,0);reset();suppress.current=true;},
