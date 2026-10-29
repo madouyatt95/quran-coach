@@ -1,3 +1,5 @@
+import {migrateMoralLibrary,migrateMoralMemory} from './moralEditionMigration';
+import type {BookMemory} from '../stores/bookNotebookStore';
 /** Account-independent backups. Only the explicit progress registry is transferable. */
 export type Json = null|boolean|number|string|Json[]|{[key:string]:Json};
 export type ObjectValue = {[key:string]:Json};
@@ -55,7 +57,8 @@ function validateJson(value:unknown,depth=0,budget={left:250000}):asserts value 
 }
 function sameType(a:unknown,b:unknown){return a===null||a===undefined?true:Array.isArray(a)?Array.isArray(b):typeof a==='object'?record(b):typeof a===typeof b;}
 function cleanSection(section:unknown,store:BackupStore):BackupSection{
- if(!record(section)||!record(section.state)||section.version!==store.version)throw new Error(`${store.label} : format incompatible. Mettez l’application à jour sur les deux appareils.`);
+ const oldBooks=record(section)&&section.version===0&&store.version===1&&['qc-audio-library-v1','qc-book-notebook-v1'].includes(store.key);
+ if(!record(section)||!record(section.state)||(section.version!==store.version&&!oldBooks))throw new Error(`${store.label} : format incompatible. Mettez l’application à jour sur les deux appareils.`);
  const state:ObjectValue={};
  for(const [key,value] of Object.entries(section.state)){
   if(omitted.has(key))continue;
@@ -70,6 +73,10 @@ function cleanSection(section:unknown,store:BackupStore):BackupSection{
   for(const key of ['favorites','favoriteHadiths','favoriteDuas','collections'])if(Array.isArray(state[key])&&state[key].some(v=>!record(v)))throw new Error('Favori invalide.');
  }
  validateProgressRecords(store.key,state);
+ if(oldBooks){
+  if(store.key==='qc-audio-library-v1')return {state:JSON.parse(JSON.stringify(migrateMoralLibrary(state as Parameters<typeof migrateMoralLibrary>[0]))),version:1};
+  for(const key of ['entries','bookmarks'])if(Array.isArray(state[key]))state[key]=JSON.parse(JSON.stringify((state[key] as unknown as BookMemory[]).map(migrateMoralMemory)));
+ }
  return {state,version:store.version};
 }
 function validateProgressRecords(key:string,state:ObjectValue){
@@ -79,7 +86,7 @@ function validateProgressRecords(key:string,state:ObjectValue){
  const eachArray=(name:string,check:(v:Json)=>boolean)=>{if(state[name]!==undefined&&(!Array.isArray(state[name])||state[name].some(v=>!check(v))))fail();};
  const position=(v:Json)=>record(v)&&Number.isInteger(v.surah)&&Number(v.surah)>=1&&Number(v.surah)<=114&&Number.isInteger(v.ayah)&&Number(v.ayah)>=1&&Number(v.ayah)<=286;
  if(key==='qc-book-notebook-v1')for(const field of ['entries','bookmarks'])eachArray(field,v=>fields(v,{id:'string',bookId:'string',version:'string',chapterId:'string',passageId:'string',text:'string',note:'string',createdAt:'number'})&&record(v)&&Array.isArray(v.sources)&&v.sources.every(x=>typeof x==='string')&&(v.audioId===undefined||typeof v.audioId==='string')&&(v.seconds===undefined||(typeof v.seconds==='number'&&v.seconds>=0)));
- if(key==='qc-audio-library-v1'){eachMap('bookReadingPoints',v=>fields(v,{chapterId:'string',passageId:'string',version:'string',updatedAt:'number'})&&record(v)&&(v.previousPassageId===undefined||typeof v.previousPassageId==='string'));eachArray('favorites',v=>typeof v==='string');eachMap('positions',v=>fields(v,{seconds:'number',updatedAt:'number'})&&Number((v as ObjectValue).seconds)>=0);}
+ if(key==='qc-audio-library-v1'){eachMap('bookReading',v=>typeof v==='string');eachMap('bookReadingUpdatedAt',v=>typeof v==='number');eachMap('bookNotes',v=>typeof v==='string');eachMap('bookReadingPoints',v=>fields(v,{chapterId:'string',passageId:'string',version:'string',updatedAt:'number'})&&record(v)&&(v.previousPassageId===undefined||typeof v.previousPassageId==='string'));eachArray('favorites',v=>typeof v==='string');eachMap('positions',v=>fields(v,{seconds:'number',updatedAt:'number'})&&Number((v as ObjectValue).seconds)>=0);}
  if(key==='quran-coach-reader-notes')eachMap('notes',v=>position(v)&&fields(v,{text:'string',kind:'string',updatedAt:'number',page:'number'}));
  if(key==='quran-coach-reading-bookmark'){
   const valid=(v:Json)=>position(v)&&fields(v,{view:'string',precision:'string',savedAt:'number',page:'number'})&&Number((v as ObjectValue).page)>=1&&Number((v as ObjectValue).page)<=604;

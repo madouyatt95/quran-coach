@@ -61,3 +61,12 @@ it('roundtrips personal book bookmarks and rejects invalid notes without losing 
  delete exported.sections[registry[0].key].state.bookmarks;
  expect(()=>parseBackup(JSON.stringify(exported),registry)).not.toThrow();
 });
+
+it('upgrades only the supported old book backup while preserving notes and audio positions',()=>{
+ const registry:BackupStore[]=[{key:'qc-audio-library-v1',label:'Livres',version:1,defaults:{favorites:[],bookReading:{},bookReadingUpdatedAt:{},bookReadingPoints:{},bookNotes:{},positions:{}},rehydrate:vi.fn()}];
+ const file={format:'quran-coach-progress',version:1,createdAt:new Date().toISOString(),sections:{'qc-audio-library-v1':{version:0,state:{favorites:['book:coeur-eprouve'],bookReading:{'coeur-eprouve':'tombe'},bookNotes:{'coeur-eprouve':'Ne pas perdre'},positions:{old:{seconds:15,updatedAt:1}}}}}};
+ const restored=parseBackup(JSON.stringify(file),registry).sections['qc-audio-library-v1'];
+ expect(restored.version).toBe(1);expect(restored.state.bookReading).toMatchObject({'portes-de-misericorde':'tombe'});
+ expect(restored.state.bookNotes).toEqual({'coeur-eprouve':'Ne pas perdre'});expect(restored.state.positions).toEqual(file.sections['qc-audio-library-v1'].state.positions);
+ file.sections['qc-audio-library-v1'].version=2;expect(()=>parseBackup(JSON.stringify(file),registry)).toThrow();
+});

@@ -32,8 +32,8 @@ describe('livres racontés : texte et sources', () => {
         }
       }
       for (const chapter of book.chapters) {
-        // Shorter factual transitions belong in a biography; padding each to 450 words obscures its chronology.
-        expect(narrationLength(chapterNarrative(chapter)).words).toBeGreaterThan(book.scope?.kind === 'biography' ? 150 : 450);
+        // Biographies and long anthologies may contain short sourced chapters; validate the complete book above.
+        expect(narrationLength(chapterNarrative(chapter)).words).toBeGreaterThan(['biography','anthology'].includes(book.scope?.kind||'') ? 150 : 450);
         for (const scene of chapter.scenes) {
           expect(scene.studyNote).not.toBe('');
           for (const paragraph of scene.paragraphs) {

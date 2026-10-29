@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {expect,it} from 'vitest';
 import {narrativeBooks} from '../data/narrativeBooks';
-import {books,recordingsForBook,chapterForAudio,bookForAudio} from './bookLibrary';
+import {books,recordingsForBook,chapterForAudio,bookForAudio,isSupersededBookAudio} from './bookLibrary';
 import {bookAudioMarks,bookPassages,audioAtPassage} from './bookPassages';
 import type {LibraryAudio} from './audioProduction';
 /** Optional audit of an explicitly fetched public catalogue, never a network call from tests. */
@@ -11,5 +11,5 @@ it.skipIf(!process.env.QC_CATALOG_AUDIT_FILE)('matches every published segment a
  // The library also contains standalone invocation explanations and listening guides.
  const bookSegments=catalog.filter(item=>bookForAudio(item));
  expect(inspected).toBe(bookSegments.length);
- for(const item of catalog.filter(item=>item.reference.includes('Manuscrit ')))expect(bookForAudio(item),item.title).toBeDefined();
+ for(const item of catalog.filter(item=>item.reference.includes('Manuscrit ')&&!isSupersededBookAudio(item)))expect(bookForAudio(item),item.title).toBeDefined();
 });

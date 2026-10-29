@@ -8,7 +8,7 @@ import {stories} from '../data/storiesData';
 const recordings=narrativeBooks.flatMap(book=>book.chapters.flatMap(chapter=>chapterDrafts(book,chapter,false,chapter===book.chapters.at(-1)).map((script,i)=>({id:`${book.id}:${chapter.id}:${i}`,title:script.title,reference:script.reference,text:script.text,duration:100,sourceUrl:script.source_url,url:'https://audio.test/a.mp3',bytes:100,category:script.category,narrator:'George',sentences:[]} as LibraryAudio))));
 it('maps every manuscript segment to its exact book and chapter, without loading editorial manuscripts in catalogues',()=>{
  expect(books).toHaveLength(narrativeBooks.length);
- for(const book of narrativeBooks){const summary=books.find(b=>b.id===book.id)!;expect(summary.chapters).toEqual(book.chapters.map(c=>({id:c.id,title:c.title,...(c.audioVersion?{audioVersion:c.audioVersion}:{})})));const audio=recordingsForBook([...recordings].reverse(),summary);expect(audio.length).toBeGreaterThan(0);for(const [i,chapter] of book.chapters.entries()){const parts=audio.filter(a=>chapterForAudio(a,summary)===i);expect(parts.map(p=>p.text).join('')).toBe(narratedChapterText(book,chapter));}}
+ for(const book of narrativeBooks){const summary=books.find(b=>b.id===book.id)!;expect(summary.chapters).toEqual(book.chapters.map(c=>({id:c.id,title:c.title,...(c.audioVersion?{audioVersion:c.audioVersion}:{}),...(c.audioTitle?{audioTitle:c.audioTitle}:{})})));const audio=recordingsForBook([...recordings].reverse(),summary);expect(audio.length).toBeGreaterThan(0);for(const [i,chapter] of book.chapters.entries()){const parts=audio.filter(a=>chapterForAudio(a,summary)===i);expect(parts.map(p=>p.text).join('')).toBe(narratedChapterText(book,chapter));}}
 });
 it('rejects similarly named pilot or unversioned recordings',()=>{expect(bookForAudio({title:'Adam · Un savoir reçu',reference:'2:30-34'})).toBeUndefined();});
 it('returns a full companion biography to its person instead of its former isolated episode',()=>{
@@ -32,6 +32,10 @@ it('retains valid source destinations and resolves old entries to their specific
  expect(bookEntryForOrigin('prophet','salih')?.chapter).toBe('salih');
  expect(bookEntryForOrigin('prophet','idris')).toBeNull();
  expect(bookEntryForOrigin('story','hudaybiyya')?.book.id).toBe('hudaybiyya-pacte');
+ expect(bookEntryForOrigin('story','ashab-as-sabt')).toMatchObject({book:{id:'or-et-intention'},chapter:'sabbat'});
+ expect(bookEntryForOrigin('story','habil-qabil')).toMatchObject({book:{id:'or-et-intention'},chapter:'freres'});
+ expect(bookEntryForOrigin('story','corbeau')).toMatchObject({book:{id:'or-et-intention'},chapter:'freres'});
+ expect(bookEntryForOrigin('story','croyant-pharaon')).toMatchObject({book:{id:'croire-parmi-les-siens'},chapter:'croyant'});
  expect(bookEntryForOrigin('story','ifk')?.book.id).toBe('aicha-innocence');
  expect(bookEntryForOrigin('prophet','ismail')?.book.id).toBe('hajar-zamzam');
  expect(bookEntryForOrigin('prophet','lut')?.book.id).toBe('lut');

@@ -1646,6 +1646,288 @@
     ]
   },
   {
+    "id": "or-et-intention",
+    "title": "L’or et l’intention",
+    "subtitle": "Du trésor enfoui aux jardins de Saba · six récits sur ce qui nous est confié",
+    "version": "or-et-intention-long-2026-10-29-v2",
+    "category": "story",
+    "scope": {
+      "kind": "anthology",
+      "description": "Édition longue en chapitres : récits distincts réunis par un fil narratif, ouvertures et transitions originales, sources consultables."
+    },
+    "length": {
+      "words": 3191,
+      "minMinutes": 20,
+      "maxMinutes": 24
+    },
+    "chapters": [
+      {
+        "id": "tresor",
+        "title": "Le trésor dont personne ne voulait"
+      },
+      {
+        "id": "aumones",
+        "title": "Les trois aumônes inattendues",
+        "audioVersion": "or-et-intention-conte-2026-10-29-v1",
+        "audioTitle": "L’or et l’intention"
+      },
+      {
+        "id": "debiteur",
+        "title": "Le marchand qui accordait du répit"
+      },
+      {
+        "id": "saba",
+        "title": "Les deux jardins de Saba"
+      },
+      {
+        "id": "sabbat",
+        "title": "Le village au bord de la mer",
+        "audioVersion": "responsabilite-du-don-conte-2026-10-29-v1",
+        "audioTitle": "La responsabilité devant le don"
+      },
+      {
+        "id": "freres",
+        "title": "Les deux fils d’Adam"
+      }
+    ]
+  },
+  {
+    "id": "aimer-sans-paraitre",
+    "title": "Aimer sans paraître",
+    "subtitle": "Neuf rencontres où l’attention change tout · aimer, voir et enseigner avec douceur",
+    "version": "aimer-sans-paraitre-long-2026-10-29-v2",
+    "category": "story",
+    "scope": {
+      "kind": "anthology",
+      "description": "Édition longue en chapitres : récits distincts réunis par un fil narratif, ouvertures et transitions originales, sources consultables."
+    },
+    "length": {
+      "words": 4629,
+      "minMinutes": 29,
+      "maxMinutes": 35
+    },
+    "chapters": [
+      {
+        "id": "visite",
+        "title": "La visite sans dette à réclamer"
+      },
+      {
+        "id": "uways",
+        "title": "Uways, connu pour sa bonté envers sa mère",
+        "audioVersion": "aimer-sans-paraitre-conte-2026-10-29-v1",
+        "audioTitle": "Aimer sans paraître"
+      },
+      {
+        "id": "dattes",
+        "title": "La troisième datte"
+      },
+      {
+        "id": "echarpe",
+        "title": "Le jour du vêtement rouge"
+      },
+      {
+        "id": "mosquee",
+        "title": "La personne qui prenait soin de la mosquée"
+      },
+      {
+        "id": "visite-malade",
+        "title": "La visite au jeune garçon malade"
+      },
+      {
+        "id": "mosquee-apprentissage",
+        "title": "Dans la mosquée, laisser le temps de réparer"
+      },
+      {
+        "id": "manteau",
+        "title": "Le manteau tiré avec force",
+        "audioVersion": "force-de-douceur-conte-2026-10-29-v1",
+        "audioTitle": "La force de la douceur"
+      },
+      {
+        "id": "priere",
+        "title": "Apprendre après une parole pendant la prière"
+      }
+    ]
+  },
+  {
+    "id": "portes-de-misericorde",
+    "title": "Les portes de la miséricorde",
+    "subtitle": "Six récits pour traverser la peur, le retour et la peine",
+    "version": "portes-de-misericorde-long-2026-10-29-v2",
+    "category": "story",
+    "scope": {
+      "kind": "anthology",
+      "description": "Édition longue en chapitres : récits distincts réunis par un fil narratif, ouvertures et transitions originales, sources consultables."
+    },
+    "length": {
+      "words": 3226,
+      "minMinutes": 20,
+      "maxMinutes": 24
+    },
+    "chapters": [
+      {
+        "id": "mere",
+        "title": "Une mère au milieu des captifs"
+      },
+      {
+        "id": "monture",
+        "title": "La monture retrouvée dans le désert",
+        "audioVersion": "portes-de-misericorde-conte-2026-10-29-v1",
+        "audioTitle": "Les portes de la miséricorde"
+      },
+      {
+        "id": "crainte",
+        "title": "L’homme qui craignait son jugement"
+      },
+      {
+        "id": "maladie",
+        "title": "La femme qui demande une invocation"
+      },
+      {
+        "id": "tombe",
+        "title": "Auprès de la tombe",
+        "audioVersion": "coeur-eprouve-conte-2026-10-29-v1",
+        "audioTitle": "Quand le cœur est éprouvé"
+      },
+      {
+        "id": "ibrahim",
+        "title": "Les larmes du Messager pour Ibrahim"
+      }
+    ]
+  },
+  {
+    "id": "juger-liberer-proteger",
+    "title": "Juger, libérer, protéger",
+    "subtitle": "Neuf récits sur la décision, le discernement et les limites du pouvoir",
+    "version": "juger-liberer-proteger-long-2026-10-29-v2",
+    "category": "story",
+    "scope": {
+      "kind": "anthology",
+      "description": "Édition longue en chapitres : récits distincts réunis par un fil narratif, ouvertures et transitions originales, sources consultables."
+    },
+    "length": {
+      "words": 3792,
+      "minMinutes": 23,
+      "maxMinutes": 29
+    },
+    "chapters": [
+      {
+        "id": "thumama",
+        "title": "Thumama, de la captivité à la liberté"
+      },
+      {
+        "id": "enfant",
+        "title": "Deux femmes et un seul enfant",
+        "audioVersion": "juger-liberer-proteger-conte-2026-10-29-v1",
+        "audioTitle": "Juger, libérer, protéger"
+      },
+      {
+        "id": "arbre",
+        "title": "Sous l’arbre, face à l’épée"
+      },
+      {
+        "id": "voleur",
+        "title": "Trois nuits auprès des provisions"
+      },
+      {
+        "id": "orgueil",
+        "title": "L’homme satisfait de son apparence",
+        "audioVersion": "discernement-epreuve-conte-2026-10-29-v1",
+        "audioTitle": "Le discernement à l’épreuve"
+      },
+      {
+        "id": "feu",
+        "title": "Un ordre devant le feu"
+      },
+      {
+        "id": "soleil",
+        "title": "Avant que le soleil ne se couche"
+      },
+      {
+        "id": "palmier",
+        "title": "Le tronc près duquel on écoutait",
+        "audioVersion": "signes-et-limites-conte-2026-10-29-v1",
+        "audioTitle": "Des signes et des limites"
+      },
+      {
+        "id": "pluie",
+        "title": "Deux vendredis, deux demandes"
+      }
+    ]
+  },
+  {
+    "id": "croire-parmi-les-siens",
+    "title": "Croire au milieu des siens",
+    "subtitle": "Onze étapes, des voix entendues aux images du Coran",
+    "version": "croire-parmi-les-siens-long-2026-10-29-v2",
+    "category": "story",
+    "scope": {
+      "kind": "anthology",
+      "description": "Édition longue en chapitres : récits distincts réunis par un fil narratif, ouvertures et transitions originales, sources consultables."
+    },
+    "length": {
+      "words": 3304,
+      "minMinutes": 21,
+      "maxMinutes": 25
+    },
+    "chapters": [
+      {
+        "id": "croyant",
+        "title": "Un croyant dans la famille de Pharaon"
+      },
+      {
+        "id": "epouse-pharaon",
+        "title": "La demande de l’épouse de Pharaon",
+        "audioVersion": "croire-parmi-les-siens-conte-2026-10-29-v1",
+        "audioTitle": "Croire au milieu des siens"
+      },
+      {
+        "id": "liens",
+        "title": "Deux familles, deux responsabilités"
+      },
+      {
+        "id": "plainte",
+        "title": "La parole de celle qui se plaint"
+      },
+      {
+        "id": "aveugle",
+        "title": "Celui qui venait pour apprendre",
+        "audioVersion": "une-parole-entendue-conte-2026-10-29-v1",
+        "audioTitle": "Une parole entendue"
+      },
+      {
+        "id": "table",
+        "title": "La demande autour de la table",
+        "audioVersion": "une-parole-entendue-conte-2026-10-29-v1",
+        "audioTitle": "Une parole entendue"
+      },
+      {
+        "id": "mosquee",
+        "title": "Le lieu bâti pour diviser"
+      },
+      {
+        "id": "feu-orage",
+        "title": "Une lumière, puis la pluie"
+      },
+      {
+        "id": "mirage",
+        "title": "Le mirage et la mer profonde",
+        "audioVersion": "images-qui-reveillent-conte-2026-10-29-v1",
+        "audioTitle": "Les images qui réveillent"
+      },
+      {
+        "id": "ecume",
+        "title": "L’écume et ce qui demeure",
+        "audioVersion": "images-qui-reveillent-conte-2026-10-29-v1",
+        "audioTitle": "Les images qui réveillent"
+      },
+      {
+        "id": "jardins",
+        "title": "Donner et cultiver"
+      }
+    ]
+  },
+  {
     "id": "salman-recherche",
     "title": "Salman al-Farisi",
     "subtitle": "De la Perse à Médine, puis aux rives de l’Irak",

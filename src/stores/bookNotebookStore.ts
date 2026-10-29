@@ -1,3 +1,4 @@
+import {migrateMoralMemory} from '../lib/moralEditionMigration';
 import {create} from 'zustand';
 import {persist} from 'zustand/middleware';
 export interface BookMemory {id:string;bookId:string;version:string;chapterId:string;passageId:string;text:string;sources:string[];audioId?:string;seconds?:number;note:string;createdAt:number}
@@ -9,4 +10,4 @@ export const useBookNotebook=create<{bookmarks:BookMemory[];saveBookmark:(entry:
  remember:entry=>set(s=>{const id=`${entry.bookId}:${entry.version}:${entry.passageId}`;return s.entries.some(e=>e.id===id)?s:{entries:[{...entry,id,note:'',createdAt:Date.now()},...s.entries]};}),
  annotate:(id,note)=>set(s=>({entries:s.entries.map(e=>e.id===id?{...e,note:note.slice(0,2000)}:e)})),
  remove:id=>set(s=>({entries:s.entries.filter(e=>e.id!==id)})),
-}),{name:'qc-book-notebook-v1'}));
+}),{name:'qc-book-notebook-v1',version:1,migrate:state=>{const old=state as {entries?:BookMemory[];bookmarks?:BookMemory[]};return {...old,entries:(old.entries||[]).map(migrateMoralMemory),bookmarks:(old.bookmarks||[]).map(migrateMoralMemory)}}}));

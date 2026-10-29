@@ -1,0 +1,46 @@
+import {defineBook} from '../defineBook';
+import {hadith,checkedAt} from './shared';
+export const justiceBook=defineBook({id:'juger-liberer-proteger',title:'Juger, libérer, protéger',subtitle:'Trois décisions au moment décisif',category:'story',checkedAt,
+note:'Trois récits distincts transmis par Abou Hourayra et Jabir. Le jugement de Sulayman est présenté comme un récit particulier, pas comme une méthode judiciaire à reproduire. Le texte ne rajoute pas d’issue absente de la version choisie.',chapters:[
+{id:'thumama',title:'Thumama, de la captivité à la liberté',sections:[{title:'Un prisonnier dans la mosquée',refs:[hadith('bukhari','4372','Thumama ibn Uthal, retenu à Médine, dialogue avec le Prophète puis est libéré.')],text:`Une troupe envoyée vers le Najd ramène un homme des Banu Hanifa : Thumama ibn Uthal. Il est attaché à un pilier de la mosquée. Le Messager d’Allah vient à lui et l’interroge sur ce qu’il a à dire. Thumama évoque plusieurs issues : s’il était mis à mort, il serait un homme ayant versé du sang ; s’il était libéré, il saurait reconnaître ce bienfait ; si l’on voulait des biens, il pourrait en donner.
+
+Le lendemain, le Prophète revient lui poser une question semblable. Thumama maintient ce qu’il a dit, notamment sa reconnaissance s’il est libéré. Le jour suivant, le Messager revient encore. Puis il donne l’ordre de le relâcher.
+
+La captivité, les échanges et la libération sont distincts de ce qui va suivre. Le hadith ne dit pas que Thumama se serait déclaré musulman pour obtenir sa liberté. Au contraire, il est libéré, puis s’en va vers des palmiers proches de la mosquée où il se lave. Ensuite seulement, il revient et entre dans la mosquée.
+
+Ce déroulement compte. Si nous plaçons sa déclaration de foi avant la libération, nous changeons l’ordre du récit. La décision de le relâcher n’attend pas la parole qu’il prononcera après être sorti.`},
+{title:'Revenir de son plein gré',refs:[hadith('bukhari','4372','Après sa libération, Thumama revient, embrasse l’islam et poursuit sa route vers La Mecque.')],text:`Thumama revient et atteste qu’il n’y a de divinité digne d’adoration qu’Allah et que Muhammad est Son messager. Il dit au Prophète combien son regard a changé : celui dont le visage, la religion et la ville lui étaient auparavant les plus détestés sont devenus les plus aimés pour lui.
+
+Il explique qu’il voulait accomplir la omra lorsque la troupe l’a arrêté et demande ce qu’il doit faire. Le Messager lui annonce une bonne nouvelle et lui indique d’accomplir la omra. Arrivé à La Mecque, interrogé sur son changement de religion, Thumama affirme avoir embrassé l’islam. Il annonce aussi que le blé de Yamama ne leur parviendra pas sans la permission du Prophète.
+
+Le texte ne nous ouvre pas toutes les pensées de Thumama pendant les journées de captivité. Il ne décrit pas des conversations secrètes qui expliqueraient chaque étape de son changement. Il donne un enchaînement : capture, paroles répétées, libération, lavage, retour et déclaration. Cette succession suffit à montrer qu’une relation peut changer d’une manière que les premiers instants ne laissaient pas prévoir.
+
+Nous pouvons y réfléchir sans transformer la libération d’un captif en règle permettant à quiconque de décider du sort d’autrui. La responsabilité actuelle est de respecter les droits et la dignité. Le récit nous laisse voir un homme qui, après avoir été relâché, revient exprimer lui-même ce qu’il a choisi.`}]},
+{id:'enfant',title:'Deux femmes et un seul enfant',sections:[{title:'Une affaire devant Dawud',refs:[hadith('muslim','1720a','Deux femmes revendiquent le même enfant après qu’un loup a emporté l’autre.')],text:`Deux femmes cheminent avec leurs deux fils. Un loup emporte l’enfant de l’une d’elles. Chacune affirme alors que l’enfant disparu est celui de l’autre et que l’enfant resté en vie est le sien. Leur désaccord porte sur ce qu’elles ont de plus précieux ; le récit ne dit pas comment chacune a perdu de vue les enfants au moment de l’attaque.
+
+Elles soumettent leur affaire à Dawud, qui rend une décision en faveur de la plus âgée. Elles rencontrent ensuite Sulayman, fils de Dawud, et lui exposent l’affaire. Il demande qu’on lui apporte un couteau et dit qu’il partagera l’enfant entre elles.
+
+La plus jeune refuse. Elle demande qu’il n’agisse pas ainsi et reconnaît l’enfant à l’autre femme. Sulayman rend alors sa décision en faveur de la plus jeune. Le récit rapporte cette issue en quelques paroles, sans faire intervenir un autre témoin ou une preuve nouvelle que nous pourrions ajouter.
+
+Il évoque une menace de violence envers un enfant : la lecture doit rester attentive à ce caractère troublant. Ce qui change le cours du jugement est la réaction de la plus jeune, prête à renoncer à sa revendication pour éviter que l’enfant soit atteint.`},
+{title:'Chercher la justice avec prudence',refs:[hadith('muslim','1720a','La réaction de la plus jeune précède le jugement rendu par Sulayman.')],text:`Ce récit appartient à une situation particulière. Il ne fournit pas un procédé à reproduire pour juger une affaire familiale. Menacer un enfant, mettre quelqu’un sous pression ou conclure automatiquement à partir d’une émotion ne constitue pas une méthode de justice que nous pourrions tirer de cette scène.
+
+La première décision de Dawud ne nous est pas accompagnée de tous les éléments sur lesquels il s’était fondé. Le hadith ne nous invite pas à le mépriser. Il rapporte une seconde décision de Sulayman, à partir de la parole provoquée par sa proposition. Nous devons garder à chacun des deux prophètes le respect qui lui est dû.
+
+La situation montre néanmoins pourquoi une décision humaine demande attention et discernement. Deux affirmations opposées peuvent paraître identiques tant que nous ne regardons que leur formulation. Ici, le récit attire notre regard sur ce qu’une personne consent à perdre pour protéger une vie.
+
+Le prochain récit mettra un autre homme en danger immédiat : le Messager d’Allah se réveille alors que son épée, suspendue à un arbre, se trouve dans la main d’un inconnu.`}]},
+{id:'arbre',title:'Sous l’arbre, face à l’épée',sections:[{title:'La question de l’homme armé',refs:[hadith('bukhari','2910','Un homme prend l’épée du Prophète pendant son sommeil et l’interroge sur celui qui le protégera.')],text:`Jabir ibn Abdullah accompagne le Messager d’Allah lors d’un voyage. Au retour, la chaleur du milieu de la journée les rejoint dans une vallée où poussent des arbres épineux. Les voyageurs descendent de leurs montures et se dispersent pour se reposer à l’ombre.
+
+Le Prophète s’installe sous un arbre et y suspend son épée. Le groupe s’endort. Puis les compagnons entendent le Messager les appeler. Lorsqu’ils se réveillent, ils voient auprès de lui un homme du désert.
+
+Le Prophète leur explique que cet homme a pris son épée pendant qu’il dormait. À son réveil, il l’a trouvée dégainée dans sa main. L’homme lui avait demandé qui le protégerait de lui. Le Messager répond : Allah. Dans cette version, cette réponse est rapportée trois fois.
+
+Jabir précise ensuite que le Prophète ne punit pas cet homme. Le hadith ne dit pas ici que l’épée serait tombée de sa main, ni que l’homme aurait embrassé l’islam. Nous ne mélangeons pas d’autres récits à cette version pour fabriquer une fin plus spectaculaire.`},
+{title:'La confiance et la retenue',refs:[hadith('bukhari','2910','Le Messager répond en invoquant Allah puis ne punit pas l’homme dans cette version.')],text:`La scène commence dans une halte ordinaire et devient soudain une menace. Le Messager ne présente pas sa propre force comme la garantie de sa protection. Il répond en nommant Allah. Lorsque les compagnons arrivent, l’homme est vivant auprès de lui et n’est pas puni selon ce récit.
+
+Il serait imprudent d’utiliser cette scène pour conseiller à une personne menacée de renoncer à se protéger ou d’ignorer un danger. La confiance en Allah n’interdit pas les précautions. Ce récit rapporte un événement précis et la réponse du Messager dans ces circonstances.
+
+Les trois chapitres de ce livre ne donnent pas une règle unique pour toutes les situations. Ils présentent une libération suivie d’un retour, un jugement difficile entre deux femmes et une menace affrontée sous un arbre. Nous pouvons en retenir une invitation au discernement sans prétendre détenir la place des personnes qui décident dans les textes.
+
+Être juste demande de ne pas changer l’ordre des faits, d’écouter ce qui est réellement dit et de ne pas faire de la peur ou de la puissance une permission de tout faire. Chaque histoire se clôt sur une décision. À nous de réfléchir à celles que nos propres responsabilités nous demandent, dans leurs limites et avec les connaissances dont nous disposons.`}]}],epilogue:'Libérer, juger ou retenir sa force sont des décisions différentes. Ces récits demandent de garder leur contexte et d’exercer aujourd’hui nos responsabilités avec attention aux droits et à la vie.',lessons:['Respecter l’ordre des événements rapportés.','Rechercher la justice sans reproduire des procédés dangereux.','Ne pas confondre confiance et imprudence.'],question:'Dans quelle décision peux-tu prendre davantage de temps pour écouter les faits et protéger les personnes concernées ?'});

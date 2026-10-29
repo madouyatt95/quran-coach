@@ -1,3 +1,4 @@
+import {moralVolumes,moralMemberChapters,moralBookDestination} from '../data/moralBookEditions';
 import {editorialConnection} from '../data/bookEditorial';
 import {companionPortraits,companionHref} from '../data/companionPortraits';
 import {narrationSentences} from './narrationText';
@@ -6,12 +7,25 @@ import type {LibraryAudio} from './audioProduction';
 import {chapterNarrative,type NarrativeBook,type NarrativeChapter} from './narrativeBooks';
 export type BookScene='dawn'|'desert'|'water'|'garden'|'night'|'cave';
 export type BookAmbience='silence'|'wind'|'water'|'rain';
-export type BookSummary=Omit<typeof catalog[number],'chapters'> & {chapters:{id:string;title:string;audioVersion?:string}[]};
+export type BookSummary=Omit<typeof catalog[number],'chapters'> & {chapters:{id:string;title:string;audioVersion?:string;audioTitle?:string}[]};
 export const books:BookSummary[]=catalog;
 const P=(id:string)=>`/prophets?prophet=${id}`;
 const S=(id:string)=>`/stories?story=${id}`;
 /** Explicit editorial links, never fuzzy name matching. Arrays correspond to chapters. */
 export const bookOrigins:Record<string,string[]>={
+ 'or-et-intention':['https://sunnah.com/bukhari:3472','https://sunnah.com/bukhari:1421','https://sunnah.com/bukhari:2078'],
+ 'aimer-sans-paraitre':['https://sunnah.com/muslim:2567a','https://sunnah.com/muslim:2542c','https://sunnah.com/muslim:2630'],
+ 'portes-de-misericorde':['https://sunnah.com/bukhari:5999','https://sunnah.com/muslim:2747a','https://sunnah.com/bukhari:3481'],
+ 'coeur-eprouve':['https://sunnah.com/bukhari:5652','https://sunnah.com/bukhari:1283','https://sunnah.com/bukhari:1303'],
+ 'force-de-douceur':['https://sunnah.com/bukhari:219','https://sunnah.com/bukhari:5809','https://sunnah.com/muslim:537a'],
+ 'ceux-que-lon-ne-voyait-pas':['https://sunnah.com/bukhari:439','https://sunnah.com/bukhari:1337','https://sunnah.com/bukhari:1356'],
+ 'juger-liberer-proteger':['https://sunnah.com/bukhari:4372','https://sunnah.com/muslim:1720a','https://sunnah.com/bukhari:2910'],
+ 'signes-et-limites':['https://sunnah.com/bukhari:3124','https://sunnah.com/bukhari:3583','https://sunnah.com/bukhari:1013'],
+ 'discernement-epreuve':['https://sunnah.com/bukhari:2311','https://sunnah.com/bukhari:5789','https://sunnah.com/bukhari:7145'],
+ 'responsabilite-du-don':['/read?surah=34&ayah=15',S('ashab-as-sabt'),S('habil-qabil'),S('corbeau')],
+ 'croire-parmi-les-siens':[S('croyant-pharaon'),'/read?surah=66&ayah=11','/read?surah=66&ayah=10'],
+ 'une-parole-entendue':['/read?surah=58&ayah=1','/read?surah=80&ayah=1','/read?surah=5&ayah=112','/read?surah=9&ayah=107'],
+ 'images-qui-reveillent':['/read?surah=2&ayah=17','/read?surah=24&ayah=39','/read?surah=13&ayah=17','/read?surah=2&ayah=264'],
  adam:[P('adam')],nuh:[P('nuh')],ibrahim:[P('ibrahim')],yusuf:[P('yusuf')],musa:[P('musa')],
  'maryam-isa':[P('zakariyya'),S('maryam'),S('maryam'),P('isa')],
  sulayman:[P('dawud'),S('fourmi'),S('huppe'),S('bilqis'),P('sulayman')],
@@ -39,6 +53,11 @@ export const bookOrigins:Record<string,string[]>={
  'jabir-attention':['https://sunnah.com/bukhari:2097','https://sunnah.com/bukhari:2718','https://sunnah.com/bukhari:2396'],
  'bois-confie-mer':['https://sunnah.com/bukhari:2291'],
 };
+// Assemble source destinations in the same order as the long manuscripts.
+for(const volume of moralVolumes){
+ const entries=volume.members.flatMap(id=>(moralMemberChapters[id]||[]).map((_,i)=>bookOrigins[id]?.[i]||'/stories'));
+ bookOrigins[volume.id]=entries;
+}
 for(const p of companionPortraits){if(p.bookId&&books.some(b=>b.id===p.bookId)){const links=bookOrigins[p.bookId]||=[];const url=companionHref(p.id);if(!links.includes(url))links.push(url);}}
 const companions:Record<string,string[]>={musa:['khidr','musa-apres-la-mer'],sulayman:['sulayman'],isa:['maryam-isa'],muhammad:['sira-confiance','hijra-route','revelation-lettre','ascension-priere','hudaybiyya-pacte'],dawud:['sulayman','royaumes-et-justice'],ibrahim:['hajar-zamzam']};
 export function originForChapter(bookId:string,chapter:number){
@@ -54,7 +73,8 @@ export function bookForAudio(item:Pick<LibraryAudio,'reference'|'title'>){
  const cached=recordingOwners.get(item);if(cached&&cached.reference===item.reference&&cached.title===item.title)return cached.book;
  const key=item.reference?.match(/Manuscrit (.+?), segment /u)?.[1],candidate=key?manuscriptIndex.get(key):undefined;
  const title=item.title.replace(/^Édition chronologique · /u,'');
- const book=candidate&&title.startsWith(`${candidate.title} · `)?candidate:undefined;
+ const chapter=candidate?.chapters.find(c=>key===`${c.audioVersion||candidate.version}, chapitre ${c.id}`);
+ const book=candidate&&(title.startsWith(`${candidate.title} · `)||chapter?.audioTitle&&title.startsWith(`${chapter.audioTitle} · `))?candidate:undefined;
  recordingOwners.set(item,{reference:item.reference,title:item.title,book});return book;
 }
 export function chapterForAudio(item:Pick<LibraryAudio,'reference'|'title'>,book=bookForAudio(item)){
@@ -79,7 +99,7 @@ export function resumeRecording(items:LibraryAudio[],positions:Record<string,{se
  if(!recent)return items[0];
  return positions[recent.id].seconds>=recent.duration-2?items[items.indexOf(recent)+1]||items[0]:recent;
 }
-const sceneDefaults:Record<string,BookScene>={adam:'dawn',nuh:'water',ibrahim:'desert',yusuf:'night',musa:'water','maryam-isa':'garden',sulayman:'desert',khidr:'water',cave:'cave','biens-et-coeur':'garden','musa-apres-la-mer':'desert','royaumes-et-justice':'desert','appels-et-mesure':'desert','sira-confiance':'night','voix-epreuve':'night','luqman-conseils':'garden','parole-juste':'dawn',
+const sceneDefaults:Record<string,BookScene>={'signes-et-limites':'water','discernement-epreuve':'night','responsabilite-du-don':'garden','croire-parmi-les-siens':'desert','une-parole-entendue':'dawn','images-qui-reveillent':'water','or-et-intention':'desert','aimer-sans-paraitre':'dawn','portes-de-misericorde':'garden','coeur-eprouve':'night','force-de-douceur':'dawn','ceux-que-lon-ne-voyait-pas':'garden','juger-liberer-proteger':'desert',adam:'dawn',nuh:'water',ibrahim:'desert',yusuf:'night',musa:'water','maryam-isa':'garden',sulayman:'desert',khidr:'water',cave:'cave','biens-et-coeur':'garden','musa-apres-la-mer':'desert','royaumes-et-justice':'desert','appels-et-mesure':'desert','sira-confiance':'night','voix-epreuve':'night','luqman-conseils':'garden','parole-juste':'dawn',
  lut:'night','kaab-verite':'night','aicha-innocence':'dawn','garcon-et-roi':'dawn','trois-et-rocher':'cave','trois-bienfaits':'garden','route-du-retour':'desert','hajar-zamzam':'water','hijra-route':'desert','ascension-priere':'night','hudaybiyya-pacte':'desert','revelation-lettre':'cave','abou-dharr-recherche':'water','equilibre-droits':'dawn','portes-hospitalite':'night','jourayj-apparences':'dawn','gestes-qui-comptent':'garden','jabir-attention':'garden','bois-confie-mer':'water'};
 export function coverScene(id:string):BookScene{return sceneDefaults[id]||companionPortraits.find(p=>p.bookId===id)?.scene||'dawn';}
 /** Scene cues are editorial atmospheres, never reconstructions of unseen events. */
@@ -146,9 +166,13 @@ export function activeBookScene(book:NarrativeBook,chapter:NarrativeChapter,item
 }
 /** Legacy entry points resolve to the canonical manuscript, with its matching chapter. */
 export function bookEntryForOrigin(kind:'prophet'|'story'|'companion',id:string){
+ if(kind==='story'&&['ashab-as-sabt','habil-qabil','corbeau'].includes(id)){
+  const target=moralBookDestination('responsabilite-du-don',id==='ashab-as-sabt'?'sabbat':'freres')!,book=books.find(b=>b.id===target.bookId);
+  if(book)return {book,chapter:target.chapterId};
+ }
  const preferred=kind==='story'?({hudaybiyya:'hudaybiyya-pacte'} as Record<string,string>)[id]:undefined;
  const related=booksForOrigin(kind,id),primary=related.find(b=>b.id===(preferred||id))||related[0];if(!primary)return null;
- const origin=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id),chapter=kind==='companion'?0:Math.max(0,(bookOrigins[primary.id]||[]).indexOf(origin));
+ const origin=kind==='companion'?companionHref(id):kind==='prophet'?P(id):S(id),chapter=kind==='companion'?0:(primary.id==='responsabilite-du-don'&&id==='corbeau'?2:Math.max(0,(bookOrigins[primary.id]||[]).indexOf(origin)));
  return {book:primary,chapter:primary.chapters[chapter]?.id||primary.chapters[0].id};
 }
 
@@ -173,7 +197,7 @@ export function canonicalBookForSource(sourceUrl:string){
 
 /** Superseded manuscript versions must never appear as unrelated standalone audios. */
 export function isSupersededBookAudio(item:Pick<LibraryAudio,'reference'|'title'>){
- return !bookForAudio(item)&&books.some(b=>item.reference?.includes(`Manuscrit ${b.id}-`));
+ return !bookForAudio(item)&&[...books.map(b=>b.id),...moralVolumes.flatMap(v=>v.members)].some(id=>item.reference?.includes(`Manuscrit ${id}-`));
 }
 export function isCompanionBook(book:BookSummary){return companionPortraits.some(p=>p.bookId===book.id);}
 

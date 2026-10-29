@@ -38,6 +38,7 @@ export interface NarrativeScene {
 }
 export interface NarrativeChapter {
   audioVersion?: string;
+  audioTitle?: string;
   id: string;
   title: string;
   recap: string;

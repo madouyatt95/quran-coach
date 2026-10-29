@@ -1,6 +1,7 @@
 import {memo,useId} from 'react';
 /** Original symbolic jacket artwork. No human figures or historical reconstruction. */
 const identities:Record<string,[string,number]>={
+ 'or-et-intention':['seed',46],'aimer-sans-paraitre':['palm',308],'portes-de-misericorde':['arch',154],'juger-liberer-proteger':['stars',214],'croire-parmi-les-siens':['manuscript',268],
  adam:['seed',30],nuh:['vessel',199],ibrahim:['arch',24],yusuf:['well',257],musa:['river',182],'maryam-isa':['palm',158],sulayman:['arch',40],khidr:['vessel',167],cave:['cave',231],
  'biens-et-coeur':['palm',96],'musa-apres-la-mer':['mountain',22],'royaumes-et-justice':['arch',219],'appels-et-mesure':['mountain',11],'sira-confiance':['cave',275],'voix-epreuve':['river',244],'luqman-conseils':['palm',139],'parole-juste':['manuscript',298],lut:['arch',336],
  'kaab-verite':['route',263],'aicha-innocence':['manuscript',320],'garcon-et-roi':['mountain',349],'trois-et-rocher':['cave',29],'trois-bienfaits':['seed',114],'route-du-retour':['route',18],'hajar-zamzam':['well',178],'hijra-route':['route',221],'ascension-priere':['stars',259],'hudaybiyya-pacte':['manuscript',37],'revelation-lettre':['manuscript',204],'abou-dharr-recherche':['route',143],'equilibre-droits':['arch',162],'portes-hospitalite':['arch',347],'jourayj-apparences':['arch',109],'gestes-qui-comptent':['seed',174],'jabir-attention':['palm',34],'bois-confie-mer':['vessel',216],

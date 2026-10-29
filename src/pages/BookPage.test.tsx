@@ -135,3 +135,11 @@ it('keeps exact audio handoff after arriving through a personal bookmark',async(
  await click(host.querySelectorAll('.book-tabs button')[1]);
  expect(mocks.player.play).toHaveBeenLastCalledWith(mocks.items[0],{queue:mocks.items,startAt:42.5});
 });
+
+it('opens a retired short edition at its renamed chapter and keeps the personal note editable',async()=>{
+ useAudioLibraryStore.setState({bookNotes:{'force-de-douceur':'Une réflexion à conserver'}});
+ await render('/books/force-de-douceur?chapter=mosquee');
+ expect(host.querySelector('.book-hero h1')?.textContent).toBe('Aimer sans paraître');
+ expect(host.querySelector('.book-reading-heading h2')?.textContent).toContain('laisser le temps de réparer');
+ expect([...host.querySelectorAll('textarea')].some(t=>t.value==='Une réflexion à conserver')).toBe(true);
+});
