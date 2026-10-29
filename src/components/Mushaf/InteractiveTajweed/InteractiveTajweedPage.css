@@ -335,3 +335,26 @@ body.iq-immersive-active .bottom-nav{display:none}
 
 .iq-screen-awake{margin:10px 0 16px}.iq-screen-awake .text-settings-switch{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:13px;min-height:44px}.iq-screen-awake small{display:block;font-size:11px;line-height:1.5;color:var(--color-text-secondary);margin-top:4px}.iq-screen-awake input{width:22px;height:22px;flex-shrink:0;accent-color:var(--color-accent-primary,#b69adb)}.iq-screen-awake>button{font-size:12px}
 @media(max-width:360px){.iq-reader .iq-transport button{min-width:32px}.iq-reader .iq-transport .iq-play-primary{width:38px;min-width:38px;margin:0}}
+
+/* Immersion owns the safe area once. Hidden controls must occupy no row. */
+.iq-reader.iq-immersive[data-pupitre-layout=plain]{bottom:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-viewport{padding-bottom:2px;scroll-padding-bottom:2px}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-book-spread{margin-block:auto}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-immersive-dock{width:100%;max-width:none;margin:0;border-radius:14px 14px 0 0}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-dock-hidden .iq-floating{display:none}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-dock-hidden .iq-translation-ribbon{border-radius:14px 14px 0 0}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-controls{display:none}
+.iq-translation-grip{touch-action:none;cursor:grab;padding-top:12px;position:relative}
+.iq-translation-grip:before{content:'';position:absolute;top:0;left:calc(50% - 18px);width:36px;height:3px;border-radius:4px;background:var(--color-text-secondary);opacity:.4}
+.iq-word.iq-reading-trace:after{content:'';position:absolute;right:-5px;top:10%;height:80%;width:2px;background:#a4843a;border-radius:3px;pointer-events:none;animation:iq-trace-fade 4.5s both}
+@keyframes iq-trace-fade{0%,65%{opacity:1}100%{opacity:0}}
+.iq-follow-return{position:absolute;z-index:25;bottom:120px;left:50%;transform:translateX(-50%);white-space:nowrap}
+.iq-follow-return button{min-height:36px;font-size:12px;padding:6px 14px;border:1px solid #b69adb55;border-radius:24px;background:var(--color-bg-secondary);box-shadow:0 4px 16px #0002}
+.iq-comfort-panel{position:absolute;z-index:45;bottom:8px;left:8px;right:8px;max-width:420px;margin-inline:auto;padding:12px 14px;border:1px solid #b69adb55;border-radius:18px;background:var(--color-bg-secondary);box-shadow:0 12px 40px #0004}
+.iq-immersive .iq-comfort-panel{bottom:calc(4px + env(safe-area-inset-bottom,0px))}
+.iq-comfort-panel header{display:flex;justify-content:space-between;align-items:center;gap:12px}.iq-comfort-panel strong{font-size:14px}.iq-comfort-panel small{display:block;font-size:11px;color:var(--color-text-secondary);margin-top:4px}
+.iq-comfort-panel label{display:flex;align-items:center;gap:14px;font-size:13px;font-variant-numeric:tabular-nums}.iq-comfort-panel input{flex:1;min-width:0;min-height:44px;accent-color:var(--color-accent-primary)}
+.iq-comfort-panel>div{display:flex;justify-content:space-between;gap:8px}.iq-comfort-panel>div button{font-size:12px}
+@media(prefers-reduced-motion:reduce){.iq-word.iq-reading-trace:after{animation:none}}
+
+.iq-reader .iq-viewport{overflow-anchor:none}

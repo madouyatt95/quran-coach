@@ -43,3 +43,13 @@ it('keeps screen wake opt-in across reloads without enabling it for existing use
  await useInteractiveReaderStore.persist.rehydrate();
  expect(useInteractiveReaderStore.getState().keepScreenAwake).toBe(true);
 });
+it('remembers independent phone, spread and desk comfort settings after reload',async()=>{
+ const {useInteractiveReaderStore:s}=await import('./interactiveReaderStore');
+ s.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
+ s.getState().setZoom(1.4);
+ s.getState().activateComfort('desk');s.getState().setFraming('page');s.getState().setZoom(1.8);
+ s.getState().activateComfort('spread');expect(s.getState().zoom).toBe(1.15);s.getState().setZoom(1.3);
+ await s.persist.rehydrate();expect(s.getState()).toMatchObject({zoom:1.4,framing:'text',comfortProfile:'single'});
+ s.getState().activateComfort('desk');expect(s.getState()).toMatchObject({zoom:1.8,framing:'page'});
+ s.getState().activateComfort('spread');expect(s.getState()).toMatchObject({zoom:1.3,framing:'text'});
+});

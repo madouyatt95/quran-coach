@@ -20,3 +20,12 @@ it('keeps fitted Mushaf text centered after changing the upper reading area',()=
  restoreReadingAnchor(root,{attribute:'data-word-key',key:'2:17:2',offset:80,offsetX:320});
  expect(viewport.scrollLeft).toBe(74);expect(viewport.scrollTop).toBe(48);root.remove();
 });
+it('preserves the reader line at the same screen height when the header disappears',()=>{
+ const root=document.createElement('div');root.className='iq-reader';root.innerHTML='<section class="pupitre-upper"><div class="iq-viewport"><span data-word-key="2:17:2">mot</span></div></section>';document.body.append(root);
+ const viewport=root.querySelector<HTMLElement>('.iq-viewport')!,word=root.querySelector<HTMLElement>('span')!;
+ let viewportTop=70;
+ viewport.getBoundingClientRect=()=>({top:viewportTop,bottom:700,left:0,right:390,height:700-viewportTop} as DOMRect);
+ word.getBoundingClientRect=()=>({top:viewportTop+150-viewport.scrollTop,bottom:viewportTop+185-viewport.scrollTop,height:35,left:20,right:90} as DOMRect);
+ const anchor=captureReadingAnchor(root);expect(anchor?.screenTop).toBe(220);
+ viewportTop=0;restoreReadingAnchor(root,anchor);expect(word.getBoundingClientRect().top).toBe(220);root.remove();
+});

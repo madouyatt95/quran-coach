@@ -33,3 +33,11 @@ it('keeps two leaves readable, cropping only the two outer margins',()=>{
  expect(scale*468).toBeGreaterThan(317);
  expect((1200*scale+4-740)/2).toBeLessThan(66*scale);
 });
+it('frames the narrower opening pages without clipping their verified 108..492 text column',()=>{
+ for(const page of [1,2]){
+  const scale=readerPageScale(382,734,false,false,base,'text',page);
+  expect(scale).toBeGreaterThan(readerPageScale(382,734,false,false,base,'text',3));
+  expect((600*scale-382)/2).toBeLessThan(108*scale);
+  expect(readerPageScale(382,734,false,false,base,'page',page)).toBe(readerPageScale(382,734,false,false,base,'page',3));
+ }
+});

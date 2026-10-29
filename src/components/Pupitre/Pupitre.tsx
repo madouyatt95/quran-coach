@@ -11,11 +11,11 @@ export const usePupitreMode=()=>useContext(LayoutContext);
 export type {PupitreActivity} from './posture';
 export type ReturnTypeOfLayout=ReturnType<typeof usePupitreLayout>;
 /** Stable wrappers: changing posture never reparents or remounts the activity. */
-export function Pupitre({title,children,enabled=true,layoutState,activity='reader',toolbar=true,documentKey=activity,...props}:HTMLAttributes<HTMLDivElement>&{title:string;children:ReactNode;enabled?:boolean;toolbar?:boolean;activity?:PupitreActivity;layoutState?:ReturnTypeOfLayout;documentKey?:string}){
+export function Pupitre({title,children,enabled=true,layoutState,activity='reader',toolbar=true,documentKey=activity,continuityKey='',...props}:HTMLAttributes<HTMLDivElement>&{title:string;children:ReactNode;enabled?:boolean;toolbar?:boolean;activity?:PupitreActivity;layoutState?:ReturnTypeOfLayout;documentKey?:string;continuityKey?:string}){
  const own=usePupitreLayout(enabled,activity),state=layoutState||own;const layout=enabled?state.layout:'plain';const [settings,setSettings]=useState(false),root=useRef<HTMLDivElement>(null),drag=useRef(false);
  const fixed=layout==='desk'?state.device.vertical:layout==='book'&&state.device.horizontal;
  const nativeFold=state.device.nativeFold?.layout===layout?state.device.nativeFold:null;
- usePupitreContinuity(root,`${layout}:${state.ratio}`,documentKey);
+ usePupitreContinuity(root,`${layout}:${state.ratio}:${continuityKey}`,documentKey);
  useLayoutEffect(()=>{
   if(layout==='plain'||activity!=='reader')return;
   const lower=root.current?.querySelector<HTMLElement>('.pupitre-lower');if(!lower)return;

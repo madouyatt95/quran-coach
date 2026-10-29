@@ -8,11 +8,12 @@ const PAPER_WIDTH = 600, PAPER_HEIGHT = 860, SPREAD_GAP = 4;
  * preserves legibility on short screens and in the upper half of a desk.
  * Page framing fits the entire sheet (or spread) into the available viewport.
  */
-export function readerPageScale(width:number,height:number,spread:boolean,_immersive:boolean,zoom:number,framing:ReaderFraming='text'){
+export function readerPageScale(width:number,height:number,spread:boolean,_immersive:boolean,zoom:number,framing:ReaderFraming='text',page=3){
     const available=Math.max(1,width-(spread?SPREAD_GAP:0));
     const fullWidth=spread?PAPER_WIDTH*2:PAPER_WIDTH;
     // 8 units of safety either side of the text. Keep the central book gutter.
-    const textWidth=spread?1084:484;
+    const opening=page<=2;
+    const textWidth=spread?(opening?1000:1084):(opening?400:484);
     const fit=framing==='page'
         ?Math.min(available/fullWidth,Math.max(1,height)/PAPER_HEIGHT)
         :available/textWidth;
