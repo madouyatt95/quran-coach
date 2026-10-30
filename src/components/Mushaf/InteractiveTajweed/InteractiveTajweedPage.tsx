@@ -1,3 +1,5 @@
+import {captureReadingReturn,readReadingReturn,saveReadingReturn,type ReadingReturn} from './readingReturn';
+import {restoreReadingAnchor} from '../../Pupitre/usePupitreContinuity';
 import {PageBrowseButton,PagePreview} from './PagePreview';
 import {ReadingSessionBar,ReadingSessionChoices} from './ReadingSessionControls';
 import {useReadingSession} from './readingSession';
@@ -155,13 +157,15 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const favorites=useFavoritesStore();
     const bookmark=useReadingBookmarkStore(s=>s.bookmark);
     const [bookmarkSaved,setBookmarkSaved]=useState(false);
-    const [returnPoint,setReturnPoint]=useState<{page:number;surah:number;ayah:number;scroll:number}|null>(null);
-    const restoreScroll=useRef<{page:number;top:number}|null>(null);
+    const [returnPoint,setReturnPoint]=useState<ReadingReturn|null>(readReadingReturn);
+    const returning=useRef(false);
+    const jumpSignal=useQuranStore(s=>s.jumpSignal);
+    useEffect(()=>saveReadingReturn(returnPoint),[returnPoint]);
+    const restoreScroll=useRef<ReadingReturn|null>(null);
     const [audioOrigin,setAudioOrigin]=useState<string|null>(null);
     const turnRequest=useRef(0),turnPreparing=useRef(false);
     const [turnError,setTurnError]=useState('');
     useEffect(()=>{if(!bookmarkSaved)return;const timer=setTimeout(()=>setBookmarkSaved(false),2400);return()=>clearTimeout(timer);},[bookmarkSaved]);
-    useEffect(()=>{if(!returnPoint)return;const timer=setTimeout(()=>setReturnPoint(null),90000);return()=>clearTimeout(timer);},[returnPoint]);
     useEffect(()=>{if(surahs.length===0)void fetchSurahs().then(setSurahs).catch(()=>{});},[surahs.length,setSurahs]);
     const data=bundle?.data.page===page&&bundle.paper===paper?bundle.data:null;
     const font=data?bundle!.font:UNICODE_PAGE_FONT;
@@ -204,6 +208,14 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     },[data,font]);
     const ready=!!data&&positions.length>0;
 
+    // Capture explicit jumps before React replaces the old page. Audio/page turns do not create a return point.
+    useEffect(()=>{
+        if(!ready||location.pathname!=='/read')return;
+        return useQuranStore.subscribe((next,previous)=>{
+            if(returning.current||next.jumpSignal===previous.jumpSignal||next.currentPage===previous.currentPage&&next.currentSurah===previous.currentSurah&&next.currentAyah===previous.currentAyah)return;
+            const host=viewport.current;if(host){const origin=captureReadingReturn(host,previous.currentPage,previous.currentSurah,previous.currentAyah);setReturnPoint(point=>point??origin);}
+        });
+    },[ready,location.pathname]);
     const bookTurn=useBookPageTurn(viewport,page,ready);
     useEffect(()=>{bookTurn.clear();},[pupitre.layout,bookTurn.clear]);
     useEffect(()=>{
@@ -225,15 +237,18 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         }catch{bookTurn.cancel();if(request===turnRequest.current)setTurnError('Cette page n’a pas pu être chargée. Réessayez.');}
         finally{if(request===turnRequest.current)turnPreparing.current=false;}
     };
-    const rememberJump=(target:number)=>{
-        if(target===page)return;
+    const rememberJump=(target:number,force=false)=>{
+        if(target===page&&!force)return;
         wordPlayback.cancel();audio.stopAudio();bookTurn.clear();turnRequest.current++;turnPreparing.current=false;
-        setReturnPoint(previous=>previous??{page,surah:currentSurah,ayah:currentAyah,scroll:viewport.current?.scrollTop||0});
+        const host=viewport.current;if(host){const origin=captureReadingReturn(host,page,currentSurah,currentAyah);setReturnPoint(previous=>previous??origin);}
     };
     const returnToReading=()=>{
         if(!returnPoint)return;const point=returnPoint;audio.stopAudio();bookTurn.clear();setReturnPoint(null);
-        restoreScroll.current={page:point.page,top:point.scroll};
-        useQuranStore.getState().goToAyah(point.surah,point.ayah,point.page,{silent:true});
+        wordPlayback.cancel();setWord(null);setSelection(null);setDetails(null);setPanel(null);
+        restoreScroll.current=point;returning.current=true;
+        useQuranStore.getState().goToPage(point.page,{silent:true});
+        useQuranStore.setState({currentSurah:point.surah,currentAyah:point.ayah});
+        sessionStorage.removeItem('scrollToAyah');returning.current=false;
     };
     const pageMarked=bookmark?.page===page&&bookmark.view==='tajweed-interactive';
     const savePageBookmark=(ribbonLength:number)=>{
@@ -250,7 +265,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const scale=readerPageScale(size.width,size.height,spread,immersive,zoom,framing,page);
     const versoPages=[...new Set([bookTurnPages(page,1,spread).back,bookTurnPages(page,-1,spread).back,bookTurn.backPage].filter((p):p is number=>p!==null&&isInteractivePage(p)))];
     const verseFor=(value:MushafWord)=>ayahs.find(a=>`${a.surah}:${a.numberInSurah}`===value.verseKey)!;
-    const selectVerse=(verse:Ayah)=>useQuranStore.setState({currentSurah:verse.surah,currentAyah:verse.numberInSurah});
+    const selectVerse=(verse:Ayah)=>{useQuranStore.setState({currentSurah:verse.surah,currentAyah:verse.numberInSurah});readingTrace.rememberVerse(`${verse.surah}:${verse.numberInSurah}`);};
     const playVerse=(verse:Ayah,repetitions=1)=>{setWord(null);setAudioOrigin(`${verse.surah}:${verse.numberInSurah}`);audio.startPassage(verse.numberInSurah,verse.numberInSurah,repetitions,verse.surah);};
     const continueFrom=(verse:Ayah,start?:WordRecitationStart)=>{
         const index=ayahs.findIndex(value=>value.number===verse.number);if(index<0)return;
@@ -364,8 +379,13 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         });return()=>cancelAnimationFrame(raf);
     },[word]);
     useEffect(()=>{
-        const el=viewport.current;if(el){el.scrollTop=ready&&restoreScroll.current?.page===page?restoreScroll.current.top:0;el.scrollLeft=Math.max(0,(el.scrollWidth-el.clientWidth)/2);if(ready)restoreScroll.current=null;}
-    },[page,ready]);
+        const el=viewport.current;if(!el)return;
+        const saved=restoreScroll.current?.page===page?restoreScroll.current:null;
+        el.scrollTop=ready&&saved?saved.scroll:0;el.scrollLeft=Math.max(0,(el.scrollWidth-el.clientWidth)/2);
+        if(!ready||!saved)return;
+        const frame=requestAnimationFrame(()=>{const root=el.closest<HTMLElement>('.iq-reader');if(root&&saved.anchor)restoreReadingAnchor(root,saved.anchor);restoreScroll.current=null;});
+        return()=>cancelAnimationFrame(frame);
+    },[page,ready,jumpSignal]);
     const studyParams=new URLSearchParams(location.search);
     const requestedPosition=Number(studyParams.get('studyWord'));
     const studyPosition=Number(studyParams.get('surah'))===currentSurah&&Number(studyParams.get('ayah'))===currentAyah&&Number.isInteger(requestedPosition)&&requestedPosition>0?requestedPosition:0;
@@ -400,6 +420,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     },[data,live.position,audio.audioPlaying,audio.activeWordIndex,audio.currentPlayingAyah,audio.verseWordsMap,audio.sourceMatchedVerse,ayahs]);
     const calmFollow=useCalmFollow(viewport,trackedWord,audio.audioActive||live.active);
     const readingTrace=useReadingTrace(viewport,page,ready,location.pathname==='/read',!!entryVerse||studyParams.has('ayah')||studyParams.has('surah')||!!sessionStorage.getItem('scrollToAyah'));
+    useEffect(()=>{if(audio.audioActive){const verse=ayahs.find(v=>v.number===audio.currentPlayingAyah);if(verse)readingTrace.rememberVerse(`${verse.surah}:${verse.numberInSurah}`);}},[audio.audioActive,audio.currentPlayingAyah,ayahs,readingTrace.rememberVerse]);
     const adoptFacing=(value:MushafWord,action:'play'|'options',selection?:VerseSelection)=>{stopPlayback();bookTurn.clear();pendingFacing.current={page:facingPage,word:value,action,selection};const [surah,ayah]=value.verseKey.split(':').map(Number);useQuranStore.getState().goToAyah(surah,ayah,facingPage,{silent:true});};
     const noteVerse=(n:ReaderNote):Ayah=>({number:CHAPTERS[n.surah-1].offset+n.ayah,numberInSurah:n.ayah,surah:n.surah,page:n.page,text:'',juz:getJuzForPage(n.page)?.number||1,hizbQuarter:1});
     const pageNotes=Object.values(notes).filter(n=>n.page===page);
@@ -531,7 +552,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
                             const highlighted=live.active?live.passage?.surah===verse.surah&&live.passage?.ayah===verse.numberInSurah:(audio.audioPlaying||audio.recitationPause)?audio.currentPlayingAyah===verse.number:currentSurah===verse.surah&&currentAyah===verse.numberInSurah;
                             return <span key={value.key} {...press(verse,selected=>holdWord(value,selected))} role="button" tabIndex={0} data-word-key={value.key} data-line={value.line} data-verse-key={value.verseKey} aria-current={highlighted&&entryVerse===value.verseKey?true:undefined} data-live-word={trackedWord===value.key||undefined}
                                 aria-label={masked?`Révéler ${revealMode==='line'?'la ligne '+value.line:'le mot '+value.position} · ${value.verseKey}`:value.kind==='end'?`Écouter depuis le verset ${value.verseKey}`:`${value.text} · ${value.verseKey} · mot ${value.position}`} aria-pressed={isSelected}
-                                className={`iq-word ${readingSession&&!readingSession.finishedAt&&readingSession.end===page&&value.kind==='end'&&value.verseKey===readingSession.endVerse?'iq-session-end':''} ${readingTrace===value.key?'iq-reading-trace':''} ${entryVerse===value.verseKey&&studyPosition===value.position?'iq-word-academy':''} ${chosenRange&&!passageStart&&selectionWords.some(w=>w.key===value.key)?'iq-word-range':''} ${selectingPassage&&passageStart?.key===value.key&&passageStart.page===page?'iq-word-range-pending':''} ${lessonFound.includes(value.key)?'iq-word-lesson':''} ${font.mode==='unicode'?'iq-word-unicode':''} ${highlighted?'iq-word-verse':''} ${highlighted&&entryVerse===value.verseKey&&!audio.audioActive?'iq-word-entry':''} ${isSelected?'iq-word-selected':''} ${trackedWord===value.key?'iq-word-tracked':''} ${value.kind==='end'?'iq-word-end':''} ${masked?'iq-word-masked':''}`}
+                                className={`iq-word ${readingSession&&!readingSession.finishedAt&&readingSession.end===page&&value.kind==='end'&&value.verseKey===readingSession.endVerse?'iq-session-end':''} ${readingTrace.word===value.key?'iq-reading-trace':''} ${readingTrace.verse===value.verseKey?'iq-resume-verse':''} ${entryVerse===value.verseKey&&studyPosition===value.position?'iq-word-academy':''} ${chosenRange&&!passageStart&&selectionWords.some(w=>w.key===value.key)?'iq-word-range':''} ${selectingPassage&&passageStart?.key===value.key&&passageStart.page===page?'iq-word-range-pending':''} ${lessonFound.includes(value.key)?'iq-word-lesson':''} ${font.mode==='unicode'?'iq-word-unicode':''} ${highlighted?'iq-word-verse':''} ${highlighted&&entryVerse===value.verseKey&&!audio.audioActive?'iq-word-entry':''} ${isSelected?'iq-word-selected':''} ${trackedWord===value.key?'iq-word-tracked':''} ${value.kind==='end'?'iq-word-end':''} ${masked?'iq-word-masked':''}`}
                                 style={{left:x,top:y,width:advance,fontSize,fontFamily:font.family,fontPalette:font.mode==='colrv1'?fontPaletteName(font.family,paper):undefined}}
                                 onClick={()=>tapWord(value)}
                                 onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tapWord(value);}else if(e.key==='ContextMenu'||e.shiftKey&&e.key==='F10'){e.preventDefault();const r=e.currentTarget.getBoundingClientRect();holdWord(value,{ayah:verse,x:r.left,y:r.top});}}}>
@@ -569,7 +590,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         {undoAudio&&<div className="iq-session-notice" role="status"><span>Nouvel emplacement d’écoute</span><button onClick={()=>resumeAudio(undoAudio)}>Annuler le départ</button><button aria-label="Fermer l’annulation" onClick={()=>setUndoAudio(null)}>×</button></div>}
         {(!immersive||split)&&!audio.audioActive&&!wordPlayback.preparing&&savedAudio&&<div className="iq-session-notice"><button onClick={()=>resumeAudio(savedAudio)}>Reprendre l’écoute · {savedAudio.verse.surah}:{savedAudio.verse.numberInSurah} · {Math.floor(savedAudio.offset/60)}:{String(Math.floor(savedAudio.offset%60)).padStart(2,'0')}</button></div>}
         {bookmarkSaved&&<div className="iq-bookmark-confirmation" role="status"><Check size={16}/>Reprendre ici · page {page}</div>}
-        {returnPoint&&returnPoint.page!==page&&<div className="iq-reading-return"><button onClick={returnToReading}><ArrowLeft size={15}/>Revenir à ma lecture · p. {returnPoint.page}</button><button aria-label="Fermer le retour à ma lecture" onClick={()=>setReturnPoint(null)}><X size={15}/></button></div>}
+        {returnPoint&&<div className="iq-reading-return"><button onClick={returnToReading}><ArrowLeft size={15}/>Revenir à ma lecture · p. {returnPoint.page}</button><button aria-label="Fermer le retour à ma lecture" onClick={()=>setReturnPoint(null)}><X size={15}/></button></div>}
         {(!immersive||split)&&sessionBar}
         {(!immersive||split)&&showTranslation&&<TranslationRibbon timings={audio.verseWordsMap.get(translationVerse.join(':'))} sourceMatched={audio.sourceMatchedVerse===translationVerse.join(':')} surah={translationVerse[0]} ayah={translationVerse[1]} expanded={showTranslation} onExpanded={setShowTranslation} audioRef={audio.audioRef} audioActive={audio.audioActive} fontSize={subtitleSize} onPauseForReading={audio.pauseForReading}/>}
         <footer className="iq-controls" inert={immersive&&!split}>
@@ -593,12 +614,12 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         {word&&!split&&<WordStudyCard onOptions={()=>{const v=verseFor(word);setHeldWord(word);setSelection({ayah:v,x:window.innerWidth/2,y:window.innerHeight*.4});setWord(null);}} selectedReciter={selectedReciter} onContinue={start=>continueFrom(verseFor(word),start)} word={word} font={font} paper={paper} page={page} rules={RULES} previous={data?.words.find(w=>w.kind==='word')?.key!==word.key} next={data?.words.filter(w=>w.kind==='word').at(-1)?.key!==word.key} onAdjacent={selectAdjacentWord} onClose={()=>setWord(null)} onTranslation={()=>{setDetails(verseFor(word));setWord(null);}} onBeforePlay={stopPlayback}/>}
         {details&&!split&&<Sheet title={`Verset ${details.surah}:${details.numberInSurah}`} onClose={()=>setDetails(null)}>
             <p className="iq-verse-arabic" dir="rtl" lang="ar">{details.text}</p><p>{translationMap.get(details.number)||'La traduction n’a pas pu être chargée. Réessayez avec une connexion.'}</p><small>Traduction : Muhammad Hamidullah</small>
-            <div className="iq-detail-actions"><Link to={`/fahm?surah=${details.surah}&ayah=${details.numberInSurah}`} state={{readerReturn:{to:`/read?surah=${details.surah}&ayah=${details.numberInSurah}&page=${page}`,label:"Retour au Mushaf"}}}>Approfondir avec Fahm</Link><button onClick={()=>playVerse(details)}><Play size={18}/>Écouter</button><button onClick={()=>{setRange({surah:details.surah,start:details.numberInSurah,end:details.numberInSurah,repetitions:3});setDetails(null);setPanel('range');}}><RotateCcw size={18}/>Répéter un passage</button><Link to={`/tafsir?surah=${details.surah}&ayah=${details.numberInSurah}`}>Consulter le Tafsir</Link><button onClick={()=>{setShare(details);setDetails(null);}}>Partager</button><button onClick={()=>{selectVerse(details);setDetails(null);}}>Reprendre ici</button><button onClick={()=>navigate(`/hifdh?surah=${details.surah}&ayah=${details.numberInSurah}`)}>Mémoriser</button></div>
+            <div className="iq-detail-actions"><Link onClick={()=>rememberJump(page,true)} to={`/fahm?surah=${details.surah}&ayah=${details.numberInSurah}`} state={{readerReturn:{to:`/read?surah=${details.surah}&ayah=${details.numberInSurah}&page=${page}`,label:"Retour au Mushaf"}}}>Approfondir avec Fahm</Link><button onClick={()=>playVerse(details)}><Play size={18}/>Écouter</button><button onClick={()=>{setRange({surah:details.surah,start:details.numberInSurah,end:details.numberInSurah,repetitions:3});setDetails(null);setPanel('range');}}><RotateCcw size={18}/>Répéter un passage</button><Link onClick={()=>rememberJump(page,true)} to={`/tafsir?surah=${details.surah}&ayah=${details.numberInSurah}`}>Consulter le Tafsir</Link><button onClick={()=>{setShare(details);setDetails(null);}}>Partager</button><button onClick={()=>{selectVerse(details);setDetails(null);}}>Reprendre ici</button><button onClick={()=>navigate(`/hifdh?surah=${details.surah}&ayah=${details.numberInSurah}`)}>Mémoriser</button></div>
         </Sheet>}
         {share&&<MushafShareModal ayah={share} surahs={CHAPTERS.map(c=>({number:c.id,englishName:c.latin}))} translationMap={translationMap} transliterationMap={new Map()} showTranslation showTransliteration={false} onClose={()=>setShare(null)}/>}
         {panel==='comfort'&&<section className="iq-comfort-panel" role="dialog" aria-label="Confort de lecture"><header><div><strong>Taille du Mushaf</strong><small>{comfortProfile==='desk'?'Pupitre':comfortProfile==='spread'?'Double page':'Page seule'} · réglage mémorisé</small></div><button aria-label="Fermer le réglage de taille" onClick={()=>setPanel(null)}><X size={18}/></button></header><label><span>{Math.round(zoom/READER_BASE_ZOOM*100)} %</span><input aria-label="Taille du Mushaf" type="range" min="1" max="2.3" step="0.025" value={zoom} onChange={e=>anchoredZoom(Number(e.target.value))}/></label><div><button onClick={()=>anchoredZoom(READER_BASE_ZOOM)}>Ajuster à l’écran</button><button onClick={()=>setPanel(null)}>Terminé</button></div></section>}
         {panel==='layout'&&<Sheet title="Disposition de lecture" onClose={()=>setPanel(null)}><FramingChoices framing={framing} onChange={setFraming}/><button onClick={()=>setPanel('comfort')}>Ajuster la taille avec aperçu</button><PupitrePreferences state={pupitre}/><button className="iq-primary" onClick={()=>setPanel(null)}>Terminé</button></Sheet>}
-        {panel==='preview'&&<Sheet title="Feuilleter le Mushaf" onClose={()=>setPanel(null)}><PagePreview page={page} paper={paper} onCommit={openPreviewPage}/></Sheet>}
+        {panel==='preview'&&<Sheet className="iq-preview-sheet" title="Feuilleter le Mushaf" onClose={()=>setPanel(null)}><PagePreview page={page} paper={paper} onCommit={openPreviewPage}/></Sheet>}
         {panel==='session'&&<Sheet title="Ma séance de lecture" onClose={()=>setPanel(null)}><ReadingSessionChoices page={page} surah={currentSurah} onClose={()=>setPanel(null)}/></Sheet>}
         {panel==='page'&&<Sheet title="Aller à une page" onClose={()=>setPanel(null)}><button onClick={()=>setPanel('preview')}>Feuilleter avec aperçu</button><form onSubmit={e=>{e.preventDefault();if(isInteractivePage(jumpPage)){rememberJump(jumpPage);audio.stopAudio();useQuranStore.getState().goToPage(jumpPage,{silent:true});setPanel(null);}}}><label className="iq-setting-label">Page du Mushaf<input aria-label="Numéro de page" type="number" inputMode="numeric" min="1" max="604" value={jumpPage} onChange={e=>setJumpPage(Number(e.target.value))}/></label><button className="iq-primary" type="submit" disabled={!isInteractivePage(jumpPage)}>Ouvrir la page</button></form></Sheet>}
         {panel==='selection-details'&&chosenRange&&<Sheet title="Comprendre le passage" onClose={()=>setPanel(null)}>{[...new Set(selectionWords.map(w=>w.verseKey))].map(key=>{const verse=selectionVerses.find(v=>`${v.surah}:${v.numberInSurah}`===key);return verse?<section key={key}><h3>Verset {key}</h3><p className="iq-verse-arabic" lang="ar" dir="rtl">{verse.text}</p><p>{translationMap.get(verse.number)||'Traduction indisponible hors ligne.'}</p><Link to={`/tafsir?surah=${verse.surah}&ayah=${verse.numberInSurah}`}>Consulter le Tafsir</Link></section>:null;})}<small>Traduction des versets complets · Muhammad Hamidullah</small></Sheet>}
