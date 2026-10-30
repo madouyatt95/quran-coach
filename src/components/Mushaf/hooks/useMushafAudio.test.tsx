@@ -184,3 +184,9 @@ it('resumes the requested verse instead of the old file after pausing its prepar
  await act(async()=>api.toggleAudio());await act(async()=>{resolve(null);await pending;});
  await act(async()=>api.toggleAudio());expect(element.src).toBe('https://audio.test/9.mp3');expect(api.currentAyahRef.current).toBe(2);
 });
+it('does not claim matched captions when restoring a legacy session',async()=>{
+ sourceMatchedPlayback=true;await render();await act(async()=>api.playAyahAtIndex(0));
+ const saved=api.snapshot()!;delete saved.sourceMatched;
+ await act(async()=>api.restoreSession(saved));expect(api.sourceMatchedVerse).toBeNull();
+ expect(element.src).toBe(saved.url);
+});

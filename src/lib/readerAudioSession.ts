@@ -3,7 +3,7 @@ import type {WordRecitationStart} from './verseRecitation';
 export type AudioStopBoundary='none'|'verse'|'page'|'surah';
 export interface PassageCuts {start:WordRecitationStart;end:WordRecitationStart;endTime:number}
 export interface ReaderAudioSession {
- verse:Ayah;reciter:string;url:string;offset:number;speed:number;stopAt:number|null;
+ sourceMatched?:boolean;verse:Ayah;reciter:string;url:string;offset:number;speed:number;stopAt:number|null;
  queue:Ayah[]|null;range:{surah:number;startAyah:number;endAyah:number;repetitions:number;iteration:number}|null;
  cuts:PassageCuts|null;timings:WordRecitationStart['timings'];savedAt:number;
 }

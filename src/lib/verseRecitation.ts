@@ -1,7 +1,7 @@
 import {fetchWithCache} from './apiCache';
 import type {VerseWords} from './wordTimings';
 export interface VerseRecitation {url:string;timings:VerseWords}
-export interface WordRecitationStart {url:string;offset:number;timings:VerseWords}
+export interface WordRecitationStart {sourceMatched?:boolean;url:string;offset:number;timings:VerseWords}
 export function parseVerseRecitation(data:unknown,key:string):VerseRecitation|null {
     const file=(data as {audio_files?:{verse_key:string;url:string;segments?:number[][]}[]})?.audio_files?.find(file=>file.verse_key===key);
     if(!file?.url)return null;

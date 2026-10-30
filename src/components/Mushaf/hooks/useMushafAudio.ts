@@ -126,6 +126,7 @@ export function useMushafAudio({
     const persistCurrent=()=>{if(rememberRef.current){const value=captureRef.current();if(value)saveReaderAudioSession(value);}};
     const pairedSources=useRef(new Map<string,string>());
     const preparedVerse=useRef<string|null>(null);
+    const verifiedSources=useRef(new Set<string>());
     const mounted = useRef(true);
 
     // Timing state for word-by-word
@@ -214,7 +215,7 @@ export function useMushafAudio({
         // Fetch word timing for this ayah (if not already in map)
         setActiveWordIndex(-1);
         const key = `${ayah.surah}:${ayah.numberInSurah}`;
-        if(start){pairedSources.current.set(key,start.url);setVerseWordsMap(previous=>new Map(previous).set(key,start.timings));}
+        if(start){if(start.sourceMatched===false)verifiedSources.current.delete(key);else verifiedSources.current.add(key);pairedSources.current.set(key,start.url);setVerseWordsMap(previous=>new Map(previous).set(key,start.timings));}
         if (!start&&!verseWordsMap.has(key)) {
             fetchWordTimings(ayah.surah, ayah.numberInSurah, timingReciterId).then(vw => {
                 if (vw && mounted.current && !pairedSources.current.has(key) && reciterRef.current === selectedReciter) setVerseWordsMap(prev => new Map(prev).set(key, vw));
@@ -355,7 +356,7 @@ export function useMushafAudio({
 
     useEffect(() => {
         stopAudio();
-        setVerseWordsMap(new Map());pairedSources.current.clear();
+        setVerseWordsMap(new Map());pairedSources.current.clear();verifiedSources.current.clear();
     }, [selectedReciter, stopAudio]);
 
     useEffect(() => {
@@ -555,7 +556,7 @@ export function useMushafAudio({
         const element=audioRef.current,verse=activeVerse.current;
         if(!sessionActive.current||!verse||!element?.src||!Number.isFinite(element.currentTime))return null;
         if(sourceMatchedPlayback&&preparedVerse.current!==`${verse.surah}:${verse.numberInSurah}`)return null;
-        return {verse,reciter:sourceReciter.current,url:element.src,offset:element.currentTime,speed:element.playbackRate||1,stopAt:stopAtRef.current,
+        return {sourceMatched:verifiedSources.current.has(`${verse.surah}:${verse.numberInSurah}`),verse,reciter:sourceReciter.current,url:element.src,offset:element.currentTime,speed:element.playbackRate||1,stopAt:stopAtRef.current,
             queue:passageQueue.current,range:passageRef.current,cuts:cutsRef.current,
             timings:verseWordsMap.get(`${verse.surah}:${verse.numberInSurah}`)||{verseKey:`${verse.surah}:${verse.numberInSurah}`,words:[]},savedAt:Date.now()};
     };
@@ -573,7 +574,7 @@ export function useMushafAudio({
         // Explicit resume offsets take priority over the selected passage's first word.
         const cuts=cutsRef.current;cutsRef.current=null;
         const request=playRequest.current+1;
-        await playAyahAtIndex(index,true,{url:saved.url,offset:saved.offset,timings:saved.timings});if(playRequest.current!==request)return;cutsRef.current=cuts;
+        await playAyahAtIndex(index,true,{sourceMatched:saved.sourceMatched===true,url:saved.url,offset:saved.offset,timings:saved.timings});if(playRequest.current!==request)return;cutsRef.current=cuts;
         if(audioRef.current)audioRef.current.playbackRate=saved.speed;
     };
 
@@ -596,7 +597,7 @@ export function useMushafAudio({
         setPlaybackSpeed,
         verseWordsMap,
         setVerseWordsMap,
-        sourceMatchedVerse: preparedVerse.current===`${currentSurahRef.current}:${currentAyahRef.current}`&&pairedSources.current.has(`${currentSurahRef.current}:${currentAyahRef.current}`) ? `${currentSurahRef.current}:${currentAyahRef.current}` : null,
+        sourceMatchedVerse: preparedVerse.current===`${currentSurahRef.current}:${currentAyahRef.current}`&&verifiedSources.current.has(`${currentSurahRef.current}:${currentAyahRef.current}`) ? `${currentSurahRef.current}:${currentAyahRef.current}` : null,
         activeWordIndex,
         setActiveWordIndex,
         playAyahAtIndex,
