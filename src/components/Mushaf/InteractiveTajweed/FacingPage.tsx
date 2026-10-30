@@ -1,3 +1,4 @@
+import {useReadingSession} from './readingSession';
 import {BookRibbon} from './BookRibbon';
 import {useReadingBookmarkStore} from '../../../stores/readingBookmarkStore';
 import {useEffect,useMemo,useState} from 'react';
@@ -11,6 +12,7 @@ import {fallbackRuleColor} from './glyphStyle';
 import {useVersePress,type VerseSelection} from '../hooks/useVersePress';
 export function FacingPage({page,paper,scale,onWord,onVerse,onNote,decorative=false}:{page:number;paper:PaperTheme;scale:number;onWord?:(word:MushafWord)=>void;onVerse?:(selection:VerseSelection,word:MushafWord)=>void;decorative?:boolean;onNote?:(note:ReaderNote)=>void}){
     const [bundle,setBundle]=useState<{data:InteractivePage;font:PageFont;opening:InteractivePage|null;openingFont:PageFont;settled:boolean}|null>(null),[error,setError]=useState(false),[retry,setRetry]=useState(0);
+    const arrival=useReadingSession(s=>!decorative&&s.session&&!s.session.finishedAt&&s.session.end===page?s.session.endVerse:null);
     const bookmark=useReadingBookmarkStore(s=>s.bookmark);
     const notes=useReaderNotesStore(s=>s.notes);
     const hold=useVersePress(()=>{},page);
@@ -28,7 +30,7 @@ export function FacingPage({page,paper,scale,onWord,onVerse,onNote,decorative=fa
             <PageOrnaments opening={page<3}/><div className="iq-paper-meta"><span>الجزء {(bundle.data.verses[0]?.juz||1).toLocaleString('ar-EG')}</span><span>{CHAPTERS[(bundle.data.verses[0]?.surah||1)-1].name}</span></div>
             {bundle.data.layout.filter(l=>l.type==='surah').map(l=><h1 key={l.n} className={page<3?'iq-surah-title':'iq-surah-line'} style={page>=3?{top:lineY(page,l.n)}:undefined} dir="rtl" lang="ar">{CHAPTERS[(l.surah||1)-1].name}</h1>)}
             {bundle.data.layout.filter(l=>l.type==='basmala').map(l=><div key={l.n} className="iq-basmala" role="img" aria-label="Basmala" style={{top:lineY(page,l.n),fontFamily:bundle.openingFont.family,fontSize:page<3?43:32}}>{bundle.opening?.words.filter(w=>w.verseKey==='1:1'&&w.kind==='word').map(w=>bundle.openingFont.mode==='unicode'?w.text:w.glyph).join(bundle.openingFont.mode==='unicode'?' ':'')}</div>)}
-            <div className="iq-words" dir="rtl" lang="ar">{positions.map(({word:w,x,y,width,fontSize})=>{const verse=bundle.data.verses.find(v=>`${v.surah}:${v.numberInSurah}`===w.verseKey)!;return <span key={w.key} {...hold(verse,selection=>onVerse?.(selection,w))} role="button" tabIndex={decorative?-1:0} className={`iq-word ${bundle.font.mode==='unicode'?'iq-word-unicode':''}`} data-line={w.line} data-word-key={w.key} aria-label={`${w.text} · ${w.verseKey} · ${w.kind==='end'?'Écouter depuis ce verset':`mot ${w.position}`}`} style={{left:x,top:y,width,fontSize,fontFamily:bundle.font.family,fontPalette:bundle.font.mode==='colrv1'?fontPaletteName(bundle.font.family,paper):undefined}}
+            <div className="iq-words" dir="rtl" lang="ar">{positions.map(({word:w,x,y,width,fontSize})=>{const verse=bundle.data.verses.find(v=>`${v.surah}:${v.numberInSurah}`===w.verseKey)!;return <span key={w.key} {...hold(verse,selection=>onVerse?.(selection,w))} role="button" tabIndex={decorative?-1:0} className={`iq-word ${arrival===w.verseKey&&w.kind==='end'?'iq-session-end':''} ${bundle.font.mode==='unicode'?'iq-word-unicode':''}`} data-line={w.line} data-word-key={w.key} aria-label={`${w.text} · ${w.verseKey} · ${w.kind==='end'?'Écouter depuis ce verset':`mot ${w.position}`}`} style={{left:x,top:y,width,fontSize,fontFamily:bundle.font.family,fontPalette:bundle.font.mode==='colrv1'?fontPaletteName(bundle.font.family,paper):undefined}}
                 onClick={e=>{e.stopPropagation();onWord?.(w);}}
                 onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onWord?.(w);}else if(e.key==='ContextMenu'||e.shiftKey&&e.key==='F10'){e.preventDefault();const r=e.currentTarget.getBoundingClientRect();onVerse?.({ayah:verse,x:r.left,y:r.top},w);}}}>
                 <span aria-hidden="true">{bundle.font.mode==='unicode'?(w.kind==='end'?unicodeWord(w):w.tajweedSegments.map((s,i)=><span key={i} style={{color:fallbackRuleColor(s.rule,paper)}}>{s.text}</span>)):w.glyph}</span>

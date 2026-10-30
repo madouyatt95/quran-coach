@@ -4,6 +4,8 @@ import { createRoot, type Root } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { useMushafAudio, type MushafAudioState } from './useMushafAudio';
+import {fetchVerseRecitation} from '../../../lib/verseRecitation';
+vi.mock('../../../lib/verseRecitation',()=>({fetchVerseRecitation:vi.fn().mockResolvedValue(null)}));
 import type { Ayah } from '../../../types';
 vi.mock('../../../lib/quranApi',()=>({mushafReciter:(r:string)=>({quranComId:r==='ar.husary'?6:7}),getAudioUrl:(_r:string,n:number)=>`https://audio.test/${n}.mp3`}));
 vi.mock('../../../lib/wordTimings',()=>({fetchWordTimings:vi.fn().mockResolvedValue(null)}));
@@ -14,16 +16,18 @@ class FakeAudio extends EventTarget {
     pause=vi.fn(()=>{this.paused=true;this.dispatchEvent(new Event('pause'));});
 }
 let element:FakeAudio, api:MushafAudioState, root:Root, div:HTMLDivElement, ayahs:Ayah[];
+let sourceMatchedPlayback=false;
 let selectedReciter='ar.alafasy',pageMode=false,currentPage=2;
 const nextPage=vi.fn();
 const nextSurah=vi.fn();
 const onPassageAyah=vi.fn();
-function Harness(){api=useMushafAudio({pageAyahs:ayahs,selectedReciter,currentPage,nextPage,nextSurah,pageMode,onPassageAyah});return null;}
+function Harness(){api=useMushafAudio({sourceMatchedPlayback,pageAyahs:ayahs,selectedReciter,currentPage,nextPage,nextSurah,pageMode,onPassageAyah});return null;}
 const render=()=>act(async()=>root.render(<MemoryRouter initialEntries={['/read']}><Harness/></MemoryRouter>));
 beforeEach(async()=>{
  vi.stubGlobal('Audio',class extends FakeAudio{constructor(){super();element=this;}});
  vi.stubGlobal('requestAnimationFrame',vi.fn(()=>1));vi.stubGlobal('cancelAnimationFrame',vi.fn());
  ayahs=Array.from({length:5},(_,i)=>({number:i+8,numberInSurah:i+1,surah:2,page:2,text:'نص'} as Ayah));
+ sourceMatchedPlayback=false;vi.mocked(fetchVerseRecitation).mockReset().mockResolvedValue(null);
  selectedReciter='ar.alafasy';pageMode=false;currentPage=2;onPassageAyah.mockClear();nextPage.mockClear();nextSurah.mockClear();div=document.createElement('div');document.body.append(div);root=createRoot(div);await render();
 });
 afterEach(async()=>{await act(async()=>root.unmount());div.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
@@ -156,4 +160,27 @@ it('keeps a stop boundary across automatic page changes',async()=>{
  await ended();expect(nextPage).toHaveBeenCalledOnce();
  currentPage=3;ayahs=[{number:13,numberInSurah:6,surah:2,page:3},{number:14,numberInSurah:7,surah:2,page:3},{number:15,numberInSurah:8,surah:2,page:3}] as Ayah[];await render();
  await ended();expect(api.currentPlayingAyah).toBe(14);await ended();expect(api.audioActive).toBe(false);expect(nextPage).toHaveBeenCalledTimes(1);
+});
+
+it('uses the verse audio file paired with caption timestamps, also on continuous next verse',async()=>{
+ sourceMatchedPlayback=true;await render();
+ vi.mocked(fetchVerseRecitation).mockImplementation(async key=>({url:`https://matched.test/${key}.mp3`,timings:{verseKey:key,words:[{id:1,position:1,text:'',timestampFrom:20,timestampTo:800}]}}));
+ await act(async()=>api.playAyahAtIndex(0));
+ expect(element.src).toBe('https://matched.test/2:1.mp3');expect(api.sourceMatchedVerse).toBe('2:1');
+ await ended();expect(element.src).toBe('https://matched.test/2:2.mp3');expect(api.sourceMatchedVerse).toBe('2:2');
+});
+it('does not start a stale recording after stop during preparation',async()=>{
+ sourceMatchedPlayback=true;await render();let resolve!:(value:null)=>void;
+ vi.mocked(fetchVerseRecitation).mockImplementation(()=>new Promise(done=>{resolve=done;}));
+ let pending!:Promise<void>;await act(async()=>{pending=api.playAyahAtIndex(0);});
+ await act(async()=>api.stopAudio());await act(async()=>{resolve(null);await pending;});
+ expect(element.play).not.toHaveBeenCalled();expect(api.audioActive).toBe(false);
+});
+it('resumes the requested verse instead of the old file after pausing its preparation',async()=>{
+ sourceMatchedPlayback=true;await render();await act(async()=>api.playAyahAtIndex(0));
+ let resolve!:(value:null)=>void;
+ vi.mocked(fetchVerseRecitation).mockImplementationOnce(()=>new Promise(done=>{resolve=done;}));
+ let pending!:Promise<void>;await act(async()=>{pending=api.playAyahAtIndex(1);});
+ await act(async()=>api.toggleAudio());await act(async()=>{resolve(null);await pending;});
+ await act(async()=>api.toggleAudio());expect(element.src).toBe('https://audio.test/9.mp3');expect(api.currentAyahRef.current).toBe(2);
 });
