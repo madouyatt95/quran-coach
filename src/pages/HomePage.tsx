@@ -5,11 +5,9 @@ import {DhikrFocus} from '../components/Home/DhikrFocus';
 import {useHomeClock} from '../components/Home/useHomeClock';
 import {useDhikrCounts} from '../components/Home/useDhikrCounts';
 import {readHomeOrder,HOME_ORDER_KEY,type HomeSection} from '../components/Home/homeExperience';
-import { useFavoriteMosqueSchedule } from '../hooks/useFavoriteMosqueSchedule';
-import { publishedDay, publishedNext, prayerCountdown } from '../lib/publishedPrayerClock';
-import { usePrayerStore } from '../stores/prayerStore';
+import {HomePrayer} from '../components/Home/HomePrayer';
 import { useReadingBookmarkStore, resumeReadingBookmark } from '../stores/readingBookmarkStore';
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Share2, RotateCcw, Heart, Plus, X, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -19,17 +17,18 @@ import { formatDivineNames } from '../lib/divineNames';
 import { useStatsStore } from '../stores/statsStore';
 import { useQuranStore } from '../stores/quranStore';
 import { useFavoritesStore } from '../stores/favoritesStore';
-import {BookCollections} from '../components/Books/BookCollections';
 import { SmartSentinel, SentinelShortcut } from '../components/Home/SmartSentinel';
 import { useSmartCoaching } from '../hooks/useSmartCoaching';
 import { ReligiousReference } from '../components/ReligiousReference';
-import { updateNextPrayerWidget, updateHadithWidget } from '../lib/widgetService';
+import { updateHadithWidget } from '../lib/widgetService';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { IslamicCalendar } from '../components/Prayer/IslamicCalendar';
 import './HomePage.css';
 import '../components/Learning/Learning.css';
 import './HomeRefresh.css';
 import '../components/Home/HomeExperience.css';
+
+const HomeBooks = lazy(() => import('../components/Home/HomeBooks'));
 
 // ─── Surah names (compact subset for display) ────────────
 const SURAH_NAMES: Record<number, string> = {
@@ -199,80 +198,6 @@ function useDhikr(now:Date) {
     return { counts, tap, reset, resetAll, undo, canUndo, getCount, getCountInSeries, completedCount, targetedCount, allTargetedDone, allItems, addCustom, removeDhikr, reorderDhikrs, restoreDefaults };
 }
 
-// ─── Next Prayer Hook ────────────────────────────────────
-function useNextPrayer() {
-    const [clock,setClock]=useState(Date.now());
-    useEffect(()=>{const timer=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(timer);},[]);
-    const {timetable,favorite}=useFavoriteMosqueSchedule(clock);
-    const known=publishedDay(timetable,clock),next=publishedNext(timetable,clock);
-    const city=usePrayerStore(s=>s.cityName);
-
-    const prayerLat=usePrayerStore(s=>s.lat),prayerLng=usePrayerStore(s=>s.lng),prayerSettings=usePrayerStore(s=>s.settings);
-    const [data, setData] = useState<{ name: string; nameAr: string; time: string; countdown: string } | null>(null);
-
-    useEffect(() => {
-        const PRAYER_NAMES: Record<string, string> = { fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء' };
-        const PRAYER_NAMES_FR: Record<string, string> = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
-
-        const computeNextPrayer = async () => {
-            try {
-                const { usePrayerStore } = await import('../stores/prayerStore');
-                const { computeDay, DEFAULT_PRAYER_SETTINGS } = await import('../lib/prayerEngine');
-                const store = usePrayerStore.getState();
-                const lat = store.lat ?? 48.8566;
-                const lng = store.lng ?? 2.3522;
-                const settings = store.settings || DEFAULT_PRAYER_SETTINGS;
-                const result = computeDay(new Date(), lat, lng, settings);
-                updateCountdown(result.formattedTimes, PRAYER_NAMES, PRAYER_NAMES_FR);
-            } catch {
-                try {
-                    const res = await fetch(`https://api.aladhan.com/v1/timings/${Date.now() / 1000}?latitude=48.8566&longitude=2.3522&method=2`);
-                    const json = await res.json();
-                    if (json.code === 200) updateCountdown(json.data.timings, PRAYER_NAMES, PRAYER_NAMES_FR);
-                } catch { /* silent */ }
-            }
-        };
-
-        const updateCountdown = (timings: Record<string, string>, namesAr: Record<string, string>, namesFr: Record<string, string>) => {
-            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-            const apiKeys: Record<string, string> = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
-            const now = new Date();
-            const currentMin = now.getHours() * 60 + now.getMinutes();
-
-            for (const p of prayers) {
-                const timeStr = timings[p] || timings[apiKeys[p]] || '';
-                if (!timeStr) continue;
-                const [h, m] = timeStr.split(':').map(Number);
-                if (isNaN(h) || isNaN(m)) continue;
-                const pMin = h * 60 + m;
-                if (pMin > currentMin) {
-                    const diff = pMin - currentMin;
-                    const hrs = Math.floor(diff / 60);
-                    const nameLoc = namesFr[p] || p;
-                    const timeLoc = timeStr;
-                    setData({ name: nameLoc, nameAr: namesAr[p] || '', time: timeLoc, countdown: hrs > 0 ? `${hrs}h ${diff % 60}min` : `${diff % 60} min` });
-
-                    return;
-                }
-            }
-            const fajrStr = timings.fajr || timings.Fajr || '05:00';
-            const [fH, fM] = fajrStr.split(':').map(Number);
-            const diff = (24 * 60 - currentMin) + (fH || 5) * 60 + (fM || 0);
-            const nameLocFajr = namesFr.fajr || 'Fajr';
-            setData({ name: nameLocFajr, nameAr: namesAr.fajr || 'الفجر', time: fajrStr, countdown: `${Math.floor(diff / 60)}h ${diff % 60}min` });
-
-        };
-
-        computeNextPrayer();
-        const interval = setInterval(computeNextPrayer, 60000);
-        return () => clearInterval(interval);
-    }, [prayerLat,prayerLng,prayerSettings]);
-
-    const displayed=known&&favorite ? (next?{name:next.label,nameAr:'',time:next.time,countdown:prayerCountdown(next.at,clock),source:favorite.name,details:next.kind==='Jumu’a'?`Jumu’a · ${next.time}`:`Adhan ${next.adhan||'—'} · Iqama ${next.iqama||'non renseignée'}`,kind:next.kind}:{name:'Prochain horaire',nameAr:'',time:'—',countdown:'Non renseigné',source:favorite.name,details:'Calendrier suivant indisponible',kind:''}) : data?{...data,source:`Horaires calculés · ${city||'Paris'}`,details:'Calendrier de mosquée indisponible',kind:''}:null;
-    useEffect(()=>{if(displayed?.time&&displayed.time!=='—')void updateNextPrayerWidget(displayed.name,displayed.time).catch(()=>{});},[displayed?.name,displayed?.time]);
-    return displayed;
-}
-
 // ═══════════════════════════════════════════════════════════
 // HomePage Component
 // ═══════════════════════════════════════════════════════════
@@ -290,7 +215,6 @@ export function HomePage() {
     const { currentPage, currentSurah, goToSurah, goToAyah, progress } = useQuranStore();
     const { readingStreak } = useStatsStore();
     const navigate = useNavigate();
-    const nextPrayer = useNextPrayer();
     const dhikr = useDhikr(now);
 
     useEffect(() => {
@@ -393,24 +317,7 @@ export function HomePage() {
 
     const sections:Record<HomeSection,React.ReactNode>={
 prayer:(<section className="home-day-context" aria-label="Prières et calendrier">
-            {nextPrayer && (
-                <Link to="/prayers" className="home-prayer-link">
-                    <div className="home-prayer">
-                        <div className="home-prayer__left">
-                            <span className="home-prayer__emoji" aria-hidden="true">🕌</span>
-                            <div>
-                                <span className="home-prayer__name">{t(`prayer.${nextPrayer.name.toLowerCase()}`, nextPrayer.name)}</span>
-                                <span className="home-prayer__name-ar">{nextPrayer.nameAr}</span>
-                            </div>
-                        </div>
-                        <div className="home-prayer__right">
-                            <span className="home-prayer__time">{nextPrayer.time}</span>
-                            <span className="home-prayer__countdown">{nextPrayer.kind} {t('home.in')} {nextPrayer.countdown}</span>
-                        </div>
-                        <div className="home-prayer__source"><span>{nextPrayer.source}</span><span>{nextPrayer.details}</span></div>
-                    </div>
-                </Link>
-            )}
+            <HomePrayer/>
 
             {upcomingEvent && (
                 <button className="home-seasonal" onClick={() => setShowIslamicCalendar(true)} aria-label={`Calendrier : ${upcomingEvent.title}`}>
@@ -635,8 +542,7 @@ quick:<HomeQuickLinks favorites={shortcuts.favorites} onEdit={()=>setShowCustomi
 
             <HomeResume readingTitle={bookmark?'Reprendre mon signet':'Reprendre ma lecture'} readingDetail={`${bookmark?.precision==='page'?'':`${SURAH_NAMES[displaySurah]||`Sourate ${displaySurah}`} · `}Page ${displayPage}${bookmark?.precision==='verse'?` · verset ${bookmark.ayah}`:''}`} onRead={handleContinueReading} streak={readingStreak}/>
             <SmartSentinel feed={sentinelFeed}/>
-            <BookCollections home/>
-            {sectionOrder.map(id=><React.Fragment key={id}>{sections[id]}</React.Fragment>)}
+            {sectionOrder.map(id=><React.Fragment key={id}>{sections[id]}{id==='prayer'&&<Suspense fallback={<p className="home-book-reading">Chargement des livres…</p>}><HomeBooks date={now}/></Suspense>}</React.Fragment>)}
 
 
 
