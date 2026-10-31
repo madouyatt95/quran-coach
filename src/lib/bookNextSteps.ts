@@ -1,3 +1,4 @@
+import {prophetChronology} from '../data/prophetCollection';
 import {books,bookHref,recommendedBooks,recommendationReason} from './bookLibrary';
 import {peopleInText} from './bookPeople';
 import {chapterNarrative,type NarrativeBook} from './narrativeBooks';
@@ -16,8 +17,11 @@ const continuations:Record<string,{id:string;reason:string}>={
 const cache=new WeakMap<NarrativeBook,ReturnType<typeof resolve>>();
 function resolve(book:NarrativeBook){
  const people=peopleInText(book.chapters.map(c=>chapterNarrative(c)).join('\n'));
- const person=people.find(p=>p.bookId&&p.bookId!==book.id&&books.some(b=>b.id===p.bookId));
- const continuation=continuations[book.id],next=continuation?books.find(b=>b.id===continuation.id):recommendedBooks(book.id,[],false,6).find(b=>b.id!==person?.bookId);
+ const periodIndex=prophetChronology.findIndex(p=>p.bookId===book.id);
+ const following=periodIndex>=0?prophetChronology[periodIndex+1]:undefined;
+ const continuation=following?{id:following.bookId,reason:`Poursuivez le récit : ${following.label}.`}:continuations[book.id];
+ const person=people.find(p=>p.bookId&&p.bookId!==book.id&&p.bookId!==continuation?.id&&books.some(b=>b.id===p.bookId));
+ const next=continuation?books.find(b=>b.id===continuation.id):recommendedBooks(book.id,[],false,6).find(b=>b.id!==person?.bookId);
  return {person:person?{name:person.name,href:bookHref(person.bookId!,person.chapterId),reason:`${person.name} apparaît dans ce récit. Découvrez son propre parcours.`}:undefined,next:next?{title:next.title,href:bookHref(next.id),label:continuation?'La période suivante':'Un autre éclairage',reason:continuation?.reason||recommendationReason(book.id,next.id)}:undefined};
 }
 export function bookNextSteps(book:NarrativeBook){let result=cache.get(book);if(!result){result=resolve(book);cache.set(book,result);}return result;}

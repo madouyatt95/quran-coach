@@ -1,3 +1,23 @@
+import {prophetTabukBook} from './prophetSeries/tabuk';
+import {prophetDelegationsBook} from './prophetSeries/delegations';
+import {prophetFarewellPilgrimageBook} from './prophetSeries/farewellPilgrimage';
+import {prophetLastDaysBook} from './prophetSeries/lastDays';
+import {prophetKhaybarBook} from './prophetSeries/khaybar';
+import {prophetUmraMutaBook} from './prophetSeries/umraMuta';
+import {prophetMeccaReturnBook} from './prophetSeries/meccaReturn';
+import {prophetHunaynBook} from './prophetSeries/hunayn';
+import {prophetAqabaBook} from './prophetSeries/aqaba';
+import {prophetMedinaBook} from './prophetSeries/medina';
+import {prophetBadrBook} from './prophetSeries/badr';
+import {prophetBetweenBattlesBook} from './prophetSeries/betweenBattles';
+import {prophetUhudBook} from './prophetSeries/uhud';
+import {prophetLossesBook} from './prophetSeries/losses';
+import {prophetTrenchBook} from './prophetSeries/trench';
+import {prophetAfterSiegeBook} from './prophetSeries/afterSiege';
+import {prophetLettersBook} from './prophetSeries/letters';
+import {prophetTaifBook} from './prophetSeries/taif';
+import {prophetBoycottBook} from './prophetSeries/boycott';
+import {prophetConversionsBook} from './prophetSeries/conversions';
 import {goldBook} from './moralCollection/gold';
 import {loveBook} from './moralCollection/love';
 import {mercyDoorsBook} from './moralCollection/mercy';
@@ -84,6 +104,6 @@ export const newCompanionBiographies=[hamzaBook,jafarBook,talhaBook,zubayrBook,a
 const authoredBooks = [adamBook, nuhBook, ibrahimBook, yusufBook, musaBook, maryamIsaBook, sulaymanBook, khidrBook, caveBook, wealthBook, musaAfterBook, kingsBook, callsBook, siraBook, voicesBook, luqmanBook, speechBook,
  lutBook,kaabBook,aishaBook,boyKingBook,rockBook,threeTestedBook,repentanceBook,hajarBook,hijraBook,nightJourneyBook,hudaybiyyaBook,revelationBook,abuDharrBook,balanceBook,hospitalityBook,appearancesBook,mercyBook,jabirBook,seaTrustBook,abuBakrBook,bilalBook,musabBook,zaydThabitBook,asmaBook,ummSalamaBook,umarBook,uthmanBook,aliBook,khadijaBook,fatimaBook,goldBook,loveBook,mercyDoorsBook,tribulationBook,gentlenessBook,unseenBook,justiceBook,signsBook,discernmentBook,giftsBook,faithBook,listenedBook,parablesBook];
 /** New recordings are prepared against these editions in the studio. */
-export const narrativeProductionBooks=[...authoredBooks,...furtherCompanionBooks,...newCompanionBiographies,prophetOpeningBook,prophetChildhoodBook,prophetHomeBook,prophetHiraBook,prophetFirstBelieversBook,prophetAbyssiniaBook].map(revisedCompanionEdition).map(completeCompanionBiography);
+export const narrativeProductionBooks=[...authoredBooks,...furtherCompanionBooks,...newCompanionBiographies,prophetOpeningBook,prophetChildhoodBook,prophetHomeBook,prophetHiraBook,prophetFirstBelieversBook,prophetAbyssiniaBook,prophetConversionsBook,prophetBoycottBook,prophetTaifBook,prophetAqabaBook,prophetMedinaBook,prophetBadrBook,prophetBetweenBattlesBook,prophetUhudBook,prophetLossesBook,prophetTrenchBook,prophetAfterSiegeBook,prophetLettersBook,prophetKhaybarBook,prophetUmraMutaBook,prophetMeccaReturnBook,prophetHunaynBook,prophetTabukBook,prophetDelegationsBook,prophetFarewellPilgrimageBook,prophetLastDaysBook].map(revisedCompanionEdition).map(completeCompanionBiography);
 /** The current written edition is canonical. Audio is exposed only for its exact manuscript version. */
 export const narrativeBooks=narrativeProductionBooks;

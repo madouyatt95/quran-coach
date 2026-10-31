@@ -28,3 +28,13 @@ it('continues from Hira into the newly available period without skipping missing
  expect(nextAudioBook(current,[...later,...next],[])?.book.id).toBe('prophete-premiers-croyants');
  expect(nextAudioBook(current,[...later,...next.slice(1)],[])).toBeNull();
 });
+
+// Includes the four existing multi-chapter books reused in the new chronology.
+it('connects every published period without skipping incomplete multi-chapter books',()=>{
+ for(let i=0;i<prophetChronology.length-1;i++){
+  const current=tracks(prophetChronology[i].bookId).at(-1)!;
+  const target=prophetChronology[i+1].bookId,next=tracks(target);
+  expect(nextAudioBook(current,next,[])?.book.id,target).toBe(target);
+  expect(nextAudioBook(current,next.slice(1),[]),target).toBeNull();
+ }
+});

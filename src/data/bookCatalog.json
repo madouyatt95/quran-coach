@@ -2847,5 +2847,445 @@
         "title": "Un refuge au-delà de la mer"
       }
     ]
+  },
+  {
+    "id": "prophete-conversions",
+    "title": "Le Prophète · Des appuis inattendus",
+    "subtitle": "Hamza et Umar rejoignent les croyants, tandis que Quraysh cherche à contenir l’appel",
+    "version": "prophete-conversions-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les conversions de Hamza et Umar et les tensions qui conduisent au boycott."
+    },
+    "length": {
+      "words": 1796,
+      "minMinutes": 11,
+      "maxMinutes": 14
+    },
+    "chapters": [
+      {
+        "id": "appuis",
+        "title": "Des appuis inattendus"
+      }
+    ]
+  },
+  {
+    "id": "prophete-boycott",
+    "title": "Le Prophète · Tenir, puis perdre ses soutiens",
+    "subtitle": "Le boycott des familles et les deuils de Khadija et Abu Talib",
+    "version": "prophete-boycott-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "La mise à l’écart des clans protecteurs puis les deux grands deuils de la période mecquoise."
+    },
+    "length": {
+      "words": 1658,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "epreuves",
+        "title": "Tenir, puis perdre ses soutiens"
+      }
+    ]
+  },
+  {
+    "id": "prophete-taif",
+    "title": "Le Prophète · La route qui semblait fermée",
+    "subtitle": "Taïf, le refus et une espérance qui dépasse le présent",
+    "version": "prophete-taif-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Recherche de soutien à Taïf et reprise de l’appel au-delà des refus."
+    },
+    "length": {
+      "words": 1694,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "route",
+        "title": "La route qui semblait fermée"
+      }
+    ]
+  },
+  {
+    "id": "prophete-aqaba",
+    "title": "Le Prophète · Yathrib ouvre une voie",
+    "subtitle": "Des premières rencontres à l’engagement de protéger le Messager",
+    "version": "prophete-aqaba-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les rencontres de Aqaba, la mission de Musab et la préparation de l’accueil à Yathrib."
+    },
+    "length": {
+      "words": 1702,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "accueil",
+        "title": "Yathrib ouvre une voie"
+      }
+    ]
+  },
+  {
+    "id": "prophete-medine",
+    "title": "Le Prophète · Bâtir une vie commune",
+    "subtitle": "Une mosquée, des liens de fraternité et les responsabilités de Médine",
+    "version": "prophete-medine-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les premiers temps de l’installation à Médine après l’Hégire."
+    },
+    "length": {
+      "words": 1681,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "batir",
+        "title": "Bâtir une vie commune"
+      }
+    ]
+  },
+  {
+    "id": "prophete-badr",
+    "title": "Le Prophète · Badr, le jour décisif",
+    "subtitle": "Une communauté confrontée à une bataille qu’elle n’avait pas préparée",
+    "version": "prophete-badr-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Badr, en l’an 2 de l’Hégire : contexte et portée."
+    },
+    "length": {
+      "words": 1649,
+      "minMinutes": 10,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "badr",
+        "title": "Badr, le jour décisif"
+      }
+    ]
+  },
+  {
+    "id": "prophete-entre-badr-uhud",
+    "title": "Le Prophète · Une victoire, puis la vigilance",
+    "subtitle": "La vie de Médine entre Badr et Uhud",
+    "version": "prophete-entre-badr-uhud-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "La période médinoise entre les deux premières grandes batailles."
+    },
+    "length": {
+      "words": 1679,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "vigilance",
+        "title": "Une victoire, puis la vigilance"
+      }
+    ]
+  },
+  {
+    "id": "prophete-uhud",
+    "title": "Le Prophète · Uhud, traverser la blessure",
+    "subtitle": "Le revers, les absents et la révélation qui relève",
+    "version": "prophete-uhud-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Uhud en l’an 3 de l’Hégire et ses suites immédiates."
+    },
+    "length": {
+      "words": 1668,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "uhud",
+        "title": "Uhud, traverser la blessure"
+      }
+    ]
+  },
+  {
+    "id": "prophete-pertes",
+    "title": "Le Prophète · Quand les épreuves se succèdent",
+    "subtitle": "Les missions perdues, le deuil et les tensions de Médine",
+    "version": "prophete-pertes-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les épreuves qui suivent Uhud, principalement en l’an 4 de l’Hégire."
+    },
+    "length": {
+      "words": 1665,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "pertes",
+        "title": "Quand les épreuves se succèdent"
+      }
+    ]
+  },
+  {
+    "id": "prophete-tranchee",
+    "title": "Le Prophète · La ville derrière le fossé",
+    "subtitle": "Les Coalisés, la faim et une nuit de fidélité",
+    "version": "prophete-tranchee-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Le siège des Coalisés, généralement situé en l’an 5 de l’Hégire."
+    },
+    "length": {
+      "words": 1703,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "fosse",
+        "title": "La ville derrière le fossé"
+      }
+    ]
+  },
+  {
+    "id": "prophete-apres-siege",
+    "title": "Le Prophète · Les lendemains du siège",
+    "subtitle": "Qurayza, la disparition de Saad et de nouveaux horizons",
+    "version": "prophete-apres-siege-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les suites des Coalisés et quelques événements précédant Hudaybiyya."
+    },
+    "length": {
+      "words": 1714,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "lendemains",
+        "title": "Les lendemains du siège"
+      }
+    ]
+  },
+  {
+    "id": "prophete-lettres",
+    "title": "Le Prophète · Le message au-delà de l’Arabie",
+    "subtitle": "Un sceau, des messagers et la rencontre avec les souverains",
+    "version": "prophete-lettres-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les correspondances dans la période ouverte par Hudaybiyya."
+    },
+    "length": {
+      "words": 1721,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "lettres",
+        "title": "Le message au-delà de l’Arabie"
+      }
+    ]
+  },
+  {
+    "id": "prophete-khaybar",
+    "title": "Le Prophète · Khaybar et les retrouvailles",
+    "subtitle": "Après les forteresses, retrouver ceux qui avaient traversé la mer",
+    "version": "prophete-khaybar-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Khaybar et le retour des émigrants, après Hudaybiyya."
+    },
+    "length": {
+      "words": 1691,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "khaybar",
+        "title": "Khaybar et les retrouvailles"
+      }
+    ]
+  },
+  {
+    "id": "prophete-oumra-muta",
+    "title": "Le Prophète · Le retour attendu, puis Mu’ta",
+    "subtitle": "Une promesse accomplie et trois absences dans la communauté",
+    "version": "prophete-oumra-muta-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Visite de compensation en l’an 7, puis Mu’ta en l’an 8."
+    },
+    "length": {
+      "words": 1664,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "retour-muta",
+        "title": "Le retour attendu, puis Mu’ta"
+      }
+    ]
+  },
+  {
+    "id": "prophete-retour-mecque",
+    "title": "Le Prophète · Le retour dans La Mecque",
+    "subtitle": "La ville retrouvée, la protection proclamée et la fidélité à Médine",
+    "version": "prophete-retour-mecque-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "La conquête de La Mecque, en Ramadan de l’an 8."
+    },
+    "length": {
+      "words": 1621,
+      "minMinutes": 10,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "retour",
+        "title": "Le retour dans La Mecque"
+      }
+    ]
+  },
+  {
+    "id": "prophete-hunayn",
+    "title": "Le Prophète · Hunayn et le retour des cœurs",
+    "subtitle": "Le nombre ne suffit pas, et les Ansar retrouvent leur place",
+    "version": "prophete-hunayn-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Hunayn, Taif et les suites de la campagne de l’an 8."
+    },
+    "length": {
+      "words": 1620,
+      "minMinutes": 10,
+      "maxMinutes": 12
+    },
+    "chapters": [
+      {
+        "id": "hunayn",
+        "title": "Hunayn et le retour des cœurs"
+      }
+    ]
+  },
+  {
+    "id": "prophete-tabuk",
+    "title": "Le Prophète · Tabuk, partir et dire vrai",
+    "subtitle": "La chaleur du départ, les absents et le chemin du retour",
+    "version": "prophete-tabuk-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "La campagne de Tabuk en l’an 9 et ses conséquences à Médine."
+    },
+    "length": {
+      "words": 1622,
+      "minMinutes": 10,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "tabuk",
+        "title": "Tabuk, partir et dire vrai"
+      }
+    ]
+  },
+  {
+    "id": "prophete-delegations",
+    "title": "Le Prophète · Accueillir et transmettre",
+    "subtitle": "Des visiteurs à Médine aux enseignants envoyés au loin",
+    "version": "prophete-delegations-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les délégations et la transmission dans les dernières années médinoises, avec quelques rencontres antérieures pour éclairer la méthode prophétique."
+    },
+    "length": {
+      "words": 1672,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "transmission",
+        "title": "Accueillir et transmettre"
+      }
+    ]
+  },
+  {
+    "id": "prophete-pelerinage",
+    "title": "Le Prophète · Le pèlerinage d’Adieu",
+    "subtitle": "Apprendre les gestes, recevoir les derniers grands rappels",
+    "version": "prophete-pelerinage-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Le pèlerinage de l’an 10, de la route vers La Mecque aux rappels de Mina."
+    },
+    "length": {
+      "words": 1696,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "adieu",
+        "title": "Le pèlerinage d’Adieu"
+      }
+    ]
+  },
+  {
+    "id": "prophete-derniers-jours",
+    "title": "Le Prophète · Les derniers jours et ce qui demeure",
+    "subtitle": "La séparation, la fidélité et le message transmis",
+    "version": "prophete-derniers-jours-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Les derniers jours du Messager en l’an 11 de l’Hégire et le deuil de Médine."
+    },
+    "length": {
+      "words": 1711,
+      "minMinutes": 11,
+      "maxMinutes": 13
+    },
+    "chapters": [
+      {
+        "id": "demeure",
+        "title": "Les derniers jours et ce qui demeure"
+      }
+    ]
   }
 ]
