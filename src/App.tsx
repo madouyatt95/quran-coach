@@ -49,6 +49,7 @@ const TafsirPage = lazy(() => import('./pages/TafsirPage').then(m => ({ default:
 const EditorialJourneyPage = lazy(() => import('./pages/EditorialJourneyPage').then(m => ({ default: m.EditorialJourneyPage })));
 const JourneyNotebookPage = lazy(() => import('./pages/JourneyNotebookPage').then(m => ({ default: m.JourneyNotebookPage })));
 const ProphetsPage = lazy(() => import('./pages/ProphetsPage').then(m => ({ default: m.ProphetsPage })));
+const ProphetLifePage = lazy(() => import('./pages/ProphetLifePage').then(m => ({ default: m.ProphetLifePage })));
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then(m => ({ default: m.FavoritesPage })));
 const ThemesPage = lazy(() => import('./pages/ThemesPage').then(m => ({ default: m.ThemesPage })));
 const QuizPage = lazy(() => import('./pages/QuizPage').then(m => ({ default: m.QuizPage })));
@@ -248,6 +249,7 @@ function AppContent() {
             <Route path="/journeys/notebook" element={<JourneyNotebookPage />} />
             <Route path="/journeys/:kind/:id" element={<EditorialJourneyPage />} />
             <Route path="/prophets" element={<ProphetsPage />} />
+            <Route path="/prophet" element={<ProphetLifePage />} />
             <Route path="/companions" element={<ProphetsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/themes" element={<ThemesPage />} />

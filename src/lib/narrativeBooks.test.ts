@@ -20,16 +20,31 @@ describe('livres racontés : texte et sources', () => {
           expect(source.last).toBeGreaterThanOrEqual(source.first);
           expect(source.last).toBeLessThanOrEqual(chapters[source.surah - 1].count);
         } else if (source.type === 'hadith') {
+          if(source.id==='ahmad-1740'){
+            expect(source.collection).toBe('Musnad Ahmad');
+            expect(source.number).toBe('1740');
+            expect(sourceUrl(source)).toBe('https://dorar.net/h/1HxXQnPW?osoul=1');
+            expect(source.grade).toContain('Isnad jayyid — al-Albani, Silsila as-sahiha, 7/578');
+          }else{
           expect(sourceUrl(source)).toMatch(/^https:\/\/sunnah\.com\//);
           expect(source.grade).toMatch(/Sahih|Hasan/);
           // A combined reference (2731–2732) links to its first hadith, whose page contains both.
           expect(sourceUrl(source)).toContain(source.number.split(/[–-]/u)[0]);
+          }
         } else {
           expect(source.author).not.toBe('');
           expect(source.work).not.toBe('');
           expect(source.location).not.toBe('');
-          expect(source.assessment).toContain('Chronique historique');
-          expect(source.rights).toContain('domaine public');
+          expect(source.assessment.trim().length).toBeGreaterThan(30);
+          if(source.work==='Le Nectar cacheté'){
+            // A modern secondary source is a reference, never a public-domain asset.
+            expect(source.rights).toContain('Référence bibliographique uniquement');
+            expect(source.rights).toContain('ni les scans ni la traduction française');
+            expect(source.rights).not.toContain('domaine public');
+          }else{
+            expect(source.assessment).toContain('Chronique historique');
+            expect(source.rights).toContain('domaine public');
+          }
         }
       }
       for (const chapter of book.chapters) {

@@ -13,6 +13,12 @@ const P=(id:string)=>`/prophets?prophet=${id}`;
 const S=(id:string)=>`/stories?story=${id}`;
 /** Explicit editorial links, never fuzzy name matching. Arrays correspond to chapters. */
 export const bookOrigins:Record<string,string[]>={
+ 'prophete-la-mecque':['/prophet',P('muhammad')],
+ 'prophete-enfance':['/prophet',P('muhammad')],
+ 'prophete-foyer':['/prophet',P('muhammad')],
+ 'prophete-hira':['/prophet',P('muhammad')],
+ 'prophete-premiers-croyants':['/prophet',P('muhammad')],
+ 'prophete-abyssinie':['/prophet',P('muhammad')],
  'or-et-intention':['https://sunnah.com/bukhari:3472','https://sunnah.com/bukhari:1421','https://sunnah.com/bukhari:2078'],
  'aimer-sans-paraitre':['https://sunnah.com/muslim:2567a','https://sunnah.com/muslim:2542c','https://sunnah.com/muslim:2630'],
  'portes-de-misericorde':['https://sunnah.com/bukhari:5999','https://sunnah.com/muslim:2747a','https://sunnah.com/bukhari:3481'],

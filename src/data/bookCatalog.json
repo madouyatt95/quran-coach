@@ -2715,5 +2715,137 @@
         "title": "La perte de Habib et le retour blessé"
       }
     ]
+  },
+  {
+    "id": "prophete-la-mecque",
+    "title": "Le Prophète · Avant les commencements",
+    "subtitle": "La Mecque, la Maison et le monde dans lequel il naît",
+    "version": "prophete-la-mecque-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Ouverture de la collection consacrée au Prophète : le contexte avant sa naissance. Ce chapitre ne constitue pas une biographie complète."
+    },
+    "length": {
+      "words": 2390,
+      "minMinutes": 15,
+      "maxMinutes": 18
+    },
+    "chapters": [
+      {
+        "id": "la-mecque",
+        "title": "Un monde autour de La Mecque"
+      }
+    ]
+  },
+  {
+    "id": "prophete-enfance",
+    "title": "Le Prophète · L’enfant recueilli",
+    "subtitle": "Amina, Halima et les maisons qui l’accueillent",
+    "version": "prophete-enfance-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Deuxième étape chronologique : naissance, enfance et premiers moyens de subsistance."
+    },
+    "length": {
+      "words": 1809,
+      "minMinutes": 11,
+      "maxMinutes": 14
+    },
+    "chapters": [
+      {
+        "id": "enfance",
+        "title": "L’enfant recueilli"
+      }
+    ]
+  },
+  {
+    "id": "prophete-foyer",
+    "title": "Le Prophète · La confiance et le foyer",
+    "subtitle": "Travailler, épouser Khadija et vivre parmi les siens",
+    "version": "prophete-foyer-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Troisième étape chronologique : jeunesse adulte, mariage et vie mecquoise avant la révélation."
+    },
+    "length": {
+      "words": 1816,
+      "minMinutes": 12,
+      "maxMinutes": 14
+    },
+    "chapters": [
+      {
+        "id": "foyer",
+        "title": "La confiance et le foyer"
+      }
+    ]
+  },
+  {
+    "id": "prophete-hira",
+    "title": "Le Prophète · Hira, le commencement",
+    "subtitle": "La révélation, l’accueil de Khadija et la rencontre avec Waraqa",
+    "version": "prophete-hira-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Quatrième étape chronologique : début de la révélation et responsabilité de transmettre."
+    },
+    "length": {
+      "words": 1974,
+      "minMinutes": 12,
+      "maxMinutes": 15
+    },
+    "chapters": [
+      {
+        "id": "hira",
+        "title": "Hira, le commencement"
+      }
+    ]
+  },
+  {
+    "id": "prophete-premiers-croyants",
+    "title": "Le Prophète · Les premiers qui répondent",
+    "subtitle": "Des premières confidences à l’appel public, une communauté prend forme",
+    "version": "prophete-premiers-croyants-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Cinquième étape : premiers croyants, Safa, enseignement et premières persécutions à La Mecque."
+    },
+    "length": {
+      "words": 2125,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "chapters": [
+      {
+        "id": "premiers",
+        "title": "Les premiers qui répondent"
+      }
+    ]
+  },
+  {
+    "id": "prophete-abyssinie",
+    "title": "Le Prophète · Un refuge au-delà de la mer",
+    "subtitle": "L’Abyssinie, la parole de Jafar et la protection du Négus",
+    "version": "prophete-abyssinie-2026-10-31-v1",
+    "category": "prophet",
+    "scope": {
+      "kind": "episode",
+      "description": "Sixième étape : les départs de La Mecque vers l’Abyssinie ; ouverture finale, explicitement ultérieure, sur la reconnaissance des émigrants."
+    },
+    "length": {
+      "words": 2045,
+      "minMinutes": 13,
+      "maxMinutes": 16
+    },
+    "chapters": [
+      {
+        "id": "refuge",
+        "title": "Un refuge au-delà de la mer"
+      }
+    ]
   }
 ]

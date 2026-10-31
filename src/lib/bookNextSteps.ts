@@ -3,6 +3,11 @@ import {peopleInText} from './bookPeople';
 import {chapterNarrative,type NarrativeBook} from './narrativeBooks';
 // Explicit continuations only. All other books offer a related context, not an inferred chronology.
 const continuations:Record<string,{id:string;reason:string}>={
+ 'prophete-la-mecque':{id:'prophete-enfance',reason:'Poursuivez la chronologie avec son enfance et ceux qui le recueillent.'},
+ 'prophete-enfance':{id:'prophete-foyer',reason:'Poursuivez avec sa jeunesse, Khadija et la fondation de leur foyer.'},
+ 'prophete-hira':{id:'prophete-premiers-croyants',reason:'Suivez les premiers croyants, de l’appel discret à Safa.'},
+ 'prophete-premiers-croyants':{id:'prophete-abyssinie',reason:'Traversez la mer avec les émigrants en quête de protection.'},
+ 'prophete-foyer':{id:'prophete-hira',reason:'Découvrez les commencements de la révélation à Hira.'},
  'abu-bakr-confiance':{id:'umar-responsabilite',reason:'Après le premier califat, découvrez les responsabilités confiées à Umar.'},
  'umar-responsabilite':{id:'uthman-transmission',reason:'Après la consultation de succession, découvrez le califat d’Uthman.'},
  'uthman-transmission':{id:'ali-proximite',reason:'Poursuivez avec Ali et les épreuves de la période suivante.'},

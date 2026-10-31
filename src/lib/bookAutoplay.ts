@@ -1,5 +1,6 @@
 import type {LibraryAudio} from './audioProduction';
 import {bookForAudio,books,chapterForAudio,recordingsForBook,recommendedBooks,type BookSummary} from './bookLibrary';
+import {prophetChronology} from '../data/prophetCollection';
 
 /** An incomplete publication must never start an apparently complete book. */
 export function completeBookQueue(items:LibraryAudio[],book:BookSummary){
@@ -18,6 +19,16 @@ export function isBookEnd(item:LibraryAudio){
 }
 export function nextAudioBook(item:LibraryAudio,items:LibraryAudio[],visited:string[]){
  const current=bookForAudio(item);if(!current)return null;
+ // This series is chronological: a missing next recording must not skip a period
+ // or loop back to the beginning through general recommendations.
+ const at=prophetChronology.findIndex(entry=>entry.bookId===current.id);
+ if(at>=0){
+  const id=prophetChronology[at+1]?.bookId;
+  const book=id&&!visited.includes(id)?books.find(candidate=>candidate.id===id):undefined;
+  if(!book)return null;
+  const queue=completeBookQueue(items,book);
+  return queue.length?{book,queue}:null;
+ }
  for(const book of recommendedBooks(current.id,items,true,books.length)){
   if(visited.includes(book.id))continue;
   const queue=completeBookQueue(items,book);

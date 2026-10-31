@@ -71,6 +71,12 @@ import {ibnMasudBook} from './ibnMasud';
 import {hafsaBook} from './hafsa';
 import {ummSulaymBook} from './ummSulaym';
 import {nusaybaBook} from './nusayba';
+import {prophetOpeningBook} from './prophetSeries/opening';
+import {prophetChildhoodBook} from './prophetSeries/childhood';
+import {prophetHomeBook} from './prophetSeries/home';
+import {prophetHiraBook} from './prophetSeries/hira';
+import {prophetFirstBelieversBook} from './prophetSeries/firstBelievers';
+import {prophetAbyssiniaBook} from './prophetSeries/abyssinia';
 
 export const newCompanionBiographies=[hamzaBook,jafarBook,talhaBook,zubayrBook,abdurrahmanBook,abuUbaydaBook,ibnMasudBook,hafsaBook,ummSulaymBook,nusaybaBook];
 
@@ -78,6 +84,6 @@ export const newCompanionBiographies=[hamzaBook,jafarBook,talhaBook,zubayrBook,a
 const authoredBooks = [adamBook, nuhBook, ibrahimBook, yusufBook, musaBook, maryamIsaBook, sulaymanBook, khidrBook, caveBook, wealthBook, musaAfterBook, kingsBook, callsBook, siraBook, voicesBook, luqmanBook, speechBook,
  lutBook,kaabBook,aishaBook,boyKingBook,rockBook,threeTestedBook,repentanceBook,hajarBook,hijraBook,nightJourneyBook,hudaybiyyaBook,revelationBook,abuDharrBook,balanceBook,hospitalityBook,appearancesBook,mercyBook,jabirBook,seaTrustBook,abuBakrBook,bilalBook,musabBook,zaydThabitBook,asmaBook,ummSalamaBook,umarBook,uthmanBook,aliBook,khadijaBook,fatimaBook,goldBook,loveBook,mercyDoorsBook,tribulationBook,gentlenessBook,unseenBook,justiceBook,signsBook,discernmentBook,giftsBook,faithBook,listenedBook,parablesBook];
 /** New recordings are prepared against these editions in the studio. */
-export const narrativeProductionBooks=[...authoredBooks,...furtherCompanionBooks,...newCompanionBiographies].map(revisedCompanionEdition).map(completeCompanionBiography);
+export const narrativeProductionBooks=[...authoredBooks,...furtherCompanionBooks,...newCompanionBiographies,prophetOpeningBook,prophetChildhoodBook,prophetHomeBook,prophetHiraBook,prophetFirstBelieversBook,prophetAbyssiniaBook].map(revisedCompanionEdition).map(completeCompanionBiography);
 /** The current written edition is canonical. Audio is exposed only for its exact manuscript version. */
 export const narrativeBooks=narrativeProductionBooks;
