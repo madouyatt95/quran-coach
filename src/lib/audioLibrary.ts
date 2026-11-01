@@ -53,7 +53,7 @@ export async function downloadLibraryAudio(item:LibraryAudio,signal:AbortSignal)
 }
 export async function removeLibraryDownload(item:LibraryAudio){await (await caches.open(AUDIO_LIBRARY_CACHE)).delete(item.url);}
 export async function libraryAudioSource(item:LibraryAudio){
- if(typeof caches!=='undefined'){const cached=await (await caches.open(AUDIO_LIBRARY_CACHE)).match(item.url);if(cached)return URL.createObjectURL(await cached.blob());}
+ try{if(typeof caches!=='undefined'){const cached=await (await caches.open(AUDIO_LIBRARY_CACHE)).match(item.url);if(cached)return URL.createObjectURL(await cached.blob());}}catch{/* Restricted storage must not block online playback. */}
  return item.url;
 }
 export function audioSearch(text:string){return text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr');}

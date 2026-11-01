@@ -51,3 +51,10 @@ it('keeps successful network data when offline cache writes fail',async()=>{
  vi.stubGlobal('fetch',vi.fn(async()=>Response.json([{id:'online',title:'Livre',text:'Texte'}])));
  const {loadAudioLibrary}=await import('./audioLibrary');expect((await loadAudioLibrary())[0].id).toBe('online');
 });
+
+it('keeps online audio playable when CacheStorage is unavailable',async()=>{
+ vi.stubGlobal('caches',{open:async()=>{throw new Error('Storage denied');}});
+ const {libraryAudioSource}=await import('./audioLibrary');
+ const item={url:'https://audio.test/book.mp3'} as Parameters<typeof libraryAudioSource>[0];
+ expect(await libraryAudioSource(item)).toBe(item.url);
+});
