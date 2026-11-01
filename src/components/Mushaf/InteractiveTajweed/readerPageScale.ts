@@ -21,5 +21,5 @@ export function readerPageScale(width:number,height:number,spread:boolean,_immer
     return Math.min(fit,1.6)*zoom/READER_BASE_ZOOM;
 }
 
-/** At least 318 CSS pixels of text per leaf, without a short landscape spread. */
-export function canShowBookSpread(width:number,height:number){return width>=740&&height>=430;}
+/** At least 267 CSS pixels of text per leaf on compact inner displays, without a short landscape spread. */
+export function canShowBookSpread(width:number,height:number){return width>=620&&height>=430;}

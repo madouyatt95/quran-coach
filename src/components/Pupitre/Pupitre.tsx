@@ -13,7 +13,7 @@ export type ReturnTypeOfLayout=ReturnType<typeof usePupitreLayout>;
 /** Stable wrappers: changing posture never reparents or remounts the activity. */
 export function Pupitre({title,children,enabled=true,layoutState,activity='reader',toolbar=true,documentKey=activity,continuityKey='',...props}:HTMLAttributes<HTMLDivElement>&{title:string;children:ReactNode;enabled?:boolean;toolbar?:boolean;activity?:PupitreActivity;layoutState?:ReturnTypeOfLayout;documentKey?:string;continuityKey?:string}){
  const own=usePupitreLayout(enabled,activity),state=layoutState||own;const layout=enabled?state.layout:'plain';const [settings,setSettings]=useState(false),root=useRef<HTMLDivElement>(null),drag=useRef(false);
- const fixed=layout==='desk'?state.device.vertical:layout==='book'&&state.device.horizontal;
+ const fixed=state.device.folded&&(layout==='desk'?state.device.vertical:layout==='book'&&state.device.horizontal);
  const nativeFold=state.device.nativeFold?.layout===layout?state.device.nativeFold:null;
  usePupitreContinuity(root,`${layout}:${state.ratio}:${continuityKey}`,documentKey);
  useLayoutEffect(()=>{

@@ -6,14 +6,16 @@ import {resolveLayout,type Posture} from './posture';
 vi.hoisted(()=>{const data=new Map<string,string>();Object.defineProperty(window,'localStorage',{configurable:true,value:{getItem:(key:string)=>data.get(key)??null,setItem:(key:string,value:string)=>data.set(key,value),removeItem:(key:string)=>data.delete(key)}});});
 import {Pupitre,PupitreTop,PupitreBottom} from './Pupitre';
 import * as nativeLayout from '../../lib/nativeLayout';
-import {useLayoutPreferences} from './usePupitreLayout';
+import {useLayoutPreferences,usePupitreLayout} from './usePupitreLayout';
 const flat:Posture={folded:false,vertical:false,horizontal:false,width:900,height:900};
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 it('never infers a hinge from width or folded posture alone',()=>{
  expect(resolveLayout('auto',flat)).toBe('plain');
  expect(resolveLayout('auto',{...flat,folded:true})).toBe('plain');
- expect(resolveLayout('auto',{...flat,vertical:true})).toBe('desk');
- expect(resolveLayout('auto',{...flat,horizontal:true})).toBe('book');
+ expect(resolveLayout('auto',{...flat,vertical:true})).toBe('plain');
+ expect(resolveLayout('auto',{...flat,folded:true,vertical:true})).toBe('desk');
+ expect(resolveLayout('auto',{...flat,horizontal:true})).toBe('plain');
+ expect(resolveLayout('auto',{...flat,folded:true,horizontal:true})).toBe('book');
  expect(resolveLayout('plain',{...flat,vertical:true})).toBe('plain');
  expect(resolveLayout('desk',{...flat,width:390})).toBe('desk');
  expect(resolveLayout('book',{...flat,width:390})).toBe('plain');
@@ -50,4 +52,36 @@ it('follows native fold changes without remounting the current activity or losin
  await act(async()=>window.dispatchEvent(new Event('qc-native-layout')));
  expect(host.querySelector('audio')).toBe(audio);expect(mount).toHaveBeenCalledTimes(1);
  await act(async()=>root.unmount());host.remove();spy.mockRestore();
+});
+
+it('listens to the browser posture API and keeps flat segments out of desk mode',async()=>{
+ const native=vi.spyOn(nativeLayout,'getNativeViewport').mockReturnValue(null);
+ const posture=Object.assign(new EventTarget(),{type:'continuous'});
+ const originalPosture=Object.getOwnPropertyDescriptor(navigator,'devicePosture');
+ Object.defineProperty(navigator,'devicePosture',{configurable:true,value:posture});
+ const originalMedia=window.matchMedia;
+ window.matchMedia=vi.fn((q:string)=>Object.assign(new EventTarget(),{
+  matches:q==='(vertical-viewport-segments: 2)',media:q,
+  onchange:null,addListener:vi.fn(),removeListener:vi.fn(),
+ })) as typeof window.matchMedia;
+ useLayoutPreferences.setState({preferences:{}});
+ function Activity(){const state=usePupitreLayout();return <output>{state.layout}</output>;}
+ const host=document.createElement('div'),root=createRoot(host);
+ try {
+  await act(async()=>root.render(<Activity/>));
+  expect(host.textContent).toBe('plain');
+  await act(async()=>{posture.type='folded';posture.dispatchEvent(new Event('change'));});
+  expect(host.textContent).toBe('desk');
+  // A native flat snapshot wins over stale browser posture and segment signals.
+  native.mockReturnValue({width:900,height:900,divisions:[],occlusions:[]});
+  await act(async()=>window.dispatchEvent(new Event('qc-native-layout')));
+  expect(host.textContent).toBe('plain');
+  native.mockReturnValue(null);
+  await act(async()=>{posture.type='continuous';posture.dispatchEvent(new Event('change'));});
+  expect(host.textContent).toBe('plain');
+ } finally {
+  await act(async()=>root.unmount());native.mockRestore();window.matchMedia=originalMedia;
+  if(originalPosture)Object.defineProperty(navigator,'devicePosture',originalPosture);
+  else Reflect.deleteProperty(navigator,'devicePosture');
+ }
 });

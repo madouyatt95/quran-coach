@@ -29,6 +29,7 @@ import { KhatmCelebration } from './components/KhatmCelebration';
 import { updateLastVisit } from './lib/notificationService';
 import { trackAppOpen, trackPageView } from './lib/analyticsService';
 import './index.css';
+import './wideLayouts.css';
 import './appearance.css';
 import { applyAppearance } from './lib/appearance';
 

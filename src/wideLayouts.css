@@ -1,0 +1,42 @@
+/* Shared compact-tablet layout. Width is not a posture signal.
+   Keep reading prose constrained, but let catalogues use the whole display.
+   Explicit app-main scope wins over lazy-loaded page CSS without !important. */
+.home-sections, .home-section { display: contents; }
+@media (min-width: 620px) {
+  .app-main--compact :is(.home-page,.voice-page,.hifdh-page,.quiz-container,.academy-page,
+    .academy-hub,.academy-start,.academy-workspace,.fahm-shell,.stories-page,.prophets-page,
+    .settings-page,.favorites-page,.inv-page,.prayer-times-page,.dashboard-page,.coach-page,
+    .themes-page,.challenges-page,.hadiths-page,.stats-page,.progress-page) {
+    width: 100%; max-width: 1200px; margin-inline: auto; min-width: 0; box-sizing: border-box;
+  }
+  .app-main--compact .home-page { padding-inline: 8px; }
+  .app-main--compact .home-shortcuts__grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .app-main--compact .home-page .dhikr-draggable { flex-basis: calc(33.333% - 8px); width: calc(33.333% - 8px); }
+  .app-main--compact .home-page .dhikr-draggable--wide { flex-basis: 100%; width: 100%; }
+  .app-main--compact .home-page .dhikr-card--add { width: calc(33.333% - 8px); }
+  .app-main--compact :is(.qx-mode-grid,.quiz-theme-grid) { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .app-main--compact .qx-activity-grid { grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); }
+  .app-main--compact :is(.academy-modules-grid,.academy-levels) { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; padding-inline:16px; }
+  .app-main--compact :is(.academy-modules-grid,.academy-levels) > * { min-width:0; margin:0; }
+  .app-main--compact .companion-portrait-grid { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+  .app-main--compact .hifdh-session-home { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+  /* Identification keeps its microphone and recognised passage in one view. */
+  .app-main--compact .voice-page:has(.voice-result):not(:has(.voice-candidate)) { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:12px 20px; align-items:start; }
+  .app-main--compact .voice-page:has(.voice-result):not(:has(.voice-candidate)) > * { grid-column:1/-1; min-width:0; }
+  .app-main--compact .voice-page:has(.voice-result):not(:has(.voice-candidate)) > .voice-listener { grid-column:1; margin:0; }
+  .app-main--compact .voice-page:has(.voice-result):not(:has(.voice-candidate)) > .voice-result { grid-column:2; margin:0; }
+  /* Prose keeps a comfortable line length; lists and tools use the extra space. */
+  .app-main--compact :is(.fahm-course,.academy-course-article,.arabic-prose) { max-width:780px; margin-inline:auto; }
+}
+@media (min-width: 820px) {
+  .app-main--compact .settings-page { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:start; }
+  .app-main--compact .settings-page > * { grid-column:1/-1; min-width:0; }
+  .app-main--compact .settings-page > .settings-section { grid-column:auto; margin:0; }
+  .app-main--compact .settings-page > :is(#backup,#storage) { grid-column:1/-1; }
+
+  .app-main--compact .home-sections { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; }
+  .app-main--compact .home-section { display:block; min-width:0; grid-column:1/-1; }
+  .app-main--compact .home-section:is([data-home-section=hadith],[data-home-section=daily]) { grid-column:auto; }
+  .app-main--compact .home-shortcuts__grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .app-main--compact .qx-mode-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}

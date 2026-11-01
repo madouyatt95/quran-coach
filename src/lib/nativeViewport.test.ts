@@ -31,3 +31,10 @@ describe('native Duo reserved regions',()=>{
   expect(nativeFold({...base,divisions:[{x:0,y:300,width:50,height:20}]},951,620)).toBeNull();
  });
 });
+
+it('waits for a matching native snapshot during rotation instead of stretching the hinge',()=>{
+ const portrait={width:669,height:902,divisions:[{x:329,y:0,width:11,height:902}],occlusions:[]};
+ expect(nativeFold(portrait,902,669)).toBeNull();
+ const landscape={width:902,height:669,divisions:[{x:0,y:329,width:902,height:11}],occlusions:[]};
+ expect(nativeFold(landscape,902,669)).toEqual({layout:'desk',start:329,size:11});
+});

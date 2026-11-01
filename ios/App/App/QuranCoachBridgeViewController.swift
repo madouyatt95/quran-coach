@@ -29,6 +29,14 @@ final class QuranCoachBridgeViewController: CAPBridgeViewController {
         layoutPlugin.layoutDidChange()
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            // Query again after UIKit and the WKWebView finish rotating together.
+            self?.layoutPlugin.layoutDidChange()
+        }
+    }
+
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         layoutPlugin.layoutDidChange()

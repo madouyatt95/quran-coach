@@ -542,7 +542,7 @@ quick:<HomeQuickLinks favorites={shortcuts.favorites} onEdit={()=>setShowCustomi
 
             <HomeResume readingTitle={bookmark?'Reprendre mon signet':'Reprendre ma lecture'} readingDetail={`${bookmark?.precision==='page'?'':`${SURAH_NAMES[displaySurah]||`Sourate ${displaySurah}`} · `}Page ${displayPage}${bookmark?.precision==='verse'?` · verset ${bookmark.ayah}`:''}`} onRead={handleContinueReading} streak={readingStreak}/>
             <SmartSentinel feed={sentinelFeed}/>
-            {sectionOrder.map(id=><React.Fragment key={id}>{sections[id]}{id==='prayer'&&<Suspense fallback={<p className="home-book-reading">Chargement des livres…</p>}><HomeBooks date={now}/></Suspense>}</React.Fragment>)}
+            <div className="home-sections">{sectionOrder.map(id=><React.Fragment key={id}><div className="home-section" data-home-section={id}>{sections[id]}</div>{id==='prayer'&&<div className="home-section" data-home-section="books"><Suspense fallback={<p className="home-book-reading">Chargement des livres…</p>}><HomeBooks date={now}/></Suspense></div>}</React.Fragment>)}</div>
 
 
 

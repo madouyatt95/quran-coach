@@ -20,15 +20,39 @@ interface LayoutPreferences {preferences:Partial<Record<PupitreActivity,Activity
 export const useLayoutPreferences=create(persist<LayoutPreferences>((set)=>({preferences:{},update:(activity,patch)=>set(state=>({preferences:{...state.preferences,[activity]:safePreference({...DEFAULT,...state.preferences[activity],...patch})}}))}),{
  name:'qc-reading-layout-v1',version:2,storage:createJSONStorage(()=>window.localStorage),migrate:value=>migrateLayoutPreferences(value) as LayoutPreferences,partialize:state=>({preferences:state.preferences}) as LayoutPreferences,
 }));
+type BrowserPosture = EventTarget & {type:'folded'|'continuous'};
+const browserPosture=()=>typeof navigator==='undefined'?undefined:(navigator as Navigator & {devicePosture?:BrowserPosture}).devicePosture;
 const matches=(query:string)=>typeof window.matchMedia==='function'&&window.matchMedia(query).matches;
 const readPosture=():Posture=>{
- const fold=nativeFold(getNativeViewport(),innerWidth,innerHeight);
- return {folded:!!fold||matches('(device-posture: folded)'),vertical:fold?.layout==='desk'||matches('(vertical-viewport-segments: 2)'),horizontal:fold?.layout==='book'||matches('(horizontal-viewport-segments: 2)'),width:innerWidth,height:innerHeight,nativeFold:fold};
+ const snapshot=getNativeViewport();
+ const fold=nativeFold(snapshot,innerWidth,innerHeight);
+ // Native snapshots are authoritative, including an explicitly flat display.
+ // Browser segments describe geometry, not whether the device is bent.
+ return {folded:snapshot?!!fold:browserPosture()?.type==='folded'||matches('(device-posture: folded)'),vertical:snapshot?fold?.layout==='desk':matches('(vertical-viewport-segments: 2)'),horizontal:snapshot?fold?.layout==='book':matches('(horizontal-viewport-segments: 2)'),width:innerWidth,height:innerHeight,nativeFold:fold};
 };
 export function usePupitreLayout(enabled=true,activity:PupitreActivity='reader'){
  const preference=useLayoutPreferences(s=>s.preferences[activity]||DEFAULT),update=useLayoutPreferences(s=>s.update);
  const [device,setDevice]=useState<Posture>(()=>typeof window==='undefined'?{folded:false,vertical:false,horizontal:false,width:0,height:0}:readPosture());
- useEffect(()=>{const change=()=>setDevice(readPosture());const queries=['(device-posture: folded)','(vertical-viewport-segments: 2)','(horizontal-viewport-segments: 2)'].flatMap(q=>typeof window.matchMedia==='function'?[window.matchMedia(q)]:[]);queries.forEach(q=>q.addEventListener('change',change));window.addEventListener('resize',change);window.addEventListener('qc-native-layout',change);window.visualViewport?.addEventListener('resize',change);change();return()=>{queries.forEach(q=>q.removeEventListener('change',change));window.removeEventListener('resize',change);window.removeEventListener('qc-native-layout',change);window.visualViewport?.removeEventListener('resize',change);};},[]);
+ useEffect(()=>{
+  const change=()=>setDevice(readPosture());
+  const queries=['(device-posture: folded)','(vertical-viewport-segments: 2)','(horizontal-viewport-segments: 2)'].flatMap(q=>typeof window.matchMedia==='function'?[window.matchMedia(q)]:[]);
+  const posture=browserPosture();
+  queries.forEach(q=>q.addEventListener('change',change));
+  posture?.addEventListener('change',change);
+  screen.orientation?.addEventListener('change',change);
+  window.addEventListener('resize',change);
+  window.addEventListener('qc-native-layout',change);
+  window.visualViewport?.addEventListener('resize',change);
+  change();
+  return()=>{
+   queries.forEach(q=>q.removeEventListener('change',change));
+   posture?.removeEventListener('change',change);
+   screen.orientation?.removeEventListener('change',change);
+   window.removeEventListener('resize',change);
+   window.removeEventListener('qc-native-layout',change);
+   window.visualViewport?.removeEventListener('resize',change);
+  };
+ },[]);
  const choose=useCallback((choice:LayoutChoice)=>{window.dispatchEvent(new Event('qc-pupitre-before-layout'));update(activity,{choice});},[activity,update]);
  const setRatio=useCallback((ratio:number)=>{window.dispatchEvent(new Event('qc-pupitre-before-layout'));update(activity,{ratio});},[activity,update]);
  return {layout:enabled?resolveLayout(preference.choice,device):'plain' as ReadingLayout,...preference,choose,setRatio,device,activity};

@@ -5,6 +5,10 @@ export interface NativeFold {layout:'desk'|'book';start:number;size:number}
 /** UIKit points are converted to the current CSS viewport, never to screen size. */
 export function nativeFold(viewport:NativeViewport|null,width:number,height:number):NativeFold|null {
  if(!viewport||width<=0||height<=0)return null;
+ // During rotation UIKit can report its previous bounds before the CSS resize.
+ // Do not stretch a vertical hinge into the new landscape viewport.
+ const sourceRatio=viewport.width/viewport.height,targetRatio=width/height;
+ if((sourceRatio<1)!==(targetRatio<1)&&Math.abs(Math.log(sourceRatio/targetRatio))>.2)return null;
  for(const frame of viewport.divisions){
   const x=Math.max(0,frame.x),y=Math.max(0,frame.y);
   const right=Math.min(viewport.width,frame.x+frame.width),bottom=Math.min(viewport.height,frame.y+frame.height);

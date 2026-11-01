@@ -26,7 +26,7 @@ it('honors custom zoom in both single and double pages',()=>{
 });
 it('keeps two leaves readable, cropping only the two outer margins',()=>{
  expect(canShowBookSpread(740,730)).toBe(true);
- expect(canShowBookSpread(700,730)).toBe(false);
+ expect(canShowBookSpread(700,730)).toBe(true);
  expect(canShowBookSpread(390,700)).toBe(false);
  expect(canShowBookSpread(812,290)).toBe(false);
  const scale=readerPageScale(740,730,true,false,base);
@@ -40,4 +40,14 @@ it('frames the narrower opening pages without clipping their verified 108..492 t
   expect((600*scale-382)/2).toBeLessThan(108*scale);
   expect(readerPageScale(382,734,false,false,base,'page',page)).toBe(readerPageScale(382,734,false,false,base,'page',3));
  }
+});
+
+it('opens two pages on the compact inner display in both orientations',()=>{
+ for(const [width,height] of [[665,730],[898,480],[620,600]]){
+  expect(canShowBookSpread(width,height)).toBe(true);
+  const scale=readerPageScale(width,height,true,false,base);
+  expect(scale*468).toBeGreaterThan(267);
+  expect((1200*scale+4-width)/2).toBeLessThan(66*scale);
+ }
+ expect(canShowBookSpread(619,900)).toBe(false);
 });
