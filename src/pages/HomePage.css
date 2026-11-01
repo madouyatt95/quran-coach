@@ -3,7 +3,8 @@
 .home-page {
     min-height: 100vh;
     background: linear-gradient(160deg, #0a0e1a 0%, #1a1a2e 35%, #16213e 65%, #0f3460 100%);
-    padding: 0 0 100px 0;
+    /* The app shell reserves the dock; keep only a small content gutter. */
+    padding: 0 0 12px 0;
     color: #e0e0e0;
     overflow-x: hidden;
     position: relative;

@@ -7,7 +7,7 @@
     --home-line: #ffffff14;
     max-width: 820px;
     margin: 0 auto;
-    padding: 0 0 32px;
+    padding: 0 0 12px;
     background: radial-gradient(ellipse at 80% 0, #24324788, transparent 36%), #101722;
     color: var(--home-text);
 }

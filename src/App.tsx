@@ -217,7 +217,7 @@ function AppContent() {
       )}
 
       <KhatmCelebration />
-      <main className={isLecturePage ? undefined : "app-main--compact"} style={{ flex: 1, paddingBottom: 'var(--bottom-nav-height)' }}>
+      <main data-reader-route={isLecturePage} className={isLecturePage ? undefined : "app-main--compact"} style={{ flex: 1, paddingBottom: isLecturePage ? 0 : 'var(--bottom-nav-height)' }}>
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
         <Suspense fallback={<PageLoader />}>

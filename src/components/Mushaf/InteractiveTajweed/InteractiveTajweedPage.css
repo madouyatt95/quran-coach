@@ -257,9 +257,9 @@ body.iq-immersive-active .bottom-nav{display:none}
 /* The gutter is stationary while the outer edge bends. */
 .iq-book-binding{position:absolute;width:10px;pointer-events:none;background:linear-gradient(90deg,transparent,#30241555 43%,#fff6 50%,#30241544 57%,transparent)}
 /* The dock participates in layout; no duplicated fixed bottom reservation. */
-.iq-reader.iq-immersive{top:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.iq-reader.iq-immersive{top:0;padding-bottom:0;background:var(--iq-paper)}
 .iq-reader.iq-immersive .iq-viewport{padding:calc(env(safe-area-inset-top,0px) + 4px) 4px 4px;display:flex;flex-direction:column}
-.iq-immersive .iq-book-spread{flex-shrink:0;margin-block:auto}
+.iq-immersive .iq-book-spread{flex-shrink:0;margin-block:0}
 .iq-immersive .iq-immersive-dock{position:relative;inset:auto;flex:0 0 auto;align-self:center;width:calc(100% - 8px);max-width:640px;margin:0 4px 4px;box-sizing:border-box}
 .iq-immersive .iq-dock-hidden .iq-floating{height:0;min-height:0;overflow:hidden;border:0}
 .iq-immersive .iq-dock-hidden .iq-translation-ribbon{transform:none}
@@ -337,10 +337,14 @@ body.iq-immersive-active .bottom-nav{display:none}
 @media(max-width:360px){.iq-reader .iq-transport button{min-width:32px}.iq-reader .iq-transport .iq-play-primary{width:38px;min-width:38px;margin:0}}
 
 /* Immersion owns the safe area once. Hidden controls must occupy no row. */
-.iq-reader.iq-immersive[data-pupitre-layout=plain]{bottom:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.iq-reader.iq-immersive[data-pupitre-layout=plain]{bottom:0;padding-bottom:0;background:var(--iq-paper)}
 .iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-viewport{padding-bottom:2px;scroll-padding-bottom:2px}
-.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-book-spread{margin-block:auto}
-.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-immersive-dock{width:100%;max-width:none;margin:0;border-radius:14px 14px 0 0}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-book-spread{margin-block:0}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-immersive-dock{width:100%;max-width:none;margin:0;border-radius:14px 14px 0 0;padding-bottom:var(--dock-bottom-space,env(safe-area-inset-bottom,0px));background:var(--color-bg-secondary)}
+/* The paper reaches the screen edges; spare height is never a dark letterbox.
+   Keep the verified sheet aspect ratio and word positions unchanged. */
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-viewport{background:var(--iq-paper);overscroll-behavior:none}
+.iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-immersive-dock.iq-dock-hidden.iq-dock-no-caption{padding:0}
 .iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-dock-hidden .iq-floating{display:none}
 .iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-dock-hidden .iq-translation-ribbon{border-radius:14px 14px 0 0}
 .iq-reader.iq-immersive[data-pupitre-layout=plain] .iq-controls{display:none}
@@ -383,3 +387,8 @@ body.iq-immersive-active .bottom-nav{display:none}
 .iq-session-end:after{content:'';position:absolute;inset:3px -2px;border-bottom:2px solid #b89645;pointer-events:none}
 .iq-caption-source{font-size:8px;line-height:9px}.iq-translation-ribbon .iq-translation-hide{gap:1px}
 .iq-translation-ribbon .iq-translation-caption{height:auto;min-height:50px;max-height:none}.iq-caption-text{max-width:100%}
+
+/* Full-line framing spends the width on glyphs, not exterior decoration.
+   Four font units on either side protect diacritics and glyph overhangs. */
+.iq-reader.iq-framing-text .iq-viewport{padding-inline:2px}
+.iq-reader.iq-framing-text.iq-immersive[data-pupitre-layout=plain] .iq-viewport{padding-inline:2px}

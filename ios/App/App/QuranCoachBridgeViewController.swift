@@ -12,6 +12,13 @@ final class QuranCoachBridgeViewController: CAPBridgeViewController {
     override var preferredVerticalBarBehavior: UIVerticalBarBehavior { .disabled }
 
     override func capacitorDidLoad() {
+        // Match the PWA's edge-to-edge viewport. Native inset adjustment moves
+        // even fixed HTML controls when the document reaches a scroll boundary.
+        webView?.scrollView.contentInsetAdjustmentBehavior = .never
+        webView?.scrollView.contentInset = .zero
+        webView?.scrollView.bounces = false
+        webView?.scrollView.alwaysBounceVertical = false
+        webView?.scrollView.alwaysBounceHorizontal = false
         bridge?.registerPluginInstance(QuranCoachCarPlugin())
         bridge?.registerPluginInstance(SpeechRecognition())
         bridge?.registerPluginInstance(layoutPlugin)

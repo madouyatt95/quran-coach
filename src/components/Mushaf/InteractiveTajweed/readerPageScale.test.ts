@@ -5,7 +5,7 @@ it('fills the text width and does not shrink it when captions or desk controls r
  for(const width of [312,382,422,700]){
   const tall=readerPageScale(width,734,false,false,base);
   const short=readerPageScale(width,230,false,true,base);
-  expect(tall*484).toBeCloseTo(width);
+  expect(tall*476).toBeCloseTo(width);
   expect(short).toBe(tall);
   // All words in the verified 66..534 column stay inside the centered viewport.
   expect((600*tall-width)/2).toBeLessThan(66*tall);

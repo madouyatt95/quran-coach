@@ -141,6 +141,7 @@ html {
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
   touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 body {
@@ -150,6 +151,7 @@ body {
   line-height: var(--line-height-ui);
   min-height: 100dvh;
   overflow-x: hidden;
+  overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-touch-callout: none;
@@ -165,7 +167,22 @@ input, textarea, .arabic, p {
   display: flex;
   flex-direction: column;
   padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* The fixed dock already includes the bottom safe area. */
+  padding-bottom: 0;
+}
+
+/* Fixed readers scroll their own panes; the document behind them must not
+   acquire a second scroll range from the root's safe area or nav reservation. */
+html:has(main[data-reader-route="true"]),
+body:has(main[data-reader-route="true"]) {
+  height: 100%;
+  overflow: hidden;
+}
+body:has(main[data-reader-route="true"]) #root {
+  height: 100dvh;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 /* Arabic Text Styles */

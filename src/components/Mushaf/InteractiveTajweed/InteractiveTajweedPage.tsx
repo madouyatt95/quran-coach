@@ -666,9 +666,9 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
 
 function FramingChoices({framing,onChange}:{framing:'text'|'page';onChange:(value:'text'|'page')=>void}){
     return <fieldset className="iq-framing-choices"><legend>Cadrage du Mushaf</legend>
-        <div><button aria-pressed={framing==='text'} onClick={()=>onChange('text')}>Texte agrandi</button>
+        <div><button aria-pressed={framing==='text'} onClick={()=>onChange('text')}>Lignes entières</button>
         <button aria-pressed={framing==='page'} onClick={()=>onChange('page')}>Page entière</button></div>
-        <p>{framing==='text'?'Le texte occupe la largeur. Faites défiler la page verticalement si nécessaire.':'La page et ses ornements sont entièrement visibles.'}</p>
+        <p>{framing==='text'?'Chaque ligne reste visible en largeur, avec des marges décoratives réduites. Faites défiler verticalement si nécessaire.':'La page et ses ornements sont entièrement visibles.'}</p>
     </fieldset>;
 }
 

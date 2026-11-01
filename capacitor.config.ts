@@ -10,7 +10,8 @@ const config: CapacitorConfig = {
     // url: 'http://192.168.x.x:5173',
   },
   ios: {
-    contentInset: 'automatic',
+    // CSS owns safe areas (viewport-fit=cover). UIKit must not add them again.
+    contentInset: 'never',
     scheme: 'Quran Coach',
   },
   plugins: {
