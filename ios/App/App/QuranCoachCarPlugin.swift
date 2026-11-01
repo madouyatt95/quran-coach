@@ -12,11 +12,40 @@ public final class QuranCoachCarPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "updateWidgetContent", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "updateActivityWidgets", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "setNowPlaying", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "clearNowPlaying", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "clearNowPlaying", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getCarPlayback", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "carPlaybackCommand", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "updateCarPreferences", returnType: CAPPluginReturnPromise)
     ]
 
     private let suite = "group.com.qurancoach.app"
-    private var commandsInstalled = false
+    public override func load() {
+        Task { @MainActor [weak self] in
+            let audio = CarAudioPlayer.shared
+            audio.install()
+            audio.webCommand = { [weak self] action, seconds in
+                var data: JSObject = ["action": action]
+                if let seconds { data["seconds"] = seconds }
+                self?.notifyListeners("remoteCommand", data: data)
+            }
+            audio.onChange = { [weak self] state in self?.notifyListeners("nativePlayback", data: state) }
+        }
+    }
+
+    @objc func getCarPlayback(_ call: CAPPluginCall) {
+        Task { @MainActor in call.resolve(CarAudioPlayer.shared.state) }
+    }
+    @objc func carPlaybackCommand(_ call: CAPPluginCall) {
+        let action = call.getString("action") ?? ""
+        let seconds = call.getDouble("seconds")
+        Task { @MainActor in CarAudioPlayer.shared.command(action, seconds: seconds); call.resolve(CarAudioPlayer.shared.state) }
+    }
+    @objc func updateCarPreferences(_ call: CAPPluginCall) {
+        let defaults = UserDefaults(suiteName: suite)
+        if let reciter = call.getString("reciter"), CarReciter.all.contains(where: { $0.id == reciter }) { defaults?.set(reciter, forKey: "car.reciter") }
+        if let autoNext = call.getBool("autoNextBook") { defaults?.set(autoNext, forKey: "car.autoNextBook") }
+        call.resolve()
+    }
 
     @objc func updatePrayerSnapshot(_ call: CAPPluginCall) {
         guard let defaults = UserDefaults(suiteName: suite) else {
@@ -41,6 +70,7 @@ public final class QuranCoachCarPlugin: CAPPlugin, CAPBridgedPlugin {
         }
         if let data = try? JSONSerialization.data(withJSONObject: events) { defaults.set(data, forKey: "car.events") }
         WidgetCenter.shared.reloadTimelines(ofKind: "PrayerWidget")
+        NotificationCenter.default.post(name: .carPrayerChanged, object: nil)
         call.resolve()
     }
 
@@ -79,6 +109,12 @@ public final class QuranCoachCarPlugin: CAPPlugin, CAPBridgedPlugin {
         let playing = call.getBool("playing") ?? false
         let elapsed = max(0, call.getDouble("elapsed") ?? 0)
         let duration = max(0, call.getDouble("duration") ?? 0)
+        Task { @MainActor in
+        // A paused web player must not clear or replace active CarPlay metadata.
+        if CarAudioPlayer.shared.current != nil {
+            guard playing else { call.resolve(); return }
+            CarAudioPlayer.shared.stop()
+        }
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [
             MPMediaItemPropertyTitle: title,
             MPMediaItemPropertyArtist: artist,
@@ -87,26 +123,17 @@ public final class QuranCoachCarPlugin: CAPPlugin, CAPBridgedPlugin {
             MPNowPlayingInfoPropertyPlaybackRate: playing ? 1.0 : 0.0
         ]
         MPNowPlayingInfoCenter.default().playbackState = playing ? .playing : .paused
-        installRemoteCommands()
         call.resolve()
+        }
     }
 
     @objc func clearNowPlaying(_ call: CAPPluginCall) {
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
-        MPNowPlayingInfoCenter.default().playbackState = .stopped
-        call.resolve()
-    }
-
-    private func installRemoteCommands() {
-        guard !commandsInstalled else { return }
-        commandsInstalled = true
-        let center = MPRemoteCommandCenter.shared()
-        center.playCommand.addTarget { [weak self] _ in self?.notifyListeners("remoteCommand", data: ["action": "play"]); return .success }
-        center.pauseCommand.addTarget { [weak self] _ in self?.notifyListeners("remoteCommand", data: ["action": "pause"]); return .success }
-        center.togglePlayPauseCommand.addTarget { [weak self] _ in self?.notifyListeners("remoteCommand", data: ["action": "toggle"]); return .success }
-        center.nextTrackCommand.addTarget { [weak self] _ in self?.notifyListeners("remoteCommand", data: ["action": "next"]); return .success }
-        center.previousTrackCommand.addTarget { [weak self] _ in self?.notifyListeners("remoteCommand", data: ["action": "previous"]); return .success }
-        center.nextTrackCommand.isEnabled = true
-        center.previousTrackCommand.isEnabled = true
+        Task { @MainActor in
+            if CarAudioPlayer.shared.current == nil {
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+                MPNowPlayingInfoCenter.default().playbackState = .stopped
+            }
+            call.resolve()
+        }
     }
 }

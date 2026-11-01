@@ -1,5 +1,6 @@
 import {NavigationMemory} from './components/Navigation/NavigationMemory';
 import { startCarMediaBridge } from './lib/carExperience';
+import {CarPlaybackBar} from './components/Audio/CarPlaybackBar';
 import { startActivityWidgetBridge } from './lib/widgetService';
 import { useWidgetNavigation } from './hooks/useWidgetNavigation';
 import { AdhanPlayer } from './components/Prayer/AdhanPlayer';
@@ -281,6 +282,7 @@ function AppContent() {
       <UpdateBanner />
       <MiniPlayer />
       <LibraryPlayer />
+      <CarPlaybackBar />
       <InvisibleCoachLayer />
       <BottomNav />
     </AutomaticMosqueContext.Provider>

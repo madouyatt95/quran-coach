@@ -1,5 +1,9 @@
 # Quran Coach sur iOS et CarPlay
 
+## État actuel — 2 novembre 2026
+
+La capacité CarPlay Audio est maintenant activée pour l’app et incluse dans son profil signé. La version de développement 1.5.3 (20) ajoute les listes et la lecture CarPlay natives, puis a été installée par câble sur l’iPhone Duo. Le détail des fonctionnalités, vérifications et limites est dans [la livraison 1.5.3 (20)](releases/2026-11-02-ios-1.5.3-20-carplay.md). Les paragraphes ci-dessous retracent les étapes antérieures, où cette capacité était encore absente. L’essai en véhicule reste à effectuer avant de déclarer CarPlay validé.
+
 ## Version native
 
 La cible `ios/App/App.xcodeproj` embarque le résultat de `npm run build` après `npx cap sync ios`.

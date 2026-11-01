@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA2026110200000000000003 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2026110200000000000013; };
+		CA2026110200000000000002 /* CarAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2026110200000000000012; };
+		CA2026110200000000000001 /* CarAudioData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2026110200000000000011; };
 		CD3150000000000000000001 /* QuranCoachWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3150000000000000000003; };
 		CD3150000000000000000002 /* QuranCoachWidgetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD3150000000000000000003; };
 		CD3140000000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CD3140000000000000000003; };
@@ -56,6 +59,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CA2026110200000000000013 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		CA2026110200000000000012 /* CarAudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarAudioPlayer.swift; sourceTree = "<group>"; };
+		CA2026110200000000000011 /* CarAudioData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarAudioData.swift; sourceTree = "<group>"; };
 		CD3150000000000000000003 /* QuranCoachWidgetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/QuranCoachWidgetData.swift; sourceTree = SOURCE_ROOT; };
 		CD3140000000000000000003 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 		11AE041D80B299DA87DA2DEC /* QuranCoachCarPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QuranCoachCarPlugin.swift; sourceTree = "<group>"; };
@@ -153,6 +159,9 @@
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
 				5D710351AB019B65825A20D1 /* QuranCoachBridgeViewController.swift */,
+				CA2026110200000000000011 /* CarAudioData.swift */,
+				CA2026110200000000000012 /* CarAudioPlayer.swift */,
+				CA2026110200000000000013 /* CarPlaySceneDelegate.swift */,
 				11AE041D80B299DA87DA2DEC /* QuranCoachCarPlugin.swift */,
 				FF4BA4C2F04F5DDAD12B0D42 /* SpeechRecognitionCapacitor8.swift */,
 				710367487D09141C8F15B169 /* Plugin.swift */,
@@ -284,6 +293,9 @@
 				CD3150000000000000000001 /* QuranCoachWidgetData.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				7F901ABCE2CC9B3D524BF040 /* QuranCoachBridgeViewController.swift in Sources */,
+				CA2026110200000000000001 /* CarAudioData.swift in Sources */,
+				CA2026110200000000000002 /* CarAudioPlayer.swift in Sources */,
+				CA2026110200000000000003 /* CarPlaySceneDelegate.swift in Sources */,
 				19776C437D4D176C374387AC /* QuranCoachCarPlugin.swift in Sources */,
 				0FA1B6A7C2EB7D30073785FD /* SpeechRecognitionCapacitor8.swift in Sources */,
 				9EF788DC33135D99D7B09FAC /* Plugin.swift in Sources */,
@@ -338,11 +350,11 @@
 				CODE_SIGN_ENTITLEMENTS = QuranCoachWidgets/QuranCoachWidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = A3PR55X9BY;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = QuranCoachWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.5.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app.QuranCoachWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -470,14 +482,14 @@
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = A3PR55X9BY;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.5.3;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -494,14 +506,14 @@
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = A3PR55X9BY;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.5.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -518,11 +530,11 @@
 				CODE_SIGN_ENTITLEMENTS = QuranCoachWidgets/QuranCoachWidgetsExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = A3PR55X9BY;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = QuranCoachWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.5.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.qurancoach.app.QuranCoachWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

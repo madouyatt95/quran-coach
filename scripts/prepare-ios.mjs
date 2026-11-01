@@ -1,4 +1,12 @@
 import {spawnSync} from 'node:child_process';
+import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+
+// A CarPlay scene may start before the web scene: ship its authoritative indices.
+mkdirSync('public/carplay',{recursive:true});
+for(const [name,source] of [['surahs','src/lib/interactiveMushaf/chapters.json'],['books','src/data/bookCatalog.json']]) {
+  const data=JSON.parse(readFileSync(source,'utf8'));
+  writeFileSync(`public/carplay/${name}.json`,JSON.stringify(data));
+}
 
 // Native releases must include the public features enabled in production.
 // These are public endpoints/flags, never server credentials.
