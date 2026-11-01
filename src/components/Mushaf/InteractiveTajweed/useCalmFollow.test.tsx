@@ -26,3 +26,17 @@ it('suspends on manual scrolling, not its own scroll, and resumes on demand',()=
  act(()=>current.resume());expect(current.paused).toBe(false);expect(vi.mocked(root.scrollBy).mock.calls.length).toBeGreaterThan(before);
  act(()=>root.dispatchEvent(new Event('wheel')));rerender({active:false});expect(current.paused).toBe(false);
 });
+it('follows the verse without word timestamps and respects both manual scroll and study',()=>{
+ vi.stubGlobal('matchMedia',()=>({matches:false}));
+ const view=document.createElement('div');view.innerHTML='<span data-verse-key="2:17">Verset</span>';document.body.append(view);
+ view.getBoundingClientRect=()=>({top:0,bottom:250,left:0,right:390} as DOMRect);
+ view.firstElementChild!.getBoundingClientRect=()=>({top:225,bottom:260,left:100,right:200} as DOMRect);
+ view.scrollBy=vi.fn();const ref={current:view};let follow!:ReturnType<typeof useCalmFollow>;
+ function App({blocked=false}:{blocked?:boolean}){follow=useCalmFollow(ref,null,true,{desk:true,verseKey:'2:17',blocked});return null;}
+ const host=document.createElement('div');reactRoot=createRoot(host);
+ act(()=>reactRoot!.render(<App/>));expect(view.scrollBy).toHaveBeenCalledWith(expect.objectContaining({top:130}));
+ act(()=>view.dispatchEvent(new Event('wheel')));vi.mocked(view.scrollBy).mockClear();
+ act(()=>reactRoot!.render(<App/>));expect(view.scrollBy).not.toHaveBeenCalled();
+ act(()=>follow.resume());expect(view.scrollBy).toHaveBeenCalled();
+ vi.mocked(view.scrollBy).mockClear();act(()=>reactRoot!.render(<App blocked/>));expect(view.scrollBy).not.toHaveBeenCalled();
+});

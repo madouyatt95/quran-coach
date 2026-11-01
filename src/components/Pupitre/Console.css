@@ -71,3 +71,22 @@ body:has(.book-pupitre:not([data-pupitre-layout=plain]) [data-book-console-activ
 .pupitre-personal-layout{display:grid;gap:10px;margin:14px 0}.pupitre-personal-layout label{display:grid;gap:8px;font-size:.85rem}.pupitre-personal-layout p,.pupitre-personal-layout small{margin:0;color:#cbbad7;font-size:.78rem;line-height:1.5}.pupitre-personal-layout input[type=range]{width:100%;accent-color:#e2c48b}
 .pupitre-root:not([data-pupitre-layout=plain]) .hifdh-command-dock,.pupitre-root:not([data-pupitre-layout=plain]) .course-audio{position:sticky;top:0;z-index:4;background:var(--color-bg-secondary,#242038)}
 @media(max-height:760px){.pupitre-workspace-fixed .pupitre-console-title{display:none}.pupitre-workspace-fixed .pupitre-transport>button{min-height:54px!important;padding:8px!important;gap:4px}.pupitre-workspace-fixed .pupitre-timeline{margin:6px 0}.pupitre-workspace-fixed .pupitre-shortcuts{margin-top:4px}.pupitre-workspace-fixed .pupitre-console-tabs{margin-top:5px}.pupitre-workspace-fixed .pupitre-transport svg{width:22px;height:22px}}
+
+/* Illustrated choices distinguish a two-page book from a study workspace. */
+.pupitre-layout-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pupitre-layout-cards legend{grid-column:1/-1}
+.pupitre-layout-cards label{position:relative;flex-direction:column;align-items:flex-start!important;gap:8px!important;padding:12px!important;min-width:0}
+.pupitre-layout-cards input{position:absolute;right:9px;top:9px}
+.pupitre-layout-cards strong{display:block;font-size:.85rem;line-height:1.4}
+.pupitre-layout-cards small{display:block;margin-top:4px;font-size:.72rem;color:var(--color-text-secondary,#cbbad7)}
+.layout-preview{width:80px;height:54px;fill:none;stroke:#b6a0ce;stroke-width:2}
+.layout-preview-frame{fill:#9c84b51a;stroke:#b6a0ce66}
+.pupitre-layout-cards label:has(input:checked) .layout-preview{stroke:#efd398}
+@media(max-width:340px){.pupitre-layout-cards{grid-template-columns:1fr}}
+/* Keep transport and repeat in place; fading secondary controls never reflows paper. */
+.pupitre-workspace .pupitre-console-tabs,.pupitre-workspace .pupitre-shortcuts>div{transition:opacity .35s ease}
+.pupitre-workspace[data-console-quiet=true] .pupitre-console-tabs,
+.pupitre-workspace[data-console-quiet=true] .pupitre-shortcuts>div:not([data-essential=true]){opacity:0;visibility:hidden;pointer-events:none}
+.pupitre-workspace{position:relative}
+.pupitre-wake-controls{align-self:center;position:absolute;bottom:8px;right:8px;z-index:5;min-height:44px;padding:8px 14px;border:1px solid #cbb28b55;border-radius:14px;background:#252033;color:#ead6b0;font:500 .8rem system-ui}
+.pupitre-wake-controls[hidden]{display:none!important}

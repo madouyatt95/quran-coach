@@ -2,7 +2,7 @@ import {useLayoutEffect,useRef,type RefObject} from 'react';
 
 const ANCHORS=['data-word-key','data-book-passage','data-pupitre-anchor'] as const;
 type Anchor={attribute:string;key:string;offset:number;offsetX:number;screenTop?:number};
-type Snapshot={documentKey:string;anchor:Anchor|null;lower:number;upper:number};
+type Snapshot={documentKey:string;anchor:Anchor|null;lower:number;upper:number;panels:Record<string,number>};
 function scrollHost(upper:HTMLElement):HTMLElement {
  const reader=upper.querySelector<HTMLElement>('.iq-viewport');
  if(reader)return reader;
@@ -14,15 +14,19 @@ export function captureReadingAnchor(root:HTMLElement):Anchor|null {
  const upper=root.querySelector<HTMLElement>('.pupitre-upper');if(!upper)return null;
  const host=scrollHost(upper),top=viewTop(host),bottom=host===document.scrollingElement?innerHeight:host.getBoundingClientRect().bottom,left=host===document.scrollingElement?0:host.getBoundingClientRect().left,right=host===document.scrollingElement?innerWidth:host.getBoundingClientRect().right;
  const candidates=[...upper.querySelectorAll<HTMLElement>(ANCHORS.map(a=>`[${a}]`).join(','))].filter(el=>{const r=el.getBoundingClientRect();return r.height>0&&r.bottom>top+16&&r.top<bottom&&r.right>left&&r.left<right;});
- const el=candidates.sort((a,b)=>Math.abs(a.getBoundingClientRect().top-top-40)-Math.abs(b.getBoundingClientRect().top-top-40))[0];
+ const meaningful=candidates.find(el=>el.matches('[aria-pressed="true"],[data-live-word="true"]'));
+ const el=meaningful||candidates.sort((a,b)=>Math.abs(a.getBoundingClientRect().top-top-40)-Math.abs(b.getBoundingClientRect().top-top-40))[0];
  if(!el)return null;const attribute=ANCHORS.find(a=>el.hasAttribute(a))!;
  return {attribute,key:el.getAttribute(attribute)!,offset:el.getBoundingClientRect().top-top,offsetX:el.getBoundingClientRect().left-left,...(root.matches('.iq-reader')?{screenTop:el.getBoundingClientRect().top}:{})};
 }
-export function restoreReadingAnchor(root:HTMLElement,anchor:Anchor|null){
+export function restoreReadingAnchor(root:HTMLElement,anchor:Anchor|null,highlight=false){
  if(!anchor)return false;
  const upper=root.querySelector<HTMLElement>('.pupitre-upper');if(!upper)return false;
  const target=[...upper.querySelectorAll<HTMLElement>(`[${anchor.attribute}]`)].find(el=>el.getAttribute(anchor.attribute)===anchor.key);
  if(!target)return false;
+ if(highlight&&typeof target.animate==='function'&&!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+  target.animate([{outline:'2px solid #cfb36a',outlineOffset:'3px'},{outline:'2px solid transparent',outlineOffset:'6px'}],{duration:1200,easing:'ease-out'});
+ }
  const host=scrollHost(upper);const bounds=host.getBoundingClientRect();
  const desired=anchor.screenTop===undefined?viewTop(host)+anchor.offset:Math.max(bounds.top+8,Math.min(bounds.bottom-44,anchor.screenTop));
  host.scrollTop+=target.getBoundingClientRect().top-desired;
@@ -32,23 +36,26 @@ export function restoreReadingAnchor(root:HTMLElement,anchor:Anchor|null){
 }
 /** Keep a semantic passage, rather than an obsolete pixel offset after a resize. */
 export function usePupitreContinuity(ref:RefObject<HTMLDivElement|null>,signature:string,documentKey:string){
- const last=useRef<Snapshot|null>(null),restoring=useRef(false),currentKey=useRef(documentKey);
+ const last=useRef<Snapshot|null>(null),restoring=useRef(false),currentKey=useRef(documentKey),lastLayout=useRef(signature.split(':')[0]);
  currentKey.current=documentKey;
  useLayoutEffect(()=>{
   const root=ref.current;if(!root)return;
   let frame=0,settle=0;
+  let cue=lastLayout.current!==signature.split(':')[0];lastLayout.current=signature.split(':')[0];
   const capture=()=>{
    if(restoring.current)return;
    const upper=root.querySelector<HTMLElement>('.pupitre-upper'),lower=root.querySelector<HTMLElement>('.pupitre-lower');
-   if(upper)last.current={documentKey:currentKey.current,anchor:captureReadingAnchor(root),upper:scrollHost(upper).scrollTop,lower:lower?.scrollTop||0};
+   if(upper)last.current={documentKey:currentKey.current,anchor:captureReadingAnchor(root),upper:scrollHost(upper).scrollTop,lower:lower?.scrollTop||0,panels:Object.fromEntries([...root.querySelectorAll<HTMLElement>('[data-scroll-key]')].map(el=>[el.dataset.scrollKey!,el.scrollTop]))};
   };
   const restore=()=>{
    const saved=last.current;if(!saved||saved.documentKey!==currentKey.current){capture();return;}
    restoring.current=true;
    cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{
     const upper=root.querySelector<HTMLElement>('.pupitre-upper'),lower=root.querySelector<HTMLElement>('.pupitre-lower');
-    if(!restoreReadingAnchor(root,saved.anchor)&&upper)scrollHost(upper).scrollTop=saved.upper;
+    if(!restoreReadingAnchor(root,saved.anchor,cue)&&upper)scrollHost(upper).scrollTop=saved.upper;
+    cue=false;
     if(lower)lower.scrollTop=saved.lower;
+    root.querySelectorAll<HTMLElement>('.pupitre-lower [data-scroll-key]').forEach(el=>{const scroll=saved.panels[el.dataset.scrollKey!];if(scroll!==undefined)el.scrollTop=scroll;});
     settle=requestAnimationFrame(()=>{restoring.current=false;capture();});
    });
   };

@@ -22,7 +22,7 @@ export function BottomNav() {
     const { t } = useTranslation();
     const location = useLocation();
     return (
-        <nav className="bottom-nav">
+        <nav className="bottom-nav" aria-label="Navigation principale">
             {navItems.map((item) => (
                 <NavLink
                     key={item.path}
@@ -39,6 +39,11 @@ export function BottomNav() {
                     <span className="bottom-nav__dot" />
                 </NavLink>
             ))}
+            <div className="bottom-nav__rail-extra">
+                <NavLink to="/listen/library" className="bottom-nav__item"><span className="bottom-nav__icon" aria-hidden="true">📚</span><span className="bottom-nav__label">Bibliothèque</span></NavLink>
+                <NavLink to="/academy" className="bottom-nav__item"><span className="bottom-nav__icon" aria-hidden="true">🎓</span><span className="bottom-nav__label">Académie</span></NavLink>
+                <NavLink to="/prayers" className="bottom-nav__item"><span className="bottom-nav__icon" aria-hidden="true">🕌</span><span className="bottom-nav__label">Prières</span></NavLink>
+            </div>
         </nav>
     );
 }
