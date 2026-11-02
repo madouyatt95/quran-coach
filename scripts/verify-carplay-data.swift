@@ -59,6 +59,11 @@ let complete = nativeReciter.best!.tracks(reciter: "123", name: "Alafasy", surah
 check(complete.map(\.chapter) == ["1","2","3"], "sourates exactes, ordre, doublons et indices invalides exclus")
 check(complete[1].url.absoluteString == "https://server8.mp3quran.net/afs/002.mp3", "même fichier complet que le menu Écoute")
 let narration = book.recordings(items)[0]
+check(complete[1].surahArtworkNumber == 2, "pochette de la sourate entière Écoute")
+check(tracks[16].surahArtworkNumber == 2, "pochette de la sourate pour une ancienne file par versets")
+check(narration.surahArtworkNumber == nil, "un livre ne reçoit pas de pochette coranique")
+let invalidArt = CarTrack(id: "quran:invalid", title: "", artist: "", url: tracks[0].url, duration: 0, path: "/read", chapter: "115")
+check(invalidArt.surahArtworkNumber == nil, "aucun médaillon pour un numéro hors du Coran")
 check(narration.afterCall(position: 12.75, rewindBooks: true) == 7.75, "reprise du livre cinq secondes avant")
 check(narration.afterCall(position: 2, rewindBooks: true) == 0, "reprise limitée au début du segment")
 check(narration.afterCall(position: 12.75, rewindBooks: false) == 12.75, "position exacte du livre sur demande")

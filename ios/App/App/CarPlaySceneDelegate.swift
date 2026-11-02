@@ -25,6 +25,8 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     private var prayerError = ""
     private var listeningLoading = false
     private var listeningError = ""
+    private let surahRows = NSHashTable<CPListItem>.weakObjects()
+    private let badges = NSCache<NSNumber, UIImage>()
     private var lastPlaybackSignature = ""
     private let defaults = UserDefaults(suiteName: "group.com.qurancoach.app") ?? .standard
     private var cacheURL: URL { FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("car-audio-catalog.json") }
@@ -55,6 +57,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             let signature = "\(audio.current?.id ?? ""):\(audio.isPlaying):\(audio.error)"
             guard signature != scene.lastPlaybackSignature else { return }
             scene.lastPlaybackSignature = signature
+            for row in scene.surahRows.allObjects { scene.refreshSurahIndicator(row) }
             scene.homeTemplate?.updateSections(scene.homeSections())
             scene.refreshListeningSections()
         }
@@ -110,11 +113,26 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         if audio.current != nil || audio.hasSaved || phone?.valid == true {
             let title = audio.current?.title ?? (phone?.valid == true && (phone!.updatedAt > audio.savedUpdatedAt || !audio.hasSaved) ? phone!.tracks[phone!.index].title : audio.savedTitle)
             rows.append(item(audio.isPlaying ? "À l’écoute" : "Reprendre", detail: title, symbol: "play.circle") { [weak self] in self?.resume() })
+        } else {
+            rows.append(item("Choisir une sourate", symbol: "book") { [weak self] in self?.browseSurahs() })
         }
         rows.append(item("Mes récitateurs favoris", detail: "\(listening?.favorites.count ?? 0) dans Écoute", symbol: "heart") { [weak self] in self?.showFavorites() })
         if let next = mosque.prayers().first {
             let event = next.next
-            rows.append(item("\(next.label) · \(event.kind == "iqama" ? "Iqama" : "Adhan") \(mosque.time(event.at))", detail: phaseDetail(next), symbol: "moon.stars") { [weak self] in self?.showPrayer(next.id) })
+            let title: String
+            let detail: String
+            let symbol: String
+            if event.kind == "iqama" {
+                let minutes = max(1, Int(ceil((event.at / 1000 - Date().timeIntervalSince1970) / 60)))
+                title = "Iqama dans \(minutes) min · \(next.label)"
+                detail = [mosque.mosque, mosque.time(event.at)].filter { !$0.isEmpty }.joined(separator: " · ")
+                symbol = "bell.fill"
+            } else {
+                title = "\(next.label) · Adhan \(mosque.time(event.at))"
+                detail = phaseDetail(next)
+                symbol = "moon.stars"
+            }
+            rows.append(item(title, detail: detail, symbol: symbol) { [weak self] in self?.showPrayer(next.id) })
         } else {
             rows.append(item("Mes horaires de prière", detail: "Consulter la mosquée et actualiser", symbol: "moon.stars") { [weak self] in
                 guard let self else { return }; self.show(CPListTemplate(title: "Adhan et Iqama", sections: self.prayerSections()))
@@ -202,13 +220,41 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         display(0, on: template)
         show(template)
     }
+    private struct SurahRowIdentity {
+        let number: Int
+        let recording: URL?
+    }
+    private func refreshSurahIndicator(_ row: CPListItem) {
+        guard let identity = row.userInfo as? SurahRowIdentity else { return }
+        let audio = CarAudioPlayer.shared
+        row.isPlaying = audio.isPlaying && audio.current?.surahArtworkNumber == identity.number
+            && (identity.recording == nil || identity.recording == audio.current?.url)
+    }
+    private func surahItem(_ number: Int, title: String, detail: String? = nil, recording: URL? = nil, action: @escaping () -> Void) -> CPListItem {
+        let row = item(title, detail: detail, action: action)
+        let key = NSNumber(value: number)
+        if let image = badges.object(forKey: key) {
+            row.setImage(image)
+        } else if let url = Bundle.main.url(forResource: "badge-\(number)", withExtension: "png", subdirectory: "public/car-art"),
+                  let bitmap = UIImage(contentsOfFile: url.path)?.cgImage {
+            let image = UIImage(cgImage: bitmap, scale: 3, orientation: .up).withRenderingMode(.alwaysOriginal)
+            badges.setObject(image, forKey: key)
+            row.setImage(image)
+        }
+        row.userInfo = SurahRowIdentity(number: number, recording: recording)
+        row.playingIndicatorLocation = .trailing
+        row.accessibilityLabel = "Sourate \(number), \(title)"
+        surahRows.add(row)
+        refreshSurahIndicator(row)
+        return row
+    }
     private func browseSurahs() {
         let groups = stride(from: 0, to: surahs.count, by: 20).map { start in
             let group = Array(surahs[start..<min(start + 20, surahs.count)])
             return item("\(group[0].id)–\(group.last!.id)", detail: "\(group[0].latin) – \(group.last!.latin)", symbol: "book") { [weak self] in
                 guard let self else { return }
                 self.showPaged("Sourates", rows: group.map { surah in
-                    self.item("\(surah.id). \(surah.latin)", symbol: "play.circle") { [weak self] in self?.startSurah(surah) }
+                    self.surahItem(surah.id, title: surah.latin) { [weak self] in self?.startSurah(surah) }
                 })
             }
         }
@@ -292,8 +338,9 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             show(CPListTemplate(title: title, sections: [CPListSection(items: [item("Enregistrements indisponibles", detail: "Actualisez le catalogue puis réessayez.")])]))
             return
         }
-        let rows = tracks.enumerated().map { index, track in
-            item("\(track.chapter). \(track.title)", detail: edition, symbol: "play.circle") { [weak self] in
+        let rows = tracks.enumerated().compactMap { index, track -> CPListItem? in
+            guard let number = track.surahArtworkNumber else { return nil }
+            return surahItem(number, title: track.title, detail: edition, recording: track.url) { [weak self] in
                 CarAudioPlayer.shared.play(tracks, index: index)
                 self?.showPlaying()
             }

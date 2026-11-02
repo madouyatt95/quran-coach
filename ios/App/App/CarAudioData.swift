@@ -62,6 +62,12 @@ struct CarTrack: Codable, Equatable {
     let chapter: String
     var listening: CarListeningReference? = nil
 
+    var surahArtworkNumber: Int? {
+        let number = listening?.surahNumber ?? (id.hasPrefix("quran:") ? Int(chapter) : nil)
+        guard let number, (1...114).contains(number) else { return nil }
+        return number
+    }
+
     func afterCall(position: Double, rewindBooks: Bool) -> Double {
         if listening?.verse != nil || id.hasPrefix("quran:") { return 0 }
         return max(0, position - (rewindBooks && path.hasPrefix("/books/") ? 5 : 0))

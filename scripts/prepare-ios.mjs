@@ -1,6 +1,8 @@
 import {spawnSync} from 'node:child_process';
 import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 
+import {prepareCarPlayCovers} from './prepare-carplay-covers.mjs';
+
 // A CarPlay scene may start before the web scene: ship its authoritative indices.
 mkdirSync('public/carplay',{recursive:true});
 for(const [name,source] of [['surahs','src/lib/interactiveMushaf/chapters.json'],['books','src/data/bookCatalog.json'],['listening','src/data/carListeningCatalog.json']]) {
@@ -20,3 +22,5 @@ for (const [command, args] of [['npm', ['run', 'build']], ['npx', ['cap', 'sync'
   if (result.error) throw result.error;
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
+
+prepareCarPlayCovers();

@@ -20,6 +20,8 @@ final class CarAudioPlayer {
     private var interruption: (track: CarTrack, position: Double)?
     private var lastSave: TimeInterval = 0
     private var autoPlay = false
+    private var artworkKey: String?
+    private var artwork: MPMediaItemArtwork?
     private var pendingPosition: Double?
     var current: CarTrack? { queue.indices.contains(index) ? queue[index] : nil }
     var isPlaying: Bool { player.rate > 0 || autoPlay && player.timeControlStatus == .waitingToPlayAtSpecifiedRate }
@@ -105,6 +107,7 @@ final class CarAudioPlayer {
     private func load(position: Double = 0, autoplay: Bool) {
         guard let track = current else { return }
         interruption = nil
+        updateArtwork(for: track)
         if let reference = track.listening, let data = try? JSONEncoder().encode(reference) {
             UserDefaults.standard.set(data, forKey: "car.voice")
             UserDefaults.standard.set(Date().timeIntervalSince1970 * 1000, forKey: "car.voice.at")
@@ -212,15 +215,35 @@ final class CarAudioPlayer {
         UserDefaults.standard.set(Date().timeIntervalSince1970 * 1000, forKey: "car.resume.updatedAt")
         lastSave = Date.timeIntervalSinceReferenceDate
     }
+    private func updateArtwork(for track: CarTrack) {
+        let key: String?
+        if let number = track.surahArtworkNumber {
+            key = "surah-\(number)"
+        } else if let path = URLComponents(string: track.path)?.path, path.hasPrefix("/books/") {
+            let book = String(path.dropFirst("/books/".count))
+            key = book.range(of: "^[a-z0-9-]+$", options: .regularExpression) != nil ? "book-\(book)" : nil
+        } else { key = nil }
+        guard key != artworkKey else { return }
+        artworkKey = key
+        artwork = nil
+        guard let key, let url = Bundle.main.url(forResource: key, withExtension: "png", subdirectory: "public/car-art"),
+              let image = UIImage(contentsOfFile: url.path) else { return }
+        artwork = MPMediaItemArtwork(boundsSize: image.size) { requestedSize in
+            image.preparingThumbnail(of: requestedSize) ?? image
+        }
+    }
+
     private func publish() {
         guard let track = current else { return }
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
+        var info: [String: Any] = [
             MPMediaItemPropertyTitle: track.title, MPMediaItemPropertyArtist: track.artist,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: elapsed, MPMediaItemPropertyPlaybackDuration: duration,
             MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? 1.0 : 0.0,
             MPNowPlayingInfoPropertyDefaultPlaybackRate: 1.0,
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue
         ]
+        info[MPMediaItemPropertyArtwork] = artwork
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
         MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .paused
         onChange?(state)
         NotificationCenter.default.post(name: .carAudioChanged, object: nil)
