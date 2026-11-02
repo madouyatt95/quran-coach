@@ -87,6 +87,12 @@ final class QuranCoachLayoutPlugin: CAPPlugin, CAPBridgedPlugin {
                 call.reject("Reader controller unavailable"); return
             }
             controller.setStatusBarVisible(!hidden)
+            // Status may change without changing the WKWebView's bounds or
+            // safe insets. Refresh reserved regions after UIKit's transition,
+            // including a return from the full-screen reader to another menu.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.layoutDidChange()
+            }
             call.resolve()
         }
     }
