@@ -1,3 +1,4 @@
+import {useId} from 'react';
 import {type ReturnTypeOfLayout} from './Pupitre';
 import {useInteractiveReaderStore} from '../../stores/interactiveReaderStore';
 import {useLayoutPreferences} from './usePupitreLayout';
@@ -9,6 +10,7 @@ function LayoutPreview({mode}:{mode:string}) {
  </svg>;
 }
 export function PupitrePreferences({state}:{state:ReturnTypeOfLayout}){
+ const groupId=useId();
  const spread=useInteractiveReaderStore(s=>s.bookSpread),setSpread=useInteractiveReaderStore(s=>s.setBookSpread);
  const reader=state.activity==='reader';
  const fixed=state.device.folded&&(state.layout==='desk'?state.device.vertical:state.layout==='book'&&state.device.horizontal);
@@ -26,7 +28,7 @@ export function PupitrePreferences({state}:{state:ReturnTypeOfLayout}){
   if(reader&&value==='book')useLayoutPreferences.getState().update('reader',{tab:'understand'});
  };
  return <div className="pupitre-personal-layout"><fieldset className="pupitre-layout-choices pupitre-layout-cards"><legend>Disposition de lecture</legend>{options.map(({value,label,detail})=><label key={value}>
-  <input type="radio" name={`reading-layout-${state.activity}`} value={value} checked={selected===value} onChange={()=>choose(value)}/><LayoutPreview mode={value}/><span><strong>{label}</strong><small>{detail}</small></span>
+  <input type="radio" name={`reading-layout-${state.activity}-${groupId}`} value={value} checked={selected===value} onChange={()=>choose(value)}/><LayoutPreview mode={value}/><span><strong>{label}</strong><small>{detail}</small></span>
  </label>)}</fieldset>
  <p>Votre choix est conservé pour cette activité.</p>
  {reader&&selected==='spread'&&state.device.width<620&&<small>Le livre s’ouvrira sur deux pages dès que l’écran sera assez large.</small>}

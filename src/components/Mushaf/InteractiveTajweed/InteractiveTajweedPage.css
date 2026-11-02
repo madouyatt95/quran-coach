@@ -392,3 +392,12 @@ body.iq-immersive-active .bottom-nav{display:none}
    Four font units on either side protect diacritics and glyph overhangs. */
 .iq-reader.iq-framing-text .iq-viewport{padding-inline:2px}
 .iq-reader.iq-framing-text.iq-immersive[data-pupitre-layout=plain] .iq-viewport{padding-inline:2px}
+
+/* Stable geometry: the explicit spread width is independent of its viewport. */
+.iq-reader .iq-book-spread{min-width:0;flex:none;margin-inline:auto}
+.iq-reader.iq-framing-page.iq-fit-width .iq-viewport{overflow:hidden}
+.iq-reader.iq-framing-page.iq-fit-width .iq-book-spread{margin-block:auto}
+
+html[data-native-ios=true] .iq-reader{padding-inline:env(safe-area-inset-left,0px) env(safe-area-inset-right,0px)}
+html[data-native-ios=true] .iq-reader.pupitre-root:not([data-pupitre-layout=plain])>.pupitre-upper,
+html[data-native-ios=true] .iq-reader.pupitre-root:not([data-pupitre-layout=plain])>.pupitre-lower{padding-left:max(4px,env(safe-area-inset-left,0px));padding-right:max(4px,env(safe-area-inset-right,0px))}

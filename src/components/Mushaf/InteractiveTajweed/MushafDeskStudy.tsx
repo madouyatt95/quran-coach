@@ -14,7 +14,7 @@ export function MushafDeskStudy({snapshot,renderWord,onListen}:{snapshot:DeskStu
  if(!shown)return <p>Ouvrez la fiche d’un mot par un appui long pour étudier son sens et sa prononciation.</p>;
  const loading=!!requested&&tafsir?.key!==key;
  return <section className="iq-desk-study" aria-label="Étude du passage"><header><div><small>{pinned?'EXPLICATION ÉPINGLÉE':'VOTRE SÉLECTION'}</small><h3>Verset {key} · p. {shown.page}</h3></div><button aria-label={pinned?'Suivre la sélection':'Épingler cette explication'} aria-pressed={!!pinned} onClick={()=>{setPinned(pinned?null:shown);setDismissedWord('');}}>{pinned?<PinOff size={18}/>:<Pin size={18}/>}</button></header>
-  {!pinned&&<p className="iq-desk-pin-note">Sélectionnez un mot dans le Mushaf pour afficher son sens ici.</p>}
+  {!pinned&&<p className="iq-desk-pin-note">Faites un appui long sur un mot pour afficher son sens ici.</p>}
   {pinned&&<p className="iq-desk-pin-note">Cette explication reste affichée pendant votre lecture.<button onClick={()=>setPinned(null)}>Suivre la sélection</button></p>}
   {shown.word&&(!pinned||dismissedWord!==shown.word.key)&&renderWord(shown,!!pinned,()=>setDismissedWord(shown.word!.key))}
   <section className="iq-desk-verse"><p className="iq-verse-arabic" lang="ar" dir="rtl">{shown.verse.text}</p><p>{shown.translation||'La traduction de ce passage n’est pas encore disponible.'}</p><small>Traduction · Muhammad Hamidullah</small></section>

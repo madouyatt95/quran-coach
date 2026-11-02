@@ -1,5 +1,5 @@
 import {dragTilt,releaseVelocity,shouldCommitTurn} from './bookTurnMotion';
-import { useRef, useState, type PointerEvent, type MouseEvent, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, useState, type PointerEvent, type MouseEvent, type RefObject } from 'react';
 export function swipePageDelta(dx:number,dy:number,zoom:number,overscroll=0) {
     const horizontal=zoom>1?overscroll:dx;
     return Math.abs(horizontal)>65 && Math.abs(dx)>Math.abs(dy)*1.5 ? horizontal>0?1:-1 : 0;
@@ -21,7 +21,13 @@ export function usePageGestures(viewport:RefObject<HTMLDivElement|null>,zoom:num
         const left=(el.scrollLeft+ax)/zoom*next-ax,top=(el.scrollTop+ay)/zoom*next-ay;
         setZoom(next);requestAnimationFrame(()=>{el.scrollTo({left,top,behavior:'instant'});});
     };
-    const reset=()=>{points.current.clear();drag.current=null;pinch.current=null;setOffset(0);};
+    const reset=useCallback(()=>{points.current.clear();drag.current=null;pinch.current=null;setOffset(0);},[]);
+    useEffect(()=>{
+        const cancel=()=>{reset();suppress.current=true;};
+        window.addEventListener('resize',cancel);
+        window.addEventListener('qc-native-layout',cancel);
+        return()=>{window.removeEventListener('resize',cancel);window.removeEventListener('qc-native-layout',cancel);};
+    },[reset]);
     return {anchoredZoom,offset,handlers:{
         onPointerDownCapture:(e:PointerEvent<HTMLDivElement>)=>{
             if(e.button!==0||(e.target as HTMLElement).closest('[data-selection-handle]'))return;points.current.set(e.pointerId,{x:e.clientX,y:e.clientY});
@@ -41,7 +47,7 @@ export function usePageGestures(viewport:RefObject<HTMLDivElement|null>,zoom:num
                 const dx=e.clientX-d.lastX;
                 if(zoom>baseZoom){
                     const step=edgeDrag(dx,el.scrollLeft,Math.max(0,el.scrollWidth-el.clientWidth));
-                    el.scrollLeft=step.next;el.scrollTop-=e.clientY-d.lastY;
+                    if(Math.abs(e.clientX-d.x)>Math.abs(e.clientY-d.y)){el.scrollLeft=step.next;}else{el.scrollTop-=e.clientY-d.lastY;}
                     d.excess=step.excess===0?0:Math.sign(d.excess)===Math.sign(step.excess)?d.excess+step.excess:step.excess;
                 }else{d.excess=e.clientX-d.x;el.scrollTop-=e.clientY-d.lastY;}
                 const horizontal=Math.abs(e.clientX-d.x)>Math.abs(e.clientY-d.y)*1.5;

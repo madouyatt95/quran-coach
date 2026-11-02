@@ -1,3 +1,5 @@
+import {Capacitor} from "@capacitor/core";
+import {readerWakeHandlers} from "./readerWakeHandlers";
 import {captureReadingReturn,readReadingReturn,saveReadingReturn,type ReadingReturn} from './readingReturn';
 import {restoreReadingAnchor} from '../../Pupitre/usePupitreContinuity';
 import {PageBrowseButton,PagePreview} from './PagePreview';
@@ -64,7 +66,7 @@ import { PageOrnaments } from './PageOrnaments';
 import { usePageGestures } from './usePageGestures';
 import { useBookPageTurn } from './useBookPageTurn';
 import {bookTurnPages} from './bookTurnMotion';
-import {readerPageScale,canShowBookSpread,READER_BASE_ZOOM} from './readerPageScale';
+import {readerPageScale,readerShowsSpread,READER_BASE_ZOOM} from './readerPageScale';
 import { useReadingBookmarkStore } from '../../../stores/readingBookmarkStore';
 import type { Ayah, ViewMode } from '../../../types';
 import {fallbackRuleColor} from './glyphStyle';
@@ -128,7 +130,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const setFraming=useCallback((value:'text'|'page')=>{window.dispatchEvent(new Event('qc-pupitre-before-layout'));storeSetFraming(value);},[storeSetFraming]);
     const setShowTranslation=useCallback((value:boolean)=>{window.dispatchEvent(new Event('qc-pupitre-before-layout'));storeSetShowTranslation(value);},[storeSetShowTranslation]);
     const immersiveControls=useImmersiveControls(immersive,!!word||!!selection||!!panel||!!details||live.active||selectingPassage);
-    const wakeOnly=useRef(false);
+
     const [jumpPage,setJumpPage]=useState(page);
     const readingSession=useReadingSession(s=>s.session);
     const [range,setRange]=useState({surah:1,start:1,end:1,repetitions:3});
@@ -149,7 +151,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const notes=useReaderNotesStore(s=>s.notes);
     const pendingFacing=useRef<{page:number;word:MushafWord;action:'play'|'options';selection?:VerseSelection}|null>(null);
     const [size,setSize]=useState({width:600,height:860});
-    const spread=!split&&bookSpread&&canShowBookSpread(size.width,size.height)&&!practice&&!lessonExercise;
+    const spread=readerShowsSpread(size.width,size.height,pupitre.layout,pupitre.choice,bookSpread,pupitre.device.width>pupitre.device.height)&&!practice&&!lessonExercise;
     const comfortProfile=split?'desk':spread?'spread':'single';
     useLayoutEffect(()=>activateComfort(comfortProfile),[comfortProfile,activateComfort]);
     const facingPage=page%2===1?page+1:page-1;
@@ -262,6 +264,14 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         preview:(delta,progress,tilt)=>{const target=spread?(Math.floor((page-1)/2)*2+1)+delta*2:page+delta;if(ready&&isInteractivePage(target)&&!turnPreparing.current)bookTurn.scrub(target,delta,progress,tilt);},
         end:(delta,commit,velocity)=>{bookTurn.release(velocity);if(commit)void turn(delta);else bookTurn.cancel();}
     },READER_BASE_ZOOM);
+    const nativeAutoFit=Capacitor.isNativePlatform();
+    useLayoutEffect(()=>{
+        // Depend on the screen/posture, not caption/header height: controls must
+        // never reset an intentional zoom while a finger is on the page.
+        if(!nativeAutoFit)return;
+        bookTurn.clear();
+        useInteractiveReaderStore.getState().setFraming('page');
+    },[nativeAutoFit,pupitre.device.width,pupitre.device.height,pupitre.layout,comfortProfile,bookTurn.clear]);
     const scale=readerPageScale(size.width,size.height,spread,immersive,zoom,framing,page);
     const versoPages=[...new Set([bookTurnPages(page,1,spread).back,bookTurnPages(page,-1,spread).back,bookTurn.backPage].filter((p):p is number=>p!==null&&isInteractivePage(p)))];
     const verseFor=(value:MushafWord)=>ayahs.find(a=>`${a.surah}:${a.numberInSurah}`===value.verseKey)!;
@@ -354,8 +364,9 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         observer.observe(el);return()=>observer.disconnect();
     },[immersive]);
     useEffect(()=>{
+        document.body.classList.toggle('iq-reader-active',location.pathname==='/read');
         document.body.classList.toggle('iq-immersive-active',immersive&&location.pathname==='/read');
-        return()=>document.body.classList.remove('iq-immersive-active');
+        return()=>document.body.classList.remove('iq-reader-active','iq-immersive-active');
     },[immersive,location.pathname]);
     useEffect(()=>{
         if(immersive&&audio.audioActive)setShowTranslation(true);
@@ -391,8 +402,8 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const studyPosition=Number(studyParams.get('surah'))===currentSurah&&Number(studyParams.get('ayah'))===currentAyah&&Number.isInteger(requestedPosition)&&requestedPosition>0?requestedPosition:0;
     const entryVerse = useVerseEntry(viewport, ayahs, ready, location.pathname === '/read' && !live.active, studyPosition);
     useEffect(()=>{
-        const el=viewport.current;if(el)el.scrollLeft=Math.max(0,(el.scrollWidth-el.clientWidth)/2);
-    },[size.width,immersive,framing,spread,split]);
+        const el=viewport.current;if(el){el.scrollLeft=Math.max(0,(el.scrollWidth-el.clientWidth)/2);if(framing==='page'&&zoom<=READER_BASE_ZOOM)el.scrollTop=0;}
+    },[size.width,size.height,immersive,framing,spread,split,zoom]);
     // Preserve the exact selected verse independently of a manually placed bookmark.
     useEffect(()=>{
         if(!ready||live.active||audio.audioPlaying||practice||word||hasRecitationPause)return;
@@ -498,7 +509,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         }finally{if(request===selectionLoadRequest.current)setSelectionLoading(false);}
     };
     const clearPassageSelection=()=>{setSelectingPassage(false);setPassageStart(null);setChosenRange(null);setSelectionPages([]);selectionLoadRequest.current++;setSelectionLoading(false);rangeAudioRequest.current++;setRangeAudioBusy(false);setSelectionError('');};
-    const tapWord=(value:MushafWord)=>{if(selectingPassage){if(!selectionLoading)void selectPassageWord(value);return;}if(lessonExercise){if(matchesPageLesson(value,lessonExercise)){setLessonFound(old=>[...new Set([...old,value.key])]);setLessonFeedback('Bien repéré : ce mot contient un segment de cette règle.');}else setLessonFeedback('Cette règle n’est pas balisée sur ce mot. Essayez un autre mot.');return;}if(practice&&value.kind==='word'&&(!practiceVerse||practiceVerse===value.verseKey)&&!revealed.has(value.key))revealWord(value);else if(chosenRange){if(value.kind==='word')setChosenRange({...chosenRange,end:value.key,endPage:page});}else if(pupitre.layout==='book'&&consoleTab==='understand'){selectVerse(verseFor(value));setSelection(null);setDetails(null);setWord(value.kind==='word'?value:null);}else {setWord(null);setSelection(null);void wordPlayback.play(value);}};
+    const tapWord=(value:MushafWord)=>{if(selectingPassage){if(!selectionLoading)void selectPassageWord(value);return;}if(lessonExercise){if(matchesPageLesson(value,lessonExercise)){setLessonFound(old=>[...new Set([...old,value.key])]);setLessonFeedback('Bien repéré : ce mot contient un segment de cette règle.');}else setLessonFeedback('Cette règle n’est pas balisée sur ce mot. Essayez un autre mot.');return;}if(practice&&value.kind==='word'&&(!practiceVerse||practiceVerse===value.verseKey)&&!revealed.has(value.key))revealWord(value);else if(chosenRange){if(value.kind==='word')setChosenRange({...chosenRange,end:value.key,endPage:page});}else {setWord(null);setSelection(null);void wordPlayback.play(value);}};
     const reviewPage=()=>{ayahs.filter(v=>!practiceVerse||`${v.surah}:${v.numberInSurah}`===practiceVerse).forEach(v=>useSRSStore.getState().addCard(v.surah,v.numberInSurah));setPracticeAdded(true);};
     const openRange=()=>{setRange({surah:currentSurah,start:currentAyah,end:currentAyah,repetitions:3});setPanel('range');};
     const resumeCoachReturn=()=>{
@@ -518,7 +529,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const audioBehavior=audio.passage?`${audio.passageComplete?'Terminé · ':''}${audio.passage.repetitions>1?`Répétition ${audio.passage.iteration}/${audio.passage.repetitions}`:chosenRange?'Passage sélectionné':audio.passage.startAyah===audio.passage.endAyah?'Verset seul':'Passage'} · ${audio.passage.surah}:${audio.passage.startAyah}${audio.passage.endAyah!==audio.passage.startAyah?`–${audio.passage.endAyah}`:''}`:`${recitationMode?'Écoute, puis récite':'Lecture continue'}${audioOrigin?` depuis ${audioOrigin}`:''}`;
     const palette=paper==='dark'?1:paper==='sepia'?2:0;
     const paletteFamilies=[bundle?.font,bundle?.basmala?.font].filter((f):f is PageFont=>!!f&&f.mode==='colrv1').map(f=>f.family);
-    return <Pupitre title="Mushaf" documentKey={`reader:${page}`} continuityKey={`${ready}:${size.width}:${size.height}:${immersive}:${framing}:${spread}:${showTranslation}`} toolbar={false} layoutState={pupitre} enabled={location.pathname==='/read'} onPointerDownCapture={event=>{wakeOnly.current=!split&&immersiveControls.hidden;immersiveControls.wake();if(wakeOnly.current)event.stopPropagation();}} onPointerUpCapture={event=>{if(wakeOnly.current)event.stopPropagation();}} onClickCapture={event=>{if(wakeOnly.current){wakeOnly.current=false;event.preventDefault();event.stopPropagation();}}} onKeyDownCapture={immersiveControls.wake} className={`iq-reader iq-framing-${framing} ${zoom<=READER_BASE_ZOOM?'iq-fit-width':''} iq-paper-${paper} ${immersive?'iq-immersive':''} ${bookTurn.turning?'iq-is-turning':''} ${panel==='comfort'?'iq-comfort-open':''}`} style={{'--iq-edge-inset':`${Math.max(0,((spread?1200:600)*scale+(spread?4:0)-size.width)/2)}px`,'--iq-paper-inset':`${Math.max(0,((spread?1200:600)*scale+(spread?4:0)-size.width)/2)/scale}px`,'--iq-entry':`${-direction*24}px`,'--iq-drag':`${offset}px`} as CSSProperties}>
+    return <Pupitre title="Mushaf" documentKey={`reader:${page}`} continuityKey={`${ready}:${size.width}:${size.height}:${immersive}:${framing}:${spread}:${showTranslation}`} toolbar={false} layoutState={pupitre} enabled={location.pathname==='/read'} {...readerWakeHandlers(immersiveControls.wake)} onKeyDownCapture={immersiveControls.wake} className={`iq-reader iq-framing-${framing} ${zoom<=READER_BASE_ZOOM?'iq-fit-width':''} iq-paper-${paper} ${immersive?'iq-immersive':''} ${bookTurn.turning?'iq-is-turning':''} ${panel==='comfort'?'iq-comfort-open':''}`} style={{'--iq-edge-inset':`${Math.max(0,((spread?1200:600)*scale+(spread?4:0)-size.width)/2)}px`,'--iq-paper-inset':`${Math.max(0,((spread?1200:600)*scale+(spread?4:0)-size.width)/2)/scale}px`,'--iq-entry':`${-direction*24}px`,'--iq-drag':`${offset}px`} as CSSProperties}>
         <style>{[...new Set(paletteFamilies)].map(f=>`@font-palette-values --palette-${f} {font-family:'${f}';base-palette:${palette};}`).join('\n')}</style>
         <PupitreTop aria-label="Page du Mushaf"><header className="iq-toolbar mih-header" inert={immersive&&!split}>
             <div className="mih-header-left">
@@ -539,7 +550,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
         {lessonExercise&&<section className="iq-lesson-exercise" aria-label="Repérage Tajwid"><div><strong>{pageLessons(data?.words||[]).find(l=>l.id===lessonExercise)?.name}</strong><span>Touchez un mot qui contient cette règle · {lessonFound.length} repéré{lessonFound.length>1?'s':''}</span></div><button onClick={()=>{const example=data?.words.find(w=>matchesPageLesson(w,lessonExercise)&&!lessonFound.includes(w.key));if(example){setLessonFound(old=>[...old,example.key]);setLessonFeedback('Exemple montré : observez le segment dans sa fiche.');openWord(example);}}}>Voir un exemple</button><button aria-label="Terminer le repérage Tajwid" onClick={()=>{setLessonExercise(null);setLessonFound([]);setWord(null);}}><X size={18}/></button>{lessonFeedback&&<p role="status">{lessonFeedback}</p>}</section>}
         {practice&&<div className="iq-practice-bar" role="region" aria-label="Entraînement sur la page"><strong>{practiceVerse?`Verset ${practiceVerse}`:'Me tester'}</strong><button aria-pressed={revealMode==='word'} onClick={()=>setRevealMode('word')}>Mot</button><button aria-pressed={revealMode==='line'} onClick={()=>setRevealMode('line')}>Ligne</button><button onClick={()=>{setRevealed(new Set());setWord(null);}}>Masquer</button><button onClick={reviewPage} disabled={practiceAdded}>{practiceAdded?'Ajouté aux révisions':'Garder à réviser'}</button><button aria-label="Quitter l’entraînement" onClick={()=>{setPractice(false);setWord(null);}}><X size={16}/></button><span className="iq-practice-help">Touchez pour révéler · retouchez pour écouter</span></div>}
         <div ref={viewport} className={`iq-viewport ${spread?'iq-spread-viewport':''}`} inert={bookTurn.turning&&!bookTurn.dragging} {...handlers} onClick={e=>{if(split||practice||lessonExercise||chosenRange)return;if(e.target===e.currentTarget||(e.target as HTMLElement).closest('.iq-paper')&&!(e.target as HTMLElement).closest('.iq-word,button'))changeImmersive(v=>!v);}}>
-            {error?<section className="iq-empty" role="alert"><p>{error}</p><button onClick={()=>{setFailure(null);setRetry(v=>v+1);}}>Réessayer</button><button onClick={()=>setViewMode('mushaf')}>Ouvrir le lecteur texte</button></section>:!ready?<div className="iq-loading" role="status"><div className="iq-loading-page"/>Préparation de la page…</div>:<div className={`iq-book-spread ${spread?'is-open':''}`}><div key={page} data-active-sheet="true" className="iq-scaled-page" style={{width:600*scale,height:860*scale,order:spread?(page%2===1?1:0):0}}>
+            {error?<section className="iq-empty" role="alert"><p>{error}</p><button onClick={()=>{setFailure(null);setRetry(v=>v+1);}}>Réessayer</button><button onClick={()=>setViewMode('mushaf')}>Ouvrir le lecteur texte</button></section>:!ready?<div className="iq-loading" role="status"><div className="iq-loading-page"/>Préparation de la page…</div>:<div className={`iq-book-spread ${spread?'is-open':''}`} style={{width:(spread?1200:600)*scale+(spread?4:0)}}><div key={page} data-active-sheet="true" className="iq-scaled-page" style={{width:600*scale,height:860*scale,order:spread?(page%2===1?1:0):0}}>
                 <article className={`iq-paper ${page<3?'iq-paper-opening':''}`} aria-label={`Mushaf Tajwid interactif, page ${page}`} style={{transform:`scale(${scale})`}}>
                     <PageOrnaments opening={page<3}/>
                     <BookRibbon key={page} marked={pageMarked} length={bookmark?.ribbonLength} scale={scale} onSave={savePageBookmark} onRemove={()=>{useReadingBookmarkStore.getState().remove();setBookmarkSaved(false);}}/>
@@ -552,7 +563,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
                             const masked=practice&&(!practiceVerse||value.verseKey===practiceVerse)&&value.kind==='word'&&!revealed.has(value.key);
                             const highlighted=live.active?live.passage?.surah===verse.surah&&live.passage?.ayah===verse.numberInSurah:(audio.audioPlaying||audio.recitationPause)?audio.currentPlayingAyah===verse.number:currentSurah===verse.surah&&currentAyah===verse.numberInSurah;
                             return <span key={value.key} {...press(verse,selected=>holdWord(value,selected))} role="button" tabIndex={0} data-word-key={value.key} data-line={value.line} data-verse-key={value.verseKey} aria-current={highlighted&&entryVerse===value.verseKey?true:undefined} data-live-word={trackedWord===value.key||undefined}
-                                aria-label={masked?`Révéler ${revealMode==='line'?'la ligne '+value.line:'le mot '+value.position} · ${value.verseKey}`:value.kind==='end'?`${pupitre.layout==='book'&&consoleTab==='understand'?'Étudier':'Écouter depuis'} le verset ${value.verseKey}`:`${value.text} · ${value.verseKey} · mot ${value.position}`} aria-pressed={isSelected}
+                                aria-label={masked?`Révéler ${revealMode==='line'?'la ligne '+value.line:'le mot '+value.position} · ${value.verseKey}`:value.kind==='end'?`Écouter depuis le verset ${value.verseKey}`:`${value.text} · ${value.verseKey} · mot ${value.position}`} aria-pressed={isSelected}
                                 className={`iq-word ${readingSession&&!readingSession.finishedAt&&readingSession.end===page&&value.kind==='end'&&value.verseKey===readingSession.endVerse?'iq-session-end':''} ${readingTrace.word===value.key?'iq-reading-trace':''} ${readingTrace.verse===value.verseKey?'iq-resume-verse':''} ${entryVerse===value.verseKey&&studyPosition===value.position?'iq-word-academy':''} ${chosenRange&&!passageStart&&selectionWords.some(w=>w.key===value.key)?'iq-word-range':''} ${selectingPassage&&passageStart?.key===value.key&&passageStart.page===page?'iq-word-range-pending':''} ${lessonFound.includes(value.key)?'iq-word-lesson':''} ${font.mode==='unicode'?'iq-word-unicode':''} ${highlighted?'iq-word-verse':''} ${highlighted&&entryVerse===value.verseKey&&!audio.audioActive?'iq-word-entry':''} ${isSelected?'iq-word-selected':''} ${trackedWord===value.key?'iq-word-tracked':''} ${value.kind==='end'?'iq-word-end':''} ${masked?'iq-word-masked':''}`}
                                 style={{left:x,top:y,width:advance,fontSize,fontFamily:font.family,fontPalette:font.mode==='colrv1'?fontPaletteName(font.family,paper):undefined}}
                                 onClick={()=>tapWord(value)}

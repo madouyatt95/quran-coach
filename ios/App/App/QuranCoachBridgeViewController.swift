@@ -6,10 +6,10 @@ final class QuranCoachBridgeViewController: CAPBridgeViewController {
     private var isVisible = false
     private let layoutPlugin = QuranCoachLayoutPlugin()
 
-    // The app owns horizontal HTML navigation and playback controls. Keep a
-    // stable horizontal system bar so the vertical status area cannot cover them.
+    // Let Duo use its compact system bar on the appropriate edge. The web
+    // shell respects the corresponding safe insets; immersion hides status.
     @available(iOS 27.1, *)
-    override var preferredVerticalBarBehavior: UIVerticalBarBehavior { .disabled }
+    override var preferredVerticalBarBehavior: UIVerticalBarBehavior { .automatic }
 
     override func capacitorDidLoad() {
         // Match the PWA's edge-to-edge viewport. Native inset adjustment moves
@@ -69,13 +69,25 @@ final class QuranCoachLayoutPlugin: CAPPlugin, CAPBridgedPlugin {
     let identifier = "QuranCoachLayoutPlugin"
     let jsName = "QuranCoachLayout"
     let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "getLayout", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "getLayout", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setImmersive", returnType: CAPPluginReturnPromise)
     ]
     private var lastSnapshot: NSDictionary?
 
     @objc func getLayout(_ call: CAPPluginCall) {
         DispatchQueue.main.async { [weak self] in
             call.resolve(self?.snapshot() ?? [:])
+        }
+    }
+
+    @objc func setImmersive(_ call: CAPPluginCall) {
+        let hidden = call.getBool("hidden") ?? false
+        DispatchQueue.main.async { [weak self] in
+            guard let controller = self?.bridge?.viewController as? CAPBridgeViewController else {
+                call.reject("Reader controller unavailable"); return
+            }
+            controller.setStatusBarVisible(!hidden)
+            call.resolve()
         }
     }
 
@@ -103,7 +115,10 @@ final class QuranCoachLayoutPlugin: CAPPlugin, CAPBridgedPlugin {
             divisions = frames(.division)
             occlusions = frames(.occlusion)
         }
+        let statusFrame = content.convert(content.window?.windowScene?.statusBarManager?.statusBarFrame ?? .zero, from: nil)
         return ["width": Double(content.bounds.width), "height": Double(content.bounds.height),
-                "divisions": divisions, "occlusions": occlusions]
+                "divisions": divisions, "occlusions": occlusions,
+                "statusBar": ["x": Double(statusFrame.minX), "y": Double(statusFrame.minY),
+                              "width": Double(statusFrame.width), "height": Double(statusFrame.height)]]
     }
 }

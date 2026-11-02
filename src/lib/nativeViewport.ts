@@ -1,5 +1,5 @@
 export interface NativeRect {x:number;y:number;width:number;height:number}
-export interface NativeViewport {width:number;height:number;divisions:NativeRect[];occlusions:NativeRect[]}
+export interface NativeViewport {width:number;height:number;divisions:NativeRect[];occlusions:NativeRect[];statusBar?:NativeRect}
 export interface NativeFold {layout:'desk'|'book';start:number;size:number}
 
 /** UIKit points are converted to the current CSS viewport, never to screen size. */
@@ -25,5 +25,22 @@ export function parseNativeViewport(value:unknown):NativeViewport|null {
  const data=value as Record<string,unknown>;
  if(typeof data.width!=='number'||typeof data.height!=='number'||!Number.isFinite(data.width)||!Number.isFinite(data.height)||data.width<=0||data.height<=0)return null;
  const rects=(items:unknown):NativeRect[]=>Array.isArray(items)?items.filter((r):r is NativeRect=>!!r&&typeof r==='object'&&['x','y','width','height'].every(key=>typeof r[key]==='number'&&Number.isFinite(r[key]))&&r.width>=0&&r.height>=0):[];
- return {width:data.width,height:data.height,divisions:rects(data.divisions),occlusions:rects(data.occlusions)};
+ const statusBar=rects([data.statusBar])[0];
+ return {width:data.width,height:data.height,divisions:rects(data.divisions),occlusions:rects(data.occlusions),...(statusBar?{statusBar}:{})};
+}
+
+/** A corner/side status bar needs horizontal clearance for header controls, not
+ * a full-width empty row. Keep ordinary full-width iPhone safe areas intact. */
+export function nativeHeaderClearance(viewport:NativeViewport|null){
+ if(!viewport)return null;
+ // On Duo statusBarFrame may only describe a thin full-width strip. UIKit's
+ // occlusion regions include the actual status/camera footprint and margins.
+ const bars=[...viewport.occlusions,...(viewport.statusBar?[viewport.statusBar]:[])];
+ let left=0,right=0;
+ for(const bar of bars){
+  if(bar.width<=0||bar.height<=0||bar.width>=viewport.width*.45||bar.height>viewport.height*.4||bar.y>4)continue;
+  if(bar.x<=4)left=Math.max(left,bar.x+bar.width);
+  if(bar.x+bar.width>=viewport.width-4)right=Math.max(right,viewport.width-bar.x);
+ }
+ return left||right?{left:Math.max(0,left),right:Math.max(0,right)}:null;
 }

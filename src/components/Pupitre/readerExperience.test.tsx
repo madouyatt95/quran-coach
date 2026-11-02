@@ -22,15 +22,31 @@ it('distinguishes a book spread from the study workspace and preserves the reque
  await choose('book');expect(useLayoutPreferences.getState().preferences.reader).toMatchObject({choice:'book',tab:'understand'});
  await choose('desk');expect(useLayoutPreferences.getState().preferences.reader?.choice).toBe('desk');
 });
-it('hides only secondary controls during playback and wakes without remounting transport',async()=>{
+it('keeps the reader transport, tabs and shortcuts visible throughout playback',async()=>{
  useLayoutPreferences.getState().update('reader',{choice:'desk'});
  const render=(playing=true)=>act(async()=>root.render(<Pupitre title="Test" activity="reader"><PupitreBottom><PupitreWorkspace activity="reader" playing={playing} primary={<button>Pause</button>} listen={<p>Traduction</p>} understand={<p>Étude</p>} settings={null} actions={[{id:'range',label:'Répéter'},{id:'word',label:'Mot'}]} defaultPins={['range','word']}/></PupitreBottom></Pupitre>));
  await render();const pause=[...host.querySelectorAll('button')].find(b=>b.textContent==='Pause');
  await act(async()=>vi.advanceTimersByTime(4000));
- expect(host.querySelector('.pupitre-workspace')?.getAttribute('data-console-quiet')).toBe('true');
- expect(host.querySelector('.pupitre-console-tabs')?.hasAttribute('inert')).toBe(true);
+ expect(host.querySelector('.pupitre-workspace')?.getAttribute('data-console-quiet')).toBe('false');
+ expect(host.querySelector('.pupitre-console-tabs')?.hasAttribute('inert')).toBe(false);
  expect(host.querySelector('[data-essential=true]')?.hasAttribute('inert')).toBe(false);
  expect([...host.querySelectorAll('button')].find(b=>b.textContent==='Pause')).toBe(pause);
- await act(async()=>host.querySelector<HTMLButtonElement>('.pupitre-wake-controls')!.click());expect(host.querySelector('.pupitre-workspace')?.getAttribute('data-console-quiet')).toBe('false');
+ expect(host.querySelector('.pupitre-workspace-fixed')?.hasAttribute('hidden')).toBe(false);
+ await act(async()=>useLayoutPreferences.getState().update('reader',{choice:'plain'}));
+ expect(host.querySelector('.pupitre-workspace-fixed')?.hasAttribute('hidden')).toBe(true);
+ await act(async()=>useLayoutPreferences.getState().update('reader',{choice:'desk'}));
+ expect(host.querySelector('.pupitre-workspace-fixed')?.hasAttribute('hidden')).toBe(false);
+ expect([...host.querySelectorAll('button')].find(b=>b.textContent==='Pause')).toBe(pause);
  await render(false);await act(async()=>vi.advanceTimersByTime(5000));expect(host.querySelector('.pupitre-console-tabs')?.hasAttribute('inert')).toBe(false);
+});
+it('keeps two mounted layout pickers independent at the DOM level and synchronised through preferences',async()=>{
+ function Choices(){const state=usePupitreLayout(true,'reader');return <><div hidden><PupitrePreferences state={state}/></div><div data-visible><PupitrePreferences state={state}/></div></>;}
+ await act(async()=>root.render(<Choices/>));
+ const visible=(value:string)=>host.querySelector<HTMLInputElement>(`[data-visible] input[value="${value}"]`)!;
+ await act(async()=>visible('desk').click());
+ await act(async()=>visible('spread').click());
+ expect(visible('spread').checked).toBe(true);
+ expect(useLayoutPreferences.getState().preferences.reader?.choice).toBe('plain');
+ expect(useInteractiveReaderStore.getState().bookSpread).toBe(true);
+ expect(new Set([...host.querySelectorAll<HTMLInputElement>('input[type=radio]')].map(input=>input.name)).size).toBe(2);
 });

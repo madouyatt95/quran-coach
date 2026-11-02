@@ -29,3 +29,13 @@ it('preserves the reader line at the same screen height when the header disappea
  const anchor=captureReadingAnchor(root);expect(anchor?.screenTop).toBe(220);
  viewportTop=0;restoreReadingAnchor(root,anchor);expect(word.getBoundingClientRect().top).toBe(220);root.remove();
 });
+
+it('discards stale pan offsets when a full page fits after rotation',()=>{
+ const root=document.createElement('div');root.className='iq-reader iq-framing-page iq-fit-width';root.innerHTML='<section class="pupitre-upper"><div class="iq-viewport"><span data-word-key="2:17:2">mot</span></div></section>';document.body.append(root);
+ const viewport=root.querySelector<HTMLElement>('.iq-viewport')!,word=root.querySelector<HTMLElement>('span')!;
+ Object.defineProperties(viewport,{clientWidth:{value:900},scrollWidth:{value:900}});
+ viewport.scrollTop=250;viewport.scrollLeft=92;
+ word.getBoundingClientRect=()=>({top:180,left:740} as DOMRect);
+ restoreReadingAnchor(root,{attribute:'data-word-key',key:'2:17:2',offset:80,offsetX:320,screenTop:210});
+ expect(viewport.scrollTop).toBe(0);expect(viewport.scrollLeft).toBe(0);root.remove();
+});

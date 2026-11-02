@@ -28,10 +28,12 @@ export function restoreReadingAnchor(root:HTMLElement,anchor:Anchor|null,highlig
   target.animate([{outline:'2px solid #cfb36a',outlineOffset:'3px'},{outline:'2px solid transparent',outlineOffset:'6px'}],{duration:1200,easing:'ease-out'});
  }
  const host=scrollHost(upper);const bounds=host.getBoundingClientRect();
+ // A fitted sheet has no reading offset to restore after rotation.
+ if(root.matches('.iq-framing-page.iq-fit-width')){host.scrollTop=0;host.scrollLeft=Math.max(0,(host.scrollWidth-host.clientWidth)/2);return true;}
  const desired=anchor.screenTop===undefined?viewTop(host)+anchor.offset:Math.max(bounds.top+8,Math.min(bounds.bottom-44,anchor.screenTop));
  host.scrollTop+=target.getBoundingClientRect().top-desired;
  // Fitted calligraphy remains centered; keep the semantic vertical anchor only.
- if(root.matches('.iq-framing-text.iq-fit-width'))host.scrollLeft=Math.max(0,(host.scrollWidth-host.clientWidth)/2);
+ if(root.matches('.iq-fit-width'))host.scrollLeft=Math.max(0,(host.scrollWidth-host.clientWidth)/2);
  else host.scrollLeft+=target.getBoundingClientRect().left-(host===document.scrollingElement?0:host.getBoundingClientRect().left)-anchor.offsetX;return true;
 }
 /** Keep a semantic passage, rather than an obsolete pixel offset after a resize. */

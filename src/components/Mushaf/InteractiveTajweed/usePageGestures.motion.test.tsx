@@ -41,3 +41,11 @@ it('pans a manually enlarged page before allowing a turn at its outer edge',()=>
  pointer('pointerdown',180,200,0);pointer('pointermove',260,200,40);pointer('pointerup',260,200,50);
  expect(turn).not.toHaveBeenCalled();expect(viewport.scrollLeft).toBe(120);
 });
+
+it('cancels the old drag when the screen rotates and accepts the next gesture',()=>{
+ const {pointer,turn}=harness(0,1.15,1.15);
+ pointer('pointerdown',180,200,0);pointer('pointermove',260,200,40);
+ act(()=>window.dispatchEvent(new Event('resize')));
+ pointer('pointerup',300,200,50);expect(turn).not.toHaveBeenCalled();
+ pointer('pointerdown',180,200,100);pointer('pointermove',260,200,140);pointer('pointerup',260,200,150);expect(turn).toHaveBeenCalledTimes(1);
+});

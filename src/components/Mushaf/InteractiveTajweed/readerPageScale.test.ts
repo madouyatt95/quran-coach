@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {readerPageScale,canShowBookSpread,READER_BASE_ZOOM} from './readerPageScale';
+import {readerPageScale,canShowBookSpread,readerShowsSpread,READER_BASE_ZOOM} from './readerPageScale';
 const base=READER_BASE_ZOOM;
 it('fills the text width and does not shrink it when captions or desk controls reduce height',()=>{
  for(const width of [312,382,422,700]){
@@ -29,6 +29,7 @@ it('keeps two leaves readable, cropping only the two outer margins',()=>{
  expect(canShowBookSpread(700,730)).toBe(true);
  expect(canShowBookSpread(390,700)).toBe(false);
  expect(canShowBookSpread(812,290)).toBe(false);
+ expect(canShowBookSpread(867,393)).toBe(true); // Inner landscape display with captions and transport visible.
  const scale=readerPageScale(740,730,true,false,base);
  expect(scale*468).toBeGreaterThan(317);
  expect((1200*scale+4-740)/2).toBeLessThan(66*scale);
@@ -50,4 +51,18 @@ it('opens two pages on the compact inner display in both orientations',()=>{
   expect((1200*scale+4-width)/2).toBeLessThan(66*scale);
  }
  expect(canShowBookSpread(619,900)).toBe(false);
+});
+
+it('shows two pages in a desk and automatic landscape while respecting an explicit flat single page',()=>{
+ expect(readerShowsSpread(867,393,'plain','auto',false,true)).toBe(true);
+ expect(readerShowsSpread(867,240,'desk','auto',false,true)).toBe(true);
+ expect(readerShowsSpread(653,320,'desk','desk',false,false)).toBe(true);
+ expect(readerShowsSpread(390,240,'desk','desk',true,false)).toBe(false);
+ expect(readerShowsSpread(867,393,'plain','plain',false,true)).toBe(false);
+ expect(readerShowsSpread(650,700,'book','book',true,true)).toBe(false);
+ for(const [width,height] of [[867,240],[653,320]]){
+  const scale=readerPageScale(width,height,true,false,base,'page');
+  expect(scale*1200+4).toBeLessThanOrEqual(width);
+  expect(scale*860).toBeLessThanOrEqual(height);
+ }
 });

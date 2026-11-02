@@ -52,6 +52,7 @@ body:has(.book-pupitre:not([data-pupitre-layout=plain]) [data-book-console-activ
 
 /* Fixed transport and shortcuts; only the active workspace panel scrolls. */
 .pupitre-workspace{display:contents}.pupitre-console-panel[hidden]{display:none!important}
+.pupitre-workspace-fixed[hidden]{display:none!important}
 .pupitre-root:not([data-pupitre-layout=plain])>.pupitre-lower:has(>.pupitre-workspace){display:flex;flex-direction:column;overflow:hidden;padding-top:12px}
 .pupitre-lower:has(>.pupitre-workspace)>.pupitre-console-heading{display:none}
 .pupitre-root:not([data-pupitre-layout=plain]) .pupitre-workspace{display:flex;flex-direction:column;min-height:0;flex:1}
@@ -90,3 +91,16 @@ body:has(.book-pupitre:not([data-pupitre-layout=plain]) [data-book-console-activ
 .pupitre-workspace{position:relative}
 .pupitre-wake-controls{align-self:center;position:absolute;bottom:8px;right:8px;z-index:5;min-height:44px;padding:8px 14px;border:1px solid #cbb28b55;border-radius:14px;background:#252033;color:#ead6b0;font:500 .8rem system-ui}
 .pupitre-wake-controls[hidden]{display:none!important}
+
+/* WebKit can keep the old, hidden paint layer when the console changes from
+   display:contents to a folded pane. Keep transport on its own painted layer;
+   only the study/caption panel participates in scroll compositing. */
+html[data-native-ios=true] .iq-reader:not([data-pupitre-layout=plain])>.pupitre-lower{contain:none;isolation:isolate}
+html[data-native-ios=true] .iq-reader:not([data-pupitre-layout=plain]) .pupitre-workspace{display:grid;grid-template-rows:auto minmax(0,1fr)}
+html[data-native-ios=true] .iq-reader:not([data-pupitre-layout=plain]) .pupitre-workspace-fixed{position:relative;z-index:2;transform:translateZ(0)}
+html[data-native-ios=true] .iq-reader:not([data-pupitre-layout=plain]) .pupitre-workspace-scroll{position:relative;z-index:1}
+
+/* The available height is a half-screen in a desk, even on a tall device.
+   The page already appears in the top header: keep room for its caption below. */
+.iq-reader[data-pupitre-layout=desk] .pupitre-workspace-fixed :is(.pupitre-console-title,.pupitre-timeline){display:none}
+.iq-reader[data-pupitre-layout=desk] .pupitre-transport>button{min-height:64px!important;flex-direction:row;gap:8px;padding:8px!important}

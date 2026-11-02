@@ -22,4 +22,10 @@ export function readerPageScale(width:number,height:number,spread:boolean,_immer
 }
 
 /** At least 267 CSS pixels of text per leaf on compact inner displays, without a short landscape spread. */
-export function canShowBookSpread(width:number,height:number){return width>=620&&height>=430;}
+export function canShowBookSpread(width:number,height:number,desk=false){return width>=620&&height>=(desk?160:320);}
+
+/** A desk uses its wide upper pane for two leaves, independently of a saved
+ * single-page preference. An explicit single-page choice still wins at flat. */
+export function readerShowsSpread(width:number,height:number,layout:'plain'|'desk'|'book',choice:'auto'|'plain'|'desk'|'book',preferred:boolean,landscape:boolean){
+ return layout!=='book'&&(layout==='desk'||preferred||choice==='auto'&&landscape)&&canShowBookSpread(width,height,layout==='desk');
+}

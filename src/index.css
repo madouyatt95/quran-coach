@@ -865,3 +865,18 @@ a {
 .star-filled {
   fill: currentColor;
 }
+
+/* Paint the status area as part of the page, rather than a detached purple slab.
+   The shell still reserves the real safe inset once for its scrolling content. */
+html[data-native-ios=true] #root:has(.home-page){background:#0a0e1a}
+html[data-native-ios=true] #root:has(.listen-hub){background:#0a0e1a}
+
+html[data-native-ios=true]:not([data-native-corner-status=true]) #root:not(:has(main[data-reader-route=true])){padding-inline:env(safe-area-inset-left,0px) env(safe-area-inset-right,0px)}
+html[data-native-ios=true] .global-page-tools{right:calc(12px + env(safe-area-inset-right,0px))}
+
+/* Fill the canvas behind the real corner status indicators. Clear only the
+   foreground header controls, without reserving an empty row across the app. */
+html[data-native-corner-status=true] #root{padding-top:0;padding-inline:0}
+html[data-native-corner-status=true] .global-page-tools{top:12px;right:calc(12px + max(var(--native-header-right,0px),env(safe-area-inset-right,0px)))}
+html[data-native-corner-status=true] .page-back-btn{left:calc(12px + max(var(--native-header-left,0px),env(safe-area-inset-left,0px)))}
+html[data-native-corner-status=true] .app-main--compact > :is(div,section) > :is(header,[class$="-header"],[class$="__header-row"],.listen-page-heading,.listen-section-heading){padding-top:12px;padding-left:calc(16px + var(--native-header-left,0px));padding-right:calc(112px + var(--native-header-right,0px))}

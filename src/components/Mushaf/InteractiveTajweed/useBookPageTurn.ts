@@ -26,7 +26,7 @@ export function useBookPageTurn(viewport:RefObject<HTMLDivElement|null>,page:num
         setTurning(false);setDragging(false);setPreview(null);setBackPage(null);
     },[]);
     useEffect(()=>()=>{if(running.current)dispose(running.current);},[]);
-    useEffect(()=>{const cancel=()=>clear();window.addEventListener('resize',cancel);document.addEventListener('visibilitychange',cancel);return()=>{window.removeEventListener('resize',cancel);document.removeEventListener('visibilitychange',cancel);};},[clear]);
+    useEffect(()=>{const cancel=()=>clear();window.addEventListener('resize',cancel);window.addEventListener('qc-native-layout',cancel);document.addEventListener('visibilitychange',cancel);return()=>{window.removeEventListener('resize',cancel);window.removeEventListener('qc-native-layout',cancel);document.removeEventListener('visibilitychange',cancel);};},[clear]);
     const paint=useCallback((r:Turn,p:number)=>{
         r.progress=p;
         const step=r.width/r.strips.length;
