@@ -20,13 +20,16 @@ final class CarAudioPlayer {
     private var interrupted = false
     private var lastSave: TimeInterval = 0
     private var autoPlay = false
+    private var pendingPosition: Double?
     var current: CarTrack? { queue.indices.contains(index) ? queue[index] : nil }
     var isPlaying: Bool { player.rate > 0 || autoPlay && player.timeControlStatus == .waitingToPlayAtSpecifiedRate }
-    var elapsed: Double { let value = player.currentTime().seconds; return value.isFinite ? max(0, value) : 0 }
+    var elapsed: Double { if let pendingPosition { return pendingPosition }; let value = player.currentTime().seconds; return value.isFinite ? max(0, value) : 0 }
     var duration: Double { let value = player.currentItem?.duration.seconds ?? 0; return value.isFinite && value > 0 ? value : current?.duration ?? 0 }
     var state: [String: Any] {
-        ["active": current != nil, "id": current?.id ?? "", "title": current?.title ?? "", "path": current?.path ?? "",
+        var value: [String: Any] = ["active": current != nil, "id": current?.id ?? "", "title": current?.title ?? "", "path": current?.path ?? "",
          "playing": isPlaying, "position": elapsed, "duration": duration, "error": error]
+        if let reference = current?.listening, let data = try? JSONEncoder().encode(reference), let object = try? JSONSerialization.jsonObject(with: data) { value["listening"] = object }
+        return value
     }
 
     func install() {
@@ -51,6 +54,7 @@ final class CarAudioPlayer {
             MainActor.assumeIsolated {
                 guard let self, self.current != nil else { return }
                 if Date.timeIntervalSinceReferenceDate - self.lastSave >= 5 { self.save() }
+                CarIqamaAnnouncer.shared.tick()
                 self.publish()
             }
         }
@@ -67,7 +71,7 @@ final class CarAudioPlayer {
             MainActor.assumeIsolated {
                 guard let self, let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
                       let type = AVAudioSession.InterruptionType(rawValue: raw) else { return }
-                if type == .began { self.interrupted = self.isPlaying; self.pause() }
+                if type == .began { self.interrupted = self.isPlaying; CarIqamaAnnouncer.shared.cancel(); self.pause() }
                 else if self.interrupted {
                     self.interrupted = false
                     let options = AVAudioSession.InterruptionOptions(rawValue: note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0)
@@ -94,6 +98,7 @@ final class CarAudioPlayer {
     private func load(position: Double = 0, autoplay: Bool) {
         guard let track = current else { return }
         autoPlay = autoplay; error = ""; status = nil
+        pendingPosition = position.isFinite && position > 0 ? position : nil
         player.pause()
         let item = AVPlayerItem(url: track.url)
         player.replaceCurrentItem(with: item)
@@ -106,7 +111,14 @@ final class CarAudioPlayer {
                 }
             }
         }
-        if position.isFinite && position > 0 { player.seek(to: CMTime(seconds: max(0, position), preferredTimescale: 600)) }
+        if position.isFinite && position > 0 {
+            player.seek(to: CMTime(seconds: position, preferredTimescale: 600)) { [weak self, weak item] finished in
+                Task { @MainActor in
+                    guard finished, let self, let item, self.player.currentItem === item else { return }
+                    self.pendingPosition = nil; self.save(); self.publish()
+                }
+            }
+        }
         if autoplay { resume() } else { publish() }
     }
 
@@ -118,10 +130,11 @@ final class CarAudioPlayer {
             autoPlay = true; player.play(); publish()
         } catch { self.error = "La sortie audio est indisponible."; autoPlay = false; publish() }
     }
-    func pause() { autoPlay = false; player.pause(); save(); publish() }
+    func pause() { CarIqamaAnnouncer.shared.cancel(); autoPlay = false; player.pause(); save(); publish() }
     func stop() {
+        CarIqamaAnnouncer.shared.cancel()
         save(); autoPlay = false; player.pause(); player.replaceCurrentItem(with: nil)
-        queue = []; index = 0; error = ""
+        queue = []; index = 0; error = ""; pendingPosition = nil
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         onChange?(state)
         NotificationCenter.default.post(name: .carAudioChanged, object: nil)
@@ -137,10 +150,11 @@ final class CarAudioPlayer {
         guard value.isFinite else { return }
         let maximum = duration > 0 ? max(0, duration - 0.1) : max(0, value)
         let item = player.currentItem
-        player.seek(to: CMTime(seconds: min(maximum, max(0, value)), preferredTimescale: 600)) { [weak self] finished in
+        let target = min(maximum, max(0, value)); pendingPosition = target
+        player.seek(to: CMTime(seconds: target, preferredTimescale: 600)) { [weak self] finished in
             Task { @MainActor in
                 guard finished, let self, self.player.currentItem === item else { return }
-                self.save(); self.publish()
+                self.pendingPosition = nil; self.save(); self.publish()
             }
         }
     }
@@ -165,12 +179,22 @@ final class CarAudioPlayer {
               let saved = try? JSONDecoder().decode([CarTrack].self, from: data) else { return }
         play(saved, index: UserDefaults.standard.integer(forKey: "car.resume.index"), position: UserDefaults.standard.double(forKey: "car.resume.seconds"))
     }
-    var hasSaved: Bool { UserDefaults.standard.data(forKey: "car.resume.queue") != nil }
+    var savedTracks: [CarTrack] {
+        guard let data = UserDefaults.standard.data(forKey: "car.resume.queue"), data.count < 8_000_000,
+              let tracks = try? JSONDecoder().decode([CarTrack].self, from: data), tracks.count <= 2000,
+              tracks.indices.contains(UserDefaults.standard.integer(forKey: "car.resume.index")),
+              tracks.allSatisfy({ $0.url.isFileURL ? $0.url.standardizedFileURL.path.hasPrefix(Bundle.main.bundlePath + "/") : CarTrack.audioURL($0.url.absoluteString) != nil }) else { return [] }
+        return tracks
+    }
+    var hasSaved: Bool { !savedTracks.isEmpty }
+    var savedUpdatedAt: Double { UserDefaults.standard.double(forKey: "car.resume.updatedAt") }
+    var savedTitle: String? { let tracks = savedTracks, index = UserDefaults.standard.integer(forKey: "car.resume.index"); return tracks.indices.contains(index) ? tracks[index].title : nil }
     private func save() {
         guard current != nil, let data = try? JSONEncoder().encode(queue) else { return }
         UserDefaults.standard.set(data, forKey: "car.resume.queue")
         UserDefaults.standard.set(index, forKey: "car.resume.index")
         UserDefaults.standard.set(elapsed, forKey: "car.resume.seconds")
+        UserDefaults.standard.set(Date().timeIntervalSince1970 * 1000, forKey: "car.resume.updatedAt")
         lastSave = Date.timeIntervalSinceReferenceDate
     }
     private func publish() {
@@ -192,4 +216,52 @@ extension Notification.Name {
     static let carAudioChanged = Notification.Name("QuranCoachCarAudioChanged")
     static let carAudioWillPlay = Notification.Name("QuranCoachCarAudioWillPlay")
     static let carPrayerChanged = Notification.Name("QuranCoachCarPrayerChanged")
+    static let carListeningChanged = Notification.Name("QuranCoachCarListeningChanged")
+}
+
+/// A short system announcement over this app's native audio, never synthetic recitation.
+/// Audio keeps its exact playhead and queue; only its volume is temporarily lowered.
+@MainActor
+final class CarIqamaAnnouncer: NSObject, AVSpeechSynthesizerDelegate {
+    static let shared = CarIqamaAnnouncer()
+    private let speech = AVSpeechSynthesizer()
+    private let defaults = UserDefaults(suiteName: "group.com.qurancoach.app") ?? .standard
+    private var originalVolume: Float?
+    private var speechTimeout: Task<Void, Never>?
+    private var lastTick: TimeInterval = 0
+    var snapshot: CarPrayerSnapshot?
+    var connected = false { didSet { if !connected { cancel(); snapshot = nil } } }
+    override init() { super.init(); speech.delegate = self }
+    func tick(now: Date = Date()) {
+        guard connected, now.timeIntervalSince1970 - lastTick >= 3 else { return }
+        lastTick = now.timeIntervalSince1970
+        guard defaults.bool(forKey: "car.iqamaReminderEnabled") else { cancel(); return }
+        guard CarAudioPlayer.shared.isPlaying, !speech.isSpeaking, let snapshot else { return }
+        let stored = defaults.stringArray(forKey: "car.iqamaAnnounced") ?? []
+        let lead = defaults.object(forKey: "car.iqamaMinutes") as? Int ?? 5
+        guard let reminder = snapshot.reminder(now: now, lead: lead, seen: Set(stored)) else { return }
+        defaults.set(Array((stored + [reminder.key]).suffix(100)), forKey: "car.iqamaAnnounced")
+        originalVolume = CarAudioPlayer.shared.player.volume
+        CarAudioPlayer.shared.player.volume = (originalVolume ?? 1) * 0.18
+        let utterance = AVSpeechUtterance(string: reminder.text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "fr-FR")
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.94
+        speech.speak(utterance)
+        // Restore the recitation even if the system voice fails to finish its callback.
+        speechTimeout = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(15))
+            guard !Task.isCancelled else { return }
+            self?.cancel()
+        }
+    }
+    func cancel() {
+        if speech.isSpeaking || speech.isPaused { speech.stopSpeaking(at: .immediate) }
+        restoreVolume()
+    }
+    private func restoreVolume() {
+        speechTimeout?.cancel(); speechTimeout = nil
+        if let originalVolume { CarAudioPlayer.shared.player.volume = originalVolume; self.originalVolume = nil }
+    }
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) { Task { @MainActor in self.restoreVolume() } }
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) { Task { @MainActor in self.restoreVolume() } }
 }

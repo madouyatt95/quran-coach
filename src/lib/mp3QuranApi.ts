@@ -1,3 +1,4 @@
+import carListeningCatalog from '../data/carListeningCatalog.json';
 const API_BASE_URL = 'https://mp3quran.net/api/v3';
 
 export interface MP3QuranReciter {
@@ -88,16 +89,19 @@ export const mp3QuranApi = {
 /**
  * Special Collection: Hudhayfi × Leclerc
  */
+const frenchCollection = carListeningCatalog.collections.find(c => c.id === 'hudhayfi-leclerc')!;
+const omarCollection = carListeningCatalog.collections.find(c => c.id === 'omar-hisham')!;
+
 export const ARABIC_FRENCH_COLLECTION = {
     id: 'hudhayfi-leclerc',
     name: 'Ali Al-Hudhayfi × Youssouf Leclerc',
     nameArabic: 'علي الحذيفي × يوسف لوكلير',
     type: 'arabic_french',
-    baseUrl: 'https://archive.org/download/Coran_Arabe_Franais_HoudeyfaInconnu/',
-    surahs: Array.from({ length: 114 }, (_, i) => i + 1),
+    baseUrl: frenchCollection.server,
+    surahs: frenchCollection.surahs,
     getAudioUrl: (surahId: number) => {
         const formattedId = surahId.toString().padStart(3, '0');
-        return `https://archive.org/download/Coran_Arabe_Franais_HoudeyfaInconnu/${formattedId}.mp3`;
+        return `${frenchCollection.server}${formattedId}.mp3`;
     }
 };
 
@@ -109,10 +113,10 @@ export const OMAR_HISHAM_COLLECTION = {
     name: 'Omar Hisham Al-Arabi',
     nameArabic: 'عمر هشام العربي',
     type: 'custom',
-    baseUrl: 'https://archive.org/download/omar-hisham-al-arabi/',
-    surahs: [1, 12, 14, 16, 17, 18, 19, 20, 22, 25, 32, 36, 40, 44, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 61, 62, 66, 67, 68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 111, 112, 113, 114],
+    baseUrl: omarCollection.server,
+    surahs: omarCollection.surahs,
     getAudioUrl: (surahId: number) => {
         const formattedId = surahId.toString().padStart(3, '0');
-        return `https://archive.org/download/omar-hisham-al-arabi/${formattedId}.mp3`;
+        return `${omarCollection.server}${formattedId}.mp3`;
     }
 };

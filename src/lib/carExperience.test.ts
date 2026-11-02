@@ -1,20 +1,31 @@
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
-const f=vi.hoisted(()=>({native:true,mosque:null as null|{name:string;id:string},events:[] as {label:string;at:number;published:boolean}[],update:vi.fn(),content:vi.fn()}));
+const f=vi.hoisted(()=>({native:true,mosque:null as null|{name:string;id:string;lat?:number;lng?:number},slug:undefined as string|undefined,published:{} as Record<string,unknown>,events:[] as {label:string;at:number;published:boolean}[],update:vi.fn(),content:vi.fn()}));
 vi.mock('@capacitor/core',()=>({Capacitor:{isNativePlatform:()=>f.native,getPlatform:()=> 'ios'},registerPlugin:()=>({updatePrayerSnapshot:f.update,updateWidgetContent:f.content})}));
 vi.mock('../stores/mosqueStore',()=>({activeMosque:()=>f.mosque,useMosqueStore:{getState:()=>({})}}));
 vi.mock('../stores/mosquePlansStore',()=>({useMosquePlansStore:{getState:()=>({plans:{}})}}));
-vi.mock('../stores/mosqueDirectoryStore',()=>({useMosqueDirectoryStore:{getState:()=>({links:{},automatic:{},published:{}})}}));
-vi.mock('./mosqueScheduleEvents',()=>({scheduleSlug:()=>undefined,mosqueScheduleEvents:()=>f.events}));
+vi.mock('../stores/mosqueDirectoryStore',()=>({useMosqueDirectoryStore:{getState:()=>({links:{},automatic:{},published:f.published})}}));
+vi.mock('./mosqueScheduleEvents',()=>({scheduleSlug:()=>f.slug,mosqueScheduleEvents:()=>f.events}));
 vi.mock('../stores/audioPlayerStore',()=>({useAudioPlayerStore:{getState:()=>({})}}));
 vi.mock('./adhanPlayback',()=>({useAdhanPlayback:{getState:()=>({})},stopAdhan:vi.fn()}));
 vi.mock('../stores/listenStore',()=>({useListenStore:{getState:()=>({})}}));
 import type {AdhanEvent} from './adhanSchedule';
 const now=Date.UTC(2026,9,16,10);
 const adhan=(delta:number):AdhanEvent=>({key:`asr:${delta}`,prayer:'asr',label:'Asr',at:now+delta,recording:'ahmed-1'});
-beforeEach(()=>{vi.resetModules();vi.useFakeTimers();vi.setSystemTime(now);f.native=true;f.mosque=null;f.events=[];f.update.mockReset().mockResolvedValue(undefined);f.content.mockReset().mockResolvedValue(undefined);});
+beforeEach(()=>{vi.resetModules();vi.useFakeTimers();vi.setSystemTime(now);f.native=true;f.mosque=null;f.slug=undefined;f.published={};f.events=[];f.update.mockReset().mockResolvedValue(undefined);f.content.mockReset().mockResolvedValue(undefined);});
 afterEach(()=>vi.useRealTimers());
 it('does not call native widget APIs in a PWA',async()=>{f.native=false;const {syncCarPrayerSnapshot}=await import('./carExperience');await syncCarPrayerSnapshot([adhan(60000)]);const {updateHadithWidget}=await import('./widgetService');await updateHadithWidget('Texte','Source');expect(f.update).not.toHaveBeenCalled();expect(f.content).not.toHaveBeenCalled();});
-it('shares only upcoming real events within 24 hours and never derives an Iqama',async()=>{const {syncCarPrayerSnapshot}=await import('./carExperience');await syncCarPrayerSnapshot([adhan(-1),adhan(60000),adhan(86400001)]);expect(f.update.mock.calls[0][0]).toMatchObject({iqamaAt:0,iqamaName:'',source:'Iqama non renseignée',events:[{kind:'adhan',label:'Asr',at:now+60000}]});});
+it('retains a recent Adhan for its Iqama detail without deriving an Iqama or exporting distant days',async()=>{const {syncCarPrayerSnapshot}=await import('./carExperience');await syncCarPrayerSnapshot([adhan(-43200001),adhan(-1),adhan(60000),adhan(86400001)]);expect(f.update.mock.calls[0][0]).toMatchObject({adhanAt:now+60000,iqamaAt:0,iqamaName:'',source:'Iqama non renseignée',events:[{kind:'adhan',label:'Asr',at:now-1,published:false},{kind:'adhan',label:'Asr',at:now+60000,published:false}]});});
 it('preserves a published Friday event and does not put a passed event in the timeline',async()=>{f.mosque={name:'Mosquée',id:'m'};f.events=[{label:'Jumu’a',at:now-1,published:true},{label:'Jumu’a · 2',at:now+120000,published:true}];const {syncCarPrayerSnapshot}=await import('./carExperience');await syncCarPrayerSnapshot([adhan(60000)]);expect(f.update.mock.calls[0][0]).toMatchObject({mosque:'Mosquée',iqamaName:'Jumu’a · 2',iqamaAt:now+120000,source:'Horaire publié',events:[{kind:'adhan',label:'Asr',at:now+60000},{kind:'iqama',label:'Jumu’a · 2',at:now+120000}]});});
 it('limits repeated writes but refreshes the timestamp after 15 minutes',async()=>{const {syncCarPrayerSnapshot}=await import('./carExperience');const items=[adhan(3600000)];await syncCarPrayerSnapshot(items);await syncCarPrayerSnapshot(items);expect(f.update).toHaveBeenCalledTimes(1);vi.setSystemTime(now+16*60000);await syncCarPrayerSnapshot(items);expect(f.update).toHaveBeenCalledTimes(2);});
+it('marks only matching fresh published Adhans and sends a selected-mosque endpoint without a GPS query',async()=>{
+ f.mosque={id:'m',name:'Ma mosquée',lat:48.8,lng:2.3};f.slug='selected-mosque';
+ f.published={'selected-mosque':{fetchedAt:now-60000,timezone:'Europe/Paris',days:[{date:'2026-10-16',prayers:[{key:'asr',adhanAt:now+60000}]}]}};
+ const {syncCarPrayerSnapshot}=await import('./carExperience');await syncCarPrayerSnapshot([adhan(60000),adhan(120000)]);
+ expect(f.update.mock.calls[0][0]).toMatchObject({mosqueId:'m',lat:48.8,lng:2.3,sourceUpdatedAt:now-60000,timezone:'Europe/Paris',refreshURL:'https://www.quran-coach.fr/api/mosques?action=published&slug=selected-mosque',events:[{at:now+60000,published:true},{at:now+120000,published:false}]});
+});
+it('does not mark a stale timetable as published or enable the reminder freshness check',async()=>{
+ f.mosque={id:'m',name:'Mosquée'};f.slug='m';f.published={m:{fetchedAt:now-3600001,timezone:'Europe/Paris',days:[]}};
+ const {syncCarPrayerSnapshot}=await import('./carExperience');await syncCarPrayerSnapshot([adhan(60000)]);
+ expect(f.update.mock.calls[0][0]).toMatchObject({sourceUpdatedAt:0,events:[{kind:'adhan',published:false,source:'Horaire calculé'}]});
+});
 it('sends the actual daily hadith to the native App Group bridge',async()=>{const {updateHadithWidget}=await import('./widgetService');await updateHadithWidget('Le texte complet fourni par l’accueil.','Référence fournie');expect(f.content).toHaveBeenCalledWith({hadithText:'Le texte complet fourni par l’accueil.',hadithSource:'Référence fournie',updatedAt:now});});

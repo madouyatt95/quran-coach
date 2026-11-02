@@ -9,13 +9,18 @@ import { useMosqueDirectoryStore } from '../stores/mosqueDirectoryStore';
 import type { AdhanEvent } from './adhanSchedule';
 import {readCarPlayback,useNativeCarPlayback,carPlaybackCommand,type NativeCarPlayback} from './nativeCarPlayback';
 import {mediaSessionOwner,claimMediaSession,releaseMediaSession} from './mediaSessionOwner';
+import {carListeningResume} from './carListening';
+import {timetableFresh} from './mosqueTimetables';
+import {mosqueApiUrl} from './mosques';
+import {collectionItems} from './listening';
 
 interface CarBridge {
   updatePrayerSnapshot(data: { mosque: string; adhanName: string; adhanAt: number; iqamaName: string; iqamaAt: number; source: string; updatedAt: number; events:{kind:'adhan'|'iqama';label:string;at:number}[] }): Promise<void>;
+  updateListeningSnapshot(data:Record<string,unknown>):Promise<void>;
   setNowPlaying(data: { title: string; artist: string; playing: boolean; elapsed: number; duration: number }): Promise<void>;
   clearNowPlaying(): Promise<void>;
   getCarPlayback():Promise<NativeCarPlayback>;
-  updateCarPreferences(data:{reciter?:string;autoNextBook?:boolean}):Promise<void>;
+  updateCarPreferences(data:{reciter?:string;autoNextBook?:boolean;iqamaReminderEnabled?:boolean;iqamaMinutes?:number}):Promise<void>;
   addListener(event: 'remoteCommand'|'nativePlayback', callback: (data: Record<string,unknown>) => void): Promise<PluginListenerHandle>;
 }
 const bridge = registerPlugin<CarBridge>('QuranCoachCar');
@@ -24,8 +29,10 @@ let lastSnapshot = '';
 let lastSnapshotAt = 0;
 let lastAudio = '';
 let suppressWebSync=false;
+let lastPrayerEvents:AdhanEvent[]=[];
 
 export async function syncCarPrayerSnapshot(events: AdhanEvent[]) {
+  lastPrayerEvents=events;
   if (!nativeIOS()) return;
   const now = Date.now();
   const mosque = activeMosque(useMosqueStore.getState());
@@ -36,7 +43,12 @@ export async function syncCarPrayerSnapshot(events: AdhanEvent[]) {
   const iqamas = mosque ? mosqueScheduleEvents(mosque, plans, timetable, now).filter(event => event.at > now && event.at <= now + 86400000) : [];
   const iqama = iqamas[0];
   const adhan = events.find(e => e.at > now);
+  const fresh=timetable&&timetableFresh(timetable,now)?timetable:undefined;
+  const publishedAdhans=new Map<string,number|null>(fresh?.days.flatMap(day=>day.prayers.filter(p=>p.adhanAt!==null).map(p=>[`${p.key}:${p.adhanAt}`,p.adhanAt] as const))||[]);
   const data = {
+    mosqueId:mosque?.id||'',lat:mosque?.lat??null,lng:mosque?.lng??null,
+    refreshURL:slug?await mosqueApiUrl(`action=published&slug=${encodeURIComponent(slug)}`):null,
+    sourceUpdatedAt:fresh?.fetchedAt||0,timezone:fresh?.timezone,
     mosque: mosque?.name ?? '',
     adhanName: adhan?.label ?? '',
     adhanAt: adhan?.at ?? 0,
@@ -45,9 +57,9 @@ export async function syncCarPrayerSnapshot(events: AdhanEvent[]) {
     source: iqama ? (iqama.published ? 'Horaire publié' : 'Horaire personnel') : 'Iqama non renseignée',
     updatedAt: now,
     events: [
-      ...events.filter(e=>e.at>now&&e.at<=now+86400000).map(e=>({kind:'adhan' as const,label:e.label,at:e.at})),
-      ...iqamas.map(e=>({kind:'iqama' as const,label:e.label,at:e.at})),
-    ].sort((a,b)=>a.at-b.at).slice(0,24),
+      ...events.filter(e=>e.at>now-43200000&&e.at<=now+86400000).map(e=>{const published=publishedAdhans.has(`${e.prayer}:${e.at}`);return {kind:'adhan' as const,label:e.label,at:e.at,published,source:published?'Horaire publié · MAWAQIT':'Horaire calculé'};}),
+      ...iqamas.map(e=>({kind:'iqama' as const,label:e.label,at:e.at,published:e.published===true,source:e.published?'Horaire publié':'Horaire personnel'})),
+    ].sort((a,b)=>a.at-b.at).slice(0,40),
   };
   const signature = JSON.stringify({ ...data, updatedAt: 0 });
   if (signature === lastSnapshot && now - lastSnapshotAt < 15 * 60000) return;
@@ -129,6 +141,15 @@ export function startCarMediaBridge() {
       stopAdhan();suppressWebSync=false;
     }
     useNativeCarPlayback.setState(state);
+    if(state.listening&&(previous.id!==state.id||Math.floor(previous.position/5)!==Math.floor(state.position/5))){
+      const store=useListenStore.getState(),reference=state.listening;
+      const old=store.lastListened?.playlist;
+      const reciter=store.reciters?.find(r=>String(r.id)===reference.reciterId);
+      const edition=reciter?.moshaf.find(m=>reference.audioUrl.startsWith(m.server.endsWith('/')?m.server:`${m.server}/`));
+      const own=old?.some(t=>t.audioUrl===reference.audioUrl)?old:collectionItems(reference.reciterId,store.reciters||[],[],edition?.id);
+      const matched=own.find(t=>t.audioUrl===reference.audioUrl);
+      store.setLastListened({...reference,verse:matched?.verse||reference.verse,position:state.position,playlist:own.length?own:undefined,playlistIndex:own.findIndex(t=>t.audioUrl===reference.audioUrl)});
+    }
   };
   listen('nativePlayback',accept);
   void bridge.getCarPlayback().then(accept).catch(()=>{});
@@ -141,15 +162,32 @@ export function startCarMediaBridge() {
   const onVisible=()=>{if(!document.hidden)void bridge.getCarPlayback().then(accept).catch(()=>{});};
   document.addEventListener('visibilitychange',onVisible);
   // Narration modules are loaded only for the native bridge, not by the PWA.
-  void Promise.all([import('../stores/libraryPlayerStore'),import('../stores/audioLibraryStore'),import('../stores/settingsStore')]).then(([{useLibraryPlayer},{useAudioLibraryStore},{useSettingsStore}])=>{
+  void Promise.all([import('../stores/libraryPlayerStore'),import('../stores/audioLibraryStore'),import('../stores/notificationStore')]).then(([{useLibraryPlayer},{useAudioLibraryStore},{useNotificationStore}])=>{
     if(disposed)return;
     let lastPreferences='';
     const preferences=()=>{
-      const value={reciter:useSettingsStore.getState().selectedReciter,autoNextBook:useAudioLibraryStore.getState().autoNextBook},signature=JSON.stringify(value);
+      const prefs=useNotificationStore.getState();
+      const value={autoNextBook:useAudioLibraryStore.getState().autoNextBook,iqamaReminderEnabled:prefs.carIqamaReminderEnabled,iqamaMinutes:prefs.carIqamaMinutes},signature=JSON.stringify(value);
       if(lastPreferences===signature)return;lastPreferences=signature;
       void bridge.updateCarPreferences(value).catch(()=>{lastPreferences='';});
     };
-    cleanups.push(useSettingsStore.subscribe(preferences),useAudioLibraryStore.subscribe(preferences));preferences();
+    cleanups.push(useNotificationStore.subscribe(preferences),useAudioLibraryStore.subscribe(preferences));preferences();
+    let listenSignature='',lastCatalog:unknown;
+    const listening=()=>{
+      if(disposed)return;
+      const s=useListenStore.getState(),native=useNativeCarPlayback.getState();
+      // Native playback already persists its queue; do not echo every progress tick back to it.
+      const position=native.active&&native.listening?.audioUrl===s.lastListened?.audioUrl?'native':Math.floor((s.lastListened?.position||0)/5);
+      const signature=JSON.stringify([s.lastListened?.audioUrl,position,s.favoriteReciters,s.bookmarks]);
+      if(signature===listenSignature&&lastCatalog===s.reciters)return;
+      const catalogChanged=lastCatalog!==s.reciters;
+      listenSignature=signature;lastCatalog=s.reciters;
+      const data={...(catalogChanged?{catalog:s.reciters||[]}:{}),favorites:s.favoriteReciters||[],recent:(s.history||[]).slice(0,20).flatMap(t=>{const item=carListeningResume(t);return item?[item]:[];}),bookmarks:(s.bookmarks||[]).slice(0,20).flatMap(t=>{const item=carListeningResume(t.track);return item?[item]:[];}),resume:carListeningResume(s.lastListened)};
+      void bridge.updateListeningSnapshot(data).catch(()=>{listenSignature='';lastCatalog=undefined;});
+    };
+    cleanups.push(useListenStore.subscribe(listening));listening();
+    const prayers=()=>{void syncCarPrayerSnapshot(lastPrayerEvents);};
+    cleanups.push(useMosquePlansStore.subscribe(prayers),useMosqueStore.subscribe(prayers),useMosqueDirectoryStore.subscribe(prayers));
     const librarySync=()=>{
       if(suppressWebSync)return;
       const s=useLibraryPlayer.getState();if(!s.item)return;

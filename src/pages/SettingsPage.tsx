@@ -1,3 +1,5 @@
+import {CarPlaySettings} from '../components/Audio/CarPlaySettings';
+import {Capacitor} from '@capacitor/core';
 import { useState, useEffect, lazy, Suspense } from 'react';
 const ProgressBackupPanel=lazy(()=>import('../components/Backup/ProgressBackupPanel').then(m=>({default:m.ProgressBackupPanel})));
 import { useSettingsStore } from '../stores/settingsStore';
@@ -151,6 +153,7 @@ export function SettingsPage() {
                 <a href="#reading">Lecture</a>
                 <a href="#audio">Audio</a>
                 <a href="#notifications">Notifications</a>
+                {Capacitor.isNativePlatform()&&Capacitor.getPlatform()==='ios'&&<a href="#carplay">CarPlay</a>}
                 <a href="#storage">Stockage</a><a href="#backup">Sauvegarde</a>
             </nav>
 
@@ -388,6 +391,7 @@ export function SettingsPage() {
                 )}
             </section>
 
+            <CarPlaySettings/>
             <section className="settings-section" id="storage">
                 <h2 className="settings-section__title">Stockage et informations</h2>
                 <button className="settings-link" type="button" onClick={() => navigate('/storage')}>

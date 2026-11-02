@@ -1,3 +1,4 @@
+import carListeningCatalog from '../data/carListeningCatalog.json';
 import {
   mp3QuranApi,
   ARABIC_FRENCH_COLLECTION,
@@ -7,23 +8,7 @@ import type { MP3QuranReciter, MP3QuranMoshaf } from "./mp3QuranApi";
 import type { PlaylistItem, Surah } from "../types";
 import { SURAH_NAMES_FR } from "../components/Mushaf/mushafConstants";
 
-export const RECITER_NAMES: Record<number, string> = {
-  54: "Abdurrahman As-Sudais",
-  31: "Saud Ash-Shuraim",
-  123: "Mishary Rashid Alafasy",
-  30: "Saad Al-Ghamidi",
-  102: "Maher Al-Muaiqly",
-  92: "Yasser Ad-Dossari",
-  5: "Ahmed Al-Ajmi",
-  107: "Muhammad Al-Luhaidan",
-  112: "Mohamed Siddiq Al-Minshawi",
-  51: "Abdulbasit Abdussamad",
-  118: "Mahmoud Khalil Al-Hussary",
-  2: "Ibrahim Al-Jibreen",
-  81: "Fares Abbad",
-  4: "Abu Bakr Ash-Shatri",
-  160: "Adil Al-Kalbani",
-};
+export const RECITER_NAMES: Record<number,string> = carListeningCatalog.names;
 const ARABIC_ALIASES: Record<number, string> = {
   123: "مشاري راشد العفاسي",
   54: "عبد الرحمن السديس",

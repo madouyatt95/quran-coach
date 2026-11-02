@@ -2,7 +2,7 @@
 
 ## État actuel — 2 novembre 2026
 
-La capacité CarPlay Audio est maintenant activée pour l’app et incluse dans son profil signé. La version de développement 1.5.3 (20) ajoute les listes et la lecture CarPlay natives, puis a été installée par câble sur l’iPhone Duo. Le détail des fonctionnalités, vérifications et limites est dans [la livraison 1.5.3 (20)](releases/2026-11-02-ios-1.5.3-20-carplay.md). Les paragraphes ci-dessous retracent les étapes antérieures, où cette capacité était encore absente. L’essai en véhicule reste à effectuer avant de déclarer CarPlay validé.
+La capacité CarPlay Audio est activée pour l’app et incluse dans son profil signé. La version de développement 1.5.3 (25) raccorde CarPlay au catalogue Écoute et ajoute Mon trajet, les détails des prières, l’itinéraire et l’annonce d’Iqama facultative. Elle est installée par câble sur l’iPhone de test. Le détail des vérifications et limites est dans [la livraison 1.5.3 (25)](releases/2026-11-02-ios-1.5.3-25-carplay.md). Les paragraphes ci-dessous retracent les étapes antérieures, où cette capacité était encore absente. L’essai en véhicule reste à effectuer avant de déclarer CarPlay validé.
 
 ## Version native
 

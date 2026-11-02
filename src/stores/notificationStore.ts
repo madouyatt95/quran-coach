@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface NotificationState {
+    carIqamaReminderEnabled:boolean;
+    carIqamaMinutes:5|10|15;
+    setCarIqamaReminder:(enabled:boolean,minutes?:5|10|15)=>void;
     // Preferences
     enabled: boolean;
     prayerEnabled: boolean;
@@ -39,6 +42,8 @@ interface NotificationState {
 export const useNotificationStore = create<NotificationState>()(
     persist(
         (set) => ({
+            carIqamaReminderEnabled:false,carIqamaMinutes:5,
+            setCarIqamaReminder:(carIqamaReminderEnabled,minutes)=>set(state=>({carIqamaReminderEnabled,carIqamaMinutes:minutes&&[5,10,15].includes(minutes)?minutes:state.carIqamaMinutes})),
             // Defaults — all off until user enables
             enabled: false,
             prayerEnabled: true,
@@ -81,6 +86,7 @@ export const useNotificationStore = create<NotificationState>()(
             version: 1,
             // Don't persist runtime permission state
             partialize: (state) => ({
+                carIqamaReminderEnabled:state.carIqamaReminderEnabled,carIqamaMinutes:state.carIqamaMinutes,
                 enabled: state.enabled,
                 prayerEnabled: state.prayerEnabled,
                 prayerMinutesBefore: state.prayerMinutesBefore,
