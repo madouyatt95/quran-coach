@@ -58,6 +58,12 @@ check(nativeReciter.best?.id == 2, "même préférence Hafs que le menu Écoute"
 let complete = nativeReciter.best!.tracks(reciter: "123", name: "Alafasy", surahs: surahs)
 check(complete.map(\.chapter) == ["1","2","3"], "sourates exactes, ordre, doublons et indices invalides exclus")
 check(complete[1].url.absoluteString == "https://server8.mp3quran.net/afs/002.mp3", "même fichier complet que le menu Écoute")
+let narration = book.recordings(items)[0]
+check(narration.afterCall(position: 12.75, rewindBooks: true) == 7.75, "reprise du livre cinq secondes avant")
+check(narration.afterCall(position: 2, rewindBooks: true) == 0, "reprise limitée au début du segment")
+check(narration.afterCall(position: 12.75, rewindBooks: false) == 12.75, "position exacte du livre sur demande")
+check(complete[1].afterCall(position: 12.75, rewindBooks: true) == 12.75, "sourate entière sans repère de verset")
+check(tracks[16].afterCall(position: 12.75, rewindBooks: true) == 0, "début du verset lorsque la piste est un verset")
 let saved = CarListeningResume(tracks: complete, index: 1, position: 467.25, updatedAt: ms)
 check(saved.valid && saved.tracks[saved.index].listening?.surahNumber == 2, "reprise exacte avec file continue")
 let decodedResume = try JSONDecoder().decode(CarListeningResume.self, from: JSONEncoder().encode(saved))
@@ -66,6 +72,13 @@ check(!CarListeningResume(tracks: complete, index: 4, position: 0, updatedAt: ms
 check(!CarListeningResume(tracks: complete, index: 1, position: .nan, updatedAt: ms).valid, "position non finie refusée")
 for raw in ["https://server8.mp3quran.net.evil.example/002.mp3","https://server8.mp3quran.net:444/002.mp3","https://archive.org/download/unrelated/001.mp3"] { check(CarTrack.audioURL(raw) == nil, "hôtes audio approuvés uniquement") }
 var schedule = CarPrayerSnapshot(mosque: "Mosquée", mosqueId: "selected", lat: 48.8, lng: 2.3, source: "Horaire publié", sourceUpdatedAt: ms - 60_000, updatedAt: ms, refreshURL: "https://www.quran-coach.fr/api/mosques?action=published&slug=selected", events: [CarPrayerEvent(kind: "adhan", label: "Asr", at: ms - 60_000, published: true, source: "Horaire publié"), CarPrayerEvent(kind: "iqama", label: "Asr", at: ms + 300_000, published: true, source: "Horaire publié")], timezone: "Europe/Paris")
+let beforeAdhan = now.addingTimeInterval(-90)
+var phases = schedule
+phases.updatedAt = beforeAdhan.timeIntervalSince1970 * 1000
+phases.events.append(CarPrayerEvent(kind: "adhan", label: "Maghrib", at: ms + 3_600_000))
+check(phases.prayers(now: beforeAdhan).first?.next.kind == "adhan", "avant l’Adhan")
+check(phases.prayers(now: now).first?.next.kind == "iqama", "entre Adhan et Iqama")
+check(phases.prayers(now: now.addingTimeInterval(300)).first?.label == "Maghrib", "bascule après l’Iqama")
 check(schedule.hasDestination && schedule.refreshEndpoint != nil, "destination valide et endpoint de la seule mosquée choisie")
 check(schedule.prayers(now: now).first?.adhan?.at == ms - 60_000, "Adhan passé conservé dans la fiche de sa prochaine Iqama")
 check(schedule.upcoming(now: now).count == 1, "Adhan passé exclu du prochain événement")

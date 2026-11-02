@@ -62,6 +62,11 @@ struct CarTrack: Codable, Equatable {
     let chapter: String
     var listening: CarListeningReference? = nil
 
+    func afterCall(position: Double, rewindBooks: Bool) -> Double {
+        if listening?.verse != nil || id.hasPrefix("quran:") { return 0 }
+        return max(0, position - (rewindBooks && path.hasPrefix("/books/") ? 5 : 0))
+    }
+
     static func audioURL(_ raw: String) -> URL? {
         // No arbitrary remote hosts, credentials, javascript URLs or local files from a catalogue.
         let absolute = raw.hasPrefix("/audio/") ? "https://www.quran-coach.fr\(raw)" : raw

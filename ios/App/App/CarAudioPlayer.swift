@@ -17,7 +17,7 @@ final class CarAudioPlayer {
     private var status: NSKeyValueObservation?
     private var playbackStatus: NSKeyValueObservation?
     private var timer: Any?
-    private var interrupted = false
+    private var interruption: (track: CarTrack, position: Double)?
     private var lastSave: TimeInterval = 0
     private var autoPlay = false
     private var pendingPosition: Double?
@@ -71,11 +71,18 @@ final class CarAudioPlayer {
             MainActor.assumeIsolated {
                 guard let self, let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
                       let type = AVAudioSession.InterruptionType(rawValue: raw) else { return }
-                if type == .began { self.interrupted = self.isPlaying; CarIqamaAnnouncer.shared.cancel(); self.pause() }
-                else if self.interrupted {
-                    self.interrupted = false
+                if type == .began {
+                    guard self.autoPlay, let track = self.current else { return }
+                    let position = self.elapsed
+                    self.pause()
+                    self.interruption = (track, position)
+                } else if let interruption = self.interruption {
+                    self.interruption = nil
                     let options = AVAudioSession.InterruptionOptions(rawValue: note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0)
-                    if options.contains(.shouldResume) { self.resume() }
+                    guard options.contains(.shouldResume), self.current == interruption.track else { return }
+                    let rewind = UserDefaults.standard.object(forKey: "car.bookRewind") as? Bool ?? true
+                    self.seek(interruption.track.afterCall(position: interruption.position, rewindBooks: rewind))
+                    self.resume()
                 }
             }
         })
@@ -97,6 +104,11 @@ final class CarAudioPlayer {
 
     private func load(position: Double = 0, autoplay: Bool) {
         guard let track = current else { return }
+        interruption = nil
+        if let reference = track.listening, let data = try? JSONEncoder().encode(reference) {
+            UserDefaults.standard.set(data, forKey: "car.voice")
+            UserDefaults.standard.set(Date().timeIntervalSince1970 * 1000, forKey: "car.voice.at")
+        }
         autoPlay = autoplay; error = ""; status = nil
         pendingPosition = position.isFinite && position > 0 ? position : nil
         player.pause()
@@ -123,6 +135,7 @@ final class CarAudioPlayer {
     }
 
     func resume() {
+        interruption = nil
         guard current != nil else { return }
         if player.currentItem?.status == .failed { load(position: elapsed, autoplay: true); return }
         do {
@@ -130,8 +143,9 @@ final class CarAudioPlayer {
             autoPlay = true; player.play(); publish()
         } catch { self.error = "La sortie audio est indisponible."; autoPlay = false; publish() }
     }
-    func pause() { CarIqamaAnnouncer.shared.cancel(); autoPlay = false; player.pause(); save(); publish() }
+    func pause() { interruption = nil; CarIqamaAnnouncer.shared.cancel(); autoPlay = false; player.pause(); save(); publish() }
     func stop() {
+        interruption = nil
         CarIqamaAnnouncer.shared.cancel()
         save(); autoPlay = false; player.pause(); player.replaceCurrentItem(with: nil)
         queue = []; index = 0; error = ""; pendingPosition = nil
@@ -147,11 +161,12 @@ final class CarAudioPlayer {
         save(); index = next; load(autoplay: true)
     }
     func seek(_ value: Double) {
+        interruption = nil
         guard value.isFinite else { return }
         let maximum = duration > 0 ? max(0, duration - 0.1) : max(0, value)
         let item = player.currentItem
         let target = min(maximum, max(0, value)); pendingPosition = target
-        player.seek(to: CMTime(seconds: target, preferredTimescale: 600)) { [weak self] finished in
+        player.seek(to: CMTime(seconds: target, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] finished in
             Task { @MainActor in
                 guard finished, let self, self.player.currentItem === item else { return }
                 self.pendingPosition = nil; self.save(); self.publish()
@@ -163,7 +178,7 @@ final class CarAudioPlayer {
         switch action {
         case "play": resume()
         case "pause": pause()
-        case "toggle": isPlaying ? pause() : resume()
+        case "toggle": (isPlaying || interruption != nil) ? pause() : resume()
         case "next": advance(1)
         case "previous": advance(-1)
         case "forward": seek(elapsed + 15)

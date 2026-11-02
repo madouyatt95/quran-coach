@@ -113,8 +113,8 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         }
         rows.append(item("Mes récitateurs favoris", detail: "\(listening?.favorites.count ?? 0) dans Écoute", symbol: "heart") { [weak self] in self?.showFavorites() })
         if let next = mosque.prayers().first {
-            let event = next.iqama ?? next.next
-            rows.append(item("\(next.label) · \(event.kind == "iqama" ? "Iqama" : "Adhan") \(mosque.time(event.at))", detail: mosque.countdown(event), symbol: "moon.stars") { [weak self] in self?.showPrayer(next.id) })
+            let event = next.next
+            rows.append(item("\(next.label) · \(event.kind == "iqama" ? "Iqama" : "Adhan") \(mosque.time(event.at))", detail: phaseDetail(next), symbol: "moon.stars") { [weak self] in self?.showPrayer(next.id) })
         } else {
             rows.append(item("Mes horaires de prière", detail: "Consulter la mosquée et actualiser", symbol: "moon.stars") { [weak self] in
                 guard let self else { return }; self.show(CPListTemplate(title: "Adhan et Iqama", sections: self.prayerSections()))
@@ -137,6 +137,16 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     }
     private func listeningSections() -> [CPListSection] {
         var rows: [CPListItem] = []
+        rows.append(item("Sourates", symbol: "book") { [weak self] in self?.browseSurahs() })
+        rows.append(item("Récitateurs", symbol: "person.wave.2") { [weak self] in
+            guard let self else { return }
+            let sorted = self.reciters.sorted { self.name($0).localizedStandardCompare(self.name($1)) == .orderedAscending }
+            self.showPaged("Récitateurs", rows: sorted.map(self.reciterItem))
+        })
+        if let reference = CarAudioPlayer.shared.current?.listening ?? lastVoice,
+           let surah = surahs.first(where: { $0.id == reference.surahNumber }) {
+            rows.append(item("Autres voix", detail: surah.latin, symbol: "waveform") { [weak self] in self?.chooseVoice(for: surah) })
+        }
         if let saved = listening?.resume, saved.valid {
             rows.append(item("Reprendre mon écoute", detail: "\(saved.tracks[saved.index].title) · \(saved.tracks[saved.index].artist)", symbol: "play.circle") { [weak self] in
                 guard let self else { return }
@@ -153,17 +163,97 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         for collection in listeningCatalog?.collections ?? [] {
             rows.append(item(collection.name, detail: "\(collection.surahs.count) sourates", symbol: "headphones") { [weak self] in self?.showCollection(collection) })
         }
-        let sorted = reciters.sorted { name($0).localizedStandardCompare(name($1)) == .orderedAscending }
-        for start in stride(from: 0, to: sorted.count, by: 20) {
-            let group = Array(sorted[start..<min(start + 20, sorted.count)])
-            rows.append(item("Récitateurs · \(start + 1)–\(start + group.count)", detail: "\(name(group.first!)) – \(name(group.last!))", symbol: "person.wave.2") { [weak self] in
-                guard let self else { return }
-                self.show(CPListTemplate(title: "Récitateurs", sections: [CPListSection(items: group.map(self.reciterItem))]))
-            })
-        }
         if reciters.isEmpty { rows.append(item(listeningLoading ? "Chargement des récitateurs…" : "Catalogue indisponible", detail: listeningError.isEmpty ? "Connectez l’iPhone à Internet pour le premier chargement." : listeningError)) }
         rows.append(item("Actualiser les récitateurs", symbol: "arrow.clockwise") { [weak self] in self?.tasks.append(Task { [weak self] in await self?.refreshListening(force: true) }) })
         return [CPListSection(items: rows)]
+    }
+    private var lastVoice: CarListeningReference? {
+        let resume = listening?.resume
+        if let resume, resume.valid, resume.updatedAt > UserDefaults.standard.double(forKey: "car.voice.at") {
+            return resume.tracks[resume.index].listening
+        }
+        if let data = UserDefaults.standard.data(forKey: "car.voice"),
+           let reference = try? JSONDecoder().decode(CarListeningReference.self, from: data) { return reference }
+        guard let resume, resume.valid else { return nil }
+        return resume.tracks[resume.index].listening
+    }
+    private func phaseDetail(_ prayer: CarPrayerSnapshot.Prayer) -> String {
+        if prayer.next.kind == "adhan", let iqama = prayer.iqama {
+            return "\(mosque.countdown(prayer.next)) · Iqama \(mosque.time(iqama.at))"
+        }
+        return mosque.countdown(prayer.next)
+    }
+    private func showPaged(_ title: String, rows: [CPListItem]) {
+        let template = CPListTemplate(title: title, sections: [])
+        let size = max(1, min(20, CPListTemplate.maximumItemCount))
+        func display(_ start: Int, on page: CPListTemplate) {
+            let end = min(start + size, rows.count)
+            let items = rows.isEmpty ? [item("Aucun enregistrement disponible", detail: "Actualisez le catalogue dans Écoute.")] : Array(rows[start..<end])
+            page.updateSections([CPListSection(items: items)])
+            var buttons: [CPBarButton] = []
+            func button(_ title: String, offset: Int) -> CPBarButton {
+                let result = CPBarButton(title: title) { [weak page] _ in if let page { display(offset, on: page) } }
+                return result
+            }
+            if start > 0 { buttons.append(button("Précédents", offset: start - size)) }
+            if end < rows.count { buttons.append(button("Suivants", offset: end)) }
+            page.trailingNavigationBarButtons = buttons
+        }
+        display(0, on: template)
+        show(template)
+    }
+    private func browseSurahs() {
+        let groups = stride(from: 0, to: surahs.count, by: 20).map { start in
+            let group = Array(surahs[start..<min(start + 20, surahs.count)])
+            return item("\(group[0].id)–\(group.last!.id)", detail: "\(group[0].latin) – \(group.last!.latin)", symbol: "book") { [weak self] in
+                guard let self else { return }
+                self.showPaged("Sourates", rows: group.map { surah in
+                    self.item("\(surah.id). \(surah.latin)", symbol: "play.circle") { [weak self] in self?.startSurah(surah) }
+                })
+            }
+        }
+        showPaged("Sourates", rows: groups)
+    }
+    private struct Voice {
+        let id: String
+        let title: String
+        let edition: String
+        let server: String
+        let numbers: [Int]
+    }
+    private func voices(for surah: CarSurah) -> [Voice] {
+        var result = (listeningCatalog?.collections ?? []).filter { $0.surahs.contains(surah.id) }.map {
+            Voice(id: $0.id, title: $0.name, edition: "", server: $0.server, numbers: $0.surahs)
+        }
+        for reciter in reciters {
+            for edition in reciter.moshaf where edition.surahs.contains(surah.id) {
+                result.append(Voice(id: String(reciter.id), title: name(reciter), edition: edition.name, server: edition.server, numbers: edition.surahs))
+            }
+        }
+        return result.filter { CarListeningCatalog.track(reciter: $0.id, name: $0.title, server: $0.server, surah: surah) != nil }
+            .sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
+    }
+    private func startSurah(_ surah: CarSurah) {
+        let reference = CarAudioPlayer.shared.current?.listening ?? lastVoice
+        if let reference, let voice = voices(for: surah).first(where: {
+            $0.id == reference.reciterId && reference.audioUrl.hasPrefix($0.server.hasSuffix("/") ? $0.server : $0.server + "/")
+        }) {
+            playSurah(surah, voice: voice)
+        } else { chooseVoice(for: surah) }
+    }
+    private func chooseVoice(for surah: CarSurah) {
+        let rows = voices(for: surah).map { voice in
+            item(voice.title, detail: voice.edition, symbol: "play.circle") { [weak self] in self?.playSurah(surah, voice: voice) }
+        }
+        showPaged(surah.latin, rows: rows)
+    }
+    private func playSurah(_ surah: CarSurah, voice: Voice) {
+        let tracks = voice.numbers.compactMap { number in
+            CarListeningCatalog.track(reciter: voice.id, name: voice.title, server: voice.server, surah: surahs.first { $0.id == number })
+        }
+        guard let index = tracks.firstIndex(where: { $0.listening?.surahNumber == surah.id }) else { return }
+        CarAudioPlayer.shared.play(tracks, index: index)
+        showPlaying()
     }
     private func reciterItem(_ reciter: CarListeningReciter) -> CPListItem {
         item(name(reciter), detail: "\(reciter.moshaf.count) édition\(reciter.moshaf.count > 1 ? "s" : "")", symbol: "person.wave.2") { [weak self] in self?.showReciter(reciter) }
@@ -202,18 +292,13 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             show(CPListTemplate(title: title, sections: [CPListSection(items: [item("Enregistrements indisponibles", detail: "Actualisez le catalogue puis réessayez.")])]))
             return
         }
-        let rows = stride(from: 0, to: tracks.count, by: 20).map { start -> CPListItem in
-            let group = Array(tracks[start..<min(start + 20, tracks.count)])
-            return item("Sourates \(group.first!.chapter) à \(group.last!.chapter)", detail: "\(group.first!.title) – \(group.last!.title)", symbol: "book") { [weak self] in
-                guard let self else { return }
-                let items = group.map { track in self.item("\(track.chapter). \(track.title)", symbol: "play.circle") { [weak self] in
-                    guard let index = tracks.firstIndex(where: { $0.id == track.id }) else { return }
-                    CarAudioPlayer.shared.play(tracks, index: index); self?.showPlaying()
-                } }
-                self.show(CPListTemplate(title: title, sections: [CPListSection(items: items)]))
+        let rows = tracks.enumerated().map { index, track in
+            item("\(track.chapter). \(track.title)", detail: edition, symbol: "play.circle") { [weak self] in
+                CarAudioPlayer.shared.play(tracks, index: index)
+                self?.showPlaying()
             }
         }
-        show(CPListTemplate(title: title, sections: [CPListSection(items: rows, header: edition, sectionIndexTitle: nil)]))
+        showPaged(title, rows: rows)
     }
     private func refreshListening(force: Bool = false) async {
         guard !listeningLoading else { return }
@@ -254,6 +339,11 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         if CarAudioPlayer.shared.current != nil { rows.insert(item("À l’écoute", symbol: "play.circle") { [weak self] in self?.showPlaying() }, at: 0) }
         else if CarAudioPlayer.shared.hasSaved { rows.insert(item("Reprendre l’écoute", symbol: "play.circle") { [weak self] in self?.resume() }, at: 0) }
         if rows.isEmpty { rows.append(item("Bibliothèque en cours de chargement", detail: "Une connexion est nécessaire au premier chargement.")) }
+        let rewind = UserDefaults.standard.object(forKey: "car.bookRewind") as? Bool ?? true
+        rows.append(item("Reprise après un appel", detail: rewind ? "Livre · reculer de 5 secondes" : "Livre · position exacte", symbol: "gobackward.5") { [weak self] in
+            UserDefaults.standard.set(!rewind, forKey: "car.bookRewind")
+            if let self { self.libraryTemplate?.updateSections(self.librarySections()) }
+        })
         rows.append(item("Actualiser la bibliothèque", symbol: "arrow.clockwise") { [weak self] in self?.tasks.append(Task { [weak self] in await self?.refreshLibrary() }) })
         return [CPListSection(items: rows)]
     }
@@ -304,7 +394,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     }
     private func prayerSummary(_ prayer: CarPrayerSnapshot.Prayer) -> String {
         let times = "Adhan \(prayer.adhan.map { mosque.time($0.at) } ?? "—") · Iqama \(prayer.iqama.map { mosque.time($0.at) } ?? "non renseignée")"
-        let event = prayer.iqama ?? prayer.next
+        let event = prayer.next
         return "\(times) · \(mosque.countdown(event))"
     }
     private func routeItem() -> CPListItem {
@@ -340,7 +430,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     private func prayerDetailSections(_ id: String) -> [CPListSection] {
         let snapshot = mosque
         guard let prayer = snapshot.prayers().first(where: { $0.id == id }) else { return [CPListSection(items: [item("Cet horaire est passé", detail: "Retrouvez la prochaine prière dans l’onglet Prières.")])] }
-        let event = prayer.iqama ?? prayer.next
+        let event = prayer.next
         var rows = [item("\(event.kind == "iqama" ? "Iqama" : "Adhan") \(snapshot.countdown(event))", detail: snapshot.time(event.at)),
                     item("Adhan", detail: prayer.adhan.map { "\(snapshot.time($0.at)) · \($0.source ?? "Horaire enregistré")" } ?? "Non renseigné"),
                     item("Iqama", detail: prayer.iqama.map { "\(snapshot.time($0.at)) · \($0.source ?? "Horaire enregistré")" } ?? "Horaires d’Iqama non renseignés")]
