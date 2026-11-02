@@ -48,8 +48,17 @@ it('remembers independent phone, spread and desk comfort settings after reload',
  s.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
  s.getState().setZoom(1.4);
  s.getState().activateComfort('desk');s.getState().setFraming('page');s.getState().setZoom(1.8);
- s.getState().activateComfort('spread');expect(s.getState().zoom).toBe(1.15);s.getState().setZoom(1.3);
+ // An unconfigured profile inherits the current view. Set this profile's
+ // framing explicitly; the check here concerns saved choices, not new defaults.
+ s.getState().activateComfort('spread');expect(s.getState().zoom).toBe(1.8);s.getState().setFraming('text');s.getState().setZoom(1.3);
  await s.persist.rehydrate();expect(s.getState()).toMatchObject({zoom:1.4,framing:'text',comfortProfile:'single'});
  s.getState().activateComfort('desk');expect(s.getState()).toMatchObject({zoom:1.8,framing:'page'});
  s.getState().activateComfort('spread');expect(s.getState()).toMatchObject({zoom:1.3,framing:'text'});
+});
+it('toggles accompanied Tajwid without changing the saved Mushaf dimensions or framing',async()=>{
+ const {useInteractiveReaderStore:s}=await import('./interactiveReaderStore');
+ s.persist.setOptions({storage:createJSONStorage(()=>localStorage)});
+ s.getState().setZoom(1.7);s.getState().setTajweedCompanion(true);
+ await s.persist.rehydrate();expect(s.getState()).toMatchObject({zoom:1.7,framing:'text',tajweedCompanion:true});
+ s.getState().setTajweedCompanion(false);expect(s.getState().zoom).toBe(1.7);
 });

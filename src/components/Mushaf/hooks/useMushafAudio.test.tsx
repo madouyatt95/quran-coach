@@ -11,7 +11,7 @@ vi.mock('../../../lib/quranApi',()=>({mushafReciter:(r:string)=>({quranComId:r==
 vi.mock('../../../lib/wordTimings',()=>({fetchWordTimings:vi.fn().mockResolvedValue(null)}));
 Object.assign(globalThis,{IS_REACT_ACT_ENVIRONMENT:true});
 class FakeAudio extends EventTarget {
-    src='';currentTime=0;playbackRate=1;paused=true;
+    src='';currentTime=0;duration=60;playbackRate=1;paused=true;
     play=vi.fn(async()=>{this.paused=false;this.dispatchEvent(new Event('play'));});
     pause=vi.fn(()=>{this.paused=true;this.dispatchEvent(new Event('pause'));});
 }
@@ -31,6 +31,23 @@ beforeEach(async()=>{
  selectedReciter='ar.alafasy';pageMode=false;currentPage=2;onPassageAyah.mockClear();nextPage.mockClear();nextSurah.mockClear();div=document.createElement('div');document.body.append(div);root=createRoot(div);await render();
 });
 afterEach(async()=>{await act(async()=>root.unmount());div.remove();vi.restoreAllMocks();vi.unstubAllGlobals();});
+it('seeks against the real media clock without resuming a paused recording',async()=>{
+ await act(async()=>api.playAyahAtIndex(1));
+ await act(async()=>api.toggleAudio());
+ await act(async()=>{expect(api.seekTo(22.4)).toBe(true);});
+ expect(element.currentTime).toBe(22.4);expect(element.paused).toBe(true);
+ expect(api.snapshot()?.offset).toBe(22.4);
+ await act(async()=>{expect(api.seekTo(500)).toBe(true);});expect(element.currentTime).toBeCloseTo(59.97);
+ expect(api.seekTo(NaN)).toBe(false);
+});
+it('keeps seeking inside A–B even when both points are in the same verse',async()=>{
+ const source={url:'https://audio.test/cut.mp3',offset:8,timings:{verseKey:'2:2',words:[]}};
+ await act(async()=>{api.startPassageFromAyahs([ayahs[1]],3,{start:source,end:{...source,offset:0},endTime:14});});
+ expect(api.seekWindow()).toEqual({start:8,end:14});
+ await act(async()=>{api.seekTo(0);});expect(element.currentTime).toBe(8);
+ await act(async()=>{api.seekTo(50);});expect(element.currentTime).toBeCloseTo(13.97);
+ await act(async()=>api.stopAudio());expect(api.seekTo(10)).toBe(false);
+});
 async function ended(){await act(async()=>{element.paused=true;element.dispatchEvent(new Event('ended'));});}
 it('plays the complete selected passage three times and stops at its final verse',async()=>{
  await act(async()=>{expect(api.startPassage(2,3,3)).toBe(true);});

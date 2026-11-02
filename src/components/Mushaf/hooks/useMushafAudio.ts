@@ -33,6 +33,8 @@ export interface AudioPassage {
 }
 
 export interface MushafAudioState {
+    seekTo:(seconds:number)=>boolean;
+    seekWindow:()=>{start:number;end:number}|null;
     snapshot:()=>ReaderAudioSession|null;
     restoreSession:(session:ReaderAudioSession)=>Promise<void>;
     stopAt:number|null;
@@ -561,6 +563,24 @@ export function useMushafAudio({
             timings:verseWordsMap.get(`${verse.surah}:${verse.numberInSurah}`)||{verseKey:`${verse.surah}:${verse.numberInSurah}`,words:[]},savedAt:Date.now()};
     };
     captureRef.current=snapshot;
+    // Only seek inside the file and the selected A–B/passage boundaries. Keep pause state.
+    const seekWindow=()=>{
+        const element=audioRef.current,verse=activeVerse.current,range=passageRef.current,cuts=cutsRef.current;
+        if(!element||!verse||!Number.isFinite(element.duration)||element.duration<=0)return null;
+        const start=cuts&&verse.numberInSurah===range?.startAyah?cuts.start.offset:0;
+        const end=cuts&&verse.numberInSurah===range?.endAyah?Math.min(element.duration,cuts.endTime):element.duration;
+        return end>start?{start,end}:null;
+    };
+    const seekTo=(seconds:number)=>{
+        const bounds=seekWindow(),element=audioRef.current;
+        if(!bounds||!element||!Number.isFinite(seconds)||!sessionActive.current||sourceMatchedPlayback&&preparedVerse.current!==`${currentSurahRef.current}:${currentAyahRef.current}`)return false;
+        // Stay just before the last boundary: a seek must not accidentally finish a loop.
+        const time=Math.max(bounds.start,Math.min(seconds,Math.max(bounds.start,bounds.end-.03)));
+        try{element.currentTime=time;}catch{return false;}
+        const timings=verseWordsMap.get(`${currentSurahRef.current}:${currentAyahRef.current}`);
+        setActiveWordIndex(timings?.words.findIndex(w=>time*1000>=w.timestampFrom&&time*1000<w.timestampTo)??-1);
+        persistCurrent();return true;
+    };
     useEffect(()=>{
         if(!rememberSession)return;
         const save=()=>persistCurrent();const element=audioRef.current;
@@ -579,6 +599,7 @@ export function useMushafAudio({
     };
 
     return {
+        seekTo,seekWindow,
         snapshot,restoreSession,stopAt,setStopAt,
         recitationPause:recitation.state,
         repeatCurrentAyah,

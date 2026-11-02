@@ -1,0 +1,11 @@
+.fahm-word-options{display:grid;gap:10px;margin:22px 0}
+.fahm-word-options>button{text-align:left;min-height:52px;line-height:1.5}
+.fahm-word-options>button[aria-pressed=true]{border-color:var(--gold);opacity:1;background:color-mix(in srgb,var(--gold) 12%,var(--color-bg-secondary))}
+.fahm-word-feedback{border-left:3px solid var(--gold);padding:4px 15px;margin:20px 0;line-height:1.7}
+.fahm-word-feedback p{margin:8px 0}
+.fahm-word-pronounce{display:inline-flex;align-items:center;gap:8px;margin:12px 0}
+.fahm-word-navigation{display:flex;align-items:center;flex-wrap:wrap;gap:18px;margin-top:18px}
+.fahm-word-navigation>button{display:inline-flex;align-items:center;gap:8px}
+.fahm-word-navigation>a{font-size:13px}
+.fahm-word-finish>a{display:block;margin-top:20px}
+.fahm-word-source{margin-top:25px;font-size:11px;color:var(--color-text-secondary);line-height:1.7}
