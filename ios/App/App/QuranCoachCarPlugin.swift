@@ -89,6 +89,7 @@ public final class QuranCoachCarPlugin: CAPPlugin, CAPBridgedPlugin {
         if let raw=call.getString("refreshURL"),let u=URL(string:raw),u.scheme=="https",u.host=="www.quran-coach.fr",u.path=="/api/mosques",u.user==nil,u.password==nil {snapshot["refreshURL"]=raw}
         if let data=try? JSONSerialization.data(withJSONObject:snapshot),var parsed=try? JSONDecoder().decode(CarPrayerSnapshot.self,from:data){if parsed.refreshEndpoint == nil { parsed.refreshURL=nil };defaults.set(try? JSONEncoder().encode(parsed),forKey:"car.prayerSnapshot")}
         WidgetCenter.shared.reloadTimelines(ofKind: "PrayerWidget")
+        WidgetCenter.shared.reloadTimelines(ofKind: "LockMosqueWidget")
         NotificationCenter.default.post(name: .carPrayerChanged, object: nil)
         call.resolve()
     }
@@ -116,6 +117,8 @@ public final class QuranCoachCarPlugin: CAPPlugin, CAPBridgedPlugin {
         }
         let previous = ActivityWidgetSnapshot.read(defaults: defaults)
         defaults.set(data, forKey: ActivityWidgetSnapshot.storageKey)
+        if previous?.audio != snapshot.audio { WidgetCenter.shared.reloadTimelines(ofKind: "LockAudioWidget") }
+        if previous?.khatm != snapshot.khatm { WidgetCenter.shared.reloadTimelines(ofKind: "LockKhatmWidget") }
         if previous?.reading != snapshot.reading { WidgetCenter.shared.reloadTimelines(ofKind: "ReadingResumeWidget") }
         if previous?.invocations != snapshot.invocations { WidgetCenter.shared.reloadTimelines(ofKind: "MomentInvocationsWidget") }
         if previous?.memorization != snapshot.memorization { WidgetCenter.shared.reloadTimelines(ofKind: "MemorizationWidget") }

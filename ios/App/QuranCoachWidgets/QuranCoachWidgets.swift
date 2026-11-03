@@ -4,7 +4,7 @@ import SwiftUI
 private let group = "group.com.qurancoach.app"
 private let gold = Color(red: 0.85, green: 0.73, blue: 0.39)
 private let violet = Color(red: 0.10, green: 0.09, blue: 0.19)
-private struct SharedPrayerEvent: Decodable { let kind: String; let label: String; let at: Double; var date: Date { Date(timeIntervalSince1970: at / 1000) } }
+private struct SharedPrayerEvent: Decodable { let kind: String; let label: String; let at: Double; let published: Bool?; var date: Date { Date(timeIntervalSince1970: at / 1000) } }
 struct TravelPrayerEntry: TimelineEntry {
     let date: Date
     let mosque: String
@@ -14,6 +14,7 @@ struct TravelPrayerEntry: TimelineEntry {
     let iqamaAt: Date?
 }
 struct TravelPrayerProvider: TimelineProvider {
+    var mosqueOnly = false
     func placeholder(in context: Context) -> TravelPrayerEntry {
         TravelPrayerEntry(date: Date(), mosque: "", adhanName: "", adhanAt: nil, iqamaName: "", iqamaAt: nil)
     }
@@ -27,13 +28,14 @@ struct TravelPrayerProvider: TimelineProvider {
     }
     private func readEvents() -> [SharedPrayerEvent] {
         guard let data = UserDefaults(suiteName: group)?.data(forKey: "car.events"), let values = try? JSONDecoder().decode([SharedPrayerEvent].self, from: data) else { return [] }
-        return values.filter { ["adhan", "iqama"].contains($0.kind) && $0.at.isFinite && $0.at > 0 }.sorted { $0.at < $1.at }
+        return values.filter { (!mosqueOnly || $0.published == true) && ["adhan", "iqama"].contains($0.kind) && $0.at.isFinite && $0.at > 0 }.sorted { $0.at < $1.at }
     }
     private func readEntry(at date: Date) -> TravelPrayerEntry {
         let defaults = UserDefaults(suiteName: group)
         let updated = Date(timeIntervalSince1970: (defaults?.double(forKey: "car.updatedAt") ?? 0) / 1000)
         let fresh = date.timeIntervalSince(updated) >= -60 && date.timeIntervalSince(updated) < 86400
-        let events = fresh ? readEvents().filter { $0.date > date } : []
+        let hasMosque = !(defaults?.string(forKey: "car.mosque") ?? "").isEmpty
+        let events = fresh && (!mosqueOnly || hasMosque) ? readEvents().filter { $0.date > date } : []
         let adhan = events.first { $0.kind == "adhan" }, iqama = events.first { $0.kind == "iqama" }
         return TravelPrayerEntry(date: date, mosque: fresh ? defaults?.string(forKey: "car.mosque") ?? "" : "", adhanName: adhan?.label ?? "", adhanAt: adhan?.date, iqamaName: iqama?.label ?? "", iqamaAt: iqama?.date)
     }
@@ -122,7 +124,17 @@ struct HadithWidget: Widget {
 }
 @main
 struct QuranCoachWidgetBundle: WidgetBundle {
-    var body: some Widget { PrayerWidget(); HadithWidget(); ReadingResumeWidget(); MomentInvocationsWidget(); MemorizationWidget() }
+    var body: some Widget {
+        PrayerWidget()
+        HadithWidget()
+        ReadingResumeWidget()
+        MomentInvocationsWidget()
+        MemorizationWidget()
+        MosqueLockWidget()
+        KhatmLockWidget()
+        AudioLockWidget()
+        IdentifyLockWidget()
+    }
 }
 
 private struct ActivityEntry: TimelineEntry {
@@ -305,5 +317,74 @@ struct MemorizationWidget: Widget {
             .configurationDisplayName("Ma mémorisation")
             .description("Votre passage à reprendre et les versets arrivés à échéance de révision.")
             .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
+    }
+}
+
+private struct MosqueLockWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "LockMosqueWidget", provider: TravelPrayerProvider(mosqueOnly: true)) { entry in
+            VStack(alignment: .leading, spacing: 2) {
+                Text(entry.mosque.isEmpty ? "Ma mosquée" : entry.mosque).font(.caption).lineLimit(1)
+                if let time = entry.iqamaAt, time < (entry.adhanAt ?? .distantFuture) {
+                    Text("\(entry.iqamaName) · Iqama").font(.headline).lineLimit(1)
+                    Text(time, style: .timer).monospacedDigit()
+                } else if let time = entry.adhanAt {
+                    Text(entry.adhanName).font(.headline)
+                    Text("Adhan à \(time, style: .time)")
+                } else {
+                    Text("Consulter les horaires").font(.headline)
+                }
+            }.widgetURL(URL(string: "qurancoach://prayers")).containerBackground(.clear, for: .widget)
+        }.configurationDisplayName("Ma mosquée en direct")
+            .description("Le prochain Adhan ou le temps avant l’Iqama, selon les horaires publiés.")
+            .supportedFamilies([.accessoryRectangular])
+    }
+}
+
+private struct KhatmLockWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "LockKhatmWidget", provider: ActivityProvider(changesWithTime: true)) { entry in
+            HStack {
+                let plan = entry.snapshot.khatm
+                let progress = plan?.progress(at: entry.date) ?? (read: 0, goal: 0)
+                let complete = plan?.active == true && plan?.remaining == 0
+                Gauge(value: complete ? 1 : min(1, Double(progress.read) / Double(max(1, progress.goal)))) {
+                    Image(systemName: "book")
+                } currentValueLabel: {
+                    if complete { Image(systemName: "checkmark") } else { Text("\(progress.read)") }
+                }.gaugeStyle(.accessoryCircular)
+                VStack(alignment: .leading) {
+                    Text("Mon Khatm").font(.headline)
+                    if plan?.active != true { Text("Ouvrir le Mushaf") }
+                    else if complete { Text("Khatm terminé") }
+                    else if progress.read >= progress.goal { Text("Objectif atteint") }
+                    else { Text("Encore \(progress.goal - progress.read) p.") }
+                }.font(.caption)
+            }.widgetURL(URL(string: "qurancoach://khatm")).containerBackground(.clear, for: .widget)
+        }.configurationDisplayName("Mon Khatm aujourd’hui").description("Les pages de votre objectif du jour et la prochaine page à lire.").supportedFamilies([.accessoryRectangular])
+    }
+}
+
+private struct AudioLockWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "LockAudioWidget", provider: ActivityProvider(changesWithTime: false)) { entry in
+            VStack(alignment: .leading, spacing: 2) {
+                Label("Reprendre mon écoute", systemImage: "headphones").font(.caption)
+                Text(entry.snapshot.audio?.title ?? "Choisir une écoute").font(.headline).lineLimit(1)
+                if let detail = entry.snapshot.audio?.detail { Text(detail).font(.caption).lineLimit(1) }
+            }.widgetURL(URL(string: "qurancoach://audio")).containerBackground(.clear, for: .widget)
+        }.configurationDisplayName("Reprendre mon écoute").description("Retrouvez votre sourate ou votre livre audio.").supportedFamilies([.accessoryRectangular])
+    }
+}
+
+private struct IdentifyLockWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "LockIdentifyWidget", provider: ActivityProvider(changesWithTime: false)) { _ in
+            ZStack {
+                AccessoryWidgetBackground()
+                Image(systemName: "mic.fill").font(.title2)
+            }.accessibilityLabel("Identifier un verset").widgetURL(URL(string: "qurancoach://identify"))
+                .containerBackground(.clear, for: .widget)
+        }.configurationDisplayName("Identifier un verset").description("Ouvrez Identifier, puis touchez le micro pour écouter.").supportedFamilies([.accessoryCircular])
     }
 }

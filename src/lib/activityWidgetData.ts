@@ -31,6 +31,8 @@ export interface MemorizationWidgetData {
 }
 export interface ActivityWidgetSnapshot {
   version: 1; updatedAt: number;
+  audio?: {title: string; detail: string};
+  khatm?: {active: boolean; day: string; end: string; read: number; goal: number; remaining: number};
   reading: ReadingWidgetData;
   invocations: {day: string; morning: InvocationWidgetPeriod; evening: InvocationWidgetPeriod};
   memorization: MemorizationWidgetData;

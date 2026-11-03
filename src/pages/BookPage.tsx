@@ -46,6 +46,7 @@ function BookReader({bookId}:{bookId:string}){
  const [readChapter,setReadChapter]=useState(()=>params.get('chapter')||store.bookReading[bookId]||summary.chapters[0].id),[view,setView]=usePageState<'read'|'listen'>('view','read'),[immersive,setImmersive]=usePageState('immersive',false),[animated,setAnimated]=useState(true),[ambience,setAmbience]=useState(false),[volume,setVolume]=useState(.12),[notice,setNotice]=useState(''),[downloaded,setDownloaded]=useState<string[]>([]),[downloadProgress,setDownloadProgress]=useState(''),[loadError,setLoadError]=useState('');
  const saveReading=store.saveBookReading;
  const navigate=useNavigate(),location=useLocation(),goBack=useSmartBack(isProphetSeriesBook(summary.id)?'/prophet':isCompanionBook(summary)?'/companions':summary.category==='prophet'?'/prophets':'/stories');
+ useEffect(()=>{if(location.state?.widgetListen)setView('listen');},[location.key]);
  const [resumeSnapshot]=useState(()=>({state:{...useAudioLibraryStore.getState()},requested:location.state?.bookResume as BookResumePoint|undefined}));
  const [recapOpen,setRecapOpen]=useState(false),[recapDismissed,setRecapDismissed]=useState(false);
  const returnPoint=bookExcursions.get(location.state?.bookOrigin);

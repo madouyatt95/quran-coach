@@ -37,6 +37,12 @@ import Foundation
         expect(QuranCoachWidgetRoute.appURL(base: base, path: "//example.com/read") == nil, "Reject protocol-relative URL")
         expect(QuranCoachWidgetRoute.path(for: URL(string: "qurancoach://prayers")!) == "/prayers", "Existing prayer link preserved")
         expect(QuranCoachWidgetRoute.path(for: URL(string: "qurancoach://home")!) == "/", "Existing hadith link preserved")
+        for (host, path) in [("khatm", "/read?widget=khatm"), ("audio", "/listen?widget=audio"), ("identify", "/voice-search")] {
+            let destination = QuranCoachWidgetRoute.path(for: URL(string: "qurancoach://\(host)")!)
+            expect(destination == path && QuranCoachWidgetRoute.appURL(base: base, path: path) != nil, "Lock Screen route \(host)")
+        }
+        let khatm = KhatmWidgetData(active: true, day: "2026-10-16", end: "2026-10-18", read: 8, goal: 10, remaining: 22)
+        expect(khatm.progress(at: date.date(from: "2026-10-17T12:00:00Z")!) == (0, 11), "Next day's remaining goal without launching the app")
         print("\(checks) native widget checks passed (TypeScript payload, period boundaries, midnight, SRS dates and deep links).")
     }
 }

@@ -8,6 +8,11 @@ import {useAdhkarExperienceStore} from '../stores/adhkarExperienceStore';
 import {readHifdhSession, HIFDH_SESSION_EVENT} from './hifdhSession';
 import {buildActivityWidgetSnapshot, type ActivityWidgetSnapshot} from './activityWidgetData';
 
+import {khatmToday, useKhatmStore} from '../stores/khatmStore';
+import {useListenStore} from '../stores/listenStore';
+import {useAudioLibraryStore} from '../stores/audioLibraryStore';
+import {latestWidgetAudio, prepareWidgetAudio} from './lockScreenAudio';
+
 const bridge = registerPlugin<{updateActivityWidgets(data: {snapshot: ActivityWidgetSnapshot}): Promise<void>}>('QuranCoachCar');
 export const activityWidgetInput = () => ({
   bookmark: useReadingBookmarkStore.getState().bookmark, progress: useQuranStore.getState().progress,
@@ -34,11 +39,19 @@ export function startActivityWidgetSync() {
   const flush = () => {
     if (timer) clearTimeout(timer);
     if (stopped) return;
-    pending = buildActivityWidgetSnapshot(activityWidgetInput());
+    const plan = useKhatmStore.getState();
+    const audio = latestWidgetAudio();
+    pending = {...buildActivityWidgetSnapshot(activityWidgetInput()),
+      khatm: {active: plan.isActive, day: khatmToday(), end: plan.endDate, read: plan.getTodayRead(),
+        goal: plan.getDailyGoal(), remaining: 604 - plan.getOverallProgress().read},
+      audio: audio ? {title: audio.title, detail: audio.detail} : undefined};
     void write();
   };
   const schedule = () => {if (timer) clearTimeout(timer); timer = setTimeout(flush, 350);};
   const unsubscribers = [
+    useKhatmStore.subscribe(schedule),
+    useListenStore.subscribe((s, p) => {if (s.lastListened !== p.lastListened) schedule();}),
+    useAudioLibraryStore.subscribe((s, p) => {if (s.positions !== p.positions) schedule();}),
     useReadingBookmarkStore.subscribe(schedule),
     useQuranStore.subscribe((state, previous) => {if (state.progress !== previous.progress) schedule();}),
     useHifdhJourneyStore.subscribe((state, previous) => {if (state.plan !== previous.plan) schedule();}),
@@ -49,7 +62,7 @@ export function startActivityWidgetSync() {
   window.addEventListener('pagehide', flush);
   window.addEventListener('storage', schedule);
   window.addEventListener(HIFDH_SESSION_EVENT, schedule);
-  flush();
+  void prepareWidgetAudio().catch(() => {}).then(flush);
   return () => {
     stopped = true; pending = undefined;
     if (timer) clearTimeout(timer);

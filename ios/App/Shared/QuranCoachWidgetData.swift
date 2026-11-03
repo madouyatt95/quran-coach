@@ -4,6 +4,9 @@ enum QuranCoachWidgetRoute {
     static func path(for url: URL) -> String? {
         guard url.scheme?.lowercased() == "qurancoach", url.user == nil, url.password == nil else { return nil }
         switch url.host?.lowercased() {
+        case "identify": return "/voice-search"
+        case "khatm": return "/read?widget=khatm"
+        case "audio": return "/listen?widget=audio"
         case "home": return "/"
         case "prayers": return "/prayers"
         case "read": return "/read?widget=resume"
@@ -17,7 +20,7 @@ enum QuranCoachWidgetRoute {
 
     static func appURL(base: URL, path: String) -> URL? {
         guard let route = URLComponents(string: path), route.scheme == nil, route.host == nil,
-              ["/", "/prayers", "/read", "/adhkar", "/hifdh"].contains(route.path),
+              ["/", "/prayers", "/read", "/voice-search", "/listen", "/adhkar", "/hifdh"].contains(route.path),
               var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return nil }
         components.path = route.path
         components.percentEncodedQuery = route.percentEncodedQuery
@@ -63,8 +66,29 @@ struct MemorizationWidgetData: Codable, Equatable {
         return reviews.filter { $0.day <= day }.reduce(0) { $0 + $1.count }
     }
 }
+struct LockAudioData: Codable, Equatable { let title: String; let detail: String }
+struct KhatmWidgetData: Codable, Equatable {
+    let active: Bool
+    let day: String
+    let end: String
+    let read: Int
+    let goal: Int
+    let remaining: Int
+
+    func progress(at date: Date) -> (read: Int, goal: Int) {
+        if day == ActivityWidgetSnapshot.dayString(date) { return (read, goal) }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        guard let endDate = formatter.date(from: end) else { return (0, goal) }
+        let days = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: date), to: endDate).day ?? 0
+        return (0, Int(ceil(Double(remaining) / Double(max(1, days + 1)))))
+    }
+}
 struct ActivityWidgetSnapshot: Codable, Equatable {
     static let storageKey = "widget.activities.v1"
+    var audio: LockAudioData? = nil
+    var khatm: KhatmWidgetData? = nil
     let version: Int
     let updatedAt: Double
     let reading: ReadingWidgetData
