@@ -98,7 +98,18 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     private func showPlaying() { if interface?.topTemplate !== CPNowPlayingTemplate.shared { show(CPNowPlayingTemplate.shared) } }
     private func play(_ resume: CarListeningResume) {
         guard resume.valid else { return }
-        CarAudioPlayer.shared.play(resume.tracks, index: resume.index, position: resume.position); showPlaying()
+        let track = resume.tracks[resume.index]
+        // Bookmarks and history from the phone may contain just the selected recording.
+        if resume.tracks.count == 1, let reference = track.listening, reference.verse == nil,
+           let surah = surahs.first(where: { $0.id == reference.surahNumber }),
+           let voice = voices(for: surah).first(where: {
+               $0.id == reference.reciterId && CarListeningCatalog.track(reciter: $0.id, name: $0.title, server: $0.server, surah: surah)?.url == track.url
+           }) {
+            playSurah(surah, voice: voice, position: resume.position)
+            return
+        }
+        CarAudioPlayer.shared.play(resume.tracks, index: resume.index, position: resume.position)
+        showPlaying()
     }
     private func resume() {
         let audio = CarAudioPlayer.shared
@@ -183,7 +194,17 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         }
         if reciters.isEmpty { rows.append(item(listeningLoading ? "Chargement des récitateurs…" : "Catalogue indisponible", detail: listeningError.isEmpty ? "Connectez l’iPhone à Internet pour le premier chargement." : listeningError)) }
         rows.append(item("Actualiser les récitateurs", symbol: "arrow.clockwise") { [weak self] in self?.tasks.append(Task { [weak self] in await self?.refreshListening(force: true) }) })
-        return [CPListSection(items: rows)]
+        let library = CPListSection(items: rows)
+        let popular = reciters.filter { listeningCatalog?.names[String($0.id)] != nil && $0.best != nil }
+        guard !popular.isEmpty else { return [library] }
+        var shortcuts = popular.prefix(3).map(reciterItem)
+        if popular.count > shortcuts.count {
+            shortcuts.append(item("Tous les récitateurs populaires", symbol: "person.2") { [weak self] in
+                guard let self else { return }
+                self.showPaged("Récitateurs populaires", rows: popular.map(self.reciterItem))
+            })
+        }
+        return [CPListSection(items: shortcuts, header: "Récitateurs populaires", sectionIndexTitle: nil), library]
     }
     private var lastVoice: CarListeningReference? {
         let resume = listening?.resume
@@ -293,12 +314,12 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         }
         showPaged(surah.latin, rows: rows)
     }
-    private func playSurah(_ surah: CarSurah, voice: Voice) {
+    private func playSurah(_ surah: CarSurah, voice: Voice, position: Double = 0) {
         let tracks = voice.numbers.compactMap { number in
             CarListeningCatalog.track(reciter: voice.id, name: voice.title, server: voice.server, surah: surahs.first { $0.id == number })
         }
         guard let index = tracks.firstIndex(where: { $0.listening?.surahNumber == surah.id }) else { return }
-        CarAudioPlayer.shared.play(tracks, index: index)
+        CarAudioPlayer.shared.play(tracks, index: index, position: position)
         showPlaying()
     }
     private func reciterItem(_ reciter: CarListeningReciter) -> CPListItem {

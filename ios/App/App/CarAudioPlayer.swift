@@ -107,6 +107,7 @@ final class CarAudioPlayer {
     private func load(position: Double = 0, autoplay: Bool) {
         guard let track = current else { return }
         interruption = nil
+        configureTransport(for: track)
         updateArtwork(for: track)
         if let reference = track.listening, let data = try? JSONEncoder().encode(reference) {
             UserDefaults.standard.set(data, forKey: "car.voice")
@@ -152,13 +153,14 @@ final class CarAudioPlayer {
         CarIqamaAnnouncer.shared.cancel()
         save(); autoPlay = false; player.pause(); player.replaceCurrentItem(with: nil)
         queue = []; index = 0; error = ""; pendingPosition = nil
+        configureTransport(for: nil)
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         onChange?(state)
         NotificationCenter.default.post(name: .carAudioChanged, object: nil)
     }
     func advance(_ delta: Int, automatically: Bool = false) {
         guard !queue.isEmpty else { return }
-        if delta < 0 && elapsed > 3 { seek(0); return }
+        if delta < 0 && current?.listening == nil && elapsed > 3 { seek(0); return }
         let next = index + delta
         guard queue.indices.contains(next) else { if automatically { pause() }; return }
         save(); index = next; load(autoplay: true)
@@ -215,6 +217,15 @@ final class CarAudioPlayer {
         UserDefaults.standard.set(Date().timeIntervalSince1970 * 1000, forKey: "car.resume.updatedAt")
         lastSave = Date.timeIntervalSinceReferenceDate
     }
+    private func configureTransport(for track: CarTrack?) {
+        let center = MPRemoteCommandCenter.shared()
+        let listening = track?.listening != nil
+        center.skipForwardCommand.isEnabled = !listening
+        center.skipBackwardCommand.isEnabled = !listening
+        center.previousTrackCommand.isEnabled = !listening || index > 0
+        center.nextTrackCommand.isEnabled = !listening || index + 1 < queue.count
+    }
+
     private func updateArtwork(for track: CarTrack) {
         let key: String?
         if let number = track.surahArtworkNumber {
@@ -242,6 +253,8 @@ final class CarAudioPlayer {
             MPNowPlayingInfoPropertyDefaultPlaybackRate: 1.0,
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue
         ]
+        info[MPNowPlayingInfoPropertyPlaybackQueueIndex] = index
+        info[MPNowPlayingInfoPropertyPlaybackQueueCount] = queue.count
         info[MPMediaItemPropertyArtwork] = artwork
         MPNowPlayingInfoCenter.default().nowPlayingInfo = info
         MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .paused
