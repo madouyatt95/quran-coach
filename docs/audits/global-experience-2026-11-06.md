@@ -12,11 +12,11 @@
 
 ## Contrôles
 
-- 41 fichiers / 199 tests réussis : stores, profils, budgets de séance, sauvegarde/synchronisation, recherche et reprise audio.
+- 42 fichiers / 202 tests réussis : stores, profils, budgets de séance, sauvegarde/synchronisation, recherche, reprise audio et planification des révisions.
 - TypeScript et build Vite de production réussis ; synchronisation Capacitor effectuée.
 - Compilation iOS Debug signée réussie avec les App Intents.
 - ESLint des nouveaux composants/services : réussi.
-- Navigateur : création d’un espace enfant, passage dans Junior, retour au profil principal avec la séance conservée ; affichage mobile du programme et du stockage.
+- Navigateur : création d’un espace enfant, passage dans Junior, retour au profil principal avec la séance conservée ; affichage mobile du programme et du stockage ; ajout d’un cours à la bibliothèque et vérification du lien de reprise.
 - Catalogue public vérifié : 502 enregistrements dont les quatre segments d’Adam. Le serveur refuse les origines localhost non autorisées ; aucun assouplissement CORS effectué.
 
 ## Limites explicites
