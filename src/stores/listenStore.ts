@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import {persist} from '../lib/profilePersist';
 import type { PlaylistItem } from "../types";
 import type { MP3QuranReciter } from "../lib/mp3QuranApi";
 import { mp3QuranApi } from "../lib/mp3QuranApi";

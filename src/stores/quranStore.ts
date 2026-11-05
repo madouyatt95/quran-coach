@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type { Surah, Ayah, ReadingProgress } from '../types';
 import { SURAH_START_PAGES } from '../components/Mushaf/mushafConstants';
 

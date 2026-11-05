@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type { TarawihNightPlan, TarawihVerse } from '../lib/tarawihService';
 
 export type TarawihPhase = 'setup' | 'loading' | 'detecting' | 'translating' | 'paused' | 'finished';

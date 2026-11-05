@@ -1,6 +1,6 @@
 import {scheduleRecall,type RecallReview,type RecallRating,type GapMode} from '../lib/invocationPractice';
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 interface Preferences {gapMode:GapMode;phonetic:boolean;translation:boolean;rate:number;repeats:number;gap:number;mode:'recite'|'learn';continuous:boolean;arabicAudio:boolean;frenchAudio:boolean;repeatSilence:boolean;}
 const defaultPreferences:Preferences={gapMode:'auto',phonetic:true,translation:true,rate:1,repeats:1,gap:4,mode:'recite',continuous:false,arabicAudio:true,frenchAudio:false,repeatSilence:true};
 export interface TimedInvocationSession {id:string;keys:string[];minutes:number;seconds:number;}

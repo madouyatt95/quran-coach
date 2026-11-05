@@ -1,7 +1,7 @@
 import {migrateMoralLibrary} from '../lib/moralEditionMigration';
 import type {BookReadingPoint} from '../lib/bookResume';
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 export const useAudioLibraryStore=create<{
  autoNextBook:boolean;setAutoNextBook:(enabled:boolean)=>void;
  bookReadingPoints:Record<string,BookReadingPoint>;saveBookReadingPoint:(book:string,point:BookReadingPoint)=>void;

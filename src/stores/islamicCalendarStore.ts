@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type { HijriMethod } from '../lib/islamicCalendar';
 type FastStatus='planned'|'done';
 interface CalendarState {

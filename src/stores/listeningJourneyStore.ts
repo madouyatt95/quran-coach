@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import {persist} from '../lib/profilePersist';
 import type { PlaylistItem } from "../types";
 import { IMMERSIVE_VOICES } from "../lib/listeningExperience";
 import { SESSION_THEMES } from "../lib/listeningJourney";

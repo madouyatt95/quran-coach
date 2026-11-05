@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 
 // SM-2 Algorithm for Spaced Repetition
 // Quality ratings: 0-5 (0-2 = fail, 3-5 = pass)

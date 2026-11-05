@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type { Bookmark, Favorite, HifdhSession } from '../types';
 
 interface ProgressState {

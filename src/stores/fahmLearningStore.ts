@@ -1,6 +1,6 @@
 import {updateRecall,type RecallCheck,type ExerciseDraft,type ListeningDraft} from '../lib/fahm/recall';
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import {useStatsStore} from './statsStore';
 import {validTarget,verseKey,type VerseTarget,type VerseKnowledge} from '../lib/fahm/learning';
 interface Session {id:string;title:string;targets:VerseTarget[];minutes:5|10|20;index:number;done:string[];finished:boolean}

@@ -1,3 +1,5 @@
+import {profileStorage} from '../lib/profileStorage';
+import {ProfileWelcome} from '../components/HouseholdProfiles';
 import {HomeResume} from '../components/Home/HomeResume';
 import {HomeCustomize,HomeQuickLinks,useHomeShortcuts} from '../components/Home/HomeCustomize';
 import {HomeDialog} from '../components/Home/HomeDialog';
@@ -123,12 +125,12 @@ const CUSTOM_EMOJIS = ['🤲', '📿', '💚', '🌙', '⭐', '🕌', '📖', '�
 
 function loadUserDhikrs(): DhikrItem[] {
     try {
-        const saved = localStorage.getItem('user-dhikrs-order');
+        const saved = profileStorage.getItem('user-dhikrs-order');
         if (saved) return JSON.parse(saved);
     } catch { /* ignore */ }
 
     try {
-        const legacyCustom = localStorage.getItem('custom-dhikr');
+        const legacyCustom = profileStorage.getItem('custom-dhikr');
         if (legacyCustom) {
             try {
                 const parsedLegacy = JSON.parse(legacyCustom);
@@ -141,8 +143,8 @@ function loadUserDhikrs(): DhikrItem[] {
 }
 
 function saveUserDhikrs(items: DhikrItem[]) {
-    localStorage.setItem('user-dhikrs-order', JSON.stringify(items));
-    localStorage.removeItem('custom-dhikr');
+    profileStorage.setItem('user-dhikrs-order', JSON.stringify(items));
+    profileStorage.removeItem('custom-dhikr');
 }
 
 // ─── Dhikr Hook ──────────────────────────────────────────
@@ -177,13 +179,13 @@ function useDhikr(now:Date) {
 
     const restoreDefaults = useCallback(() => {
         if (window.confirm('Voulez-vous restaurer la liste de Dhikr par défaut ? Vos invocations personnelles et vos progressions seront supprimées.')) {
-            localStorage.removeItem('user-dhikrs-order');
-            localStorage.removeItem('custom-dhikr');
+            profileStorage.removeItem('user-dhikrs-order');
+            profileStorage.removeItem('custom-dhikr');
             // Supprimer toutes les clés de progression dhikr-v2-*
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
+            for (let i = 0; i < profileStorage.length; i++) {
+                const key = profileStorage.key(i);
                 if (key && key.startsWith('dhikr-v2-')) {
-                    localStorage.removeItem(key);
+                    profileStorage.removeItem(key);
                     i--; // Ajuster l'index après suppression
                 }
             }
@@ -230,7 +232,7 @@ export function HomePage() {
     const [focusDhikr,setFocusDhikr]=useState<string|null>(null);
     const focusedIndex=dhikr.allItems.findIndex(item=>item.id===focusDhikr);
     const focusedItem=dhikr.allItems[focusedIndex];
-    const saveOrder=(order:HomeSection[])=>{setSectionOrder(order);try{localStorage.setItem(HOME_ORDER_KEY,JSON.stringify(order));}catch{/* Session order remains usable. */}};
+    const saveOrder=(order:HomeSection[])=>{setSectionOrder(order);try{profileStorage.setItem(HOME_ORDER_KEY,JSON.stringify(order));}catch{/* Session order remains usable. */}};
     const [isEditingDhikr, setIsEditingDhikr] = useState(false);
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const dhikrSectionRef = useRef<HTMLDivElement>(null);
@@ -525,7 +527,7 @@ explore:(<div className="home-shortcuts">
                 </div>
             </div>),
 quick:<HomeQuickLinks favorites={shortcuts.favorites} onEdit={()=>setShowCustomize(true)}/>,
- daily:<section className="home-daily-combined" aria-label="Ma séance du jour"><Link className="learning-home" to="/learning"><span className="learning-kicker">Votre rendez-vous quotidien</span><strong>Ma séance du jour →</strong><span>Réviser · Comprendre · Réciter, en 5 à 20 minutes</span></Link></section>,
+ daily:<section className="home-daily-combined" aria-label="Ma séance du jour"><Link className="learning-home" to="/learning"><span className="learning-kicker">Votre rendez-vous quotidien</span><strong>Ma séance du jour →</strong><span>Coran · Cours · Livres, en 5 à 20 minutes</span></Link><Link className="learning-btn" to="/learning/review">Retrouver ce que j’ai appris →</Link></section>,
     };
     return (
         <div className="home-page">
@@ -542,7 +544,7 @@ quick:<HomeQuickLinks favorites={shortcuts.favorites} onEdit={()=>setShowCustomi
 
             <HomeResume readingTitle={bookmark?'Reprendre mon signet':'Reprendre ma lecture'} readingDetail={`${bookmark?.precision==='page'?'':`${SURAH_NAMES[displaySurah]||`Sourate ${displaySurah}`} · `}Page ${displayPage}${bookmark?.precision==='verse'?` · verset ${bookmark.ayah}`:''}`} onRead={handleContinueReading} streak={readingStreak}/>
             <SmartSentinel feed={sentinelFeed}/>
-            <div className="home-sections">{sectionOrder.map(id=><React.Fragment key={id}><div className="home-section" data-home-section={id}>{sections[id]}</div>{id==='prayer'&&<div className="home-section" data-home-section="books"><Suspense fallback={<p className="home-book-reading">Chargement des livres…</p>}><HomeBooks date={now}/></Suspense></div>}</React.Fragment>)}</div>
+            <ProfileWelcome/><div className="home-sections">{sectionOrder.map(id=><React.Fragment key={id}><div className="home-section" data-home-section={id}>{sections[id]}</div>{id==='prayer'&&<div className="home-section" data-home-section="books"><Suspense fallback={<p className="home-book-reading">Chargement des livres…</p>}><HomeBooks date={now}/></Suspense></div>}</React.Fragment>)}</div>
 
 
 

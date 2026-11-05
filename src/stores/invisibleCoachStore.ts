@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { PACE } from '../lib/companion';
 import { useCompanionStore } from './companionStore';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 
 // ─── Types ────────────────────────────────────────────────────
 

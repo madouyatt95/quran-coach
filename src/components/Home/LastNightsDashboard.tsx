@@ -1,3 +1,4 @@
+import {profileStorage} from '../../lib/profileStorage';
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
@@ -25,12 +26,12 @@ interface NightData {
 
 function loadProgress(): Record<string, NightData> {
     try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return JSON.parse(profileStorage.getItem(STORAGE_KEY) || '{}');
     } catch { return {}; }
 }
 
 function saveProgress(data: Record<string, NightData>) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    profileStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 export function LastNightsDashboard() {

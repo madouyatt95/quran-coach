@@ -1,6 +1,6 @@
 import type {ReaderFraming} from '../components/Mushaf/InteractiveTajweed/readerPageScale';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type {RecitationDelay} from '../components/Mushaf/hooks/useRecitationPause';
 import type { PaperTheme } from '../lib/interactiveMushaf/service';
 export const DEFAULT_INTERACTIVE_READER_ZOOM=1.15;

@@ -1,3 +1,4 @@
+import {activeProfile} from '../../lib/profileStorage';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import { useAudioStudioAccess } from '../../hooks/useAudioStudioAccess';
@@ -5,6 +6,10 @@ import { progressClient } from '../../lib/progressVault';
 import { getProgressSync, lockProgressSync, subscribeProgressSync, syncProgress, unlockProgressSync, type SyncChoice } from '../../lib/progressSync';
 
 export function ProgressSyncPanel(){
+ if(activeProfile.id!=='default')return <div className="progress-sync"><h3>Un espace sur cet appareil</h3><p>Les progrès de {activeProfile.name} restent séparés du compte principal. Vous pouvez les exporter avec la sauvegarde par fichier.</p></div>;
+ return <OwnerProgressSyncPanel/>;
+}
+function OwnerProgressSyncPanel(){
  const audioStudioAccess=useAudioStudioAccess();
  const sync=useSyncExternalStore(subscribeProgressSync,getProgressSync);
  const [email,setEmail]=useState(''),[code,setCode]=useState(''),[sent,setSent]=useState(false),[account,setAccount]=useState<string|null>(null);

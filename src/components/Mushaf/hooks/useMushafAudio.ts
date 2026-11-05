@@ -1,3 +1,4 @@
+import {profileStorage} from '../../../lib/profileStorage';
 import {AUDIO_SESSION_KEY,saveReaderAudioSession,type ReaderAudioSession,type PassageCuts} from '../../../lib/readerAudioSession';
 import { useId } from 'react';
 import {useRecitationPause,recitationSeconds,type RecitationDelay,type RecitationPause} from './useRecitationPause';
@@ -124,7 +125,7 @@ export function useMushafAudio({
     const activeVerse=useRef<Ayah|null>(null),sourceReciter=useRef(selectedReciter);
     const captureRef=useRef<()=>ReaderAudioSession|null>(()=>null);
     const rememberRef=useRef(rememberSession);rememberRef.current=rememberSession;
-    const forgetCompleted=()=>{sessionActive.current=false;if(rememberRef.current)try{localStorage.removeItem(AUDIO_SESSION_KEY);}catch{/* storage unavailable */}};
+    const forgetCompleted=()=>{sessionActive.current=false;if(rememberRef.current)try{profileStorage.removeItem(AUDIO_SESSION_KEY);}catch{/* storage unavailable */}};
     const persistCurrent=()=>{if(rememberRef.current){const value=captureRef.current();if(value)saveReaderAudioSession(value);}};
     const pairedSources=useRef(new Map<string,string>());
     const preparedVerse=useRef<string|null>(null);

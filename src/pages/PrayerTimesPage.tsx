@@ -1,3 +1,4 @@
+import {profileStorage} from '../lib/profileStorage';
 import {usePageState,useSmartBack} from '../hooks/usePageState';
 import { useFavoriteMosqueSchedule } from '../hooks/useFavoriteMosqueSchedule';
 import { publishedDay, publishedNext, prayerCountdown } from '../lib/publishedPrayerClock';
@@ -115,7 +116,7 @@ function useSunnanTracker() {
     const [checked, setChecked] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
-        const saved = localStorage.getItem(todayKey);
+        const saved = profileStorage.getItem(todayKey);
         if (saved) {
             try { setChecked(JSON.parse(saved)); } catch { /* ignore */ }
         }
@@ -124,7 +125,7 @@ function useSunnanTracker() {
     const toggle = useCallback((key: string) => {
         setChecked(prev => {
             const next = { ...prev, [key]: !prev[key] };
-            localStorage.setItem(todayKey, JSON.stringify(next));
+            profileStorage.setItem(todayKey, JSON.stringify(next));
             return next;
         });
     }, [todayKey]);

@@ -1,3 +1,4 @@
+import {profileStorage} from '../lib/profileStorage';
 import { useId } from 'react';
 import { useCompanionRuntimeStore } from '../stores/companionStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -52,7 +53,7 @@ export function useCoach({ ayahs, scoreKey, playingIndex, continuous = false }: 
 
     const saveSession = useCallback(() => {
         let saved = false;
-        try { saved = persistCoachSession(localStorage, scoreKey, sessionRef.current, totalWords); } catch { /* Storage denied. */ }
+        try { saved = persistCoachSession(profileStorage, scoreKey, sessionRef.current, totalWords); } catch { /* Storage denied. */ }
         if (activeRef.current) setStorageError(!saved);
         if (saved) window.dispatchEvent(new Event(COACH_REVIEW_EVENT));
     }, [scoreKey, totalWords]);

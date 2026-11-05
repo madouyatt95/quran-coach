@@ -1,3 +1,4 @@
+import {profileStorage} from './profileStorage';
 import {migrateMoralLibrary,migrateMoralMemory} from './moralEditionMigration';
 import type {BookMemory} from '../stores/bookNotebookStore';
 /** Account-independent backups. Only the explicit progress registry is transferable. */
@@ -9,6 +10,7 @@ export interface BackupStore { key:string; label:string; version:number; default
 export const BACKUP_LIMIT=24*1024*1024;
 export const RECOVERY_KEY='qc-backup-recovery-v1';
 export const BACKUP_LABELS:Record<string,string>={
+ 'qc-personal-journey-v1':'Séances, cours favoris et révisions transversales',
  'qc-book-notebook-v1':'Carnet des livres racontés',
  'qc-audio-library-v1':'Bibliothèque audio, favoris et reprises',
  'quran-coach-quran':'Position de lecture', 'quran-coach-reading-bookmark':'Signets du Mushaf',
@@ -29,7 +31,7 @@ export const BACKUP_LABELS:Record<string,string>={
  'quran-coach-challenges':'Défis personnels', 'quran-coach-settings':'Préférences de lecture',
  'quran-coach-interactive-reader':'Préférences du Mushaf', 'quran-coach-reader-coach-v1':'Accompagnement de lecture'
 };
-const modules=import.meta.glob(["../stores/bookNotebookStore.ts","../stores/audioLibraryStore.ts","../stores/academyStore.ts", "../stores/mushafStudyStore.ts", "../stores/listeningJourneyStore.ts", "../stores/editorialJourneyStore.ts", "../stores/settingsStore.ts", "../stores/memorizationTestStore.ts", "../stores/listeningNotebookStore.ts", "../stores/fahmStore.ts", "../stores/learningStore.ts", "../stores/playlistsStore.ts", "../stores/challengesStore.ts", "../stores/listeningEvidenceStore.ts", "../stores/adhkarExperienceStore.ts", "../stores/readingBookmarkStore.ts", "../stores/arabicAdventureStore.ts", "../stores/khatmStore.ts", "../stores/academyExperienceStore.ts", "../stores/progressStore.ts", "../stores/dailyAdhkarStore.ts", "../stores/arabicLearningStore.ts", "../stores/statsStore.ts", "../stores/quizLearningStore.ts", "../stores/academyKnowledgeStore.ts", "../stores/favoritesStore.ts", "../stores/readerCoachStore.ts", "../stores/fahmLearningStore.ts", "../stores/hifdhJourneyStore.ts", "../stores/listenStore.ts", "../stores/readerNotesStore.ts", "../stores/interactiveReaderStore.ts", "../stores/srsStore.ts", "../stores/storyLibraryStore.ts", "../stores/quranStore.ts", "../stores/arabicPracticeStore.ts"]);
+const modules=import.meta.glob(["../stores/personalJourneyStore.ts","../stores/bookNotebookStore.ts","../stores/audioLibraryStore.ts","../stores/academyStore.ts", "../stores/mushafStudyStore.ts", "../stores/listeningJourneyStore.ts", "../stores/editorialJourneyStore.ts", "../stores/settingsStore.ts", "../stores/memorizationTestStore.ts", "../stores/listeningNotebookStore.ts", "../stores/fahmStore.ts", "../stores/learningStore.ts", "../stores/playlistsStore.ts", "../stores/challengesStore.ts", "../stores/listeningEvidenceStore.ts", "../stores/adhkarExperienceStore.ts", "../stores/readingBookmarkStore.ts", "../stores/arabicAdventureStore.ts", "../stores/khatmStore.ts", "../stores/academyExperienceStore.ts", "../stores/progressStore.ts", "../stores/dailyAdhkarStore.ts", "../stores/arabicLearningStore.ts", "../stores/statsStore.ts", "../stores/quizLearningStore.ts", "../stores/academyKnowledgeStore.ts", "../stores/favoritesStore.ts", "../stores/readerCoachStore.ts", "../stores/fahmLearningStore.ts", "../stores/hifdhJourneyStore.ts", "../stores/listenStore.ts", "../stores/readerNotesStore.ts", "../stores/interactiveReaderStore.ts", "../stores/srsStore.ts", "../stores/storyLibraryStore.ts", "../stores/quranStore.ts", "../stores/arabicPracticeStore.ts"]);
 let registryPromise:Promise<BackupStore[]>|undefined;
 export function backupRegistry():Promise<BackupStore[]>{
  return registryPromise??=Promise.all(Object.values(modules).map(load=>load())).then(loaded=>{
@@ -111,7 +113,7 @@ function validateProgressRecords(key:string,state:ObjectValue){
   eachMap('progress',v=>fields(v,{step:'string',sentence:'number',seconds:'number',updatedAt:'number'})&&Array.isArray((v as ObjectValue).completed));
  }
 }
-export function createBackup(stores:BackupStore[],storage:Storage=localStorage):ProgressBackup{
+export function createBackup(stores:BackupStore[],storage:Storage=profileStorage):ProgressBackup{
  const sections:Record<string,BackupSection>={};
  for(const store of stores){const raw=storage.getItem(store.key);if(!raw)continue;const section=JSON.parse(raw);validateJson(section);sections[store.key]=cleanSection(section,store);}
  return {format:'quran-coach-progress',version:1,createdAt:new Date().toISOString(),sections};
@@ -161,11 +163,11 @@ export function mergedSection(key:string,a:BackupSection|undefined,b:BackupSecti
  }
  return {version:b.version,state};
 }
-export function backupPreview(backup:ProgressBackup,stores:BackupStore[],storage:Storage=localStorage){
+export function backupPreview(backup:ProgressBackup,stores:BackupStore[],storage:Storage=profileStorage){
  const current=createBackup(stores,storage);
  return Object.entries(backup.sections).map(([key,value])=>({key,label:BACKUP_LABELS[key],fields:Object.keys(value.state).length,conflict:!!current.sections[key]&&!equal(current.sections[key].state,value.state),same:!!current.sections[key]&&equal(current.sections[key].state,value.state)}));
 }
-export async function restoreBackup(backup:ProgressBackup,stores:BackupStore[],choices:Record<string,'device'|'file'|'skip'>,storage:Storage=localStorage){
+export async function restoreBackup(backup:ProgressBackup,stores:BackupStore[],choices:Record<string,'device'|'file'|'skip'>,storage:Storage=profileStorage){
  // Revalidate immediately before the write, not just at file selection.
  const valid=parseBackup(JSON.stringify(backup),stores),current=createBackup(stores,storage);
  const keys=Object.keys(valid.sections).filter(k=>choices[k]!=='skip');
@@ -178,7 +180,7 @@ export async function restoreBackup(backup:ProgressBackup,stores:BackupStore[],c
  }catch(error){for(const [key,value] of Object.entries(before))value===null?storage.removeItem(key):storage.setItem(key,value);throw error;}
  for(const store of stores.filter(s=>keys.includes(s.key)))await store.rehydrate();
 }
-export async function undoRestore(stores:BackupStore[],storage:Storage=localStorage){
+export async function undoRestore(stores:BackupStore[],storage:Storage=profileStorage){
  const raw=storage.getItem(RECOVERY_KEY);if(!raw)throw new Error('Aucune importation à annuler.');
  const {before}=JSON.parse(raw) as {before:Record<string,string|null>};
  for(const [key,value] of Object.entries(before))if(stores.some(s=>s.key===key))value===null?storage.removeItem(key):storage.setItem(key,value);

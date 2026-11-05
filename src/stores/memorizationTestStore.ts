@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type { TestAnswer } from '../lib/memorizationTest';
 interface TestSummary {date:string;answers:TestAnswer[]}
 interface TestState {knownSurahs:number[];history:TestSummary[];setKnown:(ids:number[])=>void;save:(answers:TestAnswer[])=>void}

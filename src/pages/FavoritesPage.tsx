@@ -1,3 +1,12 @@
+import {useEffect} from 'react';
+import {useBookNotebook} from '../stores/bookNotebookStore';
+import {useAudioLibraryStore} from '../stores/audioLibraryStore';
+import {usePersonalJourneyStore} from '../stores/personalJourneyStore';
+import {academyModules} from '../lib/academyModules';
+import {loadAudioLibrary} from '../lib/audioLibrary';
+import {bookForAudio,chapterForAudio} from '../lib/bookLibrary';
+import type {LibraryAudio} from '../lib/audioProduction';
+import catalog from '../data/bookCatalog.json';
 import {useSmartBack} from '../hooks/usePageState';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -7,10 +16,10 @@ import { useOpenReader, type ReaderTarget } from '../hooks/useOpenReader';
 import { ReligiousReference } from '../components/ReligiousReference';
 import './FavoritesPage.css';
 
-type Kind = 'verses' | 'hadiths' | 'duas';
-interface LibraryItem { key: string; kind: Kind; title: string; arabic: string; french?: string; source?: string; addedAt: number; target?: ReaderTarget; remove: () => void }
+type Kind = 'verses' | 'hadiths' | 'duas' | 'books' | 'courses' | 'passages';
+interface LibraryItem { key: string; kind: Kind; title: string; arabic: string; french?: string; source?: string; addedAt: number; target?: ReaderTarget; href?:string; remove: () => void }
 const normalize = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f\u064b-\u065f\u0670\u0640]/g, '').replace(/[أإآٱ]/g, 'ا').toLocaleLowerCase();
-const kinds: { id: 'all' | Kind; label: string }[] = [{ id: 'all', label: 'Tout' }, { id: 'verses', label: '📖 Versets' }, { id: 'hadiths', label: '📜 Hadiths' }, { id: 'duas', label: '🤲 Invocations' }];
+const kinds: { id: 'all' | Kind; label: string }[] = [{ id: 'all', label: 'Tout' }, {id:'books',label:'📚 Livres et audios'}, {id:'courses',label:'🎓 Cours'}, {id:'passages',label:'✍️ Passages conservés'}, { id: 'verses', label: '📖 Versets' }, { id: 'hadiths', label: '📜 Hadiths' }, { id: 'duas', label: '🤲 Invocations' }];
 
 function LibraryCard({ item }: { item: LibraryItem }) {
     const store = useFavoritesStore();
@@ -24,13 +33,14 @@ function LibraryCard({ item }: { item: LibraryItem }) {
 
     const selected = annotation?.collectionIds ?? [];
     return <article className="library-card">
-        <div className="library-card__heading"><span>{item.title}</span><time dateTime={new Date(item.addedAt).toISOString()}>{new Date(item.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</time></div>
+        <div className="library-card__heading"><span>{item.title}</span>{item.addedAt > 0 && <time dateTime={new Date(item.addedAt).toISOString()}>{new Date(item.addedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</time>}</div>
         <div className="library-card__text" lang="ar" dir="rtl">{item.arabic}</div>
         {item.french && <p className="library-card__translation">{item.french}</p>}
         {item.source && <ReligiousReference kind={item.kind === 'hadiths' ? 'Hadith' : 'Invocation'} source={item.source} />}
         {!!selected.length && <div className="library-card__tags">{store.collections.filter(c => selected.includes(c.id)).map(c => <span key={c.id}>📁 {c.name}</span>)}</div>}
         {!editing && annotation?.note && <div className="library-note"><small>Ma note personnelle</small><p>{annotation.note}</p></div>}
         <div className="library-card__actions">
+            {item.href && <button className="library-primary" onClick={()=>navigate(item.href!)}>Ouvrir à cet endroit →</button>}
             {item.target && <><button className="library-primary" onClick={() => openReader(item.target!)}>📖 Lire le verset</button><button onClick={() => navigate(`/passage?surah=${item.target!.surah}&ayah=${item.target!.ayah}&from=favorites`)}>Comprendre</button></>}
             <button aria-expanded={editing} onClick={() => { setDraft(annotation?.note ?? ''); setEditing(!editing); setSaved(false); }}>✍️ {editing ? 'Fermer' : 'Classer / annoter'}</button>
             <button aria-label={`Retirer ${item.title} des favoris`} onClick={() => setConfirmRemove(true)}>Retirer</button>
@@ -48,6 +58,9 @@ function LibraryCard({ item }: { item: LibraryItem }) {
 
 export function FavoritesPage() {
     const store = useFavoritesStore();
+    const notebook=useBookNotebook(),audio=useAudioLibraryStore(),personal=usePersonalJourneyStore();
+    const [catalogue,setCatalogue]=useState<LibraryAudio[]>([]);
+    useEffect(()=>{let active=true;void loadAudioLibrary().then(items=>{if(active)setCatalogue(items);}).catch(()=>{});return()=>{active=false;};},[]);
     const surahs = useQuranStore(state => state.surahs);
     const navigate = useNavigate();
     const goBack=useSmartBack('/');
@@ -61,6 +74,9 @@ export function FavoritesPage() {
     const update = (key: string, value: string) => { const next = new URLSearchParams(params); if (!value || value === 'all') next.delete(key); else next.set(key, value); setParams(next, { replace: true }); };
     const activeCollection = store.collections.find(c => c.id === collection);
     const items: LibraryItem[] = [
+        ...Object.entries(personal.savedCourses).flatMap(([id,at])=>{const course=academyModules.find(m=>m.id===id);return course?[{key:`course:${id}`,kind:'courses' as const,title:course.title,arabic:course.titleAr,french:course.description,addedAt:at,href:`/academy?module=${encodeURIComponent(id)}`,remove:()=>personal.toggleCourse(id)}]:[];}),
+        ...audio.favorites.flatMap(id=>{const book=id.startsWith('book:')?catalog.find(b=>b.id===id.slice(5)):undefined;const track=catalogue.find(a=>a.id===id||`audio:${a.id}`===id);const origin=track?bookForAudio(track):undefined;const chapter=track&&origin?origin.chapters[chapterForAudio(track,origin)]:undefined;return book||track?[{key:id,kind:'books' as const,title:book?.title||track!.title,arabic:'',french:book?.subtitle,addedAt:audio.bookReadingUpdatedAt[book?.id||'']||audio.positions[track?.id||'']?.updatedAt||0,href:book?`/books/${book.id}`:origin?`/books/${origin.id}?chapter=${encodeURIComponent(chapter?.id||origin.chapters[0].id)}`:`/listen/library?audio=${encodeURIComponent(track!.id)}`,remove:()=>audio.toggleFavorite(id)}]:[];}),
+        ...[...notebook.bookmarks,...notebook.entries].filter((n,i,all)=>all.findIndex(a=>a.id===n.id)===i).map(n=>({key:`book-passage:${n.id}`,kind:'passages' as const,title:`${catalog.find(b=>b.id===n.bookId)?.title||'Livre'} · passage conservé`,arabic:'',french:[n.text,n.note].filter(Boolean).join('\n'),addedAt:n.createdAt,href:`/books/${n.bookId}?chapter=${encodeURIComponent(n.chapterId)}&passage=${encodeURIComponent(n.passageId)}`,remove:()=>{notebook.remove(n.id);notebook.removeBookmark(n.id);}})),
         ...store.favorites.map(v => ({ key: verseFavoriteKey(v.number), kind: 'verses' as const, title: `${surahs.find(s => s.number === v.surah)?.englishName ?? `Sourate ${v.surah}`} · ${v.surah}:${v.numberInSurah}`, arabic: v.text, addedAt: v.addedAt, target: { surah: v.surah, ayah: v.numberInSurah, page: v.page }, remove: () => store.removeFavorite(v.number) })),
         ...store.favoriteHadiths.map(h => ({ key: hadithFavoriteKey(h.id), kind: 'hadiths' as const, title: `📜 Hadith · ${h.nar}`, arabic: h.ar, french: h.fr, source: h.src, addedAt: h.addedAt, remove: () => store.removeFavoriteHadith(h.id) })),
         ...store.favoriteDuas.map(d => ({ key: duaFavoriteKey(d.chapterId, d.duaId), kind: 'duas' as const, title: `🤲 ${d.chapterTitle}`, arabic: d.arabic, french: d.translation, source: d.source, addedAt: d.addedAt, remove: () => store.removeFavoriteDua(d.chapterId, d.duaId) })),

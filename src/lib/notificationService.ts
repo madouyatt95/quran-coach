@@ -1,3 +1,4 @@
+import {profileStorage} from './profileStorage';
 /**
  * Notification Service for Quran Coach — Web Push Edition
  * Uses the Web Push API + Supabase backend for background notifications.
@@ -392,7 +393,7 @@ export async function sendTestNotification(): Promise<boolean> {
 
 // ─── Last visit tracking (for inactivity) ───────────
 export function updateLastVisit() {
-    localStorage.setItem('notif_last_visit', Date.now().toString());
+    profileStorage.setItem('notif_last_visit', Date.now().toString());
 }
 
 // ─── Coach Invisible Notifications ──────────────────
@@ -445,7 +446,7 @@ export async function scheduleCoachNotification(options: {
 
 // Fonction utilitaire : programme les rappels du coach
 export function scheduleCoachReminders() {
-    const lastVisit = localStorage.getItem('notif_last_visit');
+    const lastVisit = profileStorage.getItem('notif_last_visit');
     if (!lastVisit) return;
 
     const hoursSinceLastVisit = (Date.now() - parseInt(lastVisit)) / (1000 * 60 * 60);

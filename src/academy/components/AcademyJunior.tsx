@@ -1,3 +1,4 @@
+import {profileStorage} from '../../lib/profileStorage';
 // ─── Académie Junior — Composant Principal ───────────────
 import { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
@@ -17,14 +18,14 @@ interface JuniorProgress {
 
 function loadProgress(): JuniorProgress {
     try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = profileStorage.getItem(STORAGE_KEY);
         if (raw) return JSON.parse(raw);
     } catch { /* noop */ }
     return { completedSteps: [], stepStars: {} };
 }
 
 function saveProgress(p: JuniorProgress) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+    profileStorage.setItem(STORAGE_KEY, JSON.stringify(p));
 }
 
 // ─── Sound feedback ──────────────────────────────────────

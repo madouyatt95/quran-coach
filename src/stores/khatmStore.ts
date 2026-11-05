@@ -1,5 +1,6 @@
+import {profileStorage} from '../lib/profileStorage';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 
 export function hasCompleteKhatm(pages: number[]): boolean {
     const valid = new Set(pages.filter(p => Number.isInteger(p) && p >= 1 && p <= 604));
@@ -7,7 +8,7 @@ export function hasCompleteKhatm(pages: number[]): boolean {
 }
 
 function legacyCompletionCount(): number {
-    try { const count = Number(localStorage.getItem('quran-coach-khatm-count')); return Number.isSafeInteger(count) && count > 0 ? count : 0; }
+    try { const count = Number(profileStorage.getItem('quran-coach-khatm-count')); return Number.isSafeInteger(count) && count > 0 ? count : 0; }
     catch { return 0; }
 }
 

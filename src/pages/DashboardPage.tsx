@@ -1,3 +1,4 @@
+import {profileStorage} from '../lib/profileStorage';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, Trophy } from 'lucide-react';
@@ -32,7 +33,7 @@ function getWeekDates() {
 }
 function dhikrTotal(id: string, dates: string[]) {
     return dates.reduce((total, date) => {
-        try { return total + (JSON.parse(localStorage.getItem(`dhikr-v2-${date}`) || '{}')[id] || 0); }
+        try { return total + (JSON.parse(profileStorage.getItem(`dhikr-v2-${date}`) || '{}')[id] || 0); }
         catch { return total; }
     }, 0);
 }

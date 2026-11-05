@@ -1,3 +1,4 @@
+import {profileStorage} from '../../lib/profileStorage';
 import {useEffect,useEffectEvent,useRef,useState} from 'react';
 import {InvocationComparison} from './InvocationComparison';
 import {InvocationReview} from './InvocationReview';
@@ -23,7 +24,7 @@ export function InvocationReader({items,index,session,onSelect,onBack,autoStart,
  useEffect(()=>{
   setResume(session,d.key);
   // Keep old reader keys usable for links and previous app versions.
-  localStorage.setItem('adhkar_category_id',d.categoryId);localStorage.setItem('adhkar_dhikr_index',String(index));localStorage.setItem('adhkar_view_state','player');
+  profileStorage.setItem('adhkar_category_id',d.categoryId);profileStorage.setItem('adhkar_dhikr_index',String(index));profileStorage.setItem('adhkar_view_state','player');
   const cancel=()=>{sequence.current++;stopAdhkarAudio();setAudio('idle');setPart(-1);setPhase('');paused.current=false;};
   window.addEventListener('quran-stop-playback',cancel);
   return()=>{cancel();window.removeEventListener('quran-stop-playback',cancel);};

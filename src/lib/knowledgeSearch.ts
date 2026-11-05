@@ -4,8 +4,9 @@ import { LEVEL_1_FONDATIONS } from '../academy/data/level1-fondations';
 import { LEVEL_2_PRATIQUE } from '../academy/data/level2-pratique';
 import { chapterTeaching } from '../academy/data/courseExplanations';
 import { ARABIC_LESSONS } from '../arabic/data';
-import { prophets } from '../data/prophets';
-import { stories } from '../data/storiesData';
+import { useBookNotebook } from '../stores/bookNotebookStore';
+import { useAudioLibraryStore } from '../stores/audioLibraryStore';
+import { bookPassages } from './bookPassages';
 import { getJourney, journeyUrl } from './editorialJourneys';
 import { useAcademyStore } from '../stores/academyStore';
 import { useAcademyKnowledgeStore } from '../stores/academyKnowledgeStore';
@@ -22,12 +23,18 @@ const moduleTitle=(id:string)=>modules.find(m=>m.id===id)?.title||'Mon cours';
 type Entry=Omit<SearchResult,'score'>;
 // Index existing explanations, not answer keys or generated religious content.
 const publicEntries:Entry[]=[
- ...companionPortraits.map(p=>({id:`companion:${p.id}`,type:'story' as const,title:p.nameFr,textAr:p.nameAr,textFr:[p.aliases,p.title,...p.paragraphs,...p.references.map(r=>r.label)].join('\n'),source:'Compagnons et compagnes',link:companionHref(p.id),emoji:'🕯️'})),
+ ...companionPortraits.filter(p=>!p.bookId).map(p=>({id:`companion:${p.id}`,type:'story' as const,title:p.nameFr,textAr:p.nameAr,textFr:[p.aliases,p.title,...p.paragraphs,...p.references.map(r=>r.label)].join('\n'),source:'Compagnons et compagnes',link:companionHref(p.id),emoji:'🕯️'})),
  ...modules.map(m=>{const teaching=chapterTeaching(m.id);return {id:`course:${m.id}`,type:'course' as const,title:m.title,textAr:m.titleAr,textFr:[m.description,...m.content.flatMap(c=>c.type==='lesson'?c.sections.map(s=>`${s.title}\n${s.body}`):[]),teaching?.introduction,...(teaching?.developments||[]),teaching?.takeaway].filter(Boolean).join('\n'),source:'Académie · cours et explications',link:`/academy?module=${encodeURIComponent(m.id)}`,emoji:m.icon};}),
  ...ARABIC_LESSONS.map(l=>({id:`arabic:${l.id}`,type:'arabic' as const,title:l.title,textAr:l.arabic,textFr:[l.track,l.goal,...l.paragraphs,l.advanced,l.takeaway,l.translation,...l.example.map(e=>`${e.text} ${e.label} ${e.detail}`)].join('\n'),source:`Arabe · ${l.track}`,link:`/academy/arabic/${encodeURIComponent(l.id)}?view=read`,emoji:'✍️'})),
- ...[...prophets.map(p=>({kind:'prophet' as const,id:p.id})),...stories.map(s=>({kind:'story' as const,id:s.id}))].flatMap(({kind,id})=>{const j=getJourney(kind,id);return j?[{id:`story:${j.id}`,type:'story' as const,title:j.title,textAr:'',textFr:[j.intro,...j.steps.filter(s=>s.kind==='narrative').map(s=>`${s.title}\n${s.text}`),...j.lessons].filter(Boolean).join('\n'),source:kind==='prophet'?'Prophètes · parcours':'Histoires et moralités',link:journeyUrl(kind,id),emoji:j.icon}]:[];})
+
 ];
-export function searchKnowledge(query:string):SearchResult[]{
+let bookIndex: Promise<{books: typeof import('../data/narrativeBooks').narrativeBooks; entries: Entry[]}> | undefined;
+function loadBookIndex():Promise<{books: typeof import('../data/narrativeBooks').narrativeBooks; entries: Entry[]}>{
+ return bookIndex ??= import('../data/narrativeBooks').then(({narrativeBooks})=>({books:narrativeBooks,entries:narrativeBooks.flatMap(book=>book.chapters.flatMap(chapter=>bookPassages(book,chapter).map(p=>({id:`book:${book.id}:${p.id}`,type:'story' as const,title:`${book.title} · ${chapter.title}`,textAr:'',textFr:p.text,source:book.sources.filter(s=>p.sources.includes(s.id)).map(s=>s.description).join(' · '),link:`/books/${book.id}?chapter=${encodeURIComponent(chapter.id)}&passage=${encodeURIComponent(p.id)}`,emoji:'📚'})))) }));
+}
+export async function searchKnowledge(query:string):Promise<SearchResult[]>{
+ const {books:narrativeBooks,entries:bookEntries}=await loadBookIndex().catch(()=>{bookIndex=undefined;return {books:[],entries:[]};});
+ const library=useAudioLibraryStore.getState();
  const academy=useAcademyStore.getState(),journeys=useEditorialJourneyStore.getState(),arabic=useArabicLearningStore.getState();
  const notes:Entry[]=[];
  const addNote=(id:string,title:string,textFr:string,link:string,source:string)=>{if(textFr.trim())notes.push({id:`note:${id}`,type:'note',title,textAr:'',textFr,link,source,emoji:'📝',studied:true});};
@@ -38,12 +45,14 @@ export function searchKnowledge(query:string):SearchResult[]{
  for(const [key,n] of Object.entries(useAcademyKnowledgeStore.getState().concepts)){const id=key.split(':notion:')[0];addNote(`concept:${key}`,moduleTitle(id),[n.explanation,n.proofNote].filter(Boolean).join('\n'),`/academy?module=${encodeURIComponent(id)}`,'Académie · ma reformulation');}
  for(const [key,n] of Object.entries(useFahmLearningStore.getState().records))if(n.note)addNote(`fahm:${key}`,`Fahm · ${key}`,n.note,`/fahm/surah/${n.surah}`,'Fahm · ma note');
  for(const n of useListeningNotebookStore.getState().notes)addNote(`listen:${n.id}`,`Écoute · ${n.item.surahNumber}:${n.item.verse?.number}`,n.note,`/read?surah=${n.item.surahNumber}&ayah=${n.item.verse?.number||1}`,'Écoute · mon carnet');
+ for(const n of [...useBookNotebook.getState().entries,...useBookNotebook.getState().bookmarks].filter((n,i,a)=>a.findIndex(v=>v.id===n.id)===i))addNote(`book:${n.id}`,narrativeBooks.find(b=>b.id===n.bookId)?.title||'Mon livre',[n.text,n.note].filter(Boolean).join('\n'),`/books/${n.bookId}?chapter=${encodeURIComponent(n.chapterId)}&passage=${encodeURIComponent(n.passageId)}`,'Livres · mon carnet');
+ for(const [id,n] of Object.entries(library.bookNotes))addNote(`book-note:${id}`,narrativeBooks.find(b=>b.id===id)?.title||'Mon livre',n,`/books/${id}`,'Livres · ma note');
  const favorites=useFavoritesStore.getState();
  for(const [key,n] of Object.entries(favorites.annotations))if(n.note)addNote(`favorite:${key}`,'Ma note dans la bibliothèque',n.note,`/favorites?q=${encodeURIComponent(n.note.slice(0,60))}`,'Bibliothèque · annotation personnelle');
- return [...publicEntries,...notes].flatMap(entry=>{
+ return [...publicEntries,...bookEntries,...notes].flatMap(entry=>{
   const score=rankSearch(query,entry.title,`${entry.textAr}\n${entry.textFr}\n${entry.source}`);if(!score)return [];
   const id=entry.id.slice(entry.id.indexOf(':')+1);
-  const studied=entry.type==='course'?!!academy.progress[id]:entry.type==='arabic'?!!arabic.drafts[id]:entry.type==='story'?!!journeys.progress[id]:entry.studied;
+  const studied=entry.type==='course'?!!academy.progress[id]:entry.type==='arabic'?!!arabic.drafts[id]:entry.type==='story'?(entry.id.startsWith('book:')?!!library.bookReading[id.split(':')[0]]:(entry.studied??!!journeys.progress[id])):entry.studied;
   return [{...entry,score,studied}];
  });
 }

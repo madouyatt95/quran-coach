@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 export interface CourseExperienceProgress {
  hypothesis:string;conclusion:string;node:number;explanationByNode:Record<number,string>;
  decisions:Record<string,number>;sequence:number[];explored:string[];oralChecks:string[];

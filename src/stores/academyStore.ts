@@ -2,7 +2,7 @@
 // Tracks user progress through the 2-level Academy modules
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 
 export interface ModuleProgress {
     completed: boolean;

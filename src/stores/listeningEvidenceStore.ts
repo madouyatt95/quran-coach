@@ -1,5 +1,7 @@
+import {profileStorage} from '../lib/profileStorage';
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
+import {createJSONStorage} from 'zustand/middleware';
 
 export interface ListeningEvidence {
     id: string;
@@ -19,7 +21,7 @@ interface ListeningEvidenceState {
 const fallbackEntries = new Map<string, string>();
 const evidenceStorage = createJSONStorage(() => {
     try {
-        const storage = globalThis.localStorage;
+        const storage = profileStorage;
         if (storage && typeof storage.getItem === 'function' && typeof storage.setItem === 'function' && typeof storage.removeItem === 'function') return storage;
     } catch { /* Storage may be unavailable in tests or private browsing. */ }
     return {

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { parsePlan, planErrors, type MosquePlan } from '../lib/mosquePlanning';
 interface PlansState { plans:Record<string,MosquePlan>; save:(p:MosquePlan)=>void; remove:(id:string)=>void; }
 export const useMosquePlansStore=create<PlansState>()(persist((set)=>({

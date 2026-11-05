@@ -1,3 +1,4 @@
+import {activeProfile} from '../lib/profileStorage';
 import {useEffect, useReducer, useState} from 'react';
 import {audioAdmin} from '../lib/audioAdmin';
 import {AUDIO_API} from '../lib/audioLibrary';
@@ -5,6 +6,7 @@ import {progressClient} from '../lib/progressVault';
 
 /** A navigation hint only. Every studio request is independently authorized by the server. */
 export function useAudioStudioAccess(enabled = true) {
+ enabled=enabled&&activeProfile.id==='default';
  const [revision,refresh] = useReducer(value => value + 1,0);
  const [access,setAccess] = useState({revision:-1,allowed:false});
  useEffect(()=>{

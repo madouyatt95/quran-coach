@@ -1,8 +1,9 @@
+import {profileStorage} from '../lib/profileStorage';
 // ─── Circle Store (Cercle de Lecture Virtuel) ────────────
 // Manages reading circles via Supabase: create, join, track progress
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { supabase } from '../lib/supabase';
 
 export interface CircleMember {
@@ -59,10 +60,10 @@ interface CircleState {
 }
 
 function generateDeviceId(): string {
-    const stored = localStorage.getItem('qc-device-id');
+    const stored = profileStorage.getItem('qc-device-id');
     if (stored) return stored;
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem('qc-device-id', id);
+    profileStorage.setItem('qc-device-id', id);
     return id;
 }
 

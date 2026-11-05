@@ -3,8 +3,8 @@ import {bookForAudio, bookHref, chapterForAudio, recordingsForBook} from './book
 import {useAudioLibraryStore} from '../stores/audioLibraryStore';
 import {useListenStore} from '../stores/listenStore';
 
-export function latestWidgetAudio() {
-  const recitation = useListenStore.getState().lastListened;
+export function latestWidgetAudio(booksOnly=false) {
+  const recitation = booksOnly ? null : useListenStore.getState().lastListened;
   const items = audioLibrarySnapshot() ?? [];
   const positions = useAudioLibraryStore.getState().positions;
   let bookTrack: typeof items[number] | undefined;

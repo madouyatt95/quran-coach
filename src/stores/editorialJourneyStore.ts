@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 export interface JourneyProgress { step:string; sentence:number; seconds:number; completed:string[]; updatedAt:number }
 export interface JourneyNote { text:string; lesson:string; action:string; done:boolean; updatedAt:number }
 interface State { progress:Record<string,JourneyProgress>; notes:Record<string,JourneyNote>; saveProgress:(key:string,value:Omit<JourneyProgress,'updatedAt'>&{updatedAt?:number})=>void; saveNote:(key:string,value:Omit<JourneyNote,'updatedAt'>)=>void; removeNote:(key:string)=>void }

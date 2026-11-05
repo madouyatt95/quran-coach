@@ -1,3 +1,4 @@
+import {profileStorage} from './profileStorage';
 import type { Passage } from './learning';
 import chapters from './interactiveMushaf/chapters.json';
 export const VOICE_HISTORY_KEY = 'quran-coach-voice-history-v1';
@@ -7,7 +8,7 @@ export function validVoicePassage(p: Passage): boolean {
 }
 export function readVoiceHistory(): VoiceHistoryEntry[] {
     try {
-        const value: unknown = JSON.parse(localStorage.getItem(VOICE_HISTORY_KEY) || '[]');
+        const value: unknown = JSON.parse(profileStorage.getItem(VOICE_HISTORY_KEY) || '[]');
         return Array.isArray(value) ? value.filter(p => p && validVoicePassage(p) && Number.isFinite(p.at)).slice(0, 30) : [];
     } catch { return []; }
 }
@@ -16,5 +17,5 @@ export function rememberVoicePassage(items: VoiceHistoryEntry[], passage: Passag
     return [{ surah: passage.surah, ayah: passage.ayah, at }, ...items.filter(p => p.surah !== passage.surah || p.ayah !== passage.ayah)].slice(0, 30);
 }
 export function saveVoiceHistory(items: VoiceHistoryEntry[]): boolean {
-    try { localStorage.setItem(VOICE_HISTORY_KEY, JSON.stringify(items)); return true; } catch { return false; }
+    try { profileStorage.setItem(VOICE_HISTORY_KEY, JSON.stringify(items)); return true; } catch { return false; }
 }

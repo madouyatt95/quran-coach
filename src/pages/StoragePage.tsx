@@ -1,3 +1,4 @@
+import {OfflineCenter} from '../components/Learning/OfflineCenter';
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuranStore } from "../stores/quranStore";
@@ -53,7 +54,8 @@ export function StoragePage() {
       <Link className="learning-btn" to="/learning">
         ← Ma séance
       </Link>
-      <h1>Mes packs hors ligne</h1>
+      <h1>Mes téléchargements</h1>
+      <OfflineCenter/>
       <p className="learning-muted">
         Téléchargez les contenus dont vous avez besoin. Les fichiers complets
         sont conservés si le téléchargement est interrompu.

@@ -1,3 +1,4 @@
+import {profileStorage} from '../../lib/profileStorage';
 import { useEffect, useReducer } from 'react';
 import { localDay } from '../../lib/learning';
 
@@ -6,7 +7,7 @@ type State = { day: string; values: Counts; previous: Counts | null };
 type Action = { type: 'tap'; id: string } | { type: 'reset'; id: string } | { type: 'resetAll' } | { type: 'undo' } | { type: 'day'; day: string };
 function read(day: string): Counts {
     try {
-        const value = JSON.parse(localStorage.getItem(`dhikr-v2-${day}`) || '{}');
+        const value = JSON.parse(profileStorage.getItem(`dhikr-v2-${day}`) || '{}');
         return Object.fromEntries(Object.entries(value).filter(([, n]) => typeof n === 'number' && Number.isFinite(n) && n >= 0)) as Counts;
     } catch { return {}; }
 }
@@ -23,7 +24,7 @@ export function useDhikrCounts(now: Date) {
     const [state, dispatch] = useReducer(reducer, day, day => ({ day, values: read(day), previous: null }));
     if (state.day !== day) dispatch({ type: 'day', day });
     useEffect(() => {
-        try { localStorage.setItem(`dhikr-v2-${state.day}`, JSON.stringify(state.values)); }
+        try { profileStorage.setItem(`dhikr-v2-${state.day}`, JSON.stringify(state.values)); }
         catch { /* Counts remain available in this session. */ }
     }, [state.day, state.values]);
     return {

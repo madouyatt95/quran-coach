@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type {Dispatch,SetStateAction} from 'react';
 interface Evidence {seen:string[];transferAt:number;delayedAt:number}
 interface PracticeState {

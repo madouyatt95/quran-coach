@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 
 // ─── Fahm Store — Vocabulaire SRS + Parcours Thématiques ─────
 

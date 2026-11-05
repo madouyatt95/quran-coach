@@ -1,6 +1,6 @@
 import {migrateMoralMemory} from '../lib/moralEditionMigration';
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 export interface BookMemory {id:string;bookId:string;version:string;chapterId:string;passageId:string;text:string;sources:string[];audioId?:string;seconds?:number;note:string;createdAt:number}
 export const useBookNotebook=create<{bookmarks:BookMemory[];saveBookmark:(entry:Omit<BookMemory,'id'|'note'|'createdAt'>)=>void;annotateBookmark:(id:string,note:string)=>void;removeBookmark:(id:string)=>void;entries:BookMemory[];remember:(entry:Omit<BookMemory,'id'|'note'|'createdAt'>)=>void;annotate:(id:string,note:string)=>void;remove:(id:string)=>void}>()(persist(set=>({bookmarks:[],
  saveBookmark:entry=>set(s=>{const id=`${entry.bookId}:${entry.version}:${entry.passageId}`;return s.bookmarks.some(e=>e.id===id)?s:{bookmarks:[{...entry,id,note:'',createdAt:Date.now()},...s.bookmarks]};}),

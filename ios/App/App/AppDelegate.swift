@@ -71,3 +71,41 @@ private enum QuranCoachAppLinks {
         return ApplicationDelegateProxy.shared.application(UIApplication.shared, open: url, options: options)
     }
 }
+
+// Shortcuts use the same cold-start-safe router as widgets.
+import AppIntents
+
+@available(iOS 18.0, *)
+struct ResumeQuranCoachBookIntent: AppIntent {
+    static var title: LocalizedStringResource = "Reprendre mon livre"
+    static var description = IntentDescription("Ouvre le dernier livre écouté à sa position enregistrée.")
+    static var openAppWhenRun = true
+    @MainActor func perform() async throws -> some IntentResult & OpensIntent {
+        .result(opensIntent: OpenURLIntent(URL(string: "qurancoach://book")!))
+    }
+}
+@available(iOS 18.0, *)
+struct OpenQuranCoachKhatmIntent: AppIntent {
+    static var title: LocalizedStringResource = "Ouvrir mon Khatm"
+    static var openAppWhenRun = true
+    @MainActor func perform() async throws -> some IntentResult & OpensIntent {
+        .result(opensIntent: OpenURLIntent(URL(string: "qurancoach://khatm")!))
+    }
+}
+@available(iOS 18.0, *)
+struct OpenQuranCoachIqamaIntent: AppIntent {
+    static var title: LocalizedStringResource = "Afficher ma prochaine Iqama"
+    static var description = IntentDescription("Affiche les horaires publiés par votre mosquée dans Quran Coach.")
+    static var openAppWhenRun = true
+    @MainActor func perform() async throws -> some IntentResult & OpensIntent {
+        .result(opensIntent: OpenURLIntent(URL(string: "qurancoach://prayers")!))
+    }
+}
+@available(iOS 18.0, *)
+struct QuranCoachShortcuts: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(intent: ResumeQuranCoachBookIntent(), phrases: ["Reprends mon livre dans \(.applicationName)"], shortTitle: "Reprendre mon livre", systemImageName: "book")
+        AppShortcut(intent: OpenQuranCoachKhatmIntent(), phrases: ["Ouvre mon Khatm dans \(.applicationName)"], shortTitle: "Mon Khatm", systemImageName: "book.pages")
+        AppShortcut(intent: OpenQuranCoachIqamaIntent(), phrases: ["Affiche ma prochaine Iqama dans \(.applicationName)"], shortTitle: "Prochaine Iqama", systemImageName: "clock")
+    }
+}

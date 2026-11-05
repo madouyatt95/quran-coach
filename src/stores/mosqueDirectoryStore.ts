@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { mosqueApiUrl, validCoordinates, safeMosqueUrl } from '../lib/mosques';
 import type { DirectoryResult } from '../lib/mosqueDirectory';
 import type { Mosque } from '../lib/mosques';

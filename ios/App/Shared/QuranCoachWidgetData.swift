@@ -6,6 +6,7 @@ enum QuranCoachWidgetRoute {
         switch url.host?.lowercased() {
         case "identify": return "/voice-search"
         case "khatm": return "/read?widget=khatm"
+        case "book": return "/listen?widget=book"
         case "audio": return "/listen?widget=audio"
         case "home": return "/"
         case "prayers": return "/prayers"

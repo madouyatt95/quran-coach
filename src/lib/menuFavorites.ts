@@ -1,3 +1,4 @@
+import {profileStorage} from './profileStorage';
 export const MENU_FAVORITES_KEY = 'quran-coach-menu-favorites-v1';
 export const MENU_SECTIONS_KEY = 'quran-coach-menu-sections-v1';
 export const MENU_SECTION_IDS = ['discover', 'practice', 'daily', 'progress'] as const;
@@ -22,7 +23,7 @@ export function validMenuFavorites(value: unknown): string[] {
 
 export function readMenuFavorites(): string[] {
   try {
-    const raw = localStorage.getItem(MENU_FAVORITES_KEY);
+    const raw = profileStorage.getItem(MENU_FAVORITES_KEY);
     return raw === null ? [...DEFAULT_MENU_FAVORITES] : validMenuFavorites(JSON.parse(raw));
   } catch {
     return [...DEFAULT_MENU_FAVORITES];
@@ -55,7 +56,7 @@ export function validMenuSections(value: unknown): MenuSections {
 }
 
 export function readMenuSections(): MenuSections {
-  try { return validMenuSections(JSON.parse(localStorage.getItem(MENU_SECTIONS_KEY) || '{}')); }
+  try { return validMenuSections(JSON.parse(profileStorage.getItem(MENU_SECTIONS_KEY) || '{}')); }
   catch { return {}; }
 }
 

@@ -2,7 +2,7 @@ import { FONT_CACHE, fontBytes } from '../lib/interactiveMushaf/fontResources';
 import { audioDownloadUrl } from "../lib/listeningAudioCache";
 import { JOURNEY_CACHE } from "../lib/listeningOffline";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import {persist} from '../lib/profilePersist';
 import type { PlaylistItem } from "../types";
 export interface DownloadTask {
   items?: PlaylistItem[];

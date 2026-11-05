@@ -1,3 +1,4 @@
+import {profileStorage} from '../../lib/profileStorage';
 import {useEffect,useState} from 'react';
 import {Link} from 'react-router-dom';
 import {HomeDialog} from './HomeDialog';
@@ -9,7 +10,7 @@ export const HOME_DESTINATIONS=[
 export function useHomeShortcuts(){
  const [favorites,setFavorites]=useState(readMenuFavorites);
  useEffect(()=>{const refresh=()=>setFavorites(readMenuFavorites());window.addEventListener('storage',refresh);window.addEventListener('quran-menu-favorites',refresh);return()=>{window.removeEventListener('storage',refresh);window.removeEventListener('quran-menu-favorites',refresh);};},[]);
- const save=(next:string[])=>{setFavorites(next);try{localStorage.setItem(MENU_FAVORITES_KEY,JSON.stringify(next));window.dispatchEvent(new Event('quran-menu-favorites'));}catch{/* Current session remains usable. */}};
+ const save=(next:string[])=>{setFavorites(next);try{profileStorage.setItem(MENU_FAVORITES_KEY,JSON.stringify(next));window.dispatchEvent(new Event('quran-menu-favorites'));}catch{/* Current session remains usable. */}};
  return {favorites,save};
 }
 export function HomeQuickLinks({favorites,onEdit}:{favorites:string[];onEdit:()=>void}){

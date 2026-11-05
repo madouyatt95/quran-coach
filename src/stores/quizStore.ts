@@ -1,7 +1,7 @@
 import {quizDay} from '../lib/quizDate';
 // Quiz Store — Zustand state management for solo + duel + sprint + revision modes
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { supabase } from '../lib/supabase';
 import { getQuestions, getSprintQuestions, getDuelRoundQuestions, getDailyQuestions, calculateScore, getAudioQuestions, generateSiraLevels, stableQuestionId } from '../lib/quizEngine';
 import type { QuizQuestion, QuizThemeId, QuizAnswer, QuizPlayer, QuizDifficulty, ThemeStats, BadgeId, QuizView, QuizMode, PowerUpId, PowerUpEffect, SiraLevel } from '../data/quizTypes';

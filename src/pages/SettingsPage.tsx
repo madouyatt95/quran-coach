@@ -1,3 +1,5 @@
+import {HouseholdProfiles} from '../components/HouseholdProfiles';
+import '../components/Learning/Learning.css';
 import {CarPlaySettings} from '../components/Audio/CarPlaySettings';
 import {Capacitor} from '@capacitor/core';
 import { useState, useEffect, lazy, Suspense } from 'react';
@@ -154,9 +156,10 @@ export function SettingsPage() {
                 <a href="#audio">Audio</a>
                 <a href="#notifications">Notifications</a>
                 {Capacitor.isNativePlatform()&&Capacitor.getPlatform()==='ios'&&<a href="#carplay">CarPlay</a>}
-                <a href="#storage">Stockage</a><a href="#backup">Sauvegarde</a>
+                <a href="#profiles">Famille</a><a href="#storage">Stockage</a><a href="#backup">Sauvegarde</a>
             </nav>
 
+            <HouseholdProfiles />
             {/* Appearance */}
             <section className="settings-section" id="appearance">
                 <h2 className="settings-section__title">{t('settings.appearance', 'Apparence')}</h2>

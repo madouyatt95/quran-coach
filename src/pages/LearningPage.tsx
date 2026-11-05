@@ -1,3 +1,4 @@
+import {CrossAppSession} from '../components/Learning/CrossAppSession';
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLearningStore } from "../stores/learningStore";
@@ -35,13 +36,16 @@ export function LearningPage() {
     <div className="learning-page">
       <span className="learning-kicker">Un peu chaque jour</span>
       <h1>Ma séance du jour</h1>
+      <CrossAppSession/>
+      <Link className="learning-btn" to="/learning/review">Mes révisions · cours, livres et Fahm →</Link>
+      <details className="learning-card"><summary>Travailler un passage du Coran</summary>
       <p className="learning-muted">
         Comprendre, écouter et rappeler de mémoire. {due} verset
         {due > 1 ? "s" : ""} à réviser aujourd’hui.
       </p>
       <section className="learning-card learning-hero">
         <h2>
-          {session ? "Votre parcours" : "De combien de temps disposez-vous ?"}
+          {session ? "Votre parcours coranique" : "De combien de temps disposez-vous ?"}
         </h2>
         {!session ? (
           <>
@@ -145,6 +149,7 @@ export function LearningPage() {
           </>
         )}
       </section>
+      </details>
       <div className="learning-actions">
         <Link className="learning-btn" to="/similar-passages">
           Passages semblables

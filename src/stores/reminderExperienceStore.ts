@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import type {CompanionCard} from '../lib/companion';
 import type {KeptMoment,ReminderGroup} from '../lib/reminderExperience';
 interface State {

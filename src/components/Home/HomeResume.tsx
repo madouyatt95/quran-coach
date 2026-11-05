@@ -1,3 +1,4 @@
+import {profileStorage} from '../../lib/profileStorage';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useListenStore} from '../../stores/listenStore';
@@ -10,7 +11,7 @@ export function HomeResume({readingTitle,readingDetail,onRead,streak}:{readingTi
     const [mode,setMode]=useState<'reading'|'listening'|'memorizing'>('reading');
     const track=useListenStore(s=>s.lastListened),plan=useHifdhJourneyStore(s=>s.plan);
     const navigate=useNavigate();
-    const memory=menuResumeOptions({bookmark:null,progress:null,lastListened:null,journeyPlan:plan,hifdhSession:readHifdhSession(localStorage)}).find(v=>v.kind==='memorizing');
+    const memory=menuResumeOptions({bookmark:null,progress:null,lastListened:null,journeyPlan:plan,hifdhSession:readHifdhSession(profileStorage)}).find(v=>v.kind==='memorizing');
     const title=mode==='reading'?readingTitle:mode==='listening'?(track?'Reprendre mon écoute':'Choisir une récitation'):(memory?'Reprendre ma mémorisation':'Commencer à mémoriser');
     const seconds=Math.max(0,Math.floor(track?.position||0));
     const detail=mode==='reading'?readingDetail:mode==='listening'?(track?`${track.surahName} · ${track.reciterName} · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`:'Découvrez les récitateurs et les parcours'):memory?`${CHAPTERS[memory.surah-1]?.latin||'Sourate '+memory.surah} · verset ${memory.ayah}`:'Un passage à votre rythme';

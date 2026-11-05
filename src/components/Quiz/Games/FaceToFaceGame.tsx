@@ -1,3 +1,4 @@
+import {profileStorage} from '../../../lib/profileStorage';
 import {useEffect,useState} from 'react';
 import {Link,useSearchParams} from 'react-router-dom';
 import {ArrowLeft,Pause,Play,Check,RotateCcw} from 'lucide-react';
@@ -10,8 +11,8 @@ function Answers({round,onSubmit,name}:{round:TableRound;onSubmit:(answer:number
  return <><div className="table-choices">{round.pairs?<><div className="table-pair-tabs" role="group" aria-label={`Mots à associer · ${name}`}>{round.pairs.map((word,i)=><button key={i} lang="ar" dir="rtl" aria-pressed={pair===i} onClick={()=>setPair(i)}>{word}{selected[i]!==undefined&&<Check size={12}/>}</button>)}</div>{round.choices.map((choice,i)=><button key={i} aria-pressed={selected[pair]===i} onClick={()=>{setSelected(old=>{const next=[...old];const used=next.indexOf(i);if(used!==pair&&used>=0)delete next[used];next[pair]=i;return next;});setPair(Math.min(round.pairs!.length-1,pair+1));}}>{choice}</button>)}</>:round.choices.map((choice,i)=><button key={i} aria-pressed={selected[0]===i} onClick={()=>setSelected([i])}>{choice}</button>)}</div><button className="table-confirm" disabled={round.correct.some((_,i)=>selected[i]===undefined)} onClick={()=>onSubmit([...selected])}>Valider ma réponse <Check size={16}/></button></>;
 }
 export function FaceToFaceGame(){
- const [,setParams]=useSearchParams(),[session,setSession]=useState<TableDuel|null>(()=>{try{return readTableDuel(localStorage.getItem(KEY));}catch{return null;}}),[setup,setSetup]=useState(false),[mode,setMode]=useState<TableMode>('vocabulary'),[names,setNames]=useState<[string,string]>(['Joueur 1','Joueur 2']);
- useEffect(()=>{try{if(session)localStorage.setItem(KEY,JSON.stringify(session));}catch{/* A full storage must not interrupt a game. */}},[session]);
+ const [,setParams]=useSearchParams(),[session,setSession]=useState<TableDuel|null>(()=>{try{return readTableDuel(profileStorage.getItem(KEY));}catch{return null;}}),[setup,setSetup]=useState(false),[mode,setMode]=useState<TableMode>('vocabulary'),[names,setNames]=useState<[string,string]>(['Joueur 1','Joueur 2']);
+ useEffect(()=>{try{if(session)profileStorage.setItem(KEY,JSON.stringify(session));}catch{/* A full storage must not interrupt a game. */}},[session]);
  useEffect(()=>{const pause=()=>{if(document.hidden)setSession(s=>s?tableDuelReducer(s,{type:'pause'}):s);};document.addEventListener('visibilitychange',pause);return()=>document.removeEventListener('visibilitychange',pause);},[]);
  const act=(action:Parameters<typeof tableDuelReducer>[1])=>setSession(s=>s?tableDuelReducer(s,action):s);
  const exit=()=>{act({type:'pause'});setParams({}, {replace:true});};

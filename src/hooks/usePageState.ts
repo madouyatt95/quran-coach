@@ -1,9 +1,10 @@
+import {activeProfile} from '../lib/profileStorage';
 import {useCallback,useState,type SetStateAction} from 'react';
 import {useLocation,useNavigate} from 'react-router-dom';
 
 /** Only UI preferences, never credentials or form submissions. Scoped to this tab. */
 export function usePageState<T>(name:string,initial:T|(()=>T)) {
- const {pathname}=useLocation(),key=`qc-page:${pathname}:${name}`;
+ const {pathname}=useLocation(),key=`qc-page:${activeProfile.id}:${pathname}:${name}`;
  const read=()=>{const fallback=typeof initial==='function'?(initial as ()=>T)():initial;try{const raw=sessionStorage.getItem(key);if(raw!==null){const parsed=JSON.parse(raw);if(fallback===null||(parsed!==null&&typeof parsed===typeof fallback&&Array.isArray(parsed)===Array.isArray(fallback)))return parsed as T;}}catch{/* Private browsing or a stale record. */}return fallback;};
  const [saved,setSaved]=useState(()=>({key,value:read()}));
  let value=saved.value;

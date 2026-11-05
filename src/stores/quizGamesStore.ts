@@ -1,6 +1,6 @@
 import {validSavedGame} from '../lib/quizSavedGame';
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import {createGame,reduceGame,type SavedGame,type GameAction} from '../lib/quizGames';
 import type {GameKind} from '../data/quizGames';
 interface State {games:Partial<Record<GameKind,SavedGame>>;start:(kind:GameKind,id:string,options?:{advanced?:boolean;seconds?:number})=>void;act:(kind:GameKind,action:GameAction)=>void}

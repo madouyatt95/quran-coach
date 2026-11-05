@@ -1,3 +1,6 @@
+import {activeProfile} from './lib/profileStorage';
+import {SessionReturn} from './components/Learning/CrossAppSession';
+import {CourseSaveAction} from './components/CourseSaveAction';
 import {NavigationMemory} from './components/Navigation/NavigationMemory';
 import { startCarMediaBridge } from './lib/carExperience';
 import {CarPlaybackBar} from './components/Audio/CarPlaybackBar';
@@ -12,6 +15,7 @@ import { FindButton } from './components/Navigation/FindButton';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { Menu } from 'lucide-react';
+const PersonalReviewPage=lazy(()=>import('./pages/PersonalReviewPage').then(m=>({default:m.PersonalReviewPage})));
 import { BottomNav } from './components/Navigation/BottomNav';
 import { ReadPage } from './pages/ReadPage';
 import { SideMenu } from './components/Navigation/SideMenu';
@@ -224,12 +228,13 @@ function AppContent() {
         {/* ReadPage always mounted to preserve audio state & tracking */}
         <ReadPagePersistent />
         <Suspense fallback={<PageLoader />}>
-          <Routes>
+          <SessionReturn/><CourseSaveAction/><Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/read" element={null} />
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/test-memorization" element={<MemorizationTestPage />} />
             <Route path="/learning" element={<LearningPage />} />
+            <Route path="/learning/review" element={<PersonalReviewPage />} />
             <Route path="/passage" element={<PassagePage />} />
             <Route path="/similar-passages" element={<SimilarPassagesPage />} />
             <Route path="/voice-search" element={<VoiceSearchPage />} />
@@ -242,7 +247,7 @@ function AppContent() {
             <Route path="/listen" element={<ListenPage />} />
             <Route path="/listen/library" element={<AudioLibraryPage />} />
             <Route path="/books/:bookId" element={<BookPage />} />
-            <Route path="/admin/audio" element={<AudioStudioPage />} />
+            <Route path="/admin/audio" element={activeProfile.id==='default'?<AudioStudioPage />:<LearningPage />} />
             <Route path="/listen/experience" element={<ListeningExperiencePage key={location.search} />} />
             <Route path="/listen/:id" element={<ReciterDetailPage />} />
             <Route path="/playlists/:id" element={<PlaylistDetailPage />} />

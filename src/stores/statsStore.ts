@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { localDay } from '../lib/learning';
 import { regularityStreak } from '../lib/regularity';
 

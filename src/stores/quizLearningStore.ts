@@ -1,6 +1,6 @@
 import {useStatsStore} from './statsStore';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { recallAnswer, learningBank, type LearningQuestion, type QuizRecall } from '../lib/quizLearning';
 import {adaptNext,type AnswerDetail} from '../lib/quizPedagogy';
 export interface StudyAnswer {id:string;correct:boolean;certain:boolean;player:number;response:string;detail?:AnswerDetail}

@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import {CHAPTERS,PAGE_MANIFEST} from '../lib/interactiveMushaf/model';
 export type NoteKind='remember'|'explore'|'personal';
 export type ReaderNote={surah:number;ayah:number;page:number;kind:NoteKind;text:string;updatedAt:number};

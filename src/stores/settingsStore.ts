@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { applyAppearance, migrateAppearance } from '../lib/appearance';
 import type { Settings, Theme, ArabicFontSize, ArabicFontFamily, ViewMode } from '../types';
 

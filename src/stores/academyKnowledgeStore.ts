@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 export interface ConceptKnowledge {
  answers:Record<string,number>;attempts:number;mistakes:number;streak:number;
  lastCorrect:boolean;lastQuestion?:string;updatedAt:number;due:number;interval:number;

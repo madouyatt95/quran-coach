@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import { safeMosqueUrl, validCoordinates, type Mosque } from '../lib/mosques';
 interface MosqueState {
   favorite: Mosque | null;

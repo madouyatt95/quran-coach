@@ -1,3 +1,4 @@
+import {profileStorage} from '../../lib/profileStorage';
 import { FindButton } from './FindButton';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -161,20 +162,20 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         const next = replacing ? replaceMenuFavorite(favorites, replacing, path) : toggleMenuFavorite(favorites, path);
         setReplacing(null);
         setFavorites(next);
-        try { localStorage.setItem(MENU_FAVORITES_KEY, JSON.stringify(next)); window.dispatchEvent(new Event('quran-menu-favorites')); } catch { /* browsing still works */ }
+        try { profileStorage.setItem(MENU_FAVORITES_KEY, JSON.stringify(next)); window.dispatchEvent(new Event('quran-menu-favorites')); } catch { /* browsing still works */ }
     };
     const reorderFavorite = (path: string, direction: -1 | 1) => {
         reorderedRef.current = { path, direction };
         const next = moveMenuFavorite(favorites, path, direction);
         setFavorites(next);
-        try { localStorage.setItem(MENU_FAVORITES_KEY, JSON.stringify(next)); window.dispatchEvent(new Event('quran-menu-favorites')); } catch { /* Browsing still works. */ }
+        try { profileStorage.setItem(MENU_FAVORITES_KEY, JSON.stringify(next)); window.dispatchEvent(new Event('quran-menu-favorites')); } catch { /* Browsing still works. */ }
     };
     const updateSection = (id: keyof MenuSections, expanded: boolean) => {
         const next = { ...sectionsOpen, [id]: expanded };
         setSectionsOpen(next);
-        try { localStorage.setItem(MENU_SECTIONS_KEY, JSON.stringify(next)); } catch { /* Browsing still works. */ }
+        try { profileStorage.setItem(MENU_SECTIONS_KEY, JSON.stringify(next)); } catch { /* Browsing still works. */ }
     };
-    const resumes = menuResumeOptions({ bookmark, progress, lastListened, hifdhSession: readHifdhSession(localStorage), journeyPlan });
+    const resumes = menuResumeOptions({ bookmark, progress, lastListened, hifdhSession: readHifdhSession(profileStorage), journeyPlan });
     const resume = resumes[0] || null;
     const todaySession = learningSession?.date === localDay() ? learningSession : null;
     const nextStep = todaySession?.steps.find(step => !todaySession.done.includes(step.id) && !todaySession.skipped.includes(step.id));
@@ -253,7 +254,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                                 <button type="button" data-direction="1" disabled={index === favorites.length - 1} onClick={() => reorderFavorite(path, 1)} aria-label={t('sideMenu.moveFavoriteDown', { name: item.label })}><ArrowDown size={17} aria-hidden="true" /></button>
                                 <div className="side-menu-picked-actions">
                                     <button type="button" aria-label={t('sideMenu.replaceFavorite', { name: item.label })} onClick={() => { setReplacing(path); requestAnimationFrame(() => { choicesRef.current?.scrollIntoView({ block: 'nearest' }); choicesRef.current?.focus(); }); }}>{t('sideMenu.replace')}</button>
-                                    <button type="button" aria-label={t('sideMenu.removeFavorite', { name: item.label })} onClick={() => { setReplacing(null); const next = toggleMenuFavorite(favorites, path); setFavorites(next); try { localStorage.setItem(MENU_FAVORITES_KEY, JSON.stringify(next)); window.dispatchEvent(new Event('quran-menu-favorites')); } catch { /* Local storage unavailable. */ } }}><X size={16} aria-hidden="true" /> Retirer</button>
+                                    <button type="button" aria-label={t('sideMenu.removeFavorite', { name: item.label })} onClick={() => { setReplacing(null); const next = toggleMenuFavorite(favorites, path); setFavorites(next); try { profileStorage.setItem(MENU_FAVORITES_KEY, JSON.stringify(next)); window.dispatchEvent(new Event('quran-menu-favorites')); } catch { /* Local storage unavailable. */ } }}><X size={16} aria-hidden="true" /> Retirer</button>
                                 </div>
                             </div>;
                         })}

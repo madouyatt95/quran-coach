@@ -1,3 +1,4 @@
+import {profileStorage} from './profileStorage';
 import {registerPlugin} from '@capacitor/core';
 import {useReadingBookmarkStore} from '../stores/readingBookmarkStore';
 import {useQuranStore} from '../stores/quranStore';
@@ -16,7 +17,7 @@ import {latestWidgetAudio, prepareWidgetAudio} from './lockScreenAudio';
 const bridge = registerPlugin<{updateActivityWidgets(data: {snapshot: ActivityWidgetSnapshot}): Promise<void>}>('QuranCoachCar');
 export const activityWidgetInput = () => ({
   bookmark: useReadingBookmarkStore.getState().bookmark, progress: useQuranStore.getState().progress,
-  hifdhSession: readHifdhSession(localStorage), journeyPlan: useHifdhJourneyStore.getState().plan,
+  hifdhSession: readHifdhSession(profileStorage), journeyPlan: useHifdhJourneyStore.getState().plan,
   cards: useSRSStore.getState().cards, daily: useDailyAdhkarStore.getState(), experience: useAdhkarExperienceStore.getState(),
 });
 

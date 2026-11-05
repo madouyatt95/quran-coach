@@ -1,3 +1,4 @@
+import {profileStorage,activeProfile} from './profileStorage';
 import { BACKUP_LABELS, RECOVERY_KEY, backupRegistry, createBackup, parseBackup, type BackupStore, type ProgressBackup, type BackupSection } from './progressBackup';
 import { decryptProgress, encryptProgress, loadCloudProgress, progressClient, saveCloudProgress } from './progressVault';
 
@@ -27,7 +28,7 @@ export function planProgressSync(base:ProgressBackup|null,device:ProgressBackup,
  return {backup:{...device,sections},conflicts};
 }
 /** Exact replacement is essential: union-based imports would resurrect deleted notes/signets. */
-export async function applySyncedProgress(next:ProgressBackup,stores:BackupStore[],storage:Storage=localStorage,received:ProgressBackup=next) {
+export async function applySyncedProgress(next:ProgressBackup,stores:BackupStore[],storage:Storage=profileStorage,received:ProgressBackup=next) {
  const valid=parseBackup(JSON.stringify(next),stores,true),current=createBackup(stores,storage);
  const keys=stores.map(s=>s.key).filter(k=>!same(current.sections[k],valid.sections[k]));
  if(!keys.length)return;
@@ -54,6 +55,7 @@ export function lockProgressSync(){
  update({status:'locked',message:'Synchronisation verrouillée. Vos progrès restent disponibles ici.',conflicts:[]});
 }
 export async function unlockProgressSync(passphrase:string){
+ if(activeProfile.id!=='default')throw new Error('La synchronisation du compte est réservée à Mon espace. Les profils familiaux restent sur cet appareil.');
  if(passphrase.length<12)throw new Error('Utilisez une phrase secrète d’au moins 12 caractères.');
  if(busy)throw new Error('Patientez pendant la synchronisation en cours.');
  lockProgressSync();
@@ -90,13 +92,13 @@ export async function syncProgress(choices?:Record<string,SyncChoice>){
   // Never replace activity performed while the network/encryption work was in flight.
   if(!same(createBackup(stores).sections,device.sections)){update({status:'ready',message:'De nouveaux progrès sont en cours. Synchronisation au prochain passage.'});return;}
   if(payload){
-   const before=Object.fromEntries(stores.map(s=>[s.key,localStorage.getItem(s.key)]));
-   localStorage.setItem(RECOVERY_KEY,JSON.stringify({before,received:cloud,createdAt:new Date().toISOString()}));
+   const before=Object.fromEntries(stores.map(s=>[s.key,profileStorage.getItem(s.key)]));
+   profileStorage.setItem(RECOVERY_KEY,JSON.stringify({before,received:cloud,createdAt:new Date().toISOString()}));
    await saveCloudProgress(payload,remote?.revision||0,owner);
   }
   if(epoch!==generation)return;
   if(!same(createBackup(stores).sections,device.sections)){update({status:'ready',message:'Vos nouveaux progrès sont conservés. Une autre synchronisation va suivre.'});return;}
-  await applySyncedProgress(plan.backup,stores,localStorage,cloud);
+  await applySyncedProgress(plan.backup,stores,profileStorage,cloud);
   if(epoch!==generation)return;
   base=createBackup(stores);pending=null;
   update({status:'ready',message:'Vos progrès sont à jour sur cet appareil.',lastSync:new Date().toISOString(),conflicts:[]});

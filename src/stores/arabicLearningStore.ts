@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import {ARABIC_LESSONS,lessonById} from '../arabic/data';
 import {applicationQuestion} from '../arabic/applicationQuestions';
 import {REMEDIES} from '../arabic/pedagogy';

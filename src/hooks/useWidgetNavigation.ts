@@ -17,11 +17,11 @@ export function useWidgetNavigation() {
       });
       return () => {cancelled = true;};
     }
-    if (location.pathname === '/listen' && marker === 'audio') {
+    if (location.pathname === '/listen' && (marker === 'audio'||marker==='book')) {
       void import('../lib/lockScreenAudio').then(async audio => {
         await audio.prepareWidgetAudio().catch(() => {});
         if (cancelled) return;
-        const latest = audio.latestWidgetAudio();
+        const latest = audio.latestWidgetAudio(marker==='book');
         navigate(latest?.route ?? '/listen', {replace: true, state: latest ? {widgetListen: true} : undefined});
         await latest?.play();
       });

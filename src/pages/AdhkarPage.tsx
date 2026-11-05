@@ -1,3 +1,4 @@
+import {profileStorage} from '../lib/profileStorage';
 import {usePageState,useSmartBack} from '../hooks/usePageState';
 import {InvocationReviewShelf} from '../components/Adhkar/InvocationReviewShelf';
 import {useEffect,useMemo,useState} from 'react';
@@ -47,7 +48,7 @@ export function AdhkarPage(){
  const completed=suggested.items.filter(d=>getCount(d)>=target(d)).length;
  const nextDaily=suggested.items.find(d=>getCount(d)<target(d))||suggested.items[0];
  const persisted=experience.resume;
- const legacyCat=localStorage.getItem('adhkar_category_id'),legacyIndex=Number(localStorage.getItem('adhkar_dhikr_index')||0);
+ const legacyCat=profileStorage.getItem('adhkar_category_id'),legacyIndex=Number(profileStorage.getItem('adhkar_dhikr_index')||0);
  const legacy=legacyCat?categoryById.get(legacyCat)?.items[legacyIndex]:undefined;
  const candidate= persisted&&invocationByKey.has(persisted.key)?persisted:legacy?{session:legacy.categoryId,key:legacy.key}:null;
  const entry=candidate?invocationByKey.get(candidate.key):undefined;

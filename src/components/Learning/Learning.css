@@ -189,3 +189,4 @@
 }
 .voice-search-trigger.is-active { background: var(--color-bg-tertiary); color: var(--color-text-primary); }
 .voice-search-trigger:focus-visible { outline: 3px solid #4ecdc4; outline-offset: 5px; }
+.session-return{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:10px 16px;margin:8px 12px;border:1px solid #bca56755;border-radius:14px;background:var(--color-bg-secondary,#20203a);color:var(--color-text-primary);font-size:13px}.session-return button,.session-return a{padding:8px 12px;border-radius:9px;background:#bca56722;color:inherit;border:1px solid #bca56755}.learning-card fieldset{border:0;margin:12px 0;padding:0}.learning-card legend{font-size:1.1rem;line-height:1.6}.learning-card textarea{width:100%;min-height:80px}.learning-step a{flex:1;color:inherit}.learning-reveal{padding:16px;border-left:3px solid #bca567;margin:16px 0;line-height:1.7}

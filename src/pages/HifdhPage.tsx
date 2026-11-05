@@ -1,3 +1,4 @@
+import {profileStorage} from '../lib/profileStorage';
 import {usePageState} from '../hooks/usePageState';
 import {Pupitre,PupitreTop,PupitreBottom,PupitreOnly} from '../components/Pupitre/Pupitre';
 import { useHifdhWordStudy } from '../components/Hifdh/useHifdhWordStudy';
@@ -56,7 +57,7 @@ export function HifdhPage() {
     const incoming = parsePassage(new URLSearchParams(location.search));
     const { surahs } = useQuranStore();
     const { playbackSpeed, setPlaybackSpeed } = useSettingsStore();
-    const [savedSession,setSavedSession] = useState(()=>readHifdhSession(localStorage));
+    const [savedSession,setSavedSession] = useState(()=>readHifdhSession(profileStorage));
     const [step,setStep] = usePageState<HifdhStep>('step:'+location.search,'listen');
     const wordStudyHost=useRef<HTMLDivElement>(null);
     const [revealedHints,setRevealedHints]=useState<Set<string>>(()=>new Set());
@@ -75,13 +76,13 @@ export function HifdhPage() {
     const [sessionSaved,setSessionSaved] = useState(true);
     const { getDueCards, cards, addCard } = useSRSStore();
     const [reviewLog, setReviewLog] = useState(() => {
-        try { return readCoachReviews(localStorage); } catch { return []; }
+        try { return readCoachReviews(profileStorage); } catch { return []; }
     });
     const [loadError, setLoadError] = useState<string | null>(null);
     const [reloadPassage, setReloadPassage] = useState(0);
     useEffect(() => {
         const refresh = () => {
-            try { setReviewLog(readCoachReviews(localStorage)); } catch { /* Keep the current history. */ }
+            try { setReviewLog(readCoachReviews(profileStorage)); } catch { /* Keep the current history. */ }
         };
         window.addEventListener(COACH_REVIEW_EVENT, refresh);
         window.addEventListener("storage", refresh);
@@ -115,9 +116,9 @@ export function HifdhPage() {
     const [transliterations, setTransliterations] = useState<Map<number, string>>(new Map());
     const [translations, setTranslations] = useState<Map<number, string>>(new Map());
 
-    // Single verse display mode (localStorage persisted)
+    // Single verse display mode (profileStorage persisted)
     const [singleVerseMode, setSingleVerseMode] = useState(() => {
-        try { return localStorage.getItem('hifdh-single-verse') === 'true'; } catch { return false; }
+        try { return profileStorage.getItem('hifdh-single-verse') === 'true'; } catch { return false; }
     });
 
     // Word selection mode
@@ -253,7 +254,7 @@ export function HifdhPage() {
     }, [location.key, resumeMode]);
     useEffect(()=>{
         if(!sessionTouched.current || !currentAyah || currentAyah.surah!==selectedSurah || currentAyah.numberInSurah<startAyah || currentAyah.numberInSurah>endAyah)return;
-        try{const session={surah:selectedSurah,start:startAyah,end:endAyah,ayah:currentAyah.numberInSurah,speed:playbackSpeed,repeats:maxRepeats,phonetics:showPhonetics,focus:singleVerseMode,step,updatedAt:Date.now()};saveHifdhSession(localStorage,session);setSavedSession(session);setSessionSaved(true);}
+        try{const session={surah:selectedSurah,start:startAyah,end:endAyah,ayah:currentAyah.numberInSurah,speed:playbackSpeed,repeats:maxRepeats,phonetics:showPhonetics,focus:singleVerseMode,step,updatedAt:Date.now()};saveHifdhSession(profileStorage,session);setSavedSession(session);setSessionSaved(true);}
         catch{setSessionSaved(false);}
     },[selectedSurah,startAyah,endAyah,currentAyah,playbackSpeed,maxRepeats,showPhonetics,singleVerseMode,step,isPlaying]);
 
@@ -919,7 +920,7 @@ export function HifdhPage() {
                             onClick={() => {
                                 const next = !singleVerseMode;
                                 setSingleVerseMode(next);
-                                try { localStorage.setItem('hifdh-single-verse', String(next)); } catch { }
+                                try { profileStorage.setItem('hifdh-single-verse', String(next)); } catch { }
                             }}
                             title={singleVerseMode ? t('hifdh.showAllVerses', 'Afficher tous les versets') : t('hifdh.showOneVerse', 'Afficher 1 seul verset')}
                         >
@@ -1052,9 +1053,9 @@ export function HifdhPage() {
                                                             onClick={() => {
                                                                 setActiveMenu(null);
                                                                 // Bookmark (sauvegarde locale dans un 1er temps)
-                                                                localStorage.setItem('hifdh-bookmark', JSON.stringify({ surah: selectedSurah, ayah: ayah.numberInSurah }));
+                                                                profileStorage.setItem('hifdh-bookmark', JSON.stringify({ surah: selectedSurah, ayah: ayah.numberInSurah }));
                                                                 const saved={surah:selectedSurah,start:startAyah,end:endAyah,ayah:ayah.numberInSurah,speed:playbackSpeed,repeats:maxRepeats,phonetics:showPhonetics,focus:singleVerseMode,step,updatedAt:Date.now()};
-                                                                saveHifdhSession(localStorage,saved);setSavedSession(saved);
+                                                                saveHifdhSession(profileStorage,saved);setSavedSession(saved);
                                                                 alert(`Verset ${selectedSurah}:${ayah.numberInSurah} mis en favori !`);
                                                             }}
                                                         >
@@ -1080,7 +1081,7 @@ export function HifdhPage() {
                                                                 setActiveMenu(null);
                                                                 setCurrentAyahIndex(aIdx);
                                                                 setSingleVerseMode(true); // Enable Focus Mode equivalent
-                                                                localStorage.setItem('hifdh-single-verse', 'true');
+                                                                profileStorage.setItem('hifdh-single-verse', 'true');
                                                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                                             }}
                                                         >

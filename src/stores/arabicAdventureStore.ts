@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist} from '../lib/profilePersist';
 import {MISSIONS,MISSION_ANALYSES,DUELS,INQUIRIES} from '../arabic/playData';
 import {useStatsStore} from './statsStore';
 export interface MissionDraft {stage:number;heard:boolean;read:boolean;spot:number|null;order:number[];note:string;compared:boolean;recall:number|null;assisted:boolean;completeAt:number}

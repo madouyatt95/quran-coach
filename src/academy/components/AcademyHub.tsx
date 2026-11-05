@@ -1,3 +1,4 @@
+import {profileStorage,activeProfile} from '../../lib/profileStorage';
 import {usePageState,useSmartBack} from '../../hooks/usePageState';
 import {ArabicEntry} from '../../arabic/ArabicEntry';
 // ─── Academy Hub — Premium Redesign ──────────────────────
@@ -104,7 +105,7 @@ export function AcademyHub() {
     const [tajwidAnswer, setTajwidAnswer] = useState<number | null>(null);
     const [tajwidIdx, setTajwidIdx] = useState(0);
     const [showCertificate, setShowCertificate] = useState(false);
-    const [juniorMode, setJuniorMode] = useState(false);
+    const [juniorMode, setJuniorMode] = useState(activeProfile.kind==='child');
 
     const [reviewMode,setReviewMode]=useState(false),[workshop,setWorkshop]=useState(false),[lockedNotice,setLockedNotice]=useState('');
     const [notebookMode,setNotebookMode]=useState(false),[notebookInitial,setNotebookInitial]=useState('');
@@ -565,7 +566,7 @@ export function AcademyHub() {
                 )}
                 {showCertificate && (
                     <CertificateModal
-                        userName={localStorage.getItem('qc_user_name') || ''}
+                        userName={profileStorage.getItem('qc_user_name') || ''}
                         levelTitle={selectedLevel.title}
                         onClose={() => setShowCertificate(false)}
                     />

@@ -1,10 +1,11 @@
+import {profileStorage} from '../../../lib/profileStorage';
 import {useCallback,useEffect,useRef,useState,type RefObject} from 'react';
 import {captureReadingAnchor,restoreReadingAnchor} from '../../Pupitre/usePupitreContinuity';
 import {PAGE_MANIFEST} from '../../../lib/interactiveMushaf/model';
 const STORAGE='quran-coach-reading-trace';
 export type Trace={page:number;key:string;offset:number;offsetX:number;verse?:string};
 export function readTrace():Trace|null{
-    try{const v=JSON.parse(localStorage.getItem(STORAGE)||'null');return v&&Number.isInteger(v.page)&&v.page>=1&&v.page<=604&&/^\d+:\d+:\d+$/.test(v.key)&&PAGE_MANIFEST[v.page].verseKeys.includes(v.key.split(':').slice(0,2).join(':'))&&Number.isFinite(v.offset)&&Number.isFinite(v.offsetX)?{...v,verse:typeof v.verse==='string'&&PAGE_MANIFEST[v.page].verseKeys.includes(v.verse)?v.verse:undefined}:null;}catch{return null;}
+    try{const v=JSON.parse(profileStorage.getItem(STORAGE)||'null');return v&&Number.isInteger(v.page)&&v.page>=1&&v.page<=604&&/^\d+:\d+:\d+$/.test(v.key)&&PAGE_MANIFEST[v.page].verseKeys.includes(v.key.split(':').slice(0,2).join(':'))&&Number.isFinite(v.offset)&&Number.isFinite(v.offsetX)?{...v,verse:typeof v.verse==='string'&&PAGE_MANIFEST[v.page].verseKeys.includes(v.verse)?v.verse:undefined}:null;}catch{return null;}
 }
 /** Scroll anchors describe the viewport, never a claim that a particular word was read. */
 export function useReadingTrace(viewport:RefObject<HTMLDivElement|null>,page:number,ready:boolean,visible:boolean,explicitEntry:boolean){
@@ -33,7 +34,7 @@ export function useReadingTrace(viewport:RefObject<HTMLDivElement|null>,page:num
                 });
             }else attempted.current=true;
         }
-        const write=()=>{if(latest)try{localStorage.setItem(STORAGE,JSON.stringify(latest));}catch{/* Storage must not interrupt reading. */}};
+        const write=()=>{if(latest)try{profileStorage.setItem(STORAGE,JSON.stringify(latest));}catch{/* Storage must not interrupt reading. */}};
         const capture=()=>{const anchor=captureReadingAnchor(root);if(anchor?.attribute==='data-word-key')latest={page,key:anchor.key,offset:anchor.offset,offsetX:anchor.offsetX,...(selected.current?.page===page?{verse:selected.current.verse}:{})};};
         const save=()=>{capture();write();};captureNow.current=save;
         const scroll=()=>{capture();clearTimeout(timer);timer=window.setTimeout(write,400);};
