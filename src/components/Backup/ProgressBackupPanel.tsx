@@ -1,3 +1,4 @@
+import {recordBackupHealth} from '../../lib/backupHealth';
 import {profileStorage} from '../../lib/profileStorage';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 const ProgressSyncPanel=lazy(()=>import('./ProgressSyncPanel').then(m=>({default:m.ProgressSyncPanel})));
@@ -11,7 +12,7 @@ export function ProgressBackupPanel(){
  const input=useRef<HTMLInputElement>(null);
  useEffect(()=>{let active=true;backupRegistry().then(s=>{if(active)setStores(s);}).catch(()=>{if(active)setError('Impossible de préparer la sauvegarde. Rechargez la page.');});try{setRecovery(!!profileStorage.getItem(RECOVERY_KEY));}catch{/* Report errors on action. */}return()=>{active=false;};},[]);
  const run=async(action:()=>Promise<void>|void)=>{setBusy(true);setError('');setMessage('');try{await action();}catch(e){setError(e instanceof Error?e.message:'Opération impossible. Votre stockage est peut-être plein.');}finally{setBusy(false);}};
- const exportFile=()=>run(()=>{const backup=createBackup(stores);if(!Object.keys(backup.sections).length)throw new Error('Aucune progression enregistrée sur cet appareil.');downloadBackup(backup);setMessage('Fichier préparé. Conservez-le dans Fichiers ou transférez-le à votre autre appareil.');});
+ const exportFile=()=>run(()=>{const backup=createBackup(stores);if(!Object.keys(backup.sections).length)throw new Error('Aucune progression enregistrée sur cet appareil.');downloadBackup(backup);recordBackupHealth('export',new Date().toISOString());setMessage('Fichier préparé. Conservez-le dans Fichiers ou transférez-le à votre autre appareil.');});
  const readFile=(file:File)=>run(async()=>{setIncoming(null);setChoices({});if(file.size>BACKUP_LIMIT)throw new Error('Choisissez une sauvegarde de moins de 24 Mio.');const backup=parseBackup(await file.text(),stores);setIncoming(backup);});
  let rows:ReturnType<typeof backupPreview>=[];
  try{if(incoming&&stores.length)rows=backupPreview(incoming,stores);}catch{/* Actual import reports malformed local storage without writing. */}

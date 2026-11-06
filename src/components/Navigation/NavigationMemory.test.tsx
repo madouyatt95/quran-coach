@@ -17,3 +17,9 @@ afterEach(async()=>{await act(async()=>root.unmount());host.remove();vi.restoreA
 it('restores the filter and exact window position after entering a detail and pressing Back',async()=>{await act(async()=>root.render(app()));await click('Filtrer');y=740;window.dispatchEvent(new Event('scroll'));await click('Ouvrir');expect(location.pathname).toBe('/detail');expect(y).toBe(0);await click('Retour');expect(location.pathname).toBe('/list');expect(host.querySelector('output')?.textContent).toBe('Approfondir');expect(y).toBe(740);});
 it('uses a safe parent destination when a detail is opened without app history',async()=>{window.history.replaceState({idx:0,key:'direct'},'','/detail');await act(async()=>root.render(app()));await click('Retour');expect(location.pathname).toBe('/list');});
 it('ignores corrupt session preferences without breaking the page',async()=>{window.sessionStorage.setItem('qc-page:/list:filter','{broken');await act(async()=>root.render(app()));expect(host.querySelector('output')?.textContent).toBe('Tous');});
+it('retries after an image loads but stops restoring as soon as the user interacts',async()=>{
+ await act(async()=>root.render(app()));window.dispatchEvent(new Event('pointerdown'));y=820;window.dispatchEvent(new Event('scroll'));await click('Ouvrir');await click('Retour');expect(y).toBe(820);
+ y=120;await act(async()=>{window.dispatchEvent(new Event('load'));await new Promise(r=>setTimeout(r,20));});expect(y).toBe(820);
+ window.dispatchEvent(new Event('pointerdown'));y=300;window.dispatchEvent(new Event('scroll'));
+ await act(async()=>{window.dispatchEvent(new Event('load'));await new Promise(r=>setTimeout(r,20));});expect(y).toBe(300);
+});

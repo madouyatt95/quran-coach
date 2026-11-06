@@ -1,5 +1,6 @@
+import {usePageState} from '../hooks/usePageState';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams, useNavigationType } from 'react-router-dom';
 import { Search, ExternalLink } from 'lucide-react';
 import { useOpenReader } from '../hooks/useOpenReader';
 import { coachSearch, QUICK_TAGS, type SearchKind, type SearchResult } from '../lib/coachSearch';
@@ -7,15 +8,16 @@ import './CoachPage.css';
 
 export function CoachPage() {
     const navigate = useNavigate();
+    const navigationType=useNavigationType();
     const location = useLocation();
     const [params, setParams] = useSearchParams();
     const openReader = useOpenReader('Trouve');
     const query = params.get('q') || '';
     const activeTag = params.get('tag') || '';
-    const [category,setCategory]=useState<SearchKind|'all'>('all');
-    const [studiedOnly,setStudiedOnly]=useState(false);
+    const [category,setCategory]=usePageState<SearchKind|'all'>('category','all');
+    const [studiedOnly,setStudiedOnly]=usePageState('studiedOnly',false);
     const [unavailable,setUnavailable]=useState<string[]>([]);
-    const [limit,setLimit]=useState(24);
+    const [limit,setLimit]=usePageState(`limit:${query}:${activeTag}:${category}`,24);
     const [retry,setRetry]=useState(0);
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -31,18 +33,14 @@ export function CoachPage() {
     const handleTag = (tag: typeof QUICK_TAGS[0]) => updateParams(activeTag === tag.query
         ? { q: '', tag: '' } : { q: tag.label, tag: tag.query });
     useEffect(() => {
-        if (location.state?.focusSearch) inputRef.current?.focus();
-    }, [location.key]);
+        if (navigationType!=='POP'&&location.state?.focusSearch) inputRef.current?.focus({preventScroll:true});
+    }, [location.key,location.state?.focusSearch,navigationType]);
     useEffect(() => {
         let cancelled = false;
         const controller=new AbortController();
-        setUnavailable([]);setLimit(24);
         const term = activeTag || query;
-        setResults([]);
-        setSearchError(false);
-        setHasSearched(false);
-        setIsSearching(term.trim().length >= 2);
-        if (term.trim().length < 2) return;
+        queueMicrotask(()=>{if(!cancelled){setUnavailable([]);setResults([]);setSearchError(false);setHasSearched(false);setIsSearching(term.trim().length>=2);}});
+        if (term.trim().length < 2) return ()=>{cancelled=true;controller.abort();};
         const timer = setTimeout(() => {
             void coachSearch(term,{signal:controller.signal,localOnly:category!=='all'&&category!=='verse'}).then(result => {
                 if (!cancelled) { setResults(result.results); setUnavailable(result.unavailable); setHasSearched(true); }

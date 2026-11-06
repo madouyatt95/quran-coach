@@ -1,0 +1,8 @@
+import {useState} from 'react';
+import {chapterSources,sourceLabel,type NarrativeBook,type NarrativeChapter,type NarrativeSource} from '../../lib/narrativeBooks';
+import './ChapterNextSteps.css';
+export function ChapterNextSteps({book,chapter,nextTitle,onContinue,onSource,note,onNote}:{book:NarrativeBook;chapter:NarrativeChapter;nextTitle?:string;onContinue:()=>void;onSource:(source:NarrativeSource)=>void;note:string;onNote:(value:string)=>void}){
+ const [writing,setWriting]=useState(false),[sources,setSources]=useState(false);
+ const references=chapterSources(book,chapter);
+ return <section className="chapter-next" aria-label="Après ce chapitre"><span>APRÈS CE CHAPITRE</span><h3>À votre rythme</h3><div className="chapter-next-actions">{nextTitle&&<button onClick={onContinue}><strong>Continuer le récit →</strong><small>{nextTitle}</small></button>}{references.length>0&&<button aria-expanded={sources} onClick={()=>setSources(!sources)}><strong>Revenir aux sources</strong><small>{references.length} référence{references.length>1?'s':''} de ce chapitre</small></button>}<button aria-expanded={writing} onClick={()=>setWriting(!writing)}><strong>Ce que je retiens</strong><small>Garder une idée dans mon carnet</small></button></div>{sources&&<div className="chapter-next-sources">{references.map(source=><button key={source.id} onClick={()=>onSource(source)}>{sourceLabel(source)}</button>)}</div>}{writing&&<label>Mon carnet du livre<textarea autoFocus maxLength={2000} value={note} onChange={e=>onNote(e.target.value)} placeholder="Une idée que je souhaite garder…"/><small>Enregistré automatiquement sur cet appareil.</small></label>}</section>;
+}

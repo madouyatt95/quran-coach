@@ -1,3 +1,4 @@
+import {AppHealth} from '../components/Settings/AppHealth';
 import {HouseholdProfiles} from '../components/HouseholdProfiles';
 import '../components/Learning/Learning.css';
 import {CarPlaySettings} from '../components/Audio/CarPlaySettings';
@@ -156,7 +157,7 @@ export function SettingsPage() {
                 <a href="#audio">Audio</a>
                 <a href="#notifications">Notifications</a>
                 {Capacitor.isNativePlatform()&&Capacitor.getPlatform()==='ios'&&<a href="#carplay">CarPlay</a>}
-                <a href="#profiles">Famille</a><a href="#storage">Stockage</a><a href="#backup">Sauvegarde</a>
+                <a href="#profiles">Famille</a><a href="#storage">Stockage</a><a href="#app-health">État de l’app</a><a href="#backup">Sauvegarde</a>
             </nav>
 
             <HouseholdProfiles />
@@ -395,6 +396,7 @@ export function SettingsPage() {
             </section>
 
             <CarPlaySettings/>
+            <AppHealth/>
             <section className="settings-section" id="storage">
                 <h2 className="settings-section__title">Stockage et informations</h2>
                 <button className="settings-link" type="button" onClick={() => navigate('/storage')}>
@@ -408,7 +410,7 @@ export function SettingsPage() {
 
             {/* Footer / Build */}
             <div className="settings-footer">
-                <p>Quran Coach App — Version 0.0.0 (Build b6819da)</p>
+                <p>Quran Coach · Contenu {__QC_RELEASE__.id}</p>
                 <p>© 2026</p>
             </div>
         </div >

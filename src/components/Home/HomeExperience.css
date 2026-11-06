@@ -16,3 +16,5 @@
 .home-page .home-header__left{order:0;min-width:0;padding-right:0}
 .home-page .home-customize-open{position:static;order:1;flex:0 0 44px;width:44px;height:44px}
 .home-page .home-header__greeting{padding-right:0}
+
+.home-resume-tabs{flex-wrap:wrap}.home-resume-tabs button{min-width:68px}

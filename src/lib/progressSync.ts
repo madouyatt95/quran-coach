@@ -1,3 +1,4 @@
+import {recordBackupHealth} from './backupHealth';
 import {profileStorage,activeProfile} from './profileStorage';
 import { BACKUP_LABELS, RECOVERY_KEY, backupRegistry, createBackup, parseBackup, type BackupStore, type ProgressBackup, type BackupSection } from './progressBackup';
 import { decryptProgress, encryptProgress, loadCloudProgress, progressClient, saveCloudProgress } from './progressVault';
@@ -43,7 +44,7 @@ let state:SyncState={status:'locked',message:'Déverrouillez la synchronisation 
 const listeners=new Set<()=>void>();
 export const subscribeProgressSync=(listener:()=>void)=>{listeners.add(listener);return()=>{listeners.delete(listener);};};
 export const getProgressSync=()=>state;
-const update=(next:Partial<SyncState>)=>{state={...state,...next};listeners.forEach(fn=>fn());};
+const update=(next:Partial<SyncState>)=>{if(next.lastSync)recordBackupHealth('sync',next.lastSync);state={...state,...next};listeners.forEach(fn=>fn());};
 let phrase='',owner='',base:ProgressBackup|null=null,stores:BackupStore[]=[],busy=false,generation=0;
 let pending:{device:ProgressBackup;cloud:ProgressBackup;revision:number}|null=null;
 let timer:ReturnType<typeof setInterval>|undefined;
