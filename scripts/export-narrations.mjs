@@ -1,5 +1,5 @@
 import {build} from 'esbuild';
-import {writeFile, mkdir} from 'node:fs/promises';
+import {readFile,writeFile, mkdir} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 import {resolve} from 'node:path';
 const temp = '/tmp/qc-narration-catalog.mjs';
@@ -13,10 +13,12 @@ export {allInvocations} from './src/lib/adhkarExperience';
 export {narrationKey,narrationSentences} from './src/lib/narrationText';
 `,resolveDir:process.cwd(),loader:'ts'},jsx:'automatic',bundle:true,platform:'node',format:'esm',outfile:temp});
 const {getJourney,courseJourney,COURSE_LEVELS,prophets,stories,allInvocations,narrationKey,narrationSentences} = await import(pathToFileURL(temp));
+const retired=JSON.parse(await readFile('src/data/retiredSiwis.json','utf8'));
 const entries = new Map();
 function add(text, owner) {
  if (!text?.trim()) return;
  const key=narrationKey(text),old=entries.get(key);
+ if(retired[key])return;
  if(old && old.text!==text) throw new Error('Narration key collision');
  if(old) old.owners.push(owner);
  else entries.set(key,{key,text,sentences:narrationSentences(text),owners:[owner]});

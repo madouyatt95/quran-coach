@@ -1,0 +1,614 @@
+{
+  "18144cdc-549": {
+    "bookId": "adam",
+    "chapterId": "names"
+  },
+  "ca388560-563": {
+    "bookId": "adam",
+    "chapterId": "names"
+  },
+  "523bc6e1-523": {
+    "bookId": "adam",
+    "chapterId": "names"
+  },
+  "37d9ed2f-1639": {
+    "bookId": "adam",
+    "chapterId": "names"
+  },
+  "9237894-550": {
+    "bookId": "nuh",
+    "chapterId": "appel"
+  },
+  "de5beaa2-542": {
+    "bookId": "nuh",
+    "chapterId": "appel"
+  },
+  "11ef8a28-540": {
+    "bookId": "nuh",
+    "chapterId": "appel"
+  },
+  "d8814712-1636": {
+    "bookId": "nuh",
+    "chapterId": "appel"
+  },
+  "cf7da439-449": {
+    "bookId": "appels-et-mesure",
+    "chapterId": "hud"
+  },
+  "3e1bdf66-473": {
+    "bookId": "appels-et-mesure",
+    "chapterId": "salih"
+  },
+  "554d476e-563": {
+    "bookId": "ibrahim",
+    "chapterId": "pere"
+  },
+  "c3c7dfe6-526": {
+    "bookId": "ibrahim",
+    "chapterId": "pere"
+  },
+  "e27eab0e-572": {
+    "bookId": "ibrahim",
+    "chapterId": "pere"
+  },
+  "ff92d5c6-1665": {
+    "bookId": "ibrahim",
+    "chapterId": "pere"
+  },
+  "d88c327d-506": {
+    "bookId": "lut",
+    "chapterId": "appel"
+  },
+  "91d2fc8d-501": {
+    "bookId": "hajar-zamzam",
+    "chapterId": "vallee"
+  },
+  "c33d24e8-110": {
+    "bookId": "hajar-zamzam",
+    "chapterId": "vallee"
+  },
+  "c0756ca2-612": {
+    "bookId": "hajar-zamzam",
+    "chapterId": "vallee"
+  },
+  "2ef9290-521": {
+    "bookId": "yusuf",
+    "chapterId": "reve"
+  },
+  "5e551881-599": {
+    "bookId": "yusuf",
+    "chapterId": "reve"
+  },
+  "ddf268b9-579": {
+    "bookId": "yusuf",
+    "chapterId": "reve"
+  },
+  "6f55566c-586": {
+    "bookId": "yusuf",
+    "chapterId": "reve"
+  },
+  "a655520d-2291": {
+    "bookId": "yusuf",
+    "chapterId": "reve"
+  },
+  "f05a9e4e-468": {
+    "bookId": "appels-et-mesure",
+    "chapterId": "shuayb"
+  },
+  "69524d58-522": {
+    "bookId": "voix-epreuve",
+    "chapterId": "ayyub"
+  },
+  "b41a199b-51": {
+    "bookId": "voix-epreuve",
+    "chapterId": "ayyub"
+  },
+  "2acee87e-293": {
+    "bookId": "voix-epreuve",
+    "chapterId": "ayyub"
+  },
+  "76da6d10-574": {
+    "bookId": "voix-epreuve",
+    "chapterId": "ayyub"
+  },
+  "f8d01632-408": {
+    "bookId": "voix-epreuve",
+    "chapterId": "yunus"
+  },
+  "81731913-199": {
+    "bookId": "voix-epreuve",
+    "chapterId": "yunus"
+  },
+  "f0967166-326": {
+    "bookId": "voix-epreuve",
+    "chapterId": "yunus"
+  },
+  "a7150c82-608": {
+    "bookId": "voix-epreuve",
+    "chapterId": "yunus"
+  },
+  "8285bf78-545": {
+    "bookId": "musa",
+    "chapterId": "enfant"
+  },
+  "f1cfa94e-534": {
+    "bookId": "musa",
+    "chapterId": "enfant"
+  },
+  "14659402-563": {
+    "bookId": "musa",
+    "chapterId": "enfant"
+  },
+  "fb9e3733-588": {
+    "bookId": "musa",
+    "chapterId": "enfant"
+  },
+  "787303b2-2236": {
+    "bookId": "musa",
+    "chapterId": "enfant"
+  },
+  "dc897e1f-498": {
+    "bookId": "sulayman",
+    "chapterId": "justice"
+  },
+  "f5395c24-573": {
+    "bookId": "sulayman",
+    "chapterId": "trone"
+  },
+  "fee8eb54-554": {
+    "bookId": "sulayman",
+    "chapterId": "trone"
+  },
+  "92e22583-509": {
+    "bookId": "sulayman",
+    "chapterId": "trone"
+  },
+  "ab017927-1640": {
+    "bookId": "sulayman",
+    "chapterId": "trone"
+  },
+  "d6616ba6-451": {
+    "bookId": "maryam-isa",
+    "chapterId": "vocation"
+  },
+  "7e55c78e-487": {
+    "bookId": "maryam-isa",
+    "chapterId": "mission"
+  },
+  "4d452eb2-165": {
+    "bookId": "maryam-isa",
+    "chapterId": "mission"
+  },
+  "a15f6ec7-310": {
+    "bookId": "maryam-isa",
+    "chapterId": "mission"
+  },
+  "a4e1229f-653": {
+    "bookId": "maryam-isa",
+    "chapterId": "mission"
+  },
+  "7fc94906-479": {
+    "bookId": "sira-confiance",
+    "chapterId": "secours"
+  },
+  "da67a1bc-143": {
+    "bookId": "sira-confiance",
+    "chapterId": "secours"
+  },
+  "2d816f9d-278": {
+    "bookId": "sira-confiance",
+    "chapterId": "secours"
+  },
+  "58edfea9-623": {
+    "bookId": "sira-confiance",
+    "chapterId": "secours"
+  },
+  "3a73a974-422": {
+    "bookId": "voix-epreuve",
+    "chapterId": "ville"
+  },
+  "7d41d372-333": {
+    "bookId": "une-parole-entendue",
+    "chapterId": "table"
+  },
+  "fda228b2-391": {
+    "bookId": "une-parole-entendue",
+    "chapterId": "aveugle"
+  },
+  "dc7efa74-375": {
+    "bookId": "une-parole-entendue",
+    "chapterId": "plainte"
+  },
+  "f0f2117a-368": {
+    "bookId": "kaab-verite",
+    "chapterId": "demain"
+  },
+  "262fe9f1-570": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "qarun"
+  },
+  "3467e175-515": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "qarun"
+  },
+  "38090a26-530": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "qarun"
+  },
+  "8b092faa-1619": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "qarun"
+  },
+  "25cdf708-468": {
+    "bookId": "garcon-et-roi",
+    "chapterId": "chemin"
+  },
+  "fad4fcd9-484": {
+    "bookId": "garcon-et-roi",
+    "chapterId": "chemin"
+  },
+  "7206515c-953": {
+    "bookId": "garcon-et-roi",
+    "chapterId": "chemin"
+  },
+  "b3dae80b-571": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "sabbat"
+  },
+  "89849e96-306": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "sabbat"
+  },
+  "796dcc72-878": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "sabbat"
+  },
+  "cd35cb44-560": {
+    "bookId": "maryam-isa",
+    "chapterId": "annonce"
+  },
+  "9b0fb353-541": {
+    "bookId": "maryam-isa",
+    "chapterId": "annonce"
+  },
+  "ab888bb4-545": {
+    "bookId": "maryam-isa",
+    "chapterId": "annonce"
+  },
+  "77542fb3-1650": {
+    "bookId": "maryam-isa",
+    "chapterId": "annonce"
+  },
+  "ddf6257-582": {
+    "bookId": "luqman-conseils",
+    "chapterId": "gratitude"
+  },
+  "5a5623a8-505": {
+    "bookId": "luqman-conseils",
+    "chapterId": "gratitude"
+  },
+  "c92fe78b-548": {
+    "bookId": "luqman-conseils",
+    "chapterId": "gratitude"
+  },
+  "6de316fc-1639": {
+    "bookId": "luqman-conseils",
+    "chapterId": "gratitude"
+  },
+  "dbe19a05-562": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "horizons"
+  },
+  "56f6fdd2-458": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "horizons"
+  },
+  "9bcca5aa-471": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "horizons"
+  },
+  "fc951223-501": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "horizons"
+  },
+  "298e512-591": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "horizons"
+  },
+  "5bd9a5ce-88": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "horizons"
+  },
+  "2aad0db7-2676": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "horizons"
+  },
+  "7df1145c-596": {
+    "bookId": "khidr",
+    "chapterId": "rencontre"
+  },
+  "73bc4439-534": {
+    "bookId": "khidr",
+    "chapterId": "rencontre"
+  },
+  "b5e1435d-601": {
+    "bookId": "khidr",
+    "chapterId": "rencontre"
+  },
+  "dc1d6e72-1735": {
+    "bookId": "khidr",
+    "chapterId": "rencontre"
+  },
+  "801cb11d-557": {
+    "bookId": "cave",
+    "chapterId": "refuge"
+  },
+  "540d38ab-578": {
+    "bookId": "cave",
+    "chapterId": "refuge"
+  },
+  "c9ed41ef-580": {
+    "bookId": "cave",
+    "chapterId": "refuge"
+  },
+  "ff338549-1719": {
+    "bookId": "cave",
+    "chapterId": "refuge"
+  },
+  "2e7a478b-522": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "b139432-79": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "d906cee6-602": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "be201c33-586": {
+    "bookId": "sulayman",
+    "chapterId": "lettre"
+  },
+  "f0a3acee-547": {
+    "bookId": "sulayman",
+    "chapterId": "lettre"
+  },
+  "c379fb08-507": {
+    "bookId": "sulayman",
+    "chapterId": "lettre"
+  },
+  "6c1169a7-1644": {
+    "bookId": "sulayman",
+    "chapterId": "lettre"
+  },
+  "332641db-491": {
+    "bookId": "croire-parmi-les-siens",
+    "chapterId": "croyant"
+  },
+  "99e176b7-505": {
+    "bookId": "croire-parmi-les-siens",
+    "chapterId": "croyant"
+  },
+  "ed590cfa-413": {
+    "bookId": "croire-parmi-les-siens",
+    "chapterId": "croyant"
+  },
+  "75584584-548": {
+    "bookId": "croire-parmi-les-siens",
+    "chapterId": "croyant"
+  },
+  "f18d884-516": {
+    "bookId": "croire-parmi-les-siens",
+    "chapterId": "croyant"
+  },
+  "f1bae9b4-2477": {
+    "bookId": "croire-parmi-les-siens",
+    "chapterId": "croyant"
+  },
+  "d653c8a9-563": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "deux-jardins"
+  },
+  "86ac620e-540": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "deux-jardins"
+  },
+  "6f064e21-587": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "deux-jardins"
+  },
+  "55812704-1694": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "deux-jardins"
+  },
+  "1f3ef620-572": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "recolte"
+  },
+  "aec39382-565": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "recolte"
+  },
+  "e4128b4-577": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "recolte"
+  },
+  "38460a88-1718": {
+    "bookId": "biens-et-coeur",
+    "chapterId": "recolte"
+  },
+  "d4e7bc52-519": {
+    "bookId": "musa-apres-la-mer",
+    "chapterId": "vache"
+  },
+  "f5449915-510": {
+    "bookId": "musa-apres-la-mer",
+    "chapterId": "vache"
+  },
+  "40d67b42-474": {
+    "bookId": "musa-apres-la-mer",
+    "chapterId": "vache"
+  },
+  "de7ef29b-557": {
+    "bookId": "musa-apres-la-mer",
+    "chapterId": "vache"
+  },
+  "e2889abd-119": {
+    "bookId": "musa-apres-la-mer",
+    "chapterId": "vache"
+  },
+  "3dc78b73-2183": {
+    "bookId": "musa-apres-la-mer",
+    "chapterId": "vache"
+  },
+  "af7c3324-553": {
+    "bookId": "hudaybiyya-pacte",
+    "chapterId": "approche"
+  },
+  "e0aecd4c-307": {
+    "bookId": "hudaybiyya-pacte",
+    "chapterId": "approche"
+  },
+  "b04ee247-861": {
+    "bookId": "hudaybiyya-pacte",
+    "chapterId": "approche"
+  },
+  "6e2d212f-465": {
+    "bookId": "prophete-retour-mecque",
+    "chapterId": "retour"
+  },
+  "24e1d80e-334": {
+    "bookId": "prophete-retour-mecque",
+    "chapterId": "retour"
+  },
+  "c7489046-800": {
+    "bookId": "prophete-retour-mecque",
+    "chapterId": "retour"
+  },
+  "249dead0-542": {
+    "bookId": "ascension-priere",
+    "chapterId": "accueil"
+  },
+  "93e96d63-264": {
+    "bookId": "ascension-priere",
+    "chapterId": "accueil"
+  },
+  "9987fa12-807": {
+    "bookId": "ascension-priere",
+    "chapterId": "accueil"
+  },
+  "622865a6-580": {
+    "bookId": "aicha-innocence",
+    "chapterId": "origines"
+  },
+  "27dc54f5-282": {
+    "bookId": "aicha-innocence",
+    "chapterId": "origines"
+  },
+  "87ae7dea-863": {
+    "bookId": "aicha-innocence",
+    "chapterId": "origines"
+  },
+  "88b50bfd-630": {
+    "bookId": "sulayman",
+    "chapterId": "fourmi"
+  },
+  "465a1ee5-540": {
+    "bookId": "sulayman",
+    "chapterId": "fourmi"
+  },
+  "d5d89fbd-545": {
+    "bookId": "sulayman",
+    "chapterId": "fourmi"
+  },
+  "2393ab9f-215": {
+    "bookId": "sulayman",
+    "chapterId": "fourmi"
+  },
+  "b6b6b90d-1933": {
+    "bookId": "sulayman",
+    "chapterId": "fourmi"
+  },
+  "755afa63-526": {
+    "bookId": "sulayman",
+    "chapterId": "nouvelle"
+  },
+  "4d3cc716-430": {
+    "bookId": "sulayman",
+    "chapterId": "nouvelle"
+  },
+  "75d08e13-572": {
+    "bookId": "sulayman",
+    "chapterId": "nouvelle"
+  },
+  "6a1f30de-188": {
+    "bookId": "sulayman",
+    "chapterId": "nouvelle"
+  },
+  "e84ff68f-1719": {
+    "bookId": "sulayman",
+    "chapterId": "nouvelle"
+  },
+  "97f42612-531": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "d0cfff55-519": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "b5f4efa-460": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "7ba1a97-175": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "3a04203-1688": {
+    "bookId": "responsabilite-du-don",
+    "chapterId": "freres"
+  },
+  "569303be-513": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "talout"
+  },
+  "7ec56b45-483": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "talout"
+  },
+  "e3858b9a-474": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "talout"
+  },
+  "c67c7098-502": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "talout"
+  },
+  "b91c74b4-518": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "talout"
+  },
+  "a3120a29-2494": {
+    "bookId": "royaumes-et-justice",
+    "chapterId": "talout"
+  },
+  "f611169e-307": {
+    "bookId": "sira-confiance",
+    "chapterId": "retournement"
+  },
+  "5b56ea5e-351": {
+    "bookId": "sira-confiance",
+    "chapterId": "douceur"
+  },
+  "dd20fd06-354": {
+    "bookId": "sira-confiance",
+    "chapterId": "coalises"
+  },
+  "c6834d06-339": {
+    "bookId": "kaab-verite",
+    "chapterId": "origines"
+  }
+}

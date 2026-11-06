@@ -58,3 +58,9 @@ it('keeps online audio playable when CacheStorage is unavailable',async()=>{
  const item={url:'https://audio.test/book.mp3'} as Parameters<typeof libraryAudioSource>[0];
  expect(await libraryAudioSource(item)).toBe(item.url);
 });
+it('does not resurrect retired Siwis entries from a stale offline catalogue',async()=>{
+ vi.stubEnv('VITE_AUDIO_PRODUCTION_URL','');vi.resetModules();
+ const retired=await import('../data/retiredSiwis.json'),id=Object.keys(retired.default)[0];
+ vi.stubGlobal('fetch',vi.fn(async()=>Response.json([{id,title:'Ancien Siwis',text:'Ancien récit'},{id:'keep',title:'Invocation',text:'Sens conservé'}])));
+ const {loadAudioLibrary}=await import('./audioLibrary');expect((await loadAudioLibrary()).map(i=>i.id)).toEqual(['keep']);
+});

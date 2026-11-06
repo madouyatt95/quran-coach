@@ -2,7 +2,8 @@
 import hashlib,json,pathlib,subprocess
 root=pathlib.Path(__file__).resolve().parents[1]
 temp=pathlib.Path('/tmp/qc-narration-model')
-catalog=json.loads((temp/'catalog.json').read_text())
+retired=json.loads((root/'src/data/retiredSiwis.json').read_text())
+catalog=[item for item in json.loads((temp/'catalog.json').read_text()) if item['key'] not in retired]
 entries={}
 missing=[]
 total=0

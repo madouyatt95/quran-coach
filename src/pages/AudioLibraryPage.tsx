@@ -1,3 +1,4 @@
+import {retiredNarrationHref} from '../lib/retiredNarrations';
 import {BookCollections} from '../components/Books/BookCollections';
 import {ListenSections} from '../components/Listen/ListenSections';
 import {books} from '../lib/bookLibrary';
@@ -5,7 +6,7 @@ import {usePageState} from '../hooks/usePageState';
 import {BookShelf} from '../components/Books/BookShelf';
 import {bookForAudio,canonicalBookForSource,isSupersededBookAudio,audioOrigin} from '../lib/bookLibrary';
 import {useEffect,useRef,useState} from 'react';
-import {Link,useSearchParams} from 'react-router-dom';
+import {Link,Navigate,useSearchParams} from 'react-router-dom';
 import {Play,Heart,Download,Trash2,Search,Headphones} from 'lucide-react';
 import {AUDIO_CATEGORIES,type LibraryAudio} from '../lib/audioProduction';
 import {audioSearch,downloadedAudioIds,downloadLibraryAudio,loadAudioLibrary,removeLibraryDownload} from '../lib/audioLibrary';
@@ -21,6 +22,8 @@ export function AudioLibraryPage(){
  const filtered=items.filter(item=>!bookForAudio(item)&&!isSupersededBookAudio(item)&&!canonicalBookForSource(item.sourceUrl)&&(category==='all'||item.category===category)&&(mode!=='favorites'||favorites.includes(item.id))&&(mode!=='offline'||downloads.includes(item.id))&&audioSearch(`${item.title} ${item.text} ${item.reference}`).includes(audioSearch(query)));
  const resume=items.filter(i=>!bookForAudio(i)&&!isSupersededBookAudio(i)&&!canonicalBookForSource(i.sourceUrl)&&positions[i.id]?.seconds>2&&positions[i.id].seconds<i.duration-2).sort((a,b)=>positions[b.id].updatedAt-positions[a.id].updatedAt)[0];
  const download=async(item:LibraryAudio)=>{const c=new AbortController();controller.current=c;setBusy(item.id);setError('');try{await downloadLibraryAudio(item,c.signal);setDownloads(await downloadedAudioIds(items));}catch(e){if(!c.signal.aborted)setError(e instanceof Error?e.message:'Téléchargement impossible.');}finally{setBusy('');}};
+ const replacement=retiredNarrationHref(params.get('audio')||'');
+ if(replacement)return <Navigate to={replacement} replace/>;
  return <div className="audio-library"><header className="audio-library-heading"><Link to="/listen">← Écoute</Link><span className="audio-kicker">UN MOMENT POUR APPRENDRE</span><h1>Livres et récits</h1><p>Un livre, deux façons de le découvrir. À lire ou à écouter, à votre rythme.</p></header>{selected&&<section className="audio-resume"><div><small>Épisode sélectionné</small><h2>{selected.title}</h2></div><button onClick={()=>void play(selected)} aria-label={`Écouter ${selected.title}`}><Play/></button></section>}<ListenSections books/><BookCollections/>
  {resume&&!query&&<section className="audio-resume"><Headphones size={26}/><div><small>REPRENDRE MON ÉCOUTE</small><h2>{resume.title}</h2><span>{Math.floor(positions[resume.id].seconds/60)} min écoutées</span></div><button onClick={()=>void play(resume)} aria-label={`Reprendre ${resume.title}`}><Play/></button></section>}
  <section className="library-shared-controls" aria-label="Rechercher et filtrer les livres et épisodes"><div className="audio-search"><Search size={19}/><input aria-label="Rechercher dans la bibliothèque" placeholder="Un récit, un thème, une question…" value={query} onChange={e=>{setQuery(e.target.value);setLimit(24);}}/></div>

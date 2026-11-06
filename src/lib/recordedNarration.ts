@@ -1,3 +1,4 @@
+import {retiredNarrationDestination} from './retiredNarrations';
 import {narrationKey} from './narrationText';
 import {publishedNarration} from './audioLibrary';
 export interface RecordedNarration {
@@ -9,6 +10,7 @@ let manifest: Promise<Manifest> | undefined;
 export async function getRecordedNarration(text: string): Promise<RecordedNarration | null> {
     const published = await publishedNarration(text);
     if (published) return published;
+    if (retiredNarrationDestination(narrationKey(text))) return null;
     if (!manifest) manifest = fetch(`${import.meta.env.BASE_URL}audio/narration/fr-v1/manifest.json`, {signal:AbortSignal.timeout(8000)})
         .then(r => {if (!r.ok) throw new Error('Narration indisponible'); return r.json() as Promise<Manifest>;})
         .catch(error => {manifest = undefined; throw error;});

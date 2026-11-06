@@ -5,8 +5,10 @@ const {getJourney,COURSE_LEVELS,allInvocations}=await import('/tmp/qc-narration-
 const catalog=JSON.parse(await readFile('/tmp/qc-narration-model/catalog.json','utf8'));
 const manifest=JSON.parse(await readFile('public/audio/narration/fr-v1/manifest.json','utf8'));
 const courses=COURSE_LEVELS.flatMap(l=>l.modules);
+const retired=JSON.parse(await readFile('src/data/retiredSiwis.json','utf8'));
 const entries=[];
 for(const entry of catalog){
+ if(retired[entry.key])continue;
  const recorded=manifest.entries[entry.key];if(!recorded||recorded.text!==entry.text)continue;
  const [category,id,...parts]=entry.owners[0].split(':');
  let title='',reference='',sourceUrl='';

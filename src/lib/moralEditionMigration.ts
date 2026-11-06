@@ -1,3 +1,4 @@
+import {migrateNarrationFavorites} from './retiredNarrations';
 import {moralBookDestination,moralVolumes} from '../data/moralBookEditions';
 import type {BookMemory} from '../stores/bookNotebookStore';
 import type {BookReadingPoint} from './bookResume';
@@ -8,7 +9,7 @@ interface SavedLibrary {
 /** Restore independent destinations without changing notes or audio offsets. */
 export function migrateMoralLibrary<T extends SavedLibrary>(state:T):T {
  const reading={...state.bookReading},dates={...state.bookReadingUpdatedAt},points={...state.bookReadingPoints};
- const favorites=new Set(state.favorites||[]);
+ const favorites=new Set(migrateNarrationFavorites(state.favorites||[]));
  for(const volume of moralVolumes){
   const chapter=state.bookReading?.[volume.id];if(!chapter)continue;
   const target=moralBookDestination(volume.id,chapter);

@@ -84,7 +84,8 @@ def synthesize(text):
     pending.replace(cached)
     return combined, 24000
 
-catalog = json.loads((model_dir / 'catalog.json').read_text())
+retired = json.loads((root/'src/data/retiredSiwis.json').read_text())
+catalog = [item for item in json.loads((model_dir / 'catalog.json').read_text()) if item['key'] not in retired]
 manifest = {'version': 1, 'voice': 'Kokoro · Siwis', 'engine': 'Kokoro-82M v1.0', 'entries': {}}
 started = time.time()
 for n, entry in enumerate(catalog[:args.limit or None]):

@@ -74,7 +74,7 @@ it.each([true,false])('restores the original audio at the exact second, preservi
  mocks.items=[source,destination].flatMap(b=>chapterDrafts(b,b.chapters[2],false,false).map((s,i)=>({id:`${b.id}:${i}`,title:s.title,text:s.text,reference:s.reference,sourceUrl:s.source_url,category:s.category,narrator:'George',url:'/test.mp3',bytes:100,duration:500,sentences:narrationSentences(s.text).map((_,sentence)=>({sentence,start:sentence*4,end:sentence*4+3}))})));
  const original=mocks.items[0],queue=[original];Object.assign(mocks.player,{item:original,queue,position:47.25,playing});
  mocks.player.play.mockImplementation(async(item,options)=>{Object.assign(mocks.player,{item,queue:options.queue,position:options.startAt,playing:options.autoplay!==false});});
- sessionStorage.setItem('qc-page:/books/nusayba-presence:view',JSON.stringify('listen'));
+ sessionStorage.setItem('qc-page:default:/books/nusayba-presence:view',JSON.stringify('listen'));
  await render('/books/nusayba-presence?chapter=uhud');
  await click(host.querySelector('[data-connected-book="talha-engagement"] button[aria-label^="Écouter"]')!);
  expect(mocks.player.play).toHaveBeenLastCalledWith(expect.objectContaining({id:'talha-engagement:0'}),expect.objectContaining({startAt:expect.any(Number)}));
@@ -101,7 +101,7 @@ it('does not propose a recap during a recent return',async()=>{
 
 it('preserves the exact audio second when switching to text and back to the same passage',async()=>{
  mocks.player.item=mocks.items[0];mocks.player.playing=true;mocks.player.position=42.5;mocks.player.queue=mocks.items;
- sessionStorage.setItem('qc-page:/books/adam:view',JSON.stringify('listen'));
+ sessionStorage.setItem('qc-page:default:/books/adam:view',JSON.stringify('listen'));
  await render();await click(host.querySelector('.book-tabs button')!);
  expect(host.querySelector('.book-passage.is-selected')).not.toBeNull();expect(mocks.player.pause).toHaveBeenCalled();
  await click(host.querySelectorAll('.book-tabs button')[1]);

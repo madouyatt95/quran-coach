@@ -188,6 +188,11 @@ export function activeBookScene(book:NarrativeBook,chapter:NarrativeChapter,item
 }
 /** Legacy entry points resolve to the canonical manuscript, with its matching chapter. */
 export function bookEntryForOrigin(kind:'prophet'|'story'|'companion',id:string){
+ // Explicit equivalents confirmed against the current manuscripts, not title similarity.
+ const storyEditions:Record<string,[string,string]>={'messagers-cite':['voix-epreuve','ville'],'table-servie':['une-parole-entendue','table'],'abasa-accueil':['une-parole-entendue','aveugle'],'plainte-entendue':['une-parole-entendue','plainte'],'trois-repentir':['kaab-verite','demain'],'fath-makkah':['prophete-retour-mecque','retour']};
+ const edition=kind==='story'?storyEditions[id]:undefined;
+ if(edition){const book=books.find(b=>b.id===edition[0]);if(book?.chapters.some(c=>c.id===edition[1]))return {book,chapter:edition[1]};}
+
  if(kind==='story'&&['ashab-as-sabt','habil-qabil','corbeau'].includes(id)){
   const target=moralBookDestination('responsabilite-du-don',id==='ashab-as-sabt'?'sabbat':'freres')!,book=books.find(b=>b.id===target.bookId);
   if(book)return {book,chapter:target.chapterId};
