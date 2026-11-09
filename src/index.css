@@ -151,7 +151,10 @@ body {
   line-height: var(--line-height-ui);
   min-height: 100dvh;
   overflow-x: hidden;
-  overscroll-behavior: none;
+  /* overflow-x:hidden also computes overflow-y:auto. The auto-height body
+     cannot scroll, so blocking its scroll chain traps Android/Chromium pans
+     before they reach the document. Suppress viewport bounce on html only. */
+  overscroll-behavior: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-touch-callout: none;
