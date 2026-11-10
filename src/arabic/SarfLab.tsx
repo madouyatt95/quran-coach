@@ -1,3 +1,5 @@
+import {RootWorkbench} from './RootWorkbench';
+import './ArabicLaboratory.css';
 import {Pupitre,PupitreTop,PupitreBottom} from '../components/Pupitre/Pupitre';
 import {usePracticeState} from '../stores/arabicPracticeStore';
 import {SARF_FAMILIES,PERSONS,wordSegments,sarfPattern,selectSarfForm,type SarfWord} from './sarfData';
@@ -12,7 +14,7 @@ export function SarfLab() {
  {compare&&selected&&<div className="sarf-compare"><h4>Comparer les deux formes</h4><div><article><small>Forme conservée</small><ColoredWord entry={compare}/><p>{compare.meaning}</p></article><article><small>Votre choix actuel</small><ColoredWord entry={selected}/><p>{selected.meaning}</p></article></div><button onClick={()=>setCompare(null)}>Fermer la comparaison</button></div>}
  </PupitreTop><PupitreBottom aria-label="Famille, forme et personne"> <label>Famille de mots<select value={familyId} onChange={e=>{setFamilyId(e.target.value);setCompare(null);}}>{SARF_FAMILIES.map(f=><option value={f.id} key={f.id}>{f.title} · {f.root}</option>)}</select></label>
  <div className="sarf-root" aria-label="Lettres radicales" dir="rtl">{family.root.split(' ').map((r,i)=><span className={`sarf-radical-${i}`} key={i} lang="ar">{r}</span>)}</div>
- <fieldset className="sarf-controls"><legend>Forme verbale</legend><div className="arabic-options"><button aria-pressed={aspect==='past'} onClick={()=>setAspect('past')}>Accompli · māḍī</button><button aria-pressed={aspect==='present'} onClick={()=>setAspect('present')}>Inaccompli · muḍāriʿ</button></div></fieldset>
+ <RootWorkbench key={family.id} family={family}/><fieldset className="sarf-controls"><legend>Forme verbale</legend><div className="arabic-options"><button aria-pressed={aspect==='past'} onClick={()=>setAspect('past')}>Accompli · māḍī</button><button aria-pressed={aspect==='present'} onClick={()=>setAspect('present')}>Inaccompli · muḍāriʿ</button></div></fieldset>
  <fieldset className="sarf-controls"><legend>Voix</legend><div className="arabic-options"><button aria-pressed={voice==='active'} onClick={()=>setVoice('active')}>Active</button><button aria-pressed={voice==='passive'} onClick={()=>setVoice('passive')}>Passive</button></div></fieldset>
  {voice==='active'?<label>Personne<select value={person} onChange={e=>setPerson(e.target.value)}>{PERSONS.map(p=><option value={p.id} key={p.id}>{p.label}</option>)}</select></label>:<p>Pour découvrir le passif, on travaille ici à la troisième personne masculine singulière : « il / cela ». L’action est subie ; celui qui l’accomplit n’est pas nommé.</p>}
  <details className="sarf-participles"><summary>Du verbe aux participes</summary>{family.participles.map((p,i)=><article key={p.word}><h4>{i===0?'Participe actif':'Participe passif'}</h4><ColoredWord entry={p}/><p>{p.meaning}</p><p>Schème : <b dir="rtl" lang="ar">{p.pattern}</b></p></article>)}</details>

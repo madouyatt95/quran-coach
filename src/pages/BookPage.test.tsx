@@ -143,3 +143,13 @@ it('opens a combined edition link in the independent book and keeps the collecti
  expect(host.querySelector('.book-reading-heading h2')?.textContent).toContain('laisser le temps de réparer');
  expect([...host.querySelectorAll('textarea')].some(t=>t.value==='Une réflexion à conserver')).toBe(true);
 });
+
+it('explores a documentary scene without changing playback, then seeks its actual recording',async()=>{
+ await render();const journey=host.querySelector('.book-journey')!;
+ const scenes=journey.querySelectorAll('.book-journey-timeline button');expect(scenes.length).toBeGreaterThan(1);
+ await click(scenes[1]);expect(mocks.player.play).not.toHaveBeenCalled();
+ expect(journey.textContent).toContain('Revenir au passage');
+ await click([...journey.querySelectorAll('button')].find(b=>b.textContent==='Écouter ici')!);
+ expect(mocks.player.play).toHaveBeenCalledWith(expect.objectContaining({id:expect.any(String)}),expect.objectContaining({startAt:expect.any(Number)}));
+ expect(mocks.player.play.mock.calls.at(-1)![1].startAt).toBeGreaterThan(0);
+});
