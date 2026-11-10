@@ -17,7 +17,7 @@ beforeEach(()=>{vi.useFakeTimers();vi.stubGlobal('matchMedia',()=>({matches:fals
 for(let page=1;page<=7;page++){const holder=document.createElement('div');holder.dataset.bookVerso=String(page);const verso=source.cloneNode(true) as HTMLElement;verso.removeAttribute('data-active-sheet');verso.dataset.pageReady='true';verso.querySelector('span')!.textContent=`Real page ${page}`;holder.append(verso);document.body.append(holder);}
 });
 afterEach(()=>{mounts.splice(0).forEach(m=>act(()=>m.unmount()));document.body.innerHTML='';vi.useRealTimers();vi.unstubAllGlobals();});
-it('allows a partial curl then cancels without navigating and restores the original',()=>{const {result}=renderHook(()=>useBookPageTurn({current:root},4,true));act(()=>result.current.scrub(5,1,.45));expect(result.current.dragging).toBe(true);expect(result.current.preview?.page).toBe(5);expect(source.style.visibility).toBe('hidden');expect(document.querySelectorAll('.iq-book-strip')).toHaveLength(16);act(()=>result.current.cancel());act(()=>vi.advanceTimersByTime(1000));expect(source.style.visibility).toBe('');expect(document.querySelector('.iq-book-turn')).toBeNull();expect(result.current.turning).toBe(false);});
+it('allows a partial curl then cancels without navigating and restores the original',()=>{const {result}=renderHook(()=>useBookPageTurn({current:root},4,true));act(()=>result.current.scrub(5,1,.45));expect(result.current.dragging).toBe(true);expect(result.current.preview?.page).toBe(5);expect(source.style.visibility).toBe('hidden');expect(document.querySelectorAll('.iq-book-strip')).toHaveLength(24);act(()=>result.current.cancel());act(()=>vi.advanceTimersByTime(1000));expect(source.style.visibility).toBe('');expect(document.querySelector('.iq-book-turn')).toBeNull();expect(result.current.turning).toBe(false);});
 it('holds the curl until the destination is ready, then completes',()=>{const {result,rerender}=renderHook(({page,ready})=>useBookPageTurn({current:root},page,ready),{initialProps:{page:4,ready:true}});act(()=>result.current.scrub(5,1,.6));act(()=>{expect(result.current.begin(5,1)).toBe(true);});rerender({page:5,ready:false});act(()=>vi.advanceTimersByTime(1000));expect(result.current.turning).toBe(true);rerender({page:5,ready:true});act(()=>vi.advanceTimersByTime(1000));expect(result.current.turning).toBe(false);expect(document.querySelector('.iq-book-turn')).toBeNull();});
 it('respects reduced motion and cleans up on unmount',()=>{vi.stubGlobal('matchMedia',()=>({matches:true}));const {result,unmount}=renderHook(()=>useBookPageTurn({current:root},4,true));act(()=>{expect(result.current.begin(5,1,true)).toBe(false);expect(result.current.begin(5,1)).toBe(true);});expect(document.querySelector('.iq-book-turn')).toBeNull();unmount();});
 
@@ -48,7 +48,7 @@ it('puts the correct real page on each reverse face, with diagonal crop transfor
  const {result}=renderHook(()=>useBookPageTurn({current:root},4,true));
  act(()=>result.current.scrub(3,-1,.55,.35));
  const backs=Array.from(document.querySelectorAll('.iq-book-back'));
- expect(backs).toHaveLength(16);
+ expect(backs).toHaveLength(24);
  backs.forEach(back=>{expect(back.textContent).toContain('Real page 3');expect(back.textContent).not.toContain('Real page 5');});
  const strip=document.querySelector<HTMLElement>('.iq-book-strip')!;
  expect(strip.style.transform).toContain('matrix3d(');

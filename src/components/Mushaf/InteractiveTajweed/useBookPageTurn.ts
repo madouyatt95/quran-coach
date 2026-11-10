@@ -11,7 +11,7 @@ function pageCopy(source:HTMLElement){
     copy.querySelectorAll('*').forEach(node=>{for(const attr of Array.from(node.attributes)){let value=attr.value;ids.forEach((next,id)=>{value=value.replaceAll(`url(#${id})`,`url(#${next})`);if(value===`#${id}`)value=`#${next}`;});if(value!==attr.value)node.setAttribute(attr.name,value);}});
     Object.assign(copy.style,{visibility:'visible',margin:'0',animation:'none',translate:'none',position:'absolute',left:'0',top:'0',transformOrigin:'0 0'});
     copy.querySelectorAll('.iq-paper').forEach(node=>(node as HTMLElement).style.boxShadow='none');
-    copy.querySelectorAll('.iq-page-ribbon,.iq-book-ribbon,.iq-page-corners,.iq-margin-notes').forEach(node=>node.remove());
+    copy.querySelectorAll('.iq-page-ribbon,.iq-book-ribbon,.iq-page-corners,.iq-margin-notes,.iq-edge-tabs').forEach(node=>node.remove());
     const shade=document.createElement('div');shade.className='iq-book-face-shade';copy.append(shade);
     return {copy,shade};
 }
@@ -40,7 +40,8 @@ export function useBookPageTurn(viewport:RefObject<HTMLDivElement|null>,page:num
             r.shades[part.index].style.opacity=String(part.shade);
             if(back)(back.lastElementChild as HTMLElement).style.opacity=String(part.shade*.6);
         }
-        r.shadow.style.opacity=String(Math.sin(Math.PI*p)*.22);
+        r.shadow.style.opacity=String(Math.sin(Math.PI*p)*.18);
+        r.shadow.style.filter=`blur(${4+10*Math.sin(Math.PI*p)}px)`;
         r.shadow.style.transform=`scaleX(${.25+.75*Math.sin(Math.PI*p)})`;
     },[]);
     const animate=useCallback((end:number)=>{
@@ -72,7 +73,7 @@ export function useBookPageTurn(viewport:RefObject<HTMLDivElement|null>,page:num
         shadow.style.transformOrigin=direction>0?'right center':'left center';
         shadow.style.background=`linear-gradient(${direction>0?90:270}deg,transparent,#151022)`;sheet.append(shadow);
         const strips:HTMLDivElement[]=[],fronts:HTMLElement[]=[],backs:HTMLElement[]=[],shades:HTMLElement[]=[];
-        for(let index=0;index<16;index++){
+        for(let index=0;index<24;index++){
             const strip=document.createElement('div');strip.className='iq-book-strip';
             const front=document.createElement('div');front.className='iq-book-face';
             const {copy,shade}=pageCopy(source);front.append(copy);

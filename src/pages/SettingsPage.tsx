@@ -1,3 +1,4 @@
+import {OpeningPreference} from '../components/Notebook/OpeningPreference';
 import {AppHealth} from '../components/Settings/AppHealth';
 import {HouseholdProfiles} from '../components/HouseholdProfiles';
 import '../components/Learning/Learning.css';
@@ -162,7 +163,7 @@ export function SettingsPage() {
 
             <HouseholdProfiles />
             {/* Appearance */}
-            <section className="settings-section" id="appearance">
+            <section className="settings-section"><h2>À l’ouverture</h2><OpeningPreference/><button onClick={()=>navigate('/notebook')}>Ouvrir mon carnet d’étude →</button></section><section className="settings-section" id="appearance">
                 <h2 className="settings-section__title">{t('settings.appearance', 'Apparence')}</h2>
 
                 <div className="settings-item">

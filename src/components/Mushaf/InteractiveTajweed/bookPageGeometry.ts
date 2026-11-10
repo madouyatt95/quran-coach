@@ -8,7 +8,11 @@ export function bookPageGeometry(width:number, progress:number, direction:number
         // a leading free edge. Keep every segment within [0, pi]: an edge
         // rotating beyond pi dips through the page during the landing.
         // Time easing belongs to the animation, not this drag geometry.
-        const angle=Math.PI*p+Math.sin(Math.PI*p)*.9*((index+.5)/count-.4);
+        // A travelling bend starts at the free edge, then moves toward the binding.
+        // Clamp the tangent so no part of the sheet crosses the resting paper.
+        const material=(index+.5)/count;
+        const bend=Math.tanh(3*(material-(1-p)));
+        const angle=Math.max(0,Math.min(Math.PI,Math.PI*p+Math.sin(Math.PI*p)*.82*bend));
         const dx=(direction>0?-1:1)*step*Math.cos(angle),dz=step*Math.sin(angle);
         const segment={index:direction>0?count-1-index:index,x:direction>0?x+dx:x,z:direction>0?z+dz:z,
             angle:(direction>0?1:-1)*angle*180/Math.PI,shade:Math.min(.34,Math.abs(Math.sin(angle))*.25)};

@@ -1,3 +1,5 @@
+import {OpeningNavigation} from './components/Notebook/OpeningPreference';
+import {StudyNotebookPage} from './components/Notebook/StudyNotebook';
 import {activeProfile} from './lib/profileStorage';
 import {SessionReturn} from './components/Learning/CrossAppSession';
 import {CourseSaveAction} from './components/CourseSaveAction';
@@ -207,7 +209,7 @@ function AppContent() {
 
   return (
     <AutomaticMosqueContext.Provider value={automaticMosque}>
-      <NavigationMemory />
+      <NavigationMemory /><OpeningNavigation />
       <AdhanPlayer />
       {/* Global burger menu button – hidden on Lecture and Lesson pages */}
       {!isLecturePage && (
@@ -252,7 +254,7 @@ function AppContent() {
             <Route path="/listen/:id" element={<ReciterDetailPage />} />
             <Route path="/playlists/:id" element={<PlaylistDetailPage />} />
             <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
-            <Route path="/storage" element={<StoragePage />} />
+            <Route path="/notebook" element={<StudyNotebookPage />} /><Route path="/storage" element={<StoragePage />} />
             <Route path="/tafsir" element={<TafsirPage />} />
             <Route path="/journeys/notebook" element={<JourneyNotebookPage />} />
             <Route path="/journeys/:kind/:id" element={<EditorialJourneyPage />} />

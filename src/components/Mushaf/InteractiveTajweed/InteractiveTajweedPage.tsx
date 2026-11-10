@@ -1,3 +1,4 @@
+import {ReaderEdgeTabs} from './ReaderEdgeTabs';
 import {ReaderAudioTools,ReaderVoiceChoices} from './ReaderAudioTools';
 import {useReaderAudioPractice} from './useReaderAudioPractice';
 import {useReaderHandsFree} from './useReaderHandsFree';
@@ -551,7 +552,7 @@ export function InteractiveTajweedPage({onVoiceHost}:{onVoiceHost?:(element:HTML
     const paletteFamilies=[bundle?.font,bundle?.basmala?.font].filter((f):f is PageFont=>!!f&&f.mode==='colrv1').map(f=>f.family);
     return <Pupitre title="Mushaf" documentKey={`reader:${page}`} continuityKey={`${ready}:${size.width}:${size.height}:${immersive}:${framing}:${spread}:${showTranslation}`} toolbar={false} layoutState={pupitre} enabled={location.pathname==='/read'} {...readerWakeHandlers(immersiveControls.wake)} onKeyDownCapture={immersiveControls.wake} className={`iq-reader iq-framing-${framing} ${zoom<=READER_BASE_ZOOM?'iq-fit-width':''} iq-paper-${paper} ${immersive?'iq-immersive':''} ${bookTurn.turning?'iq-is-turning':''} ${panel==='comfort'?'iq-comfort-open':''}`} style={{'--iq-edge-inset':`${Math.max(0,((spread?1200:600)*scale+(spread?4:0)-size.width)/2)}px`,'--iq-paper-inset':`${Math.max(0,((spread?1200:600)*scale+(spread?4:0)-size.width)/2)/scale}px`,'--iq-entry':`${-direction*24}px`,'--iq-drag':`${offset}px`} as CSSProperties}>
         <style>{[...new Set(paletteFamilies)].map(f=>`@font-palette-values --palette-${f} {font-family:'${f}';base-palette:${palette};}`).join('\n')}</style>
-        <PupitreTop aria-label="Page du Mushaf"><header className="iq-toolbar mih-header" inert={immersive&&!split}>
+        <PupitreTop aria-label="Page du Mushaf">{ready&&!practice&&!lessonExercise&&<ReaderEdgeTabs page={page} onPages={()=>setPanel('preview')} onNotes={()=>setPanel('notes')} onBookmark={b=>{rememberJump(b.page,true);useQuranStore.getState().goToAyah(b.surah,b.ayah,b.page,{silent:true});}}/>}<header className="iq-toolbar mih-header" inert={immersive&&!split}>
             <div className="mih-header-left">
                 <button className="mih-header__icon-btn" aria-label="Menu" onClick={()=>setMenu(true)}><Menu size={20}/></button>
                 <button className="mih-header__info" aria-label="Choisir une sourate ou un verset" onClick={()=>setSearch(true)}>

@@ -1,3 +1,4 @@
+import {SaveExcerpt,StudyNotebook} from '../../Notebook/StudyNotebook';
 import {useEffect,useState,type ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import {Pin,PinOff} from 'lucide-react';
@@ -20,5 +21,6 @@ export function MushafDeskStudy({snapshot,renderWord,onListen}:{snapshot:DeskStu
   <section className="iq-desk-verse"><p className="iq-verse-arabic" lang="ar" dir="rtl">{shown.verse.text}</p><p>{shown.translation||'La traduction de ce passage n’est pas encore disponible.'}</p><small>Traduction · Muhammad Hamidullah</small></section>
   <div className="pupitre-study-actions"><button onClick={()=>onListen(shown.verse)}>Écouter le verset</button><button disabled={loading} onClick={()=>{setRequested(key);if(tafsir?.key===key&&!tafsir.value){setTafsir(null);setAttempt(n=>n+1);}}}>{loading?'Ouverture…':tafsir?.key===key&&!tafsir.value?'Réessayer l’explication':'Expliquer ce verset'}</button><Link to={`/tafsir?surah=${shown.verse.surah}&ayah=${shown.verse.numberInSurah}`} state={{readerReturn:{to:`/read?page=${shown.page}`,label:'Retour au Mushaf'}}}>Ouvrir le Tafsir</Link></div>
   {!!requested&&tafsir?.key===key&&(tafsir.value?<section className="iq-desk-tafsir"><h4>{tafsir.value.resource_name}</h4><p>{new DOMParser().parseFromString(tafsir.value.text,'text/html').body.textContent}</p><small>Source · QuranEnc</small></section>:<p role="status">L’explication n’a pas pu être chargée. Réessayez avec une connexion.</p>)}
+ <details><summary>Mon carnet du passage</summary>{shown.translation&&<SaveExcerpt entry={{id:`quran:${key}`,title:`Coran ${key}`,text:shown.translation,reference:`Coran ${key} · Traduction Muhammad Hamidullah`,href:`/read?page=${shown.page}&surah=${shown.verse.surah}&ayah=${shown.verse.numberInSurah}`}}/>}<StudyNotebook compact/></details>
  </section>;
 }
