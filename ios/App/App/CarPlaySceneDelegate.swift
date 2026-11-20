@@ -127,6 +127,12 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         } else {
             rows.append(item("Choisir une sourate", symbol: "book") { [weak self] in self?.browseSurahs() })
         }
+        if let trip = listening?.trip, trip.valid {
+            rows.append(item("Écouter mon trajet", detail: trip.title, symbol: "car.fill") { [weak self] in
+                CarAudioPlayer.shared.playPrepared(trip)
+                self?.showPlaying()
+            })
+        }
         rows.append(item("Mes récitateurs favoris", detail: "\(listening?.favorites.count ?? 0) dans Écoute", symbol: "heart") { [weak self] in self?.showFavorites() })
         if let next = mosque.prayers().first {
             let event = next.next

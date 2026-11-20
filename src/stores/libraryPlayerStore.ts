@@ -8,8 +8,8 @@ import {claimMediaSession} from '../lib/mediaSessionOwner';
 import {unlockAudio} from '../lib/audioUnlock';
 import {bookForAudio,chapterForAudio,chapterPlayback} from '../lib/bookLibrary';
 import {isBookEnd,nextAudioBook} from '../lib/bookAutoplay';
-interface PlayOptions {queue?:LibraryAudio[];fromStart?:boolean;startAt?:number;autoplay?:boolean;continueSeries?:boolean;continuous?:boolean}
-interface Player {autoAdvance:{from:string;to:string}|null;cancelledNextFor:string;nextBook:ReturnType<typeof nextAudioBook>;nextBookAt:number;visitedBooks:string[];cancelNextBook:()=>void;playNextBook:()=>void;setAutoNextBook:(enabled:boolean)=>void;queue:LibraryAudio[];stopAtChapter:boolean;completedChapter:string;setStopAtChapter:(value:boolean)=>void;item:LibraryAudio|null;playing:boolean;loading:boolean;position:number;duration:number;rate:number;error:string;deadline:number;play:(item:LibraryAudio,options?:PlayOptions)=>Promise<void>;pause:()=>void;toggle:()=>void;seek:(seconds:number)=>void;seekChapter:(seconds:number)=>void;setRate:(rate:number)=>void;sleep:(minutes:number)=>void;close:()=>void}
+interface PlayOptions {bounded?:boolean;queue?:LibraryAudio[];fromStart?:boolean;startAt?:number;autoplay?:boolean;continueSeries?:boolean;continuous?:boolean}
+interface Player {bounded:boolean;autoAdvance:{from:string;to:string}|null;cancelledNextFor:string;nextBook:ReturnType<typeof nextAudioBook>;nextBookAt:number;visitedBooks:string[];cancelNextBook:()=>void;playNextBook:()=>void;setAutoNextBook:(enabled:boolean)=>void;queue:LibraryAudio[];stopAtChapter:boolean;completedChapter:string;setStopAtChapter:(value:boolean)=>void;item:LibraryAudio|null;playing:boolean;loading:boolean;position:number;duration:number;rate:number;error:string;deadline:number;play:(item:LibraryAudio,options?:PlayOptions)=>Promise<void>;pause:()=>void;toggle:()=>void;seek:(seconds:number)=>void;seekChapter:(seconds:number)=>void;setRate:(rate:number)=>void;sleep:(minutes:number)=>void;close:()=>void}
 let audio:HTMLAudioElement|undefined,sequence=0,blob:string|undefined,lastSave=0;
 const owner='audio-library';
 let nextTimer:ReturnType<typeof setTimeout>|undefined,sleepTimer:ReturnType<typeof setTimeout>|undefined;
@@ -30,9 +30,9 @@ function clearNextBook(){clearTimeout(nextTimer);nextTimer=undefined;useLibraryP
 function cancelNextBook(){const item=useLibraryPlayer.getState().item;clearNextBook();useLibraryPlayer.setState({cancelledNextFor:item?bookForAudio(item)?.id||'':''});}
 function setAutoNextBook(enabled:boolean){useAudioLibraryStore.getState().setAutoNextBook(enabled);if(!enabled){cancelNextBook();return;}useLibraryPlayer.setState({cancelledNextFor:''});const item=useLibraryPlayer.getState().item;if(item)void prepareNextBook(item,sequence);}
 async function prepareNextBook(item:LibraryAudio,token:number){
- try{const items=await loadAudioLibrary();const s=useLibraryPlayer.getState();if(token!==sequence||s.item?.id!==item.id)return;if(!useAudioLibraryStore.getState().autoNextBook||s.cancelledNextFor===bookForAudio(item)?.id)return;const nextBook=nextAudioBook(item,items,s.visitedBooks);useLibraryPlayer.setState({nextBook});if(nextBook&&isBookEnd(item)&&s.queue.at(-1)?.id===item.id)prepareSource(nextBook.queue[0],token);}catch{/* A failed catalogue must not interrupt the current book. */}
+ try{const items=await loadAudioLibrary();const s=useLibraryPlayer.getState();if(s.bounded||token!==sequence||s.item?.id!==item.id)return;if(!useAudioLibraryStore.getState().autoNextBook||s.cancelledNextFor===bookForAudio(item)?.id)return;const nextBook=nextAudioBook(item,items,s.visitedBooks);useLibraryPlayer.setState({nextBook});if(nextBook&&isBookEnd(item)&&s.queue.at(-1)?.id===item.id)prepareSource(nextBook.queue[0],token);}catch{/* A failed catalogue must not interrupt the current book. */}
 }
-function playNextBook(){const s=useLibraryPlayer.getState();if(!s.nextBook||!useAudioLibraryStore.getState().autoNextBook||s.stopAtChapter||(s.deadline&&Date.now()>=s.deadline)){clearNextBook();return;}const next=s.nextBook,from=bookForAudio(s.item!)?.id;if(!from)return;void s.play(next.queue[0],{queue:next.queue,fromStart:true,continueSeries:true,continuous:true});useLibraryPlayer.setState({autoAdvance:{from,to:next.book.id}});}
+function playNextBook(){const s=useLibraryPlayer.getState();if(s.bounded||!s.nextBook||!useAudioLibraryStore.getState().autoNextBook||s.stopAtChapter||(s.deadline&&Date.now()>=s.deadline)){clearNextBook();return;}const next=s.nextBook,from=bookForAudio(s.item!)?.id;if(!from)return;void s.play(next.queue[0],{queue:next.queue,fromStart:true,continueSeries:true,continuous:true});useLibraryPlayer.setState({autoAdvance:{from,to:next.book.id}});}
 async function scheduleNextBook(item:LibraryAudio,token:number){
  const stopped=()=>{if(token===sequence)updateNarrationMedia(owner,false,audio?.currentTime||0,item.duration,useLibraryPlayer.getState().rate);};
  const valid=()=>{const s=useLibraryPlayer.getState();return token===sequence&&s.item?.id===item.id&&s.cancelledNextFor!==bookForAudio(item)?.id&&!s.stopAtChapter&&useAudioLibraryStore.getState().autoNextBook&&(!s.deadline||Date.now()<s.deadline);};
@@ -60,8 +60,8 @@ function ensure(){
   save();const s=useLibraryPlayer.getState(),index=s.queue.findIndex(i=>i.id===s.item?.id),next=index>=0?s.queue[index+1]:undefined;
   const sameChapter=!!next&&bookForAudio(next)?.id===bookForAudio(s.item!)?.id&&chapterForAudio(next)===chapterForAudio(s.item!);
   useLibraryPlayer.setState({playing:false,...(!sameChapter&&s.item?{completedChapter:s.item.id}:{})});
-  if(next&&(!s.stopAtChapter||sameChapter)&&(!s.deadline||Date.now()<s.deadline))void s.play(next,{queue:s.queue,fromStart:true,continueSeries:true,continuous:true});
-  else if(!next&&s.item&&isBookEnd(s.item))void scheduleNextBook(s.item,sequence);
+  if(next&&(s.bounded||!s.stopAtChapter||sameChapter)&&(!s.deadline||Date.now()<s.deadline))void s.play(next,{queue:s.queue,fromStart:true,continueSeries:true,continuous:true});
+  else if(!s.bounded&&!next&&s.item&&isBookEnd(s.item))void scheduleNextBook(s.item,sequence);
   else updateNarrationMedia(owner,false,audio!.currentTime,audio!.duration,s.rate);
  });
  audio.addEventListener('error',()=>{pause();useLibraryPlayer.setState({error:'Lecture interrompue. Réessayez ou téléchargez cet épisode.'});});
@@ -75,15 +75,15 @@ function ensure(){
  return audio;
 }
 function bind(item:LibraryAudio){claimMediaSession(owner);bindNarrationMedia(owner,'Bibliothèque Quran Coach',chapterPlayback(item,useLibraryPlayer.getState().queue,0).title,{artist:item.narrator,play:()=>useLibraryPlayer.getState().toggle(),pause,seek:(value,relative)=>useLibraryPlayer.getState().seek(relative?useLibraryPlayer.getState().position+value:value)});}
-export const useLibraryPlayer=create<Player>((set,get)=>({autoAdvance:null,cancelledNextFor:'',nextBook:null,nextBookAt:0,visitedBooks:[],cancelNextBook,playNextBook,setAutoNextBook,queue:[],stopAtChapter:false,completedChapter:'',setStopAtChapter:stopAtChapter=>{if(stopAtChapter)clearNextBook();set({stopAtChapter});const item=get().item;if(!stopAtChapter&&item)void prepareNextBook(item,sequence);},item:null,playing:false,loading:false,position:0,duration:0,rate:1,error:'',deadline:0,
+export const useLibraryPlayer=create<Player>((set,get)=>({bounded:false,autoAdvance:null,cancelledNextFor:'',nextBook:null,nextBookAt:0,visitedBooks:[],cancelNextBook,playNextBook,setAutoNextBook,queue:[],stopAtChapter:false,completedChapter:'',setStopAtChapter:stopAtChapter=>{if(stopAtChapter)clearNextBook();set({stopAtChapter});const item=get().item;if(!stopAtChapter&&item)void prepareNextBook(item,sequence);},item:null,playing:false,loading:false,position:0,duration:0,rate:1,error:'',deadline:0,
  play:async (item,options)=>{
   const queue=options?.queue||[],previousBook=get().item?bookForAudio(get().item!):undefined;
   const readySource=preparedSource?.id===item.id?preparedSource.source:undefined;
   if(readySource)preparedSource=undefined; // Ownership passes to the active player.
   if(options?.continuous){sequence++;clearNextBook();discardPreparedSource();save();}
   else{void unlockAudio();pause();window.dispatchEvent(new Event('quran-stop-playback'));const q=useAudioPlayerStore.getState();if(q.isPlaying)q.togglePlay();}
-  const token=++sequence,player=ensure(),book=bookForAudio(item);bind(item);set({item,queue,loading:true,error:'',position:0,duration:item.duration,autoAdvance:options?.continueSeries?get().autoAdvance:null,cancelledNextFor:book&&previousBook?.id===book.id?get().cancelledNextFor:'',visitedBooks:book?(options?.continueSeries?[...new Set([...get().visitedBooks,book.id])]:[book.id]):[]});
-  void prepareNextBook(item,token);
+  const token=++sequence,player=ensure(),book=bookForAudio(item);bind(item);set({bounded:options?.bounded??(!!options?.continueSeries&&get().bounded),item,queue,loading:true,error:'',position:0,duration:item.duration,autoAdvance:options?.continueSeries?get().autoAdvance:null,cancelledNextFor:book&&previousBook?.id===book.id?get().cancelledNextFor:'',visitedBooks:book?(options?.continueSeries?[...new Set([...get().visitedBooks,book.id])]:[book.id]):[]});
+  if(!get().bounded)void prepareNextBook(item,token);
   const nextIndex=queue.findIndex(part=>part.id===item.id),nextPart=nextIndex>=0?queue[nextIndex+1]:undefined;
   if(nextPart)prepareSource(nextPart,token);
   try{

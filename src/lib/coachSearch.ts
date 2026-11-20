@@ -3,6 +3,7 @@ import { normalizeSearch, rankSearch, searchExcerpt } from './searchText';
 export type SearchKind = 'hadith'|'invocation'|'verse'|'surah'|'course'|'arabic'|'story'|'note';
 export interface SearchResult {
  id:string; type:SearchKind; title:string; textAr:string; textFr:string;
+ passage?:{bookId:string;chapterId:string;id:string;sources:{label:string;url:string}[]};
  source?:string; link?:string; score:number; emoji:string; studied?:boolean;
 }
 export interface SearchResponse { results:SearchResult[]; unavailable:string[] }

@@ -57,7 +57,7 @@ export function TafsirPage() {
     const [selectedSurah, setSelectedSurah] = useState(incoming.surah);
     const [selectedAyah, setSelectedAyah] = useState(incoming.ayah);
     const [maxAyahs, setMaxAyahs] = useState(7);
-    const [selectedTafsir, setSelectedTafsir] = useState<number | string>('french_ibnkathir_local');
+    const [selectedTafsir, setSelectedTafsir] = useState<number | string>(searchParams.get('edition')==='french_mokhtasar'?'french_mokhtasar':'french_ibnkathir_local');
 
     // Content state
     const [verseText, setVerseText] = useState<{ arabic: string; translation: string } | null>(null);

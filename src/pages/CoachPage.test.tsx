@@ -12,14 +12,14 @@ vi.mock('../stores/settingsStore', () => ({ useSettingsStore: (selector: (state:
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 let root: Root, container: HTMLDivElement;
 function Location() { const location = useLocation(); return <output>{JSON.stringify(location)}</output>; }
-beforeEach(() => { vi.useFakeTimers(); mocks.search.mockReset(); mocks.search.mockResolvedValue([{ type: 'verse', title: 'Résultat', source: 'Coran 2:255', emoji: '📖', textAr: '', textFr: '' }]); container = document.createElement('div'); document.body.append(container); root = createRoot(container); });
+beforeEach(() => { vi.useFakeTimers(); mocks.search.mockReset(); mocks.search.mockResolvedValue({results:[{id:'2:255',type: 'verse', title: 'Résultat', source: 'Coran 2:255', emoji: '📖', textAr: '', textFr: '' }],unavailable:[]}); container = document.createElement('div'); document.body.append(container); root = createRoot(container); });
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.useRealTimers(); });
 async function click(element: Element) { await act(async () => element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 }))); }
 it('keeps search available from an old chatbot link', async () => {
  await act(async () => root.render(<MemoryRouter initialEntries={['/coach?tab=chatbot&q=patience']}><CoachPage/></MemoryRouter>));
  await act(async () => { await vi.advanceTimersByTimeAsync(400); });
  expect(container.querySelector('input')?.value).toBe('patience');
- expect(mocks.search).toHaveBeenCalledWith('patience');
+ expect(mocks.search).toHaveBeenCalledWith('patience',expect.objectContaining({localOnly:false}));
  expect(container.querySelector('.coach-card')).not.toBeNull();
  expect(container.textContent).not.toContain('Chatbot');
 });

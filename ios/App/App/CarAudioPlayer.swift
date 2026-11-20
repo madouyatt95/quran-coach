@@ -95,6 +95,21 @@ final class CarAudioPlayer {
         })
     }
 
+    func playPrepared(_ trip: CarPreparedTrip) {
+        guard trip.valid else { return }
+        let ids = trip.tracks.map(\.id)
+        if queue.map(\.id) == ids, current != nil {
+            if let last = queue.indices.last, index == last, duration > 0, elapsed >= duration - 1 {
+                play(trip.tracks)
+            } else { resume() }
+        } else if savedUpdatedAt > (trip.updatedAt ?? 0), savedTracks.map(\.id) == ids {
+            resumeSaved()
+        } else {
+            let start = trip.index ?? 0
+            play(trip.tracks, index: trip.tracks.indices.contains(start) ? start : 0, position: max(0, trip.position ?? 0))
+        }
+    }
+
     func play(_ tracks: [CarTrack], index: Int = 0, position: Double = 0) {
         guard tracks.indices.contains(index), tracks.count <= 2000,
               tracks.allSatisfy({ $0.url.isFileURL ? $0.url.standardizedFileURL.path.hasPrefix(Bundle.main.bundlePath + "/") : CarTrack.audioURL($0.url.absoluteString) != nil }) else { return }

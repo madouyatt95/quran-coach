@@ -3,7 +3,7 @@ import {useAudioLibraryStore} from '../../stores/audioLibraryStore';
 import {useAcademyStore} from '../../stores/academyStore';
 import {useQuranStore} from '../../stores/quranStore';
 import {useLibraryPlayer} from '../../stores/libraryPlayerStore';
-import {books,recordingsForBook} from '../../lib/bookLibrary';
+import {books,recordingsForBook,chapterPlayback} from '../../lib/bookLibrary';
 import {latestContinuation,bookContinuations,type Continuation} from '../../lib/homeContinuation';
 import {profileStorage} from '../../lib/profileStorage';
 import {useState,useEffect} from 'react';
@@ -37,6 +37,14 @@ export function HomeResume({readingTitle,readingDetail,onRead,streak}:{readingTi
     const title=smart?.title||(effectiveMode==='reading'?readingTitle:effectiveMode==='listening'?(track?'Reprendre mon écoute':'Choisir une récitation'):(memory?'Reprendre ma mémorisation':'Commencer à mémoriser'));
     const seconds=Math.max(0,Math.floor(track?.position||0));
     const detail=smart?smart.detail+(smart.remaining!==undefined?` · ${Math.ceil(smart.remaining/60)} min restantes`:''):effectiveMode==='reading'?readingDetail:effectiveMode==='listening'?(track?`${track.surahName} · ${track.reciterName} · ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`:'Découvrez les récitateurs et les parcours'):memory?`${CHAPTERS[memory.surah-1]?.latin||'Sourate '+memory.surah} · verset ${memory.ayah}`:'Un passage à votre rythme';
+    const attempts=useHifdhJourneyStore(s=>s.attempts);
+    const weak=attempts.find((a,i)=>a.outcome!=='independent'&&a.outcome!=='uncertain'&&!attempts.slice(0,i).some(b=>b.surah===a.surah&&b.ayah===a.ayah));
+    const shortChapter=candidates.filter(c=>c.audioId).sort((a,b)=>b.updatedAt-a.updatedAt).map(c=>{
+        const book=books.find(b=>b.id===c.bookId),item=items.find(i=>i.id===c.audioId);
+        if(!item||!book)return null;
+        const chapter=chapterPlayback(item,recordingsForBook(items,book),c.seconds||0),left=chapter.duration-chapter.seconds;
+        return left>2&&left<=300?{c,item,chapter,left}:null;
+    }).find(v=>v!==null);
     const open=()=>{
         if(smart?.href){
             if(smart.audioId){const book=books.find(b=>b.id===smart.bookId),item=items.find(i=>i.id===smart.audioId);if(book&&item)void useLibraryPlayer.getState().play(item,{queue:recordingsForBook(items,book),startAt:smart.seconds||0});}
@@ -48,5 +56,5 @@ export function HomeResume({readingTitle,readingDetail,onRead,streak}:{readingTi
         if(journey)navigate(`/listen/experience?journey=${encodeURIComponent(journey.id)}&voice=${encodeURIComponent(String(track!.reciterId))}`);
         else {navigate('/listen');if(track)useAudioPlayerStore.getState().resume(track);}
     };
-    return <section className="home-resume" aria-label="Reprendre une activité"><div className="home-resume-tabs" role="group" aria-label="Activité à reprendre">{latest&&<button aria-pressed={!mode} onClick={()=>setMode(null)}>Reprendre</button>}{([{id:'reading',text:'📖 Lire'},{id:'listening',text:'🎧 Écouter'},{id:'memorizing',text:'🎙️ Mémoriser'}] as const).map(v=><button key={v.id} aria-pressed={mode===v.id||(!latest&&effectiveMode===v.id)} onClick={()=>setMode(v.id)}>{v.text}</button>)}</div><button className="home-resume-action" onClick={open}><span><strong>{title}</strong><small>{detail}</small></span><span aria-hidden="true">→</span></button>{streak>0&&<small className="home-resume-streak" title="Un jour actif : lecture attentive, écoute terminée ou exercice. Plusieurs activités dans la journée comptent pour un seul jour.">🔥 {streak} jour{streak>1?'s':''} de régularité</small>}</section>;
+    return <section className="home-resume" aria-label="Reprendre une activité"><div className="home-resume-tabs" role="group" aria-label="Activité à reprendre">{latest&&<button aria-pressed={!mode} onClick={()=>setMode(null)}>Reprendre</button>}{([{id:'reading',text:'📖 Lire'},{id:'listening',text:'🎧 Écouter'},{id:'memorizing',text:'🎙️ Mémoriser'}] as const).map(v=><button key={v.id} aria-pressed={mode===v.id||(!latest&&effectiveMode===v.id)} onClick={()=>setMode(v.id)}>{v.text}</button>)}</div><button className="home-resume-action" onClick={open}><span><strong>{title}</strong><small>{detail}</small></span><span aria-hidden="true">→</span></button>{streak>0&&<small className="home-resume-streak" title="Un jour actif : lecture attentive, écoute terminée ou exercice. Plusieurs activités dans la journée comptent pour un seul jour.">🔥 {streak} jour{streak>1?'s':''} de régularité</small>}<details className="short-session"><summary>J’ai 5 minutes</summary><button onClick={onRead}>Lire une page · {readingDetail} · ≈ 3 min</button><button onClick={()=>navigate(`/hifdh?surah=${weak?.surah||memory?.surah||1}&ayah=${weak?.ayah||memory?.ayah||1}`)}>{weak?'Revoir un verset à consolider':'Réviser un verset'} · {weak?.surah||memory?.surah||1}:{weak?.ayah||memory?.ayah||1} · ≈ 2 min</button>{shortChapter?<button onClick={()=>{void useLibraryPlayer.getState().play(shortChapter.item,{queue:shortChapter.chapter.parts,bounded:true,startAt:shortChapter.c.seconds||0});navigate(shortChapter.c.href!,{state:{bookView:'listen'}});}}>Terminer {shortChapter.chapter.title} · {Math.ceil(shortChapter.left/60)} min</button>:<button onClick={()=>navigate('/fahm/priere')}>Écouter et reconnaître un verset · ≈ 2 min</button>}</details></section>;
 }

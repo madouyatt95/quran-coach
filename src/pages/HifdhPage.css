@@ -2488,3 +2488,6 @@
 .hifdh-command-dock .hifdh-player__progress-bar { height: 3px; }
 .hifdh-training:not([hidden]) { padding-bottom: 110px; }
 @media(max-width:360px) { .hifdh-dock-action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } }
+
+.verse-studio{margin:.4rem 0;padding:.6rem;border:1px solid #8886;border-radius:.75rem}
+.verse-studio summary{cursor:pointer}.verse-studio .pupitre-study-actions button{min-height:44px}

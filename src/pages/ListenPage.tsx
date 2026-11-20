@@ -146,6 +146,7 @@ export function ListenPage() {
           ⌂
         </Link>
       </header>
+      <Link className="experience-primary" to="/listen/trajet">Préparer mon trajet →</Link>
       <ListenSections />
       {lastListened && !query && tab === "explore" && (
         <section className="listen-resume">

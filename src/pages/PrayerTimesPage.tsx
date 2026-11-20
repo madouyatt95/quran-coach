@@ -452,7 +452,7 @@ export function PrayerTimesPage() {
         <div className={`prayer-times-page ${themeClass}`}>
             {/* Header / Hero */}
             <div className="prayer-hero">
-                <div className="prayer-hero__top">
+                <div className="prayer-hero__top"><button onClick={()=>navigate('/prayers/mosquee')}>À la mosquée</button>
                     <button className="prayer-hero__back" aria-label="Revenir à la page précédente" onClick={goBack}>
                         <ChevronLeft size={24} />
                     </button>
@@ -577,7 +577,7 @@ export function PrayerTimesPage() {
                 <FridayCard now={nowMs} onOpen={setSelectedMosque}/>
                 {/* Secondary Actions Row */}
                 <div className="prayer-actions-row">
-                    <button className="prayer-action-card" onClick={() => navigate('/adhkar')}>
+                    <button className="prayer-action-card" onClick={() => navigate('/adhkar?cat=hisn_chap_25')}>
                         <Trophy size={18} />
                         <span>{t('prayer.adhkarAfter')}</span>
                     </button>

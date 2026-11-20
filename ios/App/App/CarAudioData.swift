@@ -152,7 +152,16 @@ struct CarListeningResume: Codable {
         return CarTrack.audioURL(track.url.absoluteString) != nil && URL(string: reference.audioUrl) == track.url
     } }
 }
+struct CarPreparedTrip: Codable {
+    let index: Int?
+    let position: Double?
+    let updatedAt: Double?
+    let title: String
+    let tracks: [CarTrack]
+    var valid: Bool { !tracks.isEmpty && tracks.count <= 500 && tracks.allSatisfy { CarTrack.audioURL($0.url.absoluteString) == $0.url } }
+}
 struct CarListeningSnapshot: Codable {
+    var trip: CarPreparedTrip? = nil
     let favorites: [String]
     let recent: [CarListeningResume]
     let bookmarks: [CarListeningResume]

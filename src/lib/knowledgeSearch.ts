@@ -6,6 +6,7 @@ import { chapterTeaching } from '../academy/data/courseExplanations';
 import { ARABIC_LESSONS } from '../arabic/data';
 import { useBookNotebook } from '../stores/bookNotebookStore';
 import { useAudioLibraryStore } from '../stores/audioLibraryStore';
+import {sourceLabel,sourceUrl} from './narrativeBooks';
 import { bookPassages } from './bookPassages';
 import { getJourney, journeyUrl } from './editorialJourneys';
 import { useAcademyStore } from '../stores/academyStore';
@@ -30,7 +31,7 @@ const publicEntries:Entry[]=[
 ];
 let bookIndex: Promise<{books: typeof import('../data/narrativeBooks').narrativeBooks; entries: Entry[]}> | undefined;
 function loadBookIndex():Promise<{books: typeof import('../data/narrativeBooks').narrativeBooks; entries: Entry[]}>{
- return bookIndex ??= import('../data/narrativeBooks').then(({narrativeBooks})=>({books:narrativeBooks,entries:narrativeBooks.flatMap(book=>book.chapters.flatMap(chapter=>bookPassages(book,chapter).map(p=>({id:`book:${book.id}:${p.id}`,type:'story' as const,title:`${book.title} · ${chapter.title}`,textAr:'',textFr:p.text,source:book.sources.filter(s=>p.sources.includes(s.id)).map(s=>s.description).join(' · '),link:`/books/${book.id}?chapter=${encodeURIComponent(chapter.id)}&passage=${encodeURIComponent(p.id)}`,emoji:'📚'})))) }));
+ return bookIndex ??= import('../data/narrativeBooks').then(({narrativeBooks})=>({books:narrativeBooks,entries:narrativeBooks.flatMap(book=>book.chapters.flatMap(chapter=>bookPassages(book,chapter).map(p=>({id:`book:${book.id}:${p.id}`,type:'story' as const,title:[book.title,chapter.title,chapter.scenes[p.scene]?.title].filter(Boolean).join(' · '),textAr:'',textFr:p.text,source:book.sources.filter(s=>p.sources.includes(s.id)).map(s=>sourceLabel(s)+' · '+s.description).join(' · '),passage:{bookId:book.id,chapterId:chapter.id,id:p.id,sources:book.sources.filter(s=>p.sources.includes(s.id)).map(s=>({label:sourceLabel(s),url:sourceUrl(s)}))},link:`/books/${book.id}?chapter=${encodeURIComponent(chapter.id)}&passage=${encodeURIComponent(p.id)}`,emoji:'📚'})))) }));
 }
 export async function searchKnowledge(query:string):Promise<SearchResult[]>{
  const {books:narrativeBooks,entries:bookEntries}=await loadBookIndex().catch(()=>{bookIndex=undefined;return {books:[],entries:[]};});
@@ -53,6 +54,6 @@ export async function searchKnowledge(query:string):Promise<SearchResult[]>{
   const score=rankSearch(query,entry.title,`${entry.textAr}\n${entry.textFr}\n${entry.source}`);if(!score)return [];
   const id=entry.id.slice(entry.id.indexOf(':')+1);
   const studied=entry.type==='course'?!!academy.progress[id]:entry.type==='arabic'?!!arabic.drafts[id]:entry.type==='story'?(entry.id.startsWith('book:')?!!library.bookReading[id.split(':')[0]]:(entry.studied??!!journeys.progress[id])):entry.studied;
-  return [{...entry,score,studied}];
+  return [{...entry,score:score+(entry.passage?rankSearch(query,'',entry.textFr)/2:0),studied}];
  });
 }

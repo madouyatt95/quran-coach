@@ -26,6 +26,7 @@ export function HomePrayerCard({event, now, mosque, calculatedCity, published}: 
             </> : <p className="home-prayer-note">{published ? 'Le prochain horaire n’est pas encore renseigné.' : 'Choisissez votre ville pour retrouver vos horaires.'}</p>}
             <p className="home-prayer-place">{published && mosque ? mosque.name : calculatedCity ? `Horaires calculés · ${calculatedCity}` : 'Voir les horaires et les mosquées'} <span aria-hidden="true">›</span></p>
         </Link>
+        <Link className="home-prayer-directions" to="/prayers/mosquee">À la mosquée →</Link>
         {published && mosque && <details className="home-prayer-directions"><summary>Itinéraire vers la mosquée ↗</summary><div><a href={directionsUrl(mosque, 'apple')} target="_blank" rel="noopener noreferrer">Apple Plans ↗</a><a href={directionsUrl(mosque, 'google')} target="_blank" rel="noopener noreferrer">Google Maps ↗</a></div></details>}
     </section>;
 }

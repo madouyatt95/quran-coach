@@ -7,6 +7,7 @@ export const AUDIO_LIBRARY_CACHE='quran-coach-audio-library-v1';
 export const AUDIO_API=(Capacitor.isNativePlatform()
  ? 'https://quran-coach-audio.madouyatt95.workers.dev'
  : import.meta.env.VITE_AUDIO_PRODUCTION_URL||'').replace(/\/$/,'');
+const publicCatalogUrl=AUDIO_API?`${AUDIO_API}/catalog`:'/book-audio/catalog';
 let catalogue:Promise<LibraryAudio[]>|undefined;
 let published:Promise<LibraryAudio[]>|undefined;
 let librarySnapshot:LibraryAudio[]|undefined;
@@ -32,9 +33,9 @@ async function publicJson(url:string,refresh=false):Promise<LibraryAudio[]>{
 }
 export async function loadAudioLibrary(refresh=false){
  if(refresh){catalogue=undefined;published=undefined;}
- return catalogue??=Promise.all([publicJson('/audio/library.json',refresh),AUDIO_API?publicJson(`${AUDIO_API}/catalog`,refresh).catch(()=>[]):Promise.resolve([])]).then(([local,published])=>{
+ return catalogue??=Promise.all([publicJson('/audio/library.json',refresh),publicJson(publicCatalogUrl,refresh).catch(()=>[])]).then(([local,published])=>{
   const orderedPublished=[...published].sort((a,b)=>a.title.localeCompare(b.title,'fr',{numeric:true}));
-  const seen=new Set<string>();return librarySnapshot=[...orderedPublished,...local.filter(item=>!retiredNarrationDestination(item.id))].filter(i=>{if(seen.has(i.text))return false;seen.add(i.text);return true;});
+  const seen=new Set<string>();return librarySnapshot=[...orderedPublished,...local].filter(i=>{if(retiredNarrationDestination(i.id)||seen.has(i.text))return false;seen.add(i.text);return true;});
  }).catch(e=>{catalogue=undefined;throw e;});
 }
 export async function downloadedAudioIds(items:LibraryAudio[]){

@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/book-audio/catalog",
+      "destination": "https://quran-coach-audio.madouyatt95.workers.dev/catalog"
+    },
+    {
       "source": "/verse-audio/:bitrate(32|48|64|128|192)/:voice(ar\\.[a-z]+)/:ayah(\\d+).mp3",
       "destination": "https://cdn.islamic.network/quran/audio/:bitrate/:voice/:ayah.mp3"
     },

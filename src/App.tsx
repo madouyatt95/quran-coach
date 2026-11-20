@@ -74,6 +74,9 @@ const CirclePage = lazy(() => import('./pages/CirclePage').then(m => ({ default:
 const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const AtlasPage = lazy(() => import('./pages/AtlasPage').then(m => ({ default: m.AtlasPage })));
 const LastNightsDashboard = lazy(() => import('./components/Home/LastNightsDashboard').then(m => ({ default: m.LastNightsDashboard })));
+const TripPage = lazy(() => import('./pages/TripPage'));
+const MosqueMomentPage = lazy(() => import('./pages/MosqueMomentPage'));
+const PrayerStudyPage = lazy(() => import('./pages/PrayerStudyPage'));
 const FahmPage = lazy(() => import('./pages/FahmPage').then(m => ({ default: m.FahmPage })));
 const FahmWordsPage = lazy(() => import('./pages/FahmWordsPage').then(m => ({ default: m.FahmWordsPage })));
 const FahmRecallPage = lazy(() => import('./pages/FahmRecallPage').then(m => ({ default: m.FahmRecallPage })));
@@ -243,9 +246,11 @@ function AppContent() {
             <Route path="/hifdh" element={<HifdhPage />} />
 
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/prayers/mosquee" element={<MosqueMomentPage />} />
             <Route path="/prayers" element={<PrayerTimesPage />} />
             <Route path="/prayer-settings" element={<PrayerSettingsPage />} />
             <Route path="/adhkar" element={<AdhkarPage />} />
+            <Route path="/listen/trajet" element={<TripPage />} />
             <Route path="/listen" element={<ListenPage />} />
             <Route path="/listen/library" element={<AudioLibraryPage />} />
             <Route path="/books/:bookId" element={<BookPage />} />
@@ -276,6 +281,7 @@ function AppContent() {
             <Route path="/stories" element={<StoriesPage />} />
             <Route path="/atlas" element={<AtlasPage />} />
             <Route path="/last-nights" element={<LastNightsDashboard />} />
+            <Route path="/fahm/priere" element={<PrayerStudyPage />} />
             <Route path="/fahm" element={<FahmPage />} />
             <Route path="/fahm/words" element={<FahmWordsPage />} />
             <Route path="/fahm/review" element={<FahmRecallPage />} />

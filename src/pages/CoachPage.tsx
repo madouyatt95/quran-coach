@@ -6,6 +6,7 @@ import { useOpenReader } from '../hooks/useOpenReader';
 import { coachSearch, QUICK_TAGS, type SearchKind, type SearchResult } from '../lib/coachSearch';
 import './CoachPage.css';
 
+import {BookSearchActions} from '../components/Navigation/BookSearchActions';
 export function CoachPage() {
     const navigate = useNavigate();
     const navigationType=useNavigationType();
@@ -55,7 +56,7 @@ export function CoachPage() {
             const match = r.source.match(/Coran\s+(\d+):(\d+)/);
             if (match) { openReader({ surah: Number(match[1]), ayah: Number(match[2]) }); return; }
         }
-        if (r.link) navigate(r.link);
+        if (r.link) navigate(r.link,r.passage?{state:{bookBookmark:true,bookView:'read'}}:undefined);
     };
     const filtered=results.filter(r=>(category==='all'||r.type===category)&&(!studiedOnly||r.studied));
     const returnTarget = location.state?.findReturn;
@@ -126,8 +127,7 @@ export function CoachPage() {
                         {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
                     </div>
                     {filtered.slice(0,limit).map((r, i) => (
-                        <div
-                            key={r.id}
+                        <article key={r.id}><div
                             className="coach-card"
                             role="button" tabIndex={0}
                             onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleCardClick(r); } }}
@@ -150,7 +150,7 @@ export function CoachPage() {
                             {r.source && (
                                 <div className="coach-card-source">{r.source}</div>
                             )}
-                        </div>
+                        </div>{r.passage&&r.link&&<BookSearchActions passage={r.passage} href={r.link}/>}</article>
                     ))}
                     {filtered.length>limit&&<button className="coach-more" onClick={()=>setLimit(n=>n+24)}>Afficher la suite ({filtered.length-limit})</button>}
                 </div>

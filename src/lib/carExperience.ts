@@ -9,6 +9,7 @@ import { useMosqueDirectoryStore } from '../stores/mosqueDirectoryStore';
 import type { AdhanEvent } from './adhanSchedule';
 import {readCarPlayback,useNativeCarPlayback,carPlaybackCommand,type NativeCarPlayback} from './nativeCarPlayback';
 import {mediaSessionOwner,claimMediaSession,releaseMediaSession} from './mediaSessionOwner';
+import {usePreparedTrip,tripCursor} from './preparedTrip';
 import {carListeningResume} from './carListening';
 import {timetableFresh} from './mosqueTimetables';
 import {mosqueApiUrl} from './mosques';
@@ -178,14 +179,19 @@ export function startCarMediaBridge() {
       const s=useListenStore.getState(),native=useNativeCarPlayback.getState();
       // Native playback already persists its queue; do not echo every progress tick back to it.
       const position=native.active&&native.listening?.audioUrl===s.lastListened?.audioUrl?'native':Math.floor((s.lastListened?.position||0)/5);
-      const signature=JSON.stringify([s.lastListened?.audioUrl,position,s.favoriteReciters,s.bookmarks]);
+      const trip=usePreparedTrip.getState().trip;
+      const positions=useAudioLibraryStore.getState().positions||{};
+      const latestBookTrack=trip?.kind==='Biographie'?trip.tracks.filter(t=>positions[t.id]).sort((a,b)=>positions[b.id].updatedAt-positions[a.id].updatedAt)[0]:null;
+      const tripPoint=trip?tripCursor(trip,latestBookTrack?.id||s.lastListened?.audioUrl,latestBookTrack?positions[latestBookTrack.id].seconds:s.lastListened?.position||0):null;
+      const signature=JSON.stringify([s.lastListened?.audioUrl,position,s.favoriteReciters,s.bookmarks,trip?.kind,trip?.tracks.map(t=>t.id),tripPoint?.index,Math.floor((tripPoint?.position||0)/5)]);
       if(signature===listenSignature&&lastCatalog===s.reciters)return;
       const catalogChanged=lastCatalog!==s.reciters;
       listenSignature=signature;lastCatalog=s.reciters;
-      const data={...(catalogChanged?{catalog:s.reciters||[]}:{}),favorites:s.favoriteReciters||[],recent:(s.history||[]).slice(0,20).flatMap(t=>{const item=carListeningResume(t);return item?[item]:[];}),bookmarks:(s.bookmarks||[]).slice(0,20).flatMap(t=>{const item=carListeningResume(t.track);return item?[item]:[];}),resume:carListeningResume(s.lastListened)};
+      const tripAt=latestBookTrack?positions[latestBookTrack.id].updatedAt:trip?.tracks.some(t=>t.url===s.lastListened?.audioUrl)?s.lastListened?.updatedAt||0:0;
+      const data={trip:trip?{title:trip.kind,tracks:trip.tracks,...tripPoint,updatedAt:tripAt}:null,...(catalogChanged?{catalog:s.reciters||[]}:{}),favorites:s.favoriteReciters||[],recent:(s.history||[]).slice(0,20).flatMap(t=>{const item=carListeningResume(t);return item?[item]:[];}),bookmarks:(s.bookmarks||[]).slice(0,20).flatMap(t=>{const item=carListeningResume(t.track);return item?[item]:[];}),resume:carListeningResume(s.lastListened)};
       void bridge.updateListeningSnapshot(data).catch(()=>{listenSignature='';lastCatalog=undefined;});
     };
-    cleanups.push(useListenStore.subscribe(listening));listening();
+    cleanups.push(useListenStore.subscribe(listening),usePreparedTrip.subscribe(listening),useAudioLibraryStore.subscribe(listening));listening();
     const prayers=()=>{void syncCarPrayerSnapshot(lastPrayerEvents);};
     cleanups.push(useMosquePlansStore.subscribe(prayers),useMosqueStore.subscribe(prayers),useMosqueDirectoryStore.subscribe(prayers));
     const librarySync=()=>{
